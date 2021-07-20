@@ -291,7 +291,7 @@ significant amount of the framework shall depend on the existence of these macro
     - condStr is evaluated to determine if the test-case is enabled and sets name variable +
     - condStr can also define compile time macros required for the test-case to be enabled. +
     - the test-case must be delimited with an #ifdef CaseName/#endif pair +
-    - the format of CondStr can be found in https://riscof.readthedocs.io/en/latest/cond_spec.html#cond-spec
+    - the format of CondStr can be found in https://riscof.readthedocs.io/en/latest/testformat.html#rvtest-case-condition-formating
 
 ==== *Required, Model-defined Macros* 
 

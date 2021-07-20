@@ -34,10 +34,14 @@ jobs:
         uses: ffurrer2/extract-release-notes@v1
           
       - name: Tag
+        id: create_tag
         if: github.ref == 'refs/heads/master'
-        run: |
-          git tag -a ${{ steps.get_version.outputs.version }}
-          git push origin ${{ steps.get_version.outputs.version }}
+        uses: mathieudutour/github-tag-action@v5.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          custom_tag: ${{ steps.get_version.outputs.version }} 
+          create_annotated_tag: True
+          tag_prefix: ''
 
       - name: Build PDF
         id: build_pdf

@@ -2,10 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 Please note the header `WIP-DEV` is to always remain indicating the changes done on the dev branch.
 Only when a release to the main branch is done, the contents of the WIP-DEV are put under a
 versioned header while the `WIP-DEV` is left empty
+
+## [WIP-DEV]
+- Added support for zicboz extexnsion
 
 ## [0.12.2] - 2024-03-06
 - Add Zfa support. (PR#60)
@@ -19,7 +21,7 @@ versioned header while the `WIP-DEV` is left empty
 - Add hardcoded register testcases to dataset.cgf and rv32im.cgf
 - Define rs1_val_data for c.ldsp in imc.yaml
 - Update "opcode" to "mnemonics" in the cgf files
-- Delete main.yml 
+- Delete main.yml
 - Update test.yml for CI
 - Define rs1_val_data for instructions from zicfiss.cgf in template.yaml
 - Add "warning" in the verbose definition
@@ -30,7 +32,7 @@ versioned header while the `WIP-DEV` is left empty
 - Add unratified Zaamo subcomponent of A extension
 - Add unratified B extension
 - Fix issues with csr_comb
-- Minor fix in kslraw.u in rv32ip 
+- Minor fix in kslraw.u in rv32ip
 - Fix incorrect 'sig:' entry in aes32dsi in template.yaml
 - Add sig and sz for instructions in template.yaml
 - Minor change of rd definition in c.lui in rv32ec
@@ -69,7 +71,7 @@ versioned header while the `WIP-DEV` is left empty
 
 ## [0.10.2] - 2022-10-20
 - Fixed use of lowercase LI.
-- Fixed correctval to ?? in comments. 
+- Fixed correctval to ?? in comments.
 - Fixed sw to SREG for K tests.
 - Added canaries and signature boundary labels.
 

@@ -159,7 +159,7 @@
   #define INT_CAUSE_MSK ((1<<4)-1)
 #endif
 
-        // set defaults
+// set defaults
 #ifndef   NUM_SPECD_EXCPTCAUSES
   #define NUM_SPECD_EXCPTCAUSES 16
   #define EXCPT_CAUSE_MSK ((1<<4)-1)

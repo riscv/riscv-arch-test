@@ -172,7 +172,7 @@ VALS = {
     'prrformat': '["rs1_val", "rs2_val"]',
     'prrrformat': "['rs1_val', 'rs2_val' , 'rs3_val']",
     'dcasrformat': '["rs1_val", "rs2_val"]',
-    'zformat': ['rs1']
+    'zformat': "['rs1_val']"
 }
 ''' Dictionary mapping instruction formats to operand value variables used by those formats '''
 
@@ -1134,6 +1134,7 @@ class Generator():
         else:
             FLEN = 0
         XLEN = max(self.opnode['xlen'])
+        RVMODEL_CBZ_BLOCKSIZE = XLEN
         SIGALIGN = max(XLEN,FLEN)/8
         stride_sz = eval(suffix)
         for instr in instr_dict:

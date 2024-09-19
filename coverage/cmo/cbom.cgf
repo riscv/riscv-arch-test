@@ -1,0 +1,37 @@
+# For Licence details look at https://github.com/riscv-software-src/riscv-ctg/-/blob/master/LICENSE.incore
+
+cbo.clean:
+    config:
+      - check ISA:=regex(.*I.*Zicbom.*Zicsr.*)
+    mnemonics:
+      cbo.clean: 0
+    rs1:
+      <<: *all_regs_mx0
+    val_comb:
+      <<: [*base_rs1val_unsgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn]
+
+cbo.flush:
+    config:
+      - check ISA:=regex(.*I.*Zicbom.*Zicsr.*)
+    mnemonics:
+      cbo.flush: 0
+    rs1:
+      <<: *all_regs_mx0
+    val_comb:
+      <<: [*base_rs1val_unsgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn]
+
+cbo.inval:
+    config:
+      - check ISA:=regex(.*I.*Zicbom.*Zicsr.*)
+    mnemonics:
+      cbo.inval: 0
+    rs1:
+      <<: *all_regs_mx0
+    val_comb:
+      <<: [*base_rs1val_unsgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn]

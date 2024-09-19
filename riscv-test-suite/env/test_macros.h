@@ -769,10 +769,17 @@ nop					;\
 csrr flagreg, fcsr			;\
 RVTEST_SIGUPD_F(swreg,destreg,flagreg) 
 
-#define TEST_CBO_ZERO(swreg,rs1,inst,imm_val)                               ;\
-LI(rs1,imm_val&(RVMODEL_CBZ_BLOCKSIZE-1))                                   ;\
+#define TEST_CBO(swreg,rs1,inst,rs1_val)                                    ;\
+LI(rs1,rs1_val&(RVMODEL_CBZ_BLOCKSIZE-1))                                   ;\
 add rs1,rs1,swreg                                                           ;\
 inst (rs1)                                                                  ;\
+nop                                                                         ;\
+nop                                                                         ;\
+ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
+
+#define TEST_PREFETCH(swreg,rs1,inst,rs1_val,imm_val)                       ;\
+LI(rs1,rs1_val)                                                             ;\
+inst imm_val(rs1)                                                           ;\
 nop                                                                         ;\
 nop                                                                         ;\
 ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)

@@ -1,0 +1,37 @@
+# For Licence details look at https://github.com/riscv-software-src/riscv-ctg/-/blob/master/LICENSE.incore
+
+prefetch.i:
+    config:
+      - check ISA:=regex(.*I.*Zicbop.*Zicsr.*)
+    mnemonics:
+      prefetch.i: 0
+    rs1:
+      <<: *all_regs
+    val_comb:
+      <<: [*zicbop_ifmt_val_comb_unsgn, *base_rs1val_unsgn, *ifmt_base_immval11_5_sgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn, *ifmt_immval_walking_11_5]
+
+prefetch.r:
+    config:
+      - check ISA:=regex(.*I.*Zicbop.*Zicsr.*)
+    mnemonics:
+      prefetch.r: 0
+    rs1:
+      <<: *all_regs
+    val_comb:
+      <<: [*zicbop_ifmt_val_comb_unsgn, *base_rs1val_unsgn, *ifmt_base_immval11_5_sgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn, *ifmt_immval_walking_11_5]
+
+prefetch.w:
+    config:
+      - check ISA:=regex(.*I.*Zicbop.*Zicsr.*)
+    mnemonics:
+      prefetch.w: 0
+    rs1:
+      <<: *all_regs
+    val_comb:
+      <<: [*zicbop_ifmt_val_comb_unsgn, *base_rs1val_unsgn, *ifmt_base_immval11_5_sgn]
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn, *ifmt_immval_walking_11_5]

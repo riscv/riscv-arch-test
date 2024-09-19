@@ -7,7 +7,7 @@ Only when a release to the main branch is done, the contents of the WIP-DEV are 
 versioned header while the `WIP-DEV` is left empty
 
 ## [WIP-DEV]
-- Added support for zicboz extexnsion
+- Added support for zicboz/zicbom/zicbop extexnsion
 
 ## [0.12.2] - 2024-03-06
 - Add Zfa support. (PR#60)

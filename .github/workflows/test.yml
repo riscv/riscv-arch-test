@@ -1,40 +1,42 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI test
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
-
-  # Triggers the workflow on pull request events but only for the main & dev branch
   pull_request:
     branches: [ '**'  ]
-  
-  # Triggers the workflow on push events
   push:
     branches: [ '**'  ]
-
-  # Allows you to run this workflow Actions manually
   workflow_dispatch:
-
-   # Triggers the action 2am every day
+  # Triggers the action 2am every day
   schedule:
     - cron: "0 2 * * *"
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  generate-matrix:
+    name: Generate Matrix
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.matrix-gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix-gen
+        run: echo "matrix={\"file\":$(cd .github/isa_templates/ && ls *.yaml | jq -R -s -c 'split("\n")[:-1]')}" >> "$GITHUB_OUTPUT"
 
   ACT-sail-spike:
-    name: ACT-sail-spike (RV${{ matrix.xlen }})
+    name: ACT-sail-spike ${{ matrix.file }})
+    needs: generate-matrix
     runs-on: ubuntu-22.04
     # Set a 60-minute time limit for this job
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        xlen: [32, 64]
-
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
+
+      - name: Set Environment Variables
+        run: |
+              xlen=$(echo "${{ matrix.file }}" | cut -c 3-4)
+              echo "xlen=$xlen" >> $GITHUB_ENV
 
       - name: Checkout source
         uses: actions/checkout@v4
@@ -47,13 +49,13 @@ jobs:
           sudo apt-get install -y autoconf automake autotools-dev curl python3 python3-pip libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev pkg-config
           sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
           pip3 install git+https://github.com/riscv/riscof.git
-      
-      - name: Build RISCV-GNU Toolchain (${{ matrix.xlen }} bit)
+
+      - name: Build RISCV-GNU Toolchain (${{ env.xlen }} bit)
         run: |
-          wget -c https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2024.09.03/riscv${{ matrix.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
-          tar -xzf riscv${{ matrix.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
-          mv riscv riscv${{ matrix.xlen }}
-          echo $GITHUB_WORKSPACE/riscv${{ matrix.xlen }}/bin >> $GITHUB_PATH
+          wget -c https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2024.09.03/riscv${{ env.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
+          tar -xzf riscv${{ env.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
+          mv riscv riscv${{ env.xlen }}
+          echo $GITHUB_WORKSPACE/riscv${{ env.xlen }}/bin >> $GITHUB_PATH
 
       - name: Install riscv-isac
         run: |
@@ -75,7 +77,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/spike
-          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
+          key: spike-${{ env.SPIKE_HASH }}-RV${{ env.xlen }}
 
       - name: Install Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
@@ -106,7 +108,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/sail
-          key: sail-${{ env.SAIL_HASH }}-RV${{ matrix.xlen }}
+          key: sail-${{ env.SAIL_HASH }}-RV${{ env.xlen }}
 
       - name: Install Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'
@@ -115,9 +117,9 @@ jobs:
           curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
           git clone https://github.com/riscv/sail-riscv.git
           cd sail-riscv
-          ARCH=RV${{ matrix.xlen }} make
+          ARCH=RV${{ env.xlen }} make
           mkdir -p $GITHUB_WORKSPACE/sail
-          mv c_emulator/riscv_sim_RV${{ matrix.xlen }} $GITHUB_WORKSPACE/sail/riscv_sim_RV${{ matrix.xlen }}
+          mv c_emulator/riscv_sim_RV${{ env.xlen }} $GITHUB_WORKSPACE/sail/riscv_sim_RV${{ env.xlen }}
 
       - name: Save cached Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'
@@ -131,18 +133,19 @@ jobs:
         run: |
               echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
               echo $GITHUB_WORKSPACE/sail >> $GITHUB_PATH
-      
-      - name: Config and run riscof for RV${{ matrix.xlen }}
+
+      - name: Config and run riscof for ${{ matrix.file }}
         run: |
-          cd riscof-plugins/rv${{ matrix.xlen }}
-          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m/ --env ../../riscv-test-suite/env
+          cd riscof-plugins/rv${{ env.xlen }}
+          sed -i "/^ispec=/c\ispec=${{ github.workspace }}/.github/isa_templates/${{ matrix.file }}" config.ini
+          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ env.xlen }}i_m/ --env ../../riscv-test-suite/env
 
       #Check the existance of the riscof work folder, and add the PATH to environment variable
       - name: Check size and determine upload path
         if: always()
         id: check_size
         run: |
-          work_folder="${{ github.workspace }}/riscof-plugins/rv${{ matrix.xlen }}/riscof_work/"
+          work_folder="${{ github.workspace }}/riscof-plugins/rv${{ env.xlen }}/riscof_work/"
           report_file="$work_folder/report.html"
           if [ -d "$work_folder" ]; then
             folder_size=$(du -sm "$work_folder" | cut -f1)
@@ -166,11 +169,13 @@ jobs:
           fi
 
       # Upload the appropriate artifact (folder or report) and skip in case not exists
-      - name: Upload riscof artifact for rv${{ matrix.xlen }}
+      - name: Upload riscof artifact for rv${{ matrix.file }}
         if: always() && env.upload_path != ''
         uses: actions/upload-artifact@v4
         with:
-          name: riscof-artifact-rv${{ matrix.xlen }}
-          path: ${{ env.upload_path }}
+          name: riscof-test-report-${{ matrix.file }}
+          path: /home/runner/work/riscv-arch-test/riscv-arch-test/riscof-plugins/rv${{ env.xlen }}/riscof_work/
+          if-no-files-found: warn
+          retention-days: 3
           compression-level: 6
           overwrite: true

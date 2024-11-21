@@ -1,10 +1,10 @@
-// -----------
+---------------------------------------------------------------------------------------------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
-// -----------
+---------------------------------------------------------------------------------------------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the read-only protection mechanism of the Machine Interrupt Pending (MIP) register

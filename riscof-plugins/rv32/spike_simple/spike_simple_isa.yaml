@@ -1,11 +1,11 @@
 hart_ids: [0]
 hart0:
-  ISA: RV32IMACZicsr_Zifencei
+  ISA: RV32IMACSUZicsr_Zifencei
   physical_addr_sz: 32
   User_Spec_Version: '2.3'
   supported_xlen: [32]
   misa:
-   reset-val: 0x40001105
+   reset-val: 0x40141105
    rv32:
      accessible: true
      mxl:
@@ -23,7 +23,7 @@ hart0:
            warl:
               dependency_fields: []
               legal:
-                - extensions[25:0] bitmask [0x0001105, 0x0000000]
+                - extensions[25:0] bitmask [0x40141105, 0x0000000]
               wr_illegal:
                 - Unchanged
  

@@ -128,6 +128,26 @@
 #define MIP_HEIP            (1 << IRQ_H_EXT)
 #define MIP_MEIP            (1 << IRQ_M_EXT)
 
+#define MIE_SSIP            (1 << IRQ_S_SOFT)
+#define MIE_HSIP            (1 << IRQ_H_SOFT)
+#define MIE_MSIP            (1 << IRQ_M_SOFT)
+#define MIE_STIP            (1 << IRQ_S_TIMER)
+#define MIE_HTIP            (1 << IRQ_H_TIMER)
+#define MIE_MTIP            (1 << IRQ_M_TIMER)
+#define MIE_SEIP            (1 << IRQ_S_EXT)
+#define MIE_HEIP            (1 << IRQ_H_EXT)
+#define MIE_MEIP            (1 << IRQ_M_EXT)
+
+#define MIDELEG_SSI            (1 << IRQ_S_SOFT)
+#define MIDELEG_HSI            (1 << IRQ_H_SOFT)
+#define MIDELEG_MSI            (1 << IRQ_M_SOFT)
+#define MIDELEG_STI            (1 << IRQ_S_TIMER)
+#define MIDELEG_HTI            (1 << IRQ_H_TIMER)
+#define MIDELEG_MTI            (1 << IRQ_M_TIMER)
+#define MIDELEG_SEI            (1 << IRQ_S_EXT)
+#define MIDELEG_HEI            (1 << IRQ_H_EXT)
+#define MIDELEG_MEI            (1 << IRQ_M_EXT)
+
 #define SIP_SSIP MIP_SSIP
 #define SIP_STIP MIP_STIP
 

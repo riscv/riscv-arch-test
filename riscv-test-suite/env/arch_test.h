@@ -991,7 +991,13 @@ init_\__MODE__\()scratch:
         csrrw   T3, CSR_XSCRATCH, T1    // swap xscratch with save area ptr (will be used by handler)
         SREG    T3, xscr_save_off(T1)   // save old mscratch in xscratch_save
 //----------------------------------------------------------------------
+init_mtimecmp:
+        li t0, 0x2004000          
+        li t2, -1                   
+        SREG t2, 0(t0)
+//----------------------------------------------------------------------
 init_\__MODE__\()edeleg:
+ 
         li      T2, 0                   // save and clear edeleg so we can exit to Mmode
 .ifc \__MODE__ , V
         csrrw   T2, CSR_VEDELEG, T2     // special case: VS EDELEG available from Vmode
@@ -1524,10 +1530,16 @@ common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has
  //**FIXME** - make sure this is kept up-to-date with fast int extension and others
         andi    T2, T5, INT_CAUSE_MSK   // clr INT & unarched arched bits (**NOTE expand if future extns use them)
         sll     T3, T3, T2              // create mask 1<<xcause **NOTE**: that MSB is ignored in shift amt
+        csrrc   T4, CSR_XSTATUS, T3     // read then attempt to clear mstatus??
+sv_\__MODE__\()status:                  // note: clear has no effect on MxSTATUS
+        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xstatus)
         csrrc   T4, CSR_XIE, T3         // read, then attempt to clear int enable bit??
-        csrrc   T4, CSR_XIP, T3         // read, then attempt to clear int pend bit
+sv_\__MODE__\()ie:                      // note: clear has no effect on MxIE
+        SREG    T4, 3*REGWIDTH(T1)      // save 4th sig value, (xie)        
+        csrrc   T4, CSR_XIP, T3         // read, then attempt to clear int pend bit??
 sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
-        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xip)
+        SREG    T4, 4*REGWIDTH(T1)      // save 5th sig value, (xip)
+        
 
         li      T2, 0                   // index of interrupt dispatch table base
 

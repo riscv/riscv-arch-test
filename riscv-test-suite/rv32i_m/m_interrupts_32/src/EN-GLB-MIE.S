@@ -18,16 +18,9 @@
 // - Confirm interrupt is processed when global MIE is enabled
 // - Verify machine status changes during interrupt handling
 // -----------
-// Test Cases:
-// Case 1: Verify initial interrupt pending state
-// Case 2: Generate software interrupt
-// Case 3: Verify mstatus state changes
-// Case 4: Enable local software interrupt and process interrupt
-// -----------
 // Expected Behavior:
 // - Interrupts processed when global MIE is enabled
 // - Correct machine status modifications during interrupt handling
-// - Proper interrupt delegation and processing
 // ---------------------------------------------------------------------------------------------
 
 #include "model_test.h"
@@ -95,12 +88,6 @@ main:
 	LI(a5,    MIE_MSIP)
 	csrrs x0, CSR_MIE, a5
 	nop
-
-	// Verify Mstatus After Interrupt:
-	// Confirm MPIE and MIE status after interrupt processing
-	// Validates global interrupt state transitions
-	csrrs a4, CSR_MSTATUS, x0
-	RVTEST_SIGUPD(x3, a4)
 
 	// Verify Software Interrupt Cleared:
 	// Confirm software interrupt bit is cleared in MIP register

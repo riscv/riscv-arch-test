@@ -1,10 +1,10 @@
----------------------------------------------------------------------------------------------
+// -----------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
----------------------------------------------------------------------------------------------
+// -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-// Developed by: Syed Ali Faraz Jaffery
+//
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test verifies the functionality of the Machine Software Interrupt Pending (MSIP) mechanism
@@ -17,6 +17,12 @@
 // - Generate a software interrupt by writing to the memory-mapped MSIP control register
 // - Validate MSIP state changes
 // - Clear the software interrupt and confirm state reset
+// -----------
+// Test Cases:
+// Case 1: Validate initial MSIP state (zero)
+// Case 2: Generate software interrupt
+// Case 3: Verify software interrupt pending state
+// Case 4: Clear software interrupt and verify state reset
 // -----------
 // Expected Behavior:
 // - MSIP register accurately reflects software interrupt generation
@@ -44,7 +50,9 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
   	
+#ifndef MSIP_BASE  	
 #define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
 main:
 	// Disable Global Interrupts:
 	// Prevent any maskable interrupts during test execution

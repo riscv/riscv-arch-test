@@ -1,10 +1,10 @@
----------------------------------------------------------------------------------------------
+// -----------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
----------------------------------------------------------------------------------------------
+// -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-// Developed by: Syed Ali Faraz Jaffery
+//
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the handling of Most Significant Bit (MSB) in mtimecmp and mtime registers
@@ -52,8 +52,14 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
 
-#define MTIME_BASE              0x0200bff8  	    // Base address  for the memory-mapped machine timer register.
-#define MTIMECMP_BASE           0x02004000  	    // Base address  for the memory-mapped machine timer-compare register.  	
+#ifndef MTIME_BASE 
+#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef MTIMECMP_BASE 
+#define MTIMECMP_BASE           0x02004000  	// Base address  for the memory-mapped machine timer-compare register.  
+#endif
+ 	
 #define TIMER_MAX_VALUE         0x8000000000000000  // Maximum Value for the memory-mapped machine timer-compare register.
 #define TIMER_TEST_VALUE        0x200	    // Test Value
 main:	

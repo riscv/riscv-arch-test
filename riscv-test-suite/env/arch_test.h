@@ -1192,7 +1192,7 @@ spcl_\__MODE__\()2mmode_test:
         slli    T3, T5, 1                       // remove MSB, cause<<1
         addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an extint or larger? ( (cause<<1) > (8<<1) )?
         bgez    T3, \__MODE__\()trap_sig_sv     // yes, keep std length
-        li      T2, 3*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 3*regsz
+        li      T2, 5*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 3*regsz
         j       \__MODE__\()trap_sig_sv
 
  /**********************************************************************/

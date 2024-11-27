@@ -1,10 +1,10 @@
----------------------------------------------------------------------------------------------
+// -----------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
----------------------------------------------------------------------------------------------
+// -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-// Developed by: Syed Ali Faraz Jaffery
+//
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the global Machine Interrupt Enable (MIE) disable behavior
@@ -16,6 +16,12 @@
 // - Verify interrupt pending state remains unchanged
 // - Generate a software interrupt
 // - Confirm interrupt is not processed when global MIE is disabled
+// -----------
+// Test Cases:
+// Case 1: Verify initial interrupt pending state
+// Case 2: Generate software interrupt
+// Case 3: Verify mstatus state during global MIE disable
+// Case 4: Enable local software interrupt
 // -----------
 // Expected Behavior:
 // - No interrupts processed when global MIE is disabled
@@ -43,7 +49,9 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
 
+#ifndef MSIP_BASE  	
 #define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
 main:
 	// Disable Global Interrupts:
 	// Prevent maskable interrupts during test execution

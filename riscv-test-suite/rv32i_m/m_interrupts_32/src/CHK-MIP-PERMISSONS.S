@@ -1,10 +1,10 @@
----------------------------------------------------------------------------------------------
+// -----------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
----------------------------------------------------------------------------------------------
+// -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-// Developed by: Syed Ali Faraz Jaffery
+//
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the read-only protection mechanism of the Machine Interrupt Pending (MIP) register
@@ -48,9 +48,17 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	2   
   	.option norvc
   	
+#ifndef MSIP_BASE  	
 #define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
+
+#ifndef MTIME_BASE 
 #define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
+#endif
+
+#ifndef MTIMECMP_BASE 
+#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
 
 main:	
 	// Disable Global Interrupts:

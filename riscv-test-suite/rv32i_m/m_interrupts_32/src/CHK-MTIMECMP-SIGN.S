@@ -1,10 +1,10 @@
----------------------------------------------------------------------------------------------
+// -----------
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
----------------------------------------------------------------------------------------------
+// -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-// Developed by: Syed Ali Faraz Jaffery
+//
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the handling of Most Significant Bit (MSB) in mtimecmp and mtime registers
@@ -52,8 +52,14 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	2   
   	.option norvc
 
-#define MTIME_ADDR              0x0200bff8 	// Base address  for the memory-mapped machine timer register.
-#define MTIMECMP_ADDR           0x02004000  	// Base address  for the memory-mapped machine timer-compare register.  	
+#ifndef MTIME_BASE 
+#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef MTIMECMP_BASE 
+#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
+ 	
 #define TIMER_MAX_VALUE         0x80000000	// Maximum Value for the memory-mapped machine timer-compare register.
 #define TIMER_TEST_VALUE        0x200	//
 main:	
@@ -75,8 +81,8 @@ main:
 	// Timer Register Base and Test Value Initialization:
 	// Load base addresses and predefined test values for timer comparison
 	// Prepares registers for testing signed/unsigned timer behavior
-	LI(a5,   MTIMECMP_ADDR) 
-       	LI(a6,   MTIME_ADDR)
+	LI(a5,   MTIMECMP_BASE) 
+       	LI(a6,   MTIME_BASE)
        	LI(t5,   TIMER_MAX_VALUE) 
        	LI(t6,   TIMER_TEST_VALUE)
        	 	

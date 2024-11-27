@@ -1192,7 +1192,7 @@ spcl_\__MODE__\()2mmode_test:
         slli    T3, T5, 1                       // remove MSB, cause<<1
         addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an extint or larger? ( (cause<<1) > (8<<1) )?
         bgez    T3, \__MODE__\()trap_sig_sv     // yes, keep std length
-        li      T2, 5*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 3*regsz
+        li      T2, 5*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 5*regsz
         j       \__MODE__\()trap_sig_sv
 
  /**********************************************************************/
@@ -1531,6 +1531,8 @@ common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has
         andi    T2, T5, INT_CAUSE_MSK   // clr INT & unarched arched bits (**NOTE expand if future extns use them)
         sll     T3, T3, T2              // create mask 1<<xcause **NOTE**: that MSB is ignored in shift amt
         csrrc   T4, CSR_XSTATUS, T3     // read then attempt to clear mstatus??
+        srli    T4, T4, 3               // Move MIE to LSB
+        andi    T4, T4, 1               // Mask MIE     
 sv_\__MODE__\()status:                  // note: clear has no effect on MxSTATUS
         SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xstatus)
         csrrc   T4, CSR_XIE, T3         // read, then attempt to clear int enable bit??

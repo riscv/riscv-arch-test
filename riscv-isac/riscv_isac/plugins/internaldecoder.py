@@ -1369,6 +1369,13 @@ class disassembler():
     def priviledged_ops(self, instrObj):
         instr = instrObj.instr
         funct3 = (instr & self.FUNCT3_MASK) >> 12
+        funct7 = (instr >> 20)
+        
+        if funct7 == 0b001100000010:
+           instrObj.rd = None
+           instrObj.rs1 = None
+           instrObj.instr_name = 'mret'
+           return instrObj
 
         # Test for ecall and ebreak ops
         if funct3 == 0b000:

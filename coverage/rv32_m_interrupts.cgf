@@ -7,7 +7,8 @@ CHK_M_INTR_PRIORITY:
   mnemonics: 
       csrrc: 0
       csrrs: 0
-      sw   : 0   
+      sw   : 0  
+      mret : 0 
   val_comb: 
     # Software interrupt scenario validation (This coverpoint will never hit in case of timer interrupt is taken first due to mip specific value check)
     '(call_type == "interrupt") and (((mstatus >> 11) & 0x3) == 0x3) and (((mstatus >> 7) & 0x1) == 1) and (((mstatus >> 3) & 0x1) == 0) and (mcause >> 31 == 1) and ((mcause & 0xF) == 0x3) and (((mie >> 3) & 0x1) == 1) and (((mie >> 7) & 0x1) == 1) and (((mip >> 3) & 0x1) == 1) and (((mip >> 7) & 0x1) == 1)': 0 # Validates software interrupt handling when simultaneously pending with timer interrupt, checking machine status register configuration(MPP, MPIE, MIE), interrupt cause, and interrupt enable/pending states for both software and timer interrupt.
@@ -50,6 +51,7 @@ CHK_M_SOFTWARE_INTR:
       csrrc: 0
       csrrs: 0
       sw   : 0 
+      mret : 0
   val_comb:
       # Validate various software interrupt scenarios
       '(call_type != "interrupt") and (((mstatus >> 3) & 0x1) == 1) and (((mie >> 3) & 0x1) == 0) and (((mip >> 3) & 0x1) == 0)': 0 # Validates global interrupt enabled with local software interrupt disabled and encountrer no interrupt in pending.
@@ -94,6 +96,7 @@ CHK_M_TIMER_INTR:
       csrrc: 0
       csrrs: 0
       sw   : 0 
+      mret : 0
   val_comb:
       # Validate various timer interrupt scenarios
       '(call_type != "interrupt") and (((mstatus >> 3) & 0x1) == 1) and (((mie >> 7) & 0x1) == 0) and (((mip >> 7) & 0x1) == 0)': 0 # Validates global interrupt enabled with local timer interrupt disabled and encountrer no interrupt in pending.
@@ -137,6 +140,7 @@ EN_GLB_MIE:
       csrrc: 0
       csrrs: 0
       sw   : 0 
+      mret : 0
   val_comb:
       # Validate software interrupt handling
       '(call_type == "interrupt") and (((mstatus >> 11) & 0x3) == 0x3) and (((mstatus >> 7) & 0x1) == 1) and (((mstatus >> 3) & 0x1) == 0) and (mcause >> 31 == 1) and ((mcause & 0xF) == 0x3) and (((mie >> 3)  & 0x1) == 1) and (((mip >> 3)  & 0x1) == 1)': 0 # Validates software interrupt processing when global machine interrupt is enabled, verifying all required interrupt conditions.
@@ -149,6 +153,7 @@ EN_M_INTR_DELEGATION:
   mnemonics: 
       csrrs: 0
       sw   : 0 
+      mret : 0
   val_comb:
       # Validate software interrupt handling
       '(call_type == "interrupt") and (((mstatus >> 11) & 0x3) == 0x3) and (((mstatus >> 7) & 0x1) == 1) and (((mstatus >> 3) & 0x1) == 0) and (mcause >> 31 == 1) and ((mcause & 0xF) == 0x3) and (((mie >> 3)  & 0x1) == 1) and (((mip >> 3)  & 0x1) == 1)': 0 # Ensures M-mode software interrupts are processed within M-mode and not delegated to lower privilege levels.

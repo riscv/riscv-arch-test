@@ -44,18 +44,21 @@ li x1, 1                ;\
 #define RVMODEL_IO_ASSERT_DFPR_EQ(_D, _R, _I)
 
 #define RVMODEL_SET_MSW_INT           ;\
-    li t1, 1                          ;\
-    li t2, 0x2000000                  ;\
-    SREG t1, 0(t2)	              ;
+    li   t1, 1                        ;\
+    li   t2, 0x2000000                ;\
+    SREG t1, 0(t2)	              ;\
+    nop	              ;
 
-#define RVMODEL_CLEAR_MSW_INT         ;\
-    li t0, 0x2000000                  ;\
-    SREG x0, 0(t0)                    ; 
-
-#define RVMODEL_CLEAR_MTIMER_INT      ;\
-    li t0, 0x02004000                 ;\
-    li t2, -1                         ;\
-    SREG t2, 0(t0)                    ; 
+#define RVMODEL_CLR_MSW_INT           ;\
+    li   t0, 0x2000000                ;\
+    SREG x0, 0(t0)                    ;\
+    nop	              ; 
+       
+#define RVMODEL_CLR_MTIMER_INT        ;\
+    li   t0, 0x02004000               ;\
+    li   t2, -1                       ;\
+    SREG t2, 0(t0)                    ;\
+    nop	              ;
 
 #define RVMODEL_CLR_MEXT_INT
 

@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates M-mode interrupt delegation behavior
@@ -30,6 +30,10 @@
 // - Proper machine status modifications during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MSIP_BASE  	
+#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
@@ -49,10 +53,7 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 	.attribute stack_align, 16
   	.align	2   
   	.option norvc
-  	
-#ifndef MSIP_BASE  	
-#define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
+ 
 main:
 	// Enable Global Interrupts:
 	// Set Machine Status Register (mstatus) MIE bit
@@ -71,7 +72,7 @@ main:
 	// Trigger software interrupt by writing 1 to MSIP control register
 	// Validates interrupt generation under delegation configuration
 	LI(a5,   0x1)
-	LI(x5,   MSIP_BASE)
+	LI(x5,   RVMODEL_MSIP_BASE)
 	SREG a5, 0(x5)
 	nop
 

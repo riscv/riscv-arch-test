@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the timer interrupt handling mechanism in RISC-V Machine Mode
@@ -30,6 +30,14 @@
 // - Consistent machine state preservation during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
@@ -49,16 +57,9 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 	.attribute stack_align, 16
   	.align	2   
   	.option norvc
-
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif
   	
 #define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
+
 main:	
 	// Enable Global Interrupts:
 	// Set Machine Status Register (mstatus) MIE bit
@@ -76,8 +77,8 @@ main:
 	// Initialize Timer Registers:
 	// Configure timer compare (mtimecmp) and timer (mtime)
 	// Create a controlled timer interrupt scenario
-	LI(a0,     MTIMECMP_BASE) 
-	LI(a1,     MTIME_BASE)
+	LI(a0,     RVMODEL_MTIMECMP_BASE) 
+	LI(a1,     RVMODEL_MTIME_BASE)
 	LI(t1,     TIMER_MAX_VALUE)	
 	SREG t1,   0(a0)
 	nop

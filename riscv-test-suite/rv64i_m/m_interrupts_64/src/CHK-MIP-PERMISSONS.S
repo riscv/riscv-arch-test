@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the read-only protection mechanism of the Machine Interrupt Pending (MIP) register
@@ -27,6 +27,19 @@
 // - No interrupt pending bits should change after write attempts
 // - System maintains control over interrupt pending state
 // ---------------------------------------------------------------------------------------------
+
+#ifndef RVMODEL_MSIP_BASE  	
+#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
+
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
@@ -47,18 +60,6 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
   	
-#ifndef MSIP_BASE  	
-#define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
-
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif
-
 main:	
 	// Disable Global Interrupts:
 	// Mask the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
@@ -70,13 +71,13 @@ main:
 	// Ensure a clean initial state by clearing any pre-existing timer interrupt
 	// Prevents interference from previous timer interrupt states
 	LI(a5,     -1)
-	LI(a4,     MTIMECMP_BASE)	
+	LI(a4,     RVMODEL_MTIMECMP_BASE)	
 	SREG a5,   0(a4)		
 	nop
 
 	// Clear Potential Software Interrupt Pending:
 	// Reset software interrupt state to eliminate any pre-existing interrupt conditions
-	LI(a5,     MSIP_BASE)
+	LI(a5,     RVMODEL_MSIP_BASE)
 	SREG zero, 0(a5)		
 	nop
 

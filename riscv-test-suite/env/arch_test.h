@@ -991,10 +991,13 @@ init_\__MODE__\()scratch:
         csrrw   T3, CSR_XSCRATCH, T1    // swap xscratch with save area ptr (will be used by handler)
         SREG    T3, xscr_save_off(T1)   // save old mscratch in xscratch_save
 //----------------------------------------------------------------------
+#ifdef RVMODEL_MTIMECMP_BASE
 init_mtimecmp:
-        li t0, 0x2004000          
-        li t2, -1                   
-        SREG t2, 0(t0)
+        LI(  T2,  -1)                     
+        LI(  T4,  RVMODEL_MTIMECMP_BASE)          
+        SREG T2,  0(T4)	              
+        nop	              
+#endif    
 //----------------------------------------------------------------------
 init_\__MODE__\()edeleg:
  
@@ -1526,24 +1529,35 @@ resto_\__MODE__\()rtn:                  // restore and return
  /**** clears the int and saves int-specific CSRS****/
  /***************************************************/
 common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has save area
-        li      T3, 1
- //**FIXME** - make sure this is kept up-to-date with fast int extension and others
+        LI(     T3, 1)
         andi    T2, T5, INT_CAUSE_MSK   // clr INT & unarched arched bits (**NOTE expand if future extns use them)
-        sll     T3, T3, T2              // create mask 1<<xcause **NOTE**: that MSB is ignored in shift amt
-        csrrc   T4, CSR_XSTATUS, T3     // read then attempt to clear mstatus??
-        srli    T4, T4, 3               // Move MIE to LSB
-        andi    T4, T4, 1               // Mask MIE     
-sv_\__MODE__\()status:                  // note: clear has no effect on MxSTATUS
-        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xstatus)
-        csrrc   T4, CSR_XIE, T3         // read, then attempt to clear int enable bit??
-sv_\__MODE__\()ie:                      // note: clear has no effect on MxIE
-        SREG    T4, 3*REGWIDTH(T1)      // save 4th sig value, (xie)        
-        csrrc   T4, CSR_XIP, T3         // read, then attempt to clear int pend bit??
-sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
-        SREG    T4, 4*REGWIDTH(T1)      // save 5th sig value, (xip)
+        sll     T3, T3, T2              // create mask 1<<xcause **NOTE**: that MSB is ignored in shift amt    
+        csrrc   T2, CSR_MIDELEG, x0     // read machine interrupt delegation
+        nop	                // if mideleg is not used and trap occur
+        and     T2, T2, T3              // mask caused interrupt delegation bit    
+        srl     T2, T2, T3              // Move interrupt delegation to LSB
+        LI     (T4, 1)
+        beq     T2, T4, sv_\__MODE__\()status  // if interrupt delegation bit is set then read and store SIE and SPIE in signature
+        LI(     T2, 3)                  // if interrupt delegation bit is not set then read and store MIE and MPIE in signature
+sv_\__MODE__\()status:                  // note: clear has no effect on XxSTATUS
+        csrrc   T4, CSR_XSTATUS, x0     // read xstatus
+        srl     T4, T4, T2              // move xIE to LSB
+        andi    T4, T4, 0b10001         // mask xIE and xPIE 
+        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xstatus.XIE and xstatus.XPIE)
+        nop      
+sv_\__MODE__\()ie:                      // note: clear has no effect on XxIE
+        csrrc   T4, CSR_XIE, x0         // read then attempt to clear int enable bit??
+        and     T4, T4, T3              // mask XxIE
+        SREG    T4, 3*REGWIDTH(T1)      // save 4th sig value, (XxIE)   
+        nop     
+sv_\__MODE__\()ip:                      // note: clear has no effect on XxIP
+        csrrc   T4, CSR_XIP, x0         // read, then attempt to clear int pend bit??
+        and     T4, T4, T3              // mask XxIP
+        SREG    T4, 4*REGWIDTH(T1)      // save 5th sig value, (XxIP)
+        nop
         
-
-        li      T2, 0                   // index of interrupt dispatch table base
+        LI(     T2, 0)                   // index of interrupt dispatch table base
+          
 
 /**************************************************************/
 /**** spcl int/excp dispatcher. T5 has mcause, T2          ****/
@@ -2051,7 +2065,7 @@ rvtest_sig_begin:
 .endm
 
 // Tests allocate normal signature space here, then define
-// the mtrap_sigptr: label to separate normal and trap
+// the mtrap_sigptr: label to separate normal and t
 // signature space, then allocate trap signature space
 
 /********************* REQUIRED FOR NEW TESTS *************************/

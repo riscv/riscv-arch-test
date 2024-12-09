@@ -2,10 +2,9 @@
 // Copyright (c) 2020. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // -----------
-//
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the interrupt priority mechanism in RISC-V Machine Mode, 
@@ -36,6 +35,18 @@
 // - Interrupt handling follows strict priority rules defined in RISC-V specification
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MSIP_BASE  	
+#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
+
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif 
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
@@ -55,18 +66,7 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 	.attribute stack_align, 16
   	.align	2   
   	.option norvc
-  	
-#ifndef MSIP_BASE  	
-#define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
-
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif 	
+  		
 #define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
 main:
     	// Enable Global Interrupts:
@@ -87,8 +87,8 @@ main:
     	// Initialize Timer Registers:
     	// Load base addresses and maximum timer value
     	// Prepare for generating timer and software interrupts
-    	LI(a1,     MTIMECMP_BASE)
-       	LI(a2,     MTIME_BASE)
+    	LI(a1,     RVMODEL_MTIMECMP_BASE)
+       	LI(a2,     RVMODEL_MTIME_BASE)
        	LI(t0,     TIMER_MAX_VALUE)
        	
     	// Configure Timer Interrupt:
@@ -107,7 +107,7 @@ main:
     	// Write to memory-mapped Software Interrupt Pending (MSIP) register
     	// Creates a pending software interrupt alongside timer interrupt
     	LI(a3,   0x1)		
-       	LI(t0,   MSIP_BASE)
+       	LI(t0,   RVMODEL_MSIP_BASE)
        	SREG a3, 0(t0)		
        	nop
        	

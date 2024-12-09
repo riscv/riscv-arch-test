@@ -152,7 +152,6 @@ class sail_cSim(pluginTemplate):
                 coverage_cmd = 'riscv_isac --verbose info coverage -d \
                         -t {0}.log --parser-name c_sail -o coverage.rpt  \
                         --sig-label begin_signature  end_signature \
-                        --test-label rvtest_code_begin rvtest_code_end \
                         -e ref.elf -c {1} -x{2} {3} {4} {5};'.format(\
                         test_name, ' -c '.join(cgf_file), self.xlen, cov_str, header_file_flag, cgf_mac)
             else:

@@ -16,6 +16,14 @@
 // - The test stores all mip values in the signature region for verification.
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif 
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
@@ -35,14 +43,6 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
-
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif 
 	
 // Test Value to check the length of memory-mapped machine timers register.
 #define TIMER_TEST_VALUE_1      0x00000000FFFFFFFF
@@ -58,8 +58,8 @@ main:
 	RVTEST_SIGUPD(x3, a4)
 	
 	// Load base addresses for timer registers
-	LI(a1, MTIMECMP_BASE) 
-	LI(a2, MTIME_BASE)
+	LI(a1, RVMODEL_MTIMECMP_BASE) 
+	LI(a2, RVMODEL_MTIME_BASE)
 	
 	// TEST CASE 1: Verify mtime 64-bit precision
 	// Check behavior when lower 32-bits are max and upper 32-bits are zero

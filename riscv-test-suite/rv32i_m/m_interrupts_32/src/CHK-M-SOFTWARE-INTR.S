@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the software interrupt handling mechanism in RISC-V Machine Mode
@@ -29,6 +29,9 @@
 // - Consistent machine state preservation during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MSIP_BASE  	
+#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
 
 #include "model_test.h"
 #include "arch_test.h"
@@ -50,9 +53,6 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	2   
   	.option norvc
 
-#ifndef MSIP_BASE  	
-#define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
 main:	
 	// Enable Global Interrupts:
 	// Set Machine Status Register (mstatus) MIE bit
@@ -70,7 +70,7 @@ main:
 	// Initialize MSIP Base: Clear Pending Software Interrupt
 	// Reset memory-mapped Software Interrupt Pending control register
 	// Establish a clean initial interrupt state
-	LI(a5,     MSIP_BASE)
+	LI(a5,     RVMODEL_MSIP_BASE)
 	SREG zero, 0(a5)
 	nop
 

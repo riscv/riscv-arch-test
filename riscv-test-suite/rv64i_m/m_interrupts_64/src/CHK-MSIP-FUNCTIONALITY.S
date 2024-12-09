@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test verifies the functionality of the Machine Software Interrupt Pending (MSIP) mechanism
@@ -29,6 +29,10 @@
 // - Software interrupt can be set and cleared as expected
 // - Interrupt pending state changes align with control register writes
 // ---------------------------------------------------------------------------------------------
+ 	
+#ifndef RVMODEL_MSIP_BASE  	
+#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#endif
 
 #include "model_test.h"
 #include "arch_test.h"
@@ -50,9 +54,6 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
   	
-#ifndef MSIP_BASE  	
-#define MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
 main:
 	// Disable Global Interrupts:
 	// Prevent any maskable interrupts during test execution
@@ -63,7 +64,7 @@ main:
 	// Clear Software Interrupt State:
 	// Reset memory-mapped Software Interrupt Pending (MSIP) control register
 	// Establish clean initial interrupt condition
-	LI(a5,     MSIP_BASE)
+	LI(a5,     RVMODEL_MSIP_BASE)
 	SREG zero, 0(a5)		
 	nop
 
@@ -77,7 +78,7 @@ main:
 	// Write 1 to memory-mapped MSIP control register
 	// Trigger software interrupt generation mechanism
 	LI(a5,   0x1)		
-	LI(x5,   MSIP_BASE)
+	LI(x5,   RVMODEL_MSIP_BASE)
 	SREG a5, 0(x5)		
 	nop
 

@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test verifies the functionality of the Machine Timer Interrupt Pending (MTIP) mechanism
@@ -30,6 +30,14 @@
 // - Timer interrupt can be set and cleared as expected
 // - Interrupt pending state changes align with timer register comparisons
 // ---------------------------------------------------------------------------------------------
+  	
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
 
 #include "model_test.h"
 #include "arch_test.h"
@@ -51,15 +59,8 @@ RVTEST_SIGBASE( x3,signature_x3_1)
   	.align	3   
   	.option norvc
   	
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif
-  	
 #define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
+
 main:
 
 	// Disable Global Interrupts:
@@ -71,8 +72,8 @@ main:
 	// Initialize Timer Registers:
 	// Configure timer compare and timer base addresses
 	// Prepare for timer interrupt testing
-	LI(a1,    MTIMECMP_BASE)
-	LI(a2,    MTIME_BASE)
+	LI(a1,    RVMODEL_MTIMECMP_BASE)
+	LI(a2,    RVMODEL_MTIME_BASE)
 	LI(t0,    TIMER_MAX_VALUE)
 
 	// Reset Timer Registers:

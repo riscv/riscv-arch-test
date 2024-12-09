@@ -4,7 +4,7 @@
 // -----------
 // This test belongs to the test plan for RISC-V Machine Mode Interrupts developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1rwjSTbxKiXTDydAdFAE_o7mez_hcFj9a-9d3dXRVc4s/edit?usp=sharing
-//
+// Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
 // This test validates the handling of Most Significant Bit (MSB) in mtimecmp and mtime registers
@@ -32,6 +32,14 @@
 // - Accurate machine interrupt pending (MIP) state management
 // ---------------------------------------------------------------------------------------------
 
+#ifndef RVMODEL_MTIME_BASE 
+#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#endif
+
+#ifndef RVMODEL_MTIMECMP_BASE 
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#endif
+
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
@@ -51,17 +59,10 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 	.attribute stack_align, 16
   	.align	2   
   	.option norvc
-
-#ifndef MTIME_BASE 
-#define MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef MTIMECMP_BASE 
-#define MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
-#endif
- 	
+	
 #define TIMER_MAX_VALUE         0x80000000	// Maximum Value for the memory-mapped machine timer-compare register.
-#define TIMER_TEST_VALUE        0x200	//
+#define TIMER_TEST_VALUE        0x200	// Random Test Value	
+
 main:	
 	
        	// Disable Global Interrupts:
@@ -81,8 +82,8 @@ main:
 	// Timer Register Base and Test Value Initialization:
 	// Load base addresses and predefined test values for timer comparison
 	// Prepares registers for testing signed/unsigned timer behavior
-	LI(a5,   MTIMECMP_BASE) 
-       	LI(a6,   MTIME_BASE)
+	LI(a5,   RVMODEL_MTIMECMP_BASE) 
+       	LI(a6,   RVMODEL_MTIME_BASE)
        	LI(t5,   TIMER_MAX_VALUE) 
        	LI(t6,   TIMER_TEST_VALUE)
        	 	

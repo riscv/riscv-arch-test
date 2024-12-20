@@ -35,7 +35,7 @@
 // - Interrupt handling follows strict priority rules defined in RISC-V specification
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE  	
+#ifndef RVMODEL_MSIP_BASE
 #define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 

@@ -1562,6 +1562,12 @@ class disassembler():
             0b11100: 'amomaxu.d'
     }
 
+    zacas_instr_names = {
+            0b010: 'zacas.w',
+            0b011: 'zacas.d',
+            0b100: 'zacas.q',
+    }
+
     def rv64_rv32_atomic_ops(self, instrObj):
 
         instr = instrObj.instr
@@ -1580,25 +1586,28 @@ class disassembler():
         instrObj.rl = rl
         instrObj.aq = aq
 
-        #RV32A instructions
-        if funct3 == 0b010:
-            if funct5 == 0b00010:
-                instrObj.rs2 = None
-                instrObj.instr_name = self.rv32a_instr_names[funct5]
-            else:
-                instrObj.instr_name = self.rv32a_instr_names[funct5]
+        if funct5 == 0b00101:
+            instrObj.instr_name = self.zacas_instr_names[funct3]
+        else:
+            #RV32A instructions
+            if funct3 == 0b010:
+                if funct5 == 0b00010:
+                    instrObj.rs2 = None
+                    instrObj.instr_name = self.rv32a_instr_names[funct5]
+                else:
+                    instrObj.instr_name = self.rv32a_instr_names[funct5]
 
-            return instrObj
+                return instrObj
 
-        #RV64A instructions
-        if funct3 == 0b011:
-            if funct5 == 0b00010:
-                instrObj.rs2 = None
-                instrObj.instr_name = self.rv64a_instr_names[funct5]
-            else:
-                instrObj.instr_name = self.rv64a_instr_names[funct5]
+            #RV64A instructions
+            if funct3 == 0b011:
+                if funct5 == 0b00010:
+                    instrObj.rs2 = None
+                    instrObj.instr_name = self.rv64a_instr_names[funct5]
+                else:
+                    instrObj.instr_name = self.rv64a_instr_names[funct5]
 
-            return instrObj
+        return instrObj
 
     def flw_fld(self, instrObj):
         instr = instrObj.instr

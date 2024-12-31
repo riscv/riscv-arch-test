@@ -52,18 +52,27 @@ def get_value_at_location(elf_path, location, bytes):
                 return int.from_bytes(value, byteorder='little', signed=False)
     return None
 
-def dump_yaml(foo, outfile = None, indent = None, block_seq_indent = None):
+def dump_yaml(foo, outfile=None, indent=None, block_seq_indent=None):
     """
     Dump yaml to outfile. If outfile is None, dump to string. If indent or
-    block_seq_indent is set, create a new yaml object with suchconfig.
+    block_seq_indent is set, create a new yaml object with such config.
     """
-    if indent is not None or block_seq_indent is not None:
-        yaml = create_yaml(indent=indent, block_seq_indent=block_seq_indent)
+    # Create a default yaml object if no custom settings are provided
+    yaml = create_yaml() if indent is None and block_seq_indent is None else create_yaml(indent=indent, block_seq_indent=block_seq_indent)
+
     if outfile is None:
         buf = io.StringIO()
         yaml.dump(foo, buf)
         return buf.getvalue()
     return yaml.dump(foo, outfile)
+
+def create_yaml(indent=None, block_seq_indent=None):
+    yaml = ruamel.yaml.YAML()
+    if indent is not None:
+        yaml.indent = indent
+    if block_seq_indent is not None:
+        yaml.block_seq_indent = block_seq_indent
+    return yaml
 
 def load_yaml_file(foo):
     try:

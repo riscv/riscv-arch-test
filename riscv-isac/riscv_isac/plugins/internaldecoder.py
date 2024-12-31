@@ -1,3 +1,4 @@
+from ordered_set import OrderedSet
 import riscv_isac.plugins as plugins
 
 class disassembler():
@@ -38,9 +39,9 @@ class disassembler():
         self.C_OPCODES = C_OPCODES
         self.OPCODES = OPCODES
         self.init_rvp_dictionary()
-        self.rvp_rs1_is_64bit_set = set('smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 wext wexti'.split())
-        self.rvp_rs2_is_64bit_set = set(     'add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64'.split())
-        self.rvp_rd_is_64bit_set  = set('smul16 smulx16 umul16 umulx16 smul8 smulx8 umul8 umulx8 smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 smar64 smsr64 umar64 umsr64 kmar64 kmsr64 ukmar64 ukmsr64 smalbb smalbt smaltt smalda smalxda smalds smaldrs smalxds smslda smslxda mulr64 mulsr64 wext wexti'.split())
+        self.rvp_rs1_is_64bit_set = OrderedSet('smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 wext wexti'.split())
+        self.rvp_rs2_is_64bit_set = OrderedSet(     'add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64'.split())
+        self.rvp_rd_is_64bit_set  = OrderedSet('smul16 smulx16 umul16 umulx16 smul8 smulx8 umul8 umulx8 smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 smar64 smsr64 umar64 umsr64 kmar64 kmsr64 ukmar64 ukmsr64 smalbb smalbt smaltt smalda smalxda smalds smaldrs smalxds smslda smslxda mulr64 mulsr64 wext wexti'.split())
 
     def init_rvp_dictionary(self):
         # Create RVP Dictiory 0 for instruction:  clrs8  clrs16  clrs32  clo8  clo16  clo32  clz8  clz16  clz32  kabs8  kabs16  kabsw  sunpkd810  sunpkd820  sunpkd830  sunpkd831  sunpkd832  swap8  zunpkd810  zunpkd820  zunpkd830  zunpkd831  zunpkd832  kabs32

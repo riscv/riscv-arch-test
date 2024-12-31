@@ -260,7 +260,7 @@ class Generator():
 
 
         is_nan_box = False
-        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x for x in opnode['isa']])
+        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x for x in opnode['isa']])
         is_sgn_extd = True if (inxFlag and iflen <xlen) else False
 
         if is_fext:
@@ -281,7 +281,7 @@ class Generator():
         self.inxFlag = inxFlag
         self.is_sgn_extd = is_sgn_extd
 
-        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw"]:
+        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp"]:
             self.val_vars = self.val_vars + ['ea_align']
         self.template = opnode['template']
         self.opnode = opnode
@@ -812,13 +812,17 @@ class Generator():
                     for y in op_inds[i:]:
                         if op[y] == op[x]:
                             val[ind_dict[y]] = val[ind_dict[x]]
-            if self.is_fext:
+            if self.is_fext and  self.opcode in ['c.flwsp','c.fswsp','c.fldsp','c.fsdsp']:
+                if any([x == 'x2' for x in op]):
+                    cont.append(val)
+                instr_dict.append(self.__cmemsp_instr__(op,val))
+            elif self.is_fext:
                 instr_dict.append(self.__fext_instr__(op,val))
             elif self.opcode == 'c.lui':
                 instr_dict.append(self.__clui_instr__(op,val))
             elif self.opcode in ['c.beqz', 'c.bnez']:
                 instr_dict.append(self.__cb_instr__(op,val))
-            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp']:
+            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.flwsp','c.fswsp','c.fldsp','c.fsdsp']:
                 if any([x == 'x2' for x in op]):
                     cont.append(val)
                 instr_dict.append(self.__cmemsp_instr__(op,val))
@@ -838,7 +842,7 @@ class Generator():
                 instr_dict.append(self.__clui_instr__(op,val))
             elif self.opcode in ['c.beqz', 'c.bnez','c.lbu','c.lhu','c.lh','c.sb','c.sh']:
                 instr_dict.append(self.__cb_instr__(op,val))
-            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp']:
+            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.fsdsp','c.fswsp']:
                 instr_dict.append(self.__cmemsp_instr__(op,val))
             elif self.fmt == 'bformat' or self.opcode in ['c.j']:
                 instr_dict.append(self.__bfmt_instr__(op,val))

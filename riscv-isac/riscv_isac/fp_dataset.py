@@ -49,11 +49,11 @@ done        = ['0x3FF0000000000000', '0xBF80000000000000']
 rounding_modes = ['0','1','2','3','4']
 
 sanitise_cvpt = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == '+hex(rm<<5) + ' and rm_val == 7 ' \
-                + ('' if iflen == flen or inxFlg else ''.join([' and rs'+str(x)+'_nan_prefix == 0x' \
+                + ('' if iflen >= flen or inxFlg else ''.join([' and rs'+str(x)+'_nan_prefix == 0x' \
                 + 'f'*int((flen-iflen)/4) for x in range(1,c+1)]))
 
 sanitise_norm = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == 0'\
-                + ('' if iflen == flen or inxFlg else ''.join([' and rs'+str(x)+'_nan_prefix == 0x' \
+                + ('' if iflen >= flen or inxFlg else ''.join([' and rs'+str(x)+'_nan_prefix == 0x' \
                 + 'f'*int((flen-iflen)/4) for x in range(1,c+1)]))
 
 sanitise_norm_nopref = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == 0'

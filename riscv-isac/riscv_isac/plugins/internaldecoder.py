@@ -598,10 +598,10 @@ class disassembler():
 
         if funct3 == 0b001:
             if funct7 == 0b0000100:
-                if instrObj.arch == 'rv32':
-                    instrObj.instr_name = 'zip'
-                    instrObj.rs1= rs1
-                    instrObj.rd = rd
+                if self.arch == 'rv32':
+                   instrObj.instr_name = 'zip'
+                   instrObj.rs1= rs1
+                   instrObj.rd = rd
             elif sbi == 0b0100100 or  sbi == 0b010010:
                 instrObj.rs1 = rs1
                 instrObj.rd = rd
@@ -720,7 +720,7 @@ class disassembler():
 
         if funct3 == 0b101:
             if funct7 == 0b0000100:
-                if instrObj.arch == 'rv32':
+                if self.arch == 'rv32':
                     instrObj.instr_name = 'unzip'
                     instrObj.rs1= rs1
                     instrObj.rd = rd
@@ -1210,15 +1210,10 @@ class disassembler():
                 instrObj.rs2 = rs2
                 instrObj.rd = rd
             elif funct7 == 0b0000100:
-                if rs2[0] == 0b0:
-                    instrObj.instr_name = 'zext.h'
-                    instrObj.rs1 = rs1
-                    instrObj.rd = rd
-                else:
-                    instrObj.instr_name = 'pack'
-                    instrObj.rs1 = rs1
-                    instrObj.rs2 = rs2
-                    instrObj.rd = rd
+                instrObj.instr_name = 'pack'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                instrObj.rd = rd
             elif funct7 == 0b0000101:
                 instrObj.instr_name = 'min'
                 instrObj.rs1 = rs1
@@ -1499,15 +1494,14 @@ class disassembler():
 
         if funct3 == 0b100:
             if funct7 == 0b0000100:
-                if rs2[0] == 0b0:
-                    instrObj.instr_name = 'zext.h'
-                    instrObj.rs1 = rs1
-                    instrObj.rd = rd
-                else:
-                    instrObj.instr_name = 'packw'
-                    instrObj.rs1 = rs1
-                    instrObj.rs2 = rs2
-                    instrObj.rd = rd
+# packw and zext.h have same opcode, func3, funct7 only diffrence is in rs2 value
+# for zext.h rs2 is always 0, if packw instruction is used with x0 as rs2
+# then cannot distinguish from each other, hence using isa to differentiate.
+# zext.h is part of Zbb, packw is part of Zbkb
+                instrObj.instr_name = 'packw'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                instrObj.rd = rd
             elif funct7 == 0b0010000:
                 instrObj.instr_name = 'sh2add.uw'
                 instrObj.rs1 = rs1

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [3.10.0] - 2024-11-04
+- Add support for Zvk* extensions
+- Split float and double test cases into smaller ones
+- Merged riscv-ctg and riscv-isac into riscv-arch-test, and updated README  
+- Updates crypto scalar instructions
+- Physical Memory Protection (32/64) Tests and Covergroups
+- CI updates: and updated Sail and Spike in CI
+- Bug fixes
+
+
 ## [3.9.1] - 2024-07-01
 - Converted one of the CANARY words to a delta instret count (there is a variable that will enable that)
 - Converted CODE/DATA/SIG_BEGIN/END to include all the little incidental code, so the tests template improves

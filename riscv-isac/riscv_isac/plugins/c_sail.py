@@ -20,6 +20,7 @@ irrespective of their original size.')
     instr_pattern_c_sail_csr_reg_val = re.compile('(?P<CSR>CSR|clint::tick)\s(?P<reg>[a-z0-9]+)\s<-\s(?P<val>[0-9xABCDEF]+)(?:\s\(input:\s(?P<input_val>[0-9xABCDEF]+)\))?')
     instr_pattern_c_sail_mem_val = re.compile('mem\[(?P<addr>[0-9xABCDEF]+)\]\s<-\s(?P<val>[0-9xABCDEF]+)')
     instr_pattern_c_sail_trap = re.compile(r'trapping\sfrom\s(?P<mode_change>\w+\sto\s\w+)\sto\shandle\s(?P<call_type>\w+.*)\shandling\sexc#(?P<exc_num>0x[0-9a-fA-F]+)\sat\spriv\s\w\swith\stval\s(?P<tval>0x[0-9a-fA-F]+)')
+    instr_pattern_c_sail_ret  = re.compile(r'ret-ing\sfrom\s(?P<mode_change>\w+\sto\s\w+)')
     def extractInstruction(self, line):
         instr_pattern = self.instr_pattern_c_sail
         re_search = instr_pattern.search(line)
@@ -60,6 +61,13 @@ irrespective of their original size.')
         mem_r_pattern = re.compile(r'mem\[R,([0-9xABCDEF]+)\] -> 0x([0-9xABCDEF]+)')
         mem_x_pattern = re.compile(r'mem\[X,([0-9xABCDEF]+)\] -> 0x([0-9xABCDEF]+)')
         mem_depa_pattern = re.compile(r'mem\[([0-9xABCDEF]+)\]')
+        instr_trap_pattern = self.instr_pattern_c_sail_trap.search(line)
+
+        #in case of a trap
+        if instr_trap_pattern:
+            trap = 1
+        else:
+            trap = 0
 
         match_search_mnemonic = self.instr_pattern_c_sail.search(line)
         depa, ieva, ieva_align, depa_align, iepa, iepa_align = None, None, None, None, None, None
@@ -78,14 +86,19 @@ irrespective of their original size.')
             iptw_list=(mem_r_pattern.findall(line_upper_part))
             dptw_list=(mem_r_pattern.findall(line_lower_part))
 
+            #Update the data physical address only when there is no trap else it will not be present in the log.
             if dptw_list is not None:
-                if "lw" in match_search_mnemonic.group('mnemonic') and dptw_list:
-                    depa_list=dptw_list.pop()
-                    depa=int(depa_list[0],16)
-                else:
-                    depa_list=mem_depa_pattern.findall(line_lower_part)
-                    if len(depa_list) != 0:
+                if trap == 0:
+                    #Since, the load has the same pattern as the page table walk, skip the last one as it is a false positive.
+                    loads_exception_list = {"lw", "ld", "lh", "lb", "lr.w", "lr.d", "lbu", "lhu", "lwu", "c.lw", "c.ld", "c.lwsp", "c.ldsp", "flw", "fld"}
+                    if match_search_mnemonic.group('mnemonic').split()[0] in loads_exception_list and dptw_list:
+                        depa_list=dptw_list.pop()
                         depa=int(depa_list[0],16)
+                    #Stores and other page table walks are normal
+                    else:
+                        depa_list=mem_depa_pattern.findall(line_lower_part)
+                        if len(depa_list) != 0:
+                            depa=int(depa_list[0],16)
 
             ieva_align = 1 if ieva is not None and ieva & 0b11 == 0 else 0
             iepa_align = 1 if iepa is not None and iepa & 0b11 == 0 else 0
@@ -114,6 +127,8 @@ irrespective of their original size.')
         instr_trap_pattern = self.instr_pattern_c_sail_trap.search(line)
         trap_dict = {"mode_change": None, "call_type": None, "exc_num": None, "tval": None}
 
+        #ret will tell us to delete the previous state of the cause registers
+        instr_ret_pattern = self.instr_pattern_c_sail_ret.search(line)
         if instr_trap_pattern:
             trap_dict["mode_change"] = instr_trap_pattern.group("mode_change")
             trap_dict["call_type"]   = instr_trap_pattern.group("call_type")
@@ -121,8 +136,13 @@ irrespective of their original size.')
             trap_dict["tval"]        = instr_trap_pattern.group("tval")
             self.old_trap_dict = trap_dict
 
-        #maintain the value if None
-        if instr_trap_pattern is None:
+        elif instr_ret_pattern:
+            #if ret_signal is 1 then clear the values of the mode_change, call_type, exc_num, tval
+            trap_dict = {"mode_change": None, "call_type": None, "exc_num": None, "tval": None}
+            self.old_trap_dict = trap_dict
+
+        #maintain the values if None unit the new trap appears
+        if instr_trap_pattern is None or instr_ret_pattern is None:
             trap_dict = self.old_trap_dict
         return trap_dict
 

@@ -400,7 +400,7 @@ class disassembler():
                     if any([instr_name.startswith(x) for x in [
                             'fsh', 'fsw','fsd','fcvt.s','fcvt.d','fmv.w','fmv.l','fcvt.h','fmv.h','flh','fclass','fsqrt','fmax','fmin','fadd','fsub','feq','fle','flt','fmul','fdiv','fsgnj','fsgnjn','fsgnjx']]):
                         treg = 'x'
-                    temp_instrobj.rs2 = (int(get_arg_val(arg)(mcode), 2), treg
+                    temp_instrobj.rs2 = (int(get_arg_val(arg)(mcode), 2), treg)
                     if 'p' in arg:
                         temp_instrobj.rd = (8+int(get_arg_val(arg)(mcode), 2), treg)
                     else:
@@ -451,6 +451,10 @@ class disassembler():
                 if arg == 'rm':
                     temp_instrobj.rm = int(get_arg_val(arg)(mcode), 2)
                 if arg == 'csr':
+                    temp_instrobj.imm = int(get_arg_val(arg)(mcode), 2)
+                if arg == 'bs':
+                    temp_instrobj.imm = int(get_arg_val(arg)(mcode), 2)
+                if arg == 'rnum':
                     temp_instrobj.imm = int(get_arg_val(arg)(mcode), 2)
                 if arg.find('imm') != -1:
                     if arg in ['imm12', 'imm20', 'zimm', 'imm2', 'imm3', 'imm4', 'imm5']:

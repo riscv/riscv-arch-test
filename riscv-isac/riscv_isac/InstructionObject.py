@@ -25,7 +25,7 @@ unsgn_rs1 = ['sw','sd','sh','sb','ld','lw','lwu','lh','lhu','lb', 'lbu','flw','f
         'aes32esmi', 'aes32esi', 'aes32dsmi', 'aes32dsi','bclr','bext','binv',\
         'bset','zext.h','sext.h','sext.b','zext.b','zext.w','minu','maxu','orc.b','add.uw','sh1add.uw',\
         'sh2add.uw','sh3add.uw','slli.uw','clz','clzw','ctz','ctzw','cpop','cpopw','rev8',\
-        'bclri','bexti','binvi','bseti','fcvt.d.wu','fcvt.s.wu','fcvt.d.lu','fcvt.s.lu','c.flwsp''c.fldsp','c.flw','c.fld',\
+        'bclri','bexti','binvi','bseti','xperm4','xperm8','zip','unzip','gorci','fcvt.d.wu','fcvt.s.wu','fcvt.d.lu','fcvt.s.lu','c.flwsp','c.fldsp','c.flw','c.fld'\
         'c.not', 'c.sext.b','c.sext.h','c.zext.b','c.zext.h','c.zext.w','sc.w','lr.w','sc.d','lr.d']
 unsgn_rs2 = ['bgeu', 'bltu', 'sltiu', 'sltu', 'sll', 'srl', 'sra','mulhu',\
         'mulhsu','divu','remu','divuw','remuw','aes64ds','aes64dsm','aes64es',\
@@ -186,6 +186,18 @@ class instructionObject():
 
         imm_val = instr_vars.get('imm_val', None)
 
+        #update the variable for the length of the load or store:
+        if self.instr_name in ['ld','lw','lb','lh','sd','sw','sb','sh']:
+            if self.instr_name in ['ld','sd']:
+                instr_vars['access_len'] = 8
+            if self.instr_name in ['lw','sw']:
+                instr_vars['access_len'] = 4
+            if self.instr_name in ['lh','sh']:
+                instr_vars['access_len'] = 2
+            if self.instr_name in ['lb','sb']:
+                instr_vars['access_len'] = 1
+        else:
+            instr_vars['access_len'] = None
         #Update the values for the trap registers
         self.trap_registers_update(instr_vars,self.trap_dict)
 
@@ -487,21 +499,24 @@ class instructionObject():
                 instr_vars['mtval']       = trap_dict['tval']
                 #only update on the initialization
                 if "scause" not in instr_vars:
-                    instr_vars['scause']      = '0'
-                    instr_vars['stval']       = '0'
+                    instr_vars['scause']      = None
+                    instr_vars['stval']       = None
 
             elif trap_dict["mode_change"].split()[2] == "S":
                 instr_vars['scause']      = trap_dict['exc_num']
                 instr_vars['stval']       = trap_dict['tval']
                 #only update on the initialization
                 if "mcause" not in instr_vars:
-                    instr_vars['mcause']      = '0'
-                    instr_vars['mtval']       = '0'
+                    instr_vars['mcause']      = None
+                    instr_vars['mtval']       = None
+
         else:
-                instr_vars['mcause']      = '0'
-                instr_vars['mtval']       = '0'
-                instr_vars['scause']      = '0'
-                instr_vars['stval']       = '0'
+                #initialize them to None for the first time in the instr_vars
+                #reset them to None in case the mode change is ret
+                instr_vars['mcause']      = None
+                instr_vars['mtval']       = None
+                instr_vars['scause']      = None
+                instr_vars['stval']       = None
 
         return None
 

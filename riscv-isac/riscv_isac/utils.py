@@ -1,6 +1,7 @@
 # See LICENSE.incore for details
 
 """Common Utils """
+import io
 import sys
 import os
 import subprocess
@@ -13,17 +14,21 @@ from ruamel.yaml.representer import RoundTripRepresenter,SafeRepresenter
 import yaml as pyyaml
 from elftools.elf.elffile import ELFFile
 
-yaml = YAML(typ="rt")
-yaml.default_flow_style = False
-yaml.explicit_start = True
-yaml.allow_unicode = True
-yaml.allow_duplicate_keys = False
+def create_yaml(typ="rt", indent=None, block_seq_indent=None):
+    yaml = YAML(typ=typ)
+    yaml.default_flow_style = False
+    yaml.explicit_start = True
+    yaml.allow_unicode = True
+    yaml.allow_duplicate_keys = False
+    if indent is not None:
+        yaml.indent = indent
+    if block_seq_indent is not None:
+        yaml.block_seq_indent = block_seq_indent
+    return yaml
 
-safe_yaml = YAML(typ="safe")
-safe_yaml.default_flow_style = False
-safe_yaml.explicit_start = True
-safe_yaml.allow_unicode = True
-safe_yaml.allow_duplicate_keys = False
+yaml = create_yaml()
+
+safe_yaml = create_yaml(typ="safe")
 
 def collect_label_address(elf, label):
     with open(elf, 'rb') as f:
@@ -47,8 +52,27 @@ def get_value_at_location(elf_path, location, bytes):
                 return int.from_bytes(value, byteorder='little', signed=False)
     return None
 
-def dump_yaml(foo, outfile):
-    yaml.dump(foo, outfile)
+def dump_yaml(foo, outfile=None, indent=None, block_seq_indent=None):
+    """
+    Dump yaml to outfile. If outfile is None, dump to string. If indent or
+    block_seq_indent is set, create a new yaml object with such config.
+    """
+    # Create a default yaml object if no custom settings are provided
+    yaml = create_yaml() if indent is None and block_seq_indent is None else create_yaml(indent=indent, block_seq_indent=block_seq_indent)
+
+    if outfile is None:
+        buf = io.StringIO()
+        yaml.dump(foo, buf)
+        return buf.getvalue()
+    return yaml.dump(foo, outfile)
+
+def create_yaml(indent=None, block_seq_indent=None):
+    yaml = ruamel.yaml.YAML()
+    if indent is not None:
+        yaml.indent = indent
+    if block_seq_indent is not None:
+        yaml.block_seq_indent = block_seq_indent
+    return yaml
 
 def load_yaml_file(foo):
     try:

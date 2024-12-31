@@ -159,14 +159,17 @@ csr_reg_num_to_str = {
     940: 'pmpcfg12',
     941: 'pmpcfg13',
     942: 'pmpcfg14',
-    943: 'pmpcfg15'
+    943: 'pmpcfg15',
+    266: 'senvcfg',
+    778: 'menvcfg',
+    1863: 'mseccfg'
 }
 
 class cross():
 
     BASE_REG_DICT = { 'x'+str(i) : 'x'+str(i) for i in range(32)}
 
-    def __init__(self,label,coverpoint,xlen,flen,addr_pairs,sig_addrs,window_size):
+    def __init__(self,label,coverpoint,xlen,flen,addr_pairs,sig_addrs,window_size,inxFlg):
 
         self.label = label
         self.coverpoint = coverpoint
@@ -571,7 +574,10 @@ class csr_registers(MutableMapping):
             "vxsat": int('009',16),
             "fflags":int('1',16),
             "frm":int('2',16),
-            "fcsr":int('3',16)
+            "fcsr":int('3',16),
+            "menvcfg":int('30A', 16),
+            "senvcfg":int('10A', 16),
+            "mseccfg":int('747', 16)
         }
         for i in range(16):
             self.csr_regs["pmpaddr"+str(i)] = int('3B0',16)+i
@@ -687,9 +693,9 @@ class statistics:
 
         return temp
 
-def pretty_print_yaml(yaml):
+def pretty_print_yaml(yaml_obj):
     res = ''''''
-    for line in ruamel.yaml.round_trip_dump(yaml, indent=5, block_seq_indent=3).splitlines(True):
+    for line in utils.dump_yaml(yaml_obj, indent=5, block_seq_indent=3).splitlines(True):
         res += line
     return res
 
@@ -951,7 +957,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             #csr regfile track for the previous instruction(old_csr_regfile)
             old_csr_regfile = {}
             for i in csr_regfile.csr_regs:
-                old_csr_regfile[i] = int(csr_regfile[i],16)
+                if isinstance(csr_regfile[i], str):
+                    old_csr_regfile[i] = int(csr_regfile[i],16)
+                else:
+                    old_csr_regfile[i] = csr_regfile[i]
             def old_fn_csr_comb_covpt(csr_reg):
                 return old_csr_regfile[csr_reg]
 
@@ -961,11 +970,11 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             instr.evaluate_instr_vars(xlen, flen, arch_state, csr_regfile, instr_vars)
 
             #update the state of trap registers in csr_reg file using instr_vars
-            if instr_vars["mode_change"] is not None:  #change the state only on the instruction
-                csr_regfile["mcause"] = instr_vars["mcause"]
-                csr_regfile["scause"] = instr_vars["scause"]
-                csr_regfile["mtval"] = instr_vars["mtval"]
-                csr_regfile["stval"] = instr_vars["stval"]
+            # if instr_vars["mode_change"] is not None:  #change the state only on the instruction
+            csr_regfile["mcause"] = instr_vars["mcause"]
+            csr_regfile["scause"] = instr_vars["scause"]
+            csr_regfile["mtval"] = instr_vars["mtval"]
+            csr_regfile["stval"] = instr_vars["stval"]
 
             if 'rs1' in instr_vars:
                 rs1 = instr_vars['rs1']
@@ -980,8 +989,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 is_rd_valid = False
 
             for i in csr_regfile.csr_regs:
-                instr_vars[i] = int(csr_regfile[i],16)
-
+                if isinstance(csr_regfile[i], str):
+                    instr_vars[i] = int(csr_regfile[i],16)
+                else:
+                    instr_vars[i] = csr_regfile[i]
             instr.iptw_update(instr_vars, iptw_dict)
             instr.ptw_update(instr_vars)
 
@@ -1026,32 +1037,30 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 else:
                     return None
 
-            def get_pte_prop(prop_name,pa, pte_addr, pgtb_addr):
-                pte_per = get_pte(pa, pte_addr, pgtb_addr)
-                if pte_per is not None:
-                    pte_per = get_pte(pa, pte_addr, pgtb_addr) & 0x3FF
-                    prop_name_lower = prop_name.lower()
-                    if prop_name_lower == 'v' and (pte_per & 0x01 != 0):
-                        return 1
-                    elif prop_name_lower == 'r' and (pte_per & 0x02 != 0):
-                        return 1
-                    elif prop_name_lower == 'w' and (pte_per & 0x04 != 0):
-                        return 1
-                    elif prop_name_lower == 'x' and (pte_per & 0x08 != 0):
-                        return 1
-                    elif prop_name_lower == 'u' and (pte_per & 0x10 != 0):
-                        return 1
-                    elif prop_name_lower == 'g' and (pte_per & 0x20 != 0):
-                        return 1
-                    elif prop_name_lower == 'a' and (pte_per & 0x40 != 0):
-                        return 1
-                    elif prop_name_lower == 'd' and (pte_per & 0x80 != 0):
-                        return 1
-                    else:
-                        return 0
+            def get_pte_prop(prop_name, pte_addr):
+                '''
+                Function to return whether a specific Permission is given to the PTE or not
+                :param prop_name: an input property ., example: 'U' for U bit or 'RWX' for a combination of bits
+                :param pte_addr: PTE address for which we want to get the information
 
+                :type prop_name: str
+                :type pte_addr: hex/int
+
+                :return: 1 or 0 depending whether the specific (or combination of) permission/s is set or not respectively.
+                '''
+                bitmask_dict = {'v': 0x01, 'r': 0x02, 'w': 0x04, 'x': 0x08, 'u': 0x10, 'g': 0x20, 'a': 0x40, 'd': 0x80}
+                
+                if pte_addr is not None:
+                    # Get the permissions bit out of the pte_addr
+                    pte_per = pte_addr & 0x3FF
+                    
+                    # Check each character in prop_name
+                    for char in prop_name.lower():
+                        if char in bitmask_dict and (pte_per & bitmask_dict[char] == 0):
+                            return 0
+                    return 1
                 else:
-                    return None
+                    return 0
 
             globals()['get_addr'] = check_label_address
             globals()['get_mem_val'] = get_mem_val
@@ -1059,7 +1068,6 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             globals()['get_pte_prop'] = get_pte_prop
 
             if enable :
-                print(instr_vars)
                 ucovpt = []
                 covpt = []
                 csr_covpt = []
@@ -1136,7 +1144,6 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                     value['rs3'][rs3] += 1
 
                                 if 'op_comb' in value and len(value['op_comb']) != 0 :
-                                    
                                     for coverpoints in value['op_comb']:
                                         if eval(coverpoints, globals(), instr_vars):
                                             if cgf[cov_labels]['op_comb'][coverpoints] == 0:
@@ -1150,10 +1157,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                     lcls={}
                                     if instr.is_rvp and "rs1" in value:
                                         op_width = 64 if instr.rs1_nregs == 2 else xlen
-                                        simd_val_unpack(value['val_comb'], op_width, "rs1", rs1_val, lcls)
+                                        simd_val_unpack(value['val_comb'], op_width, "rs1", instr_vars['rs1_val'], lcls)
                                     if instr.is_rvp and "rs2" in value:
                                         op_width = 64 if instr.rs2_nregs == 2 else xlen
-                                        simd_val_unpack(value['val_comb'], op_width, "rs2", rs2_val, lcls)
+                                        simd_val_unpack(value['val_comb'], op_width, "rs2", instr_vars['rs2_val'], lcls)
                                     instr_vars.update(lcls)
                                     for coverpoints in value['val_comb']:
                                         if eval(coverpoints, globals(), instr_vars):
@@ -1517,7 +1524,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
 
     if dump is not None:
         dump_f = open(dump, 'w')
-        dump_f.write(ruamel.yaml.round_trip_dump(cgf, indent=5, block_seq_indent=3))
+        dump_f.write(utils.dump_yaml(cgf, indent=5, block_seq_indent=3))
         dump_f.close()
         sys.exit(0)
 
@@ -1536,7 +1543,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
             if 'cross_comb' in value and len(value['cross_comb'])!=0:
                 for coverpt in value['cross_comb'].keys():
                     if(isinstance(coverpt,str)):
-                        new_obj = cross(cov_labels,coverpt,xlen,flen,addr_pairs,sig_addrs,window_size)
+                        new_obj = cross(cov_labels,coverpt,xlen,flen,addr_pairs,sig_addrs,window_size,inxFlg)
                         obj_dict[(cov_labels,coverpt)] = new_obj
 
 
@@ -1679,7 +1686,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
     rpt_str = gen_report(rcgf, detailed)
     logger.info('Writing out updated cgf : ' + test_name + '.cgf')
     dump_file = open(test_name+'.cgf', 'w')
-    dump_file.write(ruamel.yaml.round_trip_dump(rcgf, indent=5, block_seq_indent=3))
+    dump_file.write(utils.dump_yaml(rcgf, indent=5, block_seq_indent=3))
     dump_file.close()
 
     if sig_addrs:

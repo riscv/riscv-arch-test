@@ -106,7 +106,7 @@ def ctg(verbose, out, random ,xlen_arg,flen_arg, cgf_file,num_procs,base_isa, ma
     logger.info('Copyright (c) 2020, InCore Semiconductors Pvt. Ltd.')
     logger.info('All Rights Reserved.')
     logger.info("Copying env folder to Output directory.")
-    env_dir = os.path.join(out,"env")
+    env_dir = os.path.expanduser("~/riscv-arch-test/riscv-test-suite/env")
     if not os.path.exists(env_dir):
         shutil.copytree(const.env,env_dir)
     xlen = int(xlen_arg)
@@ -131,7 +131,7 @@ def ctg(verbose, out, random ,xlen_arg,flen_arg, cgf_file,num_procs,base_isa, ma
         const.template_files.remove([fd for fd in const.template_files if "fd.yaml" in fd][0])
     else:
         const.template_files.remove([fd for fd in const.template_files if "inx.yaml" in fd][0])
-    op_template = utils.load_yamls(const.template_files)
+    op_template = utils.load_yaml(const.template_files)
     cgf = expand_cgf(cgf_file,xlen,flen)
     pool = mp.Pool(num_procs)
     results = pool.starmap(create_test, [(usage_str, node,label,base_isa,max_inst, op_template,

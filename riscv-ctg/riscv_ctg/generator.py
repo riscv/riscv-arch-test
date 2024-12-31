@@ -892,7 +892,7 @@ class Generator():
             if (is_fp_instruction(insn)):
                 insn = "fadd.s"
             instr_obj = instructionObject(None, insn, None)
-            ext_specific_vars = instr_obj.evaluate_instr_var("ext_specific_vars", {**var_dict, 'flen': self.flen, 'iflen': self.iflen}, None, {'fcsr': hex(var_dict.get('fcsr', 0))})
+            ext_specific_vars = instr_obj.evaluate_instr_var("ext_specific_vars", {**var_dict, 'flen': self.flen, 'iflen': self.iflen, 'inxFlag': self.inxFlag, 'xlen': self.xlen}, None, {'fcsr': hex(var_dict.get('fcsr', 0))})
 
             if ext_specific_vars is not None:
                 var_dict.update(ext_specific_vars)

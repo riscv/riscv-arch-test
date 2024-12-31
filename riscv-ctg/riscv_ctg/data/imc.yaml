@@ -1890,3 +1890,178 @@ c.jalr:
     // opcode: c.jalr; op1:$rs1
     TEST_CJALR_OP($testreg, $rs1, $swreg, $offset)
 
+c.flw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs 
+  rd_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'clformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: '[0]'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg; fcsr: $fcsr
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.flwsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  formattype: 'ciformat'
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'  
+  template: |-
+    // $comment
+    // opcode: $inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg; fcsr: $fcsr
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.fsw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32]
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_fregs
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'csformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: '[0]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fswsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'cssformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fld:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: '8'
+    val_template: "''"
+    load_instr: "fld"
+  rs1_op_data: *c_regs
+  rd_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  formattype: 'clformat'
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.fldsp:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  rd_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  formattype: 'ciformat'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:x2; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:x4
+    TEST_LOAD_F($swreg,$testreg,$fcsr,x2,$rd,$imm_val,$inst,$ea_align,x4)
+    
+    
+c.fsd:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: 'FLEN/8'
+    val_template: "''"
+    load_instr: "FLREG"
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'csformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)' 
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fsdsp:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: 'FLEN/8'
+    val_template: "''"
+    load_instr: "FLREG"
+  rs2_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'cssformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)' 
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+     valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)

@@ -1,0 +1,65 @@
+c.flw:
+    config: 
+      - check ISA:=regex(.*I.*F.*C.*)
+    mnemonics: 
+      c.flw: 0
+    rs1: 
+      <<: *c_regs
+    rd: 
+      <<: *c_fregs
+    val_comb:
+        'imm_val > 0  and fcsr == 0': 0
+        'imm_val == 0 and fcsr == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",5,False, scale_func = lambda x: x*4)': 0
+          'walking_zeros("imm_val",5,False, scale_func = lambda x: x*4)': 0
+          'alternate("imm_val",5, False,scale_func = lambda x: x*4)': 0
+          
+c.flwsp:
+    config: 
+      - check ISA:=regex(.*I.*F.*C.*)
+    opcode: 
+      c.flwsp: 0
+    rd: 
+      <<: *c_fregs
+    val_comb:
+        'imm_val > 0  and fcsr == 0': 0
+        'imm_val == 0 and fcsr == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",6,False, scale_func = lambda x: x*4)': 0
+          'walking_zeros("imm_val",6,False, scale_func = lambda x: x*4)': 0
+          'alternate("imm_val",6, False,scale_func = lambda x: x*4)': 0
+          
+c.fsw:
+    config: 
+      - check ISA:=regex(.*I.*F.*C.*)
+    opcode: 
+      c.fsw: 0
+    rs1: 
+      <<: *c_regs
+    rs2: 
+      <<: *c_fregs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",5,False, scale_func = lambda x: x*4)': 0
+          'walking_zeros("imm_val",5,False, scale_func = lambda x: x*4)': 0
+          'alternate("imm_val",5, False,scale_func = lambda x: x*4)': 0
+          
+c.fswsp:
+    config: 
+      - check ISA:=regex(.*I.*F.*C.*)
+    opcode: 
+      c.fswsp: 0
+    rs2: 
+      <<: *c_fregs
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",6,False, scale_func = lambda x: x*4)': 0
+          'walking_zeros("imm_val",6,False, scale_func = lambda x: x*4)': 0
+          'alternate("imm_val",6, False,scale_func = lambda x: x*4)': 0

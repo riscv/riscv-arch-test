@@ -267,7 +267,7 @@ class GeneratorCSRComb():
     def csr_comb(self, cgf_node):
         logger.debug('Generating tests for csr_comb')
         if 'csr_comb' in cgf_node:
-            csr_comb = set(cgf_node['csr_comb'])
+            csr_comb = OrderedSet(cgf_node['csr_comb'])
         else:
             return
 

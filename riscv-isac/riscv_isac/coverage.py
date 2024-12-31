@@ -188,7 +188,7 @@ class cross():
         self.result = 0
         self.queue = []
 
-        self.tracked_regs = set()
+        self.tracked_regs = OrderedSet()
         self.instr_addr_of_tracked_reg = {} # tracked_reg: instr_addr of instr which triggered its tracking
         self.instr_stat_meta_at_addr = {} # start_instr_addr: [is_ucovpt, num_exp, num_obs, num_rem, covpts_hit, code_seq, store_addresses, store_vals]
 
@@ -253,7 +253,7 @@ class cross():
         Also perform tracking for generating the data propagation report
         '''
         hit_covpt = False
-        regs_to_track = set()
+        regs_to_track = OrderedSet()
 
         for index in range(len(self.ops)):
             instr = self.queue[index]
@@ -920,8 +920,8 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
     inxFlg = arch_state.inxFlg
 
     # Set of elements to monitor for tracking signature updates
-    tracked_regs_immutable = set()
-    tracked_regs_mutable = set()
+    tracked_regs_immutable = OrderedSet()
+    tracked_regs_mutable = OrderedSet()
     tracked_instrs = [] # list of tuples of the type (list_instr_names, triggering_instr_addr)
 
     instr_stat_meta_at_addr = {} # Maps an address to the stat metadata of the instruction present at that address [is_ucovpt, num_exp, num_obs, num_rem, covpts_hit, code_seq, store_addresses, store_vals]
@@ -1262,7 +1262,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 if hit_csr_covpt:
                     stats.cov_pt_sig += covpt
 
-                    csr_regs_involved_in_covpt = set()
+                    csr_regs_involved_in_covpt = OrderedSet()
                     for covpt in csr_covpt:
                         for reg in csr_reg_num_to_str.values():
                             if reg in covpt:
@@ -1717,7 +1717,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
                 _x = (hex(x[0]), hex(x[1]), str(int((x[1]-x[0])/4)) + ' words')
             sig_addrs_hex.append(_x)
 
-        cov_set = set()
+        cov_set = OrderedSet()
         count = 1
         for addrs,vals,cover,code in stats.stat1:
             sig = ''
@@ -1753,7 +1753,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
             stat3_log += _l + '\n\n'
 
         stat5_log = ''
-        sig_set = set()
+        sig_set = OrderedSet()
         overwrites = 0
         for addr, val, cover, code in stats.stat5:
             if addr in sig_set:

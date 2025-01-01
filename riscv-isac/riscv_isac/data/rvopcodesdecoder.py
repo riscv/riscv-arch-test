@@ -3,6 +3,7 @@ from operator import itemgetter
 from collections import defaultdict
 import pprint
 import os
+from ordered_set import OrderedSet
 
 from constants import *
 #from riscv_isac.data.constants import *
@@ -232,13 +233,13 @@ class disassembler():
         funct_occ = [funct[0] for ins in funct_list for funct in ins]
 
         # Path recoder
-        funct_path = set()
+        funct_path = OrderedSet()
         # Check if there are functions remaining
         while funct_occ:
             if (1, 0) in funct_occ:
                 max_funct = (1, 0)
             else:
-                max_funct = max(set(funct_occ),key=funct_occ.count)
+                max_funct = max(OrderedSet(funct_occ),key=funct_occ.count)
 
             funct_occ = list(filter(lambda a: a != max_funct, funct_occ))
 

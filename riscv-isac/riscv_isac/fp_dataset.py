@@ -4,6 +4,7 @@ import struct
 import random
 import sys
 import math
+from ordered_set import OrderedSet
 from decimal import *
 
 # Prasanna
@@ -4941,7 +4942,7 @@ def ibm_b24(flen, iflen, opcode, ops, inxFlg=False):
         t = "{:e}".format(data[0])
         b24_comb.append((floatingPoint_tohex(iflen,float(t)),data[1]))
 
-    b24_comb = set(b24_comb)
+    b24_comb = OrderedSet(b24_comb)
 
     coverpoints = []
     k=0

@@ -27,7 +27,7 @@ unsgn_rs1 = ['sw','sd','sh','sb','ld','lw','lwu','lh','lhu','lb', 'lbu','flw','f
         'sh2add.uw','sh3add.uw','slli.uw','clz','clzw','ctz','ctzw','cpop','cpopw','rev8',\
         'bclri','bexti','binvi','bseti','xperm4','xperm8','zip','unzip','gorci','fcvt.d.wu','fcvt.s.wu','fcvt.d.lu','fcvt.s.lu','c.flwsp','c.fldsp','c.flw','c.fld'\
         'c.not', 'c.sext.b','c.sext.h','c.zext.b','c.zext.h','c.zext.w','sc.w','lr.w','sc.d','lr.d']
-unsgn_rs2 = ['bgeu', 'bltu', 'sltiu', 'sltu', 'sll', 'srl', 'sra','mulhu',\
+unsgn_rs2 = ['bgeu', 'bltu', 'sltiu', 'sltu', 'sll', 'srl', 'sra', 'sraw', 'mulhu',\
         'mulhsu','divu','remu','divuw','remuw','aes64ds','aes64dsm','aes64es',\
         'aes64esm','aes64ks2','sm4ed','sm4ks','ror','rol','rorw','rolw','clmul',\
         'clmulh','clmulr','andn','orn','xnor','pack','packh','packu','packuw','packw',\

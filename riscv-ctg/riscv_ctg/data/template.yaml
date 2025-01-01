@@ -4,6 +4,7 @@ metadata:
   all_fregs: &all_fregs "['f'+str(x) for x in range(0,32 if 'e' not in base_isa else 16)]"
   all_regs_mx0: &all_regs_mx0 "['x'+str(x) for x in range(1,32 if 'e' not in base_isa else 16)]"
   c_regs: &c_regs "['x'+str(x) for x in range(8,16)]"
+  c_fregs: &c_fregs "['x'+str(x) for x in range(8,16)]"
   pair_regs: &pair_regs "['x'+str(x) for x in range(2,32 if 'e' not in base_isa else 16, 2 if xlen == 32 else 1)]"
   rv32rv64pair_regs: &rv32rv64pair_regs "['x'+str(x) for x in range(2,30 if 'e' not in base_isa else 16, 2)]"
 

@@ -3,6 +3,8 @@
 import os
 from math import *
 from string import Template
+
+from ordered_set import OrderedSet
 from riscv_isac.fp_dataset import *
 
 root = os.path.abspath(os.path.dirname(__file__))
@@ -120,7 +122,7 @@ def gen_sign_dataset(bit_width):
     t1 =( '' if bit_width%2 == 0 else '1') + ''.join(['01']*int(bit_width/2))
     t2 =( '' if bit_width%2 == 0 else '0') + ''.join(['10']*int(bit_width/2))
     data += [twos(t1,bit_width),twos(t2,bit_width)]
-    return list(set(data))
+    return list(OrderedSet(data))
 
 def gen_usign_dataset(bit_width):
     '''

@@ -5,35 +5,37 @@
 //
 // This test belongs to the test plan for RISC-V Privilege Arch Compliance developed by 10xEngineers
 // which can be found here: https://docs.google.com/spreadsheets/d/1p13gic7BD6aq7n_dHrqti4QmlGpxY7FkF17RVbG4DC0/edit?usp=sharing
-/*	Test Name: pmp-NA4-RX.S
-//	PMP Test in NA4 address matching mode
+/*	Test Name: pmp-tor-R.S
+//	PMP Test in TOR address matching mode in S-mode
 //	Description:
-=> Testing that if a PMP entry is configured to match the four-byte range 0xC–0xF, 
-   then an 8-byte access to the range 0x8–0xF will fail, assuming that PMP entry is the highest-priority entry 
-   that matches those addresses.
-=> Testing the RWX combinations on a NA4 based PMP Region in S-mode
+=> Foreach mode in MPP (including M), for Load/store instruction, perform the instruction referencing an address where the associated pmpcfg.W=1 and observe an access fault or not. 
+=> Foreach mode, perform instruction fetches to an address where the associated pmpcfg.X=0 and observe an access fault or not.
+=> Foreach mode in MPP (including M), Perform the instruction referencing an address where the associated pmpcfg.R=1 and observe an access fault or not. Do the same for stores where pmpcfg.R=1 and pmpcfg.W=1 to make sure that the R bit only affects loads while W bit only affect store.
+=> Do the same for loads where pmpcfg.R=1 and pmpcfg.W=0 to make sure that the W bit only affects stores and AMOs.
 */
 // PMP Configuration
 /* PMP is configure in the following order:
-1. Address 0x0000 0000 to Address TEST_FOR_EXECUTION => PMP TOR Region with RWX enabled.
+1. Address 0x0000 to Address TEST_FOR_EXECUTION => PMP TOR Region with RWX enabled. 
    This region is the part of the code memory containing our code. 
    For this purpose, pmpaddr0 has been given the value of TEST_FOR_EXECUTION 
    to declare the region from 0->TEST_FOR_EXECUTION into a single PMP region.
 
-2. Address TEST_FOR_EXECUTION to Address RETURN_INSTRUCTION =====> This is the PMP region under test  
-   (A 4-byte region for NA4). This region has been declared by entering TEST_FOR_EXECUTION into pmpaddr1. 
-   Then a PMP region is configure into NA4 mode by setting pmpcfg0[15:8]=PMPREGION2
+2. Address TEST_FOR_EXECUTION to Address RETURN_INSTRUCTION => PMP region under test. 
+   This region has been declared by entering TEST_FOR_EXECUTION into pmpaddr1 and rvtest_code_end into pmpaddr2. 
+   Then a PMP region is configure from pmpaddr2(RETURN_INSTRUCTION) to pmpaddr1(TEST_FOR_EXECUTION) 
+   into TOR mode by setting pmpcfg0[23:16]=PMPREGION2
 
-3. Address RETURN_INSTRUCTION to Address rvtest_code_end => Another PMP region. 
-   This region has been declared by entering rvtest_code_end into pmpaddr3 and RETURN_INSTRUCTION into pmpaddr2. 
-   configure pmpaddr2(RETURN_INSTRUCTION) to pmpaddr3(rvtest_code_end) into TOR mode 
-   by setting pmpcfg0[31:24]=((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT))
+3. Address TEST_FOR_EXECUTION to Address rvtest_code_end => PMP region under test. 
+   This region has been declared by entering rvtest_code_end into pmpaddr4 and 
+   TEST_FOR_EXECUTION into pmpaddr3. configure pmpaddr4(TEST_FOR_EXECUTION) to pmpaddr5(rvtest_code_end) 
+   into TOR mode by setting pmpcfg1[15:8]=PMPREGION3
 
 4. Address rvtest_code_end to address PMP_region_High => PMP TOR Region with RWX enabled. 
    This region is the part of the code memory containing trap handler, epilogs, and other important macro definitions. 
-   For this purpose, configure pmpaddr3(rvtest_code_end) to pmpaddr4(PMP_region_High) 
-   into TOR mode by setting pmpcfg1[7:0]=((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT)). 
+   For this purpose, configure pmpaddr4(rvtest_code_end) to pmpaddr5(PMP_region_High) 
+   into TOR mode by setting pmpcfg1[15:8]=PMPREGION4. 
    This PMP Region is mandatory to access signature area in S,U mode	*/
+
 
 #include "model_test.h"
 #include "arch_test.h"
@@ -46,21 +48,22 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",PMP_TOR_r)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
+
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3
-  	.option norvc
+  	.align	3   
+  	.option norvc 
 #define PMPCFG0		0x3A0		// Address of pmpcfg0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
 #define PMPADDR0	0x3B0		// Address of pmpaddr0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
 /* Define PMP Configuration Fields */
@@ -69,6 +72,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 #define PMP2_CFG_SHIFT  16
 #define PMP3_CFG_SHIFT  24
 #define PMP4_CFG_SHIFT  32
+#define PMP5_CFG_SHIFT  40
 #define NOP 		(0x13<<32)+0x13	// Encoded Instruction of nop
 .macro VERIFICATION_RWX		ADDRESS	
 	LA (a4, RETURN_INSTRUCTION)
@@ -88,9 +92,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 	nop
 	sd	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-				// Testing that if a PMP entry is configured to match the four-byte range 0xC–0xF, 
-  				// then an 8-byte access to the range 0x8–0xF will fail, assuming that PMP entry is the highest-priority entry 
-   				// that matches those addresses.
 	nop
 	nop
  	lb	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
@@ -118,53 +119,53 @@ main:
     	LI(x5, 100)		// A rondom number, to check if pmp regs get update after lock bit enable
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, PMPCFG0	// Initialize an iterating variable with the address of pmpcfg0
-	.rept RVMODEL_NUM_PMPS/8	// START OF LOOP
+	.rept RVMODEL_NUM_PMPS/8			// START OF LOOP
 
 	csrw pmpcfgi , x0	// Set all pmpcfg regs to zero (initial value)
 	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
 	.endr			// END OF LOOP BODY
 	// Loop to SET ALL pmpaddr REGs to zero
 	.set pmpaddri, PMPADDR0	// Initialize an iterating variable with the address of pmpaddr0
-	.rept RVMODEL_NUM_PMPS	// START OF LOOP
+	.rept RVMODEL_NUM_PMPS		// START OF LOOP
 	csrw pmpaddri, x0	// Set all pmpaddr regs to zero (initial value)
 	.set pmpaddri, pmpaddri+1		// increment variable pmpaddri to the next pmpaddr reg
 	.endr			// END OF LOOP BODY
 		
 // pmpcfg0 [7:0] value to configure address 0->TEST_FOR_EXECUTION in TOR Mode with RWX enabled
-#define PMPREGION1      ((((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION1      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT))
 // ------------------------------------------------------------------------------------------------
-// pmpcfg0[15:8] value to configure address (TEST_FOR_EXECUTION)->(RETURN_INSTRUCTION)
-// in NA4 Mode with RX enabled =========> THIS IS OUR REGION UNDER OBSERVATION.
-// THIS REGION CONSISTS OF ONLY ONE INSTRUCTION
-#define PMPREGIONRWX      	((((PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGIONRX      	((((PMP_R|PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGIONRW      	((((PMP_R|PMP_W|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGIONR      	((((PMP_R|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGIONX      	((((PMP_X|PMP_NA4)&0xFF) << PMP1_CFG_SHIFT))
+// pmpcfg0[23:16] value to configure address (TEST_FOR_EXECUTION)->(RETURN_INSTRUCTION)
+// in TOR Mode with X enabled =========> THIS IS OUR REGION UNDER OBSERVATION.
+#define PMPREGIONRWX      	((((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGIONRX      	((((PMP_R|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGIONRW      	((((PMP_R|PMP_W|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGIONR      	((((PMP_R|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
+#define PMPREGIONX      	((((PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
 // ------------------------------------------------------------------------------------------------
-// pmpcfg0[31:24] value to configure address (RETURN_INSTRUCTION)->(rvtest_code_end)
-// in TOR Mode with RWX enabled 
-// ALSO NOTE THAT PMPREGION2 IS INSIDE THIS REGION, so this test will also check the priority order of PMP regions
-#define PMPREGION3      ((((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT))
+// pmpcfg0[39:32] value to configure address (TEST_FOR_EXECUTION)->(rvtest_code_end)
+// in TOR Mode with RW enabled 
+// ALSO NOTE THAT PMPREGION2 IS INSIDE THIS REGION, so this test can also check the priority order of PMP regions
+#define PMPREGION3      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP4_CFG_SHIFT))
 // ------------------------------------------------------------------------------------------------
-// pmpcfg0[39:32] value to configure address (RVTEST_DATA_BEGIN)->(PMP_region_High)
+// pmpcfg0[47:40] value to configure address (rvtest_code_end)->(PMP_region_High)
 // in TOR Mode with RWX enabled
-#define PMPREGION4      ((((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP4_CFG_SHIFT))
+#define PMPREGION4      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP5_CFG_SHIFT))
 // ------------------------------------------------------------------------------------------------
 // MACROS TO DECLARE THE VALUES TO BE STORED IN PMPADDR registers
 #define PMPADDRESS0	TEST_FOR_EXECUTION // value to be loaded pmpaddr0 to declare region1
-// PMPADDRESS1 = value to be loaded pmpaddr1 to declare NA4 Region
+// PMPADDRESS1 = value to be loaded pmpaddr1 to declare lower address of region2
 #define PMPADDRESS1	TEST_FOR_EXECUTION	
-// PMPADDRESS2 = value to be loaded pmpaddr2 to declare lower address of region3
-#define PMPADDRESS2	RETURN_INSTRUCTION
-// PMPADDRESS3 = value to be loaded pmpaddr3 to declare upper address of region3
-#define PMPADDRESS3	rvtest_code_end
-// PMPADDRESS4 = value to be loaded pmpaddr4 to declare upper address of region4
-#define PMPADDRESS4	PMP_region_High
+// PMPADDRESS2 = value to be loaded pmpaddr2 to declare upper address of region2
+#define PMPADDRESS2	RETURN_INSTRUCTION	
+// PMPADDRESS3 = value to be loaded pmpaddr3 to declare lower address of region3
+#define PMPADDRESS3	TEST_FOR_EXECUTION
+// PMPADDRESS4 = value to be loaded pmpaddr4 to declare upper address of region3
+#define PMPADDRESS4	rvtest_code_end
+// PMPADDRESS5 = value to be loaded pmpaddr5 to declare upper address of region4
+#define PMPADDRESS5	PMP_region_High
                                                                   
     /* SET UP DATA IN THE MEMORY */
 	csrw satp, x0			// Disable Address Translation
-	
     /* Assigning addresses to PMP address registers */
     	LA(x4, PMPADDRESS0)		// Value to be stored in pmpaddr0
 	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
@@ -186,10 +187,14 @@ main:
 	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
 	csrw 	pmpaddr4, x4		// Updated pmpaddr4
 	nop				// Added nop in case of trap
-    /* Decalring pmp configuration register for one combination */
-	LI(x4, PMPREGION1 | PMPREGIONRWX |  PMPREGION3 |  PMPREGION4)	
-	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
-	csrw pmpcfg0, x4		// Updated pmpcfg0
+    	LA(x4, PMPADDRESS5)		// Value to be stored in pmpaddr5
+	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
+	csrw 	pmpaddr5, x4		// Updated pmpaddr5
+	nop				// Added nop in case of trap
+    /* Decalring pmp configuration register */
+	LI(x4, PMPREGION1 | PMPREGIONRWX | PMPREGION3 | PMPREGION4)	
+	// Value to be stored in pmpcfg register
+	csrs pmpcfg0, x4		// Updated pmpcfg0
 	nop				// Added nop in case of trap
 //////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
 // VERIFICATION IN S-Mode	
@@ -198,7 +203,6 @@ main:
 
 /////////////////// Switch back to M-mode ////////////////////////////////////////////
 	RVTEST_GOTO_MMODE
-
     /* Decalring pmp configuration register for one combination */
 	LI(x4, PMPREGION1 | PMPREGIONRX |  PMPREGION3 |  PMPREGION4)	
 	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
@@ -211,7 +215,6 @@ main:
 
 /////////////////// Switch back to M-mode ////////////////////////////////////////////
 	RVTEST_GOTO_MMODE
-
     /* Decalring pmp configuration register for one combination */
 	LI(x4, PMPREGION1 | PMPREGIONRW |  PMPREGION3 |  PMPREGION4)	
 	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
@@ -224,6 +227,7 @@ main:
 
 /////////////////// Switch back to M-mode ////////////////////////////////////////////
 	RVTEST_GOTO_MMODE
+
 
     /* Decalring pmp configuration register for one combination */
 	LI(x4, PMPREGION1 | PMPREGIONR |  PMPREGION3 |  PMPREGION4)	
@@ -250,16 +254,13 @@ main:
 
 /////////////////// Switch back to M-mode ////////////////////////////////////////////
 	RVTEST_GOTO_MMODE
-
-
-
 	j exit
 
+.align 3
 
 TEST_FOR_EXECUTION:
-	.rept (1<<RVMODEL_PMP_GRAIN)
+	addi x9,x9,0x01		// A TEST INSTRUCTION TO TEST THE EXECUTION CHECK ON PMP REGION
 	nop
-	.endr
 RETURN_INSTRUCTION:
 	nop				// Added nop in case of trap
 	nop				// Added nop in case of trap

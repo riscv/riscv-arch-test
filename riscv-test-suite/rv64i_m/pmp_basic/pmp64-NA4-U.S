@@ -87,7 +87,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	sw	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
 	nop
 	nop
-	sd	a4,4(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
+	sd	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
 				// Testing that if a PMP entry is configured to match the four-byte range 0xC–0xF, 
   				// then an 8-byte access to the range 0x8–0xF will fail, assuming that PMP entry is the highest-priority entry 
    				// that matches those addresses.
@@ -104,6 +104,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     	lw	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
     	nop
     	nop
+	RVTEST_SIGUPD(x13,a4)
     	ld	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
     	nop
     	nop

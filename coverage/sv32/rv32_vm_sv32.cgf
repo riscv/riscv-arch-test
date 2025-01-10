@@ -65,7 +65,7 @@ pmp_check_pa:
     'mode == {"S", "U"} and mnemonic == {"sw", "lw"} and mcause == {7, 5}{[$2]}': 0
     'mode == "M" and mnemonic == "jal" and mcause == ${CAUSE_FETCH_ACCESS}': 0
 
-#Check that when PA has no PMP Permissions, it should give Load, Store and Fetch access Faults.
+#Check that when Page Table has no PMP Permissions, it should give Load, Store and Fetch access Faults.
 pmp_check_pte:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
@@ -118,7 +118,7 @@ misaligned_superpage:
     'mode == {"S", "U"} and mnemonic == {"sw", "lw"} and get_pte_prop("ADRWXV", dptw1cont) == 1 and dptw0cont == None and mcause == {15, 13}{[$2]}': 0
     'mode == "M" and (${va_data_sv32} + ${LEVEL_1_JUMP_SIZE}) == mtval and mcause == ${CAUSE_FETCH_PAGE_FAULT}': 0
 
-# If MVPV bit is set, then do page table walk in machine mode for loads and stores.
+# If MPRV bit is set, then do page table walk in machine mode for loads and stores.
 MPRV_bit:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
@@ -128,7 +128,7 @@ MPRV_bit:
     'mode == "M" and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
   csr_comb:
     '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
-    #check mstatus has: case1: MPP& U in MPP and case2: MPP& S in MPP
+    #check mstatus has: case1: MPP & U in MPP and case2: MPP & S in MPP
     mstatus == {0x00020000, 0x00020800}: 0                     
   val_comb:
     'mode == "M" and (mstatus == {0x00020000, 0x00020800}) and get_pte_prop({"ADURWXV", "ADuRWXV"}{[$1]},   dptw1cont) ==  1 and dptw0cont == None': 0
@@ -136,7 +136,6 @@ MPRV_bit:
     #Fault Checks
     'mode == "M" and (mstatus == {0x00020000, 0x00020800}) and get_pte_prop({"ADURWXV", "ADuRWXV"}{[$1]},   dptw1cont) ==  1 and dptw0cont == None and len_dptw == 1': 0
     'mode == "M" and (mstatus == {0x00020000, 0x00020800}) and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop({"ADURWXV", "ADuRWXV"}{[$1]},  dptw0cont) ==   1 and len_dptw == 2': 0
-
 
 # If MXR bit is set, then make the exec. readable and just give a store page fault else give both load and store page fault
 MXR_bit:
@@ -342,7 +341,7 @@ reserved_rsw_pte_perm:
     'mode == {"S", "U"} and get_pte_prop("RWXAD",   dptw1cont) ==  1 and dptw0cont == None': 0
     'mode == {"S", "U"} and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("RWXAD",   dptw0cont) ==  1': 0
 
-# If MVPV bit is set, then do page table walk in machine mode for loads and stores.
+# If MPRV and SUM bit is set, then do page table walk in machine mode for loads and stores.
 MPRV_SUM_bit:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;

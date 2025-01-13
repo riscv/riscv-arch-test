@@ -407,6 +407,18 @@ Mend_PMP:                                    ;\
  LI(a0, (MSTATUS_FS & (MSTATUS_FS >> 1)))	;\
  csrs mstatus, a0				;\
  csrwi fcsr, 0
+ 
+ 
+// this macro is to disable Floating point 
+// I have added this 
+
+#define RVTEST_FP_DISABLE()			;\
+ csrr a0, mstatus ;\
+ csrr a0, mtvec ;\
+ LI(a0, (MSTATUS_FS))	;\
+ csrrc x0,mstatus, a0 ;\
+ csrr a0, mstatus 
+ 
 
 // This macro is for vector 
 #define RVTEST_VXSAT_ENABLE()			;\

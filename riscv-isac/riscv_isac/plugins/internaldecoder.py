@@ -1407,6 +1407,8 @@ class disassembler():
             instrObj.instr_name = 'csrrci'
             instrObj.rs1 = None
             instrObj.zimm = rs1[0]
+        if funct3 == 0b100:
+            self.rv64_zimop_ops(instrObj)
 
         return instrObj
 
@@ -1612,6 +1614,85 @@ class disassembler():
             0b011: 'zacas.d',
             0b100: 'zacas.q',
     }
+
+    zimop_r_instr_names = {
+        0b00000: "mop.r.0",
+        0b00001: "mop.r.1",
+        0b00010: "mop.r.2",
+        0b00011: "mop.r.3",
+        0b00100: "mop.r.4",
+        0b00101: "mop.r.5",
+        0b00110: "mop.r.6",
+        0b00111: "mop.r.7",
+        0b01000: "mop.r.8",
+        0b01001: "mop.r.9",
+        0b01010: "mop.r.10",
+        0b01011: "mop.r.11",
+        0b01100: "mop.r.12",
+        0b01101: "mop.r.13",
+        0b01110: "mop.r.14",
+        0b01111: "mop.r.15",
+        0b10000: "mop.r.16",
+        0b10001: "mop.r.17",
+        0b10010: "mop.r.18",
+        0b10011: "mop.r.19",
+        0b10100: "mop.r.20",
+        0b10101: "mop.r.21",
+        0b10110: "mop.r.22",
+        0b10111: "mop.r.23",
+        0b11000: "mop.r.24",
+        0b11001: "mop.r.25",
+        0b11010: "mop.r.26",
+        0b11011: "mop.r.27",
+        0b11100: "mop.r.28",
+        0b11101: "mop.r.29",
+        0b11110: "mop.r.30",
+        0b11111: "mop.r.31"
+    }
+
+    zimop_rr_instr_names = {
+        0b000: "mop.rr.0",
+        0b001: "mop.rr.1",
+        0b010: "mop.rr.2",
+        0b011: "mop.rr.3",
+        0b100: "mop.rr.4",
+        0b101: "mop.rr.5",
+        0b110: "mop.rr.6",
+        0b111: "mop.rr.7"
+    }
+
+    def rv64_zimop_ops(self, instrObj):
+        instr = instrObj.instr
+        isR = (instr & 0x0001d000) >> 22
+        if isR == 0b0111:
+            self.rv64_zimop_r_ops(instrObj)
+        else:
+            self.rv64_zimop_rr_ops(instrObj)
+    
+    def rv64_zimop_r_ops(self, instrObj):
+        instr = instrObj.instr
+        rd = ((instr & self.RD_MASK) >> 7, 'x')
+        rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        instrObj.rd = rd
+        instrObj.rs1 = rs1
+        mop_30 = (instr & 0x80000000) >> 30
+        mop_27_26 = (instr & 0x0c000000) >> 26
+        mop_21_20 = (instr & 0x00030000) >> 20
+        mop = mop_30 << 4 | mop_27_26 << 2 | mop_21_20
+        instrObj.instr_name = self.zimop_r_instr_names[mop]
+    
+    def rv64_zimop_rr_ops(self, instrObj):
+        instr = instrObj.instr
+        rd = ((instr & self.RD_MASK) >> 7, 'x')
+        rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
+        instrObj.rd = rd
+        instrObj.rs1 = rs1
+        instrObj.rs2 = rs2
+        mop_30 = (instr & 0x80000000) >> 30
+        mop_27_26 = (instr & 0x0c000000) >> 26
+        mop = mop_30 << 2 | mop_27_26
+        instrObj.instr_name = self.zimop_rr_instr_names[mop]
 
     def rv64_rv32_atomic_ops(self, instrObj):
 

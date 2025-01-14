@@ -1,5 +1,5 @@
-// This assembly file test shows, the behavior of fence.i by setting other fields 
-// value of the fence instruction to some values instead of zeros
+// This test will check the behavior of fence.i by setting other field 
+// values of the fence instruction apart from the opcode
  
 // Developed by: Maria Rehman
 
@@ -35,10 +35,10 @@ RVMODEL_IO_WRITE_STR(x31, "# Test Begin\n")
     lw      x1, 0(x16)
     lw      x2, 4(x16)
     fence.i  # Synchronize after loading data
-   // .word 0xfff2990f   this is equal to the fence.i
+   // .word 0x0000100f   this is equal to the fence.i
                                        // For this fence.i instruction field value test used,
                                        // immediate field value == "0000_0000_0000" 
-				       // rs1 reg ==  (0000)
+				       // rs1 reg ==  (00000)
 				       // rd reg ==  (0)
 				       // func3  == 001
 				       // Opcode == 0001111
@@ -145,7 +145,7 @@ mtrap_sigptr:
 
 #ifdef rvtest_gpr_save
 gpr_save:
-    .fill 64*(XLEN/32), 4, 0xdeadbeef
+    .fill 32*(XLEN/32), 4, 0xdeadbeef
 #endif
 
 sig_end_canary:

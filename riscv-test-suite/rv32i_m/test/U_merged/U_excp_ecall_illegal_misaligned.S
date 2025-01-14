@@ -64,7 +64,7 @@ main:
 // instruction, mtval will contain the binary representation of illegal instruction
 
 	
-/*	LI (a4, 3)     
+	LI (a4, 3)     
 	csrrc t1,0xFFF,a4  // accessing non existing CSR will generate the illegal instruction exception
 	nop
 	nop
@@ -74,14 +74,11 @@ main:
 	
 	
 // In this access to the csr without appropriate privillage mode will cause the illegal 
-// instruction mcause will have the exception code 2 like if try to access the mepc and 
-// mstatus register then will cause illegal instruction
+// instruction mcause will have the exception code 2 like accesing the sstatus register 
+// then will cause illegal instruction, because Csr of S mode are not accesible in U mode
 
-	// try to access the in appropriate csr 
-	LI (t0, 0x1111)
-	// Try to read the machine mode or Supervisor mode CSR now will raise exception because the 
-	// lower privillege mode cannot access the higher privillege mode CSRs
-	csrw sstatus,t0           // try to write random value to sstatus  
+	csrrs t0, sstatus, x0
+           // try to write random value to sstatus
 	nop 
 	nop
 	
@@ -112,7 +109,7 @@ main:
 // In U-mode, the satp register and the sfence.vma instruction are not accessible regardless 
 // of the mstatus.TVM value. Any attempt to access them in U-mode will raise an illegal 
 // instruction exception as per privilege rules.       
-       	LI (t4, MSTATUS_TVM)    
+    LI (t4, MSTATUS_TVM)    
 	csrw mstatus, t4	// set mstatus with TVM bit
 	nop
 	csrr t3,mstatus
@@ -144,11 +141,12 @@ main:
 	nop
 	
 // Traps never transition from a more-privileged mode to a less-privileged mode.
-// but if in M mode I delegate the illegal instructions to handle in S mode then 
-// illegal instructions in U mode will be handled by S-handler
-// Bit 2 corresponds to illegal instruction
+// but if in M mode, if delegate the exceptions to handle in S mode then 
+//  U mode exceptions will be handled by S-handler. Here below 
+// delegated the environment call in U mode to be handled in S mode
+
 	
-	LI (a4, CSR_MEDELEG)  
+	LI (a4, 0x100)  
 	csrw medeleg, a4
 	
 	RVTEST_GOTO_LOWER_MODE Umode
@@ -168,9 +166,8 @@ main:
 // This test checks that if an extension is turned off (e.g., FS bits [13 and 14] in mstatus 
 // are 00), trying to access it will cause an illegal instruction error. 
 
-
- RVTEST_FP_DISABLE()  // this will set the FS bit in mstatsus to 00 means off
-   // Load immediate values into integer registers
+ 	RVTEST_FP_DISABLE()  // this will set the FS bit in mstatsus to 00 means off
+    // Load immediate values into integer registers
     li t0, 0x3FC00000    //  Hex representation of 1.5 in IEEE-754 single-precision
     li t1, 0x40200000    // Hex representation of 2.5 in IEEE-754 single-precision
 
@@ -200,12 +197,12 @@ main:
 // when we try to attempt to load data from a misaligned memory address.For this we will check 
 // the log file that either it is giving the expected exception at that point and value of the 
 // mcause exception code will be  "4" in U mode
-/*
+
 	LI (a4, 0x0008) 
    	LA(x17,rvtest_data)
 	lw x5,3(x17)
 	nop  
-    	RVTEST_SIGUPD(x13, a4)    // this signature will give information that test for loas address misaligned has successfullty returned from trap
+    RVTEST_SIGUPD(x13, a4)    // this signature will give information that test for loas address misaligned has successfullty returned from trap
     
        
 // This test will check that in user mode, a store address misaligned exception is raised when we try 
@@ -222,7 +219,7 @@ main:
 	
         LI (a4, 0x0009)   
     	RVTEST_SIGUPD(x13, a4)     // this signature will give information that test for store address misaligned has successfullty returned from trap
- */   
+    
 	
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

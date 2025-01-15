@@ -53,25 +53,24 @@ main:
 	// Here below are the some opcode combinations that are not defined for any instruction 
 	// so when we use such opcodes they give the illegal instruction exception
 	
-	// "111_1110" //
-	.word 0x01029071     // opcode not defined for any instruction
+	// "110_0111" //
+	.word 0x01029067     // opcode not defined for any instruction
 	nop
 	nop
 	
 	
-	// "100_0001" //
-	.word 0x0102a042     // opcode not defined for any instruction
+	// "101_0111" //
+	.word 0x0102a057     // opcode not defined for any instruction
 	nop
 	nop
 	
-	// "101_0001" //
-	.word 0x0102a052     // opcode not defined for any instruction
+	// "001_1011" //
+	.word 0x0102a01b     // opcode not defined for any instruction
 	nop
 	nop
 	
-	
-	// "101_1001" //
-	.word 0x0102a05a     // opcode not defined for any instruction
+	// "111_0111"
+	.word 0x0102a077     // opcode not defined for any instruction
 	nop
 	nop
 	

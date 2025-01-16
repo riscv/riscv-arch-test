@@ -11,7 +11,6 @@
 
 #include "arch_test.h"
 
-// RVTEST_ISA("RV32I_Zicsr,RV32IFD_Zicsr,RV32EF_Zicsr,RV32EFD_Zicsr")
 RVTEST_ISA("RV32IF_Zicsr,RV32IFD_Zicsr,RV64IF_Zicsr,RV64IFD_Zicsr,RV32EF_Zicsr,RV32EFD_Zicsr,RV64EF_Zicsr,RV64EFD_Zicsr")
 
 # Test code region

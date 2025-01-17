@@ -1,41 +1,28 @@
-// -----------
-// Copyright (c) 2020. RISC-V International. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause
-// -----------
+// ---------------------------------------------------------------------------
+// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     	: Muhammad Hammad Bashir, Umer Shahid, Allen Baum
+// Contact	  	: https://github.com/MuhammadHammad001
 //
-// This test belongs to the test plan for RISC-V Privilege Arch Compliance developed by 10xEngineers
-// which can be found here: https://docs.google.com/spreadsheets/d/1p13gic7BD6aq7n_dHrqti4QmlGpxY7FkF17RVbG4DC0/edit?usp=sharing
-/*	Test Name: pmp-tor-R.S
-//	PMP Test in TOR address matching mode in U-mode
-//	Description:
-=> Foreach mode in MPP (including M), for Load/store instruction, perform the instruction referencing an address where the associated pmpcfg.W=1 and observe an access fault or not. 
-=> Foreach mode, perform instruction fetches to an address where the associated pmpcfg.X=0 and observe an access fault or not.
-=> Foreach mode in MPP (including M), Perform the instruction referencing an address where the associated pmpcfg.R=1 and observe an access fault or not. Do the same for stores where pmpcfg.R=1 and pmpcfg.W=1 to make sure that the R bit only affects loads while W bit only affect store.
-=> Do the same for loads where pmpcfg.R=1 and pmpcfg.W=0 to make sure that the W bit only affects stores and AMOs.
-*/
-// PMP Configuration
-/* PMP is configure in the following order:
-1. Address 0x0000 to Address TEST_FOR_EXECUTION => PMP TOR Region with RWX enabled. 
-   This region is the part of the code memory containing our code. 
-   For this purpose, pmpaddr0 has been given the value of TEST_FOR_EXECUTION 
-   to declare the region from 0->TEST_FOR_EXECUTION into a single PMP region.
-
-2. Address TEST_FOR_EXECUTION to Address RETURN_INSTRUCTION => PMP region under test. 
-   This region has been declared by entering TEST_FOR_EXECUTION into pmpaddr1 and rvtest_code_end into pmpaddr2. 
-   Then a PMP region is configure from pmpaddr2(RETURN_INSTRUCTION) to pmpaddr1(TEST_FOR_EXECUTION) 
-   into TOR mode by setting pmpcfg0[23:16]=PMPREGION2
-
-3. Address TEST_FOR_EXECUTION to Address rvtest_code_end => PMP region under test. 
-   This region has been declared by entering rvtest_code_end into pmpaddr4 and 
-   TEST_FOR_EXECUTION into pmpaddr3. configure pmpaddr4(TEST_FOR_EXECUTION) to pmpaddr5(rvtest_code_end) 
-   into TOR mode by setting pmpcfg1[15:8]=PMPREGION3
-
-4. Address rvtest_code_end to address PMP_region_High => PMP TOR Region with RWX enabled. 
-   This region is the part of the code memory containing trap handler, epilogs, and other important macro definitions. 
-   For this purpose, configure pmpaddr4(rvtest_code_end) to pmpaddr5(PMP_region_High) 
-   into TOR mode by setting pmpcfg1[15:8]=PMPREGION4. 
-   This PMP Region is mandatory to access signature area in S,U mode	*/
-
+// Description : This test verifies the functionality and enforcement of
+//               Physical Memory Protection (PMP) configurations in RISC-V
+//               systems. It evaluates RWX permissions at different granularity
+//               levels (byte, half-word, word, double word) and across various
+//               PMP configurations. The test adheres to the RISC-V Privileged
+//               Specification v1.12 and includes:
+//               - Comprehensive RWX checks for multiple PMP regions.
+//
+// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+//                 and PMP region count before running this test.
+//               - Adjust PMP configurations for specific hardware if required.
+//
+// Test Cases  : 1. Full RWX permissions (Read, Write, Execute)
+//               2. RX permissions (Read, Execute)
+//               3. RW permissions (Read, Write)
+//               4. R-only permissions (Read)
+//               5. X-only permissions (Execute)
+//
+// Dependencies: model_test.h, arch_test.h
+// ---------------------------------------------------------------------------
 
 #include "model_test.h"
 #include "arch_test.h"
@@ -46,232 +33,230 @@ RVTEST_ISA("RV64I_Zicsr")
 rvtest_entry_point:
 RVMODEL_BOOT
 RVTEST_CODE_BEGIN
-
+/*
+Following are defined in the model_test.h. If you have different implementation for PMP, please change accordingly in that file.
+*/
 #ifndef RVMODEL_PMP_GRAIN
-#define RVMODEL_PMP_GRAIN 0
+	#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-#define RVMODEL_NUM_PMPS 16
+	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*U.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",PMP_TOR_r)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
-  	.option norvc 
-#define PMPCFG0		0x3A0		// Address of pmpcfg0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
-#define PMPADDR0	0x3B0		// Address of pmpaddr0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
-/* Define PMP Configuration Fields */
-#define PMP0_CFG_SHIFT  0
-#define PMP1_CFG_SHIFT  8
-#define PMP2_CFG_SHIFT  16
-#define PMP3_CFG_SHIFT  24
-#define PMP4_CFG_SHIFT  32
-#define PMP5_CFG_SHIFT  40
-#define NOP 		(0x13<<32)+0x13	// Encoded Instruction of nop
-.macro VERIFICATION_RWX		ADDRESS	
-	LA (a4, RETURN_INSTRUCTION)
-	addi a4, a4, -4		// Go to RETURN_INSTRUCTION-4 address (The ending point of TEST_FOR_EXECUTION)
-	jalr	a4		// Jump to the last instruction of TEST_FOR_EXECUTION, an instruction at the end of our PMP Region
-	nop			// NOP, in case of trap
+  	.align	3
+  	.option norvc
 
-   	LA(a5, \ADDRESS)	// Fetch the address to be checked
-	LI(a4, 	NOP)		// Load the new value (NOP Instruction ID)
-	sb	a4,0(a5)	// Store the new value (NOT TRAP => W enabled)
-	nop
-	nop
-	sh	a4,0(a5)	// store data
-	nop
-	nop
-	sw	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-	nop
-	nop
-	sd	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-	nop
-	nop
- 	lb	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-    	nop
-    	nop
-	RVTEST_SIGUPD(x13,a4)															//verify that the data is stored successfuly
-    	lh	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-    	nop
-    	nop
-	RVTEST_SIGUPD(x13,a4)
-    	lw	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-    	nop
-    	nop
-	RVTEST_SIGUPD(x13,a4)
-    	ld	a4,0(a5)	// Load data from it (CHECK FOR READ) ; (NOT TRAP => W enabled)
-    	nop
-    	nop
-	RVTEST_SIGUPD(x13,a4)
+#define NOP 		(0x13<<32)+0x13									// Encoded Instruction of nop (64 bit case)
 
+/*
+ * VERIFICATION_RWX Macro
+ *
+ * Description:
+ * This macro performs comprehensive verification of Read, Write, and Execute (RWX) permissions for a given memory address.
+ * It is designed to test the functionality and enforcement of PMP (Physical Memory Protection) configurations by checking access
+ * permission at various granularity levels (byte, half-word, word, and double word) and for both load and store operations.
+ *
+ * Parameters:
+ * - ADDRESS: The memory address to be tested for RWX access rights.
+ *
+ * Notes:
+ * - The macro assumes proper PMP configuration is in place to validate the described behaviors.
+ * - For double-word store and load operations, it adheres to the RISC-V Privileged Specification v1.12, ensuring the correct handling of boundary conditions.
+ */
+
+.macro VERIFICATION_RWX ADDRESS
+    // Execution Access Check
+    LA (a4, RETURN_INSTRUCTION)
+    addi a4, a4, -4              							// Go to RETURN_INSTRUCTION-4 address (ending address for Test for exec.)
+    jalr a4                      							// Jump to the test address
+    nop                          							// Skip in case of a trap
+    nop
+
+    // Store Access Check
+    LA(a5, \ADDRESS)             							// Address to be verified
+    LI(a4, NOP)                  							// Value to write (NOP)
+    sb a4, 0(a5)                 							// Byte-level store test
+    nop
+    nop
+    sh a4, 0(a5)                 							// Half-word store test
+    nop
+    nop
+    sw a4, 0(a5)                 							// Word store test
+    nop
+    nop
+    sd a4, 0(a5)                 							// Double-word store test
+    nop
+    nop
+
+    // Load Access Check
+    lb a4, 0(a5)                 							// Byte-level load test
+    nop
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    lh a4, 0(a5)                 							// Half-word load test
+    nop
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    lw a4, 0(a5)                 							// Word load test
+    nop
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    ld a4, 0(a5)                 							// Double-word load test
+    nop
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
 .endm
 
 main:
-//////////////////////// INITIAL VALUES //////////////////////////////// 
-    	LI(a5, -1)		// SEtting up All locked bits (including everyother non-zero bit, which is redundent for this test)
-    	LI(x5, 100)		// A rondom number, to check if pmp regs get update after lock bit enable
 	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, PMPCFG0	// Initialize an iterating variable with the address of pmpcfg0
-	.rept RVMODEL_NUM_PMPS/8			// START OF LOOP
+	.set pmpcfgi, CSR_PMPCFG0
+	.rept RVMODEL_NUM_PMPS/8
+	csrw pmpcfgi , x0
+	.set pmpcfgi, pmpcfgi+2
+	.endr
 
-	csrw pmpcfgi , x0	// Set all pmpcfg regs to zero (initial value)
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
-	.endr			// END OF LOOP BODY
 	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, PMPADDR0	// Initialize an iterating variable with the address of pmpaddr0
-	.rept RVMODEL_NUM_PMPS		// START OF LOOP
-	csrw pmpaddri, x0	// Set all pmpaddr regs to zero (initial value)
-	.set pmpaddri, pmpaddri+1		// increment variable pmpaddri to the next pmpaddr reg
-	.endr			// END OF LOOP BODY
-		
-// pmpcfg0 [7:0] value to configure address 0->TEST_FOR_EXECUTION in TOR Mode with RWX enabled
-#define PMPREGION1      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP0_CFG_SHIFT))
-// ------------------------------------------------------------------------------------------------
-// pmpcfg0[23:16] value to configure address (TEST_FOR_EXECUTION)->(RETURN_INSTRUCTION)
-// in TOR Mode with X enabled =========> THIS IS OUR REGION UNDER OBSERVATION.
-#define PMPREGIONRWX      	((((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGIONRX      	((((PMP_R|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGIONRW      	((((PMP_R|PMP_W|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGIONR      	((((PMP_R|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-#define PMPREGIONX      	((((PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))
-// ------------------------------------------------------------------------------------------------
-// pmpcfg0[39:32] value to configure address (TEST_FOR_EXECUTION)->(rvtest_code_end)
-// in TOR Mode with RW enabled 
-// ALSO NOTE THAT PMPREGION2 IS INSIDE THIS REGION, so this test can also check the priority order of PMP regions
-#define PMPREGION3      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP4_CFG_SHIFT))
-// ------------------------------------------------------------------------------------------------
-// pmpcfg0[47:40] value to configure address (rvtest_code_end)->(PMP_region_High)
-// in TOR Mode with RWX enabled
-#define PMPREGION4      ((((PMP_R|PMP_W|PMP_X|PMP_L|PMP_TOR)&0xFF) << PMP5_CFG_SHIFT))
-// ------------------------------------------------------------------------------------------------
-// MACROS TO DECLARE THE VALUES TO BE STORED IN PMPADDR registers
-#define PMPADDRESS0	TEST_FOR_EXECUTION // value to be loaded pmpaddr0 to declare region1
-// PMPADDRESS1 = value to be loaded pmpaddr1 to declare lower address of region2
-#define PMPADDRESS1	TEST_FOR_EXECUTION	
-// PMPADDRESS2 = value to be loaded pmpaddr2 to declare upper address of region2
-#define PMPADDRESS2	RETURN_INSTRUCTION	
-// PMPADDRESS3 = value to be loaded pmpaddr3 to declare lower address of region3
-#define PMPADDRESS3	TEST_FOR_EXECUTION
-// PMPADDRESS4 = value to be loaded pmpaddr4 to declare upper address of region3
-#define PMPADDRESS4	rvtest_code_end
-// PMPADDRESS5 = value to be loaded pmpaddr5 to declare upper address of region4
-#define PMPADDRESS5	PMP_region_High
-                                                                  
-    /* SET UP DATA IN THE MEMORY */
-	csrw satp, x0			// Disable Address Translation
-    /* Assigning addresses to PMP address registers */
-    	LA(x4, PMPADDRESS0)		// Value to be stored in pmpaddr0
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr0, x4		// Updated pmpaddr0
-	nop				// Added nop in case of trap
-    	LA(x4, PMPADDRESS1)		// Value to be stored in pmpaddr1
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr1, x4		// Updated pmpaddr1
-	nop				// Added nop in case of trap
-    	LA(x4, PMPADDRESS2)		// Value to be stored in pmpaddr2
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr2, x4		// Updated pmpaddr2
-	nop				// Added nop in case of trap
-    	LA(x4, PMPADDRESS3)		// Value to be stored in pmpaddr3
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr3, x4		// Updated pmpaddr3
-	nop				// Added nop in case of trap
-    	LA(x4, PMPADDRESS4)		// Value to be stored in pmpaddr4
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr4, x4		// Updated pmpaddr4
-	nop				// Added nop in case of trap
-    	LA(x4, PMPADDRESS5)		// Value to be stored in pmpaddr5
-	srl x4, x4, PMP_SHIFT		// Shift right by 2 times
-	csrw 	pmpaddr5, x4		// Updated pmpaddr5
-	nop				// Added nop in case of trap
-    /* Decalring pmp configuration register */
-	LI(x4, PMPREGION1 | PMPREGIONRWX | PMPREGION3 | PMPREGION4)	
-	// Value to be stored in pmpcfg register
-	csrs pmpcfg0, x4		// Updated pmpcfg0
-	nop				// Added nop in case of trap
-//////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
-// VERIFICATION IN S-Mode	
-	RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
-	VERIFICATION_RWX	TEST_FOR_EXECUTION	
+	.set pmpaddri, CSR_PMPADDR0
+	.rept RVMODEL_NUM_PMPS
+	csrw pmpaddri, x0
+	.set pmpaddri, pmpaddri+1
+	.endr
 
-/////////////////// Switch back to M-mode ////////////////////////////////////////////
-	RVTEST_GOTO_MMODE
-    /* Decalring pmp configuration register for one combination */
-	LI(x4, PMPREGION1 | PMPREGIONRX |  PMPREGION3 |  PMPREGION4)	
-	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
-	csrw pmpcfg0, x4		// Updated pmpcfg0
-	nop				// Added nop in case of trap
-//////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
-// VERIFICATION IN S-Mode	
-	RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
-	VERIFICATION_RWX	TEST_FOR_EXECUTION	
+/*
+	PMP configurations selection
+	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
+*/
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT))//All memory region to be used by pmp15cfg2
+#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGIONR      	((((	  PMP_R|	  		PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGIONX      	((((				  PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT))
 
-/////////////////// Switch back to M-mode ////////////////////////////////////////////
-	RVTEST_GOTO_MMODE
-    /* Decalring pmp configuration register for one combination */
-	LI(x4, PMPREGION1 | PMPREGIONRW |  PMPREGION3 |  PMPREGION4)	
-	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
-	csrw pmpcfg0, x4		// Updated pmpcfg0
-	nop				// Added nop in case of trap
-//////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
-// VERIFICATION IN S-Mode	
-	RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
-	VERIFICATION_RWX	TEST_FOR_EXECUTION	
+/*
+	PMP address selection
+	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPADDR registers
+*/
+#define PMPADDRESS15_GLOBAL	-1														//All memory region
+#define PMPADDRESS14_GLOBAL	0x0														//Base address
+#define PMPADDRESS1			RETURN_INSTRUCTION 										// Top of the range for the Test Region
+#define PMPADDRESS0			TEST_FOR_EXECUTION 										// Base address for the Test Region
 
-/////////////////// Switch back to M-mode ////////////////////////////////////////////
+//											Test Setup Section
+	csrw satp, x0																	// Disable Address Translation
+
+	LA(x4, PMPADDRESS15_GLOBAL)
+	srl x4, x4, PMP_SHIFT
+	csrw 	pmpaddr15, x4
+
+	LA(x4, PMPADDRESS14_GLOBAL)
+	srl x4, x4, PMP_SHIFT
+	csrw 	pmpaddr14, x4
+
+	LA(x4, PMPADDRESS1)
+	srl x4, x4, PMP_SHIFT
+	csrw 	pmpaddr1, x4
+
+	LA(x4, PMPADDRESS0)
+	srl x4, x4, PMP_SHIFT
+	csrw 	pmpaddr0, x4
+
+//											Verification Section
+//Test Case: 1 -- RWX Permissions given to the PMP Region.
+
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg2, x4
+
+	LI(x4, PMPREGIONRWX)
+	csrw pmpcfg0, x4
+
+	RVTEST_GOTO_LOWER_MODE	Umode
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
 	RVTEST_GOTO_MMODE
 
+//Test Case: 2 -- RX Permissions given to the PMP Region.
 
-    /* Decalring pmp configuration register for one combination */
-	LI(x4, PMPREGION1 | PMPREGIONR |  PMPREGION3 |  PMPREGION4)	
-	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
-	csrw pmpcfg0, x4		// Updated pmpcfg0
-	nop				// Added nop in case of trap
-//////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
-// VERIFICATION IN S-Mode	
-	RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
-	VERIFICATION_RWX	TEST_FOR_EXECUTION	
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg2, x4
 
-/////////////////// Switch back to M-mode ////////////////////////////////////////////
+	LI(x4, PMPREGIONRX)
+	csrw pmpcfg0, x4
+
+	RVTEST_GOTO_LOWER_MODE	Umode
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
 	RVTEST_GOTO_MMODE
 
-    /* Decalring pmp configuration register for one combination */
-	LI(x4, PMPREGION1 | PMPREGIONX |  PMPREGION3 |  PMPREGION4)	
-	// Value to be stored in pmpcfg register ;  Setting Up PMP Region-1,2,3
-	csrw pmpcfg0, x4		// Updated pmpcfg0
-	nop				// Added nop in case of trap
-//////////// ALL PMP REGIONS DECLARED //////////////////////////////////////////////
-// VERIFICATION IN S-Mode	
-	RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
-	VERIFICATION_RWX	TEST_FOR_EXECUTION	
+//Test Case: 3 -- RW Permissions given to the PMP Region.
 
-/////////////////// Switch back to M-mode ////////////////////////////////////////////
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg2, x4
+
+	LI(x4, PMPREGIONRW)
+	csrw pmpcfg0, x4
+
+	RVTEST_GOTO_LOWER_MODE	Umode
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
 	RVTEST_GOTO_MMODE
-	j exit
 
+//Test Case: 4 -- R Permissions given to the PMP Region.
+
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg2, x4
+
+	LI(x4, PMPREGIONR)
+	csrw pmpcfg0, x4
+
+	RVTEST_GOTO_LOWER_MODE	Umode
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
+	RVTEST_GOTO_MMODE
+
+//Test Case: 5 -- X Permissions given to the PMP Region.
+
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg2, x4
+
+	LI(x4, PMPREGIONX)
+	csrw pmpcfg0, x4
+
+	RVTEST_GOTO_LOWER_MODE	Umode
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
+	RVTEST_GOTO_MMODE
+
+
+	li a4, 0xbeefcafe											//Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)       								// Signature update
+	j exit														//Verification Complete, exit the test
+
+/*
+	Following section is selected based on the minimum PMP granularity set by the user.
+	Please change in model_test.h to change it here.
+*/
 .align 3
-
+.align RVMODEL_PMP_GRAIN
 TEST_FOR_EXECUTION:
-	addi x9,x9,0x01		// A TEST INSTRUCTION TO TEST THE EXECUTION CHECK ON PMP REGION
+	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
+	.endr
+
 RETURN_INSTRUCTION:
-	nop				// Added nop in case of trap
-	nop				// Added nop in case of trap
-	nop				// Added nop in case of trap
-	nop				// Added nop in case of trap
-	jr ra			
-// AN instruction to bring back PC to the address where TEST_FOR_EXECUTION was called to check for execution.
+	nop
+	nop
+	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+
 exit:
 #endif
- # ---------------------------------------------------------------------------------------------
-    # HALT
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN

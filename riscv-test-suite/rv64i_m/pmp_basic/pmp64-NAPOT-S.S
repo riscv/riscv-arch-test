@@ -44,7 +44,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -134,11 +134,11 @@ main:
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT))//All memory region to be used by pmp15cfg2
-#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONR      	((((	  PMP_R|	  		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONX      	((((				  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONR      	((((	  PMP_R|	  		PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONX      	((((				  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 /*
 	PMP address selection
@@ -171,7 +171,7 @@ main:
 	LI(x4, PMPREGIONRWX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -184,7 +184,7 @@ main:
 	LI(x4, PMPREGIONRX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -197,7 +197,7 @@ main:
 	LI(x4, PMPREGIONRW)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -210,7 +210,7 @@ main:
 	LI(x4, PMPREGIONR)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -223,7 +223,7 @@ main:
 	LI(x4, PMPREGIONX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -243,6 +243,10 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
+//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+.if RVMODEL_PMP_GRAIN == 0
+    nop
+.endif
 
 RETURN_INSTRUCTION:
 	nop

@@ -134,11 +134,11 @@ main:
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT))//All memory region to be used by pmp15cfg2
-#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONR      	((((	  PMP_R|	  		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONX      	((((				  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONR      	((((	  PMP_R|	  		PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGIONX      	((((				  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 /*
 	PMP address selection
@@ -243,6 +243,10 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
+//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+.if RVMODEL_PMP_GRAIN == 0
+    nop
+.endif
 
 RETURN_INSTRUCTION:
 	nop

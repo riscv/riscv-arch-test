@@ -37,7 +37,7 @@ RVTEST_CODE_BEGIN
 Following are defined in the model_test.h. If you have different implementation for PMP, please change accordingly in that file.
 */
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 1
+	#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
@@ -147,6 +147,8 @@ main:
 #define PMPADDRESS15_GLOBAL		-1														//All memory region
 #define PMPADDRESS14_GLOBAL		0x0														//Base address
 #define PMPADDRESS_TEST			TEST_FOR_EXECUTION 										// Test Section address
+#define PMP_REGION_SIZE 		(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#define PMP_MASK				~(1 << (RVMODEL_PMP_GRAIN - 1))
 
 //											Test Setup Section
 	csrw satp, x0																		// Disable Address Translation
@@ -162,8 +164,17 @@ main:
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.
 
+	#select pmp napot region size based on the PMP_GRAIN.
 	LA(x4, PMPADDRESS_TEST)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr13, x4
 
 	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRWX) << PMP5_CFG_SHIFT))
@@ -175,6 +186,14 @@ main:
 
 	LA(x4, PMPADDRESS_TEST)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr12, x4
 
 	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRX) << PMP4_CFG_SHIFT))
@@ -186,6 +205,14 @@ main:
 
 	LA(x4, PMPADDRESS_TEST)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr11, x4
 
 	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRW) << PMP3_CFG_SHIFT))
@@ -197,6 +224,14 @@ main:
 
 	LA(x4, PMPADDRESS_TEST)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr10, x4
 
 	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONR) << PMP2_CFG_SHIFT))
@@ -208,6 +243,14 @@ main:
 
 	LA(x4, PMPADDRESS_TEST)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr9, x4
 
 	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONX) << PMP1_CFG_SHIFT))
@@ -225,6 +268,7 @@ main:
 	Please change in model_test.h to change it here.
 */
 .align 3
+.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
@@ -237,6 +281,7 @@ TEST_FOR_EXECUTION:
 RETURN_INSTRUCTION:
 	nop
 	nop
+
 	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:

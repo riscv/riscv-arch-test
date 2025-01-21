@@ -147,6 +147,8 @@ main:
 #define PMPADDRESS15_GLOBAL	-1														//All memory region
 #define PMPADDRESS14_GLOBAL	0x0														//Base address
 #define PMPADDRESS0			TEST_FOR_EXECUTION 										// Test Section address
+#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#define PMP_MASK			~(1 << (RVMODEL_PMP_GRAIN - 1))
 
 //											Test Setup Section
 	csrw satp, x0																	// Disable Address Translation
@@ -161,6 +163,14 @@ main:
 
 	LA(x4, PMPADDRESS0)
 	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
 	csrw 	pmpaddr0, x4
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.

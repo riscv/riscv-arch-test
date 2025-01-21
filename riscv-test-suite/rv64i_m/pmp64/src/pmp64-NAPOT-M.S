@@ -37,14 +37,14 @@ RVTEST_CODE_BEGIN
 Following are defined in the model_test.h. If you have different implementation for PMP, please change accordingly in that file.
 */
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+	#define RVMODEL_PMP_GRAIN 1
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NAPOT_M)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -133,7 +133,7 @@ main:
 	PMP configurations selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT))	//All memory region to be used by pmp15cfg2
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP7_CFG_SHIFT))	//All memory region to be used by pmp15cfg2
 #define PMPREGIONRWX      	((	PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)
 #define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_NAPOT)&0xFF)
 #define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_NAPOT)&0xFF)
@@ -225,7 +225,6 @@ main:
 	Please change in model_test.h to change it here.
 */
 .align 3
-.align RVMODEL_PMP_GRAIN
 TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop

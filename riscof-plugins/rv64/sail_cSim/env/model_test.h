@@ -28,7 +28,7 @@ li x1, 1                ;\
 
 //RV_COMPLIANCE_DATA_END
 #define RVMODEL_DATA_END                                                      \
-  .align 4; .global end_signature; end_signature:  
+  .align 4; .global end_signature; end_signature:
 
 //RVTEST_IO_INIT
 #define RVMODEL_IO_INIT

@@ -44,7 +44,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True",PMP_NA4_rx)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -238,7 +238,6 @@ main:
 	Please change in model_test.h to change it here.
 */
 .align 3
-.align RVMODEL_PMP_GRAIN
 TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop

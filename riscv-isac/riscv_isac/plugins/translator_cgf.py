@@ -24,9 +24,9 @@ class Translator:
         self.multi_brace_finder         = re.compile(r'({\s*{.*?}.*?})')
         self.macro_def_finder           = re.compile(r'(\${.*?})') # ${variable}To ignore any such definition
         self.number_brace_finder        = re.compile(r'(\$\d+)')   # $1
-        self.macro_brace_resolver       = re.compile(r'(\%\d+)')   # 
+        self.macro_brace_resolver       = re.compile(r'(\%\d+)')   #
         self.repeat_brace_index         = re.compile(r'(\*\d+)')
-        self.list_brace_finder          = re.compile(r'\{([^}]*)\}\{(\[[^\]]+\])\}')
+        self.list_brace_finder          = re.compile(r'\{((?:\s*\$\{[\w\d_]+\}\s*,?)*|[^}]*)\}\{(\[[^\]]+\])\}')
         self.list_with_index_finder     = re.compile(r'\{(?:\s*\$\{[\w\d]+\}\s*,?)*\}\{\[\$[\w\d]+\]\}')
         self.list_index_brace_finder    = re.compile(r'(\{\[.*?\]\})')
         self.list_index_number_finder   = re.compile(r'(\<\<[^>]*\>\>\{\[[^\]]+\]\})')
@@ -36,7 +36,7 @@ class Translator:
 
     def translate_using_path(self, input_path, output_path):
         """Translate YAML data from the input file and dump it into the output file.
-        
+
         Args:
             input_path (str): Path to the input YAML file.
             output_path (str): Path to save the translated YAML data.
@@ -47,7 +47,7 @@ class Translator:
 
     def translate(self, loaded_cgf):
         """Translate YAML data from the input cgf and return the translated_cgf.
-        
+
         Args:
             input_path (str): Loaded cgf.
         """
@@ -145,7 +145,7 @@ class Translator:
                 # Resolve the comma separated
                 self.resolve_comma_brace(self.replacement_dict)
 
-                # Resolve list-braces 
+                # Resolve list-braces
                 self.resolve_list_braces(self.replacement_dict)
 
                 # Substitute the values in the coverpoint
@@ -181,14 +181,14 @@ class Translator:
         if len(list_with_index) != 0:
             for index, values in enumerate(list_with_index):
                 instr = instr.replace(values, f'<<TEMP_REPLACEMENT{index}>>')
-        
+
         #Find the other macros inside the instr
         macros = self.macro_def_finder.findall(instr)
         macro_dict = {macro: f'<<MACRO{index}>>' for index, macro in enumerate(macros)}
         instr, replacements = self.replace_using_dict(instr, macro_dict)
         self.replacement_dict.update(replacements)
 
-        #replace the Temp replacement back with the actual list 
+        #replace the Temp replacement back with the actual list
         temp_replacement_finds = self.temp_replacement_finder.findall(instr)
 
         if len(temp_replacement_finds) != 0:
@@ -196,7 +196,7 @@ class Translator:
                 instr = instr.replace(f'<<TEMP_REPLACEMENT{index}>>', values)
 
         return instr
-    
+
     def replace_multibraces(self, instr):
         """
         Replace multibraces in the instruction with placeholders.
@@ -247,7 +247,7 @@ class Translator:
         instr, replacements = self.replace_using_dict(instr, {**comma_dict, **single_dict})
         self.replacement_dict.update(replacements)
         return instr
-    
+
     def replace_number_placeholders(self, instr):
         """
         Replace $number placeholders in the instruction string with unique placeholders.
@@ -283,21 +283,18 @@ class Translator:
         """
         #This pattern includes all the normal pattern inside the list
         list_braces_pattern_anything = self.list_brace_finder.findall(instr)
-        #This pattern checks the all macros pattern inside the list
-        list_macros_braces_pattern = re.compile(r'\{((?:\s*\$\{[\w\d]+\}\s*,?)*)\}\{(\[\$[\w\d]+\])\}')
-        list_braces_pattern_macros = list_macros_braces_pattern.findall(instr)
 
+        list_braces = []
+        #This pattern checks the all macros pattern inside the list
         if len(list_braces_pattern_anything) != 0:
-            list_braces = list_braces_pattern_anything
-        else:
-            list_braces = list_braces_pattern_macros
+            list_braces= list_braces_pattern_anything
 
         replacements = {}
 
         for index, brace in enumerate(list_braces):
-
             brace_content, brace_index = brace[0], brace[1]
             placeholder_brace = f'<<LIST{index}>>'
+
             instr = instr.replace(f'{{{brace_content}}}', placeholder_brace)
 
             # Check if the placeholders already exist in replacements
@@ -306,7 +303,7 @@ class Translator:
 
         # Update the replacement dictionary
         self.replacement_dict.update(replacements)
-        # print("instr after list", instr)
+
         return instr
 
 
@@ -407,10 +404,10 @@ class Translator:
                         raise ValueError(f"No operation found for key {val}!")
                 else:
                     raise ValueError(f"Range pattern not found in the value for key {val}.")
-                
+
         self.replacement_dict = replacement_dict
 
-    
+
     def resolve_comma_brace(self, replacement_dict):
         """
         Resolve comma-separated values in the replacement dictionary.
@@ -436,6 +433,14 @@ class Translator:
 
         self.replacement_dict = replacement_dict
 
+    '''
+        Resolve Lists {val1, val2, ..., valn} or in the format {val1, val2, ..., valn}{[$m]}
+            -> replaces back the values using the replacement dict.
+        Logic: Get a instr. then resolve the above format and generate new instrs. depending upon the format.
+
+        Returns:
+            resolved expanded list.
+    '''
     def resolve_lists(self, instr_lst, replacement_dict, place_holder_pattern):
         number_pattern = re.compile(r'\d+')
         return_instr_lst = []
@@ -443,22 +448,27 @@ class Translator:
         for instr in instr_lst:
             req_element_list = []
             list_index_matches = self.list_index_brace_finder.findall(instr)
-            resolved_list_index = self.list_index_resolver(list_index_matches)
 
+            resolved_list_index = self.list_index_resolver(list_index_matches)
+            i = 0
             for index, (key, val) in enumerate(replacement_dict.items()):
                 if "LIST" in key:
-                    req_element_list.append(val[resolved_list_index[0]])
-            #Replace the list index with No space
+                    req_element_list.append(val[resolved_list_index[i]])
+                    i +=1
+
+            #Replace the position where list index -> {[$]} is located with empty string.
             for index, val in enumerate(req_element_list):
                 if list_index_matches[index] in instr:
                     instr = instr.replace(list_index_matches[index], "")
 
             temp_element_dict = {}
+            i = 0
             for index, (key, val) in enumerate(replacement_dict.items()):
                 if "LIST" in key:
-                    temp_element_dict[key] = req_element_list[0]
-                    instr = instr.replace(key, req_element_list[0])
-            
+                    temp_element_dict[key] = req_element_list[i]
+                    instr = instr.replace(key, req_element_list[i])
+                    i +=1
+
             for (key, val) in replacement_dict.items():
                 if "NUMBER" in key:
                     result = number_pattern.findall(val)
@@ -466,7 +476,7 @@ class Translator:
                     var = place_holder_pattern[result]
                     if "LIST" in var:
                         instr = instr.replace(key, temp_element_dict[var])
-            
+
             return_instr_lst.append(instr)
         return return_instr_lst
 
@@ -478,7 +488,7 @@ class Translator:
         req_fn_list = []
 
         gen_cov_list.append(instr)
-        
+
         #In case of only macro is present
         if len(placeholders) == 0:
             track_dict = {}
@@ -488,7 +498,7 @@ class Translator:
             for curr_resolve in placeholders:
                 #create a req_fn_list which will help in resolving the Number placeholder
                 req_fn_list = [placeholders[current_cov_track]]
-                #always include MULTI_INTER as it is not explicitly present in the instr 
+                #always include MULTI_INTER as it is not explicitly present in the instr
                 for value in place_holder_pattern:
                     if "MULTI_INTER" in value:
                         req_fn_list.append(value)
@@ -505,16 +515,16 @@ class Translator:
 
             #Append the completed generated coverpoint list to the final_cov_list
             final_cov_list.extend(gen_cov_list)
-            
+
 
             #Resolve the lists when everything is solved
-            final_cov_list = self.resolve_lists(final_cov_list, replacement_dict, place_holder_pattern)            
+            final_cov_list = self.resolve_lists(final_cov_list, replacement_dict, place_holder_pattern)
 
         #Call the generator function after creating all the coverpoints
         for coverpoint in final_cov_list:
             self.generator(self.curr_cov, self.label, f"{coverpoint}", 1)
 
-    
+
 
 
 
@@ -533,7 +543,7 @@ class Translator:
         # Create a Track Dictionary of the current variables
         track_dict = {}
         # Populate the dictionary with the proper indexes | only the req_fn_list
-        track_dict = self.initialize_track_dict(track_dict, replacement_dict) 
+        track_dict = self.initialize_track_dict(track_dict, replacement_dict)
 
         #required length of the coverpoints -> defined by the req_fn_list
         max_len = len(replacement_dict[req_fn_list[0]])
@@ -541,7 +551,7 @@ class Translator:
         gen_cov_list = []
 
         for _ in range(max_len):
-            
+
             # Generate coverpoint for current track
             out_cov = self.generate_current_cov(instr, track_dict, replacement_dict, place_holder_pattern, req_fn_list)
 
@@ -549,7 +559,7 @@ class Translator:
             track_dict = self.update_replacement_dict(track_dict)
 
             gen_cov_list.append(out_cov)
-        
+
         return gen_cov_list
 
     def generate_current_cov(self, instr, track_dict, replacement_dict, place_holder_pattern, req_fn_list):
@@ -625,7 +635,7 @@ class Translator:
         for key, val in replacement_dict.items():
             if "MACRO" in key:
                 instr = instr.replace(key, val)
-            
+
         return instr
 
     def generator(self, curr_cov, label, line, rule):
@@ -666,7 +676,7 @@ class Translator:
         """
         if not replace_dict:
             return instr, {}
-        
+
         replacements = {}
         def replace(match):
             replacement = replace_dict[match.group(0)]
@@ -687,7 +697,7 @@ class Translator:
         """
         placeholders = self.placeholder_pattern.findall(instr)
         sorted_placeholders = sorted(placeholders, key=lambda x: instr.index(x))
-        
+
         # Create a new list to store the modified order of placeholders
         modified_placeholders = []
 
@@ -716,7 +726,7 @@ class Translator:
         for key, val in replacement_dict.items():
             if isinstance(val, list):
                 start_index, end_index, curr_index = 0, len(val), 0
-                track_dict[key] = [start_index, end_index, curr_index]                
+                track_dict[key] = [start_index, end_index, curr_index]
 
         return track_dict
 

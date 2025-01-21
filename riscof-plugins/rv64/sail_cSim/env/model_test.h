@@ -51,5 +51,7 @@ li x1, 1                ;\
 
 #define RVMODEL_CLEAR_MEXT_INT
 
+#define RVMODEL_PMP_GRAIN 0
+#define RVMODEL_NUM_PMPS 16
 
 #endif // _COMPLIANCE_MODEL_H

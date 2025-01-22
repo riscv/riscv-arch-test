@@ -194,7 +194,7 @@ main:
     /* When we try to jump to the misaligned address then instead of instruction misaligned adddress it gives the illegal instruction exception */
     
     
-// This test will check that in machine mode, a load address misaligned exception will be raised 
+// This test will check that in Supervisor mode, a load address misaligned exception will be raised 
 // when we try to attempt to load data from a misaligned memory address.For this we will check 
 // the log file that either it is giving the expected exception at that point and value of the 
 // mcause exception code will be  "4" in U mode
@@ -206,7 +206,7 @@ main:
     	RVTEST_SIGUPD(x13, a4)    // this signature will give information that test for loas address misaligned has successfullty returned from trap
     
        
-// This test will check that in machine mode, a store address misaligned exception is raised when we try 
+// This test will check that in Supervisor mode, a store address misaligned exception is raised when we try 
 // to attempt to store data to a misaligned memory address. For this we will check the log file 
 // that either it is giving the expected exception at that point and value of the mcause is "6" in M mode
 	

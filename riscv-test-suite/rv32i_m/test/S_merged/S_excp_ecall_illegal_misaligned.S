@@ -219,7 +219,8 @@ main:
 	nop
 	
         LI (a4, 0x0009)   
-    	RVTEST_SIGUPD(x13, a4)     // this signature will give information that test for store address misaligned has successfullty returned from trap
+    	RVTEST_SIGUPD(x13, a4)     // this signature will give information that test for 
+    				   // store address misaligned has successfullty returned from trap
     
 	
 #endif

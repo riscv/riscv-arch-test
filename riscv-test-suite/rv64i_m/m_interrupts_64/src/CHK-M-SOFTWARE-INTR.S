@@ -29,7 +29,7 @@
 // - Consistent machine state preservation during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE  	
+#ifndef RVMODEL_MSIP_BASE
 #define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
@@ -50,10 +50,10 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
-main:	
+main:
 	// Enable Global Interrupts:
 	// Set Machine Status Register (mstatus) MIE bit
 	// Allows maskable interrupts to be recognized

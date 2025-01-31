@@ -29,7 +29,7 @@
 // - Machine status preserved during interrupt suppression
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE  	
+#ifndef RVMODEL_MSIP_BASE
 #define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
@@ -50,7 +50,7 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	2   
+  	.align	2
   	.option norvc
 
 main:

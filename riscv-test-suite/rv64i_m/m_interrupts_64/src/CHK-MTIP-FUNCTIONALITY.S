@@ -30,13 +30,13 @@
 // - Timer interrupt can be set and cleared as expected
 // - Interrupt pending state changes align with timer register comparisons
 // ---------------------------------------------------------------------------------------------
-  	
-#ifndef RVMODEL_MTIME_BASE 
+
+#ifndef RVMODEL_MTIME_BASE
 #define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
-#ifndef RVMODEL_MTIMECMP_BASE 
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#ifndef RVMODEL_MTIMECMP_BASE
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -56,9 +56,9 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
-  	
+
 #define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
 
 main:
@@ -67,7 +67,7 @@ main:
 	// Prevent maskable interrupts during test execution
 	// Ensures a controlled test environment
 	LI(a5,    MSTATUS_MIE)
-	csrrc x0, CSR_MSTATUS, a5	 
+	csrrc x0, CSR_MSTATUS, a5
 
 	// Initialize Timer Registers:
 	// Configure timer compare and timer base addresses

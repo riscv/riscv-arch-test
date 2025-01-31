@@ -4,25 +4,25 @@
 CHK_M_INTR_PRIORITY:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrc: 0
       csrrs: 0
-      sw   : 0  
-      mret : 0 
-  val_comb:     
-    # Software interrupt scenario validation (This coverpoint will never hit in case of timer interrupt is taken first due to mip specific value check)    
+      sw   : 0
+      mret : 0
+  val_comb:
+    # Software interrupt scenario validation (This coverpoint will never hit in case of timer interrupt is taken first due to mip specific value check)
      '(call_type == "interrupt") and ((mstatus & ${MSTATUS_MPP}) == ${MSTATUS_MPP_M}) and ((mstatus & ${MSTATUS_MPIE}) == ${MSTATUS_MPIE}) and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mcause & ${INTERRUPT_MASK}) == ${CAUSE_M_SOFT_INTR}) and ((mie & ${MIE_MSIE}) == ${MIE_MSIE}) and ((mie & ${MIE_MTIE}) == ${MIE_MTIE}) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP}) and ((mip & ${MIP_MTIP}) == ${MIP_MTIP})': 0  # Validates software interrupt handling when simultaneously pending with timer interrupt, checking machine status register configuration(MPP, MPIE, MIE), interrupt cause, and interrupt enable/pending states for both software and timer interrupt.
     # Timer interrupt scenario validation
-     '(call_type == "interrupt") and ((mstatus & ${MSTATUS_MPP}) == ${MSTATUS_MPP_M}) and ((mstatus & ${MSTATUS_MPIE}) == ${MSTATUS_MPIE}) and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mcause & ${INTERRUPT_MASK}) == ${CAUSE_M_TIMER_INTR}) and ((mie & ${MIE_MTIE}) == ${MIE_MTIE}) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})': 0 # Validates timer interrupt handling, verifying machine status register configuration(MPP, MPIE, MIE), interrupt cause, and timer interrupt enable/pending states.     
-    
+     '(call_type == "interrupt") and ((mstatus & ${MSTATUS_MPP}) == ${MSTATUS_MPP_M}) and ((mstatus & ${MSTATUS_MPIE}) == ${MSTATUS_MPIE}) and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mcause & ${INTERRUPT_MASK}) == ${CAUSE_M_TIMER_INTR}) and ((mie & ${MIE_MTIE}) == ${MIE_MTIE}) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})': 0 # Validates timer interrupt handling, verifying machine status register configuration(MPP, MPIE, MIE), interrupt cause, and timer interrupt enable/pending states.
+
 # This coverpoint checks MIP register write protection
 # Confirms Machine Interrupt Pending (MIP) register remains read-only
 CHK_MIP_PERMISSONS:
-  config: 
+  config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrw: 0
-  val_comb: 
+  val_comb:
       # Validate MIP bits across different register segments
       '((mip & ${MIP_MSIP}) != 1)' : 0 # Ensures Machine Software Interrupt Pending (MSIP) bit cannot be modified by write operations, maintaining read-only protection.
       '((mip & ${MIP_MTIP}) != 1)' : 0 # Ensures Machine Timer Interrupt Pending (MTIP) bit cannot be modified by write operations, maintaining read-only protection.
@@ -33,14 +33,14 @@ CHK_MIP_PERMISSONS:
 CHK_MSIP_FUNCTIONALITY:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrc: 0
-      csrrs: 0  
-      sw   : 0  
-  val_comb: 
+      csrrs: 0
+      sw   : 0
+  val_comb:
       # Verify MSIP set and clear mechanisms
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})' : 0 # Checks software interrupt pending mechanism when writing 1 to memory-mapped MSIP control register without immediate interrupt service.
-      '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MSIP}) == 0)' : 0 # Validates software interrupt clearing mechanism when writing 0 to memory-mapped MSIP control register.  
+      '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MSIP}) == 0)' : 0 # Validates software interrupt clearing mechanism when writing 0 to memory-mapped MSIP control register.
 
 # This coverpoint validates software interrupt handling
 # Ensures software interrupt is processed when global and local Machine Interrupt Enable (MIE) are active
@@ -50,7 +50,7 @@ CHK_M_SOFTWARE_INTR:
   mnemonics:
       csrrc: 0
       csrrs: 0
-      sw   : 0 
+      sw   : 0
       mret : 0
   val_comb:
       # Validate various software interrupt scenarios
@@ -59,18 +59,18 @@ CHK_M_SOFTWARE_INTR:
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == ${MSTATUS_MIE}) and ((mie & ${MIE_MSIE}) == 0) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})': 0 # Validates global interrupt enabled with local software interrupt disabled and interrupt became pending.
       # Validate interrupt context
       '(call_type == "interrupt") and ((mstatus & ${MSTATUS_MPP}) == ${MSTATUS_MPP_M}) and ((mstatus & ${MSTATUS_MPIE}) == ${MSTATUS_MPIE}) and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mcause & ${INTERRUPT_MASK}) == ${CAUSE_M_SOFT_INTR}) and ((mie & ${MIE_MSIE}) == ${MIE_MSIE}) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})': 0 Validates software interrupt handling, verifying machine status register configuration(MPP, MPIE, MIE), interrupt cause, and software interrupt enable/pending states.
-      
+
 # This coverpoint validates the handling of Most Significant Bit (MSB) in mtimecmp register
 # Verifies signed/unsigned comparison behavior for timer registers
-# Tests timer interrupt generation based on MSB comparison     
+# Tests timer interrupt generation based on MSB comparison
 CHK_MTIMECMP_SIGN:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrc: 0
-      csrrs: 0  
-      sw   : 0  
-  val_comb: 
+      csrrs: 0
+      sw   : 0
+  val_comb:
       # Verify MTIP set and clear mechanisms
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MTIP}) == ${MIP_MTIP})' : 0 # Checks timer interrupt pending state when no interrupt is being serviced.
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MTIP}) == 0)' : 0 # Confirms timer interrupt pending bit's behavior under non-interrupt execution.
@@ -79,11 +79,11 @@ CHK_MTIMECMP_SIGN:
 CHK_MTIME_LENGTH:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrc: 0
-      csrrs: 0 
-      sw   : 0   
-  val_comb: 
+      csrrs: 0
+      sw   : 0
+  val_comb:
       # Verify MTIP set and clear mechanisms
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MTIP}) == ${MIP_MTIP})' : 0 # Validates timer interrupt pending mechanism for 32-bit machine timer registers during non-interrupt execution.
 
@@ -95,7 +95,7 @@ CHK_M_TIMER_INTR:
   mnemonics:
       csrrc: 0
       csrrs: 0
-      sw   : 0 
+      sw   : 0
       mret : 0
   val_comb:
       # Validate various timer interrupt scenarios
@@ -110,11 +110,11 @@ CHK_M_TIMER_INTR:
 CHK_MTIP_FUNCTIONALITY:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrc: 0
-      csrrs: 0   
-      sw   : 0 
-  val_comb: 
+      csrrs: 0
+      sw   : 0
+  val_comb:
       # Verify MTIP set and clear mechanisms
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MTIP}) == ${MIP_MTIP})' : 0 # Verifies Machine Timer Interrupt Pending (MTIP) bit setting mechanism during non-interrupt execution.
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mip & ${MIP_MTIP}) == 0)' : 0 # Checks MTIP bit clearing mechanism when no interrupt is being processed.
@@ -122,13 +122,13 @@ CHK_MTIP_FUNCTIONALITY:
 # This coverpoint validates global Machine Interrupt Enable (MIE) disable behavior
 # Confirms no interrupts are taken when global interrupt is disabled
 DIS_GLB_MIE:
-  config: 
+  config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrs: 0
       csrrc: 0
-      sw   : 0 
-  val_comb: 
+      sw   : 0
+  val_comb:
       '(call_type != "interrupt") and ((mstatus & ${MSTATUS_MIE}) == 0) and ((mie & ${MIE_MSIE}) == ${MIE_MSIE}) and ((mip & ${MIP_MSIP}) == ${MIP_MSIP})' : 0 # Confirms that no software interrupt is taken when global machine interrupt is disabled, despite local interrupt enable being active.
 
 # This coverpoint validates global Machine Interrupt Enable (MIE) enable behavior
@@ -139,7 +139,7 @@ EN_GLB_MIE:
   mnemonics:
       csrrc: 0
       csrrs: 0
-      sw   : 0 
+      sw   : 0
       mret : 0
   val_comb:
       # Validate software interrupt handling
@@ -148,11 +148,11 @@ EN_GLB_MIE:
 # This coverpoint validates M-mode interrupt delegation behavior
 # Ensures M-mode interrupts are not delegated to S-mode when delegation is set
 EN_M_INTR_DELEGATION:
-  config: 
+  config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True;
-  mnemonics: 
+  mnemonics:
       csrrs: 0
-      sw   : 0 
+      sw   : 0
       mret : 0
   val_comb:
       # Validate software interrupt handling

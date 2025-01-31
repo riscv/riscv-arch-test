@@ -30,12 +30,12 @@
 // - Consistent machine state preservation during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MTIME_BASE 
+#ifndef RVMODEL_MTIME_BASE
 #define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
-#ifndef RVMODEL_MTIMECMP_BASE 
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#ifndef RVMODEL_MTIMECMP_BASE
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -55,12 +55,12 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
-  	
+
 #define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
 
-main:	
+main:
 	// Enable Global Interrupts:
 	// Set Machine Status Register (mstatus) MIE bit
 	// Allows maskable interrupts to be recognized
@@ -77,9 +77,9 @@ main:
 	// Initialize Timer Registers:
 	// Configure timer compare (mtimecmp) and timer (mtime)
 	// Create a controlled timer interrupt scenario
-	LI(a0,     RVMODEL_MTIMECMP_BASE) 
+	LI(a0,     RVMODEL_MTIMECMP_BASE)
 	LI(a1,     RVMODEL_MTIME_BASE)
-	LI(t1,     TIMER_MAX_VALUE)	
+	LI(t1,     TIMER_MAX_VALUE)
 	SREG t1,   0(a0)
 	nop
 	SREG zero, 0(a1)

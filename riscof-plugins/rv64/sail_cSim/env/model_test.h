@@ -32,7 +32,7 @@ li x1, 1                ;\
 
 //RV_COMPLIANCE_DATA_END
 #define RVMODEL_DATA_END                                                      \
-  .align 4; .global end_signature; end_signature:  
+  .align 4; .global end_signature; end_signature:
 
 //RVTEST_IO_INIT
 #define RVMODEL_IO_INIT
@@ -47,31 +47,31 @@ li x1, 1                ;\
 //RVTEST_IO_ASSERT_DFPR_EQ
 #define RVMODEL_IO_ASSERT_DFPR_EQ(_D, _R, _I)
 
-#define RVMODEL_SET_MSW_INT           ;\
-    LI(  T1,  1)                      ;\
-    LI(  T2,  RVMODEL_MSIP_BASE)              ;\
-    SREG T1,  0(T2)	              ;\
-    nop	              ;
+#define RVMODEL_SET_MSW_INT             ;\
+    LI(  T1,  1)                        ;\
+    LI(  T2,  RVMODEL_MSIP_BASE)        ;\
+    SREG T1,  0(T2)	                    ;\
+    nop	                                ;
 
-#define RVMODEL_CLR_MSW_INT           ;\
-    LI(  T2,  RVMODEL_MSIP_BASE)              ;\
-    SREG x0,  0(T2)	              ;\
-    nop	              ; 
+#define RVMODEL_CLR_MSW_INT             ;\
+    LI(  T2,  RVMODEL_MSIP_BASE)        ;\
+    SREG x0,  0(T2)	                    ;\
+    nop	                                ;
 
-#define RVMODEL_SET_MTIMER_INT        ;\
-    LI(  T1,  0xFFFFF)                ;\
-    LI(  T2,  RVMODEL_MTIME_BASE)             ;\
-    SREG T1,  0(T2)	              ;\
-    nop	              ;\
-    LI(  T2,  RVMODEL_MTIMECMP_BASE)          ;\
-    SREG T1,  0(T2)	              ;\
-    nop	              ;
-    
-#define RVMODEL_CLR_MTIMER_INT        ;\
-    LI(  T1,  -1)                     ;\
-    LI(  T2,  RVMODEL_MTIMECMP_BASE)          ;\
-    SREG T1,  0(T2)	              ;\
-    nop	              ; 
+#define RVMODEL_SET_MTIMER_INT          ;\
+    LI(  T1,  0xFFFFF)                  ;\
+    LI(  T2,  RVMODEL_MTIME_BASE)       ;\
+    SREG T1,  0(T2)	                    ;\
+    nop	                                ;\
+    LI(  T2,  RVMODEL_MTIMECMP_BASE)    ;\
+    SREG T1,  0(T2)	                    ;\
+    nop	                                ;
+
+#define RVMODEL_CLR_MTIMER_INT          ;\
+    LI(  T1,  -1)                       ;\
+    LI(  T2,  RVMODEL_MTIMECMP_BASE)    ;\
+    SREG T1,  0(T2)	                    ;\
+    nop	                                ;
 
 #define RVMODEL_CLR_MEXT_INT
 

@@ -7,7 +7,7 @@
 // Developed by: Syed Ali Faraz Jaffery
 // ---------------------------------------------------------------------------------------------
 // Test Description:
-// This test verifies the 64-bit precision of machine timer (mtime) and 
+// This test verifies the 64-bit precision of machine timer (mtime) and
 // machine timer compare (mtimecmp) registers in RISC-V systems.
 // -----------
 // For each test case, the machine interrupt pending (mip.mtip) bit is checked:
@@ -16,12 +16,12 @@
 // - The test stores all mip values in the signature region for verification.
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MTIME_BASE 
+#ifndef RVMODEL_MTIME_BASE
 #define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
-#ifndef RVMODEL_MTIMECMP_BASE 
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#ifndef RVMODEL_MTIMECMP_BASE
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -41,22 +41,22 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	2   
+  	.align	2
   	.option norvc
- 	
+
 #define TIMER_TEST_VALUE        0xFFFFFFFF      // Test Value to check the length of memory-mapped machine timers register.
 
 main:
 	// Disable Global Interrupts
-	LI(a1,    MSTATUS_MIE)	 
-	csrrc x0, CSR_MSTATUS, a1	
-	
+	LI(a1,    MSTATUS_MIE)
+	csrrc x0, CSR_MSTATUS, a1
+
 	// Capture initial MIP state
-	csrrs a4, CSR_MIP, x0		
+	csrrs a4, CSR_MIP, x0
 	RVTEST_SIGUPD(x3, a4)
-	
+
 	// Load base addresses for timer registers
-	LI(a1, RVMODEL_MTIMECMP_BASE) 
+	LI(a1, RVMODEL_MTIMECMP_BASE)
 	LI(a2, RVMODEL_MTIME_BASE)
 	LI(t1, TIMER_TEST_VALUE)
 
@@ -66,7 +66,7 @@ main:
 	nop
 	SREG t1,   0(a2)			// Lower half of mtime = max (0xFFFFFFFF)
 	nop
-	
+
 	// Read and store mip value
 	csrrs a4, CSR_MIP, x0
 	RVTEST_SIGUPD(x3, a4)
@@ -77,7 +77,7 @@ main:
 	nop
 	SREG zero, 0(a2)			// Lower half of mtime = 0
 	nop
-	
+
 	// Read and store mip value
 	csrrs a4, CSR_MIP, x0
 	RVTEST_SIGUPD(x3, a4)
@@ -88,7 +88,7 @@ main:
 	nop
 	SREG t1,   0(a1)			// Lower half of mtimecmp = max (0xFFFFFFFF)
 	nop
-	
+
 	// Read and store mip value
 	csrrs a4, CSR_MIP, x0
 	RVTEST_SIGUPD(x3, a4)
@@ -99,7 +99,7 @@ main:
 	nop
 	SREG zero, 0(a1)			// Lower half of mtimecmp = 0
 	nop
-	
+
 	// Read and store mip value
 	csrrs a4, CSR_MIP, x0
 	RVTEST_SIGUPD(x3, a4)

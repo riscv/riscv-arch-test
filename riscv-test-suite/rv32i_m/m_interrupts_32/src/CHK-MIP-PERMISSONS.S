@@ -28,16 +28,16 @@
 // - System maintains control over interrupt pending state
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE  	
+#ifndef RVMODEL_MSIP_BASE
 #define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
-#ifndef RVMODEL_MTIME_BASE 
+#ifndef RVMODEL_MTIME_BASE
 #define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
-#ifndef RVMODEL_MTIMECMP_BASE 
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.  
+#ifndef RVMODEL_MTIMECMP_BASE
+#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -57,52 +57,52 @@ RVTEST_SIGBASE( x3,signature_x3_1)
 
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	2   
+  	.align	2
   	.option norvc
-  	
-main:	
+
+main:
 	// Disable Global Interrupts:
 	// Mask the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
 	// Prevents any maskable interrupts from being recognized during the test
-	LI(a5,    MSTATUS_MIE)		
-	csrrc x0, CSR_MSTATUS, a5	 
+	LI(a5,    MSTATUS_MIE)
+	csrrc x0, CSR_MSTATUS, a5
 
 	// Clear Potential Timer Interrupt Pending:
 	// Ensure a clean initial state by clearing any pre-existing timer interrupt
 	// Prevents interference from previous timer interrupt states
 	LI(a5,     -1)
-	LI(a4,     RVMODEL_MTIMECMP_BASE)	
-	SREG a5,   0(a4)		
+	LI(a4,     RVMODEL_MTIMECMP_BASE)
+	SREG a5,   0(a4)
 	nop
 
 	// Clear Potential Software Interrupt Pending:
 	// Reset software interrupt state to eliminate any pre-existing interrupt conditions
 	LI(a5,     RVMODEL_MSIP_BASE)
-	SREG zero, 0(a5)		
+	SREG zero, 0(a5)
 	nop
 
 	// Capture Initial MIP State:
 	// Read and record Machine Interrupt Pending (MIP) register before test execution
 	// Verifies initial interrupt state is clear (all zeros)
-	csrrs a4, CSR_MIP, x0		
-	RVTEST_SIGUPD(x3,  a4) 
+	csrrs a4, CSR_MIP, x0
+	RVTEST_SIGUPD(x3,  a4)
 
 	// Force MIP Bit Setting:
 	// Manually set software, timer, and external interrupt pending bits
 	// Validate MIP register's read-only behavior
-	LI(a0,    MIP_MSIP)		
-	csrrw x0, CSR_MIP, a0		  
+	LI(a0,    MIP_MSIP)
+	csrrw x0, CSR_MIP, a0
 
 	LI(a0,    MIP_MTIP)
-	csrrw x0, CSR_MIP, a0		  
+	csrrw x0, CSR_MIP, a0
 
-	LI(a0,    MIP_MEIP)	
-	csrrw x0, CSR_MIP, a0		  
+	LI(a0,    MIP_MEIP)
+	csrrw x0, CSR_MIP, a0
 
 	// Capture Final MIP State:
 	// Verify that MIP register remains unchanged after attempted write operations
-	csrrs a4, CSR_MIP, x0		
-	RVTEST_SIGUPD(x3,  a4)	
+	csrrs a4, CSR_MIP, x0
+	RVTEST_SIGUPD(x3,  a4)
 #endif
  # ---------------------------------------------------------------------------------------------
     # HALT

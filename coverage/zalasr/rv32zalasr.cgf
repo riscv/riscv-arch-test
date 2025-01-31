@@ -1,0 +1,174 @@
+# cover group format file for Zalasr extension
+lb.aq:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lb.aq' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 1' : 0
+      'ea_align == 2' : 0
+      'ea_align == 3' : 0
+lh.aq:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lh.aq' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 2' : 0
+lw.aq:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lw.aq' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+sb.rl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sb.rl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 1' : 0
+      'ea_align == 2' : 0
+      'ea_align == 3' : 0
+sh.rl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sh.rl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 2' : 0
+sw.rl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sw.rl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+
+lb.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lb.aqrl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 1' : 0
+      'ea_align == 2' : 0
+      'ea_align == 3' : 0
+lh.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lh.aqrl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 2' : 0
+lw.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'lw.aqrl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+sb.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sb.aqrl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 1' : 0
+      'ea_align == 2' : 0
+      'ea_align == 3' : 0
+sh.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sh.aqrl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0
+      'ea_align == 2' : 0
+sw.aqrl:
+    config: 
+      - check ISA:=regex(.*Zalasr.*)
+    mnemonics: 
+      'sw.rl' : 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      'ea_align == 0' : 0

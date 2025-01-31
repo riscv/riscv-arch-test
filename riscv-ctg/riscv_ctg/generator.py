@@ -113,7 +113,9 @@ OPS = {
     'ppbrrformat': ['rs1', 'rs2', 'rd'],
     'prrformat': ['rs1', 'rs2', 'rd'],
     'prrrformat': ['rs1', 'rs2', 'rs3', 'rd'],
-    'dcasrformat': ['rs1', 'rs2', 'rd']
+    'dcasrformat': ['rs1', 'rs2', 'rd'],
+    'laqformat': ['rs1', 'rd'],
+    'srlformat': ['rs1', 'rs2'],
 }
 ''' Dictionary mapping instruction formats to operands used by those formats '''
 
@@ -170,7 +172,9 @@ VALS = {
     'ppbrrformat': '["rs1_val"] + simd_val_vars("rs2", xlen, 8)',
     'prrformat': '["rs1_val", "rs2_val"]',
     'prrrformat': "['rs1_val', 'rs2_val' , 'rs3_val']",
-    'dcasrformat': '["rs1_val", "rs2_val"]'
+    'dcasrformat': '["rs1_val", "rs2_val"]',
+    'laqformat': '["rs1_val"]',
+    'srlformat': '["rs1_val", "rs2_val"]',
 }
 ''' Dictionary mapping instruction formats to operand value variables used by those formats '''
 
@@ -281,7 +285,7 @@ class Generator():
         self.inxFlag = inxFlag
         self.is_sgn_extd = is_sgn_extd
 
-        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp"]:
+        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp", "lb.aq", "lh.aq", "lw.aq", "ld.aq", "sb.rl", "sh.rl", "sw.rl", "sd.rl","lb.aqrl", "lh.aqrl", "lw.aqrl", "ld.aqrl", "sb.aqrl", "sh.aqrl", "sw.aqrl", "sd.aqrl"]:
             self.val_vars = self.val_vars + ['ea_align']
         self.template = opnode['template']
         self.opnode = opnode

@@ -615,6 +615,7 @@ Mend_PMP:                                    ;\
 #define TEST_JAL_OP(tempreg, rd, imm, label, swreg, offset, adj)	;\
 5:					;\
     LA(tempreg, 2f)			;\
+    mv rd, tempreg          ;\
     jalr x0,0(tempreg)			;\
 6:  LA(tempreg, 4f)			;\
     jalr x0,0(tempreg)			;\

@@ -349,7 +349,8 @@ class Generator():
         while any([len(op_conds[x])!=0 for x in op_conds]+[len(op_comb)!=0]):
             cond_str = ''
             cond_vars = []
-            solver = MinConflictsSolver() if self.random else None
+            # Use a fixed seed for MinConflictsSolver so it is deterministic.
+            solver = MinConflictsSolver(rand=random.Random(0)) if self.random else None
             problem = Problem(solver)
 
             done = False

@@ -36,8 +36,8 @@ class sail_cSim(pluginTemplate):
         path = config['PATH'] if 'PATH' in config else ""
 
 
-        self.sail_exe = { '32' : os.path.join(path,"riscv_sim_RV32"),
-                '64' : os.path.join(path,"riscv_sim_RV64")}
+        self.sail_exe = { '32' : os.path.join(path,"riscv_sim_rv32d"),
+                '64' : os.path.join(path,"riscv_sim_rv64d")}
         self.isa_spec = os.path.abspath(config['ispec']) if 'ispec' in config else ''
         self.platform_spec = os.path.abspath(config['pspec']) if 'ispec' in config else ''
         self.make = config['make'] if 'make' in config else 'make'

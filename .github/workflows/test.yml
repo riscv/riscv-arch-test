@@ -115,9 +115,10 @@ jobs:
           curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
           git clone https://github.com/riscv/sail-riscv.git
           cd sail-riscv
-          ARCH=RV${{ matrix.xlen }} make
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja
+          cmake --build build
           mkdir -p $GITHUB_WORKSPACE/sail
-          mv c_emulator/riscv_sim_RV${{ matrix.xlen }} $GITHUB_WORKSPACE/sail/riscv_sim_RV${{ matrix.xlen }}
+          mv build/c_emulator/riscv_sim_rv${{ matrix.xlen }}d $GITHUB_WORKSPACE/sail/riscv_sim_rv${{ matrix.xlen }}d
 
       - name: Save cached Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'

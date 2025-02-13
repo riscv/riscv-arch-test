@@ -20,7 +20,7 @@ class sail_cSim(pluginTemplate):
     __model__ = "sail_c_simulator"
     __version__ = "0.5.0"
 
-    docker_cmd = 'docker run -w /work -v{0}:/work -a stdout -a stderr --init {1} {2}'
+    docker_cmd = 'docker run --rm -w /work -v{0}:/work -a stdout -a stderr --init {1} {2}'
 
     def __init__(self, *args, **kwargs):
         sclass = super().__init__(*args, **kwargs)

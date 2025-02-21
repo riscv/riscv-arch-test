@@ -992,7 +992,7 @@ init_\__MODE__\()scratch:
         SREG    T3, xscr_save_off(T1)   // save old mscratch in xscratch_save
 //----------------------------------------------------------------------
 #ifdef RVMODEL_MTIMECMP_BASE
-init_mtimecmp:
+init_\__MODE__\()timecmp:
         LI(  T2,  -1)
         LI(  T4,  RVMODEL_MTIMECMP_BASE)
         SREG T2,  0(T4)

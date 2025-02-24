@@ -21,6 +21,8 @@
 #define LEVEL3 0x03
 #define LEVEL4 0x04
 
+#define ALL_F_S 0xFFFFFFFF
+
 #define sv39 0x00
 #define sv48 0x01
 #define sv57 0x02
@@ -189,14 +191,37 @@ Mend_PMP:                                    ;\
     or _PAR, _PAR, _PR                                            ;\
     SREG _PAR, 0(_TR1);                                          
 
-#define PTE_SETUP_SV32(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
-    .if (level==1)                                                ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==0)                                                ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
-    .endif                                                        ;\
-    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+#define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)  	;\
+    srli _PAR, _PAR, 12                                         ;\
+    slli _PAR, _PAR, 10                                         ;\
+    or _PAR, _PAR, _PR                                          ;\
+    .if (level==1)                                              ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)                           ;\
+        LI(_TR0, ((VA>>22)&0x3FF)<<2)                           ;\
+    .endif                                                      ;\
+    .if (level==0)                                              ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)                           ;\
+        LI(_TR0, ((VA>>12)&0x3FF)<<2)                           ;\
+    .endif                                                      ;\
+    add _TR1, _TR1, _TR0                                        ;\
+    SREG _PAR, 0(_TR1);                                          
+
+// More Robust version of PTE_SETUP_32 to setup a PTE for a PA using Va
+// in a single line.
+//args: PA: Label of Physical Address, PERMS: permissions in hex
+//args: VA: Virtual Address in hex, level: Level to store at
+#define PTE_SETUP_RV32_New(PA_LBL, PERMS, VA, level)           ;\
+    LA(a0, PA_LBL)                                             ;\
+    LI(a1, PERMS)                                              ;\
+	PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                  ;\
+
+#define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
+	LI (t0, VA)                                                 ;\
+	LA (t1, PA_LBL)                                             ;\
+	sub t0, t0, t1                                              ;\
+	LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
+	add t2, t1, t0                                              ;\
+	SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
 
 #define PTE_SETUP_SV39(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
     .if (level==2)                                                ;\
@@ -615,6 +640,7 @@ Mend_PMP:                                    ;\
 #define TEST_JAL_OP(tempreg, rd, imm, label, swreg, offset, adj)	;\
 5:					;\
     LA(tempreg, 2f)			;\
+    mv rd, tempreg          ;\
     jalr x0,0(tempreg)			;\
 6:  LA(tempreg, 4f)			;\
     jalr x0,0(tempreg)			;\

@@ -260,7 +260,7 @@ class Generator():
 
 
         is_nan_box = False
-        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x for x in opnode['isa']])
+        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x or 'Zhinx' in x or 'Zdinx' in x for x in opnode['isa']])
         is_sgn_extd = True if (inxFlag and iflen <xlen) else False
 
         if is_fext:
@@ -340,25 +340,17 @@ class Generator():
         solutions = []
         op_conds = {}
         opcomb_value = cgf.get("op_comb")
-        if "op_comb" in cgf:
-            op_comb = set(cgf["op_comb"])
-        else:
-            op_comb = set([])
+        op_comb = OrderedSet(opcomb_value or [])
         for op in self.op_vars:
-            if op in cgf:
-                op_conds[op] = set(cgf[op])
-            else:
-                op_conds[op] = set([])
+            op_conds[op] = OrderedSet(cgf.get(op, []))
         individual = False
         nodiff = False
         construct_constraint = lambda val: (lambda x: bool(x in val))
         while any([len(op_conds[x])!=0 for x in op_conds]+[len(op_comb)!=0]):
             cond_str = ''
             cond_vars = []
-            if self.random:
-                problem = Problem(MinConflictsSolver())
-            else:
-                problem = Problem()
+            solver = MinConflictsSolver() if self.random else None
+            problem = Problem(solver)
 
             done = False
             for var in self.op_vars:
@@ -418,7 +410,7 @@ class Generator():
                 for var,val in zip(self.op_vars,op_tuple):
                     locals()[var] = val
                 return eval(cond)
-            sat_set = set(filter(eval_func,op_comb))
+            sat_set = OrderedSet(filter(eval_func,op_comb))
             cond_str += ", ".join([var+"=="+solution[var] for var in cond_vars]+list(sat_set))
             op_tuple.append(cond_str)
             problem.reset()
@@ -450,7 +442,7 @@ class Generator():
         val_comb = []
 
         conds = list(cgf['val_comb'].keys())
-        inds = set(range(len(conds)))
+        inds = OrderedSet(range(len(conds)))
         merge = True
         if 'fcvt' in self.opcode or 'fmv' in self.opcode:
             if self.opcode.split(".")[-1] in ['x','w','wu','l','lu']:
@@ -479,7 +471,7 @@ class Generator():
                                 else:
                                     logger.error("Invalid Coverpoint: More than one value of "+ i +" found!")
                                     sys.exit(1)
-                if(set(d.keys()) != set(self.val_vars)):
+                if(OrderedSet(d.keys()) != OrderedSet(self.val_vars)):
                     logger.warning(
                         "Valcomb skip: Cannot bypass SAT Solver for partially defined coverpoints!"\
                                 + str(req_val_comb))
@@ -525,7 +517,7 @@ class Generator():
                     for var,val in zip(self.val_vars,val_tuple):
                         locals()[var] = val
                     return eval(cond)
-                sat_set=set(filter(lambda x: eval_func(conds[x]),inds))
+                sat_set=OrderedSet(filter(lambda x: eval_func(conds[x]),inds))
                 inds = inds - sat_set
                 val_tuple.append(req_val_comb+', '+', '.join([conds[i] for i in sat_set]))
                 problem.reset()
@@ -803,7 +795,7 @@ class Generator():
 
         for op,val_soln in zip(op_comb,val_comb):
             val = [x for x in val_soln]
-            if any([x=='x0' for x in op]) or not (len(op) == len(set(op))):
+            if any([x=='x0' for x in op]) or not (len(op) == len(OrderedSet(op))):
                 cont.append(val_soln)
                 op_inds = list(ind_dict.keys())
                 for i,x in enumerate(op_inds):
@@ -853,7 +845,7 @@ class Generator():
             else:
                 instr_dict.append(self.__instr__(op,val))
 
-        hits = defaultdict(lambda:set([]))
+        hits = defaultdict(lambda:OrderedSet([]))
         final_instr = []
 
         rm_dict = {
@@ -898,29 +890,29 @@ class Generator():
                 var_dict.update(ext_specific_vars)
 
             if 'val_comb' in coverpoints:
-                valcomb_hits = set([])
+                valcomb_hits = OrderedSet([])
                 for coverpoint in coverpoints['val_comb']:
                     if eval(coverpoint,globals(),var_dict):
                         valcomb_hits.add(coverpoint)
                 cover_hits['val_comb']=valcomb_hits
             if 'op_comb' in coverpoints:
-                opcomb_hits = set([])
+                opcomb_hits = OrderedSet([])
                 for coverpoint in coverpoints['op_comb']:
                     if eval(coverpoint,globals(),var_dict):
                         opcomb_hits.add(coverpoint)
                 cover_hits['op_comb']=opcomb_hits
             if 'rs1' in coverpoints:
                 if var_dict['rs1'] in coverpoints['rs1']:
-                    cover_hits['rs1'] = set([var_dict['rs1']])
+                    cover_hits['rs1'] = OrderedSet([var_dict['rs1']])
             if 'rs2' in coverpoints:
                 if var_dict['rs2'] in coverpoints['rs2']:
-                    cover_hits['rs2'] = set([var_dict['rs2']])
+                    cover_hits['rs2'] = OrderedSet([var_dict['rs2']])
             if 'rs3' in coverpoints:
                 if var_dict['rs3'] in coverpoints['rs3']:
-                    cover_hits['rs3'] = set([var_dict['rs3']])
+                    cover_hits['rs3'] = OrderedSet([var_dict['rs3']])
             if 'rd' in coverpoints:
                 if var_dict['rd'] in coverpoints['rd']:
-                    cover_hits['rd'] = set([var_dict['rd']])
+                    cover_hits['rd'] = OrderedSet([var_dict['rd']])
             return cover_hits
         i = 0
 

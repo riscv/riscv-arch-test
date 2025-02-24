@@ -221,11 +221,10 @@ Then build the RISC-V Sail Model:
 ```bash
 $ git clone https://github.com/riscv/sail-riscv.git
 $ cd sail-riscv
-$ ARCH=RV32 make
-$ ARCH=RV64 make
+$ ./build-simulators.sh
 ```
 
-This will create a C simulator in `c_emulator/riscv_sim_RV64` and `c_emulator/riscv_sim_RV32`. You will need to add this path to your `$PATH` or create an alias to execute them from the command line.
+This will create a C simulator in `build/c_emulator/riscv_sim_rv64d` and `build/c_emulator/riscv_sim_rv32d`. You will need to add this path to your `$PATH` or create an alias to execute them from the command line.
 
 
 ## Necessary Env Files

@@ -115,9 +115,10 @@ jobs:
           curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
           git clone https://github.com/riscv/sail-riscv.git
           cd sail-riscv
-          ARCH=RV${{ matrix.xlen }} make
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja
+          cmake --build build
           mkdir -p $GITHUB_WORKSPACE/sail
-          mv c_emulator/riscv_sim_RV${{ matrix.xlen }} $GITHUB_WORKSPACE/sail/riscv_sim_RV${{ matrix.xlen }}
+          mv build/c_emulator/riscv_sim_rv${{ matrix.xlen }}d $GITHUB_WORKSPACE/sail/riscv_sim_rv${{ matrix.xlen }}d
 
       - name: Save cached Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'
@@ -135,7 +136,7 @@ jobs:
       - name: Config and run riscof for RV${{ matrix.xlen }}
         run: |
           cd riscof-plugins/rv${{ matrix.xlen }}
-          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m/ --env ../../riscv-test-suite/env
+          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m --env ../../riscv-test-suite/env
 
       #Check the existance of the riscof work folder, and add the PATH to environment variable
       - name: Check size and determine upload path
@@ -147,8 +148,8 @@ jobs:
           if [ -d "$work_folder" ]; then
             folder_size=$(du -sm "$work_folder" | cut -f1)
             echo "Folder size: ${folder_size} MB"
-            if [ "$folder_size" -gt 1000 ]; then
-              echo "Size exceeds 1 GB. Checking if report exists."
+            if [ "$folder_size" -gt 100000 ]; then
+              echo "Size exceeds 10 GB. Checking if report exists."
               if [ -f "$report_file" ]; then
                 echo "Uploading RISCOF generated report only."
                 echo "upload_path=$report_file" >> $GITHUB_ENV

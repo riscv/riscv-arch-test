@@ -1,28 +1,3 @@
-// ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
-// https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
-// Developed by: Muhammad Hammad Bashir, Allen Baum, Umer Shahid
-// ----------------------------------------------------------------------------------------------------------------------
-// Copyright (c) 2020. RISC-V International. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause
-// ----------------------------------------------------------------------------------------------------------------------
-// Test Explanation:
-// RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// This test verifies the functioning of the PMP Permissions on the PTE in S mode in the SV-32 virtual memory system.
-// 
-// PMP Permissions on the Page Table Entry test in S mode
-// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
-// Future updates will align with ISA version 1.13.
-// 
-// Test cases are as follows:
-// ----------------------------------------------------------------------------------------------------------------------
-// 1. V bit is UnSet for the page at level 1 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 2. V bit is UnSet for the page at level 0 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// Total Expected Faults :: 6
-//-------------------------------------------------------------------------------------------------------------------
-
 #include "model_test.h"
 
 #include "arch_test.h"
@@ -37,7 +12,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS",invalid_pte)
+    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS",reserved_rsw_pte_perm)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
@@ -92,7 +67,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .endm
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
-	RVTEST_GOTO_LOWER_MODE	\LOWER_MODE		                                // Switching to U mode
+	RVTEST_GOTO_LOWER_MODE	\LOWER_MODE		                                // Switching to S mode
 	.align 2
 
 	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
@@ -182,8 +157,23 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 1: V bit unset | Test in U-Mode | RWX bit set | expected = RWX fault 
-	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
+	// Test case 1: Test in S-Mode | G bit set | expected = successful page access and no page table walk on second access
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l1, LEVEL1)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	sfence.vma									// Flush TLB, except for global entries
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1 	// No pagetable walk 
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 2: Test in S-Mode | RSW set to 1 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 8)), va_data, LEVEL1)
 	sfence.vma
 
 	//return page PTE
@@ -193,33 +183,69 @@ main:
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 3: Test in S-Mode | RSW set to 2 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 9)), va_data, LEVEL1)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l1, LEVEL1)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+
+	
+
+//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4MB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 2: V bit unset | Test in U-Mode | RWX bit set | expected = RWX fault 
+	// Test case 4: Test in S-Mode | G bit set | expected = successful page access and no page table walk on second access
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
 	//return page PTE
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
 	sfence.vma
-	
-	//once the PTE is setup, go to big endian 
-	li t0,1																   			
-	#successful access
-	csrr t0, mstatush       														
-	li t1, 0x10      												  	   			
-	or t0, t0, t1          												     		
-	csrw mstatush, t0 
-	csrr t3, mstatush       											     		
-	RVTEST_SIGUPD(x13,t3)
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+	sfence.vma									// Flush TLB, except for global entries
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0  	// No pagetable walk
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 5: Test in S-Mode | RSW set to 1 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 8)), va_data, LEVEL0)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
+	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 6: Test in S-Mode | RSW set to 2 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 9)), va_data, LEVEL0)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -263,7 +289,7 @@ rvtest_data_1_l0:
 #ifdef rvtest_strap_routine
 .align 12                       //complete the 4KB permission memory range
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_U | PTE_G)
+		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
 RVTEST_DATA_END                               

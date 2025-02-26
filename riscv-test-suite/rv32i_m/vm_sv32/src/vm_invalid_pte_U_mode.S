@@ -209,6 +209,16 @@ main:
 	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
 	sfence.vma
 
+	//once the PTE is setup, go to big endian 
+	li t0,1																   			
+	#successful access
+	csrr t0, mstatush       														
+	li t1, 0x10      												  	   			
+	or t0, t0, t1          												     		
+	csrw mstatush, t0 
+	csrr t3, mstatush       											     		
+	RVTEST_SIGUPD(x13,t3)
+
 	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 

@@ -5,53 +5,22 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. D-bit unset, A-bit set at level 2, RWX permissions (read, write, execute page):
+// 1. D-bit unset, A-bit set at level 1, RWX permissions (read, write, execute page):
 //    Action: Access the page in S-Mode.
 //    Expected: Store-page-fault
 // 
-// 2. D-bit set, A-bit set at level 2, RWX permissions (read, write, execute page):
+// 2. D-bit set, A-bit set at level 1, RWX permissions (read, write, execute page):
 //    Action: Access the page in S-Mode.
 //    Expected: No fault should occur.
 // 
-// 3. D-bit set, A-bit unset at level 2, RWX permissions (read, write, execute page):
+// 3. D-bit set, A-bit unset at level 1, RWX permissions (read, write, execute page):
 //    Action: Access the page in S-Mode.
 //    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
 // 
-// 4. D-bit unset, A-bit unset at level 2, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
-//
-// 5. D-bit unset, A-bit set at level 1, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Store-page-fault
-// 
-// 6. D-bit set, A-bit set at level 1, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: No fault should occur.
-//
-// 7. D-bit set, A-bit unset at level 1, RWX permissions (read, write, execute page):
+// 4. D-bit unset, A-bit unset at level 1, RWX permissions (read, write, execute page):
 //    Action: Access the page in S-Mode.
 //    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
 // 
-// 8. D-bit unset, A-bit unset at level 1, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 
-// 9. D-bit unset, A-bit set at level 0, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Store-page-fault
-// 
-// 10. D-bit set, A-bit set at level 0, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: No fault should occur.
-// 
-// 11. D-bit set, A-bit unset at level 0, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 
-// 12. D-bit unset, A-bit unset at level 0, RWX permissions (read, write, execute page):
-//    Action: Access the page in S-Mode.
-//    Expected: Load-page-fault, Store-page-fault, Fetch-page-fault
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -200,48 +169,7 @@ main:
 	sfence.vma                                                             // flush the TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 2
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 1: D bit is unset and  A bit set | Test in S-Mode | RWX bit set | expected = Store page fault 
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_A | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL2)
-	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: D bit is set and  A bit set | Test in S-Mode | RWX bit set | expected = NO Fault 
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2	
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 3: D bit is set and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2	
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 4: D bit is unset and  A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
-//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -285,56 +213,7 @@ main:
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 0
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 1: D bit is unset and  A bit set | Test in S-Mode | RWX bit set | expected = Store page fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_A | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL0)
-	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: D bit is set and  A bit set | Test in S-Mode | RWX bit set | expected = NO Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-// Test case 3: D bit is set and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-// Test case 4: D bit is unset and  A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END

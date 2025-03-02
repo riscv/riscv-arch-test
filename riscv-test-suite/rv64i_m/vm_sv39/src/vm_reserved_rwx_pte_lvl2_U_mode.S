@@ -10,14 +10,7 @@
 //		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
 // 2. W Permissions is Set for the page at level 2:
 //		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 3. WX Permissions is Set for the page at level 1:
-//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 4. W Permissions is Set for the page at level 1:
-//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 5. WX Permissions is Set for the page at level 0:
-//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 6. W Permissions is Set for the page at level 0:
-//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+
 
 #define SKIP_MEPC
 #define SKIP_MTVAL
@@ -186,57 +179,6 @@ main:
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL2	
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 1
-//---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 1 -- WX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 1: Test in U-Mode | WX bit set | expected = RWX fault  
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL1)
-	sfence.vma
-
-	TEST_CASES_RUNNER Umode, va_data, LEVEL1
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 1 -- W permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: Test in U-Mode | W bit set | expected = RWX fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL1)
-	sfence.vma
-
-	TEST_CASES_RUNNER Umode, va_data, LEVEL1
-
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 0
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- WX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 1: Test in U-Mode | WX bit set | expected = RWX fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Umode, va_data, LEVEL0
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- W permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: Test in U-Mode | W bit set | expected = RWX fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

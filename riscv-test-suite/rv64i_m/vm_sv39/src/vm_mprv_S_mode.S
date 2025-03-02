@@ -1,3 +1,27 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
+// Developed by: Muhammad Abdullah, Muhammad Ahmed, Muhammad Zain and Hamza Ali
+// ----------------------------------------------------------------------------------------------------------------------
+// Copyright (c) 2020. RISC-V International. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// ----------------------------------------------------------------------------------------------------------------------
+// Test Explanation:
+// RISC-V Privileged Architecture ISA Manual -- Section 10.3
+// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
+// Future updates will align with ISA version 1.13.
+// 
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------MPRV test in M Mode (with S bit perms)---------------------------------------------------
+// 1. PTE has RWX Permissions at Level 1(Read, write, execute page) and MPRV bit set in mstatus:
+//		Then, in M-Mode, the page is accessed --> required: if VA passed then Load, store successful and (PA)fetch without translation successful
+// 2. PTE has RWX Permissions at Level 0(Read, write, execute page) and MPRV bit set in mstatus:
+//		Then, in M-Mode, the page is accessed --> required: if VA passed then Load, store successful and (PA)fetch without translation successful
+
+// Total Expected Faults :: 0
+//-------------------------------------------------------------------------------------------------------------------
+
 #define SKIP_MEPC
 #define SKIP_MTVAL
 

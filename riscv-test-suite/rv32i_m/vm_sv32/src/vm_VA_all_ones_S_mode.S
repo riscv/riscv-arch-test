@@ -1,3 +1,11 @@
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. In S-Mode, Execute is performed at virtual address 0xFFFFFFFC (all ones - 3, multiple of 4) and
+//    Load and Store is performed at virtual address 0xFFFFFFFF (all ones):
+//      - Required: Successful page access
+// Total Expected Faults :: 0
+// ----------------------------------------------------------------------------------------------------------------------
+
 #include "model_test.h"
 
 #include "arch_test.h"
@@ -12,7 +20,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS",reserved_rsw_pte_perm)
+    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS", VA_all_ones)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
@@ -21,9 +29,9 @@ RVTEST_SIGBASE( x13,signature_x13_1)
    	LA(a5, \ADDRESS)														// Fetch the address to be checked
 	addi a2, a2, 16															// 16 stored in a2 for starting point
 	
-	// Instruction at 0xffffffff is not possible as umcompressed instructions are multiples of 4
+	// Instruction at 0xffffffff is not possible as instructions are multiples of 4
 	// Access the last four bytes (0xfffffffc) which contain the jr instruction
-	addi t0, a5, -3															// (0xffffffff - 0x3) = 0xfffffffc
+	addi t0, a5, -3															// (va_data - 0x3) = 0xfffffffc
 	jalr ra, t0, 0
 	SREG a2, 0(s11)
 	nop
@@ -77,15 +85,6 @@ main:
 
 	// test section VAs
 	.set va_data,          		0xffffffff                                  // virtual address of rvtest_data_1_l1 and rvtest_data_1_l0
-	
-	// Using the above va_data, a level 1 (4MB) page will be created at VPN[1] of (0xffffffff >> 22) => 0x3ff
-	// The virtual addresses will range from 0xffc00000 to (0xffc00000 + 0x3fffff) = 0xffffffff
-	// The last byte of the 4MB page will be at 0xffffffff, which we can directly access using va_data
-
-	// Using the above va_data, a level 0 (4KB) page will be created at VPN[1] = 0x3ff and VPN[0] = 0x3ff
-	// The virtual addresses will range from 0xfffff000 to (0xfffff000 + 0xfff) = 0xffffffff
-	// The last byte of the 4KB page will be at 0xffffffff, which we can directly access using va_data
-	
 	.set va_return_page_l1,     0x91800000                                  // virtual address of return_page for the rvtest_data_1_l1
 	.set va_return_page_l0,     0x91401000                                  // virtual address of return_page for the rvtest_data_1_l0
 
@@ -150,7 +149,7 @@ main:
 	sfence.vma
 
 	//return page PTE
-	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l1, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l1, LEVEL1)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
@@ -168,7 +167,7 @@ main:
 
 	//return page PTE
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
-	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l0, LEVEL0)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0

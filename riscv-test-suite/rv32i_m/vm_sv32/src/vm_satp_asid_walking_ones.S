@@ -1,8 +1,8 @@
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. Walking ones are stored in ASID bitfield of satp register
-// 2. Then satp register is accessed S Mode -> Successful
-//    Showing that previous test case 1 had no effect on it
+// 2. Then satp register is accessed S Mode using csrrw, csrrc, csrrs -> Successful
+// Total Expected Faults :: 0
 // ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -20,7 +20,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS", satp_access_all_modes)
+    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS", vm_satp_asid_walking_ones)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 
@@ -42,11 +42,11 @@ main:
 // 										SATP_ASID_Length 
 // ------------------------------------------------------------------------------------------------------------
 
-	li t1, 0              // Temporary storage for read-back
-	li t0, 0x400000       // Initial value
+	li t1, 0                // Temporary storage for read-back
+	li t0, 0x400000         // Initial value
 
 	// Loop for multiple satp writes and reads
-	li t2, 8              // Number of iterations (8 shifts)
+	li t2, 8                // Number of iterations (8 shifts)
 	satp_test_loop:
     csrw satp, t0     		// Write satp with the current value
     csrr t1, satp     		// Read back the value from satp
@@ -88,7 +88,6 @@ main:
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 22
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -109,10 +108,6 @@ CANARY;
 // test signatures initialization
 signature_x13_1:
     .fill 64*(XLEN/32),4,0xcafebeef
-
-// test signatures initialization
-signature_x14_1:
-    .fill 256*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine

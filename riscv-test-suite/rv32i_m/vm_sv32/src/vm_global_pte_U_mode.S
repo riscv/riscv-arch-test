@@ -1,20 +1,14 @@
-// ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
-// https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
-// Developed by: Muhammad Hammad Bashir, Allen Baum, Umer Shahid
-// ----------------------------------------------------------------------------------------------------------------------
-// Copyright (c) 2020. RISC-V International. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause
-// ----------------------------------------------------------------------------------------------------------------------
-// Test Explanation:
-// RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
-// Future updates will align with ISA version 1.13.
-// 
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. RSW Permissions is Set for the page at level 1 (11):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 1. Global bit is Set for the page at level 1:
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+// 		Since the page is global, it remains accessible without a new page table walk on second access.
+// 2. Global bit is Set for the page at level 0:
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+// 		Since the page is global, it remains accessible without a new page table walk on second access.
+
 // Total Expected Faults :: 0
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -32,7 +26,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS",reserved_rsw_pte_perm)
+    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS", global_pte)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
@@ -175,26 +169,31 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4MB PAGE	Region 1 under test at level 1 -- WX permissions given to the region
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	// Test case 1: Test in U-Mode | G bit set | expected = successful page access and no page table walk on second access
 	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
 	//return page PTE
-	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l1, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l1, LEVEL1)
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL1
-	sfence.vma									// Flush TLB, except for global entries
-	TEST_CASES_RUNNER Umode, va_data, LEVEL1 	// No pagetable walk 
+	
+	csrr t2, satp
+    srli t2, t2, 22        // Extract ASID (RV32, ASID is in bits 30:22)
+    andi t2, t2, 0x1FF
+    sfence.vma x0, t2      // Invalidate TLB entries for the ASID (Global entries remain valid)
+
+	TEST_CASES_RUNNER Umode, va_data, LEVEL1 	// No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 	
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- WX permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	// Test case 2: Test in U-Mode | G bit set | expected = successful page access and no page table walk on second access
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -203,12 +202,17 @@ main:
 
 	//return page PTE
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
-	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V), va_return_page_l0, LEVEL0)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l0, LEVEL0)
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL0
-	sfence.vma									// Flush TLB, except for global entries
-	TEST_CASES_RUNNER Umode, va_data, LEVEL0  	// No pagetable walk
+	
+	csrr t2, satp
+    srli t2, t2, 22        // Extract ASID (RV32, ASID is in bits 30:22)
+    andi t2, t2, 0x1FF
+    sfence.vma x0, t2      // Invalidate TLB entries for the ASID (Global entries remain valid)
+
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0  	// No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

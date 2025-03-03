@@ -1,20 +1,17 @@
-// ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
-// https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
-// Developed by: Muhammad Hammad Bashir, Allen Baum, Umer Shahid
-// ----------------------------------------------------------------------------------------------------------------------
-// Copyright (c) 2020. RISC-V International. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause
-// ----------------------------------------------------------------------------------------------------------------------
-// Test Explanation:
-// RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
-// Future updates will align with ISA version 1.13.
-// 
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. RSW Permissions is Set for the page at level 1 (11):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 1. RSW Permissions is Set for the page at level 1 (01):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 2. RSW Permissions is Set for the page at level 1 (10):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 3. RSW Permissions is Set for the page at level 1 (11):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 4. RSW Permissions is Set for the page at level 0 (01):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 5. RSW Permissions is Set for the page at level 0 (10):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+// 6. RSW Permissions is Set for the page at level 0 (11):
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 // Total Expected Faults :: 0
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -175,9 +172,35 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4MB PAGE	Region 1 under test at level 1 -- WX permissions given to the region
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 1: Test in U-Mode | RSW bit set | expected = successful page access with no affect on these bits 
+	// Test case 1: Test in S-Mode | RSW set to 1 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 8)), va_data, LEVEL1)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l1, LEVEL1)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 2: Test in S-Mode | RSW set to 2 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 9)), va_data, LEVEL1)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l1, LEVEL1)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 3: Test in S-Mode | RSW set to 3 | expected = successful page access with no affect on these bits 
 	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | PTE_SOFT), va_data, LEVEL1)
 	sfence.vma
 
@@ -191,9 +214,39 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- WX permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 2: Test in U-Mode | RSW bit set | expected = successful page access with no affect on these bits 
+	// Test case 4: Test in S-Mode | RSW set to 1 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 8)), va_data, LEVEL0)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l0, LEVEL0)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 5: Test in S-Mode | RSW set to 2 | expected = successful page access with no affect on these bits
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | (1 << 9)), va_data, LEVEL0)
+	sfence.vma
+
+	//return page PTE
+	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_return_page_l0, LEVEL1)
+	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_return_page_l0, LEVEL0)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	// Test case 6: Test in S-Mode | RSW set to 3 | expected = successful page access with no affect on these bits 
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V | PTE_SOFT), va_data, LEVEL0)
 	sfence.vma

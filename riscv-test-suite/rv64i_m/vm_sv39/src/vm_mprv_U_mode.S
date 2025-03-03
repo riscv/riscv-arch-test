@@ -1,3 +1,4 @@
+
 // ----------------------------------------------------------------------------------------------------------------------
 // This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
 // https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
@@ -13,7 +14,7 @@
 // 
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// ------------------------------------------MPRV test in M Mode (with S bit perms)---------------------------------------------------
+// ------------------------------------------MPRV test in M Mode (with U bit perms)---------------------------------------------------
 // 1. PTE has RWX Permissions at Level 1(Read, write, execute page) and MPRV bit set in mstatus:
 //		Then, in M-Mode, the page is accessed --> required: if VA passed then Load, store successful and (PA)fetch without translation successful
 // 2. PTE has RWX Permissions at Level 0(Read, write, execute page) and MPRV bit set in mstatus:
@@ -82,7 +83,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
     	.if \LOWER_MODE == Mmode
-		    SET_REQ_MSTATUS_VAL
+		SET_REQ_MSTATUS_VAL
     	.else
         	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
     	.endif
@@ -93,9 +94,9 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 	nop
 
-	RVTEST_GOTO_MMODE
-    UNSET_REQ_MSTATUS_VAL                                        		// Switching back to M mode
-	
+	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
+	UNSET_REQ_MSTATUS_VAL
+
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
     	nop
@@ -109,10 +110,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .macro SET_REQ_MSTATUS_VAL
         LI (s7, MSTATUS_MPRV)           
 		csrs mstatus,s7                 
-		LI (s7, 0x1800)	//clear previous mode
-		csrc mstatus,s7                 
-		LI (s7, 0x800)	//Smode
-		csrs mstatus,s7
+		LI (s7, 0x1800)	//Set to U Mode
+		csrc mstatus,s7
 .endm
 
 .macro UNSET_REQ_MSTATUS_VAL
@@ -121,7 +120,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
         LI (s7, 0x1800)        
         csrc mstatus, s7       //Clear MPP 
 .endm
-
 
 main:
 #ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
@@ -149,11 +147,11 @@ main:
 
 
 //	PTE setup for Code Region
-	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X |PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X |PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
 	sfence.vma
 
 //	PTE setup for Data Region
-	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -189,7 +187,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | G bit set to 1 | expected = successful page access
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A  | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL2)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
@@ -203,7 +201,7 @@ main:
 	
 	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A  | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL1)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
@@ -218,7 +216,7 @@ main:
 	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A  | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0

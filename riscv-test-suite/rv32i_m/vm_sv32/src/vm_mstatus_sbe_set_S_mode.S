@@ -1,3 +1,13 @@
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// SBE (Supervisor Big Endian) Bit is set
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. PTE is configured in big endian format at level 1 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: No fault
+// 2. PTE is configured in big endian format at level 0 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: No fault
+// Total Expected Faults :: 0
+//-------------------------------------------------------------------------------------------------------------------
 
 #include "model_test.h"
 
@@ -80,7 +90,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .endm
 
 // Address translation with SBE high will give PTE in big endian
-// PTE_SETUP_RV32 sets up the PTE in little endian, so we need to change it to big endian
+// PTE_SETUP_RV32 sets up the PTE in little endian, so we need to change it to big endian for proper translation
 .macro CHANGE_PTE_TO_BE 
 	// After PTE_SETUP_RV32 completes, a0 has the PTE (PPN and Permission bits) while t1 has the PTE address
 	add  t2, zero, zero			

@@ -1,6 +1,6 @@
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// SBE (Supervisor Big Endian) Bit and Sum Bit are set 
+// SBE (Supervisor Big Endian) Bit and SUM Bit are set 
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. U bit is set and the PTE is configured in big endian format at level 1 with RWX Permissions (Read, write, execute page):
 //		Then, in S-Mode, the page is accessed --> required: No fault
@@ -200,7 +200,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 1: Test in S-Mode | RWX set | expected = successful page access with no affect on these bits 
+	// Test case 1: Test in S-Mode | RWX set | expected = successful page access
 	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	CHANGE_PTE_TO_BE
 	sfence.vma
@@ -216,9 +216,9 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- WX permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 2: Test in U-Mode | RSW bit set | expected = successful page access with no affect on these bits 
+	// Test case 2: Test in S-Mode | RWX set | expected = successful page access
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	CHANGE_PTE_TO_BE
 	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V | PTE_SOFT), va_data, LEVEL0)

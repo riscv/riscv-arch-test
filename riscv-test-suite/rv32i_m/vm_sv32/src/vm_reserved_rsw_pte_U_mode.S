@@ -1,3 +1,16 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-32-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1Y8fEu2PnT69w-h8hZc2QQSNKi7DBI0pbXHu2IB8soaQ/edit#gid=0
+// Developed by: Muhammad Hammad Bashir, Allen Baum, Umer Shahid
+// ----------------------------------------------------------------------------------------------------------------------
+// Copyright (c) 2020. RISC-V International. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// ----------------------------------------------------------------------------------------------------------------------
+// Test Explanation:
+// RISC-V Privileged Architecture ISA Manual -- Section 10.3
+// Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
+// Future updates will align with ISA version 1.13.
+// 
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. RSW Permissions is Set for the page at level 1 (01):

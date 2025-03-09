@@ -71,6 +71,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lw  a4, 20(a5)        				// Load back data
     nop
 
+	.if \level == LEVEL2 
+		LA(a5, rvtest_data_1_l2)														// Fetch the address to be checked
+	.elseif \level == LEVEL1
+		LA(a5, rvtest_data_1_l1)
+	.else
+		LA(a5, rvtest_data_1_l0)
+	.endif
+	
    // Test Execute Permission
    LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
    LA(x4, 1f)							// Store the return Address in x4
@@ -83,7 +91,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
     	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
+			SET_REQ_MSTATUS_VAL
     	.else
         	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
     	.endif
@@ -95,30 +103,22 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 
 	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
-	UNSET_REQ_MSTATUS_VAL
 
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+	nop
+	addi x13, x13, REGWIDTH
 
    	SREG a4, 0(x13)                     // Record load attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+	nop
+	addi x13, x13, REGWIDTH
 .endm
 
 .macro SET_REQ_MSTATUS_VAL
         LI (s7, MSTATUS_MPRV)           
 		csrs mstatus,s7                 
-		LI (s7, 0x1800)	//Set to U Mode
-		csrc mstatus,s7
-.endm
-
-.macro UNSET_REQ_MSTATUS_VAL
-        LI (s7, MSTATUS_MPRV)  
-        csrc mstatus, s7       
-        LI (s7, 0x1800)        
-        csrc mstatus, s7       //Clear MPP 
+		LI (s7, 0x1800)		// Set to U Mode
+		csrc mstatus,s7 
 .endm
 
 main:
@@ -187,10 +187,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | G bit set to 1 | expected = successful page access
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+	TEST_CASES_RUNNER Mmode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -201,10 +201,10 @@ main:
 	
 	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R| PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	TEST_CASES_RUNNER Mmode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ main:
 	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+	TEST_CASES_RUNNER Mmode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -234,6 +234,7 @@ RVTEST_DATA_BEGIN
 //Physical Address region under testing for LEVEL 1
 rvtest_data_1_l1:
 	nop																		//nops are added so if there is a trap
+	nop
 	addi ra, ra, REGWIDTH
 	jr ra																	// return back if gives access fault
 	nop
@@ -245,6 +246,7 @@ rvtest_data_1_l1:
 //Physical Address region under testing for LEVEL 0
 rvtest_data_1_l0:
 	nop																		// trap return back skip
+	nop
 	addi ra, ra, REGWIDTH
 	jr ra																	// jump back for the trap on level 1
 	nop

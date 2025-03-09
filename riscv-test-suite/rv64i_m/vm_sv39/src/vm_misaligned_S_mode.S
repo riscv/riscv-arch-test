@@ -12,20 +12,6 @@ RVTEST_ISA("RV64I_Zicsr")
 .globl rvtest_entry_point
 rvtest_entry_point:
 RVMODEL_BOOT
-
-j starting_point															// Skip this data region
-// Physical Address region under testing for LEVEL 2
-// Placed at the start because it needs to be aligned to 1 GB
-rvtest_data_1_l2:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra	
-
-starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
@@ -106,7 +92,7 @@ main:
 	.set va_data,          		0x140000004                  // virtual address of rvtest_data_1_l2, rvtest_data_1_l1 and rvtest_data_1_l0
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800003bc                  
+	.set va_rvtest_code_begin,  0x18000039c                
 	.set va_rvtest_data_begin,  0x1c0000530		     
 
 
@@ -170,31 +156,29 @@ main:
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 0
-//---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 21
+.align 12			// Misaligned Page
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
+// Physical Address region under testing for LEVEL 2
+rvtest_data_1_l2:
+	nop																		//nops are added so if there is a trap
+	nop
+	addi ra, ra, REGWIDTH
+	jr ra																	// return back if the access fault
+	nop
+	.word 0xbeefcaf1														// Random word
+	.word 0xbeefcaf2														// Random word
+	jr ra	
+
+.align 12  			// Misaligned Page
 //Physical Address region under testing for LEVEL 1
 rvtest_data_1_l1:
 	nop

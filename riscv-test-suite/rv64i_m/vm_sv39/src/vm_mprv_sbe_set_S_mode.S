@@ -57,11 +57,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .endm
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
+    RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
 	.align 2
 
 	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
@@ -81,9 +77,21 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	addi x13, x13, REGWIDTH
 .endm
 
-.macro SET_REQ_MSTATUS_VAL
-	nop // Undefined so far, but can be used to update mstatus.SUM or mstatus.MPRV bit for different VM test cases
-.endm
+.macro CHANGE_PTE_TO_BE 
+	// After PTE_SETUP_RV39 completes, a0 has the PTE (PPN and Permission bits) while t1 has the PTE address
+	add t2, zero, zero
+	add t4, zero, zero
+	addi t5, zero, 56
+	.rept(8)
+		srl  t3, a0, t4
+		andi t3, t3, 0xFF
+		sll  t3, t3, t5
+		or   t2, t2, t3
+		addi t4, t4, 8
+		addi t5, t5, -8
+	.endr
+	SREG t2, 0(t1)	
+.endm	
 
 main:
 #ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
@@ -112,10 +120,12 @@ main:
 
 //	PTE setup for Code Region
 	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X |PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 //	PTE setup for Data Region
 	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -141,8 +151,15 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	SATP_SETUP_RV64(sv39)                                                   // set the SATP for virtualization
-	sfence.vma                                                             // flush the TLB
+	sfence.vma                                                              // flush the TLB
 
+//---------------------------------------------------------------------------------------------------------------------------------
+
+	LI (s7, (1 << 36))
+	csrs mstatus, s7												// Set SBE (Supervisor Big Endian)
+	LI (s7, MSTATUS_SUM)
+	csrs mstatus, s7												// Set SUM bit
+	
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 2
@@ -151,7 +168,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | G bit set to 1 | expected = successful page access
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
@@ -165,7 +183,9 @@ main:
 	
 	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
@@ -179,8 +199,11 @@ main:
 	
 	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	CHANGE_PTE_TO_BE
 	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0

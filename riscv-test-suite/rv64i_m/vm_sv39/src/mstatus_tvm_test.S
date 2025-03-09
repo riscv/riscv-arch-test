@@ -153,7 +153,14 @@ main:
 	li t0, 1																//initial value for t0 = 1
 	csrw satp, t0  		                                        			// write satp with some value
 	nop
-	nop
+	
+	li t0, 1
+    csrrc t1, satp, t0  
+    nop
+
+    li t0, 1           
+    csrrs t1, satp, t0
+    nop
 
 	sfence.vma
 	nop

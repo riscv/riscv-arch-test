@@ -14,8 +14,11 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 j starting_point															// Skip this data region
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//											PHYSICAL ADDRESS REGIONS FOR TESTING
+//---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 2
-// Placed at the start because it needs to be aligned to 1 GB
 rvtest_data_1_l2:
 	nop																		//nops are added so if there is a trap
 	addi ra, ra, REGWIDTH
@@ -23,7 +26,31 @@ rvtest_data_1_l2:
 	nop
 	.word 0xbeefcaf1														// Random word
 	.word 0xbeefcaf2														// Random word
-	jr ra	
+	nop
+	jr ra
+//Physical Address region under testing for LEVEL 1
+rvtest_data_1_l1:
+	nop																		//nops are added so if there is a trap
+	addi ra, ra, REGWIDTH
+	jr ra																	// return back if gives access fault
+	nop
+	.word 0xbeefcaf1														// Random word
+	.word 0xbeefcaf2														// Random word
+	nop
+	jr ra																	// return back if successful access
+//Physical Address region under testing for LEVEL 0
+rvtest_data_1_l0:
+	nop																		// trap return back skip
+	addi ra, ra, REGWIDTH
+	jr ra																	// jump back for the trap on level 1
+	nop
+	.word 0xbeefcaf1														// Random word
+	.word 0xbeefcaf2														// Random word
+	nop
+	jr ra
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 
 starting_point:
 RVTEST_CODE_BEGIN
@@ -103,10 +130,12 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x140000004                  // virtual address of rvtest_data_1_l2, rvtest_data_1_l1 and rvtest_data_1_l0
-
+	.set va_data_l2,          		0x140000004                  // virtual address of rvtest_data_1_l2
+	.set va_data_l1,          		0x140000024                  // virtual address of rvtest_data_1_l1 
+	.set va_data_l0,          		0x140000044                  // virtual address of rvtest_data_1_l0 
+	
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800003bc                  
+	.set va_rvtest_code_begin,  0x18000041c                  
 	.set va_rvtest_data_begin,  0x1c0000530		     
 
 
@@ -151,10 +180,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | G bit set to 1 | expected = successful page access
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l2, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+	TEST_CASES_RUNNER Smode, va_data_l2, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -164,11 +193,11 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_l1, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l1, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	TEST_CASES_RUNNER Smode, va_data_l1, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -178,48 +207,18 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_l0, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_l0, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+	TEST_CASES_RUNNER Smode, va_data_l0, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 21
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
-//---------------------------------------------------------------------------------------------------------------------------------
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1:
-	nop
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra																	// return back if successful access
-
-.align 12
-//Physical Address region under testing for LEVEL 0
-rvtest_data_1_l0:
-	nop
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef rvtest_strap_routine
 .align 12

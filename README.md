@@ -103,21 +103,20 @@ $ pip3 install git+https://github.com/riscv/riscof.git
 ```
 This is the preferred method to install RISCOF, as it will always install the most recent stable release.
 
-### Install riscv-ctg
+To run RISCOF, you need to install two components: riscv-ctg and riscv-isac.
+
+### Install riscv-ctg & riscv-isac
 To install riscv-ctg, run this command in your terminal:
 
 ```
+$ git clone https://github.com/riscv-non-isa/riscv-arch-test.git
 $ cd riscv-ctg
 $ pip3 install --editable .
-```
-
-### Install riscv-isac
-To install riscv-isac, run this command in your terminal:
-
-```
+$ cd ..
 $ cd riscv-isac
 $ pip3 install --editable .
 ```
+
 This is the preferred method to install riscv-isac and riscv-ctg, as updated riscv-ctg will always be maintained here.
 
 
@@ -241,7 +240,79 @@ To run tests via RISCOF, you will need to provide the following items:
 $ git clone https://github.com/riscv/riscv-config.git
 ```
 
+## Creating Architectural Tests Neccesary Env Files
+
+To make things simpler, RISCOF generates standard pre-built templates for DUTs and Reference Models for the user via the `setup` command as shown below:
+
+```
+$ riscof setup --dutname=spike
+```
+
+The above command will generate the following files and directories in the current directory:
+
+```
+├──config.ini                   # configuration file for riscof
+├──spike/                       # DUT plugin templates
+   ├── env
+   │   ├── link.ld              # DUT linker script
+   │   └── model_test.h         # DUT specific header file
+   ├── riscof_spike.py          # DUT python plugin
+   ├── spike_isa.yaml           # DUT ISA yaml based on riscv-config
+   └── spike_platform.yaml      # DUT Platform yaml based on riscv-config
+├──sail_cSim/                   # reference plugin templates
+   ├── env
+   │   ├── link.ld              # Reference linker script
+   │   └── model_test.h         # Reference model specific header file
+   ├── __init__.py
+   └── riscof_sail_cSim.py      # Reference model python plugin.
+```
+
+The generate template `config.ini` will look something like this by default:
+
+```
+[RISCOF]
+ReferencePlugin=sail_cSim
+ReferencePluginPath=/path/to/riscof/sail_cSim
+DUTPlugin=spike
+DUTPluginPath=/path/to/riscof/spike
+
+## Example configuration for spike plugin.
+[spike]
+pluginpath=/path/to/riscof/spike/
+ispec=/path/to/riscof/spike/spike_isa.yaml
+pspec=/path/to/riscof/spike/spike_platform.yaml
+
+[sail_cSim]
+pluginpath=/path/to/riscof/sail_cSim
+```
+
+If the SAIL binaries (i.e. `riscv_sim_RV32`) are not in your $PATH you may want to add the following to the last line of the above config:
+
+```
+PATH=<path_to_my_Sail_binaries>
+```
+
+To use the docker image(instead of a local sail installation) the `sail_cSim` node in the above snippet should be replaced with the following:
+
+```
+[sail_cSim]
+pluginpath=/path/to/riscof/sail_cSim
+docker=True
+image=registry.gitlab.com/incoresemi/docker-images/compliance
+```
+
+The folder `spike` contains various templates of files that would be required for testing of any generic DUT. Components of this folder will need to be modified by the user as per the DUT spec. By default the `model_test.h` files and the `link.ld` file will work out of the box for `spike` and `sail` models.
+
+The `riscv-test-suite` under this repository is the testcase library. If you need, you can also use the following command to create a copy of the latest test.
+
+```
+$ riscof --verbose info arch-tests --clone
+```
+
+This will create a riscv-arch-test in the current working directory.
+
 ## Running the Tests
+
 Once everything is set up, you can run the tests using the following command:
 
 ```

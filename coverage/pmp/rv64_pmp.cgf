@@ -200,3 +200,18 @@ PMP_NA4_S_U:
     ? ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RW}, ${PMP_CFG_R}} | ${PMP_CFG_NA4}) and
       mcause == ${CAUSE_FETCH_ACCESS}
     : 0
+
+#This coverpoint checks the coverage of pmp-CSR-access.cgf (PMP CSRs accesses in different modes)
+#Checks pmpcgf and pmpaddr are only accessible in M mode and gets fault in S and U mode when accessed.
+PMP_access_permission:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw}" : 0
+  csr_comb:
+    #Check successful update for pmpcfg in M Mode
+    mode == 'M' and (((old("pmpcfg{0 , 2}") ^ (pmpcfg$1)) != 0x00) and pmpcfg$1 != 0x0): 0              #pmpcfg successfully updated in M mode
+    #Check successful update for pmpaddr in M Mode
+    mode == 'M' and (((old("pmpaddr{0 ... 15}") ^ (pmpaddr$1)) != 0x00) and pmpaddr$1 != 0x0): 0        #pmpaddr successfully updated in M mode
+    #Check for fault for pmpcfg, pmpaddr in S, U Mode
+    mode == {'S', 'U'} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}: 0 #check for illegal instruction fault

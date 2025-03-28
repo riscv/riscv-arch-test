@@ -643,7 +643,7 @@ class archState:
             self.fcsr = 0
         elif flen == 32:
             self.f_rf = ['00000000']*32
-            
+
         else:
             self.f_rf = ['0000000000000000']*32
         self.pc = 0
@@ -1074,11 +1074,53 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 return 1
 
 
+            def pmp_rgn_chk(req_addr, access_len, pmp_config, pmp_addr, prev_pmp_addr = None):
+                """
+                Function to check whether the requested address is inside the required setup pmpaddr entry.
+
+                :param req_addr: value for the requested addrress (int or hex).
+                :param access_len: For instance, 1 for lb, 2 for lh and ...
+                :param pmp_config: Selected PMP Configuration for that region. i.e., TOR, NA4, NAPOT
+                :param pmp_addr: pmpaddr csr value to examine (int or hex).
+                :param prev_pmp_addr: prev pmpaddr csr value to examine required in case of TOR (int or hex).
+
+                :return: True if conditions are met, False otherwise.
+                """
+
+                #Skip the not required cases.
+                if pmp_addr is None or access_len is None:
+                    return False
+
+                #Implementation credits: Sail RISC-V Golden Reference Model.
+                if pmp_config == "NAPOT":
+                    mask = pmp_addr ^ (pmp_addr + 1)
+                    lo = pmp_addr & (~(mask))
+                    length = mask + 1
+                    #requested address is above the minimum and below the maximum + access_len.
+                    #Here, we are giving relaxation of access_len + max because we have to verify cases
+                    #in which we are crossing the boundary as well upto the access len (for instance, 8 Bytes in case of ld).
+                    return (req_addr) >= (lo*4) and (req_addr + access_len) < (((lo + length)*4) + access_len)
+
+                elif pmp_config == "TOR":
+                    if prev_pmp_addr is None:
+                        raise ValueError("The 'prev_pmp_addr' argument is required when 'TOR' is selected.")
+                    else:
+                        return (req_addr) >= prev_pmp_addr*4 and (req_addr + access_len) < (pmp_addr*4 + access_len)
+
+                elif pmp_config == "NA4":
+                    return (req_addr) >= pmp_addr and (req_addr + access_len) < (pmp_addr*4 + 4) + access_len
+
+                elif pmp_config == "OFF":
+                    return False
+                else:
+                    raise ValueError("PMP Config is not selected properly. Select b/w NA4, NAPOT, TOR only")
+
             globals()['get_addr'] = check_label_address
             globals()['old_csr_val'] = old_fn_csr_comb_covpt
             globals()['get_mem_val'] = get_mem_val
             globals()['get_pte'] = get_pte
             globals()['get_pte_prop'] = get_pte_prop
+            globals()['pmp_rgn_chk'] = pmp_rgn_chk
 
             if enable :
                 ucovpt = []

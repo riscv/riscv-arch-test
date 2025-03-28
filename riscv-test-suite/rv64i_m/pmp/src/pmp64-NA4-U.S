@@ -22,6 +22,7 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
+// Total expected faults: 2+5+3+6+8 = 24.
 // ---------------------------------------------------------------------------
 
 #include "model_test.h"
@@ -44,7 +45,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 3); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -133,7 +134,7 @@ main:
 	PMP configurations selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT))//All memory region to be used by pmp15cfg2
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))//All memory region to be used by pmp2cfg0
 #define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
@@ -144,29 +145,31 @@ main:
 	PMP address selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPADDR registers
 */
-#define PMPADDRESS15_GLOBAL	-1														//All memory region
-#define PMPADDRESS14_GLOBAL	0x0														//Base address
+#define PMPADDRESS_TOP_GLOBAL		-1													//All memory region
+#define PMPADDRESS_BOTTOM_GLOBAL	0x0													//Base address
 #define PMPADDRESS0			TEST_FOR_EXECUTION 										// Test Section address
 
 //											Test Setup Section
 	csrw satp, x0																	// Disable Address Translation
 
-	LA(x4, PMPADDRESS15_GLOBAL)
+	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr15, x4
+	csrw 	pmpaddr2, x4
 
-	LA(x4, PMPADDRESS14_GLOBAL)
+	LA(x4, PMPADDRESS_BOTTOM_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr14, x4
+	csrw 	pmpaddr1, x4
 
 	LA(x4, PMPADDRESS0)
 	srl x4, x4, PMP_SHIFT
 	csrw 	pmpaddr0, x4
+
+	//Lock the region for other than the test region.
+	LI(x4, PMP_REGION_GLOBAL)
+	csrw pmpcfg0, x4
+
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.
-
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
 
 	LI(x4, PMPREGIONRWX)
 	csrw pmpcfg0, x4
@@ -178,9 +181,6 @@ main:
 
 //Test Case: 2 -- RX Permissions given to the PMP Region.
 
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
-
 	LI(x4, PMPREGIONRX)
 	csrw pmpcfg0, x4
 
@@ -190,9 +190,6 @@ main:
 	RVTEST_GOTO_MMODE
 
 //Test Case: 3 -- RW Permissions given to the PMP Region.
-
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
 
 	LI(x4, PMPREGIONRW)
 	csrw pmpcfg0, x4
@@ -204,9 +201,6 @@ main:
 
 //Test Case: 4 -- R Permissions given to the PMP Region.
 
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
-
 	LI(x4, PMPREGIONR)
 	csrw pmpcfg0, x4
 
@@ -216,9 +210,6 @@ main:
 	RVTEST_GOTO_MMODE
 
 //Test Case: 5 -- X Permissions given to the PMP Region.
-
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
 
 	LI(x4, PMPREGIONX)
 	csrw pmpcfg0, x4

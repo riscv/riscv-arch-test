@@ -6,28 +6,28 @@ PMP_NAPOT_M:
   csr_comb:
     #All 5 cases checked here.
     #checks for required permissions.
-    ((pmpcfg2 >> {40, 32, 24, 16, 8}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NAPOT}): 0
+    ((pmpcfg0 >> {32, 24, 16, 8, 0}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NAPOT}): 0
   val_comb:
     #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NAPOT region selected.
     ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
-      pmp_rgn_chk(rs1_val | imm_val, access_len, "NAPOT", (pmpaddr{13,12,11,10,9})) and
-      ((pmpcfg2 >> {40, 32, 24, 16, 8}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT})
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NAPOT", (pmpaddr{4, 3, 2, 1, 0})) and
+      ((pmpcfg0 >> {32, 24, 16, 8, 0}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT})
     : 0
     #checks for the faults.
     #check for store access faults
     ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
-      ((pmpcfg2 >> {32, 16, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT}) and
+      ((pmpcfg0 >> {24, 8, 0}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT}) and
       mcause == ${CAUSE_STORE_ACCESS}
     : 0
 
     #check for Load access faults
     ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
-      ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NAPOT}) and
+      ((pmpcfg0 >> 0) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NAPOT}) and
       mcause == ${CAUSE_LOAD_ACCESS}
     : 0
 
     #check for Fetch access faults
-    ? ((pmpcfg2 >> {24, 16}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NAPOT}) and
+    ? ((pmpcfg0 >> {16, 8}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NAPOT}) and
       mcause == ${CAUSE_FETCH_ACCESS}
     : 0
 
@@ -39,28 +39,28 @@ PMP_NA4_M:
   csr_comb:
     #All 5 cases checked here.
     #checks for required permissions.
-    ((pmpcfg2 >> {40, 32, 24, 16, 8}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NA4}): 0
+    ((pmpcfg0 >> {32, 24, 16, 8, 0}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NA4}): 0
   val_comb:
     #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NA4 region selected.
     ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
-      pmp_rgn_chk(rs1_val | imm_val, access_len, "NA4", (pmpaddr{13,12,11,10,9})) and
-      ((pmpcfg2 >> {40, 32, 24, 16, 8}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4})
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NA4", (pmpaddr{4,3,2,1,0})) and
+      ((pmpcfg0 >> {32, 24, 16, 8, 0}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4})
     : 0
     #checks for the faults.
     #check for store access faults
     ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
-      ((pmpcfg2 >> {32, 16, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4}) and
+      ((pmpcfg0 >> {24, 8, 0}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4}) and
       mcause == ${CAUSE_STORE_ACCESS}
     : 0
 
     #check for Load access faults
     ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
-      ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NA4}) and
+      ((pmpcfg0 >> 0) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NA4}) and
       mcause == ${CAUSE_LOAD_ACCESS}
     : 0
 
     #check for Fetch access faults
-    ? ((pmpcfg2 >> {24, 16}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NA4}) and
+    ? ((pmpcfg0 >> {16, 8}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NA4}) and
       mcause == ${CAUSE_FETCH_ACCESS}
     : 0
 
@@ -72,42 +72,33 @@ PMP_TOR_M:
   csr_comb:
     #All 5 cases checked here.
     #checks for required permissions.
-    ((pmpcfg2 >> {40, 24, 8}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}}{[$1]} | ${PMP_CFG_TOR}): 0
-    ((pmpcfg0 >> {56, 40}) & 0xFF == {${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_TOR}): 0
+    ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LRWX} | ${PMP_CFG_TOR}): 0
+    ((pmpcfg0 >> {56, 40, 24, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_TOR}): 0
   val_comb:
     ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
-      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", (pmpaddr{13,11,9}), (pmpaddr{12, 10, 8}{[$2]})) and
-      ((pmpcfg2 >> {40, 24, 8}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}}{[$2]} | ${PMP_CFG_TOR})
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", pmpaddr9, pmpaddr8) and
+      ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LRWX} | ${PMP_CFG_TOR})
     : 0
 
     ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
-      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", (pmpaddr{7, 5}), (pmpaddr{6, 4}{[$2]})) and
-      ((pmpcfg0 >> {56, 40}{[$2]}) & 0xFF == {${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR})
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", (pmpaddr{7, 5, 3, 1}), (pmpaddr{6, 4, 2, 0}{[$2]})) and
+      ((pmpcfg0 >> {56, 40, 24, 8}{[$2]}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR})
     : 0
     #checks for the faults.
     #check for store access faults
     ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
-      ((pmpcfg2 >> {40, 24, 8}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}}{[$2]} | ${PMP_CFG_TOR}) and
-      mcause == ${CAUSE_STORE_ACCESS}
-    : 0
-
-    ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
-      ((pmpcfg0 >> {56, 40}) & 0xFF == {${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR}) and
+      ((pmpcfg0 >> {56, 24, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR}) and
       mcause == ${CAUSE_STORE_ACCESS}
     : 0
 
     #check for store access faults
     ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
-      ((pmpcfg0 >> 40) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_TOR}) and
+      ((pmpcfg0 >> 8) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_TOR}) and
       mcause == ${CAUSE_LOAD_ACCESS}
     : 0
 
     #check for Fetch access faults
-    ? ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LRW} | ${PMP_CFG_TOR}) and
-      mcause == ${CAUSE_FETCH_ACCESS}
-    : 0
-
-    ? ((pmpcfg0 >> 56) & 0xFF == ${PMP_CFG_LR} | ${PMP_CFG_TOR}) and
+    ? ((pmpcfg0 >> {40, 24}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_TOR}) and
       mcause == ${CAUSE_FETCH_ACCESS}
     : 0
 
@@ -189,7 +180,7 @@ PMP_NA4_S_U:
   val_comb:
     #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NAPOT region selected.
     ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
-      pmp_rgn_chk(rs1_val | imm_val, access_len, "NAPOT", (pmpaddr0)) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NA4", (pmpaddr0)) and
       ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NA4})
     : 0
     #checks for the faults.

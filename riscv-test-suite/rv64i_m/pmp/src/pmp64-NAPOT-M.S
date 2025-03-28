@@ -22,6 +22,7 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
+// Total expected faults: 0+4+1+5+8 = 18.
 // ---------------------------------------------------------------------------
 
 #include "model_test.h"
@@ -44,7 +45,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NAPOT_M)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-writable'] >= 7); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NAPOT_M)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -133,19 +134,19 @@ main:
 	PMP configurations selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP7_CFG_SHIFT))	//All memory region to be used by pmp15cfg2
-#define PMPREGIONRWX      	((	PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)
-#define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_NAPOT)&0xFF)
-#define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_NAPOT)&0xFF)
-#define PMPREGIONR      	((	PMP_L|PMP_R|	  		PMP_NAPOT)&0xFF)
-#define PMPREGIONX      	((	PMP_L|		  	  PMP_X|PMP_NAPOT)&0xFF)
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP6_CFG_SHIFT))	//All memory region to be used by pmp15cfg2
+#define PMPREGIONRWX      	((	PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT
+#define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMPREGIONR      	((	PMP_L|PMP_R|	  		PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMPREGIONX      	((	PMP_L|		  	  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 /*
 	PMP address selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPADDR registers
 */
-#define PMPADDRESS15_GLOBAL		-1														//All memory region
-#define PMPADDRESS14_GLOBAL		0x0														//Base address
+#define PMPADDRESS_TOP_GLOBAL		-1													//All memory region
+#define PMPADDRESS_BOTTOM_GLOBAL	0x0													//Base address
 #define PMPADDRESS_TEST			TEST_FOR_EXECUTION 										// Test Section address
 #define PMP_REGION_SIZE 		(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 #define PMP_MASK				~(1 << (RVMODEL_PMP_GRAIN - 1))
@@ -153,13 +154,13 @@ main:
 //											Test Setup Section
 	csrw satp, x0																		// Disable Address Translation
 
-	LA(x4, PMPADDRESS15_GLOBAL)
+	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr15, x4
+	csrw 	pmpaddr6, x4
 
-	LA(x4, PMPADDRESS14_GLOBAL)
+	LA(x4, PMPADDRESS_BOTTOM_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr14, x4
+	csrw 	pmpaddr5, x4
 
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.
@@ -175,10 +176,10 @@ main:
 	or x4, x4, t0
 .endif
 
-	csrw 	pmpaddr13, x4
+	csrw 	pmpaddr4, x4
 
-	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRWX) << PMP5_CFG_SHIFT))
-	csrw pmpcfg2, x4
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRWX)
+	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -194,10 +195,10 @@ main:
 	or x4, x4, t0
 .endif
 
-	csrw 	pmpaddr12, x4
+	csrw 	pmpaddr3, x4
 
-	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRX) << PMP4_CFG_SHIFT))
-	csrw pmpcfg2, x4
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRX)
+	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -213,10 +214,10 @@ main:
 	or x4, x4, t0
 .endif
 
-	csrw 	pmpaddr11, x4
+	csrw 	pmpaddr2, x4
 
-	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONRW) << PMP3_CFG_SHIFT))
-	csrw pmpcfg2, x4
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRW)
+	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -232,10 +233,10 @@ main:
 	or x4, x4, t0
 .endif
 
-	csrw 	pmpaddr10, x4
+	csrw 	pmpaddr1, x4
 
-	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONR) << PMP2_CFG_SHIFT))
-	csrw pmpcfg2, x4
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONR)
+	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -251,10 +252,10 @@ main:
 	or x4, x4, t0
 .endif
 
-	csrw 	pmpaddr9, x4
+	csrw 	pmpaddr0, x4
 
-	LI(x4, PMP_REGION_GLOBAL | ((PMPREGIONX) << PMP1_CFG_SHIFT))
-	csrw pmpcfg2, x4
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONX)
+	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 

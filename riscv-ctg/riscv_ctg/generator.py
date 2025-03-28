@@ -488,10 +488,10 @@ class Generator():
                     problem = Problem()
 
                 for var in self.val_vars:
-                    if var == 'ea_align' and var not in req_val_comb:
-                        problem.addVariable(var, [0])
-                    else:
-                        problem.addVariable(var, self.datasets[var])
+                    dataset = self.datasets[var]
+                    if var not in req_val_comb:
+                        dataset = dataset[:1]
+                    problem.addVariable(var, dataset)
 
                 def condition(*argv):
                     for var,val in zip(self.val_vars,argv):

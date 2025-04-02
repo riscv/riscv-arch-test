@@ -32,11 +32,11 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MTIME_BASE
-#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#define RVMODEL_MTIME_BASE			0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
 #ifndef RVMODEL_MTIMECMP_BASE
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
+#define RVMODEL_MTIMECMP_BASE		0x02004000  // Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -49,68 +49,67 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MTIP_FUNCTIONALITY)
-RVTEST_SIGBASE( x3,signature_x3_1)
+	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MTIP_FUNCTIONALITY)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	3
+		.option norvc
 
-#define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
+		#define MTIMECMP_TEST_VALUE         0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
 
-main:
+		main:
+			// Disable Global Interrupts:
+			// Prevent maskable interrupts during test execution
+			// Ensures a controlled test environment
+			LI(a5,    MSTATUS_MIE)
+			csrrc x0, CSR_MSTATUS, a5
 
-	// Disable Global Interrupts:
-	// Prevent maskable interrupts during test execution
-	// Ensures a controlled test environment
-	LI(a5,    MSTATUS_MIE)
-	csrrc x0, CSR_MSTATUS, a5
+			// Initialize Timer Registers:
+			// Configure timer compare and timer base addresses
+			// Prepare for timer interrupt testing
+			LI(a1,    RVMODEL_MTIMECMP_BASE)
+			LI(a2,    RVMODEL_MTIME_BASE)
+			LI(t0,    MTIMECMP_TEST_VALUE)
 
-	// Initialize Timer Registers:
-	// Configure timer compare and timer base addresses
-	// Prepare for timer interrupt testing
-	LI(a1,    RVMODEL_MTIMECMP_BASE)
-	LI(a2,    RVMODEL_MTIME_BASE)
-	LI(t0,    TIMER_MAX_VALUE)
+			// Reset Timer Registers:
+			// Clear any existing timer interrupt conditions
+			// Establish a clean initial state
+			SREG t0,   0(a1)
+			nop
+			SREG zero, 0(a2)
+			nop
 
-	// Reset Timer Registers:
-	// Clear any existing timer interrupt conditions
-	// Establish a clean initial state
-	SREG t0,   0(a1)
-	nop
-	SREG zero, 0(a2)
-	nop
+			// Capture Initial MIP State:
+			// Verify initial timer interrupt pending (mtip) bit is clear
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Capture Initial MIP State:
-	// Verify initial timer interrupt pending (mtip) bit is clear
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Generate Pending Timer Interrupt:
+			// Set mtime equal to mtimecmp to trigger interrupt condition
+			SREG t0, 0(a2)
+			nop
 
-	// Generate Pending Timer Interrupt:
-	// Set mtime equal to mtimecmp to trigger interrupt condition
-	SREG t0, 0(a2)
-	nop
+			// Verify Timer Interrupt Pending:
+			// Confirm mtip bit is set in Machine Interrupt Pending register
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Verify Timer Interrupt Pending:
-	// Confirm mtip bit is set in Machine Interrupt Pending register
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Clear Timer Interrupt:
+			// Reset mtime to be less than mtimecmp
+			// Validate interrupt clearing mechanism
+			SREG zero, 0(a2)
+			nop
 
-	// Clear Timer Interrupt:
-	// Reset mtime to be less than mtimecmp
-	// Validate interrupt clearing mechanism
-	SREG zero, 0(a2)
-	nop
-
-	// Confirm Interrupt Cleared:
-	// Verify timer interrupt bit returns to zero
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
-#endif
- # ---------------------------------------------------------------------------------------------
+			// Confirm Interrupt Cleared:
+			// Verify timer interrupt bit returns to zero
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
+	#endif
+	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

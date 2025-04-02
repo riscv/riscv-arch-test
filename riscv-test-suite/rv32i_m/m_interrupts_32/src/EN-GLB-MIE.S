@@ -24,7 +24,7 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MSIP_BASE
-#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#define RVMODEL_MSIP_BASE			0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
 #include "model_test.h"
@@ -37,68 +37,68 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",EN_GLB_MIE)
-RVTEST_SIGBASE( x3,signature_x3_1)
+	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",EN_GLB_MIE)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	2
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	2
+		.option norvc
 
-main:
-	// Enable Global Interrupts:
-	// Set Machine Status Register (mstatus) MIE bit
-	// Allows maskable interrupts to be recognized and processed
-	LI(t0,    MSTATUS_MIE)
-	csrrs x0, CSR_MSTATUS, t0
+		main:
+		// Enable Global Interrupts:
+		// Set Machine Status Register (mstatus) MIE bit
+		// Allows maskable interrupts to be recognized and processed
+		LI(t0,    MSTATUS_MIE)
+		csrrs x0, CSR_MSTATUS, t0
 
-	// Clear Machine Software Interrupt Delegation:
-	// Ensure software interrupts are handled in machine mode
-	// Prevents potential redirection to lower privilege modes
-	LI(a5, MIDELEG_MSI)
-	csrrc  x0, CSR_MIDELEG, a5
-	nop
+		// Clear Machine Software Interrupt Delegation:
+		// Ensure software interrupts are handled in machine mode
+		// Prevents potential redirection to lower privilege modes
+		LI(a5, MIDELEG_MSI)
+		csrrc  x0, CSR_MIDELEG, a5
+		nop
 
-	// Capture Initial MIP State:
-	// Verify initial software interrupt bit (mip.msip) is clear
-	// Establishes baseline interrupt state before testing
-	csrrs a4, CSR_MIP, x0
-	ANDI  a4, a4, 0x8
-	nop
-	RVTEST_SIGUPD(x3,  a4)
+		// Capture Initial MIP State:
+		// Verify initial software interrupt bit (mip.msip) is clear
+		// Establishes baseline interrupt state before testing
+		csrrs a4, CSR_MIP, x0
+		ANDI  a4, a4, 0x8
+		nop
+		RVTEST_SIGUPD(x3,  a4)
 
-	// Generate Software Interrupt:
-	// Trigger software interrupt by writing 1 to MSIP control register
-	// Validates interrupt generation mechanism with global interrupts enabled
-	LI(a5,   0x1)
-	LI(x5,   RVMODEL_MSIP_BASE)
-	SREG a5, 0(x5)
-	nop
+		// Generate Software Interrupt:
+		// Trigger software interrupt by writing 1 to MSIP control register
+		// Validates interrupt generation mechanism with global interrupts enabled
+		LI(a5,   0x1)
+		LI(x5,   RVMODEL_MSIP_BASE)
+		SREG a5, 0(x5)
+		nop
 
-	// Capture Initial Interrupt State:
-	// Read mstatus to check interrupt-related status bits
-	// Verifies MPIE and MIE states during interrupt generation
-	csrrs a4, CSR_MSTATUS, x0
-	RVTEST_SIGUPD(x3, a4)
+		// Capture Initial Interrupt State:
+		// Read mstatus to check interrupt-related status bits
+		// Verifies MPIE and MIE states during interrupt generation
+		csrrs a4, CSR_MSTATUS, x0
+		RVTEST_SIGUPD(x3, a4)
 
-	// Enable Local Software Interrupt:
-	// Locally enable software interrupt handling
-	// Prepares for potential interrupt processing
-	LI(a5,    MIE_MSIP)
-	csrrs x0, CSR_MIE, a5
-	nop
+		// Enable Local Software Interrupt:
+		// Locally enable software interrupt handling
+		// Prepares for potential interrupt processing
+		LI(a5,    MIE_MSIP)
+		csrrs x0, CSR_MIE, a5
+		nop
 
-	// Verify Software Interrupt Cleared:
-	// Confirm software interrupt bit is cleared in MIP register
-	// Validates interrupt handling and clearing mechanism
-	csrrs a4, CSR_MIP, x0
-	ANDI  a4, a4, 0x8
-	nop
-	RVTEST_SIGUPD(x3,  a4)
-#endif
- # ---------------------------------------------------------------------------------------------
+		// Verify Software Interrupt Cleared:
+		// Confirm software interrupt bit is cleared in MIP register
+		// Validates interrupt handling and clearing mechanism
+		csrrs a4, CSR_MIP, x0
+		ANDI  a4, a4, 0x8
+		nop
+		RVTEST_SIGUPD(x3,  a4)
+	#endif
+ 	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

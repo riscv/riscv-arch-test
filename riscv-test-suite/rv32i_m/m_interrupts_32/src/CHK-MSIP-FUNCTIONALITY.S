@@ -31,7 +31,7 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MSIP_BASE
-#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#define RVMODEL_MSIP_BASE			0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
 #include "model_test.h"
@@ -44,61 +44,61 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MSIP_FUNCTIONALITY)
-RVTEST_SIGBASE( x3,signature_x3_1)
+ 	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MSIP_FUNCTIONALITY)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	2
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	2
+		.option norvc
 
-main:
-	// Disable Global Interrupts:
-	// Prevent any maskable interrupts during test execution
-	// Ensures controlled test environment
-	LI(a5,    MSTATUS_MIE)
-	csrrc x0, CSR_MSTATUS, a5
+		main:
+			// Disable Global Interrupts:
+			// Prevent any maskable interrupts during test execution
+			// Ensures controlled test environment
+			LI(a5,    MSTATUS_MIE)
+			csrrc x0, CSR_MSTATUS, a5
 
-	// Clear Software Interrupt State:
-	// Reset memory-mapped Software Interrupt Pending (MSIP) control register
-	// Establish clean initial interrupt condition
-	LI(a5,     RVMODEL_MSIP_BASE)
-	SREG zero, 0(a5)
-	nop
+			// Clear Software Interrupt State:
+			// Reset memory-mapped Software Interrupt Pending (MSIP) control register
+			// Establish clean initial interrupt condition
+			LI(a5,     RVMODEL_MSIP_BASE)
+			SREG zero, 0(a5)
+			nop
 
-	// Capture Initial MIP State:
-	// Read Machine Interrupt Pending (MIP) register
-	// Verify initial software interrupt bit is clear
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Capture Initial MIP State:
+			// Read Machine Interrupt Pending (MIP) register
+			// Verify initial software interrupt bit is clear
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Generate Software Interrupt:
-	// Write 1 to memory-mapped MSIP control register
-	// Trigger software interrupt generation mechanism
-	LI(a5,   0x1)
-	LI(x5,   RVMODEL_MSIP_BASE)
-	SREG a5, 0(x5)
-	nop
+			// Generate Software Interrupt:
+			// Write 1 to memory-mapped MSIP control register
+			// Trigger software interrupt generation mechanism
+			LI(a5,   0x1)
+			LI(x5,   RVMODEL_MSIP_BASE)
+			SREG a5, 0(x5)
+			nop
 
-	// Verify Software Interrupt Pending:
-	// Read MIP register to confirm software interrupt bit is set
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Verify Software Interrupt Pending:
+			// Read MIP register to confirm software interrupt bit is set
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Clear Software Interrupt:
-	// Reset MSIP control register
-	// Validate interrupt clearing mechanism
-	SREG zero, 0(x5)
-	nop
+			// Clear Software Interrupt:
+			// Reset MSIP control register
+			// Validate interrupt clearing mechanism
+			SREG zero, 0(x5)
+			nop
 
-	// Confirm Interrupt Cleared:
-	// Verify software interrupt bit returns to zero
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
-#endif
- # ---------------------------------------------------------------------------------------------
+			// Confirm Interrupt Cleared:
+			// Verify software interrupt bit returns to zero
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
+	#endif
+	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

@@ -30,7 +30,7 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MSIP_BASE
-#define RVMODEL_MSIP_BASE               0x02000000	// Base address for the memory-mapped MSIP control register.
+#define RVMODEL_MSIP_BASE			0x02000000	// Base address for the memory-mapped MSIP control register.
 #endif
 
 #include "model_test.h"
@@ -43,67 +43,67 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_M_SOFTWARE_INTR)
-RVTEST_SIGBASE( x3,signature_x3_1)
+	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_M_SOFTWARE_INTR)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	3
+		.option norvc
 
-main:
-	// Enable Global Interrupts:
-	// Set Machine Status Register (mstatus) MIE bit
-	// Allows maskable interrupts to be recognized
-	LI(t0,    MSTATUS_MIE)
-	csrrs x0, CSR_MSTATUS, t0
+		main:
+			// Enable Global Interrupts:
+			// Set Machine Status Register (mstatus) MIE bit
+			// Allows maskable interrupts to be recognized
+			LI(t0,    MSTATUS_MIE)
+			csrrs x0, CSR_MSTATUS, t0
 
-	// Clear Machine Software Interrupt Delegation:
-	// Ensure software interrupts are handled in machine mode
-	// Prevents potential redirection to lower privilege modes
-	LI(a5, MIDELEG_MSI)
-	csrrc  x0, CSR_MIDELEG, a5
-	nop
+			// Clear Machine Software Interrupt Delegation:
+			// Ensure software interrupts are handled in machine mode
+			// Prevents potential redirection to lower privilege modes
+			LI(a5, MIDELEG_MSI)
+			csrrc  x0, CSR_MIDELEG, a5
+			nop
 
-	// Initialize MSIP Base: Clear Pending Software Interrupt
-	// Reset memory-mapped Software Interrupt Pending control register
-	// Establish a clean initial interrupt state
-	LI(a5,     RVMODEL_MSIP_BASE)
-	SREG zero, 0(a5)
-	nop
+			// Initialize MSIP Base: Clear Pending Software Interrupt
+			// Reset memory-mapped Software Interrupt Pending control register
+			// Establish a clean initial interrupt state
+			LI(a5,     RVMODEL_MSIP_BASE)
+			SREG zero, 0(a5)
+			nop
 
-	// Test Case 01: Disable MSIE with Clear MIP
-	// Verify interrupt behavior when MSIE is disabled and no pending interrupt exists
-	LI(t0,    MIE_MSIP)
-	csrrc x0, CSR_MIE, t0
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Test Case 01: Disable MSIE with Clear MIP
+			// Verify interrupt behavior when MSIE is disabled and no pending interrupt exists
+			LI(t0,    MIE_MSIP)
+			csrrc x0, CSR_MIE, t0
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Test Case 02: Enable MSIE with Clear MIP
-	// Confirm interrupt state when MSIE is enabled but no interrupt is pending
-	csrrs x0, CSR_MIE, t0
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Test Case 02: Enable MSIE with Clear MIP
+			// Confirm interrupt state when MSIE is enabled but no interrupt is pending
+			csrrs x0, CSR_MIE, t0
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Test Case 03: Disable MSIE with Set MIP
-	// Check program execution with pending interrupt but MSIE disabled
-	csrrc x0, CSR_MIE, t0
-	LI(t1,    0x1)
-	SREG t1,  0(a5)
-	nop
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
+			// Test Case 03: Disable MSIE with Set MIP
+			// Check program execution with pending interrupt but MSIE disabled
+			csrrc x0, CSR_MIE, t0
+			LI(t1,    0x1)
+			SREG t1,  0(a5)
+			nop
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
-	// Test Case 04: Enable MSIE with Set MIP
-	// Validate interrupt handling when MSIE is enabled and interrupt is pending
-	csrrs x0, CSR_MIE, t0
-	nop
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
-#endif
- # ---------------------------------------------------------------------------------------------
+			// Test Case 04: Enable MSIE with Set MIP
+			// Validate interrupt handling when MSIE is enabled and interrupt is pending
+			csrrs x0, CSR_MIE, t0
+			nop
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
+	#endif
+	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

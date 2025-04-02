@@ -31,11 +31,11 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MTIME_BASE
-#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#define RVMODEL_MTIME_BASE			0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
 #ifndef RVMODEL_MTIMECMP_BASE
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
+#define RVMODEL_MTIMECMP_BASE		0x02004000  // Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -48,72 +48,72 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_M_TIMER_INTR)
-RVTEST_SIGBASE( x3,signature_x3_1)
+	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_M_TIMER_INTR)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	2
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	2
+		.option norvc
 
-#define TIMER_MAX_VALUE         0xFFFF	// Maximum Value for the memory-mapped machine timer-compare register.
+		#define MTIMECMP_TEST_VALUE         0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
 
-main:
-	// Enable Global Interrupts:
-	// Set Machine Status Register (mstatus) MIE bit
-	// Allows maskable interrupts to be recognized
-	LI(t0,     MSTATUS_MIE)
-	csrrs x0,  CSR_MSTATUS, t0
+		main:
+			// Enable Global Interrupts:
+			// Set Machine Status Register (mstatus) MIE bit
+			// Allows maskable interrupts to be recognized
+			LI(t0,     MSTATUS_MIE)
+			csrrs x0,  CSR_MSTATUS, t0
 
-	// Clear Machine Timer Interrupt Delegation:
-	// Ensure timer interrupts are handled in machine mode
-	// Prevents potential redirection to lower privilege modes
-	LI(t0, MIDELEG_MTI)
-	csrrc  x0, CSR_MIDELEG, t0
-	nop
+			// Clear Machine Timer Interrupt Delegation:
+			// Ensure timer interrupts are handled in machine mode
+			// Prevents potential redirection to lower privilege modes
+			LI(t0, MIDELEG_MTI)
+			csrrc  x0, CSR_MIDELEG, t0
+			nop
 
-	// Initialize Timer Registers:
-	// Configure timer compare (mtimecmp) and timer (mtime)
-	// Create a controlled timer interrupt scenario
-	LI(a0,     RVMODEL_MTIMECMP_BASE)
-	LI(a1,     RVMODEL_MTIME_BASE)
-	LI(t1,     TIMER_MAX_VALUE)
-	SREG t1,   0(a0)
-	nop
-	SREG zero, 0(a1)
-	nop
+			// Initialize Timer Registers:
+			// Configure timer compare (mtimecmp) and timer (mtime)
+			// Create a controlled timer interrupt scenario
+			LI(a0,     RVMODEL_MTIMECMP_BASE)
+			LI(a1,     RVMODEL_MTIME_BASE)
+			LI(t1,     MTIMECMP_TEST_VALUE)
+			SREG t1,   0(a0)
+			nop
+			SREG zero, 0(a1)
+			nop
 
-	// Test Case 01: Disable MTIE with mtime < mtimecmp
-	// Verify interrupt behavior when MTIE is disabled and no timer interrupt is pending
-	LI(t0,    MIE_MTIP)
-	csrrc x0, CSR_MIE, t0
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Test Case 01: Disable MTIE with mtime < mtimecmp
+			// Verify interrupt behavior when MTIE is disabled and no timer interrupt is pending
+			LI(t0,    MIE_MTIP)
+			csrrc x0, CSR_MIE, t0
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Test Case 02: Enable MTIE with mtime < mtimecmp
-	// Confirm interrupt state when MTIE is enabled but no timer interrupt is pending
-	csrrs x0, CSR_MIE, t0
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Test Case 02: Enable MTIE with mtime < mtimecmp
+			// Confirm interrupt state when MTIE is enabled but no timer interrupt is pending
+			csrrs x0, CSR_MIE, t0
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Test Case 03: Disable MTIE when mtime = mtimecmp
-	// Check program execution with pending timer interrupt but MTIE disabled
-	csrrc x0, CSR_MIE, t0
-	SREG  t1,  0(a1)
-	nop
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
+			// Test Case 03: Disable MTIE when mtime = mtimecmp
+			// Check program execution with pending timer interrupt but MTIE disabled
+			csrrc x0, CSR_MIE, t0
+			SREG  t1,  0(a1)
+			nop
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
 
-	// Test Case 04: Enable MTIE when mtime = mtimecmp
-	// Validate timer interrupt handling when MTIE is enabled and interrupt is pending
-	csrrs x0, CSR_MIE, t0
-	nop
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3,  a4)
-#endif
- # ---------------------------------------------------------------------------------------------
+			// Test Case 04: Enable MTIE when mtime = mtimecmp
+			// Validate timer interrupt handling when MTIE is enabled and interrupt is pending
+			csrrs x0, CSR_MIE, t0
+			nop
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3,  a4)
+	#endif
+ 	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

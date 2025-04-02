@@ -17,11 +17,11 @@
 // ---------------------------------------------------------------------------------------------
 
 #ifndef RVMODEL_MTIME_BASE
-#define RVMODEL_MTIME_BASE              0x0200bff8 	// Base address for the memory-mapped machine timer register.
+#define RVMODEL_MTIME_BASE			0x0200bff8 	// Base address for the memory-mapped machine timer register.
 #endif
 
 #ifndef RVMODEL_MTIMECMP_BASE
-#define RVMODEL_MTIMECMP_BASE           0x02004000  	// Base address for the memory-mapped machine timer-compare register.
+#define RVMODEL_MTIMECMP_BASE		0x02004000  // Base address for the memory-mapped machine timer-compare register.
 #endif
 
 #include "model_test.h"
@@ -34,78 +34,77 @@ rvtest_entry_point:
 RVMODEL_BOOT
 
 RVTEST_CODE_BEGIN
- # ---------------------------------------------------------------------------------------------
-#ifdef TEST_CASE_1
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MTIME_LENGTH)
-RVTEST_SIGBASE( x3,signature_x3_1)
+	# ---------------------------------------------------------------------------------------------
+	#ifdef TEST_CASE_1
+		RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True; ",CHK_MTIME_LENGTH)
+		RVTEST_SIGBASE( x3,signature_x3_1)
 
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	2
-  	.option norvc
+		.attribute unaligned_access, 0
+		.attribute stack_align, 16
+		.align	2
+		.option norvc
 
-#define TIMER_TEST_VALUE        0xFFFFFFFF      // Test Value to check the length of memory-mapped machine timers register.
+		#define TIMER_TEST_VALUE			0xFFFFFFFF	// Test value to check the length of memory-mapped machine timers register.
 
-main:
-	// Disable Global Interrupts
-	LI(a1,    MSTATUS_MIE)
-	csrrc x0, CSR_MSTATUS, a1
+		main:
+			// Disable Global Interrupts
+			LI(a1,    MSTATUS_MIE)
+			csrrc x0, CSR_MSTATUS, a1
 
-	// Capture initial MIP state
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
+			// Capture initial MIP state
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
-	// Load base addresses for timer registers
-	LI(a1, RVMODEL_MTIMECMP_BASE)
-	LI(a2, RVMODEL_MTIME_BASE)
-	LI(t1, TIMER_TEST_VALUE)
+			// Load base addresses for timer registers
+			LI(a1, RVMODEL_MTIMECMP_BASE)
+			LI(a2, RVMODEL_MTIME_BASE)
+			LI(t1, TIMER_TEST_VALUE)
 
-	// TEST CASE 1: Verify mtime 64-bit precision
-	// Check behavior when lower 32-bits are max and upper 32-bits are zero
-	SREG zero, 4(a2)			// Upper half of mtime = 0
-	nop
-	SREG t1,   0(a2)			// Lower half of mtime = max (0xFFFFFFFF)
-	nop
+			// TEST CASE 1: Verify mtime 64-bit precision
+			// Check behavior when lower 32-bits are max and upper 32-bits are zero
+			SREG zero, 4(a2)			// Upper half of mtime = 0
+			nop
+			SREG t1,   0(a2)			// Lower half of mtime = max (0xFFFFFFFF)
+			nop
 
-	// Read and store mip value
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
+			// Read and store mip value
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
-	// TEST CASE 2: Verify mtime 64-bit precision
-	// Check behavior when upper 32-bits are max and lower 32-bits are zero
-	SREG t1,   4(a2)			// Upper half of mtime = max (0xFFFFFFFF)
-	nop
-	SREG zero, 0(a2)			// Lower half of mtime = 0
-	nop
+			// TEST CASE 2: Verify mtime 64-bit precision
+			// Check behavior when upper 32-bits are max and lower 32-bits are zero
+			SREG t1,   4(a2)			// Upper half of mtime = max (0xFFFFFFFF)
+			nop
+			SREG zero, 0(a2)			// Lower half of mtime = 0
+			nop
 
-	// Read and store mip value
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
+			// Read and store mip value
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
-	// TEST CASE 3: Verify mtimecmp 64-bit precision
-	// Check behavior when lower 32-bits are max and upper 32-bits are zero
-	SREG zero, 4(a1)			// Upper half of mtimecmp = 0
-	nop
-	SREG t1,   0(a1)			// Lower half of mtimecmp = max (0xFFFFFFFF)
-	nop
+			// TEST CASE 3: Verify mtimecmp 64-bit precision
+			// Check behavior when lower 32-bits are max and upper 32-bits are zero
+			SREG zero, 4(a1)			// Upper half of mtimecmp = 0
+			nop
+			SREG t1,   0(a1)			// Lower half of mtimecmp = max (0xFFFFFFFF)
+			nop
 
-	// Read and store mip value
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
+			// Read and store mip value
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
-	// TEST CASE 4: Verify mtimecmp 64-bit precision
-	// Check behavior when upper 32-bits are max and lower 32-bits are zero
-	SREG t1,   4(a1)			// Upper half of mtimecmp = max (0xFFFFFFFF)
-	nop
-	SREG zero, 0(a1)			// Lower half of mtimecmp = 0
-	nop
+			// TEST CASE 4: Verify mtimecmp 64-bit precision
+			// Check behavior when upper 32-bits are max and lower 32-bits are zero
+			SREG t1,   4(a1)			// Upper half of mtimecmp = max (0xFFFFFFFF)
+			nop
+			SREG zero, 0(a1)			// Lower half of mtimecmp = 0
+			nop
 
-	// Read and store mip value
-	csrrs a4, CSR_MIP, x0
-	RVTEST_SIGUPD(x3, a4)
-
-#endif
- # ---------------------------------------------------------------------------------------------
+			// Read and store mip value
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
+	#endif
+	# ---------------------------------------------------------------------------------------------
     # HALT
 RVTEST_CODE_END
 RVMODEL_HALT

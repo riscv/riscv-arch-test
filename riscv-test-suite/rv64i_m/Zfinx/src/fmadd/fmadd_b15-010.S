@@ -35,5177 +35,5093 @@ RVTEST_FP_ENABLE()
 RVTEST_VALBASEUPD(x3,test_dataset_0)
 RVTEST_SIGBASE(x1,signature_x1_1)
 
-RVTEST_SIGBASE(x9,signature_x9_6)
-RVTEST_SIGBASE(x9,signature_x9_7)
-RVTEST_SIGBASE(x9,signature_x9_8)
-RVTEST_SIGBASE(x9,signature_x9_9)
-RVTEST_SIGBASE(x9,signature_x9_10)
-RVTEST_SIGBASE(x9,signature_x9_11)
-RVTEST_SIGBASE(x9,signature_x9_12)
-RVTEST_SIGBASE(x9,signature_x9_13)
-RVTEST_SIGBASE(x9,signature_x9_14)
-RVTEST_SIGBASE(x9,signature_x9_15)
-RVTEST_SIGBASE(x9,signature_x9_16)
-RVTEST_SIGBASE(x9,signature_x9_17)
-RVTEST_SIGBASE(x9,signature_x9_18)
-RVTEST_SIGBASE(x9,signature_x9_19)
-RVTEST_SIGBASE(x9,signature_x9_20)
-RVTEST_SIGBASE(x9,signature_x9_21)
-RVTEST_SIGBASE(x9,signature_x9_22)
-RVTEST_SIGBASE(x9,signature_x9_23)
-RVTEST_SIGBASE(x9,signature_x9_24)
-RVTEST_SIGBASE(x9,signature_x9_25)
-RVTEST_SIGBASE(x9,signature_x9_26)
-RVTEST_SIGBASE(x9,signature_x9_27)
-RVTEST_SIGBASE(x9,signature_x9_28)
-RVTEST_SIGBASE(x9,signature_x9_29)
-RVTEST_SIGBASE(x9,signature_x9_30)
-RVTEST_SIGBASE(x9,signature_x9_31)
-RVTEST_SIGBASE(x9,signature_x9_32)
-RVTEST_SIGBASE(x9,signature_x9_33)
-RVTEST_SIGBASE(x9,signature_x9_34)
-RVTEST_SIGBASE(x9,signature_x9_35)
-RVTEST_SIGBASE(x9,signature_x9_36)
-RVTEST_SIGBASE(x9,signature_x9_37)
-RVTEST_SIGBASE(x9,signature_x9_38)
-RVTEST_SIGBASE(x9,signature_x9_39)
-RVTEST_SIGBASE(x9,signature_x9_40)
-RVTEST_SIGBASE(x9,signature_x9_41)
-RVTEST_SIGBASE(x9,signature_x9_42)
-RVTEST_SIGBASE(x9,signature_x9_43)
-RVTEST_SIGBASE(x9,signature_x9_44)
-RVTEST_SIGBASE(x9,signature_x9_45)
-RVTEST_SIGBASE(x9,signature_x9_46)
-RVTEST_SIGBASE(x9,signature_x9_47)
-RVTEST_SIGBASE(x9,signature_x9_48)
-RVTEST_SIGBASE(x9,signature_x9_49)
-RVTEST_SIGBASE(x9,signature_x9_50)
-RVTEST_SIGBASE(x9,signature_x9_51)
-RVTEST_SIGBASE(x9,signature_x9_52)
-RVTEST_SIGBASE(x9,signature_x9_53)
+inst_6903:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x65 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x32800001; valaddr_reg:x12; val_offset:20646*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20646*FLEN/8, x13, x9, x10)
+
+inst_6904:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:20649*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20649*FLEN/8, x13, x9, x10)
+
+inst_6905:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:20652*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20652*FLEN/8, x13, x9, x10)
+
+inst_6906:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:20655*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20655*FLEN/8, x13, x9, x10)
+
+inst_6907:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:20658*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20658*FLEN/8, x13, x9, x10)
+
+inst_6908:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:20661*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20661*FLEN/8, x13, x9, x10)
+
+inst_6909:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:20664*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20664*FLEN/8, x13, x9, x10)
+
+inst_6910:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:20667*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20667*FLEN/8, x13, x9, x10)
+
+inst_6911:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:20670*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20670*FLEN/8, x13, x9, x10)
+
+inst_6912:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:20673*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20673*FLEN/8, x13, x9, x10)
+
+inst_6913:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:20676*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20676*FLEN/8, x13, x9, x10)
+
+inst_6914:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:20679*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20679*FLEN/8, x13, x9, x10)
+
+inst_6915:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:20682*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20682*FLEN/8, x13, x9, x10)
+
+inst_6916:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:20685*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20685*FLEN/8, x13, x9, x10)
+
+inst_6917:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:20688*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20688*FLEN/8, x13, x9, x10)
+
+inst_6918:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:20691*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20691*FLEN/8, x13, x9, x10)
+
+inst_6919:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x738906 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x434693 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ef38906; op2val:0x434693;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:20694*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20694*FLEN/8, x13, x9, x10)
+
+inst_6920:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33000000; valaddr_reg:x12; val_offset:20697*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20697*FLEN/8, x13, x9, x10)
+
+inst_6921:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fffff; valaddr_reg:x12; val_offset:20700*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20700*FLEN/8, x13, x9, x10)
+
+inst_6922:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33400000; valaddr_reg:x12; val_offset:20703*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20703*FLEN/8, x13, x9, x10)
+
+inst_6923:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x333fffff; valaddr_reg:x12; val_offset:20706*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20706*FLEN/8, x13, x9, x10)
+
+inst_6924:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33600000; valaddr_reg:x12; val_offset:20709*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20709*FLEN/8, x13, x9, x10)
+
+inst_6925:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x331fffff; valaddr_reg:x12; val_offset:20712*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20712*FLEN/8, x13, x9, x10)
+
+inst_6926:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33700000; valaddr_reg:x12; val_offset:20715*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20715*FLEN/8, x13, x9, x10)
+
+inst_6927:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x330fffff; valaddr_reg:x12; val_offset:20718*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20718*FLEN/8, x13, x9, x10)
+
+inst_6928:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33780000; valaddr_reg:x12; val_offset:20721*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20721*FLEN/8, x13, x9, x10)
+
+inst_6929:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3307ffff; valaddr_reg:x12; val_offset:20724*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20724*FLEN/8, x13, x9, x10)
+
+inst_6930:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337c0000; valaddr_reg:x12; val_offset:20727*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20727*FLEN/8, x13, x9, x10)
+
+inst_6931:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3303ffff; valaddr_reg:x12; val_offset:20730*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20730*FLEN/8, x13, x9, x10)
+
+inst_6932:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337e0000; valaddr_reg:x12; val_offset:20733*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20733*FLEN/8, x13, x9, x10)
+
+inst_6933:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3301ffff; valaddr_reg:x12; val_offset:20736*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20736*FLEN/8, x13, x9, x10)
+
+inst_6934:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337f0000; valaddr_reg:x12; val_offset:20739*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20739*FLEN/8, x13, x9, x10)
+
+inst_6935:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3300ffff; valaddr_reg:x12; val_offset:20742*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20742*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_54)
+inst_6936:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337f8000; valaddr_reg:x12; val_offset:20745*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20745*FLEN/8, x13, x9, x10)
+
+inst_6937:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33007fff; valaddr_reg:x12; val_offset:20748*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20748*FLEN/8, x13, x9, x10)
+
+inst_6938:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fc000; valaddr_reg:x12; val_offset:20751*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20751*FLEN/8, x13, x9, x10)
+
+inst_6939:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33003fff; valaddr_reg:x12; val_offset:20754*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20754*FLEN/8, x13, x9, x10)
+
+inst_6940:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fe000; valaddr_reg:x12; val_offset:20757*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20757*FLEN/8, x13, x9, x10)
+
+inst_6941:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33001fff; valaddr_reg:x12; val_offset:20760*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20760*FLEN/8, x13, x9, x10)
+
+inst_6942:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ff000; valaddr_reg:x12; val_offset:20763*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20763*FLEN/8, x13, x9, x10)
+
+inst_6943:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33000fff; valaddr_reg:x12; val_offset:20766*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20766*FLEN/8, x13, x9, x10)
+
+inst_6944:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ff800; valaddr_reg:x12; val_offset:20769*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20769*FLEN/8, x13, x9, x10)
+
+inst_6945:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x330007ff; valaddr_reg:x12; val_offset:20772*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20772*FLEN/8, x13, x9, x10)
+
+inst_6946:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffc00; valaddr_reg:x12; val_offset:20775*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20775*FLEN/8, x13, x9, x10)
+
+inst_6947:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x330003ff; valaddr_reg:x12; val_offset:20778*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20778*FLEN/8, x13, x9, x10)
+
+inst_6948:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffe00; valaddr_reg:x12; val_offset:20781*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20781*FLEN/8, x13, x9, x10)
+
+inst_6949:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x330001ff; valaddr_reg:x12; val_offset:20784*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20784*FLEN/8, x13, x9, x10)
+
+inst_6950:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fff00; valaddr_reg:x12; val_offset:20787*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20787*FLEN/8, x13, x9, x10)
+
+inst_6951:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x330000ff; valaddr_reg:x12; val_offset:20790*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20790*FLEN/8, x13, x9, x10)
+
+inst_6952:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fff80; valaddr_reg:x12; val_offset:20793*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20793*FLEN/8, x13, x9, x10)
+
+inst_6953:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3300007f; valaddr_reg:x12; val_offset:20796*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20796*FLEN/8, x13, x9, x10)
+
+inst_6954:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fffc0; valaddr_reg:x12; val_offset:20799*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20799*FLEN/8, x13, x9, x10)
+
+inst_6955:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3300003f; valaddr_reg:x12; val_offset:20802*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20802*FLEN/8, x13, x9, x10)
+
+inst_6956:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337fffe0; valaddr_reg:x12; val_offset:20805*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20805*FLEN/8, x13, x9, x10)
+
+inst_6957:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3300001f; valaddr_reg:x12; val_offset:20808*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20808*FLEN/8, x13, x9, x10)
+
+inst_6958:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffff0; valaddr_reg:x12; val_offset:20811*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20811*FLEN/8, x13, x9, x10)
+
+inst_6959:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3300000f; valaddr_reg:x12; val_offset:20814*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20814*FLEN/8, x13, x9, x10)
+
+inst_6960:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffff8; valaddr_reg:x12; val_offset:20817*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20817*FLEN/8, x13, x9, x10)
+
+inst_6961:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33000007; valaddr_reg:x12; val_offset:20820*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20820*FLEN/8, x13, x9, x10)
+
+inst_6962:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffffc; valaddr_reg:x12; val_offset:20823*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20823*FLEN/8, x13, x9, x10)
+
+inst_6963:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33000003; valaddr_reg:x12; val_offset:20826*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20826*FLEN/8, x13, x9, x10)
+
+inst_6964:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x337ffffe; valaddr_reg:x12; val_offset:20829*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20829*FLEN/8, x13, x9, x10)
+
+inst_6965:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x66 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x33000001; valaddr_reg:x12; val_offset:20832*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20832*FLEN/8, x13, x9, x10)
+
+inst_6966:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:20835*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20835*FLEN/8, x13, x9, x10)
+
+inst_6967:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:20838*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20838*FLEN/8, x13, x9, x10)
+
+inst_6968:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:20841*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20841*FLEN/8, x13, x9, x10)
+
+inst_6969:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:20844*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20844*FLEN/8, x13, x9, x10)
+
+inst_6970:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:20847*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20847*FLEN/8, x13, x9, x10)
+
+inst_6971:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:20850*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20850*FLEN/8, x13, x9, x10)
+
+inst_6972:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:20853*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20853*FLEN/8, x13, x9, x10)
+
+inst_6973:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:20856*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20856*FLEN/8, x13, x9, x10)
+
+inst_6974:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:20859*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20859*FLEN/8, x13, x9, x10)
+
+inst_6975:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:20862*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20862*FLEN/8, x13, x9, x10)
+
+inst_6976:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:20865*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20865*FLEN/8, x13, x9, x10)
+
+inst_6977:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:20868*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20868*FLEN/8, x13, x9, x10)
+
+inst_6978:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:20871*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20871*FLEN/8, x13, x9, x10)
+
+inst_6979:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:20874*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20874*FLEN/8, x13, x9, x10)
+
+inst_6980:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:20877*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20877*FLEN/8, x13, x9, x10)
+
+inst_6981:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x33cfd0 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x2d8f0a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f33cfd0; op2val:0x2d8f0a;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:20880*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20880*FLEN/8, x13, x9, x10)
+
+inst_6982:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33800000; valaddr_reg:x12; val_offset:20883*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20883*FLEN/8, x13, x9, x10)
+
+inst_6983:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffffff; valaddr_reg:x12; val_offset:20886*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20886*FLEN/8, x13, x9, x10)
+
+inst_6984:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33c00000; valaddr_reg:x12; val_offset:20889*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20889*FLEN/8, x13, x9, x10)
+
+inst_6985:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33bfffff; valaddr_reg:x12; val_offset:20892*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20892*FLEN/8, x13, x9, x10)
+
+inst_6986:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33e00000; valaddr_reg:x12; val_offset:20895*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20895*FLEN/8, x13, x9, x10)
+
+inst_6987:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x339fffff; valaddr_reg:x12; val_offset:20898*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20898*FLEN/8, x13, x9, x10)
+
+inst_6988:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33f00000; valaddr_reg:x12; val_offset:20901*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20901*FLEN/8, x13, x9, x10)
+
+inst_6989:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x338fffff; valaddr_reg:x12; val_offset:20904*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20904*FLEN/8, x13, x9, x10)
+
+inst_6990:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33f80000; valaddr_reg:x12; val_offset:20907*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20907*FLEN/8, x13, x9, x10)
+
+inst_6991:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3387ffff; valaddr_reg:x12; val_offset:20910*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20910*FLEN/8, x13, x9, x10)
+
+inst_6992:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fc0000; valaddr_reg:x12; val_offset:20913*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20913*FLEN/8, x13, x9, x10)
+
+inst_6993:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3383ffff; valaddr_reg:x12; val_offset:20916*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20916*FLEN/8, x13, x9, x10)
+
+inst_6994:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fe0000; valaddr_reg:x12; val_offset:20919*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20919*FLEN/8, x13, x9, x10)
+
+inst_6995:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3381ffff; valaddr_reg:x12; val_offset:20922*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20922*FLEN/8, x13, x9, x10)
+
+inst_6996:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ff0000; valaddr_reg:x12; val_offset:20925*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20925*FLEN/8, x13, x9, x10)
+
+inst_6997:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3380ffff; valaddr_reg:x12; val_offset:20928*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20928*FLEN/8, x13, x9, x10)
+
+inst_6998:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ff8000; valaddr_reg:x12; val_offset:20931*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20931*FLEN/8, x13, x9, x10)
+
+inst_6999:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33807fff; valaddr_reg:x12; val_offset:20934*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20934*FLEN/8, x13, x9, x10)
+
+inst_7000:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffc000; valaddr_reg:x12; val_offset:20937*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20937*FLEN/8, x13, x9, x10)
+
+inst_7001:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33803fff; valaddr_reg:x12; val_offset:20940*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20940*FLEN/8, x13, x9, x10)
+
+inst_7002:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffe000; valaddr_reg:x12; val_offset:20943*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20943*FLEN/8, x13, x9, x10)
+
+inst_7003:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33801fff; valaddr_reg:x12; val_offset:20946*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20946*FLEN/8, x13, x9, x10)
+
+inst_7004:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fff000; valaddr_reg:x12; val_offset:20949*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20949*FLEN/8, x13, x9, x10)
+
+inst_7005:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33800fff; valaddr_reg:x12; val_offset:20952*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20952*FLEN/8, x13, x9, x10)
+
+inst_7006:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fff800; valaddr_reg:x12; val_offset:20955*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20955*FLEN/8, x13, x9, x10)
+
+inst_7007:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x338007ff; valaddr_reg:x12; val_offset:20958*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20958*FLEN/8, x13, x9, x10)
+
+inst_7008:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffc00; valaddr_reg:x12; val_offset:20961*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20961*FLEN/8, x13, x9, x10)
+
+inst_7009:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x338003ff; valaddr_reg:x12; val_offset:20964*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20964*FLEN/8, x13, x9, x10)
+
+inst_7010:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffe00; valaddr_reg:x12; val_offset:20967*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20967*FLEN/8, x13, x9, x10)
+
+inst_7011:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x338001ff; valaddr_reg:x12; val_offset:20970*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20970*FLEN/8, x13, x9, x10)
+
+inst_7012:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffff00; valaddr_reg:x12; val_offset:20973*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20973*FLEN/8, x13, x9, x10)
+
+inst_7013:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x338000ff; valaddr_reg:x12; val_offset:20976*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20976*FLEN/8, x13, x9, x10)
+
+inst_7014:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffff80; valaddr_reg:x12; val_offset:20979*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20979*FLEN/8, x13, x9, x10)
+
+inst_7015:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3380007f; valaddr_reg:x12; val_offset:20982*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20982*FLEN/8, x13, x9, x10)
+
+inst_7016:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffffc0; valaddr_reg:x12; val_offset:20985*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20985*FLEN/8, x13, x9, x10)
+
+inst_7017:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3380003f; valaddr_reg:x12; val_offset:20988*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20988*FLEN/8, x13, x9, x10)
+
+inst_7018:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33ffffe0; valaddr_reg:x12; val_offset:20991*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20991*FLEN/8, x13, x9, x10)
+
+inst_7019:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3380001f; valaddr_reg:x12; val_offset:20994*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20994*FLEN/8, x13, x9, x10)
+
+inst_7020:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffff0; valaddr_reg:x12; val_offset:20997*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 20997*FLEN/8, x13, x9, x10)
+
+inst_7021:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3380000f; valaddr_reg:x12; val_offset:21000*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21000*FLEN/8, x13, x9, x10)
+
+inst_7022:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffff8; valaddr_reg:x12; val_offset:21003*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21003*FLEN/8, x13, x9, x10)
+
+inst_7023:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33800007; valaddr_reg:x12; val_offset:21006*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21006*FLEN/8, x13, x9, x10)
+
+inst_7024:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffffc; valaddr_reg:x12; val_offset:21009*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21009*FLEN/8, x13, x9, x10)
+
+inst_7025:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33800003; valaddr_reg:x12; val_offset:21012*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21012*FLEN/8, x13, x9, x10)
+
+inst_7026:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33fffffe; valaddr_reg:x12; val_offset:21015*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21015*FLEN/8, x13, x9, x10)
+
+inst_7027:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x67 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x33800001; valaddr_reg:x12; val_offset:21018*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21018*FLEN/8, x13, x9, x10)
+
+inst_7028:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21021*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21021*FLEN/8, x13, x9, x10)
+
+inst_7029:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21024*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21024*FLEN/8, x13, x9, x10)
+
+inst_7030:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21027*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21027*FLEN/8, x13, x9, x10)
+
+inst_7031:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21030*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21030*FLEN/8, x13, x9, x10)
+
+inst_7032:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21033*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21033*FLEN/8, x13, x9, x10)
+
+inst_7033:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21036*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21036*FLEN/8, x13, x9, x10)
+
+inst_7034:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21039*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21039*FLEN/8, x13, x9, x10)
+
+inst_7035:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21042*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21042*FLEN/8, x13, x9, x10)
+
+inst_7036:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21045*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21045*FLEN/8, x13, x9, x10)
+
+inst_7037:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21048*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21048*FLEN/8, x13, x9, x10)
+
+inst_7038:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21051*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21051*FLEN/8, x13, x9, x10)
+
+inst_7039:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21054*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21054*FLEN/8, x13, x9, x10)
+
+inst_7040:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21057*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21057*FLEN/8, x13, x9, x10)
+
+inst_7041:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21060*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21060*FLEN/8, x13, x9, x10)
+
+inst_7042:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21063*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21063*FLEN/8, x13, x9, x10)
+
+inst_7043:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x673bc3 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x46dad4 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee73bc3; op2val:0x46dad4;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21066*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21066*FLEN/8, x13, x9, x10)
+
+inst_7044:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34000000; valaddr_reg:x12; val_offset:21069*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21069*FLEN/8, x13, x9, x10)
+
+inst_7045:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fffff; valaddr_reg:x12; val_offset:21072*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21072*FLEN/8, x13, x9, x10)
+
+inst_7046:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34400000; valaddr_reg:x12; val_offset:21075*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21075*FLEN/8, x13, x9, x10)
+
+inst_7047:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x343fffff; valaddr_reg:x12; val_offset:21078*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21078*FLEN/8, x13, x9, x10)
+
+inst_7048:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34600000; valaddr_reg:x12; val_offset:21081*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21081*FLEN/8, x13, x9, x10)
+
+inst_7049:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x341fffff; valaddr_reg:x12; val_offset:21084*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21084*FLEN/8, x13, x9, x10)
+
+inst_7050:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34700000; valaddr_reg:x12; val_offset:21087*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21087*FLEN/8, x13, x9, x10)
+
+inst_7051:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x340fffff; valaddr_reg:x12; val_offset:21090*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21090*FLEN/8, x13, x9, x10)
+
+inst_7052:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34780000; valaddr_reg:x12; val_offset:21093*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21093*FLEN/8, x13, x9, x10)
+
+inst_7053:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3407ffff; valaddr_reg:x12; val_offset:21096*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21096*FLEN/8, x13, x9, x10)
+
+inst_7054:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347c0000; valaddr_reg:x12; val_offset:21099*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21099*FLEN/8, x13, x9, x10)
+
+inst_7055:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3403ffff; valaddr_reg:x12; val_offset:21102*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21102*FLEN/8, x13, x9, x10)
+
+inst_7056:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347e0000; valaddr_reg:x12; val_offset:21105*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21105*FLEN/8, x13, x9, x10)
+
+inst_7057:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3401ffff; valaddr_reg:x12; val_offset:21108*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21108*FLEN/8, x13, x9, x10)
+
+inst_7058:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347f0000; valaddr_reg:x12; val_offset:21111*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21111*FLEN/8, x13, x9, x10)
+
+inst_7059:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3400ffff; valaddr_reg:x12; val_offset:21114*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21114*FLEN/8, x13, x9, x10)
+
+inst_7060:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347f8000; valaddr_reg:x12; val_offset:21117*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21117*FLEN/8, x13, x9, x10)
+
+inst_7061:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34007fff; valaddr_reg:x12; val_offset:21120*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21120*FLEN/8, x13, x9, x10)
+
+inst_7062:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fc000; valaddr_reg:x12; val_offset:21123*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21123*FLEN/8, x13, x9, x10)
+
+inst_7063:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34003fff; valaddr_reg:x12; val_offset:21126*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21126*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_55)
+inst_7064:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fe000; valaddr_reg:x12; val_offset:21129*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21129*FLEN/8, x13, x9, x10)
+
+inst_7065:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34001fff; valaddr_reg:x12; val_offset:21132*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21132*FLEN/8, x13, x9, x10)
+
+inst_7066:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ff000; valaddr_reg:x12; val_offset:21135*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21135*FLEN/8, x13, x9, x10)
+
+inst_7067:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34000fff; valaddr_reg:x12; val_offset:21138*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21138*FLEN/8, x13, x9, x10)
+
+inst_7068:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ff800; valaddr_reg:x12; val_offset:21141*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21141*FLEN/8, x13, x9, x10)
+
+inst_7069:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x340007ff; valaddr_reg:x12; val_offset:21144*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21144*FLEN/8, x13, x9, x10)
+
+inst_7070:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffc00; valaddr_reg:x12; val_offset:21147*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21147*FLEN/8, x13, x9, x10)
+
+inst_7071:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x340003ff; valaddr_reg:x12; val_offset:21150*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21150*FLEN/8, x13, x9, x10)
+
+inst_7072:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffe00; valaddr_reg:x12; val_offset:21153*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21153*FLEN/8, x13, x9, x10)
+
+inst_7073:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x340001ff; valaddr_reg:x12; val_offset:21156*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21156*FLEN/8, x13, x9, x10)
+
+inst_7074:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fff00; valaddr_reg:x12; val_offset:21159*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21159*FLEN/8, x13, x9, x10)
+
+inst_7075:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x340000ff; valaddr_reg:x12; val_offset:21162*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21162*FLEN/8, x13, x9, x10)
+
+inst_7076:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fff80; valaddr_reg:x12; val_offset:21165*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21165*FLEN/8, x13, x9, x10)
+
+inst_7077:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3400007f; valaddr_reg:x12; val_offset:21168*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21168*FLEN/8, x13, x9, x10)
+
+inst_7078:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fffc0; valaddr_reg:x12; val_offset:21171*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21171*FLEN/8, x13, x9, x10)
+
+inst_7079:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3400003f; valaddr_reg:x12; val_offset:21174*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21174*FLEN/8, x13, x9, x10)
+
+inst_7080:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347fffe0; valaddr_reg:x12; val_offset:21177*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21177*FLEN/8, x13, x9, x10)
+
+inst_7081:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3400001f; valaddr_reg:x12; val_offset:21180*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21180*FLEN/8, x13, x9, x10)
+
+inst_7082:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffff0; valaddr_reg:x12; val_offset:21183*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21183*FLEN/8, x13, x9, x10)
+
+inst_7083:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3400000f; valaddr_reg:x12; val_offset:21186*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21186*FLEN/8, x13, x9, x10)
+
+inst_7084:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffff8; valaddr_reg:x12; val_offset:21189*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21189*FLEN/8, x13, x9, x10)
+
+inst_7085:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34000007; valaddr_reg:x12; val_offset:21192*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21192*FLEN/8, x13, x9, x10)
+
+inst_7086:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffffc; valaddr_reg:x12; val_offset:21195*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21195*FLEN/8, x13, x9, x10)
+
+inst_7087:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34000003; valaddr_reg:x12; val_offset:21198*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21198*FLEN/8, x13, x9, x10)
+
+inst_7088:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x347ffffe; valaddr_reg:x12; val_offset:21201*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21201*FLEN/8, x13, x9, x10)
+
+inst_7089:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x68 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x34000001; valaddr_reg:x12; val_offset:21204*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21204*FLEN/8, x13, x9, x10)
+
+inst_7090:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21207*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21207*FLEN/8, x13, x9, x10)
+
+inst_7091:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21210*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21210*FLEN/8, x13, x9, x10)
+
+inst_7092:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21213*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21213*FLEN/8, x13, x9, x10)
+
+inst_7093:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21216*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21216*FLEN/8, x13, x9, x10)
+
+inst_7094:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21219*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21219*FLEN/8, x13, x9, x10)
+
+inst_7095:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21222*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21222*FLEN/8, x13, x9, x10)
+
+inst_7096:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21225*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21225*FLEN/8, x13, x9, x10)
+
+inst_7097:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21228*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21228*FLEN/8, x13, x9, x10)
+
+inst_7098:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21231*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21231*FLEN/8, x13, x9, x10)
+
+inst_7099:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21234*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21234*FLEN/8, x13, x9, x10)
+
+inst_7100:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21237*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21237*FLEN/8, x13, x9, x10)
+
+inst_7101:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21240*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21240*FLEN/8, x13, x9, x10)
+
+inst_7102:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21243*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21243*FLEN/8, x13, x9, x10)
+
+inst_7103:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21246*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21246*FLEN/8, x13, x9, x10)
+
+inst_7104:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21249*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21249*FLEN/8, x13, x9, x10)
+
+inst_7105:
+// fs1 == 0 and fe1 == 0xfa and fm1 == 0x635185 and fs2 == 0 and fe2 == 0x03 and fm2 == 0x102673 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d635185; op2val:0x1902673;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21252*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21252*FLEN/8, x13, x9, x10)
+
+inst_7106:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34800000; valaddr_reg:x12; val_offset:21255*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21255*FLEN/8, x13, x9, x10)
+
+inst_7107:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffffff; valaddr_reg:x12; val_offset:21258*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21258*FLEN/8, x13, x9, x10)
+
+inst_7108:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34c00000; valaddr_reg:x12; val_offset:21261*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21261*FLEN/8, x13, x9, x10)
+
+inst_7109:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34bfffff; valaddr_reg:x12; val_offset:21264*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21264*FLEN/8, x13, x9, x10)
+
+inst_7110:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34e00000; valaddr_reg:x12; val_offset:21267*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21267*FLEN/8, x13, x9, x10)
+
+inst_7111:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x349fffff; valaddr_reg:x12; val_offset:21270*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21270*FLEN/8, x13, x9, x10)
+
+inst_7112:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34f00000; valaddr_reg:x12; val_offset:21273*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21273*FLEN/8, x13, x9, x10)
+
+inst_7113:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x348fffff; valaddr_reg:x12; val_offset:21276*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21276*FLEN/8, x13, x9, x10)
+
+inst_7114:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34f80000; valaddr_reg:x12; val_offset:21279*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21279*FLEN/8, x13, x9, x10)
+
+inst_7115:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3487ffff; valaddr_reg:x12; val_offset:21282*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21282*FLEN/8, x13, x9, x10)
+
+inst_7116:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fc0000; valaddr_reg:x12; val_offset:21285*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21285*FLEN/8, x13, x9, x10)
+
+inst_7117:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3483ffff; valaddr_reg:x12; val_offset:21288*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21288*FLEN/8, x13, x9, x10)
+
+inst_7118:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fe0000; valaddr_reg:x12; val_offset:21291*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21291*FLEN/8, x13, x9, x10)
+
+inst_7119:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3481ffff; valaddr_reg:x12; val_offset:21294*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21294*FLEN/8, x13, x9, x10)
+
+inst_7120:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ff0000; valaddr_reg:x12; val_offset:21297*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21297*FLEN/8, x13, x9, x10)
+
+inst_7121:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3480ffff; valaddr_reg:x12; val_offset:21300*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21300*FLEN/8, x13, x9, x10)
+
+inst_7122:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ff8000; valaddr_reg:x12; val_offset:21303*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21303*FLEN/8, x13, x9, x10)
+
+inst_7123:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34807fff; valaddr_reg:x12; val_offset:21306*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21306*FLEN/8, x13, x9, x10)
+
+inst_7124:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffc000; valaddr_reg:x12; val_offset:21309*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21309*FLEN/8, x13, x9, x10)
+
+inst_7125:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34803fff; valaddr_reg:x12; val_offset:21312*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21312*FLEN/8, x13, x9, x10)
+
+inst_7126:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffe000; valaddr_reg:x12; val_offset:21315*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21315*FLEN/8, x13, x9, x10)
+
+inst_7127:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34801fff; valaddr_reg:x12; val_offset:21318*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21318*FLEN/8, x13, x9, x10)
+
+inst_7128:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fff000; valaddr_reg:x12; val_offset:21321*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21321*FLEN/8, x13, x9, x10)
+
+inst_7129:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34800fff; valaddr_reg:x12; val_offset:21324*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21324*FLEN/8, x13, x9, x10)
+
+inst_7130:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fff800; valaddr_reg:x12; val_offset:21327*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21327*FLEN/8, x13, x9, x10)
+
+inst_7131:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x348007ff; valaddr_reg:x12; val_offset:21330*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21330*FLEN/8, x13, x9, x10)
+
+inst_7132:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffc00; valaddr_reg:x12; val_offset:21333*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21333*FLEN/8, x13, x9, x10)
+
+inst_7133:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x348003ff; valaddr_reg:x12; val_offset:21336*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21336*FLEN/8, x13, x9, x10)
+
+inst_7134:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffe00; valaddr_reg:x12; val_offset:21339*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21339*FLEN/8, x13, x9, x10)
+
+inst_7135:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x348001ff; valaddr_reg:x12; val_offset:21342*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21342*FLEN/8, x13, x9, x10)
+
+inst_7136:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffff00; valaddr_reg:x12; val_offset:21345*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21345*FLEN/8, x13, x9, x10)
+
+inst_7137:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x348000ff; valaddr_reg:x12; val_offset:21348*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21348*FLEN/8, x13, x9, x10)
+
+inst_7138:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffff80; valaddr_reg:x12; val_offset:21351*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21351*FLEN/8, x13, x9, x10)
+
+inst_7139:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3480007f; valaddr_reg:x12; val_offset:21354*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21354*FLEN/8, x13, x9, x10)
+
+inst_7140:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffffc0; valaddr_reg:x12; val_offset:21357*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21357*FLEN/8, x13, x9, x10)
+
+inst_7141:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3480003f; valaddr_reg:x12; val_offset:21360*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21360*FLEN/8, x13, x9, x10)
+
+inst_7142:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34ffffe0; valaddr_reg:x12; val_offset:21363*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21363*FLEN/8, x13, x9, x10)
+
+inst_7143:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3480001f; valaddr_reg:x12; val_offset:21366*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21366*FLEN/8, x13, x9, x10)
+
+inst_7144:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffff0; valaddr_reg:x12; val_offset:21369*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21369*FLEN/8, x13, x9, x10)
+
+inst_7145:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3480000f; valaddr_reg:x12; val_offset:21372*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21372*FLEN/8, x13, x9, x10)
+
+inst_7146:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffff8; valaddr_reg:x12; val_offset:21375*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21375*FLEN/8, x13, x9, x10)
+
+inst_7147:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34800007; valaddr_reg:x12; val_offset:21378*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21378*FLEN/8, x13, x9, x10)
+
+inst_7148:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffffc; valaddr_reg:x12; val_offset:21381*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21381*FLEN/8, x13, x9, x10)
+
+inst_7149:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34800003; valaddr_reg:x12; val_offset:21384*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21384*FLEN/8, x13, x9, x10)
+
+inst_7150:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34fffffe; valaddr_reg:x12; val_offset:21387*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21387*FLEN/8, x13, x9, x10)
+
+inst_7151:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x69 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x34800001; valaddr_reg:x12; val_offset:21390*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21390*FLEN/8, x13, x9, x10)
+
+inst_7152:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21393*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21393*FLEN/8, x13, x9, x10)
+
+inst_7153:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21396*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21396*FLEN/8, x13, x9, x10)
+
+inst_7154:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21399*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21399*FLEN/8, x13, x9, x10)
+
+inst_7155:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21402*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21402*FLEN/8, x13, x9, x10)
+
+inst_7156:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21405*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21405*FLEN/8, x13, x9, x10)
+
+inst_7157:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21408*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21408*FLEN/8, x13, x9, x10)
+
+inst_7158:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21411*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21411*FLEN/8, x13, x9, x10)
+
+inst_7159:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21414*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21414*FLEN/8, x13, x9, x10)
+
+inst_7160:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21417*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21417*FLEN/8, x13, x9, x10)
+
+inst_7161:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21420*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21420*FLEN/8, x13, x9, x10)
+
+inst_7162:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21423*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21423*FLEN/8, x13, x9, x10)
+
+inst_7163:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21426*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21426*FLEN/8, x13, x9, x10)
+
+inst_7164:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21429*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21429*FLEN/8, x13, x9, x10)
+
+inst_7165:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21432*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21432*FLEN/8, x13, x9, x10)
+
+inst_7166:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21435*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21435*FLEN/8, x13, x9, x10)
+
+inst_7167:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x3f2542 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x2b6df8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dbf2542; op2val:0x12b6df8;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21438*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21438*FLEN/8, x13, x9, x10)
+
+inst_7168:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35000000; valaddr_reg:x12; val_offset:21441*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21441*FLEN/8, x13, x9, x10)
+
+inst_7169:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fffff; valaddr_reg:x12; val_offset:21444*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21444*FLEN/8, x13, x9, x10)
+
+inst_7170:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35400000; valaddr_reg:x12; val_offset:21447*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21447*FLEN/8, x13, x9, x10)
+
+inst_7171:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x353fffff; valaddr_reg:x12; val_offset:21450*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21450*FLEN/8, x13, x9, x10)
+
+inst_7172:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35600000; valaddr_reg:x12; val_offset:21453*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21453*FLEN/8, x13, x9, x10)
+
+inst_7173:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x351fffff; valaddr_reg:x12; val_offset:21456*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21456*FLEN/8, x13, x9, x10)
+
+inst_7174:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35700000; valaddr_reg:x12; val_offset:21459*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21459*FLEN/8, x13, x9, x10)
+
+inst_7175:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x350fffff; valaddr_reg:x12; val_offset:21462*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21462*FLEN/8, x13, x9, x10)
+
+inst_7176:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35780000; valaddr_reg:x12; val_offset:21465*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21465*FLEN/8, x13, x9, x10)
+
+inst_7177:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3507ffff; valaddr_reg:x12; val_offset:21468*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21468*FLEN/8, x13, x9, x10)
+
+inst_7178:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357c0000; valaddr_reg:x12; val_offset:21471*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21471*FLEN/8, x13, x9, x10)
+
+inst_7179:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3503ffff; valaddr_reg:x12; val_offset:21474*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21474*FLEN/8, x13, x9, x10)
+
+inst_7180:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357e0000; valaddr_reg:x12; val_offset:21477*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21477*FLEN/8, x13, x9, x10)
+
+inst_7181:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3501ffff; valaddr_reg:x12; val_offset:21480*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21480*FLEN/8, x13, x9, x10)
+
+inst_7182:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357f0000; valaddr_reg:x12; val_offset:21483*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21483*FLEN/8, x13, x9, x10)
+
+inst_7183:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3500ffff; valaddr_reg:x12; val_offset:21486*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21486*FLEN/8, x13, x9, x10)
+
+inst_7184:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357f8000; valaddr_reg:x12; val_offset:21489*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21489*FLEN/8, x13, x9, x10)
+
+inst_7185:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35007fff; valaddr_reg:x12; val_offset:21492*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21492*FLEN/8, x13, x9, x10)
+
+inst_7186:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fc000; valaddr_reg:x12; val_offset:21495*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21495*FLEN/8, x13, x9, x10)
+
+inst_7187:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35003fff; valaddr_reg:x12; val_offset:21498*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21498*FLEN/8, x13, x9, x10)
+
+inst_7188:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fe000; valaddr_reg:x12; val_offset:21501*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21501*FLEN/8, x13, x9, x10)
+
+inst_7189:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35001fff; valaddr_reg:x12; val_offset:21504*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21504*FLEN/8, x13, x9, x10)
+
+inst_7190:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ff000; valaddr_reg:x12; val_offset:21507*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21507*FLEN/8, x13, x9, x10)
+
+inst_7191:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35000fff; valaddr_reg:x12; val_offset:21510*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21510*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_56)
+inst_7192:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ff800; valaddr_reg:x12; val_offset:21513*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21513*FLEN/8, x13, x9, x10)
+
+inst_7193:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x350007ff; valaddr_reg:x12; val_offset:21516*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21516*FLEN/8, x13, x9, x10)
+
+inst_7194:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffc00; valaddr_reg:x12; val_offset:21519*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21519*FLEN/8, x13, x9, x10)
+
+inst_7195:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x350003ff; valaddr_reg:x12; val_offset:21522*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21522*FLEN/8, x13, x9, x10)
+
+inst_7196:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffe00; valaddr_reg:x12; val_offset:21525*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21525*FLEN/8, x13, x9, x10)
+
+inst_7197:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x350001ff; valaddr_reg:x12; val_offset:21528*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21528*FLEN/8, x13, x9, x10)
+
+inst_7198:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fff00; valaddr_reg:x12; val_offset:21531*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21531*FLEN/8, x13, x9, x10)
+
+inst_7199:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x350000ff; valaddr_reg:x12; val_offset:21534*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21534*FLEN/8, x13, x9, x10)
+
+inst_7200:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fff80; valaddr_reg:x12; val_offset:21537*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21537*FLEN/8, x13, x9, x10)
+
+inst_7201:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3500007f; valaddr_reg:x12; val_offset:21540*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21540*FLEN/8, x13, x9, x10)
+
+inst_7202:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fffc0; valaddr_reg:x12; val_offset:21543*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21543*FLEN/8, x13, x9, x10)
+
+inst_7203:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3500003f; valaddr_reg:x12; val_offset:21546*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21546*FLEN/8, x13, x9, x10)
+
+inst_7204:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357fffe0; valaddr_reg:x12; val_offset:21549*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21549*FLEN/8, x13, x9, x10)
+
+inst_7205:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3500001f; valaddr_reg:x12; val_offset:21552*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21552*FLEN/8, x13, x9, x10)
+
+inst_7206:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffff0; valaddr_reg:x12; val_offset:21555*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21555*FLEN/8, x13, x9, x10)
+
+inst_7207:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3500000f; valaddr_reg:x12; val_offset:21558*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21558*FLEN/8, x13, x9, x10)
+
+inst_7208:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffff8; valaddr_reg:x12; val_offset:21561*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21561*FLEN/8, x13, x9, x10)
+
+inst_7209:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35000007; valaddr_reg:x12; val_offset:21564*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21564*FLEN/8, x13, x9, x10)
+
+inst_7210:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffffc; valaddr_reg:x12; val_offset:21567*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21567*FLEN/8, x13, x9, x10)
+
+inst_7211:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35000003; valaddr_reg:x12; val_offset:21570*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21570*FLEN/8, x13, x9, x10)
+
+inst_7212:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x357ffffe; valaddr_reg:x12; val_offset:21573*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21573*FLEN/8, x13, x9, x10)
+
+inst_7213:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x6a and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x35000001; valaddr_reg:x12; val_offset:21576*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21576*FLEN/8, x13, x9, x10)
+
+inst_7214:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21579*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21579*FLEN/8, x13, x9, x10)
+
+inst_7215:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21582*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21582*FLEN/8, x13, x9, x10)
+
+inst_7216:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21585*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21585*FLEN/8, x13, x9, x10)
+
+inst_7217:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21588*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21588*FLEN/8, x13, x9, x10)
+
+inst_7218:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21591*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21591*FLEN/8, x13, x9, x10)
+
+inst_7219:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21594*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21594*FLEN/8, x13, x9, x10)
+
+inst_7220:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21597*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21597*FLEN/8, x13, x9, x10)
+
+inst_7221:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21600*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21600*FLEN/8, x13, x9, x10)
+
+inst_7222:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21603*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21603*FLEN/8, x13, x9, x10)
+
+inst_7223:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21606*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21606*FLEN/8, x13, x9, x10)
+
+inst_7224:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21609*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21609*FLEN/8, x13, x9, x10)
+
+inst_7225:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21612*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21612*FLEN/8, x13, x9, x10)
+
+inst_7226:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21615*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21615*FLEN/8, x13, x9, x10)
+
+inst_7227:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21618*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21618*FLEN/8, x13, x9, x10)
+
+inst_7228:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21621*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21621*FLEN/8, x13, x9, x10)
+
+inst_7229:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x10c8a9 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x6252d8 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e10c8a9; op2val:0xe252d8;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21624*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21624*FLEN/8, x13, x9, x10)
+
+inst_7230:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35800000; valaddr_reg:x12; val_offset:21627*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21627*FLEN/8, x13, x9, x10)
+
+inst_7231:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffffff; valaddr_reg:x12; val_offset:21630*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21630*FLEN/8, x13, x9, x10)
+
+inst_7232:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35c00000; valaddr_reg:x12; val_offset:21633*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21633*FLEN/8, x13, x9, x10)
+
+inst_7233:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35bfffff; valaddr_reg:x12; val_offset:21636*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21636*FLEN/8, x13, x9, x10)
+
+inst_7234:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35e00000; valaddr_reg:x12; val_offset:21639*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21639*FLEN/8, x13, x9, x10)
+
+inst_7235:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x359fffff; valaddr_reg:x12; val_offset:21642*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21642*FLEN/8, x13, x9, x10)
+
+inst_7236:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35f00000; valaddr_reg:x12; val_offset:21645*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21645*FLEN/8, x13, x9, x10)
+
+inst_7237:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x358fffff; valaddr_reg:x12; val_offset:21648*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21648*FLEN/8, x13, x9, x10)
+
+inst_7238:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35f80000; valaddr_reg:x12; val_offset:21651*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21651*FLEN/8, x13, x9, x10)
+
+inst_7239:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3587ffff; valaddr_reg:x12; val_offset:21654*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21654*FLEN/8, x13, x9, x10)
+
+inst_7240:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fc0000; valaddr_reg:x12; val_offset:21657*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21657*FLEN/8, x13, x9, x10)
+
+inst_7241:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3583ffff; valaddr_reg:x12; val_offset:21660*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21660*FLEN/8, x13, x9, x10)
+
+inst_7242:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fe0000; valaddr_reg:x12; val_offset:21663*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21663*FLEN/8, x13, x9, x10)
+
+inst_7243:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3581ffff; valaddr_reg:x12; val_offset:21666*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21666*FLEN/8, x13, x9, x10)
+
+inst_7244:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ff0000; valaddr_reg:x12; val_offset:21669*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21669*FLEN/8, x13, x9, x10)
+
+inst_7245:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3580ffff; valaddr_reg:x12; val_offset:21672*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21672*FLEN/8, x13, x9, x10)
+
+inst_7246:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ff8000; valaddr_reg:x12; val_offset:21675*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21675*FLEN/8, x13, x9, x10)
+
+inst_7247:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35807fff; valaddr_reg:x12; val_offset:21678*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21678*FLEN/8, x13, x9, x10)
+
+inst_7248:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffc000; valaddr_reg:x12; val_offset:21681*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21681*FLEN/8, x13, x9, x10)
+
+inst_7249:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35803fff; valaddr_reg:x12; val_offset:21684*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21684*FLEN/8, x13, x9, x10)
+
+inst_7250:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffe000; valaddr_reg:x12; val_offset:21687*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21687*FLEN/8, x13, x9, x10)
+
+inst_7251:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35801fff; valaddr_reg:x12; val_offset:21690*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21690*FLEN/8, x13, x9, x10)
+
+inst_7252:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fff000; valaddr_reg:x12; val_offset:21693*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21693*FLEN/8, x13, x9, x10)
+
+inst_7253:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35800fff; valaddr_reg:x12; val_offset:21696*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21696*FLEN/8, x13, x9, x10)
+
+inst_7254:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fff800; valaddr_reg:x12; val_offset:21699*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21699*FLEN/8, x13, x9, x10)
+
+inst_7255:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x358007ff; valaddr_reg:x12; val_offset:21702*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21702*FLEN/8, x13, x9, x10)
+
+inst_7256:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffc00; valaddr_reg:x12; val_offset:21705*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21705*FLEN/8, x13, x9, x10)
+
+inst_7257:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x358003ff; valaddr_reg:x12; val_offset:21708*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21708*FLEN/8, x13, x9, x10)
+
+inst_7258:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffe00; valaddr_reg:x12; val_offset:21711*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21711*FLEN/8, x13, x9, x10)
+
+inst_7259:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x358001ff; valaddr_reg:x12; val_offset:21714*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21714*FLEN/8, x13, x9, x10)
+
+inst_7260:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffff00; valaddr_reg:x12; val_offset:21717*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21717*FLEN/8, x13, x9, x10)
+
+inst_7261:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x358000ff; valaddr_reg:x12; val_offset:21720*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21720*FLEN/8, x13, x9, x10)
+
+inst_7262:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffff80; valaddr_reg:x12; val_offset:21723*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21723*FLEN/8, x13, x9, x10)
+
+inst_7263:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3580007f; valaddr_reg:x12; val_offset:21726*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21726*FLEN/8, x13, x9, x10)
+
+inst_7264:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffffc0; valaddr_reg:x12; val_offset:21729*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21729*FLEN/8, x13, x9, x10)
+
+inst_7265:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3580003f; valaddr_reg:x12; val_offset:21732*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21732*FLEN/8, x13, x9, x10)
+
+inst_7266:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35ffffe0; valaddr_reg:x12; val_offset:21735*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21735*FLEN/8, x13, x9, x10)
+
+inst_7267:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3580001f; valaddr_reg:x12; val_offset:21738*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21738*FLEN/8, x13, x9, x10)
+
+inst_7268:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffff0; valaddr_reg:x12; val_offset:21741*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21741*FLEN/8, x13, x9, x10)
+
+inst_7269:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3580000f; valaddr_reg:x12; val_offset:21744*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21744*FLEN/8, x13, x9, x10)
+
+inst_7270:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffff8; valaddr_reg:x12; val_offset:21747*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21747*FLEN/8, x13, x9, x10)
+
+inst_7271:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35800007; valaddr_reg:x12; val_offset:21750*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21750*FLEN/8, x13, x9, x10)
+
+inst_7272:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffffc; valaddr_reg:x12; val_offset:21753*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21753*FLEN/8, x13, x9, x10)
+
+inst_7273:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35800003; valaddr_reg:x12; val_offset:21756*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21756*FLEN/8, x13, x9, x10)
+
+inst_7274:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35fffffe; valaddr_reg:x12; val_offset:21759*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21759*FLEN/8, x13, x9, x10)
+
+inst_7275:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x6b and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x35800001; valaddr_reg:x12; val_offset:21762*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21762*FLEN/8, x13, x9, x10)
+
+inst_7276:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21765*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21765*FLEN/8, x13, x9, x10)
+
+inst_7277:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21768*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21768*FLEN/8, x13, x9, x10)
+
+inst_7278:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21771*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21771*FLEN/8, x13, x9, x10)
+
+inst_7279:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21774*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21774*FLEN/8, x13, x9, x10)
+
+inst_7280:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21777*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21777*FLEN/8, x13, x9, x10)
+
+inst_7281:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21780*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21780*FLEN/8, x13, x9, x10)
+
+inst_7282:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21783*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21783*FLEN/8, x13, x9, x10)
+
+inst_7283:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21786*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21786*FLEN/8, x13, x9, x10)
+
+inst_7284:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21789*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21789*FLEN/8, x13, x9, x10)
+
+inst_7285:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21792*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21792*FLEN/8, x13, x9, x10)
+
+inst_7286:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21795*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21795*FLEN/8, x13, x9, x10)
+
+inst_7287:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21798*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21798*FLEN/8, x13, x9, x10)
+
+inst_7288:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21801*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21801*FLEN/8, x13, x9, x10)
+
+inst_7289:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21804*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21804*FLEN/8, x13, x9, x10)
+
+inst_7290:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21807*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21807*FLEN/8, x13, x9, x10)
+
+inst_7291:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x1f6064 and fs2 == 0 and fe2 == 0x00 and fm2 == 0x336679 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f1f6064; op2val:0x336679;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21810*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21810*FLEN/8, x13, x9, x10)
+
+inst_7292:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36000000; valaddr_reg:x12; val_offset:21813*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21813*FLEN/8, x13, x9, x10)
+
+inst_7293:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fffff; valaddr_reg:x12; val_offset:21816*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21816*FLEN/8, x13, x9, x10)
+
+inst_7294:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36400000; valaddr_reg:x12; val_offset:21819*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21819*FLEN/8, x13, x9, x10)
+
+inst_7295:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x363fffff; valaddr_reg:x12; val_offset:21822*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21822*FLEN/8, x13, x9, x10)
+
+inst_7296:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36600000; valaddr_reg:x12; val_offset:21825*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21825*FLEN/8, x13, x9, x10)
+
+inst_7297:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x361fffff; valaddr_reg:x12; val_offset:21828*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21828*FLEN/8, x13, x9, x10)
+
+inst_7298:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36700000; valaddr_reg:x12; val_offset:21831*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21831*FLEN/8, x13, x9, x10)
+
+inst_7299:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x360fffff; valaddr_reg:x12; val_offset:21834*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21834*FLEN/8, x13, x9, x10)
+
+inst_7300:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36780000; valaddr_reg:x12; val_offset:21837*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21837*FLEN/8, x13, x9, x10)
+
+inst_7301:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3607ffff; valaddr_reg:x12; val_offset:21840*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21840*FLEN/8, x13, x9, x10)
+
+inst_7302:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367c0000; valaddr_reg:x12; val_offset:21843*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21843*FLEN/8, x13, x9, x10)
+
+inst_7303:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3603ffff; valaddr_reg:x12; val_offset:21846*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21846*FLEN/8, x13, x9, x10)
+
+inst_7304:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367e0000; valaddr_reg:x12; val_offset:21849*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21849*FLEN/8, x13, x9, x10)
+
+inst_7305:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3601ffff; valaddr_reg:x12; val_offset:21852*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21852*FLEN/8, x13, x9, x10)
+
+inst_7306:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367f0000; valaddr_reg:x12; val_offset:21855*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21855*FLEN/8, x13, x9, x10)
+
+inst_7307:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3600ffff; valaddr_reg:x12; val_offset:21858*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21858*FLEN/8, x13, x9, x10)
+
+inst_7308:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367f8000; valaddr_reg:x12; val_offset:21861*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21861*FLEN/8, x13, x9, x10)
+
+inst_7309:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36007fff; valaddr_reg:x12; val_offset:21864*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21864*FLEN/8, x13, x9, x10)
+
+inst_7310:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fc000; valaddr_reg:x12; val_offset:21867*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21867*FLEN/8, x13, x9, x10)
+
+inst_7311:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36003fff; valaddr_reg:x12; val_offset:21870*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21870*FLEN/8, x13, x9, x10)
+
+inst_7312:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fe000; valaddr_reg:x12; val_offset:21873*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21873*FLEN/8, x13, x9, x10)
+
+inst_7313:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36001fff; valaddr_reg:x12; val_offset:21876*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21876*FLEN/8, x13, x9, x10)
+
+inst_7314:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ff000; valaddr_reg:x12; val_offset:21879*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21879*FLEN/8, x13, x9, x10)
+
+inst_7315:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36000fff; valaddr_reg:x12; val_offset:21882*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21882*FLEN/8, x13, x9, x10)
+
+inst_7316:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ff800; valaddr_reg:x12; val_offset:21885*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21885*FLEN/8, x13, x9, x10)
+
+inst_7317:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x360007ff; valaddr_reg:x12; val_offset:21888*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21888*FLEN/8, x13, x9, x10)
+
+inst_7318:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffc00; valaddr_reg:x12; val_offset:21891*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21891*FLEN/8, x13, x9, x10)
+
+inst_7319:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x360003ff; valaddr_reg:x12; val_offset:21894*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21894*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_57)
+inst_7320:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffe00; valaddr_reg:x12; val_offset:21897*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21897*FLEN/8, x13, x9, x10)
+
+inst_7321:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x360001ff; valaddr_reg:x12; val_offset:21900*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21900*FLEN/8, x13, x9, x10)
+
+inst_7322:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fff00; valaddr_reg:x12; val_offset:21903*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21903*FLEN/8, x13, x9, x10)
+
+inst_7323:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x360000ff; valaddr_reg:x12; val_offset:21906*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21906*FLEN/8, x13, x9, x10)
+
+inst_7324:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fff80; valaddr_reg:x12; val_offset:21909*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21909*FLEN/8, x13, x9, x10)
+
+inst_7325:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3600007f; valaddr_reg:x12; val_offset:21912*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21912*FLEN/8, x13, x9, x10)
+
+inst_7326:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fffc0; valaddr_reg:x12; val_offset:21915*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21915*FLEN/8, x13, x9, x10)
+
+inst_7327:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3600003f; valaddr_reg:x12; val_offset:21918*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21918*FLEN/8, x13, x9, x10)
+
+inst_7328:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367fffe0; valaddr_reg:x12; val_offset:21921*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21921*FLEN/8, x13, x9, x10)
+
+inst_7329:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3600001f; valaddr_reg:x12; val_offset:21924*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21924*FLEN/8, x13, x9, x10)
+
+inst_7330:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffff0; valaddr_reg:x12; val_offset:21927*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21927*FLEN/8, x13, x9, x10)
+
+inst_7331:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3600000f; valaddr_reg:x12; val_offset:21930*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21930*FLEN/8, x13, x9, x10)
+
+inst_7332:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffff8; valaddr_reg:x12; val_offset:21933*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21933*FLEN/8, x13, x9, x10)
+
+inst_7333:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36000007; valaddr_reg:x12; val_offset:21936*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21936*FLEN/8, x13, x9, x10)
+
+inst_7334:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffffc; valaddr_reg:x12; val_offset:21939*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21939*FLEN/8, x13, x9, x10)
+
+inst_7335:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36000003; valaddr_reg:x12; val_offset:21942*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21942*FLEN/8, x13, x9, x10)
+
+inst_7336:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x367ffffe; valaddr_reg:x12; val_offset:21945*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21945*FLEN/8, x13, x9, x10)
+
+inst_7337:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x6c and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x36000001; valaddr_reg:x12; val_offset:21948*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21948*FLEN/8, x13, x9, x10)
+
+inst_7338:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:21951*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21951*FLEN/8, x13, x9, x10)
+
+inst_7339:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:21954*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21954*FLEN/8, x13, x9, x10)
+
+inst_7340:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:21957*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21957*FLEN/8, x13, x9, x10)
+
+inst_7341:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:21960*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21960*FLEN/8, x13, x9, x10)
+
+inst_7342:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:21963*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21963*FLEN/8, x13, x9, x10)
+
+inst_7343:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:21966*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21966*FLEN/8, x13, x9, x10)
+
+inst_7344:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:21969*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21969*FLEN/8, x13, x9, x10)
+
+inst_7345:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:21972*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21972*FLEN/8, x13, x9, x10)
+
+inst_7346:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:21975*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21975*FLEN/8, x13, x9, x10)
+
+inst_7347:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:21978*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21978*FLEN/8, x13, x9, x10)
+
+inst_7348:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:21981*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21981*FLEN/8, x13, x9, x10)
+
+inst_7349:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:21984*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21984*FLEN/8, x13, x9, x10)
+
+inst_7350:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:21987*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21987*FLEN/8, x13, x9, x10)
+
+inst_7351:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:21990*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21990*FLEN/8, x13, x9, x10)
+
+inst_7352:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:21993*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21993*FLEN/8, x13, x9, x10)
+
+inst_7353:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x37da2c and fs2 == 0 and fe2 == 0x02 and fm2 == 0x323ae6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db7da2c; op2val:0x1323ae6;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:21996*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21996*FLEN/8, x13, x9, x10)
+
+inst_7354:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36800000; valaddr_reg:x12; val_offset:21999*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 21999*FLEN/8, x13, x9, x10)
+
+inst_7355:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffffff; valaddr_reg:x12; val_offset:22002*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22002*FLEN/8, x13, x9, x10)
+
+inst_7356:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36c00000; valaddr_reg:x12; val_offset:22005*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22005*FLEN/8, x13, x9, x10)
+
+inst_7357:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36bfffff; valaddr_reg:x12; val_offset:22008*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22008*FLEN/8, x13, x9, x10)
+
+inst_7358:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36e00000; valaddr_reg:x12; val_offset:22011*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22011*FLEN/8, x13, x9, x10)
+
+inst_7359:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x369fffff; valaddr_reg:x12; val_offset:22014*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22014*FLEN/8, x13, x9, x10)
+
+inst_7360:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36f00000; valaddr_reg:x12; val_offset:22017*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22017*FLEN/8, x13, x9, x10)
+
+inst_7361:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x368fffff; valaddr_reg:x12; val_offset:22020*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22020*FLEN/8, x13, x9, x10)
+
+inst_7362:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36f80000; valaddr_reg:x12; val_offset:22023*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22023*FLEN/8, x13, x9, x10)
+
+inst_7363:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3687ffff; valaddr_reg:x12; val_offset:22026*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22026*FLEN/8, x13, x9, x10)
+
+inst_7364:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fc0000; valaddr_reg:x12; val_offset:22029*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22029*FLEN/8, x13, x9, x10)
+
+inst_7365:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3683ffff; valaddr_reg:x12; val_offset:22032*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22032*FLEN/8, x13, x9, x10)
+
+inst_7366:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fe0000; valaddr_reg:x12; val_offset:22035*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22035*FLEN/8, x13, x9, x10)
+
+inst_7367:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3681ffff; valaddr_reg:x12; val_offset:22038*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22038*FLEN/8, x13, x9, x10)
+
+inst_7368:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ff0000; valaddr_reg:x12; val_offset:22041*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22041*FLEN/8, x13, x9, x10)
+
+inst_7369:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3680ffff; valaddr_reg:x12; val_offset:22044*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22044*FLEN/8, x13, x9, x10)
+
+inst_7370:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ff8000; valaddr_reg:x12; val_offset:22047*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22047*FLEN/8, x13, x9, x10)
+
+inst_7371:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36807fff; valaddr_reg:x12; val_offset:22050*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22050*FLEN/8, x13, x9, x10)
+
+inst_7372:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffc000; valaddr_reg:x12; val_offset:22053*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22053*FLEN/8, x13, x9, x10)
+
+inst_7373:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36803fff; valaddr_reg:x12; val_offset:22056*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22056*FLEN/8, x13, x9, x10)
+
+inst_7374:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffe000; valaddr_reg:x12; val_offset:22059*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22059*FLEN/8, x13, x9, x10)
+
+inst_7375:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36801fff; valaddr_reg:x12; val_offset:22062*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22062*FLEN/8, x13, x9, x10)
+
+inst_7376:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fff000; valaddr_reg:x12; val_offset:22065*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22065*FLEN/8, x13, x9, x10)
+
+inst_7377:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36800fff; valaddr_reg:x12; val_offset:22068*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22068*FLEN/8, x13, x9, x10)
+
+inst_7378:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fff800; valaddr_reg:x12; val_offset:22071*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22071*FLEN/8, x13, x9, x10)
+
+inst_7379:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x368007ff; valaddr_reg:x12; val_offset:22074*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22074*FLEN/8, x13, x9, x10)
+
+inst_7380:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffc00; valaddr_reg:x12; val_offset:22077*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22077*FLEN/8, x13, x9, x10)
+
+inst_7381:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x368003ff; valaddr_reg:x12; val_offset:22080*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22080*FLEN/8, x13, x9, x10)
+
+inst_7382:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffe00; valaddr_reg:x12; val_offset:22083*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22083*FLEN/8, x13, x9, x10)
+
+inst_7383:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x368001ff; valaddr_reg:x12; val_offset:22086*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22086*FLEN/8, x13, x9, x10)
+
+inst_7384:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffff00; valaddr_reg:x12; val_offset:22089*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22089*FLEN/8, x13, x9, x10)
+
+inst_7385:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x368000ff; valaddr_reg:x12; val_offset:22092*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22092*FLEN/8, x13, x9, x10)
+
+inst_7386:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffff80; valaddr_reg:x12; val_offset:22095*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22095*FLEN/8, x13, x9, x10)
+
+inst_7387:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3680007f; valaddr_reg:x12; val_offset:22098*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22098*FLEN/8, x13, x9, x10)
+
+inst_7388:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffffc0; valaddr_reg:x12; val_offset:22101*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22101*FLEN/8, x13, x9, x10)
+
+inst_7389:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3680003f; valaddr_reg:x12; val_offset:22104*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22104*FLEN/8, x13, x9, x10)
+
+inst_7390:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36ffffe0; valaddr_reg:x12; val_offset:22107*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22107*FLEN/8, x13, x9, x10)
+
+inst_7391:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3680001f; valaddr_reg:x12; val_offset:22110*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22110*FLEN/8, x13, x9, x10)
+
+inst_7392:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffff0; valaddr_reg:x12; val_offset:22113*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22113*FLEN/8, x13, x9, x10)
+
+inst_7393:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3680000f; valaddr_reg:x12; val_offset:22116*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22116*FLEN/8, x13, x9, x10)
+
+inst_7394:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffff8; valaddr_reg:x12; val_offset:22119*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22119*FLEN/8, x13, x9, x10)
+
+inst_7395:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36800007; valaddr_reg:x12; val_offset:22122*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22122*FLEN/8, x13, x9, x10)
+
+inst_7396:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffffc; valaddr_reg:x12; val_offset:22125*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22125*FLEN/8, x13, x9, x10)
+
+inst_7397:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36800003; valaddr_reg:x12; val_offset:22128*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22128*FLEN/8, x13, x9, x10)
+
+inst_7398:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36fffffe; valaddr_reg:x12; val_offset:22131*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22131*FLEN/8, x13, x9, x10)
+
+inst_7399:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x6d and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x36800001; valaddr_reg:x12; val_offset:22134*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22134*FLEN/8, x13, x9, x10)
+
+inst_7400:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:22137*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22137*FLEN/8, x13, x9, x10)
+
+inst_7401:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:22140*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22140*FLEN/8, x13, x9, x10)
+
+inst_7402:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:22143*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22143*FLEN/8, x13, x9, x10)
+
+inst_7403:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:22146*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22146*FLEN/8, x13, x9, x10)
+
+inst_7404:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:22149*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22149*FLEN/8, x13, x9, x10)
+
+inst_7405:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:22152*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22152*FLEN/8, x13, x9, x10)
+
+inst_7406:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:22155*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22155*FLEN/8, x13, x9, x10)
+
+inst_7407:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:22158*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22158*FLEN/8, x13, x9, x10)
+
+inst_7408:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:22161*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22161*FLEN/8, x13, x9, x10)
+
+inst_7409:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:22164*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22164*FLEN/8, x13, x9, x10)
+
+inst_7410:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:22167*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22167*FLEN/8, x13, x9, x10)
+
+inst_7411:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:22170*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22170*FLEN/8, x13, x9, x10)
+
+inst_7412:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:22173*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22173*FLEN/8, x13, x9, x10)
+
+inst_7413:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:22176*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22176*FLEN/8, x13, x9, x10)
+
+inst_7414:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:22179*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22179*FLEN/8, x13, x9, x10)
+
+inst_7415:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x0c97c9 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x6911ef and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d8c97c9; op2val:0x16911ef;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:22182*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22182*FLEN/8, x13, x9, x10)
+
+inst_7416:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37000000; valaddr_reg:x12; val_offset:22185*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22185*FLEN/8, x13, x9, x10)
+
+inst_7417:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fffff; valaddr_reg:x12; val_offset:22188*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22188*FLEN/8, x13, x9, x10)
+
+inst_7418:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37400000; valaddr_reg:x12; val_offset:22191*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22191*FLEN/8, x13, x9, x10)
+
+inst_7419:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x373fffff; valaddr_reg:x12; val_offset:22194*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22194*FLEN/8, x13, x9, x10)
+
+inst_7420:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37600000; valaddr_reg:x12; val_offset:22197*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22197*FLEN/8, x13, x9, x10)
+
+inst_7421:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x371fffff; valaddr_reg:x12; val_offset:22200*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22200*FLEN/8, x13, x9, x10)
+
+inst_7422:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37700000; valaddr_reg:x12; val_offset:22203*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22203*FLEN/8, x13, x9, x10)
+
+inst_7423:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x370fffff; valaddr_reg:x12; val_offset:22206*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22206*FLEN/8, x13, x9, x10)
+
+inst_7424:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37780000; valaddr_reg:x12; val_offset:22209*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22209*FLEN/8, x13, x9, x10)
+
+inst_7425:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3707ffff; valaddr_reg:x12; val_offset:22212*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22212*FLEN/8, x13, x9, x10)
+
+inst_7426:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377c0000; valaddr_reg:x12; val_offset:22215*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22215*FLEN/8, x13, x9, x10)
+
+inst_7427:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3703ffff; valaddr_reg:x12; val_offset:22218*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22218*FLEN/8, x13, x9, x10)
+
+inst_7428:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377e0000; valaddr_reg:x12; val_offset:22221*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22221*FLEN/8, x13, x9, x10)
+
+inst_7429:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3701ffff; valaddr_reg:x12; val_offset:22224*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22224*FLEN/8, x13, x9, x10)
+
+inst_7430:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377f0000; valaddr_reg:x12; val_offset:22227*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22227*FLEN/8, x13, x9, x10)
+
+inst_7431:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3700ffff; valaddr_reg:x12; val_offset:22230*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22230*FLEN/8, x13, x9, x10)
+
+inst_7432:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377f8000; valaddr_reg:x12; val_offset:22233*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22233*FLEN/8, x13, x9, x10)
+
+inst_7433:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37007fff; valaddr_reg:x12; val_offset:22236*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22236*FLEN/8, x13, x9, x10)
+
+inst_7434:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fc000; valaddr_reg:x12; val_offset:22239*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22239*FLEN/8, x13, x9, x10)
+
+inst_7435:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37003fff; valaddr_reg:x12; val_offset:22242*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22242*FLEN/8, x13, x9, x10)
+
+inst_7436:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fe000; valaddr_reg:x12; val_offset:22245*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22245*FLEN/8, x13, x9, x10)
+
+inst_7437:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37001fff; valaddr_reg:x12; val_offset:22248*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22248*FLEN/8, x13, x9, x10)
+
+inst_7438:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ff000; valaddr_reg:x12; val_offset:22251*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22251*FLEN/8, x13, x9, x10)
+
+inst_7439:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37000fff; valaddr_reg:x12; val_offset:22254*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22254*FLEN/8, x13, x9, x10)
+
+inst_7440:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ff800; valaddr_reg:x12; val_offset:22257*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22257*FLEN/8, x13, x9, x10)
+
+inst_7441:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x370007ff; valaddr_reg:x12; val_offset:22260*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22260*FLEN/8, x13, x9, x10)
+
+inst_7442:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffc00; valaddr_reg:x12; val_offset:22263*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22263*FLEN/8, x13, x9, x10)
+
+inst_7443:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x370003ff; valaddr_reg:x12; val_offset:22266*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22266*FLEN/8, x13, x9, x10)
+
+inst_7444:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffe00; valaddr_reg:x12; val_offset:22269*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22269*FLEN/8, x13, x9, x10)
+
+inst_7445:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x370001ff; valaddr_reg:x12; val_offset:22272*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22272*FLEN/8, x13, x9, x10)
+
+inst_7446:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fff00; valaddr_reg:x12; val_offset:22275*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22275*FLEN/8, x13, x9, x10)
+
+inst_7447:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x370000ff; valaddr_reg:x12; val_offset:22278*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22278*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_58)
+inst_7448:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fff80; valaddr_reg:x12; val_offset:22281*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22281*FLEN/8, x13, x9, x10)
+
+inst_7449:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3700007f; valaddr_reg:x12; val_offset:22284*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22284*FLEN/8, x13, x9, x10)
+
+inst_7450:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fffc0; valaddr_reg:x12; val_offset:22287*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22287*FLEN/8, x13, x9, x10)
+
+inst_7451:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3700003f; valaddr_reg:x12; val_offset:22290*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22290*FLEN/8, x13, x9, x10)
+
+inst_7452:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377fffe0; valaddr_reg:x12; val_offset:22293*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22293*FLEN/8, x13, x9, x10)
+
+inst_7453:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3700001f; valaddr_reg:x12; val_offset:22296*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22296*FLEN/8, x13, x9, x10)
+
+inst_7454:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffff0; valaddr_reg:x12; val_offset:22299*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22299*FLEN/8, x13, x9, x10)
+
+inst_7455:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3700000f; valaddr_reg:x12; val_offset:22302*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22302*FLEN/8, x13, x9, x10)
+
+inst_7456:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffff8; valaddr_reg:x12; val_offset:22305*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22305*FLEN/8, x13, x9, x10)
+
+inst_7457:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37000007; valaddr_reg:x12; val_offset:22308*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22308*FLEN/8, x13, x9, x10)
+
+inst_7458:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffffc; valaddr_reg:x12; val_offset:22311*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22311*FLEN/8, x13, x9, x10)
+
+inst_7459:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37000003; valaddr_reg:x12; val_offset:22314*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22314*FLEN/8, x13, x9, x10)
+
+inst_7460:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x377ffffe; valaddr_reg:x12; val_offset:22317*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22317*FLEN/8, x13, x9, x10)
+
+inst_7461:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x6e and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x37000001; valaddr_reg:x12; val_offset:22320*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22320*FLEN/8, x13, x9, x10)
+
+inst_7462:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:22323*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22323*FLEN/8, x13, x9, x10)
+
+inst_7463:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:22326*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22326*FLEN/8, x13, x9, x10)
+
+inst_7464:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:22329*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22329*FLEN/8, x13, x9, x10)
+
+inst_7465:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:22332*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22332*FLEN/8, x13, x9, x10)
+
+inst_7466:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:22335*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22335*FLEN/8, x13, x9, x10)
+
+inst_7467:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:22338*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22338*FLEN/8, x13, x9, x10)
+
+inst_7468:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:22341*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22341*FLEN/8, x13, x9, x10)
+
+inst_7469:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:22344*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22344*FLEN/8, x13, x9, x10)
+
+inst_7470:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:22347*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22347*FLEN/8, x13, x9, x10)
+
+inst_7471:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:22350*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22350*FLEN/8, x13, x9, x10)
+
+inst_7472:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:22353*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22353*FLEN/8, x13, x9, x10)
+
+inst_7473:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:22356*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22356*FLEN/8, x13, x9, x10)
+
+inst_7474:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:22359*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22359*FLEN/8, x13, x9, x10)
+
+inst_7475:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:22362*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22362*FLEN/8, x13, x9, x10)
+
+inst_7476:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:22365*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22365*FLEN/8, x13, x9, x10)
+
+inst_7477:
+// fs1 == 0 and fe1 == 0xfe and fm1 == 0x20191e and fs2 == 0 and fe2 == 0x00 and fm2 == 0x332b2a and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f20191e; op2val:0x332b2a;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:22368*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22368*FLEN/8, x13, x9, x10)
+
+inst_7478:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37800000; valaddr_reg:x12; val_offset:22371*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22371*FLEN/8, x13, x9, x10)
+
+inst_7479:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffffff; valaddr_reg:x12; val_offset:22374*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22374*FLEN/8, x13, x9, x10)
+
+inst_7480:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37c00000; valaddr_reg:x12; val_offset:22377*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22377*FLEN/8, x13, x9, x10)
+
+inst_7481:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37bfffff; valaddr_reg:x12; val_offset:22380*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22380*FLEN/8, x13, x9, x10)
+
+inst_7482:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37e00000; valaddr_reg:x12; val_offset:22383*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22383*FLEN/8, x13, x9, x10)
+
+inst_7483:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x379fffff; valaddr_reg:x12; val_offset:22386*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22386*FLEN/8, x13, x9, x10)
+
+inst_7484:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37f00000; valaddr_reg:x12; val_offset:22389*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22389*FLEN/8, x13, x9, x10)
+
+inst_7485:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x378fffff; valaddr_reg:x12; val_offset:22392*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22392*FLEN/8, x13, x9, x10)
+
+inst_7486:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37f80000; valaddr_reg:x12; val_offset:22395*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22395*FLEN/8, x13, x9, x10)
+
+inst_7487:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3787ffff; valaddr_reg:x12; val_offset:22398*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22398*FLEN/8, x13, x9, x10)
+
+inst_7488:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fc0000; valaddr_reg:x12; val_offset:22401*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22401*FLEN/8, x13, x9, x10)
+
+inst_7489:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3783ffff; valaddr_reg:x12; val_offset:22404*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22404*FLEN/8, x13, x9, x10)
+
+inst_7490:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fe0000; valaddr_reg:x12; val_offset:22407*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22407*FLEN/8, x13, x9, x10)
+
+inst_7491:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3781ffff; valaddr_reg:x12; val_offset:22410*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22410*FLEN/8, x13, x9, x10)
+
+inst_7492:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ff0000; valaddr_reg:x12; val_offset:22413*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22413*FLEN/8, x13, x9, x10)
+
+inst_7493:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3780ffff; valaddr_reg:x12; val_offset:22416*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22416*FLEN/8, x13, x9, x10)
+
+inst_7494:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ff8000; valaddr_reg:x12; val_offset:22419*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22419*FLEN/8, x13, x9, x10)
+
+inst_7495:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37807fff; valaddr_reg:x12; val_offset:22422*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22422*FLEN/8, x13, x9, x10)
+
+inst_7496:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffc000; valaddr_reg:x12; val_offset:22425*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22425*FLEN/8, x13, x9, x10)
+
+inst_7497:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37803fff; valaddr_reg:x12; val_offset:22428*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22428*FLEN/8, x13, x9, x10)
+
+inst_7498:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffe000; valaddr_reg:x12; val_offset:22431*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22431*FLEN/8, x13, x9, x10)
+
+inst_7499:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37801fff; valaddr_reg:x12; val_offset:22434*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22434*FLEN/8, x13, x9, x10)
+
+inst_7500:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fff000; valaddr_reg:x12; val_offset:22437*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22437*FLEN/8, x13, x9, x10)
+
+inst_7501:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37800fff; valaddr_reg:x12; val_offset:22440*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22440*FLEN/8, x13, x9, x10)
+
+inst_7502:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fff800; valaddr_reg:x12; val_offset:22443*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22443*FLEN/8, x13, x9, x10)
+
+inst_7503:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x378007ff; valaddr_reg:x12; val_offset:22446*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22446*FLEN/8, x13, x9, x10)
+
+inst_7504:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffc00; valaddr_reg:x12; val_offset:22449*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22449*FLEN/8, x13, x9, x10)
+
+inst_7505:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x378003ff; valaddr_reg:x12; val_offset:22452*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22452*FLEN/8, x13, x9, x10)
+
+inst_7506:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffe00; valaddr_reg:x12; val_offset:22455*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22455*FLEN/8, x13, x9, x10)
+
+inst_7507:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x378001ff; valaddr_reg:x12; val_offset:22458*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22458*FLEN/8, x13, x9, x10)
+
+inst_7508:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffff00; valaddr_reg:x12; val_offset:22461*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22461*FLEN/8, x13, x9, x10)
+
+inst_7509:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x378000ff; valaddr_reg:x12; val_offset:22464*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22464*FLEN/8, x13, x9, x10)
+
+inst_7510:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffff80; valaddr_reg:x12; val_offset:22467*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22467*FLEN/8, x13, x9, x10)
+
+inst_7511:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3780007f; valaddr_reg:x12; val_offset:22470*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22470*FLEN/8, x13, x9, x10)
+
+inst_7512:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffffc0; valaddr_reg:x12; val_offset:22473*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22473*FLEN/8, x13, x9, x10)
+
+inst_7513:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3780003f; valaddr_reg:x12; val_offset:22476*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22476*FLEN/8, x13, x9, x10)
+
+inst_7514:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37ffffe0; valaddr_reg:x12; val_offset:22479*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22479*FLEN/8, x13, x9, x10)
+
+inst_7515:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3780001f; valaddr_reg:x12; val_offset:22482*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22482*FLEN/8, x13, x9, x10)
+
+inst_7516:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffff0; valaddr_reg:x12; val_offset:22485*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22485*FLEN/8, x13, x9, x10)
+
+inst_7517:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3780000f; valaddr_reg:x12; val_offset:22488*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22488*FLEN/8, x13, x9, x10)
+
+inst_7518:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffff8; valaddr_reg:x12; val_offset:22491*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22491*FLEN/8, x13, x9, x10)
+
+inst_7519:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37800007; valaddr_reg:x12; val_offset:22494*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22494*FLEN/8, x13, x9, x10)
+
+inst_7520:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffffc; valaddr_reg:x12; val_offset:22497*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22497*FLEN/8, x13, x9, x10)
+
+inst_7521:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37800003; valaddr_reg:x12; val_offset:22500*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22500*FLEN/8, x13, x9, x10)
+
+inst_7522:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37fffffe; valaddr_reg:x12; val_offset:22503*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22503*FLEN/8, x13, x9, x10)
+
+inst_7523:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x6f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x37800001; valaddr_reg:x12; val_offset:22506*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22506*FLEN/8, x13, x9, x10)
+
+inst_7524:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:22509*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22509*FLEN/8, x13, x9, x10)
+
+inst_7525:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:22512*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22512*FLEN/8, x13, x9, x10)
+
+inst_7526:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:22515*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22515*FLEN/8, x13, x9, x10)
+
+inst_7527:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:22518*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22518*FLEN/8, x13, x9, x10)
+
+inst_7528:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:22521*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22521*FLEN/8, x13, x9, x10)
+
+inst_7529:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:22524*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22524*FLEN/8, x13, x9, x10)
+
+inst_7530:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:22527*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22527*FLEN/8, x13, x9, x10)
+
+inst_7531:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:22530*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22530*FLEN/8, x13, x9, x10)
+
+inst_7532:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:22533*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22533*FLEN/8, x13, x9, x10)
+
+inst_7533:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:22536*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22536*FLEN/8, x13, x9, x10)
+
+inst_7534:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:22539*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22539*FLEN/8, x13, x9, x10)
+
+inst_7535:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:22542*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22542*FLEN/8, x13, x9, x10)
+
+inst_7536:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:22545*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22545*FLEN/8, x13, x9, x10)
+
+inst_7537:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:22548*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22548*FLEN/8, x13, x9, x10)
+
+inst_7538:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:22551*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22551*FLEN/8, x13, x9, x10)
+
+inst_7539:
+// fs1 == 0 and fe1 == 0xfb and fm1 == 0x323f32 and fs2 == 0 and fe2 == 0x02 and fm2 == 0x37d5be and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7db23f32; op2val:0x137d5be;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:22554*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22554*FLEN/8, x13, x9, x10)
+
+inst_7540:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38000000; valaddr_reg:x12; val_offset:22557*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22557*FLEN/8, x13, x9, x10)
+
+inst_7541:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fffff; valaddr_reg:x12; val_offset:22560*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22560*FLEN/8, x13, x9, x10)
+
+inst_7542:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38400000; valaddr_reg:x12; val_offset:22563*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22563*FLEN/8, x13, x9, x10)
+
+inst_7543:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x383fffff; valaddr_reg:x12; val_offset:22566*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22566*FLEN/8, x13, x9, x10)
+
+inst_7544:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38600000; valaddr_reg:x12; val_offset:22569*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22569*FLEN/8, x13, x9, x10)
+
+inst_7545:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x381fffff; valaddr_reg:x12; val_offset:22572*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22572*FLEN/8, x13, x9, x10)
+
+inst_7546:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38700000; valaddr_reg:x12; val_offset:22575*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22575*FLEN/8, x13, x9, x10)
+
+inst_7547:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x380fffff; valaddr_reg:x12; val_offset:22578*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22578*FLEN/8, x13, x9, x10)
+
+inst_7548:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38780000; valaddr_reg:x12; val_offset:22581*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22581*FLEN/8, x13, x9, x10)
+
+inst_7549:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3807ffff; valaddr_reg:x12; val_offset:22584*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22584*FLEN/8, x13, x9, x10)
+
+inst_7550:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387c0000; valaddr_reg:x12; val_offset:22587*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22587*FLEN/8, x13, x9, x10)
+
+inst_7551:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3803ffff; valaddr_reg:x12; val_offset:22590*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22590*FLEN/8, x13, x9, x10)
+
+inst_7552:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387e0000; valaddr_reg:x12; val_offset:22593*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22593*FLEN/8, x13, x9, x10)
+
+inst_7553:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3801ffff; valaddr_reg:x12; val_offset:22596*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22596*FLEN/8, x13, x9, x10)
+
+inst_7554:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387f0000; valaddr_reg:x12; val_offset:22599*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22599*FLEN/8, x13, x9, x10)
+
+inst_7555:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3800ffff; valaddr_reg:x12; val_offset:22602*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22602*FLEN/8, x13, x9, x10)
+
+inst_7556:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387f8000; valaddr_reg:x12; val_offset:22605*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22605*FLEN/8, x13, x9, x10)
+
+inst_7557:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38007fff; valaddr_reg:x12; val_offset:22608*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22608*FLEN/8, x13, x9, x10)
+
+inst_7558:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fc000; valaddr_reg:x12; val_offset:22611*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22611*FLEN/8, x13, x9, x10)
+
+inst_7559:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38003fff; valaddr_reg:x12; val_offset:22614*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22614*FLEN/8, x13, x9, x10)
+
+inst_7560:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fe000; valaddr_reg:x12; val_offset:22617*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22617*FLEN/8, x13, x9, x10)
+
+inst_7561:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38001fff; valaddr_reg:x12; val_offset:22620*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22620*FLEN/8, x13, x9, x10)
+
+inst_7562:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ff000; valaddr_reg:x12; val_offset:22623*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22623*FLEN/8, x13, x9, x10)
+
+inst_7563:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38000fff; valaddr_reg:x12; val_offset:22626*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22626*FLEN/8, x13, x9, x10)
+
+inst_7564:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ff800; valaddr_reg:x12; val_offset:22629*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22629*FLEN/8, x13, x9, x10)
+
+inst_7565:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x380007ff; valaddr_reg:x12; val_offset:22632*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22632*FLEN/8, x13, x9, x10)
+
+inst_7566:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffc00; valaddr_reg:x12; val_offset:22635*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22635*FLEN/8, x13, x9, x10)
+
+inst_7567:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x380003ff; valaddr_reg:x12; val_offset:22638*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22638*FLEN/8, x13, x9, x10)
+
+inst_7568:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffe00; valaddr_reg:x12; val_offset:22641*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22641*FLEN/8, x13, x9, x10)
+
+inst_7569:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x380001ff; valaddr_reg:x12; val_offset:22644*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22644*FLEN/8, x13, x9, x10)
+
+inst_7570:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fff00; valaddr_reg:x12; val_offset:22647*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22647*FLEN/8, x13, x9, x10)
+
+inst_7571:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x380000ff; valaddr_reg:x12; val_offset:22650*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22650*FLEN/8, x13, x9, x10)
+
+inst_7572:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fff80; valaddr_reg:x12; val_offset:22653*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22653*FLEN/8, x13, x9, x10)
+
+inst_7573:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3800007f; valaddr_reg:x12; val_offset:22656*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22656*FLEN/8, x13, x9, x10)
+
+inst_7574:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fffc0; valaddr_reg:x12; val_offset:22659*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22659*FLEN/8, x13, x9, x10)
+
+inst_7575:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3800003f; valaddr_reg:x12; val_offset:22662*FLEN/8; rmval:dyn;
+testreg:x10; fcsr_val:0 */
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22662*FLEN/8, x13, x9, x10)
+
 RVTEST_SIGBASE(x9,signature_x9_59)
-RVTEST_SIGBASE(x9,signature_x9_60)
-RVTEST_SIGBASE(x9,signature_x9_61)
-RVTEST_SIGBASE(x9,signature_x9_62)
-RVTEST_SIGBASE(x9,signature_x9_63)
-RVTEST_SIGBASE(x9,signature_x9_64)
-RVTEST_SIGBASE(x9,signature_x9_65)
-RVTEST_SIGBASE(x9,signature_x9_66)
-RVTEST_SIGBASE(x9,signature_x9_67)
-RVTEST_SIGBASE(x9,signature_x9_68)
-RVTEST_SIGBASE(x9,signature_x9_69)
-RVTEST_SIGBASE(x9,signature_x9_70)
-RVTEST_SIGBASE(x9,signature_x9_71)
-RVTEST_SIGBASE(x9,signature_x9_72)
-RVTEST_SIGBASE(x9,signature_x9_73)
-RVTEST_SIGBASE(x9,signature_x9_74)
-RVTEST_SIGBASE(x9,signature_x9_75)
-RVTEST_SIGBASE(x9,signature_x9_76)
-RVTEST_SIGBASE(x9,signature_x9_77)
-RVTEST_SIGBASE(x9,signature_x9_78)
-RVTEST_SIGBASE(x9,signature_x9_79)
-RVTEST_SIGBASE(x9,signature_x9_80)
-RVTEST_SIGBASE(x9,signature_x9_81)
-RVTEST_SIGBASE(x9,signature_x9_82)
-RVTEST_SIGBASE(x9,signature_x9_83)
-RVTEST_SIGBASE(x9,signature_x9_84)
-RVTEST_SIGBASE(x9,signature_x9_85)
-RVTEST_SIGBASE(x9,signature_x9_86)
-RVTEST_SIGBASE(x9,signature_x9_87)
-RVTEST_SIGBASE(x9,signature_x9_88)
-RVTEST_SIGBASE(x9,signature_x9_89)
-inst_11505:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa63fffff; valaddr_reg:x12; val_offset:34452*FLEN/8; rmval:dyn;
+inst_7576:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387fffe0; valaddr_reg:x12; val_offset:22665*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34452*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22665*FLEN/8, x13, x9, x10)
 
-inst_11506:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6600000; valaddr_reg:x12; val_offset:34455*FLEN/8; rmval:dyn;
+inst_7577:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3800001f; valaddr_reg:x12; val_offset:22668*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34455*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22668*FLEN/8, x13, x9, x10)
 
-inst_11507:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa61fffff; valaddr_reg:x12; val_offset:34458*FLEN/8; rmval:dyn;
+inst_7578:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffff0; valaddr_reg:x12; val_offset:22671*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34458*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22671*FLEN/8, x13, x9, x10)
 
-inst_11508:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6700000; valaddr_reg:x12; val_offset:34461*FLEN/8; rmval:dyn;
+inst_7579:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3800000f; valaddr_reg:x12; val_offset:22674*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34461*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22674*FLEN/8, x13, x9, x10)
 
-inst_11509:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa60fffff; valaddr_reg:x12; val_offset:34464*FLEN/8; rmval:dyn;
+inst_7580:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffff8; valaddr_reg:x12; val_offset:22677*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34464*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22677*FLEN/8, x13, x9, x10)
 
-inst_11510:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6780000; valaddr_reg:x12; val_offset:34467*FLEN/8; rmval:dyn;
+inst_7581:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38000007; valaddr_reg:x12; val_offset:22680*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34467*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22680*FLEN/8, x13, x9, x10)
 
-inst_11511:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa607ffff; valaddr_reg:x12; val_offset:34470*FLEN/8; rmval:dyn;
+inst_7582:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffffc; valaddr_reg:x12; val_offset:22683*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34470*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22683*FLEN/8, x13, x9, x10)
 
-inst_11512:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67c0000; valaddr_reg:x12; val_offset:34473*FLEN/8; rmval:dyn;
+inst_7583:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38000003; valaddr_reg:x12; val_offset:22686*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34473*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22686*FLEN/8, x13, x9, x10)
 
-inst_11513:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa603ffff; valaddr_reg:x12; val_offset:34476*FLEN/8; rmval:dyn;
+inst_7584:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x387ffffe; valaddr_reg:x12; val_offset:22689*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34476*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22689*FLEN/8, x13, x9, x10)
 
-inst_11514:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67e0000; valaddr_reg:x12; val_offset:34479*FLEN/8; rmval:dyn;
+inst_7585:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x70 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x38000001; valaddr_reg:x12; val_offset:22692*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34479*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22692*FLEN/8, x13, x9, x10)
 
-inst_11515:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa601ffff; valaddr_reg:x12; val_offset:34482*FLEN/8; rmval:dyn;
+inst_7586:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3ffffff8; valaddr_reg:x12; val_offset:22695*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34482*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22695*FLEN/8, x13, x9, x10)
 
-inst_11516:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67f0000; valaddr_reg:x12; val_offset:34485*FLEN/8; rmval:dyn;
+inst_7587:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3f800007; valaddr_reg:x12; val_offset:22698*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34485*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22698*FLEN/8, x13, x9, x10)
 
-inst_11517:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa600ffff; valaddr_reg:x12; val_offset:34488*FLEN/8; rmval:dyn;
+inst_7588:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3ffffffc; valaddr_reg:x12; val_offset:22701*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34488*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22701*FLEN/8, x13, x9, x10)
 
-inst_11518:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67f8000; valaddr_reg:x12; val_offset:34491*FLEN/8; rmval:dyn;
+inst_7589:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3f800003; valaddr_reg:x12; val_offset:22704*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34491*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22704*FLEN/8, x13, x9, x10)
 
-inst_11519:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6007fff; valaddr_reg:x12; val_offset:34494*FLEN/8; rmval:dyn;
+inst_7590:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3ffffffe; valaddr_reg:x12; val_offset:22707*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34494*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22707*FLEN/8, x13, x9, x10)
 
-inst_11520:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fc000; valaddr_reg:x12; val_offset:34497*FLEN/8; rmval:dyn;
+inst_7591:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3f800001; valaddr_reg:x12; val_offset:22710*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34497*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22710*FLEN/8, x13, x9, x10)
 
-inst_11521:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6003fff; valaddr_reg:x12; val_offset:34500*FLEN/8; rmval:dyn;
+inst_7592:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fb6db6d; valaddr_reg:x12; val_offset:22713*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34500*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22713*FLEN/8, x13, x9, x10)
 
-inst_11522:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fe000; valaddr_reg:x12; val_offset:34503*FLEN/8; rmval:dyn;
+inst_7593:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fedb6db; valaddr_reg:x12; val_offset:22716*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34503*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22716*FLEN/8, x13, x9, x10)
 
-inst_11523:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6001fff; valaddr_reg:x12; val_offset:34506*FLEN/8; rmval:dyn;
+inst_7594:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3f999999; valaddr_reg:x12; val_offset:22719*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34506*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22719*FLEN/8, x13, x9, x10)
 
-inst_11524:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ff000; valaddr_reg:x12; val_offset:34509*FLEN/8; rmval:dyn;
+inst_7595:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fe66666; valaddr_reg:x12; val_offset:22722*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34509*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22722*FLEN/8, x13, x9, x10)
 
-inst_11525:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6000fff; valaddr_reg:x12; val_offset:34512*FLEN/8; rmval:dyn;
+inst_7596:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fbbbbbb; valaddr_reg:x12; val_offset:22725*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34512*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22725*FLEN/8, x13, x9, x10)
 
-inst_11526:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ff800; valaddr_reg:x12; val_offset:34515*FLEN/8; rmval:dyn;
+inst_7597:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fc44444; valaddr_reg:x12; val_offset:22728*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34515*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22728*FLEN/8, x13, x9, x10)
 
-inst_11527:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa60007ff; valaddr_reg:x12; val_offset:34518*FLEN/8; rmval:dyn;
+inst_7598:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fa49249; valaddr_reg:x12; val_offset:22731*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34518*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22731*FLEN/8, x13, x9, x10)
 
-inst_11528:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffc00; valaddr_reg:x12; val_offset:34521*FLEN/8; rmval:dyn;
+inst_7599:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fdb6db6; valaddr_reg:x12; val_offset:22734*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34521*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22734*FLEN/8, x13, x9, x10)
 
-inst_11529:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa60003ff; valaddr_reg:x12; val_offset:34524*FLEN/8; rmval:dyn;
+inst_7600:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fb33333; valaddr_reg:x12; val_offset:22737*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34524*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22737*FLEN/8, x13, x9, x10)
 
-inst_11530:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffe00; valaddr_reg:x12; val_offset:34527*FLEN/8; rmval:dyn;
+inst_7601:
+// fs1 == 0 and fe1 == 0xfd and fm1 == 0x68837a and fs2 == 0 and fe2 == 0x00 and fm2 == 0x4676f6 and fs3 == 0 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ee8837a; op2val:0x4676f6;
+op3val:0x3fcccccc; valaddr_reg:x12; val_offset:22740*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34527*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22740*FLEN/8, x13, x9, x10)
 
-inst_11531:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa60001ff; valaddr_reg:x12; val_offset:34530*FLEN/8; rmval:dyn;
+inst_7602:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38800000; valaddr_reg:x12; val_offset:22743*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34530*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22743*FLEN/8, x13, x9, x10)
 
-inst_11532:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fff00; valaddr_reg:x12; val_offset:34533*FLEN/8; rmval:dyn;
+inst_7603:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38ffffff; valaddr_reg:x12; val_offset:22746*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34533*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22746*FLEN/8, x13, x9, x10)
 
-inst_11533:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa60000ff; valaddr_reg:x12; val_offset:34536*FLEN/8; rmval:dyn;
+inst_7604:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38c00000; valaddr_reg:x12; val_offset:22749*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34536*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22749*FLEN/8, x13, x9, x10)
 
-inst_11534:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fff80; valaddr_reg:x12; val_offset:34539*FLEN/8; rmval:dyn;
+inst_7605:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38bfffff; valaddr_reg:x12; val_offset:22752*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34539*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22752*FLEN/8, x13, x9, x10)
 
-inst_11535:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa600007f; valaddr_reg:x12; val_offset:34542*FLEN/8; rmval:dyn;
+inst_7606:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38e00000; valaddr_reg:x12; val_offset:22755*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34542*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22755*FLEN/8, x13, x9, x10)
 
-inst_11536:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fffc0; valaddr_reg:x12; val_offset:34545*FLEN/8; rmval:dyn;
+inst_7607:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x389fffff; valaddr_reg:x12; val_offset:22758*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34545*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22758*FLEN/8, x13, x9, x10)
 
-inst_11537:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa600003f; valaddr_reg:x12; val_offset:34548*FLEN/8; rmval:dyn;
+inst_7608:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38f00000; valaddr_reg:x12; val_offset:22761*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34548*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22761*FLEN/8, x13, x9, x10)
 
-inst_11538:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67fffe0; valaddr_reg:x12; val_offset:34551*FLEN/8; rmval:dyn;
+inst_7609:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x388fffff; valaddr_reg:x12; val_offset:22764*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34551*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22764*FLEN/8, x13, x9, x10)
 
-inst_11539:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa600001f; valaddr_reg:x12; val_offset:34554*FLEN/8; rmval:dyn;
+inst_7610:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38f80000; valaddr_reg:x12; val_offset:22767*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34554*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22767*FLEN/8, x13, x9, x10)
 
-inst_11540:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffff0; valaddr_reg:x12; val_offset:34557*FLEN/8; rmval:dyn;
+inst_7611:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x3887ffff; valaddr_reg:x12; val_offset:22770*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34557*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22770*FLEN/8, x13, x9, x10)
 
-inst_11541:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa600000f; valaddr_reg:x12; val_offset:34560*FLEN/8; rmval:dyn;
+inst_7612:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38fc0000; valaddr_reg:x12; val_offset:22773*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34560*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22773*FLEN/8, x13, x9, x10)
 
-inst_11542:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffff8; valaddr_reg:x12; val_offset:34563*FLEN/8; rmval:dyn;
+inst_7613:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x3883ffff; valaddr_reg:x12; val_offset:22776*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34563*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22776*FLEN/8, x13, x9, x10)
 
-inst_11543:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6000007; valaddr_reg:x12; val_offset:34566*FLEN/8; rmval:dyn;
+inst_7614:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38fe0000; valaddr_reg:x12; val_offset:22779*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34566*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22779*FLEN/8, x13, x9, x10)
 
-RVTEST_SIGBASE(x9,signature_x9_90)
-inst_11544:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffffc; valaddr_reg:x12; val_offset:34569*FLEN/8; rmval:dyn;
+inst_7615:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x3881ffff; valaddr_reg:x12; val_offset:22782*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34569*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22782*FLEN/8, x13, x9, x10)
 
-inst_11545:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6000003; valaddr_reg:x12; val_offset:34572*FLEN/8; rmval:dyn;
+inst_7616:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38ff0000; valaddr_reg:x12; val_offset:22785*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34572*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22785*FLEN/8, x13, x9, x10)
 
-inst_11546:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa67ffffe; valaddr_reg:x12; val_offset:34575*FLEN/8; rmval:dyn;
+inst_7617:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x3880ffff; valaddr_reg:x12; val_offset:22788*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34575*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22788*FLEN/8, x13, x9, x10)
 
-inst_11547:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x4c and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xa6000001; valaddr_reg:x12; val_offset:34578*FLEN/8; rmval:dyn;
+inst_7618:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38ff8000; valaddr_reg:x12; val_offset:22791*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34578*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22791*FLEN/8, x13, x9, x10)
 
-inst_11548:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:34581*FLEN/8; rmval:dyn;
+inst_7619:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38807fff; valaddr_reg:x12; val_offset:22794*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34581*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22794*FLEN/8, x13, x9, x10)
 
-inst_11549:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:34584*FLEN/8; rmval:dyn;
+inst_7620:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38ffc000; valaddr_reg:x12; val_offset:22797*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34584*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22797*FLEN/8, x13, x9, x10)
 
-inst_11550:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:34587*FLEN/8; rmval:dyn;
+inst_7621:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38803fff; valaddr_reg:x12; val_offset:22800*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34587*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22800*FLEN/8, x13, x9, x10)
 
-inst_11551:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:34590*FLEN/8; rmval:dyn;
+inst_7622:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38ffe000; valaddr_reg:x12; val_offset:22803*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34590*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22803*FLEN/8, x13, x9, x10)
 
-inst_11552:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:34593*FLEN/8; rmval:dyn;
+inst_7623:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38801fff; valaddr_reg:x12; val_offset:22806*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34593*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22806*FLEN/8, x13, x9, x10)
 
-inst_11553:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:34596*FLEN/8; rmval:dyn;
+inst_7624:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38fff000; valaddr_reg:x12; val_offset:22809*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34596*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22809*FLEN/8, x13, x9, x10)
 
-inst_11554:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:34599*FLEN/8; rmval:dyn;
+inst_7625:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38800fff; valaddr_reg:x12; val_offset:22812*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34599*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22812*FLEN/8, x13, x9, x10)
 
-inst_11555:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:34602*FLEN/8; rmval:dyn;
+inst_7626:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38fff800; valaddr_reg:x12; val_offset:22815*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34602*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22815*FLEN/8, x13, x9, x10)
 
-inst_11556:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:34605*FLEN/8; rmval:dyn;
+inst_7627:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x388007ff; valaddr_reg:x12; val_offset:22818*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34605*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22818*FLEN/8, x13, x9, x10)
 
-inst_11557:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:34608*FLEN/8; rmval:dyn;
+inst_7628:
+// fs1 == 0 and fe1 == 0xfc and fm1 == 0x157223 and fs2 == 0 and fe2 == 0x01 and fm2 == 0x5b436c and fs3 == 0 and fe3 == 0x71 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0x00000000 and rs3_sgn_prefix == 0x00000000  
+/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e157223; op2val:0xdb436c;
+op3val:0x38fffc00; valaddr_reg:x12; val_offset:22821*FLEN/8; rmval:dyn;
 testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34608*FLEN/8, x13, x9, x10)
-
-inst_11558:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:34611*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34611*FLEN/8, x13, x9, x10)
-
-inst_11559:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:34614*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34614*FLEN/8, x13, x9, x10)
-
-inst_11560:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:34617*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34617*FLEN/8, x13, x9, x10)
-
-inst_11561:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:34620*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34620*FLEN/8, x13, x9, x10)
-
-inst_11562:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:34623*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34623*FLEN/8, x13, x9, x10)
-
-inst_11563:
-// fs1 == 0 and fe1 == 0xfc and fm1 == 0x2b56d0 and fs2 == 1 and fe2 == 0x01 and fm2 == 0x3f3f17 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7e2b56d0; op2val:0x80bf3f17;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:34626*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34626*FLEN/8, x13, x9, x10)
-
-inst_11564:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6800000; valaddr_reg:x12; val_offset:34629*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34629*FLEN/8, x13, x9, x10)
-
-inst_11565:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffffff; valaddr_reg:x12; val_offset:34632*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34632*FLEN/8, x13, x9, x10)
-
-inst_11566:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6c00000; valaddr_reg:x12; val_offset:34635*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34635*FLEN/8, x13, x9, x10)
-
-inst_11567:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6bfffff; valaddr_reg:x12; val_offset:34638*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34638*FLEN/8, x13, x9, x10)
-
-inst_11568:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6e00000; valaddr_reg:x12; val_offset:34641*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34641*FLEN/8, x13, x9, x10)
-
-inst_11569:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa69fffff; valaddr_reg:x12; val_offset:34644*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34644*FLEN/8, x13, x9, x10)
-
-inst_11570:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6f00000; valaddr_reg:x12; val_offset:34647*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34647*FLEN/8, x13, x9, x10)
-
-inst_11571:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa68fffff; valaddr_reg:x12; val_offset:34650*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34650*FLEN/8, x13, x9, x10)
-
-inst_11572:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6f80000; valaddr_reg:x12; val_offset:34653*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34653*FLEN/8, x13, x9, x10)
-
-inst_11573:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa687ffff; valaddr_reg:x12; val_offset:34656*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34656*FLEN/8, x13, x9, x10)
-
-inst_11574:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fc0000; valaddr_reg:x12; val_offset:34659*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34659*FLEN/8, x13, x9, x10)
-
-inst_11575:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa683ffff; valaddr_reg:x12; val_offset:34662*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34662*FLEN/8, x13, x9, x10)
-
-inst_11576:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fe0000; valaddr_reg:x12; val_offset:34665*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34665*FLEN/8, x13, x9, x10)
-
-inst_11577:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa681ffff; valaddr_reg:x12; val_offset:34668*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34668*FLEN/8, x13, x9, x10)
-
-inst_11578:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ff0000; valaddr_reg:x12; val_offset:34671*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34671*FLEN/8, x13, x9, x10)
-
-inst_11579:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa680ffff; valaddr_reg:x12; val_offset:34674*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34674*FLEN/8, x13, x9, x10)
-
-inst_11580:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ff8000; valaddr_reg:x12; val_offset:34677*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34677*FLEN/8, x13, x9, x10)
-
-inst_11581:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6807fff; valaddr_reg:x12; val_offset:34680*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34680*FLEN/8, x13, x9, x10)
-
-inst_11582:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffc000; valaddr_reg:x12; val_offset:34683*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34683*FLEN/8, x13, x9, x10)
-
-inst_11583:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6803fff; valaddr_reg:x12; val_offset:34686*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34686*FLEN/8, x13, x9, x10)
-
-inst_11584:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffe000; valaddr_reg:x12; val_offset:34689*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34689*FLEN/8, x13, x9, x10)
-
-inst_11585:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6801fff; valaddr_reg:x12; val_offset:34692*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34692*FLEN/8, x13, x9, x10)
-
-inst_11586:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fff000; valaddr_reg:x12; val_offset:34695*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34695*FLEN/8, x13, x9, x10)
-
-inst_11587:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6800fff; valaddr_reg:x12; val_offset:34698*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34698*FLEN/8, x13, x9, x10)
-
-inst_11588:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fff800; valaddr_reg:x12; val_offset:34701*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34701*FLEN/8, x13, x9, x10)
-
-inst_11589:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa68007ff; valaddr_reg:x12; val_offset:34704*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34704*FLEN/8, x13, x9, x10)
-
-inst_11590:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffc00; valaddr_reg:x12; val_offset:34707*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34707*FLEN/8, x13, x9, x10)
-
-inst_11591:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa68003ff; valaddr_reg:x12; val_offset:34710*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34710*FLEN/8, x13, x9, x10)
-
-inst_11592:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffe00; valaddr_reg:x12; val_offset:34713*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34713*FLEN/8, x13, x9, x10)
-
-inst_11593:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa68001ff; valaddr_reg:x12; val_offset:34716*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34716*FLEN/8, x13, x9, x10)
-
-inst_11594:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffff00; valaddr_reg:x12; val_offset:34719*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34719*FLEN/8, x13, x9, x10)
-
-inst_11595:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa68000ff; valaddr_reg:x12; val_offset:34722*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34722*FLEN/8, x13, x9, x10)
-
-inst_11596:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffff80; valaddr_reg:x12; val_offset:34725*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34725*FLEN/8, x13, x9, x10)
-
-inst_11597:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa680007f; valaddr_reg:x12; val_offset:34728*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34728*FLEN/8, x13, x9, x10)
-
-inst_11598:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffffc0; valaddr_reg:x12; val_offset:34731*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34731*FLEN/8, x13, x9, x10)
-
-inst_11599:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa680003f; valaddr_reg:x12; val_offset:34734*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34734*FLEN/8, x13, x9, x10)
-
-inst_11600:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6ffffe0; valaddr_reg:x12; val_offset:34737*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34737*FLEN/8, x13, x9, x10)
-
-inst_11601:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa680001f; valaddr_reg:x12; val_offset:34740*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34740*FLEN/8, x13, x9, x10)
-
-inst_11602:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffff0; valaddr_reg:x12; val_offset:34743*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34743*FLEN/8, x13, x9, x10)
-
-inst_11603:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa680000f; valaddr_reg:x12; val_offset:34746*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34746*FLEN/8, x13, x9, x10)
-
-inst_11604:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffff8; valaddr_reg:x12; val_offset:34749*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34749*FLEN/8, x13, x9, x10)
-
-inst_11605:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6800007; valaddr_reg:x12; val_offset:34752*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34752*FLEN/8, x13, x9, x10)
-
-inst_11606:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffffc; valaddr_reg:x12; val_offset:34755*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34755*FLEN/8, x13, x9, x10)
-
-inst_11607:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6800003; valaddr_reg:x12; val_offset:34758*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34758*FLEN/8, x13, x9, x10)
-
-inst_11608:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6fffffe; valaddr_reg:x12; val_offset:34761*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34761*FLEN/8, x13, x9, x10)
-
-inst_11609:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x4d and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xa6800001; valaddr_reg:x12; val_offset:34764*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34764*FLEN/8, x13, x9, x10)
-
-inst_11610:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:34767*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34767*FLEN/8, x13, x9, x10)
-
-inst_11611:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:34770*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34770*FLEN/8, x13, x9, x10)
-
-inst_11612:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:34773*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34773*FLEN/8, x13, x9, x10)
-
-inst_11613:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:34776*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34776*FLEN/8, x13, x9, x10)
-
-inst_11614:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:34779*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34779*FLEN/8, x13, x9, x10)
-
-inst_11615:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:34782*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34782*FLEN/8, x13, x9, x10)
-
-inst_11616:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:34785*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34785*FLEN/8, x13, x9, x10)
-
-inst_11617:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:34788*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34788*FLEN/8, x13, x9, x10)
-
-inst_11618:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:34791*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34791*FLEN/8, x13, x9, x10)
-
-inst_11619:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:34794*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34794*FLEN/8, x13, x9, x10)
-
-inst_11620:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:34797*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34797*FLEN/8, x13, x9, x10)
-
-inst_11621:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:34800*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34800*FLEN/8, x13, x9, x10)
-
-inst_11622:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:34803*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34803*FLEN/8, x13, x9, x10)
-
-inst_11623:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:34806*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34806*FLEN/8, x13, x9, x10)
-
-inst_11624:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:34809*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34809*FLEN/8, x13, x9, x10)
-
-inst_11625:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x2c157e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x5f3597 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7eac157e; op2val:0x805f3597;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:34812*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34812*FLEN/8, x13, x9, x10)
-
-inst_11626:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7000000; valaddr_reg:x12; val_offset:34815*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34815*FLEN/8, x13, x9, x10)
-
-inst_11627:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fffff; valaddr_reg:x12; val_offset:34818*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34818*FLEN/8, x13, x9, x10)
-
-inst_11628:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7400000; valaddr_reg:x12; val_offset:34821*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34821*FLEN/8, x13, x9, x10)
-
-inst_11629:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa73fffff; valaddr_reg:x12; val_offset:34824*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34824*FLEN/8, x13, x9, x10)
-
-inst_11630:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7600000; valaddr_reg:x12; val_offset:34827*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34827*FLEN/8, x13, x9, x10)
-
-inst_11631:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa71fffff; valaddr_reg:x12; val_offset:34830*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34830*FLEN/8, x13, x9, x10)
-
-inst_11632:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7700000; valaddr_reg:x12; val_offset:34833*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34833*FLEN/8, x13, x9, x10)
-
-inst_11633:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa70fffff; valaddr_reg:x12; val_offset:34836*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34836*FLEN/8, x13, x9, x10)
-
-inst_11634:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7780000; valaddr_reg:x12; val_offset:34839*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34839*FLEN/8, x13, x9, x10)
-
-inst_11635:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa707ffff; valaddr_reg:x12; val_offset:34842*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34842*FLEN/8, x13, x9, x10)
-
-inst_11636:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77c0000; valaddr_reg:x12; val_offset:34845*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34845*FLEN/8, x13, x9, x10)
-
-inst_11637:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa703ffff; valaddr_reg:x12; val_offset:34848*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34848*FLEN/8, x13, x9, x10)
-
-inst_11638:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77e0000; valaddr_reg:x12; val_offset:34851*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34851*FLEN/8, x13, x9, x10)
-
-inst_11639:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa701ffff; valaddr_reg:x12; val_offset:34854*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34854*FLEN/8, x13, x9, x10)
-
-inst_11640:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77f0000; valaddr_reg:x12; val_offset:34857*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34857*FLEN/8, x13, x9, x10)
-
-inst_11641:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa700ffff; valaddr_reg:x12; val_offset:34860*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34860*FLEN/8, x13, x9, x10)
-
-inst_11642:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77f8000; valaddr_reg:x12; val_offset:34863*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34863*FLEN/8, x13, x9, x10)
-
-inst_11643:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7007fff; valaddr_reg:x12; val_offset:34866*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34866*FLEN/8, x13, x9, x10)
-
-inst_11644:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fc000; valaddr_reg:x12; val_offset:34869*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34869*FLEN/8, x13, x9, x10)
-
-inst_11645:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7003fff; valaddr_reg:x12; val_offset:34872*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34872*FLEN/8, x13, x9, x10)
-
-inst_11646:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fe000; valaddr_reg:x12; val_offset:34875*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34875*FLEN/8, x13, x9, x10)
-
-inst_11647:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7001fff; valaddr_reg:x12; val_offset:34878*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34878*FLEN/8, x13, x9, x10)
-
-inst_11648:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ff000; valaddr_reg:x12; val_offset:34881*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34881*FLEN/8, x13, x9, x10)
-
-inst_11649:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7000fff; valaddr_reg:x12; val_offset:34884*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34884*FLEN/8, x13, x9, x10)
-
-inst_11650:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ff800; valaddr_reg:x12; val_offset:34887*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34887*FLEN/8, x13, x9, x10)
-
-inst_11651:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa70007ff; valaddr_reg:x12; val_offset:34890*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34890*FLEN/8, x13, x9, x10)
-
-inst_11652:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffc00; valaddr_reg:x12; val_offset:34893*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34893*FLEN/8, x13, x9, x10)
-
-inst_11653:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa70003ff; valaddr_reg:x12; val_offset:34896*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34896*FLEN/8, x13, x9, x10)
-
-inst_11654:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffe00; valaddr_reg:x12; val_offset:34899*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34899*FLEN/8, x13, x9, x10)
-
-inst_11655:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa70001ff; valaddr_reg:x12; val_offset:34902*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34902*FLEN/8, x13, x9, x10)
-
-inst_11656:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fff00; valaddr_reg:x12; val_offset:34905*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34905*FLEN/8, x13, x9, x10)
-
-inst_11657:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa70000ff; valaddr_reg:x12; val_offset:34908*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34908*FLEN/8, x13, x9, x10)
-
-inst_11658:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fff80; valaddr_reg:x12; val_offset:34911*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34911*FLEN/8, x13, x9, x10)
-
-inst_11659:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa700007f; valaddr_reg:x12; val_offset:34914*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34914*FLEN/8, x13, x9, x10)
-
-inst_11660:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fffc0; valaddr_reg:x12; val_offset:34917*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34917*FLEN/8, x13, x9, x10)
-
-inst_11661:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa700003f; valaddr_reg:x12; val_offset:34920*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34920*FLEN/8, x13, x9, x10)
-
-inst_11662:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77fffe0; valaddr_reg:x12; val_offset:34923*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34923*FLEN/8, x13, x9, x10)
-
-inst_11663:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa700001f; valaddr_reg:x12; val_offset:34926*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34926*FLEN/8, x13, x9, x10)
-
-inst_11664:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffff0; valaddr_reg:x12; val_offset:34929*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34929*FLEN/8, x13, x9, x10)
-
-inst_11665:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa700000f; valaddr_reg:x12; val_offset:34932*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34932*FLEN/8, x13, x9, x10)
-
-inst_11666:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffff8; valaddr_reg:x12; val_offset:34935*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34935*FLEN/8, x13, x9, x10)
-
-inst_11667:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7000007; valaddr_reg:x12; val_offset:34938*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34938*FLEN/8, x13, x9, x10)
-
-inst_11668:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffffc; valaddr_reg:x12; val_offset:34941*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34941*FLEN/8, x13, x9, x10)
-
-inst_11669:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7000003; valaddr_reg:x12; val_offset:34944*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34944*FLEN/8, x13, x9, x10)
-
-inst_11670:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa77ffffe; valaddr_reg:x12; val_offset:34947*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34947*FLEN/8, x13, x9, x10)
-
-inst_11671:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x4e and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xa7000001; valaddr_reg:x12; val_offset:34950*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34950*FLEN/8, x13, x9, x10)
-
-RVTEST_SIGBASE(x9,signature_x9_91)
-inst_11672:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:34953*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34953*FLEN/8, x13, x9, x10)
-
-inst_11673:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:34956*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34956*FLEN/8, x13, x9, x10)
-
-inst_11674:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:34959*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34959*FLEN/8, x13, x9, x10)
-
-inst_11675:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:34962*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34962*FLEN/8, x13, x9, x10)
-
-inst_11676:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:34965*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34965*FLEN/8, x13, x9, x10)
-
-inst_11677:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:34968*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34968*FLEN/8, x13, x9, x10)
-
-inst_11678:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:34971*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34971*FLEN/8, x13, x9, x10)
-
-inst_11679:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:34974*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34974*FLEN/8, x13, x9, x10)
-
-inst_11680:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:34977*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34977*FLEN/8, x13, x9, x10)
-
-inst_11681:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:34980*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34980*FLEN/8, x13, x9, x10)
-
-inst_11682:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:34983*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34983*FLEN/8, x13, x9, x10)
-
-inst_11683:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:34986*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34986*FLEN/8, x13, x9, x10)
-
-inst_11684:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:34989*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34989*FLEN/8, x13, x9, x10)
-
-inst_11685:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:34992*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34992*FLEN/8, x13, x9, x10)
-
-inst_11686:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:34995*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34995*FLEN/8, x13, x9, x10)
-
-inst_11687:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x08631e and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c1075 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f08631e; op2val:0x803c1075;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:34998*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 34998*FLEN/8, x13, x9, x10)
-
-inst_11688:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7800000; valaddr_reg:x12; val_offset:35001*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35001*FLEN/8, x13, x9, x10)
-
-inst_11689:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffffff; valaddr_reg:x12; val_offset:35004*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35004*FLEN/8, x13, x9, x10)
-
-inst_11690:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7c00000; valaddr_reg:x12; val_offset:35007*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35007*FLEN/8, x13, x9, x10)
-
-inst_11691:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7bfffff; valaddr_reg:x12; val_offset:35010*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35010*FLEN/8, x13, x9, x10)
-
-inst_11692:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7e00000; valaddr_reg:x12; val_offset:35013*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35013*FLEN/8, x13, x9, x10)
-
-inst_11693:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa79fffff; valaddr_reg:x12; val_offset:35016*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35016*FLEN/8, x13, x9, x10)
-
-inst_11694:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7f00000; valaddr_reg:x12; val_offset:35019*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35019*FLEN/8, x13, x9, x10)
-
-inst_11695:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa78fffff; valaddr_reg:x12; val_offset:35022*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35022*FLEN/8, x13, x9, x10)
-
-inst_11696:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7f80000; valaddr_reg:x12; val_offset:35025*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35025*FLEN/8, x13, x9, x10)
-
-inst_11697:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa787ffff; valaddr_reg:x12; val_offset:35028*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35028*FLEN/8, x13, x9, x10)
-
-inst_11698:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fc0000; valaddr_reg:x12; val_offset:35031*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35031*FLEN/8, x13, x9, x10)
-
-inst_11699:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa783ffff; valaddr_reg:x12; val_offset:35034*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35034*FLEN/8, x13, x9, x10)
-
-inst_11700:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fe0000; valaddr_reg:x12; val_offset:35037*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35037*FLEN/8, x13, x9, x10)
-
-inst_11701:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa781ffff; valaddr_reg:x12; val_offset:35040*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35040*FLEN/8, x13, x9, x10)
-
-inst_11702:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ff0000; valaddr_reg:x12; val_offset:35043*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35043*FLEN/8, x13, x9, x10)
-
-inst_11703:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa780ffff; valaddr_reg:x12; val_offset:35046*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35046*FLEN/8, x13, x9, x10)
-
-inst_11704:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ff8000; valaddr_reg:x12; val_offset:35049*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35049*FLEN/8, x13, x9, x10)
-
-inst_11705:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7807fff; valaddr_reg:x12; val_offset:35052*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35052*FLEN/8, x13, x9, x10)
-
-inst_11706:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffc000; valaddr_reg:x12; val_offset:35055*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35055*FLEN/8, x13, x9, x10)
-
-inst_11707:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7803fff; valaddr_reg:x12; val_offset:35058*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35058*FLEN/8, x13, x9, x10)
-
-inst_11708:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffe000; valaddr_reg:x12; val_offset:35061*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35061*FLEN/8, x13, x9, x10)
-
-inst_11709:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7801fff; valaddr_reg:x12; val_offset:35064*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35064*FLEN/8, x13, x9, x10)
-
-inst_11710:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fff000; valaddr_reg:x12; val_offset:35067*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35067*FLEN/8, x13, x9, x10)
-
-inst_11711:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7800fff; valaddr_reg:x12; val_offset:35070*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35070*FLEN/8, x13, x9, x10)
-
-inst_11712:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fff800; valaddr_reg:x12; val_offset:35073*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35073*FLEN/8, x13, x9, x10)
-
-inst_11713:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa78007ff; valaddr_reg:x12; val_offset:35076*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35076*FLEN/8, x13, x9, x10)
-
-inst_11714:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffc00; valaddr_reg:x12; val_offset:35079*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35079*FLEN/8, x13, x9, x10)
-
-inst_11715:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa78003ff; valaddr_reg:x12; val_offset:35082*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35082*FLEN/8, x13, x9, x10)
-
-inst_11716:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffe00; valaddr_reg:x12; val_offset:35085*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35085*FLEN/8, x13, x9, x10)
-
-inst_11717:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa78001ff; valaddr_reg:x12; val_offset:35088*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35088*FLEN/8, x13, x9, x10)
-
-inst_11718:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffff00; valaddr_reg:x12; val_offset:35091*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35091*FLEN/8, x13, x9, x10)
-
-inst_11719:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa78000ff; valaddr_reg:x12; val_offset:35094*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35094*FLEN/8, x13, x9, x10)
-
-inst_11720:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffff80; valaddr_reg:x12; val_offset:35097*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35097*FLEN/8, x13, x9, x10)
-
-inst_11721:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa780007f; valaddr_reg:x12; val_offset:35100*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35100*FLEN/8, x13, x9, x10)
-
-inst_11722:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffffc0; valaddr_reg:x12; val_offset:35103*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35103*FLEN/8, x13, x9, x10)
-
-inst_11723:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa780003f; valaddr_reg:x12; val_offset:35106*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35106*FLEN/8, x13, x9, x10)
-
-inst_11724:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7ffffe0; valaddr_reg:x12; val_offset:35109*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35109*FLEN/8, x13, x9, x10)
-
-inst_11725:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa780001f; valaddr_reg:x12; val_offset:35112*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35112*FLEN/8, x13, x9, x10)
-
-inst_11726:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffff0; valaddr_reg:x12; val_offset:35115*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35115*FLEN/8, x13, x9, x10)
-
-inst_11727:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa780000f; valaddr_reg:x12; val_offset:35118*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35118*FLEN/8, x13, x9, x10)
-
-inst_11728:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffff8; valaddr_reg:x12; val_offset:35121*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35121*FLEN/8, x13, x9, x10)
-
-inst_11729:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7800007; valaddr_reg:x12; val_offset:35124*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35124*FLEN/8, x13, x9, x10)
-
-inst_11730:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffffc; valaddr_reg:x12; val_offset:35127*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35127*FLEN/8, x13, x9, x10)
-
-inst_11731:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7800003; valaddr_reg:x12; val_offset:35130*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35130*FLEN/8, x13, x9, x10)
-
-inst_11732:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7fffffe; valaddr_reg:x12; val_offset:35133*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35133*FLEN/8, x13, x9, x10)
-
-inst_11733:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x4f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xa7800001; valaddr_reg:x12; val_offset:35136*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35136*FLEN/8, x13, x9, x10)
-
-inst_11734:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:35139*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35139*FLEN/8, x13, x9, x10)
-
-inst_11735:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:35142*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35142*FLEN/8, x13, x9, x10)
-
-inst_11736:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:35145*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35145*FLEN/8, x13, x9, x10)
-
-inst_11737:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:35148*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35148*FLEN/8, x13, x9, x10)
-
-inst_11738:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:35151*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35151*FLEN/8, x13, x9, x10)
-
-inst_11739:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:35154*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35154*FLEN/8, x13, x9, x10)
-
-inst_11740:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:35157*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35157*FLEN/8, x13, x9, x10)
-
-inst_11741:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:35160*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35160*FLEN/8, x13, x9, x10)
-
-inst_11742:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:35163*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35163*FLEN/8, x13, x9, x10)
-
-inst_11743:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:35166*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35166*FLEN/8, x13, x9, x10)
-
-inst_11744:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:35169*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35169*FLEN/8, x13, x9, x10)
-
-inst_11745:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:35172*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35172*FLEN/8, x13, x9, x10)
-
-inst_11746:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:35175*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35175*FLEN/8, x13, x9, x10)
-
-inst_11747:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:35178*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35178*FLEN/8, x13, x9, x10)
-
-inst_11748:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:35181*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35181*FLEN/8, x13, x9, x10)
-
-inst_11749:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x015d65 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3f5324 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f015d65; op2val:0x803f5324;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:35184*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35184*FLEN/8, x13, x9, x10)
-
-inst_11750:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8000000; valaddr_reg:x12; val_offset:35187*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35187*FLEN/8, x13, x9, x10)
-
-inst_11751:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fffff; valaddr_reg:x12; val_offset:35190*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35190*FLEN/8, x13, x9, x10)
-
-inst_11752:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8400000; valaddr_reg:x12; val_offset:35193*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35193*FLEN/8, x13, x9, x10)
-
-inst_11753:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa83fffff; valaddr_reg:x12; val_offset:35196*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35196*FLEN/8, x13, x9, x10)
-
-inst_11754:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8600000; valaddr_reg:x12; val_offset:35199*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35199*FLEN/8, x13, x9, x10)
-
-inst_11755:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa81fffff; valaddr_reg:x12; val_offset:35202*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35202*FLEN/8, x13, x9, x10)
-
-inst_11756:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8700000; valaddr_reg:x12; val_offset:35205*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35205*FLEN/8, x13, x9, x10)
-
-inst_11757:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa80fffff; valaddr_reg:x12; val_offset:35208*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35208*FLEN/8, x13, x9, x10)
-
-inst_11758:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8780000; valaddr_reg:x12; val_offset:35211*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35211*FLEN/8, x13, x9, x10)
-
-inst_11759:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa807ffff; valaddr_reg:x12; val_offset:35214*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35214*FLEN/8, x13, x9, x10)
-
-inst_11760:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87c0000; valaddr_reg:x12; val_offset:35217*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35217*FLEN/8, x13, x9, x10)
-
-inst_11761:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa803ffff; valaddr_reg:x12; val_offset:35220*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35220*FLEN/8, x13, x9, x10)
-
-inst_11762:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87e0000; valaddr_reg:x12; val_offset:35223*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35223*FLEN/8, x13, x9, x10)
-
-inst_11763:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa801ffff; valaddr_reg:x12; val_offset:35226*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35226*FLEN/8, x13, x9, x10)
-
-inst_11764:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87f0000; valaddr_reg:x12; val_offset:35229*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35229*FLEN/8, x13, x9, x10)
-
-inst_11765:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa800ffff; valaddr_reg:x12; val_offset:35232*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35232*FLEN/8, x13, x9, x10)
-
-inst_11766:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87f8000; valaddr_reg:x12; val_offset:35235*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35235*FLEN/8, x13, x9, x10)
-
-inst_11767:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8007fff; valaddr_reg:x12; val_offset:35238*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35238*FLEN/8, x13, x9, x10)
-
-inst_11768:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fc000; valaddr_reg:x12; val_offset:35241*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35241*FLEN/8, x13, x9, x10)
-
-inst_11769:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8003fff; valaddr_reg:x12; val_offset:35244*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35244*FLEN/8, x13, x9, x10)
-
-inst_11770:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fe000; valaddr_reg:x12; val_offset:35247*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35247*FLEN/8, x13, x9, x10)
-
-inst_11771:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8001fff; valaddr_reg:x12; val_offset:35250*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35250*FLEN/8, x13, x9, x10)
-
-inst_11772:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ff000; valaddr_reg:x12; val_offset:35253*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35253*FLEN/8, x13, x9, x10)
-
-inst_11773:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8000fff; valaddr_reg:x12; val_offset:35256*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35256*FLEN/8, x13, x9, x10)
-
-inst_11774:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ff800; valaddr_reg:x12; val_offset:35259*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35259*FLEN/8, x13, x9, x10)
-
-inst_11775:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa80007ff; valaddr_reg:x12; val_offset:35262*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35262*FLEN/8, x13, x9, x10)
-
-inst_11776:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffc00; valaddr_reg:x12; val_offset:35265*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35265*FLEN/8, x13, x9, x10)
-
-inst_11777:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa80003ff; valaddr_reg:x12; val_offset:35268*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35268*FLEN/8, x13, x9, x10)
-
-inst_11778:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffe00; valaddr_reg:x12; val_offset:35271*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35271*FLEN/8, x13, x9, x10)
-
-inst_11779:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa80001ff; valaddr_reg:x12; val_offset:35274*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35274*FLEN/8, x13, x9, x10)
-
-inst_11780:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fff00; valaddr_reg:x12; val_offset:35277*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35277*FLEN/8, x13, x9, x10)
-
-inst_11781:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa80000ff; valaddr_reg:x12; val_offset:35280*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35280*FLEN/8, x13, x9, x10)
-
-inst_11782:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fff80; valaddr_reg:x12; val_offset:35283*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35283*FLEN/8, x13, x9, x10)
-
-inst_11783:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa800007f; valaddr_reg:x12; val_offset:35286*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35286*FLEN/8, x13, x9, x10)
-
-inst_11784:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fffc0; valaddr_reg:x12; val_offset:35289*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35289*FLEN/8, x13, x9, x10)
-
-inst_11785:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa800003f; valaddr_reg:x12; val_offset:35292*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35292*FLEN/8, x13, x9, x10)
-
-inst_11786:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87fffe0; valaddr_reg:x12; val_offset:35295*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35295*FLEN/8, x13, x9, x10)
-
-inst_11787:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa800001f; valaddr_reg:x12; val_offset:35298*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35298*FLEN/8, x13, x9, x10)
-
-inst_11788:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffff0; valaddr_reg:x12; val_offset:35301*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35301*FLEN/8, x13, x9, x10)
-
-inst_11789:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa800000f; valaddr_reg:x12; val_offset:35304*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35304*FLEN/8, x13, x9, x10)
-
-inst_11790:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffff8; valaddr_reg:x12; val_offset:35307*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35307*FLEN/8, x13, x9, x10)
-
-inst_11791:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8000007; valaddr_reg:x12; val_offset:35310*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35310*FLEN/8, x13, x9, x10)
-
-inst_11792:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffffc; valaddr_reg:x12; val_offset:35313*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35313*FLEN/8, x13, x9, x10)
-
-inst_11793:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8000003; valaddr_reg:x12; val_offset:35316*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35316*FLEN/8, x13, x9, x10)
-
-inst_11794:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa87ffffe; valaddr_reg:x12; val_offset:35319*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35319*FLEN/8, x13, x9, x10)
-
-inst_11795:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x50 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xa8000001; valaddr_reg:x12; val_offset:35322*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35322*FLEN/8, x13, x9, x10)
-
-inst_11796:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:35325*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35325*FLEN/8, x13, x9, x10)
-
-inst_11797:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:35328*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35328*FLEN/8, x13, x9, x10)
-
-inst_11798:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:35331*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35331*FLEN/8, x13, x9, x10)
-
-inst_11799:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:35334*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35334*FLEN/8, x13, x9, x10)
-
-RVTEST_SIGBASE(x9,signature_x9_92)
-inst_11800:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:35337*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35337*FLEN/8, x13, x9, x10)
-
-inst_11801:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:35340*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35340*FLEN/8, x13, x9, x10)
-
-inst_11802:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:35343*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35343*FLEN/8, x13, x9, x10)
-
-inst_11803:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:35346*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35346*FLEN/8, x13, x9, x10)
-
-inst_11804:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:35349*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35349*FLEN/8, x13, x9, x10)
-
-inst_11805:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:35352*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35352*FLEN/8, x13, x9, x10)
-
-inst_11806:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:35355*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35355*FLEN/8, x13, x9, x10)
-
-inst_11807:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:35358*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35358*FLEN/8, x13, x9, x10)
-
-inst_11808:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:35361*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35361*FLEN/8, x13, x9, x10)
-
-inst_11809:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:35364*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35364*FLEN/8, x13, x9, x10)
-
-inst_11810:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:35367*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35367*FLEN/8, x13, x9, x10)
-
-inst_11811:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x27e945 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30c9a5 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f27e945; op2val:0x8030c9a5;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:35370*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35370*FLEN/8, x13, x9, x10)
-
-inst_11812:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8800000; valaddr_reg:x12; val_offset:35373*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35373*FLEN/8, x13, x9, x10)
-
-inst_11813:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffffff; valaddr_reg:x12; val_offset:35376*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35376*FLEN/8, x13, x9, x10)
-
-inst_11814:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8c00000; valaddr_reg:x12; val_offset:35379*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35379*FLEN/8, x13, x9, x10)
-
-inst_11815:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8bfffff; valaddr_reg:x12; val_offset:35382*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35382*FLEN/8, x13, x9, x10)
-
-inst_11816:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8e00000; valaddr_reg:x12; val_offset:35385*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35385*FLEN/8, x13, x9, x10)
-
-inst_11817:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa89fffff; valaddr_reg:x12; val_offset:35388*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35388*FLEN/8, x13, x9, x10)
-
-inst_11818:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8f00000; valaddr_reg:x12; val_offset:35391*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35391*FLEN/8, x13, x9, x10)
-
-inst_11819:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa88fffff; valaddr_reg:x12; val_offset:35394*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35394*FLEN/8, x13, x9, x10)
-
-inst_11820:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8f80000; valaddr_reg:x12; val_offset:35397*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35397*FLEN/8, x13, x9, x10)
-
-inst_11821:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa887ffff; valaddr_reg:x12; val_offset:35400*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35400*FLEN/8, x13, x9, x10)
-
-inst_11822:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fc0000; valaddr_reg:x12; val_offset:35403*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35403*FLEN/8, x13, x9, x10)
-
-inst_11823:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa883ffff; valaddr_reg:x12; val_offset:35406*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35406*FLEN/8, x13, x9, x10)
-
-inst_11824:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fe0000; valaddr_reg:x12; val_offset:35409*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35409*FLEN/8, x13, x9, x10)
-
-inst_11825:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa881ffff; valaddr_reg:x12; val_offset:35412*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35412*FLEN/8, x13, x9, x10)
-
-inst_11826:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ff0000; valaddr_reg:x12; val_offset:35415*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35415*FLEN/8, x13, x9, x10)
-
-inst_11827:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa880ffff; valaddr_reg:x12; val_offset:35418*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35418*FLEN/8, x13, x9, x10)
-
-inst_11828:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ff8000; valaddr_reg:x12; val_offset:35421*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35421*FLEN/8, x13, x9, x10)
-
-inst_11829:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8807fff; valaddr_reg:x12; val_offset:35424*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35424*FLEN/8, x13, x9, x10)
-
-inst_11830:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffc000; valaddr_reg:x12; val_offset:35427*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35427*FLEN/8, x13, x9, x10)
-
-inst_11831:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8803fff; valaddr_reg:x12; val_offset:35430*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35430*FLEN/8, x13, x9, x10)
-
-inst_11832:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffe000; valaddr_reg:x12; val_offset:35433*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35433*FLEN/8, x13, x9, x10)
-
-inst_11833:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8801fff; valaddr_reg:x12; val_offset:35436*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35436*FLEN/8, x13, x9, x10)
-
-inst_11834:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fff000; valaddr_reg:x12; val_offset:35439*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35439*FLEN/8, x13, x9, x10)
-
-inst_11835:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8800fff; valaddr_reg:x12; val_offset:35442*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35442*FLEN/8, x13, x9, x10)
-
-inst_11836:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fff800; valaddr_reg:x12; val_offset:35445*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35445*FLEN/8, x13, x9, x10)
-
-inst_11837:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa88007ff; valaddr_reg:x12; val_offset:35448*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35448*FLEN/8, x13, x9, x10)
-
-inst_11838:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffc00; valaddr_reg:x12; val_offset:35451*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35451*FLEN/8, x13, x9, x10)
-
-inst_11839:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa88003ff; valaddr_reg:x12; val_offset:35454*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35454*FLEN/8, x13, x9, x10)
-
-inst_11840:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffe00; valaddr_reg:x12; val_offset:35457*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35457*FLEN/8, x13, x9, x10)
-
-inst_11841:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa88001ff; valaddr_reg:x12; val_offset:35460*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35460*FLEN/8, x13, x9, x10)
-
-inst_11842:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffff00; valaddr_reg:x12; val_offset:35463*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35463*FLEN/8, x13, x9, x10)
-
-inst_11843:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa88000ff; valaddr_reg:x12; val_offset:35466*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35466*FLEN/8, x13, x9, x10)
-
-inst_11844:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffff80; valaddr_reg:x12; val_offset:35469*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35469*FLEN/8, x13, x9, x10)
-
-inst_11845:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa880007f; valaddr_reg:x12; val_offset:35472*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35472*FLEN/8, x13, x9, x10)
-
-inst_11846:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffffc0; valaddr_reg:x12; val_offset:35475*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35475*FLEN/8, x13, x9, x10)
-
-inst_11847:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa880003f; valaddr_reg:x12; val_offset:35478*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35478*FLEN/8, x13, x9, x10)
-
-inst_11848:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8ffffe0; valaddr_reg:x12; val_offset:35481*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35481*FLEN/8, x13, x9, x10)
-
-inst_11849:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa880001f; valaddr_reg:x12; val_offset:35484*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35484*FLEN/8, x13, x9, x10)
-
-inst_11850:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffff0; valaddr_reg:x12; val_offset:35487*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35487*FLEN/8, x13, x9, x10)
-
-inst_11851:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa880000f; valaddr_reg:x12; val_offset:35490*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35490*FLEN/8, x13, x9, x10)
-
-inst_11852:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffff8; valaddr_reg:x12; val_offset:35493*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35493*FLEN/8, x13, x9, x10)
-
-inst_11853:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8800007; valaddr_reg:x12; val_offset:35496*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35496*FLEN/8, x13, x9, x10)
-
-inst_11854:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffffc; valaddr_reg:x12; val_offset:35499*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35499*FLEN/8, x13, x9, x10)
-
-inst_11855:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8800003; valaddr_reg:x12; val_offset:35502*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35502*FLEN/8, x13, x9, x10)
-
-inst_11856:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8fffffe; valaddr_reg:x12; val_offset:35505*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35505*FLEN/8, x13, x9, x10)
-
-inst_11857:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x51 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xa8800001; valaddr_reg:x12; val_offset:35508*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35508*FLEN/8, x13, x9, x10)
-
-inst_11858:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:35511*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35511*FLEN/8, x13, x9, x10)
-
-inst_11859:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:35514*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35514*FLEN/8, x13, x9, x10)
-
-inst_11860:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:35517*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35517*FLEN/8, x13, x9, x10)
-
-inst_11861:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:35520*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35520*FLEN/8, x13, x9, x10)
-
-inst_11862:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:35523*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35523*FLEN/8, x13, x9, x10)
-
-inst_11863:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:35526*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35526*FLEN/8, x13, x9, x10)
-
-inst_11864:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:35529*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35529*FLEN/8, x13, x9, x10)
-
-inst_11865:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:35532*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35532*FLEN/8, x13, x9, x10)
-
-inst_11866:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:35535*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35535*FLEN/8, x13, x9, x10)
-
-inst_11867:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:35538*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35538*FLEN/8, x13, x9, x10)
-
-inst_11868:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:35541*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35541*FLEN/8, x13, x9, x10)
-
-inst_11869:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:35544*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35544*FLEN/8, x13, x9, x10)
-
-inst_11870:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:35547*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35547*FLEN/8, x13, x9, x10)
-
-inst_11871:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:35550*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35550*FLEN/8, x13, x9, x10)
-
-inst_11872:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:35553*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35553*FLEN/8, x13, x9, x10)
-
-inst_11873:
-// fs1 == 0 and fe1 == 0xf9 and fm1 == 0x41d0be and fs2 == 1 and fe2 == 0x04 and fm2 == 0x29116d and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7cc1d0be; op2val:0x8229116d;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:35556*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35556*FLEN/8, x13, x9, x10)
-
-inst_11874:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9000000; valaddr_reg:x12; val_offset:35559*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35559*FLEN/8, x13, x9, x10)
-
-inst_11875:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fffff; valaddr_reg:x12; val_offset:35562*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35562*FLEN/8, x13, x9, x10)
-
-inst_11876:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9400000; valaddr_reg:x12; val_offset:35565*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35565*FLEN/8, x13, x9, x10)
-
-inst_11877:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa93fffff; valaddr_reg:x12; val_offset:35568*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35568*FLEN/8, x13, x9, x10)
-
-inst_11878:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9600000; valaddr_reg:x12; val_offset:35571*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35571*FLEN/8, x13, x9, x10)
-
-inst_11879:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa91fffff; valaddr_reg:x12; val_offset:35574*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35574*FLEN/8, x13, x9, x10)
-
-inst_11880:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9700000; valaddr_reg:x12; val_offset:35577*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35577*FLEN/8, x13, x9, x10)
-
-inst_11881:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa90fffff; valaddr_reg:x12; val_offset:35580*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35580*FLEN/8, x13, x9, x10)
-
-inst_11882:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9780000; valaddr_reg:x12; val_offset:35583*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35583*FLEN/8, x13, x9, x10)
-
-inst_11883:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa907ffff; valaddr_reg:x12; val_offset:35586*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35586*FLEN/8, x13, x9, x10)
-
-inst_11884:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97c0000; valaddr_reg:x12; val_offset:35589*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35589*FLEN/8, x13, x9, x10)
-
-inst_11885:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa903ffff; valaddr_reg:x12; val_offset:35592*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35592*FLEN/8, x13, x9, x10)
-
-inst_11886:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97e0000; valaddr_reg:x12; val_offset:35595*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35595*FLEN/8, x13, x9, x10)
-
-inst_11887:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa901ffff; valaddr_reg:x12; val_offset:35598*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35598*FLEN/8, x13, x9, x10)
-
-inst_11888:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97f0000; valaddr_reg:x12; val_offset:35601*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35601*FLEN/8, x13, x9, x10)
-
-inst_11889:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa900ffff; valaddr_reg:x12; val_offset:35604*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35604*FLEN/8, x13, x9, x10)
-
-inst_11890:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97f8000; valaddr_reg:x12; val_offset:35607*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35607*FLEN/8, x13, x9, x10)
-
-inst_11891:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9007fff; valaddr_reg:x12; val_offset:35610*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35610*FLEN/8, x13, x9, x10)
-
-inst_11892:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fc000; valaddr_reg:x12; val_offset:35613*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35613*FLEN/8, x13, x9, x10)
-
-inst_11893:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9003fff; valaddr_reg:x12; val_offset:35616*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35616*FLEN/8, x13, x9, x10)
-
-inst_11894:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fe000; valaddr_reg:x12; val_offset:35619*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35619*FLEN/8, x13, x9, x10)
-
-inst_11895:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9001fff; valaddr_reg:x12; val_offset:35622*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35622*FLEN/8, x13, x9, x10)
-
-inst_11896:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ff000; valaddr_reg:x12; val_offset:35625*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35625*FLEN/8, x13, x9, x10)
-
-inst_11897:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9000fff; valaddr_reg:x12; val_offset:35628*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35628*FLEN/8, x13, x9, x10)
-
-inst_11898:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ff800; valaddr_reg:x12; val_offset:35631*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35631*FLEN/8, x13, x9, x10)
-
-inst_11899:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa90007ff; valaddr_reg:x12; val_offset:35634*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35634*FLEN/8, x13, x9, x10)
-
-inst_11900:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffc00; valaddr_reg:x12; val_offset:35637*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35637*FLEN/8, x13, x9, x10)
-
-inst_11901:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa90003ff; valaddr_reg:x12; val_offset:35640*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35640*FLEN/8, x13, x9, x10)
-
-inst_11902:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffe00; valaddr_reg:x12; val_offset:35643*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35643*FLEN/8, x13, x9, x10)
-
-inst_11903:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa90001ff; valaddr_reg:x12; val_offset:35646*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35646*FLEN/8, x13, x9, x10)
-
-inst_11904:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fff00; valaddr_reg:x12; val_offset:35649*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35649*FLEN/8, x13, x9, x10)
-
-inst_11905:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa90000ff; valaddr_reg:x12; val_offset:35652*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35652*FLEN/8, x13, x9, x10)
-
-inst_11906:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fff80; valaddr_reg:x12; val_offset:35655*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35655*FLEN/8, x13, x9, x10)
-
-inst_11907:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa900007f; valaddr_reg:x12; val_offset:35658*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35658*FLEN/8, x13, x9, x10)
-
-inst_11908:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fffc0; valaddr_reg:x12; val_offset:35661*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35661*FLEN/8, x13, x9, x10)
-
-inst_11909:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa900003f; valaddr_reg:x12; val_offset:35664*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35664*FLEN/8, x13, x9, x10)
-
-inst_11910:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97fffe0; valaddr_reg:x12; val_offset:35667*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35667*FLEN/8, x13, x9, x10)
-
-inst_11911:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa900001f; valaddr_reg:x12; val_offset:35670*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35670*FLEN/8, x13, x9, x10)
-
-inst_11912:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffff0; valaddr_reg:x12; val_offset:35673*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35673*FLEN/8, x13, x9, x10)
-
-inst_11913:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa900000f; valaddr_reg:x12; val_offset:35676*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35676*FLEN/8, x13, x9, x10)
-
-inst_11914:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffff8; valaddr_reg:x12; val_offset:35679*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35679*FLEN/8, x13, x9, x10)
-
-inst_11915:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9000007; valaddr_reg:x12; val_offset:35682*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35682*FLEN/8, x13, x9, x10)
-
-inst_11916:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffffc; valaddr_reg:x12; val_offset:35685*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35685*FLEN/8, x13, x9, x10)
-
-inst_11917:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9000003; valaddr_reg:x12; val_offset:35688*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35688*FLEN/8, x13, x9, x10)
-
-inst_11918:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa97ffffe; valaddr_reg:x12; val_offset:35691*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35691*FLEN/8, x13, x9, x10)
-
-inst_11919:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x52 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xa9000001; valaddr_reg:x12; val_offset:35694*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35694*FLEN/8, x13, x9, x10)
-
-inst_11920:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:35697*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35697*FLEN/8, x13, x9, x10)
-
-inst_11921:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:35700*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35700*FLEN/8, x13, x9, x10)
-
-inst_11922:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:35703*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35703*FLEN/8, x13, x9, x10)
-
-inst_11923:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:35706*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35706*FLEN/8, x13, x9, x10)
-
-inst_11924:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:35709*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35709*FLEN/8, x13, x9, x10)
-
-inst_11925:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:35712*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35712*FLEN/8, x13, x9, x10)
-
-inst_11926:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:35715*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35715*FLEN/8, x13, x9, x10)
-
-inst_11927:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:35718*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35718*FLEN/8, x13, x9, x10)
-
-RVTEST_SIGBASE(x9,signature_x9_93)
-inst_11928:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:35721*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35721*FLEN/8, x13, x9, x10)
-
-inst_11929:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:35724*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35724*FLEN/8, x13, x9, x10)
-
-inst_11930:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:35727*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35727*FLEN/8, x13, x9, x10)
-
-inst_11931:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:35730*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35730*FLEN/8, x13, x9, x10)
-
-inst_11932:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:35733*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35733*FLEN/8, x13, x9, x10)
-
-inst_11933:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:35736*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35736*FLEN/8, x13, x9, x10)
-
-inst_11934:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:35739*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35739*FLEN/8, x13, x9, x10)
-
-inst_11935:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x275d37 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x30f279 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f275d37; op2val:0x8030f279;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:35742*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35742*FLEN/8, x13, x9, x10)
-
-inst_11936:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9800000; valaddr_reg:x12; val_offset:35745*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35745*FLEN/8, x13, x9, x10)
-
-inst_11937:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffffff; valaddr_reg:x12; val_offset:35748*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35748*FLEN/8, x13, x9, x10)
-
-inst_11938:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9c00000; valaddr_reg:x12; val_offset:35751*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35751*FLEN/8, x13, x9, x10)
-
-inst_11939:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9bfffff; valaddr_reg:x12; val_offset:35754*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35754*FLEN/8, x13, x9, x10)
-
-inst_11940:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9e00000; valaddr_reg:x12; val_offset:35757*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35757*FLEN/8, x13, x9, x10)
-
-inst_11941:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa99fffff; valaddr_reg:x12; val_offset:35760*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35760*FLEN/8, x13, x9, x10)
-
-inst_11942:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9f00000; valaddr_reg:x12; val_offset:35763*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35763*FLEN/8, x13, x9, x10)
-
-inst_11943:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa98fffff; valaddr_reg:x12; val_offset:35766*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35766*FLEN/8, x13, x9, x10)
-
-inst_11944:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9f80000; valaddr_reg:x12; val_offset:35769*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35769*FLEN/8, x13, x9, x10)
-
-inst_11945:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa987ffff; valaddr_reg:x12; val_offset:35772*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35772*FLEN/8, x13, x9, x10)
-
-inst_11946:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fc0000; valaddr_reg:x12; val_offset:35775*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35775*FLEN/8, x13, x9, x10)
-
-inst_11947:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa983ffff; valaddr_reg:x12; val_offset:35778*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35778*FLEN/8, x13, x9, x10)
-
-inst_11948:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fe0000; valaddr_reg:x12; val_offset:35781*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35781*FLEN/8, x13, x9, x10)
-
-inst_11949:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa981ffff; valaddr_reg:x12; val_offset:35784*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35784*FLEN/8, x13, x9, x10)
-
-inst_11950:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ff0000; valaddr_reg:x12; val_offset:35787*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35787*FLEN/8, x13, x9, x10)
-
-inst_11951:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa980ffff; valaddr_reg:x12; val_offset:35790*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35790*FLEN/8, x13, x9, x10)
-
-inst_11952:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ff8000; valaddr_reg:x12; val_offset:35793*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35793*FLEN/8, x13, x9, x10)
-
-inst_11953:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9807fff; valaddr_reg:x12; val_offset:35796*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35796*FLEN/8, x13, x9, x10)
-
-inst_11954:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffc000; valaddr_reg:x12; val_offset:35799*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35799*FLEN/8, x13, x9, x10)
-
-inst_11955:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9803fff; valaddr_reg:x12; val_offset:35802*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35802*FLEN/8, x13, x9, x10)
-
-inst_11956:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffe000; valaddr_reg:x12; val_offset:35805*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35805*FLEN/8, x13, x9, x10)
-
-inst_11957:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9801fff; valaddr_reg:x12; val_offset:35808*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35808*FLEN/8, x13, x9, x10)
-
-inst_11958:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fff000; valaddr_reg:x12; val_offset:35811*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35811*FLEN/8, x13, x9, x10)
-
-inst_11959:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9800fff; valaddr_reg:x12; val_offset:35814*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35814*FLEN/8, x13, x9, x10)
-
-inst_11960:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fff800; valaddr_reg:x12; val_offset:35817*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35817*FLEN/8, x13, x9, x10)
-
-inst_11961:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa98007ff; valaddr_reg:x12; val_offset:35820*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35820*FLEN/8, x13, x9, x10)
-
-inst_11962:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffc00; valaddr_reg:x12; val_offset:35823*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35823*FLEN/8, x13, x9, x10)
-
-inst_11963:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa98003ff; valaddr_reg:x12; val_offset:35826*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35826*FLEN/8, x13, x9, x10)
-
-inst_11964:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffe00; valaddr_reg:x12; val_offset:35829*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35829*FLEN/8, x13, x9, x10)
-
-inst_11965:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa98001ff; valaddr_reg:x12; val_offset:35832*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35832*FLEN/8, x13, x9, x10)
-
-inst_11966:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffff00; valaddr_reg:x12; val_offset:35835*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35835*FLEN/8, x13, x9, x10)
-
-inst_11967:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa98000ff; valaddr_reg:x12; val_offset:35838*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35838*FLEN/8, x13, x9, x10)
-
-inst_11968:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffff80; valaddr_reg:x12; val_offset:35841*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35841*FLEN/8, x13, x9, x10)
-
-inst_11969:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa980007f; valaddr_reg:x12; val_offset:35844*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35844*FLEN/8, x13, x9, x10)
-
-inst_11970:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffffc0; valaddr_reg:x12; val_offset:35847*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35847*FLEN/8, x13, x9, x10)
-
-inst_11971:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa980003f; valaddr_reg:x12; val_offset:35850*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35850*FLEN/8, x13, x9, x10)
-
-inst_11972:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9ffffe0; valaddr_reg:x12; val_offset:35853*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35853*FLEN/8, x13, x9, x10)
-
-inst_11973:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa980001f; valaddr_reg:x12; val_offset:35856*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35856*FLEN/8, x13, x9, x10)
-
-inst_11974:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffff0; valaddr_reg:x12; val_offset:35859*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35859*FLEN/8, x13, x9, x10)
-
-inst_11975:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa980000f; valaddr_reg:x12; val_offset:35862*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35862*FLEN/8, x13, x9, x10)
-
-inst_11976:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffff8; valaddr_reg:x12; val_offset:35865*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35865*FLEN/8, x13, x9, x10)
-
-inst_11977:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9800007; valaddr_reg:x12; val_offset:35868*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35868*FLEN/8, x13, x9, x10)
-
-inst_11978:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffffc; valaddr_reg:x12; val_offset:35871*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35871*FLEN/8, x13, x9, x10)
-
-inst_11979:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9800003; valaddr_reg:x12; val_offset:35874*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35874*FLEN/8, x13, x9, x10)
-
-inst_11980:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9fffffe; valaddr_reg:x12; val_offset:35877*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35877*FLEN/8, x13, x9, x10)
-
-inst_11981:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x53 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xa9800001; valaddr_reg:x12; val_offset:35880*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35880*FLEN/8, x13, x9, x10)
-
-inst_11982:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:35883*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35883*FLEN/8, x13, x9, x10)
-
-inst_11983:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:35886*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35886*FLEN/8, x13, x9, x10)
-
-inst_11984:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:35889*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35889*FLEN/8, x13, x9, x10)
-
-inst_11985:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:35892*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35892*FLEN/8, x13, x9, x10)
-
-inst_11986:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:35895*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35895*FLEN/8, x13, x9, x10)
-
-inst_11987:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:35898*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35898*FLEN/8, x13, x9, x10)
-
-inst_11988:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:35901*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35901*FLEN/8, x13, x9, x10)
-
-inst_11989:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:35904*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35904*FLEN/8, x13, x9, x10)
-
-inst_11990:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:35907*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35907*FLEN/8, x13, x9, x10)
-
-inst_11991:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:35910*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35910*FLEN/8, x13, x9, x10)
-
-inst_11992:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:35913*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35913*FLEN/8, x13, x9, x10)
-
-inst_11993:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:35916*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35916*FLEN/8, x13, x9, x10)
-
-inst_11994:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:35919*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35919*FLEN/8, x13, x9, x10)
-
-inst_11995:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:35922*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35922*FLEN/8, x13, x9, x10)
-
-inst_11996:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:35925*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35925*FLEN/8, x13, x9, x10)
-
-inst_11997:
-// fs1 == 0 and fe1 == 0xfd and fm1 == 0x59e8cc and fs2 == 1 and fe2 == 0x00 and fm2 == 0x4b2fed and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7ed9e8cc; op2val:0x804b2fed;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:35928*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35928*FLEN/8, x13, x9, x10)
-
-inst_11998:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa000000; valaddr_reg:x12; val_offset:35931*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35931*FLEN/8, x13, x9, x10)
-
-inst_11999:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fffff; valaddr_reg:x12; val_offset:35934*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35934*FLEN/8, x13, x9, x10)
-
-inst_12000:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa400000; valaddr_reg:x12; val_offset:35937*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35937*FLEN/8, x13, x9, x10)
-
-inst_12001:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa3fffff; valaddr_reg:x12; val_offset:35940*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35940*FLEN/8, x13, x9, x10)
-
-inst_12002:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa600000; valaddr_reg:x12; val_offset:35943*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35943*FLEN/8, x13, x9, x10)
-
-inst_12003:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa1fffff; valaddr_reg:x12; val_offset:35946*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35946*FLEN/8, x13, x9, x10)
-
-inst_12004:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa700000; valaddr_reg:x12; val_offset:35949*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35949*FLEN/8, x13, x9, x10)
-
-inst_12005:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa0fffff; valaddr_reg:x12; val_offset:35952*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35952*FLEN/8, x13, x9, x10)
-
-inst_12006:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa780000; valaddr_reg:x12; val_offset:35955*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35955*FLEN/8, x13, x9, x10)
-
-inst_12007:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa07ffff; valaddr_reg:x12; val_offset:35958*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35958*FLEN/8, x13, x9, x10)
-
-inst_12008:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7c0000; valaddr_reg:x12; val_offset:35961*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35961*FLEN/8, x13, x9, x10)
-
-inst_12009:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa03ffff; valaddr_reg:x12; val_offset:35964*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35964*FLEN/8, x13, x9, x10)
-
-inst_12010:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7e0000; valaddr_reg:x12; val_offset:35967*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35967*FLEN/8, x13, x9, x10)
-
-inst_12011:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa01ffff; valaddr_reg:x12; val_offset:35970*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35970*FLEN/8, x13, x9, x10)
-
-inst_12012:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7f0000; valaddr_reg:x12; val_offset:35973*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35973*FLEN/8, x13, x9, x10)
-
-inst_12013:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa00ffff; valaddr_reg:x12; val_offset:35976*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35976*FLEN/8, x13, x9, x10)
-
-inst_12014:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7f8000; valaddr_reg:x12; val_offset:35979*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35979*FLEN/8, x13, x9, x10)
-
-inst_12015:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa007fff; valaddr_reg:x12; val_offset:35982*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35982*FLEN/8, x13, x9, x10)
-
-inst_12016:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fc000; valaddr_reg:x12; val_offset:35985*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35985*FLEN/8, x13, x9, x10)
-
-inst_12017:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa003fff; valaddr_reg:x12; val_offset:35988*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35988*FLEN/8, x13, x9, x10)
-
-inst_12018:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fe000; valaddr_reg:x12; val_offset:35991*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35991*FLEN/8, x13, x9, x10)
-
-inst_12019:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa001fff; valaddr_reg:x12; val_offset:35994*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35994*FLEN/8, x13, x9, x10)
-
-inst_12020:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ff000; valaddr_reg:x12; val_offset:35997*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 35997*FLEN/8, x13, x9, x10)
-
-inst_12021:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa000fff; valaddr_reg:x12; val_offset:36000*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36000*FLEN/8, x13, x9, x10)
-
-inst_12022:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ff800; valaddr_reg:x12; val_offset:36003*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36003*FLEN/8, x13, x9, x10)
-
-inst_12023:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa0007ff; valaddr_reg:x12; val_offset:36006*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36006*FLEN/8, x13, x9, x10)
-
-inst_12024:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffc00; valaddr_reg:x12; val_offset:36009*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36009*FLEN/8, x13, x9, x10)
-
-inst_12025:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa0003ff; valaddr_reg:x12; val_offset:36012*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36012*FLEN/8, x13, x9, x10)
-
-inst_12026:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffe00; valaddr_reg:x12; val_offset:36015*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36015*FLEN/8, x13, x9, x10)
-
-inst_12027:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa0001ff; valaddr_reg:x12; val_offset:36018*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36018*FLEN/8, x13, x9, x10)
-
-inst_12028:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fff00; valaddr_reg:x12; val_offset:36021*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36021*FLEN/8, x13, x9, x10)
-
-inst_12029:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa0000ff; valaddr_reg:x12; val_offset:36024*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36024*FLEN/8, x13, x9, x10)
-
-inst_12030:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fff80; valaddr_reg:x12; val_offset:36027*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36027*FLEN/8, x13, x9, x10)
-
-inst_12031:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa00007f; valaddr_reg:x12; val_offset:36030*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36030*FLEN/8, x13, x9, x10)
-
-inst_12032:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fffc0; valaddr_reg:x12; val_offset:36033*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36033*FLEN/8, x13, x9, x10)
-
-inst_12033:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa00003f; valaddr_reg:x12; val_offset:36036*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36036*FLEN/8, x13, x9, x10)
-
-inst_12034:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7fffe0; valaddr_reg:x12; val_offset:36039*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36039*FLEN/8, x13, x9, x10)
-
-inst_12035:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa00001f; valaddr_reg:x12; val_offset:36042*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36042*FLEN/8, x13, x9, x10)
-
-inst_12036:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffff0; valaddr_reg:x12; val_offset:36045*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36045*FLEN/8, x13, x9, x10)
-
-inst_12037:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa00000f; valaddr_reg:x12; val_offset:36048*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36048*FLEN/8, x13, x9, x10)
-
-inst_12038:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffff8; valaddr_reg:x12; val_offset:36051*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36051*FLEN/8, x13, x9, x10)
-
-inst_12039:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa000007; valaddr_reg:x12; val_offset:36054*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36054*FLEN/8, x13, x9, x10)
-
-inst_12040:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffffc; valaddr_reg:x12; val_offset:36057*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36057*FLEN/8, x13, x9, x10)
-
-inst_12041:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa000003; valaddr_reg:x12; val_offset:36060*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36060*FLEN/8, x13, x9, x10)
-
-inst_12042:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa7ffffe; valaddr_reg:x12; val_offset:36063*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36063*FLEN/8, x13, x9, x10)
-
-inst_12043:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x54 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xaa000001; valaddr_reg:x12; val_offset:36066*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36066*FLEN/8, x13, x9, x10)
-
-inst_12044:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:36069*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36069*FLEN/8, x13, x9, x10)
-
-inst_12045:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:36072*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36072*FLEN/8, x13, x9, x10)
-
-inst_12046:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:36075*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36075*FLEN/8, x13, x9, x10)
-
-inst_12047:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:36078*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36078*FLEN/8, x13, x9, x10)
-
-inst_12048:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:36081*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36081*FLEN/8, x13, x9, x10)
-
-inst_12049:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:36084*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36084*FLEN/8, x13, x9, x10)
-
-inst_12050:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:36087*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36087*FLEN/8, x13, x9, x10)
-
-inst_12051:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:36090*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36090*FLEN/8, x13, x9, x10)
-
-inst_12052:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:36093*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36093*FLEN/8, x13, x9, x10)
-
-inst_12053:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:36096*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36096*FLEN/8, x13, x9, x10)
-
-inst_12054:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:36099*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36099*FLEN/8, x13, x9, x10)
-
-inst_12055:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:36102*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36102*FLEN/8, x13, x9, x10)
-
-RVTEST_SIGBASE(x9,signature_x9_94)
-inst_12056:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:36105*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36105*FLEN/8, x13, x9, x10)
-
-inst_12057:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:36108*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36108*FLEN/8, x13, x9, x10)
-
-inst_12058:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:36111*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36111*FLEN/8, x13, x9, x10)
-
-inst_12059:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x144278 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x374121 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f144278; op2val:0x80374121;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:36114*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36114*FLEN/8, x13, x9, x10)
-
-inst_12060:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa800000; valaddr_reg:x12; val_offset:36117*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36117*FLEN/8, x13, x9, x10)
-
-inst_12061:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffffff; valaddr_reg:x12; val_offset:36120*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36120*FLEN/8, x13, x9, x10)
-
-inst_12062:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaac00000; valaddr_reg:x12; val_offset:36123*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36123*FLEN/8, x13, x9, x10)
-
-inst_12063:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaabfffff; valaddr_reg:x12; val_offset:36126*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36126*FLEN/8, x13, x9, x10)
-
-inst_12064:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaae00000; valaddr_reg:x12; val_offset:36129*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36129*FLEN/8, x13, x9, x10)
-
-inst_12065:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa9fffff; valaddr_reg:x12; val_offset:36132*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36132*FLEN/8, x13, x9, x10)
-
-inst_12066:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaf00000; valaddr_reg:x12; val_offset:36135*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36135*FLEN/8, x13, x9, x10)
-
-inst_12067:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa8fffff; valaddr_reg:x12; val_offset:36138*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36138*FLEN/8, x13, x9, x10)
-
-inst_12068:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaf80000; valaddr_reg:x12; val_offset:36141*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36141*FLEN/8, x13, x9, x10)
-
-inst_12069:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa87ffff; valaddr_reg:x12; val_offset:36144*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36144*FLEN/8, x13, x9, x10)
-
-inst_12070:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafc0000; valaddr_reg:x12; val_offset:36147*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36147*FLEN/8, x13, x9, x10)
-
-inst_12071:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa83ffff; valaddr_reg:x12; val_offset:36150*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36150*FLEN/8, x13, x9, x10)
-
-inst_12072:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafe0000; valaddr_reg:x12; val_offset:36153*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36153*FLEN/8, x13, x9, x10)
-
-inst_12073:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa81ffff; valaddr_reg:x12; val_offset:36156*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36156*FLEN/8, x13, x9, x10)
-
-inst_12074:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaff0000; valaddr_reg:x12; val_offset:36159*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36159*FLEN/8, x13, x9, x10)
-
-inst_12075:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa80ffff; valaddr_reg:x12; val_offset:36162*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36162*FLEN/8, x13, x9, x10)
-
-inst_12076:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaff8000; valaddr_reg:x12; val_offset:36165*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36165*FLEN/8, x13, x9, x10)
-
-inst_12077:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa807fff; valaddr_reg:x12; val_offset:36168*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36168*FLEN/8, x13, x9, x10)
-
-inst_12078:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffc000; valaddr_reg:x12; val_offset:36171*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36171*FLEN/8, x13, x9, x10)
-
-inst_12079:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa803fff; valaddr_reg:x12; val_offset:36174*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36174*FLEN/8, x13, x9, x10)
-
-inst_12080:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffe000; valaddr_reg:x12; val_offset:36177*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36177*FLEN/8, x13, x9, x10)
-
-inst_12081:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa801fff; valaddr_reg:x12; val_offset:36180*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36180*FLEN/8, x13, x9, x10)
-
-inst_12082:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafff000; valaddr_reg:x12; val_offset:36183*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36183*FLEN/8, x13, x9, x10)
-
-inst_12083:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa800fff; valaddr_reg:x12; val_offset:36186*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36186*FLEN/8, x13, x9, x10)
-
-inst_12084:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafff800; valaddr_reg:x12; val_offset:36189*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36189*FLEN/8, x13, x9, x10)
-
-inst_12085:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa8007ff; valaddr_reg:x12; val_offset:36192*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36192*FLEN/8, x13, x9, x10)
-
-inst_12086:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffc00; valaddr_reg:x12; val_offset:36195*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36195*FLEN/8, x13, x9, x10)
-
-inst_12087:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa8003ff; valaddr_reg:x12; val_offset:36198*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36198*FLEN/8, x13, x9, x10)
-
-inst_12088:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffe00; valaddr_reg:x12; val_offset:36201*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36201*FLEN/8, x13, x9, x10)
-
-inst_12089:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa8001ff; valaddr_reg:x12; val_offset:36204*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36204*FLEN/8, x13, x9, x10)
-
-inst_12090:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffff00; valaddr_reg:x12; val_offset:36207*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36207*FLEN/8, x13, x9, x10)
-
-inst_12091:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa8000ff; valaddr_reg:x12; val_offset:36210*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36210*FLEN/8, x13, x9, x10)
-
-inst_12092:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffff80; valaddr_reg:x12; val_offset:36213*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36213*FLEN/8, x13, x9, x10)
-
-inst_12093:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa80007f; valaddr_reg:x12; val_offset:36216*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36216*FLEN/8, x13, x9, x10)
-
-inst_12094:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffffc0; valaddr_reg:x12; val_offset:36219*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36219*FLEN/8, x13, x9, x10)
-
-inst_12095:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa80003f; valaddr_reg:x12; val_offset:36222*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36222*FLEN/8, x13, x9, x10)
-
-inst_12096:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaaffffe0; valaddr_reg:x12; val_offset:36225*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36225*FLEN/8, x13, x9, x10)
-
-inst_12097:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa80001f; valaddr_reg:x12; val_offset:36228*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36228*FLEN/8, x13, x9, x10)
-
-inst_12098:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffff0; valaddr_reg:x12; val_offset:36231*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36231*FLEN/8, x13, x9, x10)
-
-inst_12099:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa80000f; valaddr_reg:x12; val_offset:36234*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36234*FLEN/8, x13, x9, x10)
-
-inst_12100:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffff8; valaddr_reg:x12; val_offset:36237*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36237*FLEN/8, x13, x9, x10)
-
-inst_12101:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa800007; valaddr_reg:x12; val_offset:36240*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36240*FLEN/8, x13, x9, x10)
-
-inst_12102:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffffc; valaddr_reg:x12; val_offset:36243*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36243*FLEN/8, x13, x9, x10)
-
-inst_12103:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa800003; valaddr_reg:x12; val_offset:36246*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36246*FLEN/8, x13, x9, x10)
-
-inst_12104:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaafffffe; valaddr_reg:x12; val_offset:36249*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36249*FLEN/8, x13, x9, x10)
-
-inst_12105:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x55 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xaa800001; valaddr_reg:x12; val_offset:36252*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36252*FLEN/8, x13, x9, x10)
-
-inst_12106:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:36255*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36255*FLEN/8, x13, x9, x10)
-
-inst_12107:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:36258*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36258*FLEN/8, x13, x9, x10)
-
-inst_12108:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:36261*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36261*FLEN/8, x13, x9, x10)
-
-inst_12109:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:36264*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36264*FLEN/8, x13, x9, x10)
-
-inst_12110:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:36267*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36267*FLEN/8, x13, x9, x10)
-
-inst_12111:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:36270*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36270*FLEN/8, x13, x9, x10)
-
-inst_12112:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:36273*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36273*FLEN/8, x13, x9, x10)
-
-inst_12113:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:36276*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36276*FLEN/8, x13, x9, x10)
-
-inst_12114:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:36279*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36279*FLEN/8, x13, x9, x10)
-
-inst_12115:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:36282*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36282*FLEN/8, x13, x9, x10)
-
-inst_12116:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:36285*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36285*FLEN/8, x13, x9, x10)
-
-inst_12117:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:36288*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36288*FLEN/8, x13, x9, x10)
-
-inst_12118:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:36291*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36291*FLEN/8, x13, x9, x10)
-
-inst_12119:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:36294*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36294*FLEN/8, x13, x9, x10)
-
-inst_12120:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:36297*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36297*FLEN/8, x13, x9, x10)
-
-inst_12121:
-// fs1 == 0 and fe1 == 0xfe and fm1 == 0x082110 and fs2 == 1 and fe2 == 0x00 and fm2 == 0x3c2d9a and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7f082110; op2val:0x803c2d9a;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:36300*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36300*FLEN/8, x13, x9, x10)
-
-inst_12122:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab000000; valaddr_reg:x12; val_offset:36303*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36303*FLEN/8, x13, x9, x10)
-
-inst_12123:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fffff; valaddr_reg:x12; val_offset:36306*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36306*FLEN/8, x13, x9, x10)
-
-inst_12124:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab400000; valaddr_reg:x12; val_offset:36309*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36309*FLEN/8, x13, x9, x10)
-
-inst_12125:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab3fffff; valaddr_reg:x12; val_offset:36312*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36312*FLEN/8, x13, x9, x10)
-
-inst_12126:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab600000; valaddr_reg:x12; val_offset:36315*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36315*FLEN/8, x13, x9, x10)
-
-inst_12127:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab1fffff; valaddr_reg:x12; val_offset:36318*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36318*FLEN/8, x13, x9, x10)
-
-inst_12128:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab700000; valaddr_reg:x12; val_offset:36321*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36321*FLEN/8, x13, x9, x10)
-
-inst_12129:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab0fffff; valaddr_reg:x12; val_offset:36324*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36324*FLEN/8, x13, x9, x10)
-
-inst_12130:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab780000; valaddr_reg:x12; val_offset:36327*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36327*FLEN/8, x13, x9, x10)
-
-inst_12131:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab07ffff; valaddr_reg:x12; val_offset:36330*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36330*FLEN/8, x13, x9, x10)
-
-inst_12132:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7c0000; valaddr_reg:x12; val_offset:36333*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36333*FLEN/8, x13, x9, x10)
-
-inst_12133:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab03ffff; valaddr_reg:x12; val_offset:36336*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36336*FLEN/8, x13, x9, x10)
-
-inst_12134:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7e0000; valaddr_reg:x12; val_offset:36339*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36339*FLEN/8, x13, x9, x10)
-
-inst_12135:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab01ffff; valaddr_reg:x12; val_offset:36342*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36342*FLEN/8, x13, x9, x10)
-
-inst_12136:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7f0000; valaddr_reg:x12; val_offset:36345*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36345*FLEN/8, x13, x9, x10)
-
-inst_12137:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab00ffff; valaddr_reg:x12; val_offset:36348*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36348*FLEN/8, x13, x9, x10)
-
-inst_12138:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7f8000; valaddr_reg:x12; val_offset:36351*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36351*FLEN/8, x13, x9, x10)
-
-inst_12139:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab007fff; valaddr_reg:x12; val_offset:36354*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36354*FLEN/8, x13, x9, x10)
-
-inst_12140:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fc000; valaddr_reg:x12; val_offset:36357*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36357*FLEN/8, x13, x9, x10)
-
-inst_12141:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab003fff; valaddr_reg:x12; val_offset:36360*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36360*FLEN/8, x13, x9, x10)
-
-inst_12142:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fe000; valaddr_reg:x12; val_offset:36363*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36363*FLEN/8, x13, x9, x10)
-
-inst_12143:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab001fff; valaddr_reg:x12; val_offset:36366*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36366*FLEN/8, x13, x9, x10)
-
-inst_12144:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ff000; valaddr_reg:x12; val_offset:36369*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36369*FLEN/8, x13, x9, x10)
-
-inst_12145:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab000fff; valaddr_reg:x12; val_offset:36372*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36372*FLEN/8, x13, x9, x10)
-
-inst_12146:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ff800; valaddr_reg:x12; val_offset:36375*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36375*FLEN/8, x13, x9, x10)
-
-inst_12147:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab0007ff; valaddr_reg:x12; val_offset:36378*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36378*FLEN/8, x13, x9, x10)
-
-inst_12148:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffc00; valaddr_reg:x12; val_offset:36381*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36381*FLEN/8, x13, x9, x10)
-
-inst_12149:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab0003ff; valaddr_reg:x12; val_offset:36384*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36384*FLEN/8, x13, x9, x10)
-
-inst_12150:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffe00; valaddr_reg:x12; val_offset:36387*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36387*FLEN/8, x13, x9, x10)
-
-inst_12151:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab0001ff; valaddr_reg:x12; val_offset:36390*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36390*FLEN/8, x13, x9, x10)
-
-inst_12152:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fff00; valaddr_reg:x12; val_offset:36393*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36393*FLEN/8, x13, x9, x10)
-
-inst_12153:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab0000ff; valaddr_reg:x12; val_offset:36396*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36396*FLEN/8, x13, x9, x10)
-
-inst_12154:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fff80; valaddr_reg:x12; val_offset:36399*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36399*FLEN/8, x13, x9, x10)
-
-inst_12155:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab00007f; valaddr_reg:x12; val_offset:36402*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36402*FLEN/8, x13, x9, x10)
-
-inst_12156:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fffc0; valaddr_reg:x12; val_offset:36405*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36405*FLEN/8, x13, x9, x10)
-
-inst_12157:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab00003f; valaddr_reg:x12; val_offset:36408*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36408*FLEN/8, x13, x9, x10)
-
-inst_12158:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7fffe0; valaddr_reg:x12; val_offset:36411*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36411*FLEN/8, x13, x9, x10)
-
-inst_12159:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab00001f; valaddr_reg:x12; val_offset:36414*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36414*FLEN/8, x13, x9, x10)
-
-inst_12160:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffff0; valaddr_reg:x12; val_offset:36417*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36417*FLEN/8, x13, x9, x10)
-
-inst_12161:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab00000f; valaddr_reg:x12; val_offset:36420*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36420*FLEN/8, x13, x9, x10)
-
-inst_12162:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffff8; valaddr_reg:x12; val_offset:36423*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36423*FLEN/8, x13, x9, x10)
-
-inst_12163:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab000007; valaddr_reg:x12; val_offset:36426*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36426*FLEN/8, x13, x9, x10)
-
-inst_12164:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffffc; valaddr_reg:x12; val_offset:36429*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36429*FLEN/8, x13, x9, x10)
-
-inst_12165:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab000003; valaddr_reg:x12; val_offset:36432*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36432*FLEN/8, x13, x9, x10)
-
-inst_12166:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab7ffffe; valaddr_reg:x12; val_offset:36435*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36435*FLEN/8, x13, x9, x10)
-
-inst_12167:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x56 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xab000001; valaddr_reg:x12; val_offset:36438*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36438*FLEN/8, x13, x9, x10)
-
-inst_12168:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:36441*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36441*FLEN/8, x13, x9, x10)
-
-inst_12169:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbf800007; valaddr_reg:x12; val_offset:36444*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36444*FLEN/8, x13, x9, x10)
-
-inst_12170:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbffffffc; valaddr_reg:x12; val_offset:36447*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36447*FLEN/8, x13, x9, x10)
-
-inst_12171:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbf800003; valaddr_reg:x12; val_offset:36450*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36450*FLEN/8, x13, x9, x10)
-
-inst_12172:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbffffffe; valaddr_reg:x12; val_offset:36453*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36453*FLEN/8, x13, x9, x10)
-
-inst_12173:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbf800001; valaddr_reg:x12; val_offset:36456*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36456*FLEN/8, x13, x9, x10)
-
-inst_12174:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x36db6d and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfb6db6d; valaddr_reg:x12; val_offset:36459*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36459*FLEN/8, x13, x9, x10)
-
-inst_12175:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x6db6db and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfedb6db; valaddr_reg:x12; val_offset:36462*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36462*FLEN/8, x13, x9, x10)
-
-inst_12176:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x199999 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbf999999; valaddr_reg:x12; val_offset:36465*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36465*FLEN/8, x13, x9, x10)
-
-inst_12177:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x666666 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfe66666; valaddr_reg:x12; val_offset:36468*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36468*FLEN/8, x13, x9, x10)
-
-inst_12178:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x3bbbbb and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfbbbbbb; valaddr_reg:x12; val_offset:36471*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36471*FLEN/8, x13, x9, x10)
-
-inst_12179:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x444444 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfc44444; valaddr_reg:x12; val_offset:36474*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36474*FLEN/8, x13, x9, x10)
-
-inst_12180:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x249249 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfa49249; valaddr_reg:x12; val_offset:36477*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36477*FLEN/8, x13, x9, x10)
-
-inst_12181:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x5b6db6 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfdb6db6; valaddr_reg:x12; val_offset:36480*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36480*FLEN/8, x13, x9, x10)
-
-inst_12182:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x333333 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfb33333; valaddr_reg:x12; val_offset:36483*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36483*FLEN/8, x13, x9, x10)
-
-inst_12183:
-// fs1 == 0 and fe1 == 0xfb and fm1 == 0x7e7a0c and fs2 == 1 and fe2 == 0x02 and fm2 == 0x00c424 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x4ccccc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7dfe7a0c; op2val:0x8100c424;
-op3val:0xbfcccccc; valaddr_reg:x12; val_offset:36486*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36486*FLEN/8, x13, x9, x10)
-
-RVTEST_SIGBASE(x9,signature_x9_95)
-inst_12184:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x000000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab800000; valaddr_reg:x12; val_offset:36489*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36489*FLEN/8, x13, x9, x10)
-
-inst_12185:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffffff; valaddr_reg:x12; val_offset:36492*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36492*FLEN/8, x13, x9, x10)
-
-inst_12186:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x400000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabc00000; valaddr_reg:x12; val_offset:36495*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36495*FLEN/8, x13, x9, x10)
-
-inst_12187:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x3fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabbfffff; valaddr_reg:x12; val_offset:36498*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36498*FLEN/8, x13, x9, x10)
-
-inst_12188:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x600000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabe00000; valaddr_reg:x12; val_offset:36501*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36501*FLEN/8, x13, x9, x10)
-
-inst_12189:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x1fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab9fffff; valaddr_reg:x12; val_offset:36504*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36504*FLEN/8, x13, x9, x10)
-
-inst_12190:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x700000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabf00000; valaddr_reg:x12; val_offset:36507*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36507*FLEN/8, x13, x9, x10)
-
-inst_12191:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x0fffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab8fffff; valaddr_reg:x12; val_offset:36510*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36510*FLEN/8, x13, x9, x10)
-
-inst_12192:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x780000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabf80000; valaddr_reg:x12; val_offset:36513*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36513*FLEN/8, x13, x9, x10)
-
-inst_12193:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x07ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab87ffff; valaddr_reg:x12; val_offset:36516*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36516*FLEN/8, x13, x9, x10)
-
-inst_12194:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7c0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfc0000; valaddr_reg:x12; val_offset:36519*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36519*FLEN/8, x13, x9, x10)
-
-inst_12195:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x03ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab83ffff; valaddr_reg:x12; val_offset:36522*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36522*FLEN/8, x13, x9, x10)
-
-inst_12196:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7e0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfe0000; valaddr_reg:x12; val_offset:36525*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36525*FLEN/8, x13, x9, x10)
-
-inst_12197:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x01ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab81ffff; valaddr_reg:x12; val_offset:36528*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36528*FLEN/8, x13, x9, x10)
-
-inst_12198:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7f0000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabff0000; valaddr_reg:x12; val_offset:36531*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36531*FLEN/8, x13, x9, x10)
-
-inst_12199:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x00ffff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab80ffff; valaddr_reg:x12; val_offset:36534*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36534*FLEN/8, x13, x9, x10)
-
-inst_12200:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7f8000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabff8000; valaddr_reg:x12; val_offset:36537*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36537*FLEN/8, x13, x9, x10)
-
-inst_12201:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x007fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab807fff; valaddr_reg:x12; val_offset:36540*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36540*FLEN/8, x13, x9, x10)
-
-inst_12202:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fc000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffc000; valaddr_reg:x12; val_offset:36543*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36543*FLEN/8, x13, x9, x10)
-
-inst_12203:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x003fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab803fff; valaddr_reg:x12; val_offset:36546*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36546*FLEN/8, x13, x9, x10)
-
-inst_12204:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fe000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffe000; valaddr_reg:x12; val_offset:36549*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36549*FLEN/8, x13, x9, x10)
-
-inst_12205:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x001fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab801fff; valaddr_reg:x12; val_offset:36552*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36552*FLEN/8, x13, x9, x10)
-
-inst_12206:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ff000 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfff000; valaddr_reg:x12; val_offset:36555*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36555*FLEN/8, x13, x9, x10)
-
-inst_12207:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x000fff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab800fff; valaddr_reg:x12; val_offset:36558*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36558*FLEN/8, x13, x9, x10)
-
-inst_12208:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ff800 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfff800; valaddr_reg:x12; val_offset:36561*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36561*FLEN/8, x13, x9, x10)
-
-inst_12209:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x0007ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab8007ff; valaddr_reg:x12; val_offset:36564*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36564*FLEN/8, x13, x9, x10)
-
-inst_12210:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffc00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffc00; valaddr_reg:x12; val_offset:36567*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36567*FLEN/8, x13, x9, x10)
-
-inst_12211:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x0003ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab8003ff; valaddr_reg:x12; val_offset:36570*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36570*FLEN/8, x13, x9, x10)
-
-inst_12212:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffe00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffe00; valaddr_reg:x12; val_offset:36573*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36573*FLEN/8, x13, x9, x10)
-
-inst_12213:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x0001ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab8001ff; valaddr_reg:x12; val_offset:36576*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36576*FLEN/8, x13, x9, x10)
-
-inst_12214:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fff00 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffff00; valaddr_reg:x12; val_offset:36579*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36579*FLEN/8, x13, x9, x10)
-
-inst_12215:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x0000ff and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab8000ff; valaddr_reg:x12; val_offset:36582*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36582*FLEN/8, x13, x9, x10)
-
-inst_12216:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fff80 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffff80; valaddr_reg:x12; val_offset:36585*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36585*FLEN/8, x13, x9, x10)
-
-inst_12217:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x00007f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab80007f; valaddr_reg:x12; val_offset:36588*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36588*FLEN/8, x13, x9, x10)
-
-inst_12218:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fffc0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffffc0; valaddr_reg:x12; val_offset:36591*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36591*FLEN/8, x13, x9, x10)
-
-inst_12219:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x00003f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab80003f; valaddr_reg:x12; val_offset:36594*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36594*FLEN/8, x13, x9, x10)
-
-inst_12220:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7fffe0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabffffe0; valaddr_reg:x12; val_offset:36597*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36597*FLEN/8, x13, x9, x10)
-
-inst_12221:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x00001f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab80001f; valaddr_reg:x12; val_offset:36600*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36600*FLEN/8, x13, x9, x10)
-
-inst_12222:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffff0 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffff0; valaddr_reg:x12; val_offset:36603*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36603*FLEN/8, x13, x9, x10)
-
-inst_12223:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x00000f and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab80000f; valaddr_reg:x12; val_offset:36606*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36606*FLEN/8, x13, x9, x10)
-
-inst_12224:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffff8; valaddr_reg:x12; val_offset:36609*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36609*FLEN/8, x13, x9, x10)
-
-inst_12225:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x000007 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab800007; valaddr_reg:x12; val_offset:36612*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36612*FLEN/8, x13, x9, x10)
-
-inst_12226:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffffc and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffffc; valaddr_reg:x12; val_offset:36615*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36615*FLEN/8, x13, x9, x10)
-
-inst_12227:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x000003 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab800003; valaddr_reg:x12; val_offset:36618*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36618*FLEN/8, x13, x9, x10)
-
-inst_12228:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x7ffffe and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xabfffffe; valaddr_reg:x12; val_offset:36621*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36621*FLEN/8, x13, x9, x10)
-
-inst_12229:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x57 and fm3 == 0x000001 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xab800001; valaddr_reg:x12; val_offset:36624*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36624*FLEN/8, x13, x9, x10)
-
-inst_12230:
-// fs1 == 0 and fe1 == 0xfa and fm1 == 0x44423c and fs2 == 1 and fe2 == 0x03 and fm2 == 0x26f698 and fs3 == 1 and fe3 == 0x7f and fm3 == 0x7ffff8 and fcsr == 0x0 and rm_val == 7  and rs1_sgn_prefix == 0x00000000 and rs2_sgn_prefix == 0xffffffff and rs3_sgn_prefix == 0xffffffff  
-/* opcode: fmadd.s ; op1:x30; op2:x29; op3:x28; dest:x31; op1val:0x7d44423c; op2val:0x81a6f698;
-op3val:0xbffffff8; valaddr_reg:x12; val_offset:36627*FLEN/8; rmval:dyn;
-testreg:x10; fcsr_val:0 */
-TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 36627*FLEN/8, x13, x9, x10)
+TEST_FPR4_OP(fmadd.s, x31, x30, x29, x28, dyn, 0, 0, x12, 22821*FLEN/8, x13, x9, x10)
 
 #endif
 RVTEST_CODE_END
@@ -5218,2310 +5134,2310 @@ rvtest_data:
 .word 0xbecafeba
 .word 0xecafebab
 test_dataset_0:
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785148927,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793340928,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785083391,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793373696,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785050623,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793390080,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785034239,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793398272,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785026047,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793402368,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785021951,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793404416,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785019903,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793405440,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785018879,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793405952,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785018367,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406208,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785018111,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406336,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017983,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406400,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017919,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406432,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017887,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406448,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017871,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406456,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017863,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406460,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017859,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2793406462,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(2785017857,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2116769488,32,FLEN)
-NAN_BOXED(2160017175,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406464,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795071,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2797600768,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2797600767,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2799697920,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2795503615,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2800746496,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2794455039,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801270784,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793930751,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801532928,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793668607,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801664000,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793537535,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801729536,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793471999,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801762304,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793439231,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801778688,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793422847,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801786880,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793414655,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801790976,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793410559,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801793024,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793408511,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801794048,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793407487,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801794560,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406975,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801794816,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406719,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801794944,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406591,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795008,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406527,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795040,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406495,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795056,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406479,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795064,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406471,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795068,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406467,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2801795070,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(2793406465,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2125206910,32,FLEN)
-NAN_BOXED(2153723287,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795072,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183679,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2805989376,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2805989375,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2808086528,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2803892223,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2809135104,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2802843647,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2809659392,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2802319359,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2809921536,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2802057215,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810052608,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801926143,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810118144,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801860607,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810150912,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801827839,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810167296,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801811455,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810175488,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801803263,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810179584,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801799167,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810181632,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801797119,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810182656,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801796095,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183168,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795583,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183424,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795327,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183552,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795199,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183616,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795135,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183648,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795103,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183664,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795087,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183672,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795079,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183676,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795075,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2810183678,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(2801795073,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2131256094,32,FLEN)
-NAN_BOXED(2151420021,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183680,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572287,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2814377984,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2814377983,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2816475136,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2812280831,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2817523712,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2811232255,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818048000,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810707967,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818310144,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810445823,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818441216,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810314751,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818506752,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810249215,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818539520,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810216447,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818555904,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810200063,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818564096,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810191871,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818568192,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810187775,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818570240,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810185727,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818571264,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810184703,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818571776,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810184191,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572032,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183935,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572160,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183807,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572224,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183743,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572256,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183711,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572272,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183695,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572280,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183687,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572284,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183683,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2818572286,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(2810183681,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2130795877,32,FLEN)
-NAN_BOXED(2151633700,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572288,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960895,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2822766592,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2822766591,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2824863744,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2820669439,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2825912320,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2819620863,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826436608,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2819096575,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826698752,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818834431,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826829824,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818703359,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826895360,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818637823,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826928128,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818605055,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826944512,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818588671,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826952704,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818580479,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826956800,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818576383,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826958848,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818574335,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826959872,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818573311,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960384,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572799,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960640,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572543,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960768,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572415,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960832,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572351,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960864,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572319,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960880,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572303,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960888,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572295,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960892,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572291,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2826960894,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(2818572289,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2133322053,32,FLEN)
-NAN_BOXED(2150680997,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960896,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349503,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2831155200,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2831155199,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2833252352,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2829058047,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2834300928,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2828009471,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2834825216,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2827485183,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835087360,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2827223039,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835218432,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2827091967,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835283968,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2827026431,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835316736,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826993663,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835333120,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826977279,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835341312,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826969087,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835345408,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826964991,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835347456,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826962943,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835348480,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826961919,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835348992,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826961407,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349248,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826961151,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349376,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826961023,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349440,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960959,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349472,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960927,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349488,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960911,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349496,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960903,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349500,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960899,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2835349502,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(2826960897,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2093076670,32,FLEN)
-NAN_BOXED(2183729517,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349504,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738111,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2839543808,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2839543807,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2841640960,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2837446655,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2842689536,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2836398079,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843213824,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835873791,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843475968,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835611647,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843607040,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835480575,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843672576,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835415039,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843705344,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835382271,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843721728,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835365887,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843729920,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835357695,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843734016,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835353599,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843736064,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835351551,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843737088,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835350527,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843737600,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835350015,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843737856,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349759,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843737984,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349631,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738048,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349567,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738080,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349535,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738096,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349519,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738104,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349511,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738108,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349507,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2843738110,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(2835349505,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2133286199,32,FLEN)
-NAN_BOXED(2150691449,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738112,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126719,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2847932416,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2847932415,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2850029568,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2845835263,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2851078144,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2844786687,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2851602432,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2844262399,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2851864576,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2844000255,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2851995648,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843869183,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852061184,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843803647,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852093952,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843770879,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852110336,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843754495,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852118528,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843746303,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852122624,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843742207,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852124672,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843740159,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852125696,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843739135,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126208,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738623,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126464,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738367,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126592,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738239,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126656,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738175,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126688,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738143,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126704,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738127,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126712,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738119,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126716,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738115,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2852126718,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(2843738113,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2128210124,32,FLEN)
-NAN_BOXED(2152411117,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126720,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515327,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2856321024,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2856321023,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2858418176,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2854223871,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2859466752,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2853175295,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2859991040,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852651007,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860253184,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852388863,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860384256,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852257791,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860449792,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852192255,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860482560,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852159487,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860498944,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852143103,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860507136,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852134911,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860511232,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852130815,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860513280,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852128767,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860514304,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852127743,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860514816,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852127231,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515072,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126975,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515200,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126847,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515264,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126783,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515296,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126751,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515312,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126735,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515320,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126727,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515324,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126723,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2860515326,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(2852126721,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2132034168,32,FLEN)
-NAN_BOXED(2151104801,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515328,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903935,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2864709632,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2864709631,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2866806784,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2862612479,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2867855360,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2861563903,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868379648,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2861039615,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868641792,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860777471,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868772864,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860646399,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868838400,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860580863,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868871168,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860548095,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868887552,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860531711,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868895744,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860523519,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868899840,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860519423,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868901888,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860517375,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868902912,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860516351,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903424,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515839,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903680,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515583,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903808,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515455,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903872,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515391,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903904,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515359,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903920,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515343,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903928,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515335,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903932,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515331,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2868903934,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(2860515329,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2131239184,32,FLEN)
-NAN_BOXED(2151427482,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903936,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292543,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2873098240,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2873098239,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2875195392,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2871001087,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2876243968,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2869952511,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2876768256,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2869428223,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877030400,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2869166079,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877161472,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2869035007,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877227008,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868969471,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877259776,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868936703,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877276160,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868920319,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877284352,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868912127,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877288448,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868908031,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877290496,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868905983,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877291520,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868904959,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292032,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868904447,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292288,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868904191,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292416,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868904063,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292480,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903999,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292512,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903967,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292528,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903951,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292536,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903943,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292540,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903939,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2877292542,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(2868903937,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2113829388,32,FLEN)
-NAN_BOXED(2164311076,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292544,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681151,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2881486848,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2881486847,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2883584000,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2879389695,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2884632576,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2878341119,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885156864,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877816831,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885419008,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877554687,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885550080,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877423615,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885615616,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877358079,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885648384,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877325311,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885664768,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877308927,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885672960,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877300735,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885677056,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877296639,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885679104,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877294591,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885680128,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877293567,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885680640,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877293055,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885680896,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292799,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681024,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292671,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681088,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292607,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681120,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292575,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681136,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292559,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681144,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292551,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681148,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292547,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2885681150,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(2877292545,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3221225464,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3212836871,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3221225468,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3212836867,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3221225470,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3212836865,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3216431981,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3220027099,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3214514585,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3219547750,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3216751547,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3217310788,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3215233609,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3218828726,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3216192307,32,FLEN)
-NAN_BOXED(2101625404,32,FLEN)
-NAN_BOXED(2175202968,32,FLEN)
-NAN_BOXED(3217870028,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885681152,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069759,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2889875456,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2889875455,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2891972608,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2887778303,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2893021184,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2886729727,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2893545472,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2886205439,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2893807616,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885943295,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2893938688,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885812223,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894004224,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885746687,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894036992,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885713919,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894053376,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885697535,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894061568,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885689343,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894065664,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885685247,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894067712,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885683199,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894068736,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885682175,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069248,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885681663,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069504,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885681407,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069632,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885681279,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069696,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2885681215,32,FLEN)
-NAN_BOXED(2131144939,32,FLEN)
-NAN_BOXED(2151469590,32,FLEN)
-NAN_BOXED(2894069728,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2129889542,32,FLEN)
+NAN_BOXED(4408979,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638016,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026623,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(859832320,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(859832319,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(861929472,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(857735167,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(862978048,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(856686591,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(863502336,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(856162303,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(863764480,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855900159,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(863895552,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855769087,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(863961088,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855703551,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(863993856,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855670783,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864010240,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855654399,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864018432,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855646207,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864022528,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855642111,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864024576,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855640063,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864025600,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855639039,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026112,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638527,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026368,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638271,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026496,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638143,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026560,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638079,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026592,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638047,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026608,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638031,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026616,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638023,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026620,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638019,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(864026622,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(855638017,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2134101968,32,FLEN)
+NAN_BOXED(2985738,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026624,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415231,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(868220928,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(868220927,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(870318080,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(866123775,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(871366656,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(865075199,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(871890944,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864550911,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872153088,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864288767,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872284160,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864157695,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872349696,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864092159,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872382464,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864059391,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872398848,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864043007,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872407040,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864034815,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872411136,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864030719,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872413184,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864028671,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872414208,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864027647,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872414720,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864027135,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872414976,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026879,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415104,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026751,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415168,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026687,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415200,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026655,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415216,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026639,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415224,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026631,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415228,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026627,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(872415230,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(864026625,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2129083331,32,FLEN)
+NAN_BOXED(4643540,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415232,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803839,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(876609536,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(876609535,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(878706688,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(874512383,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(879755264,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(873463807,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880279552,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872939519,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880541696,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872677375,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880672768,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872546303,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880738304,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872480767,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880771072,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872447999,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880787456,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872431615,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880795648,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872423423,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880799744,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872419327,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880801792,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872417279,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880802816,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872416255,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803328,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415743,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803584,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415487,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803712,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415359,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803776,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415295,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803808,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415263,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803824,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415247,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803832,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415239,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803836,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415235,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(880803838,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(872415233,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2103660933,32,FLEN)
+NAN_BOXED(26224243,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803840,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192447,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(884998144,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(884998143,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(887095296,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(882900991,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(888143872,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(881852415,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(888668160,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(881328127,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(888930304,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(881065983,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889061376,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880934911,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889126912,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880869375,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889159680,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880836607,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889176064,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880820223,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889184256,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880812031,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889188352,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880807935,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889190400,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880805887,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889191424,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880804863,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889191936,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880804351,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192192,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880804095,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192320,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803967,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192384,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803903,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192416,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803871,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192432,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803855,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192440,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803847,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192444,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803843,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(889192446,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(880803841,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2109678914,32,FLEN)
+NAN_BOXED(19623416,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192448,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581055,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(893386752,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(893386751,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(895483904,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(891289599,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(896532480,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(890241023,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897056768,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889716735,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897318912,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889454591,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897449984,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889323519,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897515520,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889257983,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897548288,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889225215,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897564672,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889208831,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897572864,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889200639,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897576960,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889196543,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897579008,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889194495,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897580032,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889193471,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897580544,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192959,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897580800,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192703,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897580928,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192575,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897580992,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192511,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581024,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192479,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581040,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192463,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581048,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192455,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581052,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192451,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(897581054,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(889192449,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2115029161,32,FLEN)
+NAN_BOXED(14832344,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581056,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969663,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(901775360,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(901775359,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(903872512,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(899678207,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(904921088,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(898629631,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905445376,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(898105343,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905707520,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897843199,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905838592,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897712127,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905904128,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897646591,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905936896,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897613823,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905953280,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897597439,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905961472,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897589247,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905965568,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897585151,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905967616,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897583103,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905968640,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897582079,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969152,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581567,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969408,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581311,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969536,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581183,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969600,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581119,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969632,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581087,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969648,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581071,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969656,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581063,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969660,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581059,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(905969662,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(897581057,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2132762724,32,FLEN)
+NAN_BOXED(3368569,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969664,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358271,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(910163968,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(910163967,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(912261120,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(908066815,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(913309696,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(907018239,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(913833984,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(906493951,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914096128,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(906231807,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914227200,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(906100735,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914292736,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(906035199,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914325504,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(906002431,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914341888,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905986047,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914350080,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905977855,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914354176,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905973759,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914356224,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905971711,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914357248,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905970687,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914357760,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905970175,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358016,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969919,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358144,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969791,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358208,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969727,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358240,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969695,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358256,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969679,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358264,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969671,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358268,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969667,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(914358270,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(905969665,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2109200940,32,FLEN)
+NAN_BOXED(20069094,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358272,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746879,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(918552576,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(918552575,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(920649728,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(916455423,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(921698304,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(915406847,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922222592,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914882559,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922484736,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914620415,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922615808,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914489343,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922681344,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914423807,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922714112,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914391039,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922730496,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914374655,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922738688,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914366463,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922742784,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914362367,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922744832,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914360319,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922745856,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914359295,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746368,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358783,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746624,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358527,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746752,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358399,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746816,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358335,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746848,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358303,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746864,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358287,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746872,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358279,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746876,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358275,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(922746878,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(914358273,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2106365897,32,FLEN)
+NAN_BOXED(23663087,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746880,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135487,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(926941184,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(926941183,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(929038336,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(924844031,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(930086912,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(923795455,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(930611200,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(923271167,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(930873344,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(923009023,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931004416,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922877951,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931069952,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922812415,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931102720,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922779647,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931119104,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922763263,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931127296,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922755071,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931131392,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922750975,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931133440,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922748927,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931134464,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922747903,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931134976,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922747391,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135232,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922747135,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135360,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922747007,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135424,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746943,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135456,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746911,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135472,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746895,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135480,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746887,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135484,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746883,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(931135486,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(922746881,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2132810014,32,FLEN)
+NAN_BOXED(3353386,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135488,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524095,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(935329792,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(935329791,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(937426944,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(933232639,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(938475520,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(932184063,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(938999808,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931659775,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939261952,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931397631,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939393024,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931266559,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939458560,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931201023,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939491328,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931168255,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939507712,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931151871,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939515904,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931143679,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939520000,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931139583,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939522048,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931137535,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939523072,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931136511,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939523584,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135999,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939523840,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135743,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939523968,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135615,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524032,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135551,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524064,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135519,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524080,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135503,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524088,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135495,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524092,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135491,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(939524094,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(931135489,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2108833586,32,FLEN)
+NAN_BOXED(20436414,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524096,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912703,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(943718400,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(943718399,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(945815552,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(941621247,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(946864128,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(940572671,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947388416,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(940048383,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947650560,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939786239,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947781632,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939655167,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947847168,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939589631,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947879936,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939556863,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947896320,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939540479,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947904512,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939532287,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947908608,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939528191,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947910656,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939526143,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947911680,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939525119,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912192,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524607,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912448,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524351,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912576,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524223,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912640,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524159,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912672,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524127,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912688,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524111,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912696,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524103,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912700,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524099,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(947912702,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(939524097,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2129167226,32,FLEN)
+NAN_BOXED(4617974,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912704,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301311,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(952107008,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(952107007,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(954204160,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(950009855,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(955252736,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(948961279,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(955777024,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(948436991,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956039168,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(948174847,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956170240,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(948043775,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956235776,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947978239,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956268544,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947945471,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956284928,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947929087,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956293120,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947920895,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956297216,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947916799,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956299264,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947914751,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956300288,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947913727,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956300800,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947913215,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301056,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912959,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301184,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912831,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301248,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912767,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301280,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912735,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301296,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912719,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301304,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912711,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301308,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912707,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(956301310,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(947912705,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1073741816,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1065353223,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1073741820,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1065353219,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1073741822,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1065353217,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1068948333,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1072543451,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1067030937,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1072064102,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1069267899,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1069827140,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1067749961,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1071345078,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1068708659,32,FLEN)
+NAN_BOXED(2115334691,32,FLEN)
+NAN_BOXED(14369644,32,FLEN)
+NAN_BOXED(1070386380,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(956301312,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(964689919,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(960495616,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(960495615,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(962592768,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(958398463,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(963641344,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(957349887,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(964165632,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(956825599,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(964427776,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(956563455,32,FLEN)
+NAN_BOXED(2134531954,32,FLEN)
+NAN_BOXED(2880628,32,FLEN)
+NAN_BOXED(964558848,32,FLEN)
 
 RVTEST_DATA_END
 

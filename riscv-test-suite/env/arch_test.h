@@ -292,7 +292,13 @@
   #define FSREG SREG
   #define FREGWIDTH 8
   #define FLEN 64
+#elif ZHINX==1
+  #define FLREG lw
+  #define FSREG sw
+  #define FREGWIDTH 4
+  #define FLEN 32
 #endif
+
 
 #if SIGALIGN==8
   #define CANARY \
@@ -1374,6 +1380,11 @@ vmem_adj_\__MODE__\()epc:
         add     T4, T4, sp              /* calc address of correct sv_area      */
         csrr    T2, CSR_XEPC            /* T4 now pts to trapping sv_area mode  */
 
+#ifdef SKIP_MEPC
+        addi T3, T3, 0
+        j adj_\__MODE__\()epc
+#endif
+
         LREG    T3, vmem_bgn_off(T4)            // see if epc is in the vmem area
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T3                      // construct vmem seg end
@@ -1420,6 +1431,11 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
              the mode of the mstatus.mpp that is stored in Xtrampend_sv ****/
 
         csrr    T2, CSR_XTVAL
+
+#ifdef SKIP_MTVAL
+        addi T3, T3, 0
+        j adj_\__MODE__\()tval
+#endif
 
 chk_\__MODE__\()tval:
         andi    T5, T5, EXCPT_CAUSE_MSK // ensures shift amt will be within range

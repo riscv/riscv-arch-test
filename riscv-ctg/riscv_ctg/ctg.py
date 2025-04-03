@@ -100,13 +100,14 @@ def create_test(usage_str, node,label,base_isa,max_inst, op_template, randomize,
         logger.info('Writing tests for csr_comb')
         csr_comb_gen.write_test(fprefix, node, usage_str, label, csr_comb_instr_dict)
 
-def ctg(verbose, out, random ,xlen_arg,flen_arg, cgf_file,num_procs,base_isa, max_inst,inxFlag):
+def ctg(verbose, out, random ,xlen_arg,flen_arg, cgf_file,num_procs,base_isa, max_inst,inxFlag,filter):
     logger.level(verbose)
     logger.info('****** RISC-V Compliance Test Generator {0} *******'.format(__version__ ))
     logger.info('Copyright (c) 2020, InCore Semiconductors Pvt. Ltd.')
     logger.info('All Rights Reserved.')
     logger.info("Copying env folder to Output directory.")
-    env_dir = os.path.expanduser("~/riscv-arch-test/riscv-test-suite/env")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env_dir = os.path.join(current_dir, "../../riscv-test-suite/env")
     if not os.path.exists(env_dir):
         shutil.copytree(const.env,env_dir)
     xlen = int(xlen_arg)
@@ -134,6 +135,12 @@ def ctg(verbose, out, random ,xlen_arg,flen_arg, cgf_file,num_procs,base_isa, ma
     op_template = utils.load_yaml(const.template_files)
     cgf = expand_cgf(cgf_file,xlen,flen)
     pool = mp.Pool(num_procs)
-    results = pool.starmap(create_test, [(usage_str, node,label,base_isa,max_inst, op_template,
-        randomize, out_dir, xlen, flen, inxFlag) for label,node in cgf.items()])
+
+    args_list = []
+    for label,node in cgf.items():
+        if filter is not None and re.search(filter, label) is None:
+            continue
+        args_list.append((usage_str, node,label,base_isa,max_inst, op_template,
+        randomize, out_dir, xlen, flen, inxFlag))
+    results = pool.starmap(create_test, args_list)
     pool.close()

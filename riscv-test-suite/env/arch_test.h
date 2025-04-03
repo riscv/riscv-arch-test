@@ -1246,21 +1246,44 @@ rvtest_\__MODE__\()endtest:                     // target may be too far away, s
         LREG    T3, xtvec_new_off(sp)           // get pointer to actual tramp table
 //----------------------------------------------------------------
 
-  /*************************************************************************/
-  /****   This first entry has this format.                             ****/
-  /****   The #entries is useful for parsing and is really #bytes/entry ****/
-  /**** +---------------+-----------+----------+------+                 ****/
-  /**** | XLEN-1     16 | 15      6 | 5      2 | 1  0 |                 ****/
-  /**** +---------------+-----------+----------+------+                 ****/
-  /**** |   zeroes      | vector    | #entries | mode |                 ****/
-  /**** +---------------+-----------+----------+------+                 ****/
-  /*************************************************************************/
+  /*******************************************************************************/
+  /****   This first entry has this format.                                   ****/
+  /****   The #entries is useful for parsing and is really #bytes/entry       ****/
+  /**** +----------+-----------+----+----+----------+-------+--------+------+ ****/
+  /**** |XLEN-1 20 |    19     | 18 | 17 |    16    | 15  6 | 5   2  | 1  0 | ****/
+  /**** +----------+-----------+----+----+----------+-------+--------+------+ ****/
+  /**** |zeroes    |Xstatus.PIE|XxIP|XxIE|Xstatus.IE|vector |#entries| mode | ****/
+  /**** +----------+-----------+----+----+----------+-------+--------+------+ ****/
+  /*******************************************************************************/
 
 sv_\__MODE__\()vect:                            // **FIXME?: breaks if tramp crosses pg && MMU enabled
         sub     T6, T6, T3                      // cvt spreader-addr to vector offset fm top of tramptable
         slli    T6, T6, 4                       // make room for 4 bits; vector is 10b max  **FIXME: broken for SV64!)
         or      T6, T6, T2                      // insert entry size into bits 5:2
         addi    T6, T6, \__MODE__\()MODE_SIG    // insert mode# into 1:0
+
+        csrrc   T4, CSR_XSTATUS, x0             // read xstatus
+        srl     T4, T4, T2                      // move xIE to LSB
+        andi    T4, T4, 0b10001                 // mask xIE and xPIE
+        sll     T4, T4, 16                      // Shift xIE and xPIE by 16
+        or      T6, T6, T4                      // insert xIE & xPIE into bits 16 & bit 20
+
+        andi    T2, T5, INT_CAUSE_MSK           // clr INT & unarched arched bits (**NOTE expand if future extns use them)
+
+        csrrc   T4, CSR_XIE, x0
+        srl     T4, T4, T2
+        andi    T4, T4, 1                       // Extracting XxIE bit into LSB
+        
+        sll     T4, T4, 17                      // Shift xxIE by 17
+        or      T6, T6, T4                      // insert xxIE into bits 17
+        
+        csrrc   T4, CSR_XIP, x0
+        srl     T4, T4, T2
+        andi    T4, T4, 1                       // Extracting XxIP into LSB
+        
+        sll     T4, T4, 18                      // Shift xxIP by 18
+        or      T6, T6, T4                      // insert xxIE into bits 18
+                
         SREG    T6, 0*REGWIDTH(T1)              // save 1st sig value, (vec-offset, entrysz, trapmode)
 //----------------------------------------------------------------
 sv_\__MODE__\()cause:
@@ -1529,32 +1552,15 @@ resto_\__MODE__\()rtn:                  // restore and return
  /**** clears the int and saves int-specific CSRS****/
  /***************************************************/
 common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has save area
-        LI(     T3, 1)
+        li      T3, 1
+ //**FIXME** - make sure this is kept up-to-date with fast int extension and others
         andi    T2, T5, INT_CAUSE_MSK   // clr INT & unarched arched bits (**NOTE expand if future extns use them)
         sll     T3, T3, T2              // create mask 1<<xcause **NOTE**: that MSB is ignored in shift amt
-        csrrc   T2, CSR_MIDELEG, x0     // read machine interrupt delegation
-        nop	                // if mideleg is not used and trap occur
-        and     T2, T2, T3              // mask caused interrupt delegation bit
-        srl     T2, T2, T3              // Move interrupt delegation to LSB
-        LI     (T4, 1)
-        beq     T2, T4, sv_\__MODE__\()status  // if interrupt delegation bit is set then read and store SIE and SPIE in signature
-        LI(     T2, 3)                  // if interrupt delegation bit is not set then read and store MIE and MPIE in signature
-sv_\__MODE__\()status:                  // note: clear has no effect on XxSTATUS
-        csrrc   T4, CSR_XSTATUS, x0     // read xstatus
-        srl     T4, T4, T2              // move xIE to LSB
-        andi    T4, T4, 0b10001         // mask xIE and xPIE
-        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xstatus.XIE and xstatus.XPIE)
-        nop
-sv_\__MODE__\()ie:                      // note: clear has no effect on XxIE
-        csrrc   T4, CSR_XIE, x0         // read then attempt to clear int enable bit??
-        and     T4, T4, T3              // mask XxIE
-        SREG    T4, 3*REGWIDTH(T1)      // save 4th sig value, (XxIE)
-        nop
-sv_\__MODE__\()ip:                      // note: clear has no effect on XxIP
-        csrrc   T4, CSR_XIP, x0         // read, then attempt to clear int pend bit??
-        and     T4, T4, T3              // mask XxIP
-        SREG    T4, 4*REGWIDTH(T1)      // save 5th sig value, (XxIP)
-        nop
+        csrrc   T4, CSR_XIE, T3         // read, then attempt to clear int enable bit??
+        csrrc   T4, CSR_XIP, T3         // read, then attempt to clear int pend bit
+sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
+        SREG    T4, 2*REGWIDTH(T1)      // save 3rd sig value, (xip)
+
 
         LI(     T2, 0)                   // index of interrupt dispatch table base
 

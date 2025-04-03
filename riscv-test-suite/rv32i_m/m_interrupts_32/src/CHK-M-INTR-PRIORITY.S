@@ -95,13 +95,9 @@ main:
     	// Set mtime and mtimecmp to trigger a timer interrupt
     	// Demonstrates timer interrupt generation mechanism
     	SREG t0,   0(a1)
-       	nop
        	SREG zero, 4(a1)
-       	nop
        	SREG t0,   0(a2)
-       	nop
        	SREG zero, 4(a2)
-       	nop
 
     	// Generate Software Interrupt:
     	// Write to memory-mapped Software Interrupt Pending (MSIP) register
@@ -109,7 +105,6 @@ main:
     	LI(a3,   0x1)
        	LI(t0,   RVMODEL_MSIP_BASE)
        	SREG a3, 0(t0)
-       	nop
 
     	// Initial MIP State Capture:
     	// Read Machine Interrupt Pending (MIP) register before interrupt handling

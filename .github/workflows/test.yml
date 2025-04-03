@@ -46,7 +46,6 @@ jobs:
           sudo apt-get install -y gcc git autoconf automake libtool curl make unzip
           sudo apt-get install -y autoconf automake autotools-dev curl python3 python3-pip libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev pkg-config
           sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
-          pip3 install git+https://github.com/riscv/riscof.git
 
       - name: Build RISCV-GNU Toolchain (${{ matrix.xlen }} bit)
         run: |
@@ -54,6 +53,18 @@ jobs:
           tar -xzf riscv${{ matrix.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
           mv riscv riscv${{ matrix.xlen }}
           echo $GITHUB_WORKSPACE/riscv${{ matrix.xlen }}/bin >> $GITHUB_PATH
+
+      - name: Install latest riscof
+        run: |
+          git clone https://github.com/riscv-software-src/riscof.git
+          cd riscof
+          pip3 install --editable .
+
+      - name: Install latest riscv-config
+        run: |
+          git clone https://github.com/riscv-software-src/riscv-config.git
+          cd riscv-config
+          pip3 install --editable .
 
       - name: Install riscv-isac
         run: |

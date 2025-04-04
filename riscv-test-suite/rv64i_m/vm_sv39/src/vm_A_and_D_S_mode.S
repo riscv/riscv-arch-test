@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
 // https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
-// Developed by: Muhammad Abdullah, Muhammad Zain, Muhammad Ahmad, Hamza Ali
+// Developed by: Umer Shahid, Muhammad Abdullah, Muhammad Zain, Hamza Ali and Muhammad Ahmad
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
@@ -68,19 +68,28 @@ RVTEST_ISA("RV64I_Zicsr")
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
-RVMODEL_BOOT
+RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
 
-j starting_point															// Skip this data region
-// Physical Address region under testing for LEVEL 2
-// Placed at the start because it needs to be aligned to 1 GB
-rvtest_data_1_l2:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
+nop
+.align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
+j starting_point											// Skip this data region
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//											PHYSICAL ADDRESS REGION FOR TESTING
+//---------------------------------------------------------------------------------------------------------------------------------
+// Physical Address region under testing for LEVEL 0, 1 and 2
+rvtest_data_1:
 	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra	
+	addi ra, ra, REGWIDTH
+	jr ra
+	nop
+	.word 0xbeefcaf1					// Random word
+	.word 0xbeefcaf2					// Random word
+	nop
+	jr ra
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 
 starting_point:
 RVTEST_CODE_BEGIN
@@ -130,17 +139,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+    nop
+	addi x13, x13, REGWIDTH
 
    	SREG a4, 0(x13)                     // Record load attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+	nop
+	addi x13, x13, REGWIDTH
 .endm
 
-.macro SET_REQ_MSTATUS_VAL
-	nop // Undefined so far, but can be used to update mstatus.SUM or mstatus.MPRV bit for different VM test cases
-.endm
 
 main:
 #ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
@@ -160,11 +166,11 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x140000004                  // virtual address of rvtest_data_1_l2, rvtest_data_1_l1 and rvtest_data_1_l0
+	.set va_data,          		0x140000404                  // virtual address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800003bc                  
-	.set va_rvtest_data_begin,  0x1c0000530		     
+	.set va_rvtest_code_begin,  0x1800007dc                  
+	.set va_rvtest_data_begin,  0x1c0000530			
 
 
 //	PTE setup for Code Region
@@ -208,40 +214,40 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: D bit unset and A bit set | Test in S-Mode | RWX bit set | expected = Store page fault 
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 2: Both D and A bit set | Test in S-Mode | RWX bit set | expected = No Fault 
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL2	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 3: D bit set and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL2	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 4: Both D and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -251,42 +257,42 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 5: D bit unset and A bit set | Test in S-Mode | RWX bit set | expected = Store page fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 6: Both D and A bit set | Test in S-Mode | RWX bit set | expected = No Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL1	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 7: D bit set and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 8: Both D and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL1
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -296,82 +302,54 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 9: D bit unset and A bit set | Test in S-Mode | RWX bit set | expected = Store page fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V),  va_data, LEVEL1)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 10: Both D and A bit set | Test in S-Mode | RWX bit set | expected = No Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V),  va_data, LEVEL1)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL0	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 // Test case 11: D bit set and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V),  va_data, LEVEL1)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL0	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 // Test case 12: Both D and A bit unset | Test in S-Mode | RWX bit set | expected = Load-page-fault, Store-page-fault, Fetch-page-fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V),  va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V),  va_data, LEVEL1)
+	PTE_SETUP_RV39_New( rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V),  va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL0	
+	TEST_CASES_RUNNER Smode,  va_data, LEVEL0	
     
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 21
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
-//---------------------------------------------------------------------------------------------------------------------------------
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra																	// return back if successful access
-
-.align 12
-//Physical Address region under testing for LEVEL 0
-rvtest_data_1_l0:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef rvtest_strap_routine
 .align 12

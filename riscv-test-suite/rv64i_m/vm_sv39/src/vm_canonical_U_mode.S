@@ -1,3 +1,21 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
+// Developed by: Umer Shahid, Muhammad Zain, Muhammad Abdullah, Hamza Ali and Muhammad Ahmad
+// ----------------------------------------------------------------------------------------------------------------------
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. PTE with incorrectly sign extended VA is set up at level 2, RWX permissions (read, write, execute page) given:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 2. PTE with incorrectly sign extended VA is set up at level 1, RWX permissions (read, write, execute page) given:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 3. PTE with incorrectly sign extended VA is set up at level 0, RWX permissions (read, write, execute page) given:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+
+// Total Expected Faults :: 9
+// ----------------------------------------------------------------------------------------------------------------------
+
 #define SKIP_MEPC
 #define SKIP_MTVAL
 
@@ -11,45 +29,70 @@ RVTEST_ISA("RV64I_Zicsr")
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
-RVMODEL_BOOT
+RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
 
-j starting_point															// Skip this data region
-// Physical Address region under testing for LEVEL 2
-// Placed at the start because it needs to be aligned to 1 GB
-rvtest_data_1_l2_x:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
+nop
+.align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
+j starting_point											// Skip this data region
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//											PHYSICAL ADDRESS REGION FOR TESTING
+//---------------------------------------------------------------------------------------------------------------------------------
+// Physical Address region under testing for LEVEL 0, 1 and 2
+rvtest_data_1:
 	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra	
+	addi ra, ra, REGWIDTH
+	jr ra
+	nop
+	.word 0xbeefcaf1					// Random word
+	.word 0xbeefcaf2					// Random word
+	nop
+	jr ra
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
 
 starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV39_MACROS",sv39_template)
+    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV39_MACROS",reserved_rwx_pte_perm)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
-.macro TEST_CASES_RUNNER_RW LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
-	
-	.align 2
-	LI(a5, \VA)                    		// Load virtual address
+// Test the RWX permissions
+.macro VERIFICATION_RWX ADDRESS, level	
+   	LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
-    
-	// Test store permission
-    sb  a2, 0(a5)               		// Store test data
+
+    // Test store permission
+    sw  a2, 20(a5)               		// Store test data
     nop
+
     // Test load permission
-    lbu  a4, 0(a5)        				// Load back data
+    lw  a4, 20(a5)        				// Load back data
     nop
+
+   	// Test Execute Permission
+   	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
+   	LA(x4, 1f)							// Store the return Address in x4
+   	jalr ra, a5, 0
+   	nop
+   	nop
+1:
+   	nop
+.endm
+
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level
+    .if \LOWER_MODE == Mmode
+		SET_REQ_MSTATUS_VAL
+    .else
+    	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+    .endif
+	.align 2
+
+	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
+	VERIFICATION_RWX	\VA, \level
 	nop
 	nop
 
@@ -57,34 +100,12 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+    nop
+	addi x13, x13, REGWIDTH
 
    	SREG a4, 0(x13)                     // Record load attempt
-    	nop
-    	addi x13, x13, REGWIDTH
-.endm	
-
-
-.macro TEST_CASES_RUNNER_X LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
-	
-	.align 2
-	LI(a5, \VA)                    		// Load virtual address
-	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
-	LA(x4, 1f)							// Store the return Address in x4
-	jalr ra, 0(a5)
-	nop
-	nop
-1:
-	nop
-	nop
-
-	RVTEST_GOTO_MMODE		            // Switching back to M mode
+    nop
+	addi x13, x13, REGWIDTH
 .endm
 
 
@@ -106,11 +127,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data_rw,          	0xffffffffffffffff			// Store & Load will be performed at this VA
-	.set va_data_x,          	0xffffff7ffffffffc			// Execute will be performed at this VA
+	.set va_data,          		0x8000000140000404             // virtual address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800003bc                  
+	.set va_rvtest_code_begin,  0x1800007dc                  
 	.set va_rvtest_data_begin,  0x1c0000530		     
 
 
@@ -144,100 +164,59 @@ main:
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	SATP_SETUP_RV64(sv39)                                                   // set the SATP for virtualization
+	SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
 	sfence.vma                                                             // flush the TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 2
 //---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
+//					1GB PAGE	Region 1 under test at level 2 -- WX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 1: RWX bit set | Test in U-Mode | Set the VA[63:39] != 0 or all ones 
-	PTE_SETUP_RV39_New(rvtest_data_1_l2_x, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_X | PTE_V), va_data_x, LEVEL2)
+	// Test case 1: Test in U-Mode | RWX bit set | expected = RWX fault 
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	TEST_CASES_RUNNER_X Umode, va_data_x, LEVEL2
+	TEST_CASES_RUNNER Umode, va_data, LEVEL2
 
+
+//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
+//					2MB PAGE	Region 1 under test at level 1 -- WX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 2: RWX bit set | Test in U-Mode | Set the VA[63:39] != 0 or all ones
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_x, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1_x, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_X | PTE_V), va_data_x, LEVEL1)
+	// Test case 2: Test in U-Mode | RWX bit set | expected = RWX fault  
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	TEST_CASES_RUNNER_X Umode, va_data_x, LEVEL1
+	TEST_CASES_RUNNER Umode, va_data, LEVEL1
 
+
+//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
-//--------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 0 -- X permission given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- WX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 3: RWX bit set | Test in U-Mode | Set the VA[63:39] != 0 or all ones 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_x, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_x, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_X | PTE_V), va_data_x, LEVEL0)
+	// Test case 3: Test in U-Mode | RWX bit set | expected = RWX fault 
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER_X Umode, va_data_x, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
+
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 21
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
-//---------------------------------------------------------------------------------------------------------------------------------
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1_x:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra																	// return back if successful access
-
-.align 12
-// Physical Address region under testing for LEVEL 0
-// This region will be used to Store and then Load from the last byte
-rvtest_data_1_l0_rw:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
-	.word 0xbeefcaf3
-
-.align 12
-// Physical Address region under testing for LEVEL 0
-// This region will be used to execute the last instruction at (4KB - 4)
-rvtest_data_1_l0_x:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
-	jr ra
-
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef rvtest_strap_routine
 .align 12
@@ -258,12 +237,12 @@ CANARY;
 
 // test signatures initialization
 signature_x13_1:
-    .fill 64*(XLEN/64),4,0xcafebeef
+    .fill 64*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 64*(XLEN/64),4,0xdeadbeef
+    .fill 64*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

@@ -1,3 +1,18 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
+// Developed by: Umer Shahid, Muhammad Zain, Muhammad Abdullah, Hamza Ali and Muhammad Ahmad
+// ----------------------------------------------------------------------------------------------------------------------
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. A misaligned gigapage is set up with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 2. A misaligned megapage is set up with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+
+// Total Expected Faults :: 6
+// ----------------------------------------------------------------------------------------------------------------------
+
 #define SKIP_MEPC
 #define SKIP_MTVAL
 
@@ -32,22 +47,22 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lw  a4, 20(a5)        				// Load back data
     nop
 
-   // Test Execute Permission
-   LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
-   LA(x4, 1f)							// Store the return Address in x4
-   jalr ra, a5, 0
-   nop
-   nop
+    // Test Execute Permission
+    LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
+    LA(x4, 1f)							// Store the return Address in x4
+    jalr ra, a5, 0
+    nop
+    nop
 1:
-   nop
+    nop
 .endm
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
+    .if \LOWER_MODE == Mmode
 		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
+    .else
+    	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+    .endif
 	.align 2
 
 	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
@@ -67,9 +82,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	addi x13, x13, REGWIDTH
 .endm
 
-.macro SET_REQ_MSTATUS_VAL
-	nop // Undefined so far, but can be used to update mstatus.SUM or mstatus.MPRV bit for different VM test cases
-.endm
 
 main:
 #ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
@@ -89,7 +101,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x140000004                  // virtual address of rvtest_data_1_l2, rvtest_data_1_l1 and rvtest_data_1_l0
+	.set va_data,          		0x140000000                  // virtual address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
 	.set va_rvtest_code_begin,  0x18000039c                
@@ -97,7 +109,7 @@ main:
 
 
 //	PTE setup for Code Region
-	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X |PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
 	sfence.vma
 
 //	PTE setup for Data Region
@@ -136,8 +148,8 @@ main:
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 1: Test in S-Mode | G bit set to 1 | expected = successful page access
-	PTE_SETUP_RV39_New(rvtest_data_1_l2, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	// Test case 1: Test in S-Mode | Misaligned gigapage | expected = RWX Fault
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
@@ -149,9 +161,9 @@ main:
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access 
+	// Test case 2: Test in S-Mode | Misaligned megapage | expected = RWX Fault 
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
@@ -162,45 +174,22 @@ main:
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 12			// Misaligned Page
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-// Physical Address region under testing for LEVEL 2
-rvtest_data_1_l2:
-	nop																		//nops are added so if there is a trap
-	nop
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra	
+// Physical Address region under testing for LEVEL 0, 1 and 2
 
-.align 12  			// Misaligned Page
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1:
+.align 12				// Misaligned (Giga/Mega) Page
+rvtest_data_1:
 	nop
-	nop																		//nops are added so if there is a trap
+	nop
 	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra																	// return back if successful access
-
-.align 12
-//Physical Address region under testing for LEVEL 0
-rvtest_data_1_l0:
-	nop
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
 	jr ra
+	nop
+	.word 0xbeefcaf1				// Random word
+	.word 0xbeefcaf2				// Random word
+	jr ra	
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -224,12 +213,12 @@ CANARY;
 
 // test signatures initialization
 signature_x13_1:
-    .fill 64*(XLEN/64),4,0xcafebeef
+    .fill 64*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 64*(XLEN/64),4,0xdeadbeef
+    .fill 64*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

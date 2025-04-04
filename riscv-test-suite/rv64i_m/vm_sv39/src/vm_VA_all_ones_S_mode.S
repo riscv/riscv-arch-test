@@ -1,3 +1,14 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
+// Developed by: Umer Shahid, Muhammad Zain, Muhammad Abdullah, Hamza Ali, Muhammad Ahmad
+// ----------------------------------------------------------------------------------------------------------------------
+// Test Explanation:
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. Perform Load & Store at virtual address 0xffffffffffffffff (last byte)
+// 2. Perform Execute at virtual address 0xfffffffffffffffc (last word)
+// ----------------------------------------------------------------------------------------------------------------------
+
 #define SKIP_MEPC
 #define SKIP_MTVAL
 
@@ -12,20 +23,6 @@ RVTEST_ISA("RV64I_Zicsr")
 .globl rvtest_entry_point
 rvtest_entry_point:
 RVMODEL_BOOT
-
-j starting_point															// Skip this data region
-// Physical Address region under testing for LEVEL 2
-// Placed at the start because it needs to be aligned to 1 GB
-rvtest_data_1_l2:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra	
-
-starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
@@ -33,12 +30,13 @@ RVTEST_CODE_BEGIN
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
+
 .macro TEST_CASES_RUNNER_RW LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
+    .if \LOWER_MODE == Mmode
 		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
+    .else
+    	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+    .endif
 	
 	.align 2
 	LI(a5, \VA)                    		// Load virtual address
@@ -47,13 +45,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	// Test store permission
     sb  a2, 0(a5)               		// Store test data
     nop
+
     // Test load permission
     lbu  a4, 0(a5)        				// Load back data
     nop
 	nop
 	nop
 
-	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
+	RVTEST_GOTO_MMODE		            // Switching back to M mode
 	
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
@@ -67,11 +66,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 
 .macro TEST_CASES_RUNNER_X LOWER_MODE, VA, level
-    	.if \LOWER_MODE == Mmode
+	.if \LOWER_MODE == Mmode
 		SET_REQ_MSTATUS_VAL
-    	.else
-        	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-    	.endif
+	.else
+		RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+	.endif
 	
 	.align 2
 	LI(a5, \VA)                    		// Load virtual address
@@ -110,7 +109,7 @@ main:
 	.set va_data_x,          	0xfffffffffffffffc			// Execute will be performed at this VA
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800003bc                  
+	.set va_rvtest_code_begin,  0x18000039c                  
 	.set va_rvtest_data_begin,  0x1c0000530		     
 
 
@@ -179,24 +178,13 @@ main:
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 21
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	jr ra																	// return back if successful access
-
-.align 12
 // Physical Address region under testing for LEVEL 0
 // This region will be used to Store and then Load from the last byte
+.align 12
 rvtest_data_1_l0_rw:
 	nop																		// trap return back skip
 	addi ra, ra, REGWIDTH
@@ -207,9 +195,9 @@ rvtest_data_1_l0_rw:
 	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
 	.word 0xbeefcaf3
 
-.align 12
 // Physical Address region under testing for LEVEL 0
 // This region will be used to execute the last instruction at (4KB - 4)
+.align 12
 rvtest_data_1_l0_x:
 	nop																		// trap return back skip
 	addi ra, ra, REGWIDTH
@@ -243,12 +231,12 @@ CANARY;
 
 // test signatures initialization
 signature_x13_1:
-    .fill 64*(XLEN/64),4,0xcafebeef
+    .fill 64*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 64*(XLEN/64),4,0xdeadbeef
+    .fill 64*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

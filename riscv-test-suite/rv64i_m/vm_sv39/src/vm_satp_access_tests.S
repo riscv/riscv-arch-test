@@ -1,20 +1,21 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
 // https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
-// Developed by: Muhammad Abdullah, Muhammad Zain, Muhammad Ahmad, Hamza Ali
+// Developed by: Umer Shahid, Muhammad Abdullah, Muhammad Zain, Hamza Ali and Muhammad Ahmad
 // ----------------------------------------------------------------------------------------------------------------------
 // This test verifies the functionality of satp register in M, S and U Mode using csrrw, csrrs, csrrc.
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-//	1. satp register accessed in M, S Mode -> Successful
-//	2. satp register accessed in U Mode -> Illegal Instruction exception
-//	3. Walking ones on the PPN of satp -> Successful
+//  1. Accessing the satp register in M and S mode -> Successful
+//  2. Accessing the satp register in U mode -> Illegal Instruction exception
+//  3. Testing satp mode field (SV39 and Bare mode) -> Successful
+//  4. All zeroes, ones and walking ones on the PPN field of satp  -> Successful
+//	5. All zeroes and ones on the ASID of satp -> Successful
+//	6. Walking ones on the ASID of satp -> Successful
+//  7. Verifying Bare mode operation -> Successful
+
 // Total Expected Faults: 3
 // ----------------------------------------------------------------------------------------------------------------------
-
-
-// #define SKIP_MEPC
-// #define SKIP_MTVAL
 
 #include "model_test.h"
 
@@ -120,15 +121,10 @@ main:
 	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
 	
 // ------------------------------------------------------------------------------------------------------------
-// 										Mode Supported --- SV39, SV48, and Bare i.e., sat.2
+// 										Mode Supported --- SV39 and Bare i.e., sat.2
 // ------------------------------------------------------------------------------------------------------------
 
 	li t0, 0x8000000000000000  // Set t0 to have 8 in [63:60] (SV39)
-    csrw satp, t0              // Write satp
-    csrr t1, satp              // Read back satp
-    RVTEST_SIGUPD(x13, t1)     // Store read value in signature
-
-    li t0, 0x9000000000000000  // Set t0 to have 9 in [63:60] (SV48)
     csrw satp, t0              // Write satp
     csrr t1, satp              // Read back satp
     RVTEST_SIGUPD(x13, t1)     // Store read value in signature
@@ -144,7 +140,7 @@ main:
 // 				PPN all zeros, ones and walking ones to the PPN bits of satp i.e., sat.4
 // ------------------------------------------------------------------------------------------------------------	
 
-     li t0, 0x8000000000000000  // Ensure SV39 mode in [63:60]
+    li t0, 0x8000000000000000  // Ensure SV39 mode in [63:60]
     mv t3, t0                  // Start with all_zero case                   
     csrw satp, t3              // Write all_zero PPN to satp
     csrr t2, satp              // Read back satp
@@ -219,26 +215,12 @@ satp_test_loop:
     csrr t2, satp                   // Read back satp
     RVTEST_SIGUPD(x13, t2)          // Store read-back value in signature
 
-// ------------------------------------------------------------------------------------------------------------
-//                                      tvm_mstatus Testing
-// ------------------------------------------------------------------------------------------------------------
-
-    csrr t1, mstatus               // Read current mstatus value
-    li t2, ~(1 << 20)              // Create mask to clear bit 20 (tvm)
-    and t3, t1, t2                 // Clear bit 20 while keeping other bits unchanged
-    csrw mstatus, t3               // Write back modified mstatus
-    csrr t4, mstatus               // Read back mstatus to verify
-    RVTEST_SIGUPD(x13, t4)         // Store read-back value in signature
-
-
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVMODEL_HALT
 RVTEST_DATA_BEGIN
-.align 12 // Align with 4KiB
-
 
 #ifdef rvtest_strap_routine
 .align 12
@@ -257,12 +239,12 @@ CANARY;
 
 // test signatures initialization
 signature_x13_1:
-    .fill 128*(XLEN/64),4,0xcafebeef
+    .fill 128*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 128*(XLEN/64),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

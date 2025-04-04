@@ -1,3 +1,27 @@
+// ----------------------------------------------------------------------------------------------------------------------
+// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
+// https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
+// Developed by: Umer Shahid, Muhammad Zain, Muhammad Abdullah, Hamza Ali and Muhammad Ahmad
+// ----------------------------------------------------------------------------------------------------------------------
+// Test cases are as follows:
+// ----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
+// 1. PTE with RWX permissions set up at level 0, D bit set for level 2:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 2. PTE with RWX permissions set up at level 0, A bit set for level 2:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 3. PTE with RWX permissions set up at level 0, U bit set for level 2:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 4. PTE with RWX permissions set up at level 0, D bit set for level 1:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 5. PTE with RWX permissions set up at level 0, A bit set for level 1:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// 6. PTE with RWX permissions set up at level 0, U bit set for level 1:
+//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+
+// Total Expected Faults :: 18
+// ----------------------------------------------------------------------------------------------------------------------
+
 #define SKIP_MEPC
 #define SKIP_MTVAL
 
@@ -11,41 +35,23 @@ RVTEST_ISA("RV64I_Zicsr")
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
-RVMODEL_BOOT
+RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
 
-j starting_point															// Skip this data region
+nop
+.align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
+j starting_point											// Skip this data region
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
+//											PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-// Physical Address region under testing for LEVEL 2
-rvtest_data_1_l2:
-	nop																		//nops are added so if there is a trap
+// Physical Address region under testing for LEVEL 0, 1 and 2
+rvtest_data_1:
+	nop
 	addi ra, ra, REGWIDTH
-	jr ra																	// return back if the access fault
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	nop
 	jr ra
-//Physical Address region under testing for LEVEL 1
-rvtest_data_1_l1:
-	nop																		//nops are added so if there is a trap
-	addi ra, ra, REGWIDTH
-	jr ra																	// return back if gives access fault
 	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	nop
-	jr ra																	// return back if successful access
-//Physical Address region under testing for LEVEL 0
-rvtest_data_1_l0:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
+	.word 0xbeefcaf1					// Random word
+	.word 0xbeefcaf2					// Random word
 	nop
 	jr ra
 
@@ -126,12 +132,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data_l2,          		0x140000004                  // virtual address of rvtest_data_1_l2
-	.set va_data_l1,          		0x140000024                  // virtual address of rvtest_data_1_l1 
-	.set va_data_l0,          		0x140000044                  // virtual address of rvtest_data_1_l0 
-	
+	.set va_data,          		0x140000404                  // virtual address of rvtest_data_1
+
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x18000041c                  
+	.set va_rvtest_code_begin,  0x1800007dc                  
 	.set va_rvtest_data_begin,  0x1c0000530		     
 
 
@@ -176,72 +180,72 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in U-Mode | D bit set for level 2 | expected = RWX Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_D | PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 2: Test in U-Mode | A bit set for level 2 | expected = RWX Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_A | PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_A | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 3: Test in U-Mode | U bit set for level 2 | expected = RWX Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_U | PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_U | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 4: Test in U-Mode | D bit set for level 1 | expected = RWX Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_D | PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_D | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 5: Test in U-Mode | A bit set for level 1 | expected = RWX Fault 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_A | PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_A | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 6: Test in U-Mode | D bit set for level 1 | expected = RWX Fault
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_l0, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_U | PTE_V), va_data_l0, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l0, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_U | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data_l0, LEVEL0
+	TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

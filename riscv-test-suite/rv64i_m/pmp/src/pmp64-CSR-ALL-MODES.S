@@ -1,16 +1,24 @@
-// -----------
-// Copyright (c) 2020. RISC-V International. All rights reserved.
-// SPDX-License-Identifier: BSD-3-Clause
-// -----------
+// ---------------------------------------------------------------------------
+// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
+// Authors     	: Muhammad Hammad Bashir, Umer Shahid, Allen Baum
+// Contact	  	: https://github.com/MuhammadHammad001
 //
-// This test belongs to the test plan for RISC-V Privilege Arch Compliance developed by 10xEngineers
-// which can be found here: https://docs.google.com/spreadsheets/d/1p13gic7BD6aq7n_dHrqti4QmlGpxY7FkF17RVbG4DC0/edit?usp=sharing
+// Description : 	This assembly file tests access of pmp registers in M, S, and U mode.
+// 					pmp csrs are accessable only in M-mode so it should trap in S, and U mode.
 //
-// This assembly file tests access of pmp registers in M, S, and U mode.
-// pmp csrs are accessable only in M-mode so it should trap in S, and U mode.
+// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+//                 and PMP region count before running this test.
+//               - Adjust PMP configurations for specific hardware if required.
 //
-// coverpoint definitions are given in coverage/pmp32_translated_coverpoints.cgf or coverage/pmp32_coverpoint_def_format.cgf
-// 
+// Test Cases  : 1. Full RWX permissions (Read, Write, Execute)
+//               2. RX permissions (Read, Execute)
+//               3. RW permissions (Read, Write)
+//               4. R-only permissions (Read)
+//               5. X-only permissions (Execute)
+//
+// Dependencies: model_test.h, arch_test.h
+// Total expected faults: 2+5+3+6+8 = 24.
+// ---------------------------------------------------------------------------
 #define rvtest_strap_routine
 #include "model_test.h"
 #include "arch_test.h"
@@ -28,11 +36,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
   	.align	3
-main: 
+main:
 #define PMPCFG0		0x3A0		// Address of pmpcfg0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
 #define PMPADDR0	0x3B0		// Address of pmpaddr0 	(HAS BEEN USED WHILE ITERATING THE LOOP)
 main:
-//////////////////////// INITIAL VALUES //////////////////////////////// 
+//////////////////////// INITIAL VALUES ////////////////////////////////
     	LI(a5, -1)		// SEtting up All locked bits (including everyother non-zero bit, which is redundent for this test)
     	LI(x5, 100)		// A rondom number, to check if pmp regs get update after lock bit enable
 	// Loop to SET ALL pmpcfg REGs to zero
@@ -74,7 +82,7 @@ main:
 	.rept 2			// START OF LOOP
 	csrw pmpcfgi, a5	// Write pmpcfgi
 	nop			// Added nop in case of trap
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 //////////////// VERIFICATION /////////////////////////////////////////
 // READING pmpcfg in M-mode /////////////////////////////////////////
@@ -84,7 +92,7 @@ main:
 	csrr a4, pmpcfg0		// Read pmpcfg0
 	nop				// Added nop in case of trap
 	RVTEST_SIGUPD(x13,a4)
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 /////////////////// Switch to S-mode ////////////////////////////////////////////
 	csrw satp, zero                // Disable address translation.
@@ -96,8 +104,8 @@ main:
 	LI(a5, PMP_L| PMP_R| PMP_W | PMP_X | PMP_TOR)		// LOCKED BIT IS SET
 	csrw pmpcfg0, a5
 
-	RVTEST_GOTO_LOWER_MODE	Smode	// GO into S mode	
-// REPEATING THE SAME TEST //////////////////////////////////////////		
+	RVTEST_GOTO_LOWER_MODE	Smode	// GO into S mode
+// REPEATING THE SAME TEST //////////////////////////////////////////
 // IN Smode now
 /////////////////// TEST 01 ////////////////////////////////////////////
 // READING pmpaddr in S-mode /////////////////////////////////////////
@@ -125,7 +133,7 @@ main:
 	.rept 2			// START OF LOOP
 	csrw pmpcfgi, a5	// Write pmpcfgi
 	nop			// Added nop in case of trap
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 //////////////// VERIFICATION /////////////////////////////////////////
 // READING pmpcfg in S-mode /////////////////////////////////////////
@@ -135,7 +143,7 @@ main:
 	csrr a4, pmpcfg0		// Read pmpcfg0
 	nop				// Added nop in case of trap
 	RVTEST_SIGUPD(x13,a4)
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 /////////////////// Switch back to M-mode ////////////////////////////////////////////
 	RVTEST_GOTO_MMODE
@@ -153,8 +161,8 @@ main:
 	csrw pmpcfg0, a5
 // These steps are repeated and can be removed but it will make sure that you will switch mode
 // with full access on physical memory
-	RVTEST_GOTO_LOWER_MODE	Umode	
-// REPEATING THE SAME TEST //////////////////////////////////////////		
+	RVTEST_GOTO_LOWER_MODE	Umode
+// REPEATING THE SAME TEST //////////////////////////////////////////
 // IN U-mode now
 // READING pmpaddr in U-mode /////////////////////////////////////////
 	.set pmpaddri, PMPADDR0		// Initialize an iterating variable with the address of pmpaddr0
@@ -181,7 +189,7 @@ main:
 	.rept 2			// START OF LOOP
 	csrw pmpcfgi, a5	// Write pmpcfgi
 	nop			// Added nop in case of trap
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 //////////////// VERIFICATION /////////////////////////////////////////
 // READING pmpcfg in U-mode /////////////////////////////////////////
@@ -191,9 +199,9 @@ main:
 	csrr a4, pmpcfg0		// Read pmpcfg0
 	nop				// Added nop in case of trap
 	RVTEST_SIGUPD(x13,a4)
-	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg	
+	.set pmpcfgi, pmpcfgi+2		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
-	
+
 #endif
 
  # ---------------------------------------------------------------------------------------------

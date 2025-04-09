@@ -151,6 +151,12 @@ def incr_reg_num(reg):
     num = num + 1
     return name + str(num)
 
+def dec_reg_num(reg):
+    name = reg[0]
+    num = int(reg[1:])
+    num = num - 2
+    return name + str(num)
+
 def gen_pair_reg_data(instr_dict, xlen, _bit_width, p64_profile):
     '''
     This function generate high registers for paired register operands, rs1_hi, rs2_hi and rd_hi depending on the specification of the p64_profile string.

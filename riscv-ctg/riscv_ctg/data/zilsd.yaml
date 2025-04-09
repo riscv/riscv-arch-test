@@ -1,0 +1,128 @@
+# See https://gitlab.com/vyoma_systems/common/-/blob/main/LICENSE.BSD3.vyoma for more details
+ldz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *pair_regs_zilsd
+  rd_hi: 0
+  isa: 
+    - IZilsd
+  xlen: [32]
+  opcode: ld
+  std_op:
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3,4,5,6,7]'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode:$opcode op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align;rd_hi:$rd_hi
+    TEST_LOAD_ZILSD($swreg,$testreg,$index,$rs1,$rd,$rd_hi,$imm_val,$offset,ld,$ea_align)
+
+sdz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rs2_op_data: *pair_regs_zilsd
+  rd_op_data: *all_regs
+  rs2_hi: 0
+  xlen: [32]
+  opcode: sd
+  std_op:
+  isa: 
+    - IZilsd
+  formattype: 'szformat'
+  ea_align_data: '[0,1,2,3,4,5,6,7]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  rs2_hi_val_data: 'gen_sign_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode:$opcode; op1:$rs1; op2:$rs2; op2val:$rs2_val;op3val:$rs2_hi_val; immval:$imm_val; align:$ea_align; rs2_hi:$rs2_hi
+    TEST_STORE_ZILSD($swreg,$testreg,$index,$rs1,$rs2,$rs2_hi,$rs2_val,$rs2_hi_val,$imm_val,$offset,sd,$ea_align)
+
+c.ldz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rd_op_data: *c_pair_regs 
+  rd_hi: 0
+  xlen: [32]
+  std_op:
+  isa: 
+    - ICZilsd_Zclsd
+  formattype: 'clformat'
+  rs1_val_data: '[0]'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; op1val:$rs1_val; immval:$imm_val; rd_hi:$rd_hi
+    TEST_LOAD_ZILSD($swreg,$testreg,$index,$rs1,$rd,$rd_hi,$imm_val,$offset,c.ld,$rs1_val)
+
+c.ldspz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rd_op_data: *pair_regs_zclsd
+  rd_hi: 0
+  xlen: [32]
+  std_op:
+  isa: 
+    - ICZilsd_Zclsd
+  formattype: 'ciformat'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:x2; dest:$rd; immval:$imm_val; rd_hi:$rd_hi
+    TEST_LOAD_ZILSD($swreg,$testreg,$index,x2,$rd,$rd_hi,$imm_val,$offset,c.ldsp,0)
+
+c.sdz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_pair_regs
+  rs2_hi: 0
+  xlen: [32]
+  std_op:
+  isa: 
+    - ICZilsd_Zclsd
+  formattype: 'cszformat'
+  rs1_val_data: '[0]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  rs2_hi_val_data: 'gen_sign_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; op3val:$rs2_hi_val; $immval:$imm_val; rs2_hi:$rs2_hi
+    TEST_STORE_ZILSD($swreg,$testreg,$index,$rs1,$rs2,$rs2_hi,$rs2_val,$rs2_hi_val,$imm_val,$offset,c.sd,0)
+
+c.sdspz:
+  sig:
+    stride: 2
+    sz: 'XLEN/8'
+  rs2_op_data: *pair_regs_zilsd
+  rs2_hi: 0
+  xlen: [32]
+  std_op:
+  isa: 
+    - ICZilsd_Zclsd
+  formattype: 'csszformat'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  rs2_hi_val_data: 'gen_sign_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:x2; op2:$rs2; op2val:$rs2_val;  op3val:$rs2_hi_val; immval:$imm_val; rs2_hi:$rs2_hi
+    TEST_STORE_ZILSD($swreg,$testreg,$index,x2,$rs2,$rs2_hi,$rs2_val,$rs2_hi_val,$imm_val,$offset,c.sdsp,0)

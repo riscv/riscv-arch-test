@@ -7,6 +7,9 @@ metadata:
   c_fregs: &c_fregs "['x'+str(x) for x in range(8,16)]"
   pair_regs: &pair_regs "['x'+str(x) for x in range(2,32 if 'e' not in base_isa else 16, 2 if xlen == 32 else 1)]"
   rv32rv64pair_regs: &rv32rv64pair_regs "['x'+str(x) for x in range(2,30 if 'e' not in base_isa else 16, 2)]"
+  pair_regs_zclsd: &pair_regs_zclsd "['x'+str(x) for x in range(2,31 if 'e' not in base_isa else 16, 2 if xlen == 32 else 1)]"
+  pair_regs_zilsd: &pair_regs_zilsd "['x'+str(x) for x in range(0,31 if 'e' not in base_isa else 16, 2 if xlen == 32 else 1)]"
+  c_pair_regs: &c_pair_regs "['x'+str(x) for x in range(8,16,2)]"
 
 aes32dsi:
   sig:

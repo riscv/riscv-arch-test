@@ -1,0 +1,128 @@
+# See License https://gitlab.com/vyoma_systems/common/-/blob/main/LICENSE.BSD3.vyoma for more details
+
+ld:
+    config: 
+      - check ISA:=regex(.*I.*Zilsd.*)
+    opcode: 
+      ldz: 0
+    rs1: 
+      <<: *all_regs_mx0
+    rd: 
+      <<: *pair_regs_zilsd
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 8) == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 1': 0
+        'ea_align == 0 and (imm_val % 8) == 2': 0
+        'ea_align == 0 and (imm_val % 8) == 3': 0
+        'ea_align == 0 and (imm_val % 8) == 4': 0
+        'ea_align == 0 and (imm_val % 8) == 5': 0
+        'ea_align == 0 and (imm_val % 8) == 6': 0
+        'ea_align == 0 and (imm_val % 8) == 7': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0       
+
+
+sd:
+    config: 
+      - check ISA:=regex(.*I.*Zilsd.*)
+    opcode: 
+      sdz: 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *pair_regs_zilsd
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'ea_align == 0 and (imm_val % 8) == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 1': 0
+        'ea_align == 0 and (imm_val % 8) == 2': 0
+        'ea_align == 0 and (imm_val % 8) == 3': 0
+        'ea_align == 0 and (imm_val % 8) == 4': 0
+        'ea_align == 0 and (imm_val % 8) == 5': 0
+        'ea_align == 0 and (imm_val % 8) == 6': 0
+        'ea_align == 0 and (imm_val % 8) == 7': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+        <<: [  *base_rs2val_sgn]
+        abstract_comb:
+          <<: [*rs2val_walking]
+
+
+
+cldsp:
+    config: 
+      - check ISA:=regex(.*I.*C.*Zilsd.*Zclsd.*)
+    opcode: 
+      c.ldspz: 0
+    rd: 
+      <<: *pair_regs
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",6,False, scale_func = lambda x: x*8)': 0
+          'walking_zeros("imm_val",6,False, scale_func = lambda x: x*8)': 0
+          'alternate("imm_val",6, False,scale_func = lambda x: x*8)': 0
+
+csdsp:
+    config: 
+      - check ISA:=regex(.*I.*C.*Zilsd.*Zclsd.*)
+    opcode: 
+      c.sdspz: 0
+    rs2: 
+      <<: *pair_regs_zilsd
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        <<: [  *base_rs2val_sgn]
+        abstract_comb:
+          <<: [*rs2val_walking]
+          'walking_ones("imm_val",6,False, scale_func = lambda x: x*8)': 0
+          'walking_zeros("imm_val",6,False, scale_func = lambda x: x*8)': 0
+          'alternate("imm_val",6, False,scale_func = lambda x: x*8)': 0
+
+cld:
+    config: 
+      - check ISA:=regex(.*I.*C.*Zilsd.*Zclsd.*)
+    opcode: 
+      c.ldz: 0
+    rs1: 
+      <<: *c_regs
+    rd: 
+      <<: *c_pair_regs
+    op_comb:
+        'rs1 == rd': 0
+        'rs1 != rd': 0
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        abstract_comb:
+          'walking_ones("imm_val",5,False, scale_func = lambda x: x*8)': 0
+          'walking_zeros("imm_val",5,False, scale_func = lambda x: x*8)': 0
+          'alternate("imm_val",5, False,scale_func = lambda x: x*8)': 0
+
+csd:
+    config: 
+      - check ISA:=regex(.*I.*C.*Zilsd.*Zclsd.*)
+    opcode: 
+      c.sdz: 0
+    rs1: 
+      <<: *c_regs
+    rs2: 
+      <<: *c_pair_regs
+    op_comb:
+        'rs1 != rs2': 0
+    val_comb:
+        'imm_val > 0': 0
+        'imm_val == 0': 0
+        <<: [  *base_rs2val_sgn]
+        abstract_comb:
+          <<: [*rs2val_walking]
+          'walking_ones("imm_val",5,False, scale_func = lambda x: x*8)': 0
+          'walking_zeros("imm_val",5,False, scale_func = lambda x: x*8)': 0
+          'alternate("imm_val",5, False,scale_func = lambda x: x*8)': 0

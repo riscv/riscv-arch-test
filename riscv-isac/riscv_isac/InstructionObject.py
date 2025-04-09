@@ -1,7 +1,7 @@
 import struct
 
 instrs_sig_mutable = ['auipc','jal','jalr']
-instrs_sig_update = ['sh','sb','sw','sd','c.fsw','c.sw','c.sd','c.swsp','c.sdsp','fsw','fsd',\
+instrs_sig_update = ['sh','sb','sw','sd','sdz','c.fsw','c.sw','c.sd','c.sdz','c.swsp','c.sdsp','c.sdspz','fsw','fsd',\
         'c.fsw','c.fsd','c.fswsp','c.fsdsp']
 instrs_no_reg_tracking = ['beq','bne','blt','bge','bltu','bgeu','fence','c.j','c.jal','c.jalr',\
         'c.jr','c.beqz','c.bnez', 'c.ebreak'] + instrs_sig_update
@@ -12,7 +12,7 @@ instrs_fcsr_affected = ['fmadd.s','fmsub.s','fnmsub.s','fnmadd.s','fadd.s','fsub
         'fmul.d','fdiv.d','fsqrt.d','fmin.d','fmax.d','fcvt.s.d','fcvt.d.s',\
         'feq.d','flt.d','fle.d','fcvt.w.d','fcvt.wu.d','fcvt.l.d','fcvt.lu.d',\
         'fcvt.d.l','fcvt.d.lu']
-unsgn_rs1 = ['sw','sd','sh','sb','ld','lw','lwu','lh','lhu','lb', 'lbu','flw','fld','fsw','fsd','flh','fsh',\
+unsgn_rs1 = ['sw','sd','sh','sb','ld','ldz','sdz','c.ldz','c.ldspz','c.sdz','c.sdspz','lw','lwu','lh','lhu','lb', 'lbu','flw','fld','fsw','fsd','flh','fsh',\
         'bgeu', 'bltu', 'sltiu', 'sltu','c.lw','c.lhu','c.lh','c.ld','c.lwsp','c.ldsp',\
         'c.sw','c.sd','c.swsp','c.sdsp','c.fsw','mulhu','divu','remu','divuw',\
         'remuw','aes64ds','aes64dsm','aes64es','aes64esm','aes64ks2',\
@@ -219,7 +219,7 @@ class instructionObject():
             ea_align = (rs1_val + imm_val) % 2
         if self.instr_name in ['sw','sh','sb','lw','lhu','lh','lb','lbu','lwu','flw','fsw']:
             ea_align = (rs1_val + imm_val) % 4
-        if self.instr_name in ['ld','sd','fld','fsd']:
+        if self.instr_name in ['ldz','sdz','ld','sd','fld','fsd']:
             ea_align = (rs1_val + imm_val) % 8
 
         instr_vars.update({

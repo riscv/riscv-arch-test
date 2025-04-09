@@ -36,6 +36,8 @@ three_operand_hinstructions = ["fmadd.h","fmsub.h","fnmadd.h","fnmsub.h"]
 one_operand_dinstructions += ["fround.d", "froundnx.d"]
 two_operand_dinstructions += ["fmaxm.d", "fminm.d", "fleq.d", "fltq.d"]
 
+#Zilsd
+zilsd_instructions = ["ldz","sdz","c.ldz","c.sdz","c.ldspz","c.sdspz"]
 
 def is_fp_instruction(insn):
     '''
@@ -71,6 +73,7 @@ OPS = {
     'r4format': ['rs1', 'rs2', 'rs3', 'rd'],
     'iformat': ['rs1', 'rd'],
     'sformat': ['rs1', 'rs2'],
+    'szformat': ['rs1', 'rs2'],
     'bsformat': ['rs1', 'rs2', 'rd'],
     'bformat': ['rs1', 'rs2'],
     'uformat': ['rd'],
@@ -79,9 +82,11 @@ OPS = {
     'cmvformat': ['rd', 'rs2'],
     'ciformat': ['rd'],
     'cssformat': ['rs2'],
+    'csszformat': ['rs2'],
     'ciwformat': ['rd'],
     'clformat': ['rs1', 'rd'],
     'csformat': ['rs1', 'rs2'],
+    'cszformat': ['rs1', 'rs2'],
     'caformat': ['rs1', 'rs2'],
     'cuformat': ['rs1'],
     'cbformat': ['rs1'],
@@ -126,6 +131,7 @@ VALS = {
         (['rs{0}_sgn_prefix'.format(x) for x in range(1,4)] if is_sgn_extd else [])",
     'iformat': "['rs1_val', 'imm_val'] + ([] if not is_fext else ['fcsr'])",
     'sformat': "['rs1_val', 'rs2_val', 'imm_val'] + ([] if not is_fext else ['fcsr'])",
+    'szformat': "['rs1_val', 'rs2_val', 'rs2_hi_val', 'imm_val'] + ([] if not is_fext else ['fcsr'])",
     'bsformat': "['rs1_val', 'rs2_val', 'imm_val']",
     'bformat': "['rs1_val', 'rs2_val', 'imm_val']",
     'uformat': "['imm_val']",
@@ -134,6 +140,7 @@ VALS = {
     'cmvformat': "['rs2_val']",
     'ciformat': "['rs1_val', 'imm_val']",
     'cssformat': "['rs2_val', 'imm_val']",
+    'csszformat': "['rs2_val', 'rs2_hi_val', 'imm_val']",
     'ciwformat': "['imm_val']",
     'clformat': "['rs1_val', 'imm_val', 'fcsr']",
     'cuformat': "['rs1_val']",
@@ -142,6 +149,7 @@ VALS = {
     'csbformat': "['rs1_val','rs2_val','imm_val']",
     'cshformat': "['rs1_val','rs2_val','imm_val']",
     'csformat': "['rs1_val', 'rs2_val', 'imm_val']",
+    'cszformat': "['rs1_val', 'rs2_val', 'rs2_hi_val', 'imm_val']",
     'caformat': "['rs1_val', 'rs2_val']",
     'cbformat': "['rs1_val', 'imm_val']",
     'cjformat': "['imm_val']",
@@ -281,7 +289,7 @@ class Generator():
         self.inxFlag = inxFlag
         self.is_sgn_extd = is_sgn_extd
 
-        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp"]:
+        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp","ldz","sdz"]:
             self.val_vars = self.val_vars + ['ea_align']
         self.template = opnode['template']
         self.opnode = opnode
@@ -814,7 +822,7 @@ class Generator():
                 instr_dict.append(self.__clui_instr__(op,val))
             elif self.opcode in ['c.beqz', 'c.bnez']:
                 instr_dict.append(self.__cb_instr__(op,val))
-            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.flwsp','c.fswsp','c.fldsp','c.fsdsp']:
+            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.ldspz','c.sdspz', 'c.flwsp','c.fswsp','c.fldsp','c.fsdsp']:
                 if any([x == 'x2' for x in op]):
                     cont.append(val)
                 instr_dict.append(self.__cmemsp_instr__(op,val))
@@ -834,7 +842,7 @@ class Generator():
                 instr_dict.append(self.__clui_instr__(op,val))
             elif self.opcode in ['c.beqz', 'c.bnez','c.lbu','c.lhu','c.lh','c.sb','c.sh']:
                 instr_dict.append(self.__cb_instr__(op,val))
-            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.fsdsp','c.fswsp']:
+            elif self.opcode in ['c.lwsp', 'c.swsp', 'c.ldsp', 'c.sdsp','c.ldspz','c.sdspz','c.fsdsp','c.fswsp']:
                 instr_dict.append(self.__cmemsp_instr__(op,val))
             elif self.fmt == 'bformat' or self.opcode in ['c.j']:
                 instr_dict.append(self.__bfmt_instr__(op,val))
@@ -919,7 +927,7 @@ class Generator():
         for instr in instr_dict:
             unique = False
             skip_val = False
-            if instr['inst'] in cgf['mnemonics']:
+            if instr['inst'] in cgf['mnemonics'] or instr['inst'] in zilsd_instructions:
                 if 'rs1' in instr and 'rs2' in instr:
                     if instr['rs1'] == instr['rs2']:
                         skip_val = True
@@ -944,6 +952,14 @@ class Generator():
                     final_instr.append(instr)
                 else:
                     i+=1
+            if instr['inst'] in zilsd_instructions:
+                if 'rs2_hi' and 'rd' not in instr :
+                    instr.update({'rs2_hi': incr_reg_num(instr['rs2'])})
+                    if instr['rs2_hi'] == instr['rs1'] and instr['rs1'] == 'x31':
+                            instr.update({'rs1': dec_reg_num(instr['rs1'])})
+                elif 'rd_hi' not in instr and 'rd' in instr:
+                    instr.update({'rd_hi': incr_reg_num(instr['rd'])})
+
 
         if any('IP' in isa for isa in self.opnode['isa']):
             if 'p64_profile' in self.opnode:

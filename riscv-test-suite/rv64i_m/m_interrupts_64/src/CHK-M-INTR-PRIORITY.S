@@ -70,12 +70,6 @@ RVTEST_CODE_BEGIN
 		#define MTIMECMP_TEST_VALUE			0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
 
 		main:
-			// Enable Global Interrupts:
-			// Set the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
-			// Allows maskable interrupts to be recognized during the test
-			LI(t0,    MSTATUS_MIE)
-			csrrs x0, CSR_MSTATUS, t0
-
 			// Clear Machine Interrupt Delegations:
 			// Disable delegation of both software and timer interrupts
 			// Ensures interrupts are handled in machine mode
@@ -96,9 +90,7 @@ RVTEST_CODE_BEGIN
 			// Set mtime and mtimecmp to trigger a timer interrupt
 			// Demonstrates timer interrupt generation mechanism
 			SREG t0,   0(a1)
-			nop
 			SREG t0,   0(a2)
-			nop
 
 			// Generate Software Interrupt:
 			// Write to memory-mapped Software Interrupt Pending (MSIP) register
@@ -117,11 +109,15 @@ RVTEST_CODE_BEGIN
 			// Enable Local Interrupts:
 			// Locally enable both software and timer interrupts
 			// Prepares processor to handle pending interrupts
-			LI(a1,    MIE_MSIP)
-			LI(a2,    MIE_MTIP)
-			OR a1,    a1, a2
+			LI(a1,    MIE_MSIP + MIE_MTIP)
 			csrrs x0, CSR_MIE, a1
 			nop
+
+			// Enable Global Interrupts:
+			// Set the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
+			// Allows maskable interrupts to be recognized
+			LI(t0,    MSTATUS_MIE)
+			csrrs x0, CSR_MSTATUS, t0
 
 			// Final MIP State Capture:
 			// Read MIP register after interrupt handling

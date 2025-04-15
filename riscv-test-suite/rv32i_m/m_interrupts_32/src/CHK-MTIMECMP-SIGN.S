@@ -65,20 +65,23 @@ RVTEST_CODE_BEGIN
 
 		main:
 			// Disable Global Interrupts:
-			// Mask the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
 			// Prevents any maskable interrupts from interfering with the tests
 			LI(a1,    MSTATUS_MIE)
 			csrrc x0, CSR_MSTATUS, a1
+
+			// Reset Machine Timer Registers:
+			// Clear any existing timer interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MTIMER_INT
 
 			// Initial MIP State Capture:
 			// Read and store Machine Interrupt Pending (MIP) register
 			// Verifies initial timer interrupt state is clear
 			csrr a4, mip
-			ANDI a4, a4, 0x80
+			ANDI a4, a4, MIP_MTIP
 			nop
 			RVTEST_SIGUPD(x3,a4)
 
-			// Timer Register Base and Test Value Initialization:
 			// Load base addresses and predefined test values for timer comparison
 			// Prepares registers for testing signed/unsigned timer behavior
 			LI(a5,   RVMODEL_MTIMECMP_BASE)
@@ -102,7 +105,7 @@ RVTEST_CODE_BEGIN
 			// Capture MIP register to confirm interrupt state
 			// Expects no timer interrupt triggered
 			csrr a4, mip
-			ANDI a4, a4, 0x80  		// Masking MTIP
+			ANDI a4, a4, MIP_MTIP  		// Masking MTIP
 			nop
 			RVTEST_SIGUPD(x3,a4)
 
@@ -120,7 +123,7 @@ RVTEST_CODE_BEGIN
 			// Capture MIP register to confirm timer interrupt pending
 			// Expects timer interrupt to be set
 			csrr a4, mip
-			ANDI a4, a4, 0x80  		// Masking MTIP
+			ANDI a4, a4, MIP_MTIP  		// Masking MTIP
 			nop
 			RVTEST_SIGUPD(x3,a4)
 	#endif

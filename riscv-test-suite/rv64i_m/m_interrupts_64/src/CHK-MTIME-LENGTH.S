@@ -50,8 +50,14 @@ RVTEST_CODE_BEGIN
 
 		main:
 			// Disable Global Interrupts
+			// Prevents any maskable interrupts from interfering with the tests
 			LI(a1,    MSTATUS_MIE)
 			csrrc x0, CSR_MSTATUS, a1
+
+			// Reset Machine Timer Registers:
+			// Clear any existing timer interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MTIMER_INT
 
 			// Capture initial MIP state
 			csrrs a4, CSR_MIP, x0

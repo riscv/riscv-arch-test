@@ -79,12 +79,17 @@ RVTEST_CODE_BEGIN
 			csrrc  x0, CSR_MIDELEG, a3
 			nop
 
-			// Initialize Timer Registers:
 			// Load base addresses and maximum timer value
-			// Prepare for generating timer and software interrupts
+			// Prepare for generating timer and software interrupt
 			LI(a1,     RVMODEL_MTIMECMP_BASE)
 			LI(a2,     RVMODEL_MTIME_BASE)
 			LI(t0,     MTIMECMP_TEST_VALUE)
+
+			// Reset Machine Software Interrupt and Machine Timer Registers:
+			// Clear any existing software and timer interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
+			RVMODEL_CLR_MTIMER_INT
 
 			// Configure Timer Interrupt:
 			// Set mtime and mtimecmp to trigger a timer interrupt

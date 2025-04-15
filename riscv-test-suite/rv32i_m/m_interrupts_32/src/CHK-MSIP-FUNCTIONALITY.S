@@ -54,19 +54,17 @@ RVTEST_CODE_BEGIN
 		.align	2
 		.option norvc
 
-		main:
+		main:			
 			// Disable Global Interrupts:
 			// Prevent any maskable interrupts during test execution
 			// Ensures controlled test environment
 			LI(a5,    MSTATUS_MIE)
 			csrrc x0, CSR_MSTATUS, a5
 
-			// Clear Software Interrupt State:
-			// Reset memory-mapped Software Interrupt Pending (MSIP) control register
-			// Establish clean initial interrupt condition
-			LI(a5,     RVMODEL_MSIP_BASE)
-			SREG zero, 0(a5)
-			nop
+			// Reset Machine Software Interrupt:
+			// Clear any existing software interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
 
 			// Capture Initial MIP State:
 			// Read Machine Interrupt Pending (MIP) register

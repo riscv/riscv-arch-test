@@ -68,6 +68,11 @@ RVTEST_CODE_BEGIN
 			csrrs  x0, CSR_MIDELEG, a5
 			nop
 
+			// Reset Machine Software Interrupt:
+			// Clear any existing software interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
+
 			// Generate Software Interrupt:
 			// Trigger software interrupt by writing 1 to MSIP control register
 			// Validates interrupt generation under delegation configuration

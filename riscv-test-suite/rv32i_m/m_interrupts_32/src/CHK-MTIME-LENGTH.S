@@ -48,17 +48,23 @@ RVTEST_CODE_BEGIN
 
 		main:
 			// Disable Global Interrupts
+			// Prevents any maskable interrupts from interfering with the tests
 			LI(a1,    MSTATUS_MIE)
 			csrrc x0, CSR_MSTATUS, a1
-
-			// Capture initial MIP state
-			csrrs a4, CSR_MIP, x0
-			RVTEST_SIGUPD(x3, a4)
 
 			// Load base addresses for timer registers
 			LI(a1, RVMODEL_MTIMECMP_BASE)
 			LI(a2, RVMODEL_MTIME_BASE)
 			LI(t1, TIMER_TEST_VALUE)
+
+			// Reset Machine Timer Registers:
+			// Clear any existing timer interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MTIMER_INT
+
+			// Capture initial MIP state
+			csrrs a4, CSR_MIP, x0
+			RVTEST_SIGUPD(x3, a4)
 
 			// TEST CASE 1: Verify mtime 64-bit precision
 			// Check behavior when lower 32-bits are max and upper 32-bits are zero

@@ -56,17 +56,22 @@ RVTEST_CODE_BEGIN
 			csrrs x0, CSR_MSTATUS, t0
 
 			// Clear Machine Software Interrupt Delegation:
-			// Ensure software interrupts are handled in machine mode
+			// Ensure software interrupt are handled in machine mode
 			// Prevents potential redirection to lower privilege modes
 			LI(a5, MIDELEG_MSI)
 			csrrc  x0, CSR_MIDELEG, a5
 			nop
 
+			// Reset Machine Software Interrupt:
+			// Clear any existing software interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
+
 			// Capture Initial MIP State:
 			// Verify initial software interrupt bit (mip.msip) is clear
 			// Establishes baseline interrupt state before testing
 			csrrs a4, CSR_MIP, x0
-			ANDI  a4, a4, 0x8
+			ANDI  a4, a4, MIP_MSIP
 			nop
 			RVTEST_SIGUPD(x3,  a4)
 
@@ -95,7 +100,7 @@ RVTEST_CODE_BEGIN
 			// Confirm software interrupt bit is cleared in MIP register
 			// Validates interrupt handling and clearing mechanism
 			csrrs a4, CSR_MIP, x0
-			ANDI  a4, a4, 0x8
+			ANDI  a4, a4, MIP_MSIP
 			nop
 			RVTEST_SIGUPD(x3,  a4)
 	#endif

@@ -74,16 +74,16 @@ RVTEST_CODE_BEGIN
 			csrrc  x0, CSR_MIDELEG, t0
 			nop
 
-			// Initialize Timer Registers:
-			// Configure timer compare (mtimecmp) and timer (mtime)
-			// Create a controlled timer interrupt scenario
+			// Load base addresses and maximum timer value
+			// Prepare for generating timer and software interrupt
 			LI(a0,     RVMODEL_MTIMECMP_BASE)
 			LI(a1,     RVMODEL_MTIME_BASE)
 			LI(t1,     MTIMECMP_TEST_VALUE)
-			SREG t1,   0(a0)
-			nop
-			SREG zero, 0(a1)
-			nop
+
+			// Reset Machine Timer Registers:
+			// Clear any existing timer interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MTIMER_INT
 
 			// Test Case 01: Disable MTIE with mtime < mtimecmp
 			// Verify interrupt behavior when MTIE is disabled and no timer interrupt is pending
@@ -101,6 +101,7 @@ RVTEST_CODE_BEGIN
 			// Test Case 03: Disable MTIE when mtime = mtimecmp
 			// Check program execution with pending timer interrupt but MTIE disabled
 			csrrc x0, CSR_MIE, t0
+			LREG  t1,  0(a0)
 			SREG  t1,  0(a1)
 			nop
 			csrrs a4, CSR_MIP, x0

@@ -75,17 +75,10 @@ RVTEST_CODE_BEGIN
 			LI(a2,    RVMODEL_MTIME_BASE)
 			LI(t0,    MTIMECMP_TEST_VALUE)
 
-			// Reset Timer Registers:
+			// Reset Machine Timer Registers:
 			// Clear any existing timer interrupt conditions
-			// Establish a clean initial state
-			SREG t0,   0(a1)
-			nop
-			SREG zero, 4(a1)
-			nop
-			SREG zero, 0(a2)
-			nop
-			SREG zero, 4(a2)
-			nop
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MTIMER_INT
 
 			// Capture Initial MIP State:
 			// Verify initial timer interrupt pending (mtip) bit is clear
@@ -94,6 +87,8 @@ RVTEST_CODE_BEGIN
 
 			// Generate Pending Timer Interrupt:
 			// Set mtime equal to mtimecmp to trigger interrupt condition
+			SREG t0, 0(a1)
+			nop
 			SREG t0, 0(a2)
 			nop
 

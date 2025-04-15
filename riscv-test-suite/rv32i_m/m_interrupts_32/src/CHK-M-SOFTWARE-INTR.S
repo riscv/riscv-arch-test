@@ -54,12 +54,6 @@ RVTEST_CODE_BEGIN
 		.option norvc
 
 		main:
-			// Clear Software & Hardware Interrupts at the start, if there is any
-			RVMODEL_CLR_MEXT_INT
-			RVMODEL_CLR_SEXT_INT
-			RVMODEL_CLR_MSW_INT
-			RVMODEL_CLR_SSW_INT
-	
 			// Enable Global Interrupts:
 			// Set Machine Status Register (mstatus) MIE bit
 			// Allows maskable interrupts to be recognized
@@ -67,18 +61,16 @@ RVTEST_CODE_BEGIN
 			csrrs x0, CSR_MSTATUS, t0
 
 			// Clear Machine Software Interrupt Delegation:
-			// Ensure software interrupts are handled in machine mode
+			// Ensure software interrupt are handled in machine mode
 			// Prevents potential redirection to lower privilege modes
 			LI(a5, MIDELEG_MSI)
 			csrrc  x0, CSR_MIDELEG, a5
 			nop
 
-			// Initialize MSIP Base: Clear Pending Software Interrupt
-			// Reset memory-mapped Software Interrupt Pending control register
-			// Establish a clean initial interrupt state
-			LI(a5,     RVMODEL_MSIP_BASE)
-			SREG zero, 0(a5)
-			nop
+			// Reset Machine Software Interrupt:
+			// Clear any existing software interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
 
 			// Test Case 01: Disable MSIE with Clear MIP
 			// Verify interrupt behavior when MSIE is disabled and no pending interrupt exists
@@ -95,6 +87,7 @@ RVTEST_CODE_BEGIN
 
 			// Test Case 03: Disable MSIE with Set MIP
 			// Check program execution with pending interrupt but MSIE disabled
+			LI(a5,    RVMODEL_MSIP_BASE)
 			csrrc x0, CSR_MIE, t0
 			LI(t1,    0x1)
 			SREG t1,  0(a5)

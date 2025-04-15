@@ -60,26 +60,16 @@ RVTEST_CODE_BEGIN
 		.align	2
 		.option norvc
 
-		main:
+		main:		
 			// Disable Global Interrupts:
-			// Mask the Machine Status Register (mstatus) Interrupt Enable (MIE) bit
 			// Prevents any maskable interrupts from being recognized during the test
 			LI(a5,    MSTATUS_MIE)
 			csrrc x0, CSR_MSTATUS, a5
 
-			// Clear Potential Timer Interrupt Pending:
-			// Ensure a clean initial state by clearing any pre-existing timer interrupt
-			// Prevents interference from previous timer interrupt states
-			LI(a5,     -1)
-			LI(a4,     RVMODEL_MTIMECMP_BASE)
-			SREG a5,   0(a4)
-			nop
-
-			// Clear Potential Software Interrupt Pending:
-			// Reset software interrupt state to eliminate any pre-existing interrupt conditions
-			LI(a5,     RVMODEL_MSIP_BASE)
-			SREG zero, 0(a5)
-			nop
+			// Reset Machine Software Interrupt:
+			// Clear any existing software interrupt conditions
+			// Establish a clean initial state before actual test
+			RVMODEL_CLR_MSW_INT
 
 			// Capture Initial MIP State:
 			// Read and record Machine Interrupt Pending (MIP) register before test execution
@@ -91,13 +81,13 @@ RVTEST_CODE_BEGIN
 			// Manually set software, timer, and external interrupt pending bits
 			// Validate MIP register's read-only behavior
 			LI(a0,    MIP_MSIP)
-			csrrw x0, CSR_MIP, a0
+			csrrw a0, CSR_MIP, a0
 
 			LI(a0,    MIP_MTIP)
-			csrrw x0, CSR_MIP, a0
+			csrrw a0, CSR_MIP, a0
 
 			LI(a0,    MIP_MEIP)
-			csrrw x0, CSR_MIP, a0
+			csrrw a0, CSR_MIP, a0
 
 			// Capture Final MIP State:
 			// Verify that MIP register remains unchanged after attempted write operations

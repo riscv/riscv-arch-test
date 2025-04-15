@@ -88,9 +88,7 @@ RVTEST_CODE_BEGIN
 			// Generate Pending Timer Interrupt:
 			// Set mtime equal to mtimecmp to trigger interrupt condition
 			SREG t0, 0(a1)
-			nop
 			SREG t0, 0(a2)
-			nop
 
 			// Verify Timer Interrupt Pending:
 			// Confirm mtip bit is set in Machine Interrupt Pending register
@@ -101,7 +99,6 @@ RVTEST_CODE_BEGIN
 			// Reset mtime to be less than mtimecmp
 			// Validate interrupt clearing mechanism
 			SREG zero, 0(a2)
-			nop
 
 			// Confirm Interrupt Cleared:
 			// Verify timer interrupt bit returns to zero

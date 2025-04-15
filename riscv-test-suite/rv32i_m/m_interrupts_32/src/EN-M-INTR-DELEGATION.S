@@ -79,7 +79,6 @@ RVTEST_CODE_BEGIN
 			LI(a5,   0x1)
 			LI(x5,   RVMODEL_MSIP_BASE)
 			SREG a5, 0(x5)
-			nop
 
 			// Capture Initial Interrupt Pending State:
 			// Verify machine interrupt pending (MIP) register

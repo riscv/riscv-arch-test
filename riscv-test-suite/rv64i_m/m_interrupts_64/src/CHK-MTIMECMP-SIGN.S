@@ -92,9 +92,7 @@ RVTEST_CODE_BEGIN
 			// Configure mtimecmp with Most Significant Bit (MSB) set to 1
 			// Demonstrates signed timer register comparison behavior
 			SREG t0, 0(a5)		// mtimecmp = 0x8000000000000000 (set MSB to 1)
-			nop
 			SREG t1, 0(a6)		// mtime = 0x200 --> (mtime < mtimecmp)
-			nop
 
 			// Verify MIP State After First Test:
 			// Capture MIP register to confirm interrupt state
@@ -106,9 +104,7 @@ RVTEST_CODE_BEGIN
 			// Modify mtime to exceed mtimecmp
 			// Validates timer interrupt generation mechanism
 			ADDI t0, t0, 1
-			nop
 			SREG t0, 0(a6)		// mtime = 0x8000000000000001 --> (mtime > mtimecmp)
-			nop
 
 			// Verify MIP State After Second Test:
 			// Capture MIP register to confirm timer interrupt pending

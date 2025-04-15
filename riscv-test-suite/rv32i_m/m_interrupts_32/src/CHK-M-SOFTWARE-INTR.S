@@ -91,7 +91,6 @@ RVTEST_CODE_BEGIN
 			csrrc x0, CSR_MIE, t0
 			LI(t1,    0x1)
 			SREG t1,  0(a5)
-			nop
 			csrrs a4, CSR_MIP, x0
 			RVTEST_SIGUPD(x3, a4)
 

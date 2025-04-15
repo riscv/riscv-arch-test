@@ -77,7 +77,6 @@ RVTEST_CODE_BEGIN
 			// Establishes baseline interrupt state before testing
 			csrrs a4, CSR_MIP, x0
 			ANDI  a4, a4, MIP_MSIP
-			nop
 			RVTEST_SIGUPD(x3,  a4)
 
 			// Generate Software Interrupt:
@@ -86,7 +85,6 @@ RVTEST_CODE_BEGIN
 			LI(a5,   0x1)
 			LI(x5,   RVMODEL_MSIP_BASE)
 			SREG a5, 0(x5)
-			nop
 
 			// Capture Interrupt Generation State:
 			// Read mstatus to check interrupt-related status bits
@@ -99,14 +97,12 @@ RVTEST_CODE_BEGIN
 			// Prepares for potential interrupt processing
 			LI(a5,    MIE_MSIP)
 			csrrs x0, CSR_MIE, a5
-			nop
 
 			// Verify Software Interrupt Pending:
 			// Confirm software interrupt bit is set in MIP register
 			// Validates interrupt pending mechanism
 			csrrs a4, CSR_MIP, x0
 			ANDI  a4, a4, MIP_MSIP
-			nop
 			RVTEST_SIGUPD(x3,  a4)
 	#endif
 	# ---------------------------------------------------------------------------------------------

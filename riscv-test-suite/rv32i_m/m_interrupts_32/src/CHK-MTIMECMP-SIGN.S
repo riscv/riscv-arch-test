@@ -79,7 +79,6 @@ RVTEST_CODE_BEGIN
 			// Verifies initial timer interrupt state is clear
 			csrr a4, mip
 			ANDI a4, a4, MIP_MTIP
-			nop
 			RVTEST_SIGUPD(x3,a4)
 
 			// Load base addresses and predefined test values for timer comparison
@@ -93,38 +92,29 @@ RVTEST_CODE_BEGIN
 			// Configure mtimecmp with Most Significant Bit (MSB) set to 1
 			// Demonstrates signed timer register comparison behavior
 			SREG zero, 0(a5)
-			nop
 			SREG t5,   4(a5)		// mtimecmp = 0x8000000000000000 (set MSB to 1)
-			nop
 			SREG t6,   0(a6)
-			nop
 			SREG zero, 4(a6)		// mtime = 0x200 --> (mtime < mtimecmp)
-			nop
 
 			// Verify MIP State After First Test:
 			// Capture MIP register to confirm interrupt state
 			// Expects no timer interrupt triggered
 			csrr a4, mip
 			ANDI a4, a4, MIP_MTIP  		// Masking MTIP
-			nop
 			RVTEST_SIGUPD(x3,a4)
 
 			// Test Case 2: Trigger Timer Interrupt
 			// Modify mtime to exceed mtimecmp
 			// Validates timer interrupt generation mechanism
 			ADDI t5, t5, 1
-			nop
 			SREG zero, 0(a6)
-			nop
 			SREG t5, 4(a6)		// mtime = 0x8000000100000000 --> (mtime > mtimecmp)
-			nop
 
 			// Verify MIP State After Second Test:
 			// Capture MIP register to confirm timer interrupt pending
 			// Expects timer interrupt to be set
 			csrr a4, mip
 			ANDI a4, a4, MIP_MTIP  		// Masking MTIP
-			nop
 			RVTEST_SIGUPD(x3,a4)
 	#endif
 	# ---------------------------------------------------------------------------------------------

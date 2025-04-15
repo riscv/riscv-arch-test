@@ -70,8 +70,7 @@ RVTEST_CODE_BEGIN
 			// TEST CASE 1: Verify mtime 64-bit precision
 			// Check behavior when lower 32-bits are max and upper 32-bits are zero
 			LI(t1, TIMER_TEST_VALUE_1)
-			SREG t1,   0(a2)
-			nop			// Lower half of mtime = max (0xFFFFFFFF)
+			SREG t1,   0(a2)			// Lower half of mtime = max (0xFFFFFFFF)
 
 			// Read and store mip value
 			csrrs a4, CSR_MIP, x0
@@ -81,7 +80,6 @@ RVTEST_CODE_BEGIN
 			// Check behavior when upper 32-bits are max and lower 32-bits are zero
 			LI(t1, TIMER_TEST_VALUE_2)
 			SREG zero, 0(a2)			// Upper half of mtime = max (0xFFFFFFFF)
-			nop
 
 			// Read and store mip value
 			csrrs a4, CSR_MIP, x0
@@ -91,7 +89,6 @@ RVTEST_CODE_BEGIN
 			// Check behavior when lower 32-bits are max and upper 32-bits are zero
 			LI(t1, TIMER_TEST_VALUE_1)
 			SREG t1,   0(a1)			// Lower half of mtimecmp = max (0xFFFFFFFF)
-			nop
 
 			// Read and store mip value
 			csrrs a4, CSR_MIP, x0
@@ -101,7 +98,6 @@ RVTEST_CODE_BEGIN
 			// Check behavior when upper 32-bits are max and lower 32-bits are zero
 			LI(t1, TIMER_TEST_VALUE_2)
 			SREG zero, 0(a1)			// Upper half of mtimecmp = max (0xFFFFFFFF)
-			nop
 
 			// Read and store mip value
 			RVTEST_SIGUPD(x3, a4)

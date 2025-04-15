@@ -104,7 +104,6 @@ RVTEST_CODE_BEGIN
 			LI(a3,   0x1)
 			LI(t0,   RVMODEL_MSIP_BASE)
 			SREG a3, 0(t0)
-			nop
 
 			// Initial MIP State Capture:
 			// Read Machine Interrupt Pending (MIP) register before interrupt handling

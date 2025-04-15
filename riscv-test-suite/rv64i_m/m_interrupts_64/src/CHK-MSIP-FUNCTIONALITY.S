@@ -78,7 +78,6 @@ RVTEST_CODE_BEGIN
 			LI(a5,   0x1)
 			LI(x5,   RVMODEL_MSIP_BASE)
 			SREG a5, 0(x5)
-			nop
 
 			// Verify Software Interrupt Pending:
 			// Read MIP register to confirm software interrupt bit is set
@@ -89,7 +88,6 @@ RVTEST_CODE_BEGIN
 			// Reset MSIP control register
 			// Validate interrupt clearing mechanism
 			SREG zero, 0(x5)
-			nop
 
 			// Confirm Interrupt Cleared:
 			// Verify software interrupt bit returns to zero

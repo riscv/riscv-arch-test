@@ -54,7 +54,7 @@ RVTEST_CODE_BEGIN
 		.align	2
 		.option norvc
 
-		main:			
+		main:
 			// Disable Global Interrupts:
 			// Prevent any maskable interrupts during test execution
 			// Ensures controlled test environment

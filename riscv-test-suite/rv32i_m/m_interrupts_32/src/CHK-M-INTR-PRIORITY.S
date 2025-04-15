@@ -68,7 +68,7 @@ RVTEST_CODE_BEGIN
 		.option norvc
 
 		#define MTIMECMP_TEST_VALUE         0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
-		
+
 		main:
 			// Clear Machine Interrupt Delegations:
 			// Disable delegation of both software and timer interrupts

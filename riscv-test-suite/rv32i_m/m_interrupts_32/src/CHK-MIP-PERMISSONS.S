@@ -60,7 +60,7 @@ RVTEST_CODE_BEGIN
 		.align	2
 		.option norvc
 
-		main:		
+		main:
 			// Disable Global Interrupts:
 			// Prevents any maskable interrupts from being recognized during the test
 			LI(a5,    MSTATUS_MIE)

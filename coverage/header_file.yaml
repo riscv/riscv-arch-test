@@ -958,7 +958,7 @@ SV32_MACROS:
  read: "RWX"
  writ: "rx"
  va_data_sv32: (0x91400000)
- 
+
 PMM_MACROS:
  PMM_MASK: 0x300000000
  PMM_MASK_SV57: 0x200000000

@@ -61,7 +61,6 @@ RVTEST_CODE_BEGIN
 		#define MTIMECMP_TEST_VALUE         0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
 
 		main:
-			
 			// Enable Global Interrupts:
 			// Set Machine Status Register (mstatus) MIE bit
 			// Allows maskable interrupts to be recognized

@@ -61,7 +61,7 @@ RVTEST_CODE_BEGIN
 		.option norvc
 
 		#define TIMER_TEST_VALUE_HIGH		0x80000000	// Random test value for the memory-mapped machine timer-compare register.
-		#define TIMER_TEST_VALUE_LOW      	0x200		// Random test value low 
+		#define TIMER_TEST_VALUE_LOW      	0x200		// Random test value low
 
 		main:
 			// Disable Global Interrupts:

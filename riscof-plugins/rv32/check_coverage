@@ -2,15 +2,15 @@
 set -e
 
 # Create parent folder once
-# mkdir -p all_riscof_works
+ mkdir -p all_riscof_works
 
 # Run coverage for I extension
-# riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
-#  --cgf-file ../../coverage/i/rv32i.cgf \
-#  --suite ../../riscv-test-suite/rv32i_m/I \
-#  --env ../../riscv-test-suite/env \
-#  -h ../../coverage/header_file.yaml
-[ -d riscof_work ] && echo "riscof_work exists ✅" || echo "riscof_work missing ❌"
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/i/rv32i.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/I \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+ -d riscof_work ] && echo "riscof_work exists ✅" || echo "riscof_work missing ❌"
 echo "📊 Extracting RISCOF Coverage Summary..."
 w3m -dump riscof_work/coverage.html > coverage.txt
 

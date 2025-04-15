@@ -114,7 +114,7 @@ RVTEST_CODE_BEGIN
 			// Enable Local Interrupts:
 			// Locally enable both software and timer interrupts
 			// Prepares processor to handle pending interrupts
-			LI(a1,    MIE_MSIP + MIE_MTIP)
+			LI(a1,    MIE_MSIE + MIE_MTIE)
 			csrrs x0, CSR_MIE, a1
 			nop
 

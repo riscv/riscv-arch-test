@@ -89,7 +89,7 @@ RVTEST_CODE_BEGIN
 			// Enable Local Software Interrupt:
 			// Locally enable software interrupt handling
 			// Prepares for potential interrupt processing
-			LI(a5,    MIE_MSIP)
+			LI(a5,    MIE_MSIE)
 			csrrs x0, CSR_MIE, a5
 			nop
 

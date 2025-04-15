@@ -88,7 +88,7 @@ RVTEST_CODE_BEGIN
 
 			// Test Case 01: Disable MTIE with mtime < mtimecmp
 			// Verify interrupt behavior when MTIE is disabled and no timer interrupt is pending
-			LI(t0,    MIE_MTIP)
+			LI(t0,    MIE_MTIE)
 			csrrc x0, CSR_MIE, t0
 			csrrs a4, CSR_MIP, x0
 			RVTEST_SIGUPD(x3,  a4)

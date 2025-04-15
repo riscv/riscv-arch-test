@@ -74,7 +74,7 @@ RVTEST_CODE_BEGIN
 
 			// Test Case 01: Disable MSIE with Clear MIP
 			// Verify interrupt behavior when MSIE is disabled and no pending interrupt exists
-			LI(t0,    MIE_MSIP)
+			LI(t0,    MIE_MSIE)
 			csrrc x0, CSR_MIE, t0
 			csrrs a4, CSR_MIP, x0
 			RVTEST_SIGUPD(x3,  a4)

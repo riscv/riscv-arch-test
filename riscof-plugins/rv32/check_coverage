@@ -1,0 +1,68 @@
+#!/bin/bash
+set -e
+
+# Create parent folder once
+mkdir -p all_riscof_works
+
+# Run coverage for I extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/i/rv32i.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/I \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+echo "Moving riscof_work to all_riscof_works/riscof_work_I"
+[ -d riscof_work ] && echo "riscof_work exists ✅" || echo "riscof_work missing ❌"
+mv riscof_work all_riscof_works/riscof_work_I
+echo "📊 Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Print the heading for clarity
+echo -e "\n        Coverage Label            (Covered)/(Total)    Percentage"
+
+# Extract lines with coverage stats for each instruction (e.g., div, mul)
+grep -E '^[[:space:]]*(lui|auipc|jal|jalr|beq|bne|blt|bge|bltu|bgeu|lb|lh|lw|lbu|lhu|sb|sh|sw|addi|slti|sltiu|xori|ori|andi|slli|srli|srai|add|sub|sll|slt|sltu|xor|srl|sra|or|and)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+
+
+# Run coverage for M extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/m/rv32im.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/M \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+echo "Moving riscof_work to all_riscof_works/riscof_work_M"
+[ -d riscof_work ] && echo "riscof_work exists ✅" || echo "riscof_work missing ❌"
+mv riscof_work all_riscof_works/riscof_work_M
+echo "📊 Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Print the heading for clarity
+echo -e "\n        Coverage Label            (Covered)/(Total)    Percentage"
+
+# Extract lines with coverage stats for each instruction
+grep -E '^[[:space:]]*(div|divu|mul|mulh|mulhsu|mulhu|rem|remu)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+
+# Run coverage for C extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/c/rv32ic.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/C \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+echo "Moving riscof_work to all_riscof_works/riscof_work_C"
+[ -d riscof_work ] && echo "riscof_work exists ✅" || echo "riscof_work missing ❌"
+mv riscof_work all_riscof_works/riscof_work_C
+echo "📊 Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Print the heading for clarity
+echo -e "\n        Coverage Label            (Covered)/(Total)    Percentage"
+
+# Extract lines with coverage stats for each instruction
+grep -E '^[[:space:]]*(c.addi4spn|c.lw|c.sw|c.nop|c.addi|c.jal|c.li|c.addi16sp|c.lui|c.srli|c.srai|c.andi|c.sub|c.xor|c.or|c.and|c.j|c.beqz|c.bnez|c.slli|c.mv|c.add|c.ebreak|c.jr|c.jalr|c.swsp|c.lwsp)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+
+

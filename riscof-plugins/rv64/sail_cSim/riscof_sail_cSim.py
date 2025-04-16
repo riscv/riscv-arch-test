@@ -140,7 +140,7 @@ class sail_cSim(pluginTemplate):
             with open(sail_config_path, 'w', encoding='utf-8') as file:
                 json.dump(config, file, indent=4)
 
-            execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=4  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
+            execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 
             cov_str = ' '
             for label in testentry['coverage_labels']:

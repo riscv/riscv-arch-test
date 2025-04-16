@@ -147,42 +147,121 @@ jobs:
       - name: Config and run riscof for RV${{ matrix.xlen }}
         run: |
           cd riscof-plugins/rv${{ matrix.xlen }}
-          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m --env ../../riscv-test-suite/env
+          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m --env ../../riscv-test-suite/env --no-browser
 
-      #Check the existance of the riscof work folder, and add the PATH to environment variable
-      - name: Check size and determine upload path
+      - name: Config and check coverage riscof for RV${{ matrix.xlen }}
+        run: |
+          cd riscof-plugins/rv${{ matrix.xlen }}
+          mkdir -p complete_coverage
+          combined_file="combined_coverage.md"
+          first_file=1
+
+          declare -A EXT_CGF_MAP=(
+            ["I"]="i/rv${{ matrix.xlen }}i.cgf"
+            ["M"]="m/rv${{ matrix.xlen }}im.cgf"
+          )
+
+          for EXT in "${!EXT_CGF_MAP[@]}"; do
+            echo "Running coverage for extension: $EXT"
+            riscof coverage --config=config.ini \
+              --cgf-file ../../coverage/dataset.cgf \
+              --cgf-file ../../coverage/${EXT_CGF_MAP[$EXT]} \
+              --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m/$EXT \
+              --env ../../riscv-test-suite/env \
+              -h ../../coverage/header_file.yaml --no-browser
+
+            [ -d riscof_work ] && echo "riscof_work for rv${{ matrix.xlen }}i_m/$EXT exists" || echo "riscof_work for ${{ matrix.xlen }}i_m/$EXT missing"
+
+            # Copy the entire folder to complete_coverage with a unique name based on the extension
+            cp -r riscof_work complete_coverage/riscof_work_${EXT}
+
+            if [ "$first_file" -eq 1 ]; then
+              cat riscof_work/coverage.md > $combined_file
+              first_file=0
+            else
+              tail -n +3 riscof_work/coverage.md >> $combined_file
+            fi
+          done
+
+          echo -e "\n\nCombined Coverage Table:\n"
+          tail -n +2 $combined_file | column -t -s '|' | sed 's/^/|/' | sed 's/$/|/'
+
+      - name: Upload complete coverage folder for rv${{ matrix.xlen }}
         if: always()
-        id: check_size
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-coverage-rv${{ matrix.xlen }}
+          path: ${{ github.workspace }}/riscof-plugins/rv${{ matrix.xlen }}/complete_coverage
+          compression-level: 6
+          overwrite: true
+
+      #Check the existance of the run riscof work folder, and add the PATH to environment variable
+      - name: Check size and determine riscof run command upload path
+        if: always()
+        id: check_size_run
         run: |
           work_folder="${{ github.workspace }}/riscof-plugins/rv${{ matrix.xlen }}/riscof_work/"
-          report_file="$work_folder/report.html"
+          run_report_file="$work_folder/report.html"
+
           if [ -d "$work_folder" ]; then
             folder_size=$(du -sm "$work_folder" | cut -f1)
             echo "Folder size: ${folder_size} MB"
-            if [ "$folder_size" -gt 100000 ]; then
+            if [ "$folder_size" -gt 10000 ]; then
               echo "Size exceeds 10 GB. Checking if report exists."
-              if [ -f "$report_file" ]; then
+              if [ -f "$run_report_file" ]; then
                 echo "Uploading RISCOF generated report only."
-                echo "upload_path=$report_file" >> $GITHUB_ENV
+                echo "run_upload_path=$run_report_file" >> $GITHUB_ENV
               else
                 echo "No report found. Skipping upload."
-                echo "upload_path=" >> $GITHUB_ENV
+                echo "run_upload_path=" >> $GITHUB_ENV
               fi
             else
               echo "Size is within limit. Uploading complete RISCOF_WORK Folder."
-              echo "upload_path=$work_folder" >> $GITHUB_ENV
+              echo "run_upload_path=$work_folder" >> $GITHUB_ENV
             fi
           else
             echo "Folder does not exist. Skipping upload."
-            echo "upload_path=" >> $GITHUB_ENV
+            echo "run_upload_path=" >> $GITHUB_ENV
           fi
 
-      # Upload the appropriate artifact (folder or report) and skip in case not exists
+      #Check the existance of the coverage riscof work folder, and add the PATH to environment variable
+      - name: Check size and determine riscof coverage upload path
+        if: always()
+        id: check_size_coverage
+        run: |
+          coverage_folder="${{ github.workspace }}/riscof-plugins/rv${{ matrix.xlen }}/complete_coverage"
+
+          if [ -d "$coverage_folder" ]; then
+          coverage_size=$(du -sm "$coverage_folder" | cut -f1)
+          echo "Complete coverage folder size: ${coverage_size} MB"
+          if [ "$coverage_size" -gt 10000 ]; then
+            echo "Coverage folder too large, skipping upload."
+            echo "coverage_upload_path=" >> $GITHUB_ENV
+          else
+            echo "Coverage folder is within limit. Will upload."
+            echo "coverage_upload_path=$coverage_folder" >> $GITHUB_ENV
+          fi
+          else
+            echo "Complete coverage folder does not exist. Skipping upload."
+            echo "coverage_upload_path=" >> $GITHUB_ENV
+          fi
+
+      # Upload riscof work/report artifact
       - name: Upload riscof artifact for rv${{ matrix.xlen }}
-        if: always() && env.upload_path != ''
+        if: always() && env.run_upload_path != ''
         uses: actions/upload-artifact@v4
         with:
           name: riscof-artifact-rv${{ matrix.xlen }}
-          path: ${{ env.upload_path }}
+          path: ${{ env.run_upload_path }}
+          compression-level: 6
+          overwrite: true
+
+      # Upload complete_coverage folder if present
+      - name: Upload complete coverage artifact for rv${{ matrix.xlen }}
+        if: always() && env.coverage_upload_path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-coverage-rv${{ matrix.xlen }}
+          path: ${{ env.coverage_upload_path }}
           compression-level: 6
           overwrite: true

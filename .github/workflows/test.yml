@@ -147,7 +147,7 @@ jobs:
       - name: Config and run riscof for RV${{ matrix.xlen }}
         run: |
           cd riscof-plugins/rv${{ matrix.xlen }}
-          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m --env ../../riscv-test-suite/env --no-browser
+          riscof run --config config.ini --suite ../../riscv-test-suite/rv${{ matrix.xlen }}i_m/I --env ../../riscv-test-suite/env --no-browser
 
       - name: Config and check coverage riscof for RV${{ matrix.xlen }}
         run: |

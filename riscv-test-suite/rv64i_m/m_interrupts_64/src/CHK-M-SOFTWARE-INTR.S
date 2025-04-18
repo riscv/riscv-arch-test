@@ -29,10 +29,6 @@
 // - Consistent machine state preservation during interrupt handling
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE
-#define RVMODEL_MSIP_BASE			0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
-
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")

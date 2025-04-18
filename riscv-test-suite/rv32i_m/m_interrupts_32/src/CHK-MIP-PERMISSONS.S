@@ -28,18 +28,6 @@
 // - System maintains control over interrupt pending state
 // ---------------------------------------------------------------------------------------------
 
-#ifndef RVMODEL_MSIP_BASE
-#define RVMODEL_MSIP_BASE			0x02000000	// Base address for the memory-mapped MSIP control register.
-#endif
-
-#ifndef RVMODEL_MTIME_BASE
-#define RVMODEL_MTIME_BASE			0x0200bff8 	// Base address for the memory-mapped machine timer register.
-#endif
-
-#ifndef RVMODEL_MTIMECMP_BASE
-#define RVMODEL_MTIMECMP_BASE		0x02004000  // Base address for the memory-mapped machine timer-compare register.
-#endif
-
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")

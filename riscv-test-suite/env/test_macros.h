@@ -260,20 +260,36 @@ Mend_PMP:                                    ;\
     LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
     PTE_SETUP_SV39(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV39 macro */             ;\
 
-#define PTE_SETUP_SV48(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
-    .if (level==3)                                                ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==2)                                                ;\
-        LA(_TR1, rvtest_slvl3_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==1)                                                ;\
-        LA(_TR1, rvtest_slvl2_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==0)                                                ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
-    .endif                                                        ;\
-    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+#define PTE_SETUP_SV48(_PAR, _PR, _TR0, _TR1, VA, level)                                    ;\
+    srli _PAR, _PAR, 12                 /* Shift PA right by 12 to get PPN */               ;\
+    slli _PAR, _PAR, 10                 /* Shift left by 10 to align PPN in PTE format */   ;\
+    or _PAR, _PAR, _PR                  /* Combine PPN with permissions */                  ;\
+    .if (level==3)                      /* Level 3 (512GB superpage) */                     ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>39)&0x1FF)<<3)   /* Calculate index for LEVEL3 (bits 47:39) */       ;\
+    .endif                                                                                  ;\
+    .if (level==2)                      /* Level 2 (1GB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl3_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>30)&0x1FF)<<3)   /* Calculate index for LEVEL2 (bits 38:30) */       ;\
+    .endif                                                                                  ;\
+    .if (level==1)                      /* Level 1 (2MB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl2_pg_tbl)   /* Load level 2 page table address */               ;\
+        LI(_TR0, ((VA>>21)&0x1FF)<<3)   /* Calculate index for LEVEL1 (bits 29:21) */       ;\
+    .endif                                                                                  ;\
+    .if (level==0)                      /* Level 0 (4KB page) */                            ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)   /* Load level 1 page table address */               ;\
+        LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
+    .endif                                                                                  ;\
+    add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
+    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+
+// More Robust version of PTE_SETUP_SV48 to setup a PTE for a PA using VA in a single line.
+// args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
+// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2 or 3)
+#define PTE_SETUP_SV48_New(PA_LBL, PERMS, VA, level)                                        ;\
+    LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
+    LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
+    PTE_SETUP_SV48(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV48 macro */             ;\
 
 #define PTE_SETUP_SV57(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
     .if (level==4)                                                ;\

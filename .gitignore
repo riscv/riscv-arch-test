@@ -15,3 +15,7 @@ riscv-isac/riscv-env
 
 __pycache__
 riscof_work
+all_riscof_works
+all_riscof_works/*
+coverage.txt
+

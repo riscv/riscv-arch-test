@@ -122,7 +122,7 @@ class cross():
         full_solution = []
         
         if 'cross_comb' in cgf_node:
-            cross_comb = set(cgf_node['cross_comb'])
+            cross_comb = OrderedSet(cgf_node['cross_comb'])
         else:
             return
         
@@ -210,7 +210,7 @@ class cross():
                         opr_lst += get_oprs(assgn)
 
                         # Remove redundant operands
-                        opr_lst = list(set(opr_lst))
+                        opr_lst = list(OrderedSet(opr_lst))
 
                         # Get possible instructions
                         problem.reset()
@@ -293,7 +293,7 @@ class cross():
                     opr_lst = get_oprs(cond)
                     opr_lst += get_oprs(assgn)
 
-                    opr_lst = list(set(opr_lst))                  
+                    opr_lst = list(OrderedSet(opr_lst))                  
 
                     if data[i] in self.OP_TEMPLATE:                                    # If single instruction
                         instr = data[i]
@@ -363,7 +363,7 @@ class cross():
 
             full_solution += [solution]
         
-        self.isa = list(set(isa_set))
+        self.isa = list(OrderedSet(isa_set))
         return full_solution
 
     def swreg(cross_comb_instrs):
@@ -381,10 +381,10 @@ class cross():
                 if key != 'instr' and key != 'imm_val':
                     op_vals.add(val)
 
-        swreg_sol = set(['x'+str(x) for x in range(0,32 if 'e' not in base_isa else 16)]) - op_vals
+        swreg_sol = OrderedSet(['x'+str(x) for x in range(0,32 if 'e' not in base_isa else 16)]) - op_vals
 
         sreg = random.choice(list(swreg_sol))
-        freg_Sol = swreg_sol - set(sreg)
+        freg_Sol = swreg_sol - OrderedSet(sreg)
         freg = random.choice(list(freg_Sol))
         return (sreg, freg)
 
@@ -401,7 +401,7 @@ class cross():
             - List of initialization strings
         '''
         
-        reg_init_lst = set()
+        reg_init_lst = OrderedSet()
 
         for instr_dict in cross_comb_instrs:
             if 'rd' in instr_dict:
@@ -455,7 +455,7 @@ class cross():
             sig_label = "signature_" + sreg + "_" + str(sreg_dict[sreg])
             code = code + "\nRVTEST_SIGBASE(" + sreg + ", "+ sig_label + ")\n\n"
 
-            rd_lst = set()
+            rd_lst = OrderedSet()
             # Generate instruction corresponding to each instruction dictionary
             # Append signature update statements to store rd value after each instruction
             code += '// Cross-combination test sequence\n'

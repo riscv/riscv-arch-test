@@ -6,6 +6,7 @@ import shlex
 import logging
 import random
 import string
+import json
 from string import Template
 
 import riscof.utils as utils
@@ -106,21 +107,42 @@ class sail_cSim(pluginTemplate):
             isa_yaml = utils.load_yaml(self.isa_yaml_path)
             # Verify the availability of PMP:
             if "PMP" in isa_yaml['hart0']:
+                pmp_flags = {}
                 if isa_yaml['hart0']["PMP"]["implemented"] == True:
                     if "pmp-grain" in isa_yaml['hart0']["PMP"]:
-                        pmp_flags = " --pmp-grain=" + str(isa_yaml['hart0']["PMP"]["pmp-grain"])
+                        pmp_flags["pmp-grain"] = isa_yaml['hart0']["PMP"]["pmp-grain"]
                     else:
                         logger.error("PMP grain not defined")
                         pmp_flags = ""
                     if "pmp-count" in isa_yaml['hart0']["PMP"]:
-                        pmp_flags = pmp_flags + " --pmp-count=" + str(isa_yaml['hart0']["PMP"]["pmp-count"])
+                        pmp_flags["pmp-count"] = isa_yaml['hart0']["PMP"]["pmp-count"]
                     else:
                         logger.error("PMP count not defined")
                         pmp_flags = ""
             else:
                 pmp_flags = ""
 
-            execute += self.sail_exe[self.xlen] + '  -i -v --trace=step {0} --ram-size=8796093022208 --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(pmp_flags, sig_file, elf, test_name)
+            sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')
+
+            # Read the JSON configuration from the file
+            with open(sail_config_path, 'r', encoding='utf-8') as file:
+                config = json.load(file)
+
+            # Update the values for pmp
+            config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
+            config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
+
+            # Update the values for the ramsize.
+            config["platform"]["ram"]["base"] = 2147483648
+            config["platform"]["ram"]["size"] = 2147483648
+            # config["platform"]["ram"]["size"] = 8796093022208
+            # execute += self.sail_exe[self.xlen] + '  -i -v --trace=step {0} --ram-size=8796093022208 --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(pmp_flags, sig_file, elf, test_name)
+
+            # Write the updated configuration back to the file
+            with open(sail_config_path, 'w', encoding='utf-8') as file:
+                json.dump(config, file, indent=4)
+
+            execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 
             cov_str = ' '
             for label in testentry['coverage_labels']:

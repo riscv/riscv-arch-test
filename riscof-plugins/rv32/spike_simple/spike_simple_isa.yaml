@@ -26,3 +26,9 @@ hart0:
                 - extensions[25:0] bitmask [0x40141105, 0x0000000]
               wr_illegal:
                 - Unchanged
+ 
+  PMP:
+    implemented: True
+    pmp-grain: 0
+    pmp-count: 16
+    pmp-writable: 12

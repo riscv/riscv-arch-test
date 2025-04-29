@@ -148,7 +148,7 @@ main:
 
 	// Virtual Addresses for code & data regions
 	.set va_rvtest_code_begin,  0x0300800007DC
-	.set va_rvtest_data_begin,  0x038000000530	
+	.set va_rvtest_data_begin,  0x038080003530	
     
 	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000
 	// Therefore, we will setup TeraPage using this imm value
@@ -160,7 +160,7 @@ main:
 	sfence.vma
 
 //	PTE setup for Data Region
-	PTE_SETUP_SV48_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL3)
+	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL3)
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -298,6 +298,7 @@ main:
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL1
 
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
@@ -357,7 +358,6 @@ rvtest_slvl2_pg_tbl:
 .align 12
 rvtest_slvl3_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
-		
 #endif
 
 RVTEST_DATA_END                               

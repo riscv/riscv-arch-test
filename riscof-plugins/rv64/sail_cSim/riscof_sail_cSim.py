@@ -6,6 +6,7 @@ import shlex
 import logging
 import random
 import string
+import json
 from string import Template
 
 import riscof.utils as utils
@@ -51,6 +52,7 @@ class sail_cSim(pluginTemplate):
     def build(self, isa_yaml, platform_yaml):
         ispec = utils.load_yaml(isa_yaml)['hart0']
         self.xlen = ('64' if 64 in ispec['supported_xlen'] else '32')
+        self.isa_yaml_path = isa_yaml
         self.isa = 'rv' + self.xlen
         self.compile_cmd = self.compile_cmd+' -mabi='+('lp64 ' if 64 in ispec['supported_xlen'] else 'ilp32 ')
         if "I" in ispec["ISA"]:
@@ -102,7 +104,45 @@ class sail_cSim(pluginTemplate):
             execute += self.objdump_cmd.format(elf, self.xlen, 'ref.disass')
             sig_file = os.path.join(test_dir, self.name[:-1] + ".signature")
 
-            execute += self.sail_exe[self.xlen] + '  -i -v --trace=step --pmp-count=16 --pmp-grain=0 --ram-size=8796093022208 --signature-granularity=8  --test-signature={0} {1} > {2}.log 2>&1;'.format(sig_file, elf, test_name)
+            isa_yaml = utils.load_yaml(self.isa_yaml_path)
+            # Verify the availability of PMP:
+            if "PMP" in isa_yaml['hart0']:
+                pmp_flags = {}
+                if isa_yaml['hart0']["PMP"]["implemented"] == True:
+                    if "pmp-grain" in isa_yaml['hart0']["PMP"]:
+                        pmp_flags["pmp-grain"] = isa_yaml['hart0']["PMP"]["pmp-grain"]
+                    else:
+                        logger.error("PMP grain not defined")
+                        pmp_flags = ""
+                    if "pmp-count" in isa_yaml['hart0']["PMP"]:
+                        pmp_flags["pmp-count"] = isa_yaml['hart0']["PMP"]["pmp-count"]
+                    else:
+                        logger.error("PMP count not defined")
+                        pmp_flags = ""
+            else:
+                pmp_flags = ""
+
+            sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')
+
+            # Read the JSON configuration from the file
+            with open(sail_config_path, 'r', encoding='utf-8') as file:
+                config = json.load(file)
+
+            # Update the values for pmp
+            config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
+            config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
+
+            # Update the values for the ramsize.
+            config["platform"]["ram"]["base"] = 2147483648
+            config["platform"]["ram"]["size"] = 2147483648
+            # config["platform"]["ram"]["size"] = 8796093022208
+            # execute += self.sail_exe[self.xlen] + '  -i -v --trace=step {0} --ram-size=8796093022208 --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(pmp_flags, sig_file, elf, test_name)
+
+            # Write the updated configuration back to the file
+            with open(sail_config_path, 'w', encoding='utf-8') as file:
+                json.dump(config, file, indent=4)
+
+            execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 
             cov_str = ' '
             for label in testentry['coverage_labels']:
@@ -120,7 +160,6 @@ class sail_cSim(pluginTemplate):
                 coverage_cmd = 'riscv_isac --verbose info coverage -d \
                         -t {0}.log --parser-name c_sail -o coverage.rpt  \
                         --sig-label begin_signature  end_signature \
-                        --test-label rvtest_code_begin rvtest_code_end \
                         -e ref.elf -c {1} -x{2} {3} {4} {5};'.format(\
                         test_name, ' -c '.join(cgf_file), self.xlen, cov_str, header_file_flag, cgf_mac)
             else:

@@ -95,6 +95,20 @@ $ pip3 install --upgrade pip
 ```
 You should now have two binaries: `python3` and `pip3` available in your `$PATH`.
 
+### Install riscv-ctg & riscv-isac
+To install riscv-ctg, run this command in your terminal:
+
+```
+$ git clone https://github.com/riscv-non-isa/riscv-arch-test.git
+$ cd riscv-ctg
+$ pip3 install --editable .
+$ cd ..
+$ cd riscv-isac
+$ pip3 install --editable .
+```
+
+This is the preferred method to install riscv-isac and riscv-ctg, as updated riscv-ctg will always be maintained here.
+
 ### Install RISCOF
 To install RISCOF, run this command in your terminal:
 
@@ -103,22 +117,7 @@ $ pip3 install git+https://github.com/riscv/riscof.git
 ```
 This is the preferred method to install RISCOF, as it will always install the most recent stable release.
 
-### Install riscv-ctg
-To install riscv-ctg, run this command in your terminal:
-
-```
-$ cd riscv-ctg
-$ pip3 install --editable .
-```
-
-### Install riscv-isac
-To install riscv-isac, run this command in your terminal:
-
-```
-$ cd riscv-isac
-$ pip3 install --editable .
-```
-This is the preferred method to install riscv-isac and riscv-ctg, as updated riscv-ctg will always be maintained here.
+To run RISCOF, you need to install two components: riscv-ctg and riscv-isac.
 
 
 ### Test RISCOF
@@ -241,7 +240,9 @@ To run tests via RISCOF, you will need to provide the following items:
 $ git clone https://github.com/riscv/riscv-config.git
 ```
 
+
 ## Running the Tests
+
 Once everything is set up, you can run the tests using the following command:
 
 ```

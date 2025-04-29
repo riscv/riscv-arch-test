@@ -717,10 +717,10 @@ class instructionObject():
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(sgnd_bin_val[0:iflen],2)
                 else:
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(0x0)
-             else:
+            else:
                 bin_val =bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:]
-             f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
-             bin_val = bin_val[flen-iflen:]
+                f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
+                bin_val = bin_val[flen-iflen:]
        
 
         f_ext_vars['fs'+postfix] = int(bin_val[0], 2)

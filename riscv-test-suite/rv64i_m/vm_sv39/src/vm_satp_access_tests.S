@@ -224,10 +224,12 @@ RVTEST_DATA_BEGIN
 
 #ifdef rvtest_strap_routine
 .align 12
-rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2 ,PTE_V | PTE_A | PTE_D | PTE_G)
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1 ,PTE_V | PTE_A | PTE_D | PTE_G)
+		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+.align 12
+rvtest_slvl2_pg_tbl:
+		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+		
 #endif
 
 RVTEST_DATA_END                               

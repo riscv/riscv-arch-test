@@ -218,7 +218,7 @@ main:
 	
 	// Test case 2: X bit set and MXR bit set | Test in U-Mode | X bit set | expected = store page fault
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
 	li s7, MSTATUS_MXR
@@ -249,7 +249,7 @@ main:
 	// Test case 2: X bit set and MXR bit set | Test in U-Mode | X bit set | expected = store page fault
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X| PTE_W| PTE_R| PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
 	sfence.vma
     
     li s7, MSTATUS_MXR

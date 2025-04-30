@@ -12,7 +12,7 @@
 //		Then, in S-Mode, the page is accessed --> required: No Fault
 // 2. Level 1 page set up with RWX Permissions (Read, write, execute):
 //		Then, in S-Mode, the page is accessed --> required: No Fault
-// 3. Level 0 page set upwith RWX Permissions (Read, write, execute):
+// 3. Level 0 page set up with RWX Permissions (Read, write, execute):
 //		Then, in S-Mode, the page is accessed --> required: No Fault
 
 // Total Expected Faults :: 0
@@ -221,7 +221,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access 

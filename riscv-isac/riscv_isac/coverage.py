@@ -974,8 +974,8 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             # if instr_vars["mode_change"] is not None:  #change the state only on the instruction
             csr_regfile["mcause"] = instr_vars["mcause"]
             csr_regfile["scause"] = instr_vars["scause"]
-            csr_regfile["mtval"] = instr_vars["mtval"]
-            csr_regfile["stval"] = instr_vars["stval"]
+            csr_regfile["mtval"]  = instr_vars["mtval"]
+            csr_regfile["stval"]  = instr_vars["stval"]
 
             if 'rs1' in instr_vars:
                 rs1 = instr_vars['rs1']

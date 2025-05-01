@@ -5,14 +5,12 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-//  1. Bit 61 Set (which sets PBMT = 1, but reserved for sv39), RWX permissions given (level 2):
-// 		Then, in S-Mode, the page is accessed --> required: RWX Fault
-//  2. Bit 62 Set (which sets PBMT = 2, but reserved for sv39), RWX permissions given (level 2):
-// 		Then, in S-Mode, the page is accessed --> required: RWX Fault
-//  3. Bit 61 and 62 Set (which sets PBMT = 3, but reserved for sv39), RWX permissions given (level 2):
+//  1. Storing non-zero value in the reserved bit field [63:54] of PTE, RWX permissions given (level 2):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  2. Bit 63 Set (NAPOT indicator, but reserved as SVNAPOT is not supported), RWX permissions given (level 2):
 // 		Then, in S-Mode, the page is accessed --> required: RWX Fault
 
-// Total Expected Faults :: 9
+// Total Expected Faults :: 6
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -99,12 +97,12 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+    nop
+	addi x13, x13, REGWIDTH
 
    	SREG a4, 0(x13)                     // Record load attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+    nop
+	addi x13, x13, REGWIDTH
 .endm
 
 
@@ -130,7 +128,7 @@ main:
 
 	// Virtual Addresses for code & data regions
 	.set va_rvtest_code_begin,  0x1800007dc                  
-	.set va_rvtest_data_begin,  0x1c0000530		     
+	.set va_rvtest_data_begin,  0x1c0000530				     
 
 
 //	PTE setup for Code Region
@@ -163,15 +161,18 @@ main:
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	SATP_SETUP_RV64(sv39)                                                   // set the SATP for virtualization
-	sfence.vma                                                             // flush the TLB
+	SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
+	sfence.vma                                                             // Flush the TLB
 
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
+//													TESTS AT LEVEL 2
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 1: Test in S-Mode | RWX bit set | PBMT = 1 
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	// Test case 1: Test in S-Mode | RWX bit set | Storing non-zero value in PTE[63:54]  
+	PTE_SETUP_RV39_New(rvtest_data_1, ((5 << 54) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2	
@@ -180,22 +181,11 @@ main:
 //					1GB PAGE	Region 2 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 2: Test in S-Mode | RWX bit set | PBMT = 2
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 62) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	// Test case 2: Test in S-Mode | RWX bit set | Bit 63 set (Svnapot) 
+	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 63) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2			
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 3 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 3: Test in S-Mode | RWX bit set | PBMT = 3
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 62) | (1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2			
-
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

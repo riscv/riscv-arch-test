@@ -7,6 +7,8 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. Perform Load & Store at virtual address 0xffffffffffffffff (last byte)
 // 2. Perform Execute at virtual address 0xfffffffffffffffc (last word)
+
+// Total Expected Faults :: 0
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -150,7 +152,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 0 -- RW permissions given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- RW permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | RW bit set | expected = successful page access 
@@ -162,7 +164,7 @@ main:
 	TEST_CASES_RUNNER_RW Smode, va_data_rw, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					2MB PAGE	Region 1 under test at level 0 -- X permission given to the region
+//					4KB PAGE	Region 1 under test at level 0 -- X permission given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 2: Test in S-Mode | X bit set | expected = successful page access 

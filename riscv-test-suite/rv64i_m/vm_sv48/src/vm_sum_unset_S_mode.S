@@ -5,51 +5,51 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. U bit is set and Sum bit in mstatus is set for the page at level 3 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 2. U bit is set and Sum bit in mstatus is set for the page at level 3 with X Permissions (Execute only page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 3. U bit is set and Sum bit in mstatus is set for the page at level 3 with R,X Permissions (Read, Execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
-// 4. U bit is set and Sum bit in mstatus is set for the page at level 3 with R,W Permissions (Read, Store page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 5. U bit is set and Sum bit in mstatus is set for the page at level 3 with R Permissions (execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
+// 1. U bit is set and Sum bit in mstatus is unset for the page at level 3 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 2. U bit is set and Sum bit in mstatus is unset for the page at level 3 with X Permissions (Execute only page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 3. U bit is set and Sum bit in mstatus is unset for the page at level 3 with R,X Permissions (Read, Execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 4. U bit is set and Sum bit in mstatus is unset for the page at level 3 with R,W Permissions (Read, Store page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 5. U bit is set and Sum bit in mstatus is unset for the page at level 3 with X Permissions (execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
 
-// 6. U bit is set and Sum bit in mstatus is set for the page at level 2 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 7. U bit is set and Sum bit in mstatus is set for the page at level 2 with X Permissions (Execute only page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 8. U bit is set and Sum bit in mstatus is set for the page at level 2 with R,X Permissions (Read, Execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
-// 9. U bit is set and Sum bit in mstatus is set for the page at level 2 with R,W Permissions (Read, Store page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 10. U bit is set and Sum bit in mstatus is set for the page at level 2 with R Permissions (execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
+// 6. U bit is set and Sum bit in mstatus is unset for the page at level 2 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 7. U bit is set and Sum bit in mstatus is unset for the page at level 2 with X Permissions (Execute only page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 8. U bit is set and Sum bit in mstatus is unset for the page at level 2 with R,X Permissions (Read, Execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 9. U bit is set and Sum bit in mstatus is unset for the page at level 2 with R,W Permissions (Read, Store page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 10. U bit is set and Sum bit in mstatus is unset for the page at level 2 with X Permissions (execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
 
-// 11. U bit is set and Sum bit in mstatus is set for the page at level 1 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 12. U bit is set and Sum bit in mstatus is set for the page at level 1 with X Permissions (Execute only page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 13. U bit is set and Sum bit in mstatus is set for the page at level 1 with R,X Permissions (Read, Execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
-// 14. U bit is set and Sum bit in mstatus is set for the page at level 1 with R,W Permissions (Read, Store page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 15. U bit is set and Sum bit in mstatus is set for the page at level 1 with R Permissions (execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
+// 11. U bit is set and Sum bit in mstatus is unset for the page at level 1 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 12. U bit is set and Sum bit in mstatus is unset for the page at level 1 with X Permissions (Execute only page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 13. U bit is set and Sum bit in mstatus is unset for the page at level 1 with R,X Permissions (Read, Execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 14. U bit is set and Sum bit in mstatus is unset for the page at level 1 with R,W Permissions (Read, Store page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 15. U bit is set and Sum bit in mstatus is unset for the page at level 1 with X Permissions (execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
 
-// 16. U bit is set and Sum bit in mstatus is set for the page at level 0 with RWX Permissions (Read, write, execute page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 17. U bit is set and Sum bit in mstatus is set for the page at level 0 with X Permissions (Execute only page):
-//		Then, in S-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
-// 18. U bit is set and Sum bit in mstatus is set for the page at level 0 with R,X Permissions (Read, Execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
-// 19. U bit is set and Sum bit in mstatus is set for the page at level 0 with R,W Permissions (Read, Store page):
-//		Then, in S-Mode, the page is accessed --> required: Fetch-page-fault
-// 20. U bit is set and Sum bit in mstatus is set for the page at level 0 with R Permissions (execute page):
-//		Then, in S-Mode, the page is accessed --> required: Store-page-fault, Fetch-page-fault
+// 16. U bit is set and Sum bit in mstatus is unset for the page at level 0 with RWX Permissions (Read, write, execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 17. U bit is set and Sum bit in mstatus is unset for the page at level 0 with X Permissions (Execute only page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 18. U bit is set and Sum bit in mstatus is unset for the page at level 0 with R,X Permissions (Read, Execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 19. U bit is set and Sum bit in mstatus is unset for the page at level 0 with R,W Permissions (Read, Store page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
+// 20. U bit is set and Sum bit in mstatus is unset for the page at level 0 with X Permissions (execute page):
+//		Then, in S-Mode, the page is accessed --> required: load-page-fault, store-page-fault, Fetch Page Fault
 
-// Total Expected Faults :: 36
+// Total Expected Faults :: 60
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -213,12 +213,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 1: U bit set | Test in S-Mode | RWX bit set | expected = fetch-page-fault
+	// Test case 1: U bit set | Test in S-Mode | RWX bit set | expected = RWX Fault 
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -228,41 +226,33 @@ main:
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					512GB PAGE	Region 3 under test at level 3 -- RX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 3: U bit set | Test in S-Mode | RX bit set | expected = store-page-fault, fetch-page-fault
+	// Test case 3: U bit set | Test in S-Mode | RX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_X | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					512GB PAGE	Region 4 under test at level 3 -- RW permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 4: U bit set | Test in S-Mode |  RW bit set | expected = fetch-page-fault
+	// Test case 4: U bit set | Test in S-Mode |  RW bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					512GB PAGE	Region 5 under test at level 3 -- R permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 5: U bit set | Test in S-Mode | R bit set | expected = fetch-page-fault, store-page-fault
+	// Test case 5: U bit set | Test in S-Mode | R bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 
@@ -272,13 +262,11 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 6: U bit set | Test in S-Mode | RWX bit set | expected = fetch-page-fault
+	// Test case 6: U bit set | Test in S-Mode | RWX bit set | expected = RWX Fault 
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -289,44 +277,36 @@ main:
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 3 under test at level 2 -- RX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 8: U bit set | Test in S-Mode | RX bit set | expected = store-page-fault, fetch-page-fault
+	// Test case 8: U bit set | Test in S-Mode | RX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_X | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 4 under test at level 2 -- RW permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 9: U bit set | Test in S-Mode |  RW bit set | expected = fetch-page-fault
+	// Test case 9: U bit set | Test in S-Mode |  RW bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 5 under test at level 2 -- R permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 10: U bit set | Test in S-Mode | R bit set | expected = fetch-page-fault, store-page-fault
+	// Test case 10: U bit set | Test in S-Mode | R bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 
@@ -336,14 +316,12 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 11: U bit set | Test in S-Mode | RWX bit set | expected = fetch-page-fault
+	// Test case 11: U bit set | Test in S-Mode | RWX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -355,47 +333,39 @@ main:
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 3 under test at level 1 -- RX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 13: U bit set | Test in S-Mode | RX bit set | expected = store-page-fault, fetch-page-fault
+	// Test case 13: U bit set | Test in S-Mode | RX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_X | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 4 under test at level 1 -- RW permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 14: U bit set | Test in S-Mode |  RW bit set | expected = fetch-page-fault
+	// Test case 14: U bit set | Test in S-Mode |  RW bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 5 under test at level 1 -- R permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 15: U bit set | Test in S-Mode | R bit set | expected = fetch-page-fault, store-page-fault
+	// Test case 15: U bit set | Test in S-Mode | R bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 
@@ -405,15 +375,13 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 16: U bit set | Test in S-Mode | RWX bit set | expected = fetch-page-fault
+	// Test case 16: U bit set | Test in S-Mode | RWX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -426,50 +394,42 @@ main:
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 3 under test at level 0 -- RX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 18: U bit set | Test in S-Mode | RX bit set | expected = store-page-fault, fetch-page-fault
+	// Test case 18: U bit set | Test in S-Mode | RX bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_X | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 4 under test at level 0 -- RW permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 19: U bit set | Test in S-Mode | RW bit set | expected = fetch-page-fault
+	// Test case 19: U bit set | Test in S-Mode | RW bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_W | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 5 under test at level 0 -- R permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 20: U bit set | Test in S-Mode | R bit set | expected = load-page-fault, store-page-fault
+	// Test case 20: U bit set | Test in S-Mode | R bit set | expected = RWX Fault
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
     PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
-	li s7, MSTATUS_SUM
-	csrs mstatus,s7							         						// set mstatus.SUM = 1
 	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 #endif

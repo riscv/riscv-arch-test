@@ -22,12 +22,13 @@ unsgn_rs1 = ['sw','sd','sh','sb','ld','lw','lwu','lh','lhu','lb', 'lbu','flw','f
         'sm4ed','sm4ks','ror','rol','rori','rorw','rolw','roriw','clmul','clmulh','clmulr',\
         'andn','orn','xnor','pack','packh','packu','packuw','packw',\
         'xperm.n','xperm.b','grevi','aes64ks1i', 'shfli', 'unshfli', \
+        'cbo.clean', 'cbo.flush', 'cbo.inval', 'cbo.zero', 'prefetch.i','prefetch.r','prefetch.w', \
         'aes32esmi', 'aes32esi', 'aes32dsmi', 'aes32dsi','bclr','bext','binv',\
         'bset','zext.h','sext.h','sext.b','zext.b','zext.w','minu','maxu','orc.b','add.uw','sh1add.uw',\
         'sh2add.uw','sh3add.uw','slli.uw','clz','clzw','ctz','ctzw','cpop','cpopw','rev8',\
-        'bclri','bexti','binvi','bseti','xperm4','xperm8','zip','unzip','gorci','fcvt.d.wu','fcvt.s.wu','fcvt.d.lu','fcvt.s.lu','c.flwsp',\
+        'bclri','bexti','binvi','bseti','xperm4','xperm8','zip','unzip','gorci','fcvt.d.wu','fcvt.s.wu','fcvt.d.lu','fcvt.s.lu','c.flwsp','c.fldsp','c.flw','c.fld'\
         'c.not', 'c.sext.b','c.sext.h','c.zext.b','c.zext.h','c.zext.w','sc.w','lr.w','sc.d','lr.d']
-unsgn_rs2 = ['bgeu', 'bltu', 'sltiu', 'sltu', 'sll', 'srl', 'sra','mulhu',\
+unsgn_rs2 = ['bgeu', 'bltu', 'sltiu', 'sltu', 'sll', 'srl', 'sra', 'sraw', 'mulhu',\
         'mulhsu','divu','remu','divuw','remuw','aes64ds','aes64dsm','aes64es',\
         'aes64esm','aes64ks2','sm4ed','sm4ks','ror','rol','rorw','rolw','clmul',\
         'clmulh','clmulr','andn','orn','xnor','pack','packh','packu','packuw','packw',\
@@ -90,7 +91,8 @@ class instructionObject():
         mem_val =  None,
         trap_dict = None,
         inxFlag = None,
-        is_sgn_extd = None
+        is_sgn_extd = None,
+        mip_updated_val = None
     ):
 
         '''
@@ -135,6 +137,7 @@ class instructionObject():
         self.matches_for_options = None
         self.mem_val = mem_val
         self.trap_dict = trap_dict
+        self.mip_updated_val = mip_updated_val
 
     def is_sig_update(self):
         return self.instr_name in instrs_sig_update
@@ -198,8 +201,16 @@ class instructionObject():
                 instr_vars['access_len'] = 1
         else:
             instr_vars['access_len'] = None
+
         #Update the values for the trap registers
         self.trap_registers_update(instr_vars,self.trap_dict)
+
+        #Update the value of MIP as soon as the hart updates it.
+        if self.mip_updated_val is not None:
+            if isinstance(csr_regfile['mip'], str):
+                csr_regfile['mip'] = int(csr_regfile['mip'], 16) | self.mip_updated_val
+            else:
+                csr_regfile['mip'] = csr_regfile['mip'] | self.mip_updated_val
 
         # capture the register operand values
         rs1_val = self.evaluate_instr_var("rs1_val", instr_vars, arch_state)
@@ -326,7 +337,7 @@ class instructionObject():
         arch_state.pc = self.instr_addr
 
         commitvalue = self.reg_commit
-        if commitvalue is not None:
+        if commitvalue is not None and len(self.rd) >= 1:
             if self.rd[1] == 'x':
                 arch_state.x_rf[int(commitvalue[1])] =  str(commitvalue[2][2:])
             elif self.rd[1] == 'f':
@@ -492,6 +503,8 @@ class instructionObject():
         instr_vars['mode_change']   = trap_dict['mode_change']
         instr_vars['call_type']     = trap_dict['call_type']
 
+        mcause_interrupt = {32: 0x80000000, 64: 0x8000000000000000}
+
         if trap_dict["mode_change"] is not None:
             #update the registers depending upon the mode change
             if trap_dict["mode_change"].split()[2] == "M":
@@ -509,6 +522,17 @@ class instructionObject():
                 if "mcause" not in instr_vars:
                     instr_vars['mcause']      = None
                     instr_vars['mtval']       = None
+        
+        #Handle interrupt Case
+        # TODO: update the interrupt case for delegation !
+        elif trap_dict["mode_change"] is None and trap_dict['call_type'] == "interrupt":
+                #upper most bit should be 1 in case of interrupt
+                instr_vars['mcause'] = mcause_interrupt[instr_vars['xlen']] | int(trap_dict['exc_num'], 16)
+                instr_vars['mtval']       = trap_dict['tval']
+                #only update on the initialization
+                if "scause" not in instr_vars:
+                    instr_vars['scause']      = None
+                    instr_vars['stval']       = None
 
         else:
                 #initialize them to None for the first time in the instr_vars
@@ -542,6 +566,10 @@ class instructionObject():
 
     @evaluator_func("rs1_val", lambda **params: not params['instr_name'] in unsgn_rs1 and not params['is_rvp'] and params['rs1'] is not None and (params['rs1'][1] == 'f' or params['inxFlag']))
     def evaluate_rs1_val_fsgn(self, instr_vars, arch_state):
+        return self.evaluate_reg_val_zdinx32_ext(self.rs1[0], self.rs1_nregs,instr_vars['flen'],instr_vars['xlen'],arch_state)
+        
+    @evaluator_func("rs1_val", lambda **params: not params['instr_name'] in unsgn_rs1 and not params['is_rvp'] and params['rs1'] is not None and (params['rs1'][1] == 'f' or params['inxFlag']))
+    def evaluate_rs1_val_fsgn(self, instr_vars, arch_state):
         return self.evaluate_reg_val_fsgn(self.rs1[0], instr_vars['flen'], instr_vars['xlen'],arch_state)
    
 
@@ -566,6 +594,10 @@ class instructionObject():
         return self.evaluate_reg_val_sgn(self.rs2[0], instr_vars['xlen'], arch_state)
 
 
+    @evaluator_func("rs2_val", lambda **params: params['is_rvp'] and params['rs2'] is not None)
+    def evaluate_rs2_val_fsgn(self, instr_vars, arch_state):
+        return self.evaluate_reg_val_zdinx32_ext(self.rs2[0],instr_vars['flen'], instr_vars['xlen'], self.rs2_nregs, arch_state)
+        
     @evaluator_func("rs2_val", lambda **params: not params['instr_name'] in unsgn_rs2 and not params['is_rvp'] and params['rs2'] is not None and (params['rs2'][1] == 'f' or params['inxFlag']))
     def evaluate_rs2_val_fsgn(self, instr_vars, arch_state):
         return self.evaluate_reg_val_fsgn(self.rs2[0], instr_vars['flen'], instr_vars['xlen'], arch_state)
@@ -651,6 +683,13 @@ class instructionObject():
             reg_val = (reg_hi_val << 32) | reg_val
         return reg_val
     
+    def evaluate_reg_val_zdinx32_ext(self, reg_idx, nregs, flen,arch_state,xlen):
+        reg_val = self.evaluate_reg_val_fsgn(reg_idx,flen,arch_state,xlen)
+        if nregs == 2:
+            reg_hi_val = self.evaluate_reg_val_fsgn(reg_idx+1,flen,arch_state,xlen)
+            reg_val = (reg_hi_val << 32) | reg_val
+        return reg_val
+        
     def sign_extend(self, value, e_bits, v_bits ):
         return bin(value | ((1<<e_bits) - (1<<v_bits)))
     
@@ -689,7 +728,13 @@ class instructionObject():
         
 
         if flen > iflen:
-            if inxFlag:
+            if inxFlag and iflen == 16:
+                if bin_val[16] == '1' :
+                   sgnd_bin_val = bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:] 
+                   f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(sgnd_bin_val[0:iflen],2)
+                else:
+                   f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(0x0)
+            elif inxFlag and iflen == 32:
                 if bin_val[32] == '1' :
                    sgnd_bin_val = bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:] 
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(sgnd_bin_val[0:iflen],2)
@@ -697,8 +742,8 @@ class instructionObject():
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(0x0)
             else:
                 bin_val =bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:]
-            f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
-            bin_val = bin_val[flen-iflen:]
+                f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
+                bin_val = bin_val[flen-iflen:]
        
 
         f_ext_vars['fs'+postfix] = int(bin_val[0], 2)

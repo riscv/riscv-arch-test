@@ -223,6 +223,15 @@ Mend_PMP:                                    ;\
 	add t2, t1, t0                                              ;\
 	SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
 
+#define PTE_SETUP_SV32(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
+    .if (level==1)                                                ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
+    .endif                                                        ;\
+    .if (level==0)                                                ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
+    .endif                                                        ;\
+    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+
 #define PTE_SETUP_SV39(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
     .if (level==2)                                                ;\
         LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\

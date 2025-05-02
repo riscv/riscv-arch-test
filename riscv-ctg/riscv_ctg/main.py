@@ -2,6 +2,7 @@
 """Console script for riscv_ctg."""
 
 import click,os
+import sys
 
 from riscv_ctg.log import logger
 from riscv_ctg.ctg import ctg
@@ -22,10 +23,15 @@ from riscv_isac.cgf_normalize import expand_cgf
 @click.option("--z-inx", '-ix', type=bool, default='False', help="If the extension is Z*inx then pass True otherwise defaulted to False")
 @click.option("--filter", type=str, help="Filtering tests to be generated with regex")
 def cli(verbose, out_dir, randomize , cgf,procs,base_isa, flen,inst,z_inx,filter):
-    if not os.path.exists(out_dir):
-        os.mkdir(out_dir)
-    if '32' in base_isa:
-        xlen = 32
-    elif '64' in base_isa:
-        xlen = 64
-    ctg(verbose, out_dir, randomize ,xlen, int(flen), cgf,procs,base_isa,inst,z_inx,filter)
+    if len(sys.argv) == 1:
+        with click.get_current_context() as context:
+            click.echo(context.get_help())
+        sys.exit(0)
+    else:
+        if not os.path.exists(out_dir):
+            os.mkdir(out_dir)
+        if '32' in base_isa:
+            xlen = 32
+        elif '64' in base_isa:
+            xlen = 64
+        ctg(verbose, out_dir, randomize ,xlen, int(flen), cgf,procs,base_isa,inst,z_inx,filter)

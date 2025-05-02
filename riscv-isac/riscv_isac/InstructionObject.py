@@ -91,7 +91,8 @@ class instructionObject():
         mem_val =  None,
         trap_dict = None,
         inxFlag = None,
-        is_sgn_extd = None
+        is_sgn_extd = None,
+        mip_updated_val = None
     ):
 
         '''
@@ -136,6 +137,7 @@ class instructionObject():
         self.matches_for_options = None
         self.mem_val = mem_val
         self.trap_dict = trap_dict
+        self.mip_updated_val = mip_updated_val
 
     def is_sig_update(self):
         return self.instr_name in instrs_sig_update
@@ -199,8 +201,16 @@ class instructionObject():
                 instr_vars['access_len'] = 1
         else:
             instr_vars['access_len'] = None
+
         #Update the values for the trap registers
         self.trap_registers_update(instr_vars,self.trap_dict)
+
+        #Update the value of MIP as soon as the hart updates it.
+        if self.mip_updated_val is not None:
+            if isinstance(csr_regfile['mip'], str):
+                csr_regfile['mip'] = int(csr_regfile['mip'], 16) | self.mip_updated_val
+            else:
+                csr_regfile['mip'] = csr_regfile['mip'] | self.mip_updated_val
 
         # capture the register operand values
         rs1_val = self.evaluate_instr_var("rs1_val", instr_vars, arch_state)
@@ -493,6 +503,8 @@ class instructionObject():
         instr_vars['mode_change']   = trap_dict['mode_change']
         instr_vars['call_type']     = trap_dict['call_type']
 
+        mcause_interrupt = {32: 0x80000000, 64: 0x8000000000000000}
+
         if trap_dict["mode_change"] is not None:
             #update the registers depending upon the mode change
             if trap_dict["mode_change"].split()[2] == "M":
@@ -510,6 +522,17 @@ class instructionObject():
                 if "mcause" not in instr_vars:
                     instr_vars['mcause']      = None
                     instr_vars['mtval']       = None
+        
+        #Handle interrupt Case
+        # TODO: update the interrupt case for delegation !
+        elif trap_dict["mode_change"] is None and trap_dict['call_type'] == "interrupt":
+                #upper most bit should be 1 in case of interrupt
+                instr_vars['mcause'] = mcause_interrupt[instr_vars['xlen']] | int(trap_dict['exc_num'], 16)
+                instr_vars['mtval']       = trap_dict['tval']
+                #only update on the initialization
+                if "scause" not in instr_vars:
+                    instr_vars['scause']      = None
+                    instr_vars['stval']       = None
 
         else:
                 #initialize them to None for the first time in the instr_vars

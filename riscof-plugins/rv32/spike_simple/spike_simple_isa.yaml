@@ -27,3 +27,8 @@ hart0:
               wr_illegal:
                 - Unchanged
  
+  PMP:
+    implemented: True
+    pmp-grain: 0
+    pmp-count: 16
+    pmp-writable: 12

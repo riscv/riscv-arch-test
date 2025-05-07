@@ -216,7 +216,7 @@ main:
 	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					512GB PAGE	Region 3 under test at level 2 -- X permissions given to the region
+//					512GB PAGE	Region 3 under test at level 3 -- X permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	// Test case 3: U bit unset | Test in S-Mode | X bit set | expected = Load, Store Fault
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_V), va_data_l3, LEVEL3)

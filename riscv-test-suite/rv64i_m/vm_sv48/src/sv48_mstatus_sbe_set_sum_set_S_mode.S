@@ -201,7 +201,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | RWX bit set | expected = successful page access
-	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
 	CHANGE_PTE_TO_BE
 	sfence.vma
 
@@ -217,7 +217,7 @@ main:
 	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	CHANGE_PTE_TO_BE
-	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	CHANGE_PTE_TO_BE
 	sfence.vma
 
@@ -235,7 +235,7 @@ main:
 	CHANGE_PTE_TO_BE
 	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	CHANGE_PTE_TO_BE
-	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	CHANGE_PTE_TO_BE
 	sfence.vma
 
@@ -255,7 +255,7 @@ main:
 	CHANGE_PTE_TO_BE
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	CHANGE_PTE_TO_BE
-	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	CHANGE_PTE_TO_BE
 	sfence.vma
 

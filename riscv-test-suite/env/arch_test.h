@@ -816,7 +816,7 @@
 /**** This is a helper macro that causes harts to transition from    ****/
 /**** M-mode to a lower priv mode at the instruction that follows    ****/
 /**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/**** The H,U variations leave V unchanged. This uses T4 only.       ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.     ****/
 /**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
 /**** FIXME - SATP & VSATP must point to the identity map page table ****/
 
@@ -868,17 +868,19 @@
     csrs CSR_MSTATUS, T4        /* set correct mode and Vbit            */
   .endif
 #endif
-  csrr   sp, CSR_MSCRATCH       /* ensure sp points to Mmode datae area */
+  csrr   T2, CSR_MSCRATCH       /* ensure GPR T2 points to Mmode datae area */
         /**** mstatus MPV and PP now set up to desired mode    ****/
         /**** set MEPC to mret+4; requires relocating the pc   ****/
 .if     (\LMODE\() == Vmode)     // get trapsig_ptr & init val up 2 save areas (M<-S<-V)
-        LREG    T1, code_bgn_off + 2*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 2*sv_area_sz(T2)
+#ifdef rvtest_strap_routine
 .elseif (\LMODE\() == Smode || \LMODE\() == Umode)     // get trapsig_ptr & init val up 1 save areas (M<-S)
-        LREG    T1, code_bgn_off + 1*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 1*sv_area_sz(T2)
+#endif
 .else                            // get trapsig ptr & init val for this Mmode, (M)
-        LREG    T1, code_bgn_off + 0*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 0*sv_area_sz(T2)
 .endif
-        LREG    T4, code_bgn_off(sp)
+        LREG    T4, code_bgn_off(T2)
   sub   T1, T1,T4               /* calc addr delta between this mode (M) and lower mode code */
   addi  T1, T1, 4*WDBYTSZ       /* bias by # ops after auipc continue executing at mret+4 */
   auipc T4, 0
@@ -1377,8 +1379,17 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:
+#ifndef rvtest_strap_routine             // Access Smode sv area only if Smode is supported
+                                        // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        li T4, 0
+#endif
         add     T4, T4, sp              /* calc address of correct sv_area      */
         csrr    T2, CSR_XEPC            /* T4 now pts to trapping sv_area mode  */
+
+#ifdef SKIP_MEPC
+        addi T3, T3, 0
+        j adj_\__MODE__\()epc
+#endif
 
         LREG    T3, vmem_bgn_off(T4)            // see if epc is in the vmem area
         LREG    T6, vmem_seg_siz(T4)
@@ -1426,6 +1437,11 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
              the mode of the mstatus.mpp that is stored in Xtrampend_sv ****/
 
         csrr    T2, CSR_XTVAL
+
+#ifdef SKIP_MTVAL
+        addi T3, T3, 0
+        j adj_\__MODE__\()tval
+#endif
 
 chk_\__MODE__\()tval:
         andi    T5, T5, EXCPT_CAUSE_MSK // ensures shift amt will be within range
@@ -1696,7 +1712,11 @@ rtn2mmode:
   #endif
         slli    T2, T2, WDSZ-MPV_LSB-1  /* but V into MSB  ****FIXME if RV128   */ 
 #endif
+#ifdef rvtest_strap_routine             // Only if S-mode is defined, then access S-mode save area
         LREG    T6, code_bgn_off+1*sv_area_sz(sp)    /* get U/S mode code begin */
+#else                                   // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        LREG    T6, code_bgn_off+0*sv_area_sz(sp)    /* get U/S mode code begin */
+#endif
         bgez    T2, from_u_s            /* V==0, not virtualized, *1 offset     */
 from_v:
         LREG    T6, code_bgn_off+2*sv_area_sz(sp)/* get VU/VS   mode code begin */

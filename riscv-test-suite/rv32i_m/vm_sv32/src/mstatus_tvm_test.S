@@ -18,7 +18,7 @@
 //	1. satp and sfence.vma accessed in M Mode with mstatus.tvm bit set -> Successful
 //	2. satp and sfence.vma accessed in S Mode with mstatus.tvm bit set -> illegal instruction exception
 //
-// Total Expected Faults: 2
+// Total Expected Faults: 4
 // ----------------------------------------------------------------------------------------------------------------------
 
 //TODO: instead of using two different tests, use a single test for hart/software update.
@@ -75,7 +75,7 @@ main:
 	nop
 
 // ------------------------------------------------------------------------------------------------------------
-// 										satp access in S Mode
+// 										satp access in S Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
 
 	RVTEST_GOTO_LOWER_MODE Smode
@@ -83,7 +83,14 @@ main:
 	li t0, 1																//initial value for t0 = 1
 	csrw satp, t0  		                                        			// write satp with some value
 	nop
-	nop
+
+	li t0, 1
+    csrrc t1, satp, t0  
+    nop
+
+    li t0, 1           
+    csrrs t1, satp, t0
+    nop
 
 	sfence.vma
 	nop

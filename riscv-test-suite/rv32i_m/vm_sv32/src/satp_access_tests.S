@@ -18,6 +18,7 @@
 //	1. satp register accessed in M, S Mode -> Successful
 //	2. satp register accessed in U Mode -> Illegal Instruction exception
 //	3. Walking ones on the PPN of satp -> Successful
+//	4. Walking ones on the ASID of satp -> Successful
 // Total Expected Faults: 3
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -151,6 +152,23 @@ walking_ones_satp:
 	RVTEST_SIGUPD(x14,t1)
 	addi x14, x14, REGWIDTH
 	bne t3, t2, walking_ones_satp
+
+// ------------------------------------------------------------------------------------------------------------
+// 							Walking ones to the ASID bitfield of satp register using csrw 
+// ------------------------------------------------------------------------------------------------------------
+
+	li t1, 0                		// Temporary storage for read-back
+	li t0, 0x400000         		// Initial value
+
+	// Loop for multiple satp writes and reads
+	li t2, 8                		// Number of iterations (8 shifts)
+walking_ones_asid:		
+    csrw satp, t0     				// Write satp with the current value
+    csrr t1, satp     				
+    RVTEST_SIGUPD(x13, t1) 			
+    slli t0, t0, 1    				// Shift left to prepare the next value
+    addi t2, t2, -1   				// Decrement loop counter
+    bnez t2, walking_ones_asid 		
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------

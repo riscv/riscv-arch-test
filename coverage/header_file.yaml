@@ -903,36 +903,29 @@ common:
  RISCV_PGSIZE: (1 << RISCV_PGSHIFT)
 
 PMP_MACROS:
- PMPCFG_BIT_SET: 1
- PMPCFG_BIT_NOT_SET: 0
- PMPCFG_ONLY_R_SET: 0x01
- PMPCFG_ONLY_X_SET: 0x04
- PMPCFG_ONLY_RW_SET: 0x03
- PMPCFG_ONLY_RX_SET: 0x05
- PMPCFG_ONLY_RWX_SET: 0x07
- PMPCFG_OFF_MODE: 0x00
- PMPCFG_TOR_MODE: 0x08
- PMPCFG_NA4_MODE: 0x10
- PMPCFG_NAPOT_MODE: 0x18
- PMPCFG_R_BIT: 0x01
- PMPCFG_W_BIT: 0x02
- PMPCFG_X_BIT: 0x04
- PMPCFG_RWX_BIT: 0x07
- PMPCFG_A_BIT: 0x18
- PMPCFG_RW_BIT: 0x60
- PMPCFG_L_BIT: 0x80
+ PMP0_CFG_SHIFT: 0
+ PMP1_CFG_SHIFT: 8
+ PMP2_CFG_SHIFT: 16
+ PMP3_CFG_SHIFT: 24
+ PMP4_CFG_SHIFT: 32
+ PMP5_CFG_SHIFT: 40
+ PMP6_CFG_SHIFT: 48
+ PMP7_CFG_SHIFT: 56
+ PMP_CFG_LOCK: 0x80
+ PMP_CFG_RWX: 0x07
+ PMP_CFG_RX: 0x05
+ PMP_CFG_RW: 0x03
+ PMP_CFG_R: 0x01
+ PMP_CFG_X: 0x04
+ PMP_CFG_LRWX: 0x87
+ PMP_CFG_LRX: 0x85
+ PMP_CFG_LRW: 0x83
+ PMP_CFG_LR: 0x81
+ PMP_CFG_LX: 0x84
+ PMP_CFG_TOR: 0x08
+ PMP_CFG_NA4: 0x10
+ PMP_CFG_NAPOT: 0x18
  PMPCFG_ALL_BIT: 0xFF
-
-PMP_helper_Coverpoints:
- NAPOT_REGION_ADDRESS_MATCH:  ((rs1_val + imm_val) ^ (pmpaddr1<<2)) &  ~(((pmpaddr1 ^ (pmpaddr1+1))<<2) | 3) ==0 and ((rs1_val+imm_val+access_len-1 ) ^ (pmpaddr1<<2)) &  ~(((pmpaddr1 ^ (pmpaddr1+1))<<2) | 3) ==0
- NAPOT_PRIORITY_REGION_MATCH: ((rs1_val + imm_val) ^ (pmpaddr3<<2)) &  ~(((pmpaddr3 ^ (pmpaddr3+1))<<2) | 3) ==0 and ((rs1_val+imm_val+access_len-1 ) ^ (pmpaddr3<<2)) &  ~(((pmpaddr3 ^ (pmpaddr3+1))<<2) | 3) ==0
- NAPOT_PRIORITY_2_REGION_MATCH: ((rs1_val + imm_val) ^ (pmpaddr1<<2)) &  ~(((pmpaddr1 ^ (pmpaddr1+1))<<2) | 3) ==0 and ((rs1_val+imm_val+access_len-1 ) ^ (pmpaddr1<<2)) &  ~(((pmpaddr1 ^ (pmpaddr1+1))<<2) | 3) ==0
- TOR_REGION_ADDRESS_MATCH: (rs1_val + imm_val >= (pmpaddr1 << 2)) and (rs1_val + imm_val < (pmpaddr2 << 2))
- TOR_PRIORITY_REGION_MATCH: (rs1_val + imm_val >= (pmpaddr2 << 2)) and (rs1_val + imm_val < (pmpaddr3 << 2))
- TOR_PRIORITY_2_REGION_MATCH: (rs1_val + imm_val >= (pmpaddr0 << 2)) and (rs1_val + imm_val < (pmpaddr1 << 2))
- NA4_REGION_ADDRESS_MATCH: (rs1_val + imm_val == (pmpaddr1 << 2))
- NA4_PRIORITY_REGION_MATCH: (rs1_val + imm_val == (pmpaddr3 << 2))
- NA4_PRIORITY_2_REGION_MATCH: (rs1_val + imm_val == (pmpaddr1 << 2))
 
 SV32_MACROS:
  LEVEL_1_JUMP_SIZE: (0x400000 - 4)

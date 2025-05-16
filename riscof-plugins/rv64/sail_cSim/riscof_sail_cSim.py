@@ -122,25 +122,25 @@ class sail_cSim(pluginTemplate):
             else:
                 pmp_flags = ""
 
+            try:
+                sail_config = subprocess.run(["riscv_sim_rv64d", "--print-default-config"], check= True, text=True, capture_output=True)
+                sail_config = json.loads(sail_config.stdout)
+            except subprocess.CalledProcessError as e:
+                print("riscv_sim_rv64d --print-default-config failed:", e.stderr)
+                exit(1)
+            except json.JSONDecodeError:
+                print("riscv_sim_rv64d --print-default-config output is not valid JSON.")
+                exit(1)
+
+            sail_config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
+            sail_config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
+
+            #For User-configuration: Replace this variable with your configuration. "/home/riscv-arch-test/custom_sail_config.json"
             sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')
-
-            # Read the JSON configuration from the file
-            with open(sail_config_path, 'r', encoding='utf-8') as file:
-                config = json.load(file)
-
-            # Update the values for pmp
-            config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
-            config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
-
-            # Update the values for the ramsize.
-            config["platform"]["ram"]["base"] = 2147483648
-            config["platform"]["ram"]["size"] = 2147483648
-            # config["platform"]["ram"]["size"] = 8796093022208
-            # execute += self.sail_exe[self.xlen] + '  -i -v --trace=step {0} --ram-size=8796093022208 --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(pmp_flags, sig_file, elf, test_name)
 
             # Write the updated configuration back to the file
             with open(sail_config_path, 'w', encoding='utf-8') as file:
-                json.dump(config, file, indent=4)
+                json.dump(sail_config, file, indent=4)
 
             execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 

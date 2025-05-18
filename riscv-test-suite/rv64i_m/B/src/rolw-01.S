@@ -19,7 +19,7 @@
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64IZbb,RV64IZbkb,RV64IZk,RV64IZkn,RV64IZks")
+RVTEST_ISA("RV64IZbb,RV64IZbkb,RV64IZk,RV64IZkn,RV64IZks,RV64IB")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -38,6 +38,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*Zk.*);def 
 RVTEST_CASE(3,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*Zkn.*);def TEST_CASE_1=True;",rolw)
 
 RVTEST_CASE(4,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*Zks.*);def TEST_CASE_1=True;",rolw)
+RVTEST_CASE(5,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*B.*);def TEST_CASE_1=True;",rolw)
 
 RVTEST_SIGBASE(x1,signature_x1_1)
 

@@ -122,3 +122,5 @@ ENV/
 
 __pycache__
 riscof_work
+
+sail_config.json

@@ -1,0 +1,44 @@
+lpad-m:
+  config:
+    - check ISA:=regex(.*I.*Zicsr.*Zicfilp.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+  mnemonics:
+    lpad-m: 0
+  val_comb:
+    'imm_val == 0': 0
+    'imm_val > 0': 0
+    'imm_val == ((2**20)-1)': 0
+    abstract_comb:
+        'sp_dataset(20,["imm_val"],signed=False)': 0
+        'walking_ones("imm_val", 20, False)': 0
+        'walking_zeros("imm_val", 20, False)': 0
+        'alternate("imm_val", 20, False)': 0
+
+lpad-s:
+  config:
+    - check ISA:=regex(.*I.*Zicsr.*Zicfilp.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+  mnemonics:
+    lpad-s: 0
+  val_comb:
+    'imm_val == 0': 0
+    'imm_val > 0': 0
+    'imm_val == ((2**20)-1)': 0
+    abstract_comb:
+        'sp_dataset(20,["imm_val"],signed=False)': 0
+        'walking_ones("imm_val", 20, False)': 0
+        'walking_zeros("imm_val", 20, False)': 0
+        'alternate("imm_val", 20, False)': 0
+
+lpad-u:
+  config:
+    - check ISA:=regex(.*I.*Zicsr.*Zicfilp.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+  mnemonics:
+    lpad-u: 0
+  val_comb:
+    'imm_val == 0': 0
+    'imm_val > 0': 0
+    'imm_val == ((2**20)-1)': 0
+    abstract_comb:
+        'sp_dataset(20,["imm_val"],signed=False)': 0
+        'walking_ones("imm_val", 20, False)': 0
+        'walking_zeros("imm_val", 20, False)': 0
+        'alternate("imm_val", 20, False)': 0

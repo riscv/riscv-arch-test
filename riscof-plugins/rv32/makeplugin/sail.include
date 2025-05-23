@@ -1,0 +1,21 @@
+TARGET_SIM   ?= riscv_sim_RV32 -V
+TARGET_FLAGS =
+
+RISCV_PREFIX   ?= riscv32-unknown-elf-
+RISCV_GCC      ?= $(RISCV_PREFIX)gcc
+RISCV_OBJDUMP  ?= $(RISCV_PREFIX)objdump
+RISCV_GCC_OPTS ?= -g -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles
+
+COMPILE_TARGET=\
+            $$(RISCV_GCC) -march=${march} -mabi=${mabi} $$(RISCV_GCC_OPTS) \
+							-I${include} \
+							-I${target_dir}/env/ \
+							-T${target_dir}/env/link.ld \
+						    ${asm} -o ${test_bin} ${macros};\
+        $$(RISCV_OBJDUMP) ${test_bin} -D > ${test_name}.disass; \
+					$$(RISCV_OBJDUMP) ${test_bin} --source > ${test_name}.debug
+
+RUN_TARGET=\
+    $(TARGET_SIM) $(TARGET_FLAGS)\
+        --test-signature=${signature_file} \
+        ${test_bin} 

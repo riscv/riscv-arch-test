@@ -1,0 +1,2067 @@
+# See LICENSE.incore for details
+add:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val + rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sub:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32,64]
+  std_op:
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  isa: 
+    - I
+  operation: 'hex((rs1_val - rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+
+addw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend( (rs1_val & 0xFFFFFFFF) + (rs2_val & 0xFFFFFFFF) ,32))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+subw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend( (rs1_val & 0xFFFFFFFF) - (rs2_val & 0xFFFFFFFF) ,32))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+and:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val & rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+or:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val | rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+slt:
+  rs1_op_data: *all_regs
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(int(rs1_val < rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sltu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(int(rs1_val < rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+xor:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val ^ rs2_val) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sllw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((rs1_val << (rs2_val%32)) ,32))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+srlw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((rs1_val & 0xffffffff) >> (rs2_val%32), 32))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sraw:
+  rs1_op_data: *all_regs
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((sign_extend(rs1_val,32) >> ((rs2_val & 0xffffffff) %32))& 0xffffffff ,32))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sll:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val << (rs2_val%xlen)) & (2**(xlen)-1))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+srl:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val & (2**(xlen)-1)) >> (rs2_val%xlen))'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+sra:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(rs1_val >> (rs2_val%xlen) )'
+  formattype: 'rformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+addi:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val + imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+addiw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend( (rs1_val & 0xFFFFFFFF) + (imm_val & 0xffffffff) , 32))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12,True)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+slti:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(int(rs1_val < imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12,True)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+sltiu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(int(rs1_val < int(imm_val if imm_val&0x800 == 0 else imm_val + int("0x"+"".join("f"*int((xlen-12)/4)+"000"),16))) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,False)'
+  imm_val_data: 'gen_usign_dataset(12)+ gen_sp_dataset(12,False)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+andi:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val & imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+ori:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val | imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+xori:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val ^ imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)+ gen_sp_dataset(12)'
+  formattype: 'iformat'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+slli:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val << imm_val) & (2**(xlen)-1))'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+srli:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex((rs1_val & (2**(xlen)-1)) >> imm_val)'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+srai:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(rs1_val >> (imm_val))'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(ceil(log(xlen,2)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+slliw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((rs1_val << imm_val) , 32))'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+srliw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((rs1_val & 0xFFFFFFFF) >> imm_val , 32))'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+sraiw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend((sign_extend(rs1_val,32) >> ((imm_val & 0xfff) %32)) & 0xffffffff, 32))'
+  formattype: 'iformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_usign_dataset(5)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; dest:$rd; op1val:$rs1_val;  immval:$imm_val
+    TEST_IMM_OP( $inst, $rd, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+lui:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend(imm_val << (12), 32))'
+  formattype: 'uformat'
+  imm_val_data: 'gen_usign_dataset(20)+ gen_sp_dataset(20,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; dest:$rd; immval:$imm_val
+    TEST_CASE($testreg, $rd, $correctval, $swreg, $offset, $inst $rd,$imm_val)
+
+auipc:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  operation: 'hex(sign_extend(imm_val << (12) ,32))'
+  formattype: 'uformat'
+  imm_val_data: 'gen_usign_dataset(20)+ gen_sp_dataset(20, False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; dest:$rd; immval:$imm_val
+    TEST_AUIPC($inst, $rd, $correctval, $imm_val, $swreg, $offset, $testreg)
+
+beq:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+bge:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+bgeu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,False)'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+blt:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+bltu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,False)'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+bne:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'bformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen) '
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen) '
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(12)))'
+  template: |-
+
+    // $comment
+    // opcode: $inst, op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_BRANCH_OP($inst, $testreg, $rs1, $rs2, $rs1_val, $rs2_val, $imm_val, $label, $swreg, $offset,$ea_align)
+
+sd:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'sformat'
+  ea_align_data: '[0,1,2,3,4,5,6,7]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,$ea_align)
+
+sw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'sformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,$ea_align)
+
+sh:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'sformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,$ea_align)
+
+sb:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'sformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,$ea_align)
+
+ld:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  isa: 
+    - I
+  xlen: [64]
+  std_op:
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3,4,5,6,7]'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lwu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  isa: 
+    - I
+  xlen: [64]
+  std_op:
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0 
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lhu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lh:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lbu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_usign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+lb:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'gen_sign_dataset(12)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode:$inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$ea_align)
+
+jal:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'jformat'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: 'list(filter(lambda x: x%2==0,gen_sign_dataset(20)))'
+  template: |-
+
+    // $comment
+    // opcode: jal; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_JAL_OP($testreg, $rd, $imm_val, $label, $swreg, $offset,$ea_align)
+
+jalr:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - I
+  formattype: 'iformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen,True)'
+  imm_val_data: 'gen_sign_dataset(12)'
+  template: |-
+
+    // $comment
+    // opcode: jalr; op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align
+    TEST_JALR_OP($testreg, $rd, $rs1, $imm_val, $swreg, $offset,$ea_align)
+
+mul:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex((rs1_val * rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+mulh:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(((rs1_val * rs2_val)>>xlen) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+mulhu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(((rs1_val * rs2_val)>>xlen) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+mulhsu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(((rs1_val * (rs2_val if rs2_val>=0 else int(hex((1<<xlen) + rs2_val),base=16)))>>xlen) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+div:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation:  'hex(int(abs(rs1_val)//abs(rs2_val))) if (rs1_val * rs2_val > 0) else hex(-int(abs(rs1_val)//abs(rs2_val))) if rs2_val != 0 else "0x"+("F"*int(xlen/4))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True) + [-(2**(xlen-1))]'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+divu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(int(rs1_val // rs2_val) & (2**(xlen)-1)) if rs2_val!=0 else "0x"+("F"*int(xlen/4))'
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+rem:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  #  operation: 'hex(rs1_val if rs2_val==0 or (rs1_val<rs2_val and rs2_val<0) else (rs1_val % rs2_val) & (2**(xlen)-1))'
+  operation: 'hex(rs1_val) if rs2_val == 0 else hex(int(abs(rs1_val) % abs(rs2_val))) if rs1_val > 0 else hex(-int(abs(rs1_val) % abs(rs2_val)))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True) + [-(2**(xlen-1))]'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+remu:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(rs1_val) if rs2_val == 0 else hex(int(abs(rs1_val) % abs(rs2_val))) '
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+mulw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(sign_extend((rs1_val & 0xFFFFFFFF) * (rs2_val & 0xFFFFFFFF) ,32))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+divw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  #  operation: 'hex(sign_extend(int((rs1_val & 0xFFFFFFFF) // (rs2_val & 0xFFFFFFFF)) ,32)) if (rs2_val&0xFFFFFFFF)!=0 else "0x"+("F"*int(xlen/4))'
+  operation: 'hex(sign_extend(int(abs(sign_extend(rs1_val,32))//abs(sign_extend(rs2_val,32))),32)) if (sign_extend(rs1_val,32) * sign_extend(rs2_val,32) > 0) else hex(-int(abs(sign_extend(rs1_val,32))//abs(sign_extend(rs2_val, 32)))) if sign_extend(rs2_val,32) != 0 else "0x"+("F"*int(xlen/4))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+divuw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(sign_extend(int((rs1_val & 0xFFFFFFFF) // (rs2_val & 0xFFFFFFFF)) ,32)) if (rs2_val&0xFFFFFFFF)!=0 else "0x"+("F"*int(xlen/4))'
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+remw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  #  operation: 'hex(sign_extend(((rs1_val & 0xFFFFFFFF) % (rs2_val & 0xFFFFFFFF)) , 32)) if (rs2_val&0xFFFFFFFF)!=0 else hex(rs1_val)'
+  operation: 'hex(sign_extend(rs1_val,32)) if (rs2_val&0xffffffff) == 0 else hex(sign_extend(int(abs(sign_extend(rs1_val,32)) % abs(sign_extend(rs2_val,32))),32)) if sign_extend(rs1_val,32) > 0 else hex(-int(abs(sign_extend(rs1_val,32)) % abs(sign_extend(rs2_val,32))))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+remuw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs
+  rd_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IM
+  formattype: 'rformat'
+  operation: 'hex(sign_extend((rs1_val & 0xFFFFFFFF) % (rs2_val & 0xFFFFFFFF) , 32)) if (rs2_val&0xFFFFFFFF)!=0 else hex(sign_extend(rs1_val,32))'
+  rs1_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  rs2_val_data: 'gen_usign_dataset(xlen) + gen_sp_dataset(xlen,False)'
+  template: |-
+
+    // $comment
+    // opcode: $inst ; op1:$rs1; op2:$rs2; dest:$rd; op1val:$rs1_val;  op2val:$rs2_val
+    TEST_RR_OP($inst, $rd, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.mv:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *all_regs_mx0
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cmvformat'
+  operation: 'hex(rs2_val)'
+  rs2_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op2:$rs2; dest:$rd; op2val:$rs2_val
+    TEST_CMV_OP( $inst, $rd, $rs2, $correctval, $rs2_val, $swreg, $offset, $testreg)
+
+c.add:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs
+  rs2_op_data: *all_regs_mx0
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex((rs1_val + rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen,True)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen,True)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.addw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex(sign_extend((rs1_val + rs2_val) ,32))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.and:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex((rs1_val & rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.or:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex((rs1_val | rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.xor:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex((rs1_val ^ rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.sub:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex((rs1_val - rs2_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.subw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  operation: 'hex(sign_extend((rs1_val & 0xFFFFFFFF) - (rs2_val & 0xFFFFFFFF) ,32))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op2:$rs2; op1val:$rs1_val; op2val:$rs2_val
+    TEST_CR_OP( $inst, $rs1, $rs2, $correctval, $rs1_val, $rs2_val, $swreg, $offset, $testreg)
+
+c.andi:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  operation: 'hex((rs1_val & imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+gen_sp_dataset(xlen)'
+  imm_val_data: 'gen_sign_dataset(6)+gen_sp_dataset(6)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; immval:$imm_val
+    TEST_CI_OP( $inst, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.nop:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  imm_val_data: 'gen_sign_dataset(6)'
+  rs1_data: "['x0']"
+  rs1_val_data: "[0]"
+  template: |-
+    // $comment
+    // opcode:$inst; immval:$imm_val
+    TEST_CNOP_OP($inst, $testreg, $imm_val, $swreg, $offset)
+
+c.addi:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs_mx0
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation: 'hex((rs1_val + imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'gen_sign_dataset(6) + gen_sp_dataset(6)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rd; dest:$rd op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rd, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.addiw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs_mx0
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation: 'hex(sign_extend(((rs1_val & 0xFFFFFFFF) + (imm_val & 0xffffffff)) , 32))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'gen_sign_dataset(6) + gen_sp_dataset(6)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rd; dest:$rd op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rd, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.addi16sp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: "['x2']"
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation: 'hex((rs1_val + imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: 'list(filter( lambda x: x!=0 , [ 16*x for x in gen_sign_dataset(6)])) + [496]'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:x2; dest:x2 op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, x2, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.addi4spn:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciwformat'
+  operation: 'hex(imm_val)'
+  imm_val_data: 'list(filter( lambda x: x!=0 , [ 4*x for x in gen_usign_dataset(8)]))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; dest:$rd; immval:$imm_val
+    TEST_CADDI4SPN_OP( $inst, $rd, $correctval, $imm_val, $swreg, $offset, $testreg)
+
+c.slli:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation: 'hex((rs1_val << imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: x!=0, gen_usign_dataset(ceil(log(xlen,2)))))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rd; dest:$rd op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rd, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.srli:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  operation: 'hex(((rs1_val & (2**(xlen)-1)) >> imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: x!=0, gen_usign_dataset(ceil(log(xlen,2)))))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; dest:$rs1 op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.srai:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  operation: 'hex(rs1_val >> (imm_val) & (2**(xlen)-1))'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: x!=0, gen_usign_dataset(ceil(log(xlen,2)))))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; dest:$rs1 op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rs1, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.li:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation : 'hex(sign_extend(imm_val,6))'
+  imm_val_data: 'gen_sign_dataset(6)'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; dest:$rd; immval:$imm_val
+    TEST_CASE($testreg, $rd, $correctval, $swreg, $offset, $inst $rd, $imm_val;)
+
+c.lui:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  operation: 'hex(sign_extend(imm_val << 12,32))'
+  rs1_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: x!=0 ,gen_usign_dataset(6)))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rd; dest:$rd op1val:$rs1_val; immval:$imm_val
+    TEST_CI_OP( $inst, $rd, $correctval, $rs1_val, $imm_val, $swreg, $offset, $testreg)
+
+c.sw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'csformat'
+  rs1_val_data: '[0]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,0)
+
+c.sd:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'csformat'
+  rs1_val_data: '[0]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val
+    TEST_STORE($swreg,$testreg,$index,$rs1,$rs2,$rs2_val,$imm_val,$offset,$inst,0)
+
+c.ld:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rd_op_data: *c_regs 
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'clformat'
+  rs1_val_data: '[0]'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; op1val:$rs1_val; immval:$imm_val
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,$rs1_val)
+
+c.lw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  rd_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'clformat'
+  rs1_val_data: '[0]'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,0)
+
+c.lwsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs_mx0
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val
+    TEST_LOAD($swreg,$testreg,$index,$rs1,$rd,$imm_val,$offset,$inst,0)
+
+c.ldsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *all_regs_mx0
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'ciformat'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:x2; dest:$rd; immval:$imm_val
+    TEST_LOAD($swreg,$testreg,$index,x2,$rd,$imm_val,$offset,$inst,0)
+
+c.swsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *all_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cssformat'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:x2; op2:$rs2; op2val:$rs2_val; immval:$imm_val
+    TEST_STORE($swreg,$testreg,$index,x2,$rs2,$rs2_val,$imm_val,$offset,$inst,0)
+
+c.sdsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *all_regs
+  xlen: [64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cssformat'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:x2; op2:$rs2; op2val:$rs2_val; immval:$imm_val
+    TEST_STORE($swreg,$testreg,$index,x2,$rs2,$rs2_val,$imm_val,$offset,$inst,0)
+
+c.beqz:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  rs1_val_data: 'gen_sign_dataset(xlen) + gen_sp_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: (x >=4 and x<250) or (x<=-4 and x>=-250),[x*2 for x in gen_sign_dataset(8)]))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; op1:$rs1; op1val:$rs1_val; immval:$imm_val
+    TEST_CBRANCH_OP($inst, $testreg, $rs1, $rs1_val, $imm_val, $label, $swreg, $offset)
+
+c.bnez:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  imm_val_data: 'list(filter(lambda x: (x >=4 and x<250) if x>0 else (x<=-4 and x>=-250),[x*2 for x in gen_sign_dataset(8)]))'
+  template: |-
+
+    // $comment
+    // opcode: $inst; op1:$rs1; op1val:$rs1_val; immval:$imm_val
+    TEST_CBRANCH_OP($inst, $testreg, $rs1, $rs1_val, $imm_val, $label, $swreg, $offset)
+
+c.j:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cjformat'
+  imm_val_data: 'list(filter(lambda x: (x >=4 and x<2030) if x>0 else (x<=-4 and x> -2030 ),[x*2 for x in gen_sign_dataset(11)]))'
+  template: |-
+
+    // $comment
+    // opcode:$inst; immval:$imm_val
+    TEST_CJ_OP($inst, $testreg, $imm_val, $label, $swreg, $offset)
+
+c.jal:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'cbformat'
+  imm_val_data: 'list(filter(lambda x: (x >=4 and x<2030) if x>0 else (x<=-4 and x> -2030 ),[x*2 for x in gen_sign_dataset(11)]))'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode:$inst; immval:$imm_val
+    TEST_CJAL_OP($inst, $testreg, $imm_val, $label, $swreg, $offset)
+
+c.jr:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  ea_align_data: '[0,1]'
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: c.jr; op1:$rs1
+    TEST_CJR_OP($testreg, $rs1, $swreg, $offset)
+
+c.jalr:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *all_regs_mx0
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IC
+  formattype: 'crformat'
+  ea_align_data: '[0,1]' 
+  rs1_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  rs2_val_data: 'gen_sign_dataset(xlen)+ gen_sp_dataset(xlen)'
+  template: |-
+
+    // $comment
+    // opcode: c.jalr; op1:$rs1
+    TEST_CJALR_OP($testreg, $rs1, $swreg, $offset)
+
+c.flw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs1_op_data: *c_regs 
+  rd_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'clformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: '[0]'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg; fcsr: $fcsr
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.flwsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rd_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  formattype: 'ciformat'
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'  
+  template: |-
+    // $comment
+    // opcode: $inst op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg; fcsr: $fcsr
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.fsw:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  xlen: [32]
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_fregs
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'csformat'
+  ea_align_data: '[0,1,2,3]'
+  rs1_val_data: '[0]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fswsp:
+  sig:
+    stride: 1
+    sz: 'XLEN/8'
+  rs2_op_data: *c_fregs
+  xlen: [32]
+  std_op:
+  isa: 
+    - IF_Zcf
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'cssformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)'
+  imm_val_data: '[x*4 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fld:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: '8'
+    val_template: "''"
+    load_instr: "fld"
+  rs1_op_data: *c_regs
+  rd_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  formattype: 'clformat'
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  ea_align_data: '[0,1,2,3]'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:$rs1; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:$flagreg
+    TEST_LOAD_F($swreg,$testreg,$fcsr,$rs1,$rd,$imm_val,$inst,$ea_align,$flagreg)
+    
+c.fldsp:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  rd_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  formattype: 'ciformat'
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    // opcode: $inst; op1:x2; dest:$rd; immval:$imm_val; align:$ea_align; flagreg:x4
+    TEST_LOAD_F($swreg,$testreg,$fcsr,x2,$rd,$imm_val,$inst,$ea_align,x4)
+    
+    
+c.fsd:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: 'FLEN/8'
+    val_template: "''"
+    load_instr: "FLREG"
+  rs1_op_data: *c_regs
+  rs2_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'csformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)' 
+  imm_val_data: '[x*8 for x in gen_usign_dataset(5)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+       valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)
+    
+c.fsdsp:
+  sig:
+    stride: 2
+    sz: 'SIGALIGN'
+  val:
+    stride: 1
+    sz: 'FLEN/8'
+    val_template: "''"
+    load_instr: "FLREG"
+  rs2_op_data: *c_fregs
+  xlen: [32,64]
+  std_op:
+  isa: 
+    - IFD_Zcd
+  fcsr_data: '[x<<5|y for x,y in itertools.product([0,1,2,3,4],range(0,2**5))]'
+  formattype: 'cssformat'
+  ea_align_data: '[0,1,2,3]'
+  rs2_val_data: 'gen_sign_dataset(xlen)' 
+  imm_val_data: '[x*8 for x in gen_usign_dataset(6)]'
+  template: |-
+    // $comment
+    /* opcode: $inst; op1:$rs1; op2:$rs2; op2val:$rs2_val; immval:$imm_val; align:$ea_align; flagreg:$flagreg;
+     valreg: $valaddr_reg; valoffset: $val_offset
+    */
+    TEST_STORE_F($swreg,$testreg,$fcsr,$rs1,$rs2,$imm_val,$offset,$inst,$ea_align,$flagreg,$valaddr_reg, $val_offset)

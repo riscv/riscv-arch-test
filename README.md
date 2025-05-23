@@ -73,9 +73,185 @@ The files [`COPYING.BSD`](./COPYING.BSD), [`COPYING.APACHE`](./COPYING.APACHE) a
 ## Quick Links:
 
 - RISCOF \[[DOCS](https://riscof.readthedocs.io/en/latest/)\] \[[REPO](https://github.com/riscv-software-src/riscof)\]: This is the next version of the architectural test framework currently under development
-- RISCV-ISAC \[[DOCS](https://riscv-isac.readthedocs.io/en/latest/index.html)\] \[[REPO](https://github.com/riscv-software-src/riscv-isac)\] : This is an ISA level coverage extraction tool for RISC-V which used to generate the coverage statistics of the architectural tests.
-- RISCV-CTG: \[[DOCS](https://riscv-ctg.readthedocs.io/en/latest/index.html)\]\[[REPO](https://github.com/riscv-software-src/riscv-ctg)\]: This is a RISC-V Architectural Test generator used to generate some of the tests already checked into this repository.
+- RISCV-ISAC \[[DOCS](https://riscv-isac.readthedocs.io/en/latest/index.html)\]: This is an ISA level coverage extraction tool for RISC-V which used to generate the coverage statistics of the architectural tests.
+- RISCV-CTG: \[[DOCS](https://riscv-ctg.readthedocs.io/en/latest/index.html)\]: This is a RISC-V Architectural Test generator used to generate some of the tests already checked into this repository.
 - [Videos](https://youtu.be/VIW1or1Oubo): This Global Forum 2020 video provides an introduction to the above mentioned tools
 - [riscvOVPsim](https://github.com/riscv-ovpsim/imperas-riscv-tests): Imperas freeware RISC-V reference simulator for compliance testing
 - [riscvOVPsimPlus](https://www.ovpworld.org/riscvOVPsimPlus/): Imperas enhanced freeware RISC-V reference simulator for test development and verification
 
+# Getting Started
+
+This section serves as a quick guide to set up RISCOF and perform a sample validation check between Spike (DUT in this case) and Sail-riscv (Reference Golden Model). This guide will help you set up all the required tooling for running RISCOF on your system.
+
+### Install Python
+
+### Ubuntu
+
+For Ubuntu, you can directly install Python using the Universe repository:
+
+```bash
+$ sudo apt-get install python3.6
+$ pip3 install --upgrade pip
+```
+You should now have two binaries: `python3` and `pip3` available in your `$PATH`.
+
+### Install riscv-ctg & riscv-isac
+To install riscv-ctg, run this command in your terminal:
+
+```
+$ git clone https://github.com/riscv-non-isa/riscv-arch-test.git
+$ cd riscv-ctg
+$ pip3 install --editable .
+$ cd ..
+$ cd riscv-isac
+$ pip3 install --editable .
+```
+
+This is the preferred method to install riscv-isac and riscv-ctg, as updated riscv-ctg will always be maintained here.
+
+### Install RISCOF
+To install RISCOF, run this command in your terminal:
+
+```
+$ pip3 install git+https://github.com/riscv/riscof.git
+```
+This is the preferred method to install RISCOF, as it will always install the most recent stable release.
+
+To run RISCOF, you need to install two components: riscv-ctg and riscv-isac.
+
+
+### Test RISCOF
+Once you have installed `RISCOF`, you can execute `riscof --help` to print the help routine:
+
+```bash
+$ riscof --help
+Usage: riscof [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --version                       Show the version and exit.
+  -v, --verbose [info|error|debug]
+                                  Set verbose level
+  --help                          Show this message and exit.
+
+Commands:
+  arch-test     Setup and maintenance for Architectural TestSuite.
+  coverage      Run the tests on DUT and reference and compare signatures
+  gendb         Generate Database for the Suite.
+  run           Run the tests on DUT and reference and compare signatures
+  setup         Initiate Setup for riscof.
+  testlist      Generate the test list for the given DUT and suite.
+  validateyaml  Validate the Input YAMLs using riscv-config.
+```
+
+
+## Install RISCV-GNU Toolchain
+
+This guide will use the 32-bit riscv-gnu toolchain to compile the architectural suite. If you already have the 32-bit gnu-toolchain available, you can skip to the next section.
+
+> **Note**: The git clone and installation will take significant time. Please be patient. If you face issues with any of the following steps, please refer to [riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) for further help in installation.
+
+### Ubuntu
+
+```bash
+$ sudo apt-get install autoconf automake autotools-dev curl python3 libmpc-dev \
+      libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool \
+      patchutils bc zlib1g-dev libexpat-dev
+$ git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
+$ git clone --recursive https://github.com/riscv/riscv-opcodes.git
+$ cd riscv-gnu-toolchain
+$ ./configure --prefix=/path/to/install --with-arch=rv32gc --with-abi=ilp32d # for 32-bit toolchain
+$ [sudo] make # sudo is required depending on the path chosen in the previous setup
+```
+
+Make sure to add the path `/path/to/install` to your `$PATH` in the `.bashrc/cshrc`.
+
+With this, you should now have all the following available as command line arguments:
+
+```bash
+riscv32-unknown-elf-addr2line      riscv32-unknown-elf-elfedit
+riscv32-unknown-elf-ar             riscv32-unknown-elf-g++
+riscv32-unknown-elf-as             riscv32-unknown-elf-gcc
+riscv32-unknown-elf-c++            riscv32-unknown-elf-gcc-8.3.0
+riscv32-unknown-elf-c++filt        riscv32-unknown-elf-gcc-ar
+riscv32-unknown-elf-cpp            riscv32-unknown-elf-gcc-nm
+riscv32-unknown-elf-gcc-ranlib     riscv32-unknown-elf-gprof
+riscv32-unknown-elf-gcov           riscv32-unknown-elf-ld
+riscv32-unknown-elf-gcov-dump      riscv32-unknown-elf-ld.bfd
+riscv32-unknown-elf-gcov-tool      riscv32-unknown-elf-nm
+riscv32-unknown-elf-gdb            riscv32-unknown-elf-objcopy
+riscv32-unknown-elf-gdb-add-index  riscv32-unknown-elf-objdump
+riscv32-unknown-elf-ranlib         riscv32-unknown-elf-readelf
+riscv32-unknown-elf-run            riscv32-unknown-elf-size
+riscv32-unknown-elf-strings        riscv32-unknown-elf-strip
+```
+# Installing RISC-V Reference Models: Spike and SAIL
+This section will guide you through the installation of two important RISC-V reference models: Spike and SAIL. These models are often used as reference models in the RISCOF framework.
+
+
+### 1. Spike (riscv-isa-sim)
+
+Spike is the official RISC-V ISA simulator, also known as the RISC-V ISA simulator (riscv-isa-sim). It is commonly used as a reference model in RISCOF for compliance testing.
+
+### Installation Steps for Spike
+
+```bash
+$ sudo apt-get install device-tree-compiler
+$ git clone https://github.com/riscv-software-src/riscv-isa-sim.git
+$ cd riscv-isa-sim
+$ mkdir build
+$ cd build
+$ ../configure --prefix=/path/to/install
+$ make
+$ [sudo] make install
+```
+Note: Use sudo if the installation path requires administrative privileges.
+
+
+### 2. SAIL (SAIL C-emulator)
+First install the [Sail Compiler](https://github.com/rems-project/sail/). It is recommended to use the pre-compiled [binary release](https://github.com/rems-project/sail/releases). This can be performed as follows:
+
+```bash
+$ sudo apt-get install libgmp-dev pkg-config zlib1g-dev curl
+$ curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
+```
+Note: Make sure to add the path `/path/to/install` to your `$PATH`.
+
+Then build the RISC-V Sail Model:
+```bash
+$ git clone https://github.com/riscv/sail-riscv.git
+$ cd sail-riscv
+$ ./build-simulators.sh
+```
+
+This will create a C simulator in `build/c_emulator/riscv_sim_rv64d` and `build/c_emulator/riscv_sim_rv32d`. You will need to add this path to your `$PATH` or create an alias to execute them from the command line.
+
+
+## Necessary Env Files
+
+To run tests via RISCOF, you will need to provide the following items:
+
+- **config.ini**: This file is a basic configuration file following the INI syntax. This file will capture information like the name of the DUT/reference plugins, path to the plugins, path to the riscv-config based YAMLs, etc. This file is located at `riscof-plugins/rv32/config.ini` for RV32 and at `riscof-plugins/rv64/config.ini` for `RV64`
+
+- **riscv-test-suite/**: The directory contains the architectural test suites.
+
+- **riscv-config/**: The repository containing the configuration files for various RISC-V implementations. You can clone the required repository using the following commands:
+
+```
+$ git clone https://github.com/riscv/riscv-config.git
+```
+
+
+## Running the Tests
+
+Once everything is set up, you can run the tests using the following command:
+
+```
+$ riscof run --config config.ini --suite riscv-test-suite/ --env riscv-test-suite/env
+```
+
+## Running the coverage command
+You can run the coverage using the following command:
+
+```
+$ riscof coverage --config=config.ini --cgf-file covergroups/dataset.cgf --cgf-file covergroups/m/rv32im.cgf --suite /riscv-test-suite/rv32i_m/M --env /riscv-test-suite/env
+```

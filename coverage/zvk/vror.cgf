@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+vror.vv:
+    config:
+      - check ISA:=(.*I.*V.*Zvkb)
+    mnemonics:
+      vror.vv: 0
+    rs1:
+      <<: *all_vregs
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      <<: *sfmt_op_comb
+
+vror.vx:
+    config:
+      - check ISA:=(.*I.*V.*Zvkb)
+    mnemonics:
+      vror.vx: 0
+    rs1:
+      <<: *all_regs
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      <<: *sfmt_op_comb
+
+vror.vi:
+    config:
+      - check ISA:=(.*I.*V.*Zvkb)
+    mnemonics:
+      vror.vi: 0
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      'rs2 == rd and rs2 != 0': 0
+      'rs2 != rd and rs2 != 0': 0

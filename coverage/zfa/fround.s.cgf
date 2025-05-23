@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+fround_b1:
+    config:
+      - check ISA:=regex(.*I.*F.*Zfa.*)
+    mnemonics:
+      fround.s: 0
+    rs1:
+      <<: *all_fregs
+    rd:
+      <<: *all_fregs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen, 32, "fsqrt.s", 1)': 0

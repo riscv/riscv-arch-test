@@ -1,0 +1,697 @@
+# For Licence details look at https://github.com/riscv-software-src/riscv-ctg/-/blob/master/LICENSE.incore
+
+mop.rr.0:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.0: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.1:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.1: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.2:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.2: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.3:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.3: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.4:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.4: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.5:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.5: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.6:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.6: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.rr.7:
+    config: 
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics: 
+      mop.rr.7: 0
+    rs1: 
+      <<: *all_regs
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+mop.r.0:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.0: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.1:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.1: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.2:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.2: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.3:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.3: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.4:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.4: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.5:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.5: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.6:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.6: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.7:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.7: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.8:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.8: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.9:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.9: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.10:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.10: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.11:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.11: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.12:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.12: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.13:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.13: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.14:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.14: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.15:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.15: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.16:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.16: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.17:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.17: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.18:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.18: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.19:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.19: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.20:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.20: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.21:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.21: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.22:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.22: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.23:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.23: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.24:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.24: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.25:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.25: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.26:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.26: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.27:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.27: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.28:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.28: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.29:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.29: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.30:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.30: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]
+
+mop.r.31:
+    config:
+      - check ISA:=regex(.*Zimop.*)
+    mnemonics:
+      mop.r.31: 0
+    rs1:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+    abstract_comb:
+      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+      <<: [*rs1val_walking, *ifmt_immval_walking]

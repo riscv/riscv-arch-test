@@ -1,0 +1,190 @@
+
+clbu:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.lbu: 0
+    rs1: 
+      <<: *c_regs
+    rd: 
+      <<: *c_regs
+    op_comb:
+        'rs1 == rd': 0
+        'rs1 != rd': 0
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val == 1': 0
+        'imm_val == 2': 0
+        'imm_val == 3': 0
+
+clhu:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.lhu: 0
+    rs1: 
+      <<: *c_regs
+    rd: 
+      <<: *c_regs
+    op_comb:
+        'rs1 == rd': 0
+        'rs1 != rd': 0
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val == 2': 0
+
+clh:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.lh: 0
+    rs1: 
+      <<: *c_regs
+    rd: 
+      <<: *c_regs
+    op_comb:
+        'rs1 == rd': 0
+        'rs1 != rd': 0
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val == 2': 0
+
+csb:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.sb: 0
+    rs1: 
+      <<: *c_regs
+    rs2: 
+      <<: *c_regs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val == 1': 0
+        'imm_val == 2': 0
+        'imm_val == 3': 0
+
+csh:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.sh: 0
+    rs1: 
+      <<: *c_regs
+    rs2: 
+      <<: *c_regs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val == 2': 0
+
+csext.b:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*.Zbb.*)
+    mnemonics: 
+      c.sext.b: 0
+    rs1: 
+      <<: *c_regs
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x80': 0
+      'rs1_val == 0x8000': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+csext.h:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*.Zbb.*)
+    mnemonics: 
+      c.sext.h: 0
+    rs1: 
+      <<: *c_regs
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x800': 0
+      'rs1_val == 0xFF80': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+
+czext.b:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.zext.b: 0
+    rs1: 
+      <<: *c_regs
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x80': 0
+      'rs1_val == 0x8000': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+
+czext.h:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*.Zbb.*)
+    mnemonics: 
+      c.zext.h: 0
+    rs1: 
+      <<: *c_regs
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x800': 0
+      'rs1_val == 0xFF80': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+
+czext.w:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*.Zba.*)
+    mnemonics: 
+      c.zext.w: 0
+    rs1: 
+      <<: *c_regs
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x800': 0
+      'rs1_val == 0xFF80': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+
+cnot:
+    config: 
+      - check ISA:=regex(.*I.*Zca.*Zcb.*)
+    mnemonics: 
+      c.not: 0
+    rs1: 
+      <<: *c_regs
+    op_comb:
+      <<: *r0fmt_op_comb
+    val_comb:
+      'rs1_val == 0': 0
+      'rs1_val == 0x800': 0
+      'rs1_val == 0xFF80': 0
+      abstract_comb:
+        'walking_ones("rs1_val", xlen, False)': 0
+        'walking_zeros("rs1_val", xlen, False)': 0
+
+cmul:
+    config: 
+      - check ISA:=regex(.*I.*M.*Zca.*Zcb.*)
+    mnemonics: 
+      c.mul: 0
+    rs1:
+      <<: *c_regs
+    rs2:
+      <<: *c_regs
+    op_comb:
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]

@@ -1,0 +1,14 @@
+# For Licence details look at https://github.com/riscv-software-src/riscv-ctg/-/blob/master/LICENSE.incore
+
+cbozero:
+    config:
+      - check ISA:=regex(.*I.*Zicboz.*Zicsr.*)
+    opcode:
+      cbo.zero: 0
+    rs1:
+      <<: *all_regs_mx0
+    val_comb:
+      abstract_comb:
+        'walking_ones("rs1_val", 12, False)': 0
+        'walking_zeros("rs1_val", 12, False)': 0
+        'uniform_random(10, 100, ["rs1_val"], [12])': 0

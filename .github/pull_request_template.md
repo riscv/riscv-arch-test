@@ -29,12 +29,9 @@
   - [ ] Ran the new tests on RISCOF with SAIL/Spike as reference model successfully ?
   - [ ] Ran the new tests on RISCOF in [coverage mode](https://riscof.readthedocs.io/en/stable/commands.html#coverage)
   - [ ] Link to Google-Drive folder containing the new coverage reports ([See this](https://github.com/riscv-non-isa/riscv-arch-test/blob/main/CONTRIBUTION.md#uploading-test-stats) for more info): < SPECIFY HERE >
-  - [ ] Link to PR in RISCV-ISAC from which the reports were generated : < SPECIFY HERE > 
-  - [ ] Changelog entry created with a minor patch
 
 ### Optional Checklist:
 
-  - [ ] RISCV-V CTG PR link if tests were generated using it : < SPECIFY HERE >
   - [ ] Were the tests hand-written/modified ?
   - [ ] Have you run these on any hard DUT model ? Please specify name and provide link if possible in the description
   - [ ] If you have modified arch\_test.h Please provide a detailed description of the changes in the Description section above.

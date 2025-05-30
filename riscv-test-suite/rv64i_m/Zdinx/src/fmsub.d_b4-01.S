@@ -29,7 +29,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*I.*Zdinx.*);def TEST_CASE_1=True;",fmsub.d_b4)
+RVTEST_CASE(0,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zdinx.*);def TEST_CASE_1=True;",fmsub.d_b4)
 
 RVTEST_FP_ENABLE()
 RVTEST_VALBASEUPD(x3,test_dataset_0)

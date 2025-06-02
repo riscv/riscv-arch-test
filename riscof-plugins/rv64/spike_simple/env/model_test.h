@@ -10,6 +10,9 @@
         .align 8; .global end_regstate; end_regstate:                   \
         .word 4;
 
+//Comment the following line if you don't want to run in the self-checking mode.
+#define RVTEST_SELFCHK_MODE
+
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\
 li x1, 1                ;\
@@ -28,7 +31,7 @@ li x1, 1                ;\
 //RV_COMPLIANCE_DATA_END
 #define RVMODEL_DATA_END                                                      \
   .align 4;\
-  .global end_signature; end_signature:  
+  .global end_signature; end_signature:
 
 //RVTEST_IO_INIT
 #define RVMODEL_IO_INIT

@@ -11,6 +11,9 @@
         .align 8; .global end_regstate; end_regstate:                   \
         .word 4;
 
+// Uncomment only if you want to run the tests on the RISC-V Sail Model in self-checking Mode.
+// #define RVTEST_SELFCHK_MODE
+
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\
 li x1, 1                ;\

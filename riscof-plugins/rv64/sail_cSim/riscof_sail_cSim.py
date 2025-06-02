@@ -67,6 +67,9 @@ class sail_cSim(pluginTemplate):
             self.isa += 'd'
         if "C" in ispec["ISA"]:
             self.isa += 'c'
+        if "_Zicsr" in ispec["ISA"]:
+            self.isa += '_zicsr'
+
         objdump = "riscv{0}-unknown-elf-objdump".format(self.xlen)
         if shutil.which(objdump) is None:
             logger.error(objdump+": executable not found. Please check environment setup.")
@@ -170,3 +173,48 @@ class sail_cSim(pluginTemplate):
 
             make.add_target(execute)
         make.execute_all(self.work_dir)
+
+    def genSigheader(self, sigName, test_list):
+        logger.info("Generating Signature Files...")
+        for test in test_list:
+            test_path = test_list[test]['test_path']
+            sig_file_path = os.path.join(test_list[test]['work_dir'],"ref",sigName[:-1]+".signature")
+            with open(sig_file_path, 'r') as file:
+                sig_file = [line.strip() for line in file.readlines()]
+
+            with open(test_path, 'r') as file:
+                test_file = [line.strip() for line in file.readlines()]
+
+            sig_lst = []
+            sig_size = re.compile(r"(\d+)[\*,]")
+            curr_idx = 0
+            mtrap_sigptr = any('mtrap' in macro for macro in test_list[test]['macros'])
+            for idx, line in enumerate(test_file):
+                if  ':' in line:
+                    if 'signature_x' in line:
+                        sig_lst.append((line, int(sig_size.findall(test_file[idx+1])[0])))
+                    elif 'mtrap_sig' in line and mtrap_sigptr:
+                        sig_lst.append((line, int(sig_size.findall(test_file[idx+1])[0])))
+                    curr_idx+=1
+
+            output = []
+            curr_sig_idx = 0
+            for curr_sig in range(len(sig_lst)):
+                if "mtrap_sig" in sig_lst[curr_sig][0]:
+                    output.append(f"  .dword 0x6f5ca309e7d4b281")
+                output.append(f"{sig_lst[curr_sig][0]}")
+                sig_idx = 0
+                while sig_idx in range(sig_lst[curr_sig][1]):
+                    if (sig_file[curr_sig_idx]) != '6f5ca309e7d4b281':
+                        output.append(f"  .dword 0x{sig_file[curr_sig_idx]}")
+                        sig_idx+=1
+                    curr_sig_idx +=1
+
+            sig_header_content = '\n'.join(output)
+
+            req_riscv_test_idx = test_list[test]['test_path'].find("riscv-test-suite") + len("riscv-test-suite")
+            sig_header_path = os.path.join('/home/hammad/ARCH_TESTS_WORK/SELF_CHECK/riscv-arch-test/riscv-test-suite/Reference', test_list[test]['test_path'][req_riscv_test_idx+1:-1]+'S')
+            os.makedirs(os.path.dirname(sig_header_path), exist_ok=True)
+
+            with open(sig_header_path, 'w') as f:
+                f.write(sig_header_content)

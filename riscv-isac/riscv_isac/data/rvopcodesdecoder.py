@@ -363,6 +363,9 @@ class disassembler():
                 reg_type = 'f'
             if file_name in ['rv_zfh','rv_d_zfh','rv64_zfh'] and temp_instrobj.inxFlg == True:
                 reg_type = 'x'
+            if file_name in ['rv_d','rv64_d'] and temp_instrobj.inxFlg == True:
+                reg_type = 'x'
+                
             for arg in args[:-1]:
                 if 'rd' in arg:
                     treg = reg_type
@@ -375,7 +378,7 @@ class disassembler():
                 if 'rd' in arg and self.inxFlag == True:
                     treg = reg_type
                     if any([instr_name.startswith(x) for x in [
-                            'fcvt.w','fcvt.l','fmv.s','fmv.d','flt','feq','fle','fclass','fmv.x','fsqrt','fmax','fmin','fadd','fsub','feq','flt','fle','fmul','fdiv','fsgnj','fsgnjn','fsgnjx','fcvt.lu','fcvt.wu']]):
+                            'fcvt.w','fcvt.l','fmv.s','fmv.d','flt','feq','fle','fclass','fmv.x','fsqrt','fmax','fmin','fadd','fsub','feq','flt','fle','fmul','fdiv','fsgnj','fsgnjn','fsgnjx','fcvt.lu','fcvt.wu','fmadd']]):
                         treg = 'x'
                     temp_instrobj.rd = (int(get_arg_val(arg)(mcode), 2), treg)
 
@@ -389,7 +392,7 @@ class disassembler():
                 if 'rs1' in arg and self.inxFlag == True:
                     treg = reg_type
                     if any([instr_name.startswith(x) for x in [
-                            'fsh', 'fsw','fsd','fcvt.s','fcvt.d','fmv.w','fmv.l','fcvt.h','fmv.h','flh','fclass','fsqrt','fmax','fmin','fadd','fsub','feq','fle','flt','fmul','fdiv','fsgnj','fsgnjn','fsgnjx','fcvt.lu','fcvt.w','fcvt.wu']]):
+                            'fsh', 'fsw','fsd','fcvt.s','fcvt.d','fmv.w','fmv.l','fcvt.h','fmv.h','flh','fclass','fsqrt','fmax','fmin','fadd','fsub','feq','fle','flt','fmul','fdiv','fsgnj','fsgnjn','fsgnjx','fcvt.lu','fcvt.w','fcvt.wu','fmadd']]):
                         treg = 'x'
                     temp_instrobj.rs1 = (int(get_arg_val(arg)(mcode), 2), treg)
 
@@ -399,7 +402,7 @@ class disassembler():
                 if 'rs2' in arg and self.inxFlag == True:
                     treg = reg_type
                     if any([instr_name.startswith(x) for x in [
-                            'fsh', 'fsw','fsd','fcvt.s','fcvt.d','fmv.w','fmv.l','fcvt.h','fmv.h','flh','fclass','fsqrt','fmax','fmin','fadd','fsub','feq','fle','flt','fmul','fdiv','fsgnj','fsgnjn','fsgnjx']]):
+                            'fsh', 'fsw','fsd','fcvt.s','fcvt.d','fmv.w','fmv.l','fcvt.h','fmv.h','flh','fclass','fsqrt','fmax','fmin','fadd','fsub','feq','fle','flt','fmul','fdiv','fsgnj','fsgnjn','fsgnjx','fmadd']]):
                         treg = 'x'
                     temp_instrobj.rs2 = (int(get_arg_val(arg)(mcode), 2), treg)
                     if 'p' in arg:

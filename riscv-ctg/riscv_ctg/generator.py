@@ -260,8 +260,7 @@ class Generator():
 
 
         is_nan_box = False
-
-        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x or 'Zhinx' in x for x in opnode['isa']])
+        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x or 'Zhinx' in x or 'Zdinx' in x for x in opnode['isa']])
         is_sgn_extd = True if (inxFlag and iflen <xlen) else False
 
         if is_fext:
@@ -489,10 +488,10 @@ class Generator():
                     problem = Problem()
 
                 for var in self.val_vars:
-                    if var == 'ea_align' and var not in req_val_comb:
-                        problem.addVariable(var, [0])
-                    else:
-                        problem.addVariable(var, self.datasets[var])
+                    dataset = self.datasets[var]
+                    if var not in req_val_comb:
+                        dataset = dataset[:1]
+                    problem.addVariable(var, dataset)
 
                 def condition(*argv):
                     for var,val in zip(self.val_vars,argv):

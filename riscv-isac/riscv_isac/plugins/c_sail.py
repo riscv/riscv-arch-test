@@ -20,7 +20,10 @@ irrespective of their original size.')
     instr_pattern_c_sail_csr_reg_val = re.compile('(?P<CSR>CSR|clint::tick)\s(?P<reg>[a-z0-9]+)\s<-\s(?P<val>[0-9xABCDEF]+)(?:\s\(input:\s(?P<input_val>[0-9xABCDEF]+)\))?')
     instr_pattern_c_sail_mem_val = re.compile('mem\[(?P<addr>[0-9xABCDEF]+)\]\s<-\s(?P<val>[0-9xABCDEF]+)')
     instr_pattern_c_sail_trap = re.compile(r'trapping\sfrom\s(?P<mode_change>\w+\sto\s\w+)\sto\shandle\s(?P<call_type>\w+.*)\shandling\sexc#(?P<exc_num>0x[0-9a-fA-F]+)\sat\spriv\s\w\swith\stval\s(?P<tval>0x[0-9a-fA-F]+)')
+    instr_pattern_c_sail_interrupt = re.compile(r'Handling\s(?P<call_type>\w+):\s(?P<intr_num>0x[0-9a-fA-F]+)\shandling\sint#0x[0-9a-fA-F]+\sat\spriv\s\w\swith\stval\s(?P<tval>0x[0-9a-fA-F]+)')
     instr_pattern_c_sail_ret  = re.compile(r'ret-ing\sfrom\s(?P<mode_change>\w+\sto\s\w+)')
+    instr_pattern_c_sail_mip = re.compile(r'\(mip\.(?P<bit>\w+)\s<-\s(?P<val>[0-9a-fA-F]+b[0-9a-fA-F]+)\)')
+# (?P<bit_type>)\s<-\s(?P<Bit_value>))
     def extractInstruction(self, line):
         instr_pattern = self.instr_pattern_c_sail
         re_search = instr_pattern.search(line)
@@ -123,8 +126,23 @@ irrespective of their original size.')
         else:
             return mem_val
     
+    def extractMIPVal(self, line):
+        '''
+        Function to extract the hart updated value of MIP CSR.        
+        return: int -> value updated in the MIP
+        '''
+        instr_pattern = self.instr_pattern_c_sail_mip.search(line)
+        mip = {'mei': 0x800, 'sei': 0x200, 'mti': 0x80, 'sti': 0x20,'msi': 0x8,'ssi': 0x2}
+
+        if instr_pattern:
+            if instr_pattern.group("bit").lower() in mip.keys():
+                return mip[instr_pattern.group("bit").lower()] * int(instr_pattern.group("val"), 2)
+            else:
+                return None
+
     def extracttrapvals(self, line):
         instr_trap_pattern = self.instr_pattern_c_sail_trap.search(line)
+        instr_interrupt_pattern  = self.instr_pattern_c_sail_interrupt.search(line)
         trap_dict = {"mode_change": None, "call_type": None, "exc_num": None, "tval": None}
 
         #ret will tell us to delete the previous state of the cause registers
@@ -136,12 +154,20 @@ irrespective of their original size.')
             trap_dict["tval"]        = instr_trap_pattern.group("tval")
             self.old_trap_dict = trap_dict
 
+        #update the cause registers if there is interrupt
+        elif instr_interrupt_pattern:
+            trap_dict["mode_change"] = None
+            trap_dict["call_type"]   = instr_interrupt_pattern.group("call_type")
+            trap_dict["exc_num"]     = instr_interrupt_pattern.group("intr_num")
+            trap_dict["tval"]        = instr_interrupt_pattern.group("tval")
+            self.old_trap_dict = trap_dict
+ 
         elif instr_ret_pattern:
             #if ret_signal is 1 then clear the values of the mode_change, call_type, exc_num, tval
             trap_dict = {"mode_change": None, "call_type": None, "exc_num": None, "tval": None}
             self.old_trap_dict = trap_dict
 
-        #maintain the values if None unit the new trap appears
+        #maintain the values if None until the new trap appears
         if instr_trap_pattern is None or instr_ret_pattern is None:
             trap_dict = self.old_trap_dict
         return trap_dict
@@ -159,5 +185,6 @@ irrespective of their original size.')
             vm_addr_dict = self.extractVirtualMemory(line)
             mem_val = self.extractMemVal(line)
             trap_dict = self.extracttrapvals(line)
-            instrObj = instructionObject(instr, 'None', addr, reg_commit = reg_commit, csr_commit = csr_commit, mnemonic = mnemonic, mode = mode, vm_addr_dict = vm_addr_dict, mem_val = mem_val, trap_dict = trap_dict)
+            mip_updated_val = self.extractMIPVal(line)
+            instrObj = instructionObject(instr, 'None', addr, reg_commit = reg_commit, csr_commit = csr_commit, mnemonic = mnemonic, mode = mode, vm_addr_dict = vm_addr_dict, mem_val = mem_val, trap_dict = trap_dict, mip_updated_val = mip_updated_val)
             yield instrObj

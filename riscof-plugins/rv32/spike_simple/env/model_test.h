@@ -33,6 +33,7 @@ li x1, 1                ;\
 
 //RV_COMPLIANCE_DATA_END
 #define RVMODEL_DATA_END                                                      \
+.align ALIGNMENT;\
   .global end_signature; end_signature:  
 
 //RVTEST_IO_INIT

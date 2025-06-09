@@ -9,7 +9,32 @@ Your inputs are welcome and greatly appreciated! We want to make contributing to
 - Becoming a maintainer
 
 ## We develop with Github
+
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
+
+## Prepare
+
+We use [ruff](https://docs.astral.sh/ruff/) as our linter and formatter, all the changes you made will be checked by Github CI pipeline
+
+- install ruff: `pip install ruff` or [more install methods](https://docs.astral.sh/ruff/installation/)
+
+To run ruff locally, you can use [pre-commit](https://pre-commit.com/), it runs the same check as CI pipeline:
+
+- install pre-commit: `pip install pre-commit`
+
+then you can run check directly by: `pre-commit run`
+
+> notice that pre-commit will only run on the staged files, if you want to check all, please use `pre-commit run -a`
+
+If you use git, you can set [git hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) automatically by:
+
+- set git hooks: `pre-commit install`
+
+then pre-commit check will be triggered automatically when you run `git commit`
+
+> if your think some changes are necessary even though they won't pass the check, you can use `git commit --no-verify` which will skip the pre-commit check.
+
+If you are using vscode, you can also use [Offical Ruff Extension for vscode](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) to automatically format/lint your code on save.
 
 ## We use a simple git flow where all code changes happen through Pull Requests
 
@@ -54,9 +79,11 @@ Note: You can have either a patch or minor or major update.
 Note: In case of a conflict, the maintainers will decide the final version to be assigned.
 
 ## Any contributions you make will be under the permissive open-source License
+
 In short, when you submit code changes, your submissions are understood to be under a permissive open source license like BSD-3, Apache-2.0 and CC, etc that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's [issues](https://github.com/riscv/riscv-arch-test/issues)
+
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/riscv/riscv-arch-test/issues/new); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
@@ -66,7 +93,7 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 - A quick summary and/or background
 - Steps to reproduce
   - Be specific!
-  - Give sample code if you can. 
+  - Give sample code if you can.
 - What you expected would happen
 - What actually happens
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
@@ -74,4 +101,3 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 ## License
 By contributing, you agree that your contributions will be licensed under its permissive open source
 licenses.
-

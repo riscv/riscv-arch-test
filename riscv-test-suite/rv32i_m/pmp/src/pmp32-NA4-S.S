@@ -27,7 +27,7 @@
 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64I_Zicsr")
+RVTEST_ISA("RV32I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -45,7 +45,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 3); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 3); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -92,9 +92,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     sw a4, 0(a5)                 							// Word store test
     nop
     nop
-    sd a4, 0(a5)                 							// Double-word store test
-    nop
-    nop
 
     // Load Access Check
     lb a4, 0(a5)                 							// Byte-level load test
@@ -109,18 +106,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-    ld a4, 0(a5)                 							// Double-word load test
-    nop
-    nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
 .endm
 
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/8
+	.rept RVMODEL_NUM_PMPS/4
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
+	.set pmpcfgi, pmpcfgi+1
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -174,7 +167,7 @@ main:
 	LI(x4, PMPREGIONRWX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -184,7 +177,7 @@ main:
 	LI(x4, PMPREGIONRX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -194,7 +187,7 @@ main:
 	LI(x4, PMPREGIONRW)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
@@ -204,17 +197,18 @@ main:
 	LI(x4, PMPREGIONR)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE
 
 //Test Case: 5 -- X Permissions given to the PMP Region.
 
+
 	LI(x4, PMPREGIONX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+	RVTEST_GOTO_LOWER_MODE	Smode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE

@@ -6,6 +6,10 @@
   #define ALIGNMENT 2
 #endif
 
+#define RVMODEL_PMP_GRAIN   0
+#define RVMODEL_NUM_PMPS    16
+
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                            \
         .align 8; .global tohost; tohost: .dword 0;                     \

@@ -22,12 +22,12 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
-// Total expected faults: 2+5+3+6+8 = 24.
+// Total expected faults: 3+1+4+6 = 14.
 // ---------------------------------------------------------------------------
 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64I_Zicsr")
+RVTEST_ISA("RV32I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -45,7 +45,7 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 3); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_S_U)
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-writable'] >= 7); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NAPOT_M)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -92,9 +92,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     sw a4, 0(a5)                 							// Word store test
     nop
     nop
-    sd a4, 0(a5)                 							// Double-word store test
-    nop
-    nop
 
     // Load Access Check
     lb a4, 0(a5)                 							// Byte-level load test
@@ -109,18 +106,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-    ld a4, 0(a5)                 							// Double-word load test
-    nop
-    nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
 .endm
 
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/8
+	.rept RVMODEL_NUM_PMPS/4
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
+	.set pmpcfgi, pmpcfgi+1
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -134,12 +127,12 @@ main:
 	PMP configurations selection
 	MACROS TO DECLARE THE VALUES TO BE STORED IN PMPCFG registers
 */
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))//All memory region to be used by pmp2cfg0
-#define PMPREGIONRWX      	((((	  PMP_R|PMP_W|PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRX      	((((	  PMP_R|	  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONRW      	((((	  PMP_R|PMP_W|		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONR      	((((	  PMP_R|	  		PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGIONX      	((((				  PMP_X|PMP_NA4)&0xFF) << PMP0_CFG_SHIFT))
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP2_CFG_SHIFT))	//All memory region to be used by pmp15cfg2
+#define PMPREGIONRWX      	((	PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT
+#define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT
+#define PMPREGIONR      	((	PMP_L|PMP_R|	  		PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMPREGIONX      	((	PMP_L|		  	  PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 /*
 	PMP address selection
@@ -147,77 +140,117 @@ main:
 */
 #define PMPADDRESS_TOP_GLOBAL		-1													//All memory region
 #define PMPADDRESS_BOTTOM_GLOBAL	0x0													//Base address
-#define PMPADDRESS0			TEST_FOR_EXECUTION 										// Test Section address
+#define PMPADDRESS_TEST			TEST_FOR_EXECUTION 										// Test Section address
+#define PMP_REGION_SIZE 		(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#define PMP_MASK				~(1 << (RVMODEL_PMP_GRAIN - 1))
 
 //											Test Setup Section
-	csrw satp, x0																	// Disable Address Translation
+	csrw satp, x0																		// Disable Address Translation
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr2, x4
+	csrw 	pmpaddr6, x4
 
 	LA(x4, PMPADDRESS_BOTTOM_GLOBAL)
 	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr1, x4
-
-	LA(x4, PMPADDRESS0)
-	srl x4, x4, PMP_SHIFT
-	csrw 	pmpaddr0, x4
-
-	//Lock the region for other than the test region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg0, x4
+	csrw 	pmpaddr5, x4
 
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.
 
-	LI(x4, PMPREGIONRWX)
-	csrw pmpcfg0, x4
+	#select pmp napot region size based on the PMP_GRAIN.
+	LA(x4, PMPADDRESS_TEST)
+	srl x4, x4, PMP_SHIFT
 
-	RVTEST_GOTO_LOWER_MODE	Umode
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
+	csrw 	pmpaddr4, x4
+
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRWX)
+	csrw pmpcfg1, x4
+
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 //Test Case: 2 -- RX Permissions given to the PMP Region.
 
-	LI(x4, PMPREGIONRX)
+	LA(x4, PMPADDRESS_TEST)
+	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
+	csrw 	pmpaddr3, x4
+
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 //Test Case: 3 -- RW Permissions given to the PMP Region.
 
-	LI(x4, PMPREGIONRW)
+	LA(x4, PMPADDRESS_TEST)
+	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
+	csrw 	pmpaddr2, x4
+
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONRW)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 //Test Case: 4 -- R Permissions given to the PMP Region.
 
-	LI(x4, PMPREGIONR)
+	LA(x4, PMPADDRESS_TEST)
+	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
+	csrw 	pmpaddr1, x4
+
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONR)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 //Test Case: 5 -- X Permissions given to the PMP Region.
 
-	LI(x4, PMPREGIONX)
+	LA(x4, PMPADDRESS_TEST)
+	srl x4, x4, PMP_SHIFT
+
+.if RVMODEL_PMP_GRAIN != 0
+	li t0, PMP_MASK
+	and x4, x4, t0
+	li t0, PMP_REGION_SIZE
+	or x4, x4, t0
+.endif
+
+	csrw 	pmpaddr0, x4
+
+	LI(x4, PMP_REGION_GLOBAL | PMPREGIONX)
 	csrw pmpcfg0, x4
 
-	RVTEST_GOTO_LOWER_MODE	Umode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 
 	li a4, 0xbeefcafe											//Clean Test exit verification signature.
@@ -229,14 +262,20 @@ main:
 	Please change in model_test.h to change it here.
 */
 .align 3
+.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
+//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+.if RVMODEL_PMP_GRAIN == 0
+    nop
+.endif
 
 RETURN_INSTRUCTION:
 	nop
 	nop
+
 	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:

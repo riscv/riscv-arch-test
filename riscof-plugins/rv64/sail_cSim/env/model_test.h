@@ -11,6 +11,10 @@
         .align 8; .global end_regstate; end_regstate:                   \
         .word 4;
 
+
+#define RVMODEL_PMP_GRAIN   0
+#define RVMODEL_NUM_PMPS    16
+
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\
 li x1, 1                ;\

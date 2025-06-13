@@ -814,12 +814,14 @@
 .endm
 
 
-/**** This is a helper macro that causes harts to transition from    ****/
-/**** M-mode to a lower priv mode at the instruction that follows    ****/
-/**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/****  This uses T1,T2&T4. The H,U variations leave V unchanged.     ****/
-/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
-/**** FIXME - SATP & VSATP must point to the identity map page table ****/
+/**** This is a helper macro that causes harts to transition from               ****/
+/**** M-mode to a lower priv mode at the instruction that follows               ****/
+/**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
+/**** HUmode,Smode & Umode.                                                     ****/
+/**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
+/**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
 #define HSmode  0x9
 #define HUmode  0x8

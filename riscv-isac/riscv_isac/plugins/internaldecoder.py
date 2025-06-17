@@ -2313,7 +2313,7 @@ class disassembler():
             instrObj.rd = (rd, 'x')
             instrObj.rs1 = (rs1, 'x')
             instrObj.imm = imm_slli
-        elif funct3 == 1 and self.arch == 'rv64':
+        elif funct3 == 1:
             instrObj.instr_name = 'c.fldsp'
             instrObj.rd = (rd, 'f')
             instrObj.imm = imm_fldsp

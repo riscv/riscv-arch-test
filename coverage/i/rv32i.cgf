@@ -82,7 +82,7 @@ ori:
     rs1: 
       <<: *all_regs
     rd: 
-      <<: *all_regs
+      <<: *all_regs_mx0
     op_comb: 
       <<: *ifmt_op_comb
     val_comb:

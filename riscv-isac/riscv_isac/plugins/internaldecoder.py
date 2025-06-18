@@ -2330,7 +2330,7 @@ class disassembler():
             instrObj.imm = imm_lwsp
         elif funct3 == 3 and self.arch == 'rv64':
             instrObj.instr_name = 'c.ldsp'
-            instrObj.rd = (rd, 'f')
+            instrObj.rd = (rd, 'x')
             instrObj.rs1 = (2, 'x')
             instrObj.imm = imm_ldsp
         elif funct3 == 4 and rs1 != 0 and imm_5 == 0 and rs2 == 0:

@@ -965,10 +965,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             def old_fn_csr_comb_covpt(csr_reg):
                 return old_csr_regfile[csr_reg]
 
-            #update the arch state and csr_regfile for the current instruction
-            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
             #update instr_vars using updated arch state and updated csr_regfile
             instr.evaluate_instr_vars(xlen, flen, arch_state, csr_regfile, instr_vars)
+            #update the arch state and csr_regfile for the current instruction
+            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
 
             #update the state of trap registers in csr_reg file using instr_vars
             # if instr_vars["mode_change"] is not None:  #change the state only on the instruction

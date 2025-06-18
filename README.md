@@ -212,7 +212,7 @@ First install the [Sail Compiler](https://github.com/rems-project/sail/). It is 
 
 ```bash
 $ sudo apt-get install libgmp-dev pkg-config zlib1g-dev curl
-$ curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
+$ curl --location https://github.com/rems-project/sail/releases/latest/download/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
 ```
 Note: Make sure to add the path `/path/to/install` to your `$PATH`.
 

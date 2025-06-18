@@ -3105,6 +3105,27 @@ inst_613:
 // rs2_val == -134217729, 
 // opcode: rem ; op1:x30; op2:x29; dest:x31; op1val:0xb505;  op2val:-0x8000001
 TEST_RR_OP(rem, x31, x30, x29, 0xb505, 0xb505, -0x8000001, x8, 76*XLEN/8, x9)
+
+inst_614:
+// rs1 == "x0" != rd, rs1==x0, rs1_val==46341 and rs2_val==1431655766, 
+// opcode: rem ; op1:x0; op2:x31; dest:x31; op1val:0x0;  op2val:0x55555556
+TEST_RR_OP(rem, x31, x0, x31, 0x0, 0x0, 0x55555556, x8, 77*XLEN/8, x9)
+
+inst_615:
+// rd == "x0" != rs1, rs1==x25, rs1_val==46341 and rs2_val==1717986917, 
+// opcode: rem ; op1:x25; op2:x31; dest:x0; op1val:0xb505;  op2val:0x66666665
+TEST_RR_OP(rem, x0, x25, x31, 0, 0xb505, 0x66666665, x8, 78*XLEN/8, x9)
+
+inst_616:
+// rs1 == rd != rs2 and rd != "x0", rs1==x27, rs2==x26, rd==x27, rs1 == rd != rs2, rs1_val==46341 and rs2_val==6, 
+// opcode: rem ; op1:x27; op2:x26; dest:x27; op1val:0xb505;  op2val:0x6
+TEST_RR_OP(rem, x27, x27, x26, 0x3, 0xb505, 0x6, x8, 79*XLEN/8, x9)
+
+inst_617:
+// rs1 == rd != rs2 and rd == "x0", rs1==x0, rs2==x30, rd==x0, rs1 == rd != rs2, rs1_val==46341 and rs2_val==858993460, 
+// opcode: rem ; op1:x0; op2:x30; dest:x0; op1val:0x0;  op2val:0x33333334
+TEST_RR_OP(rem, x0, x0, x30, 0, 0x0, 0x33333334, x8, 80*XLEN/8, x9)
+
 #endif
 
 

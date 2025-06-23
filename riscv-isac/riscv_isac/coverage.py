@@ -524,7 +524,7 @@ class csr_registers(MutableMapping):
             "mie":int('304',16),
             "mtvec":int('305',16),
             "mcounteren":int('306',16),
-            "784":int('310',16),
+            "mstatush":int('310',16),
             "mscratch":int('340',16),
             "mepc":int('341',16),
             "mcause":int('342',16),

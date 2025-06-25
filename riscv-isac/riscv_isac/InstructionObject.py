@@ -161,7 +161,7 @@ class instructionObject():
         instr_vars['mnemonic'] = self.instr_name
 
         instr_vars['iflen'] = flen
-        if self.instr_name.endswith(".s") or 'fmv.x.w' in self.instr_name:
+        if self.instr_name.endswith(".s") or self.instr_name in {'fmv.x.w', 'flw', 'fsw'}:
             instr_vars['iflen'] = 32
         elif self.instr_name.endswith(".d"):
             instr_vars['iflen'] = 64
@@ -669,7 +669,7 @@ class instructionObject():
 
 
     def evaluate_reg_val_fsgn(self, reg_idx, flen, xlen, arch_state):
-        fsgn_sz = '>Q' if flen == 64 and xlen >32  else '>I'  
+        fsgn_sz = '>Q' if flen == 64 else '>I'  
         if self.inxFlg:
             return struct.unpack(fsgn_sz, bytes.fromhex(arch_state.x_rf[reg_idx]))[0]
         

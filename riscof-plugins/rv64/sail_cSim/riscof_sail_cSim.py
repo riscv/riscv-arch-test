@@ -52,6 +52,7 @@ class sail_cSim(pluginTemplate):
     def build(self, isa_yaml, platform_yaml):
         ispec = utils.load_yaml(isa_yaml)['hart0']
         self.xlen = ('64' if 64 in ispec['supported_xlen'] else '32')
+        self.flen = ('64' if "D" in ispec["ISA"] else '32')
         self.isa_yaml_path = isa_yaml
         self.isa = 'rv' + self.xlen
         self.compile_cmd = self.compile_cmd+' -mabi='+('lp64 ' if 64 in ispec['supported_xlen'] else 'ilp32 ')
@@ -160,8 +161,8 @@ class sail_cSim(pluginTemplate):
                 coverage_cmd = 'riscv_isac --verbose info coverage -d \
                         -t {0}.log --parser-name c_sail -o coverage.rpt  \
                         --sig-label begin_signature  end_signature \
-                        -e ref.elf -c {1} -x{2} {3} {4} {5};'.format(\
-                        test_name, ' -c '.join(cgf_file), self.xlen, cov_str, header_file_flag, cgf_mac)
+                        -e ref.elf -c {1} -x{2} -f{3} {4} {5} {6};'.format(\
+                        test_name, ' -c '.join(cgf_file), self.xlen, self.flen, cov_str, header_file_flag, cgf_mac)
             else:
                 coverage_cmd = ''
 

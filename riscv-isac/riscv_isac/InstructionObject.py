@@ -347,7 +347,7 @@ class instructionObject():
         if csr_commit is not None:
             for commit in csr_commit:
                 if (commit[0] == "CSR"):
-                    csr_regfile[commit[1]] = str(commit[2][2:])
+                    csr_regfile[commit[1]] = str(commit[3][2:])
 
         mem_val = self.mem_val
         if mem_val is not None:

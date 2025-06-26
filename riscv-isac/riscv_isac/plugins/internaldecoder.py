@@ -2108,6 +2108,33 @@ class disassembler():
                 instrObj.rs1 = (8 + rs1prime, 'x')
                 instrObj.imm = uimm_7_6_5_3
 
+        elif funct3 == 0b100:
+            if uimm_5_3 == 0:
+                instrObj.instr_name = 'c.lbu'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_7_6 >> 6
+            elif uimm_5_3 == 8 and uimm_2 == 4:
+                instrObj.instr_name = 'c.lh'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+            elif uimm_5_3 == 8 and uimm_2 == 0:
+                instrObj.instr_name = 'c.lhu'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+            elif uimm_5_3 == 16:
+                instrObj.instr_name = 'c.sb'
+                instrObj.rs2 = (8 + rs2prime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_7_6 >> 6
+            elif uimm_5_3 == 24 and uimm_2 == 0:
+                instrObj.instr_name = 'c.sh'
+                instrObj.rs2 = (8 + rs2prime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+               
         elif funct3 == 0b101:
             instrObj.instr_name = 'c.fsd'
             instrObj.rs1 = (8 + rs1prime, 'x')
@@ -2257,6 +2284,35 @@ class disassembler():
                 instrObj.rs1 = (8 + rs1prime, 'x')
                 instrObj.rd = (8 + rdprime, 'x')
                 instrObj.rs2 = (8 + rs2prime, 'x')
+            elif op == 3 and imm_4_0 == 24 and imm_5 == 32:
+                instrObj.instr_name = 'c.zext.b'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 25 and imm_5 == 32:
+                instrObj.instr_name = 'c.sext.b'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 26 and imm_5 == 32:
+                instrObj.instr_name = 'c.zext.h'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 27 and imm_5 == 32:
+                instrObj.instr_name = 'c.sext.h'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 29 and imm_5 == 32:
+                instrObj.instr_name = 'c.not'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and op2 == 2 and imm_5 == 32:
+                instrObj.instr_name = 'c.mul'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs2 = (8 + rs2prime, 'x')
+            elif op == 3 and imm_4_0 == 28 and imm_5 == 32 and self.arch == 'rv64':
+                instrObj.instr_name = 'c.zext.w'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
         elif funct3 == 5:
             instrObj.instr_name = 'c.j'
             instrObj.rd = (0, 'x')

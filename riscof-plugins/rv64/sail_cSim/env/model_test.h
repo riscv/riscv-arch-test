@@ -12,8 +12,13 @@
         .word 4;
 
 
-#define RVMODEL_PMP_GRAIN   0
-#define RVMODEL_NUM_PMPS    16
+#ifndef RVMODEL_PMP_GRAIN
+  #define RVMODEL_PMP_GRAIN   0
+#endif
+
+#ifndef RVMODEL_NUM_PMPS
+  #define RVMODEL_NUM_PMPS    16
+#endif
 
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\

@@ -52,6 +52,7 @@ class sail_cSim(pluginTemplate):
     def build(self, isa_yaml, platform_yaml):
         ispec = utils.load_yaml(isa_yaml)['hart0']
         self.xlen = ('64' if 64 in ispec['supported_xlen'] else '32')
+        self.flen = ('64' if "D" in ispec["ISA"] else '32')
         self.isa_yaml_path = isa_yaml
         self.isa = 'rv' + self.xlen
         self.compile_cmd = self.compile_cmd+' -mabi='+('lp64 ' if 64 in ispec['supported_xlen'] else 'ilp32 ')
@@ -122,25 +123,25 @@ class sail_cSim(pluginTemplate):
             else:
                 pmp_flags = ""
 
+            try:
+                sail_config = subprocess.run(["riscv_sim_rv64d", "--print-default-config"], check= True, text=True, capture_output=True)
+                sail_config = json.loads(sail_config.stdout)
+            except subprocess.CalledProcessError as e:
+                print("riscv_sim_rv64d --print-default-config failed:", e.stderr)
+                exit(1)
+            except json.JSONDecodeError:
+                print("riscv_sim_rv64d --print-default-config output is not valid JSON.")
+                exit(1)
+
+            sail_config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
+            sail_config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
+
+            #For User-configuration: Replace this variable with your configuration. "/home/riscv-arch-test/custom_sail_config.json"
             sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')
-
-            # Read the JSON configuration from the file
-            with open(sail_config_path, 'r', encoding='utf-8') as file:
-                config = json.load(file)
-
-            # Update the values for pmp
-            config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
-            config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
-
-            # Update the values for the ramsize.
-            config["platform"]["ram"]["base"] = 2147483648
-            config["platform"]["ram"]["size"] = 2147483648
-            # config["platform"]["ram"]["size"] = 8796093022208
-            # execute += self.sail_exe[self.xlen] + '  -i -v --trace=step {0} --ram-size=8796093022208 --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(pmp_flags, sig_file, elf, test_name)
 
             # Write the updated configuration back to the file
             with open(sail_config_path, 'w', encoding='utf-8') as file:
-                json.dump(config, file, indent=4)
+                json.dump(sail_config, file, indent=4)
 
             execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 
@@ -160,8 +161,8 @@ class sail_cSim(pluginTemplate):
                 coverage_cmd = 'riscv_isac --verbose info coverage -d \
                         -t {0}.log --parser-name c_sail -o coverage.rpt  \
                         --sig-label begin_signature  end_signature \
-                        -e ref.elf -c {1} -x{2} {3} {4} {5};'.format(\
-                        test_name, ' -c '.join(cgf_file), self.xlen, cov_str, header_file_flag, cgf_mac)
+                        -e ref.elf -c {1} -x{2} -f{3} {4} {5} {6};'.format(\
+                        test_name, ' -c '.join(cgf_file), self.xlen, self.flen, cov_str, header_file_flag, cgf_mac)
             else:
                 coverage_cmd = ''
 

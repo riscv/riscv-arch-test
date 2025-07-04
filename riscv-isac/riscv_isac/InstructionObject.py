@@ -161,7 +161,7 @@ class instructionObject():
         instr_vars['mnemonic'] = self.instr_name
 
         instr_vars['iflen'] = flen
-        if self.instr_name.endswith(".s") or 'fmv.x.w' in self.instr_name:
+        if self.instr_name.endswith(".s") or self.instr_name in {'fmv.x.w', 'flw', 'fsw'}:
             instr_vars['iflen'] = 32
         elif self.instr_name.endswith(".d"):
             instr_vars['iflen'] = 64
@@ -347,7 +347,7 @@ class instructionObject():
         if csr_commit is not None:
             for commit in csr_commit:
                 if (commit[0] == "CSR"):
-                    csr_regfile[commit[1]] = str(commit[2][2:])
+                    csr_regfile[commit[1]] = str(commit[3][2:])
 
         mem_val = self.mem_val
         if mem_val is not None:
@@ -669,7 +669,7 @@ class instructionObject():
 
 
     def evaluate_reg_val_fsgn(self, reg_idx, flen, xlen, arch_state):
-        fsgn_sz = '>Q' if flen == 64 and xlen >32  else '>I'  
+        fsgn_sz = '>Q' if flen == 64 else '>I'  
         if self.inxFlg:
             return struct.unpack(fsgn_sz, bytes.fromhex(arch_state.x_rf[reg_idx]))[0]
         
@@ -742,8 +742,8 @@ class instructionObject():
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(0x0)
             else:
                 bin_val =bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:]
-                f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
-                bin_val = bin_val[flen-iflen:]
+            f_ext_vars['rs'+postfix+'_nan_prefix'] =  int(bin_val[0:iflen],2)
+            bin_val = bin_val[flen-iflen:]
        
 
         f_ext_vars['fs'+postfix] = int(bin_val[0], 2)

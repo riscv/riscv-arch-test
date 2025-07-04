@@ -114,7 +114,7 @@ jobs:
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/rems-project/sail/releases/download/0.19-linux-binary/sail.tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/rems-project/sail/releases/latest/download/sail.tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
           git clone https://github.com/riscv/sail-riscv.git
           cd sail-riscv
           cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja

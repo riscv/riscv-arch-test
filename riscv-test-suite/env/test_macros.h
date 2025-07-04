@@ -615,9 +615,9 @@ Mend_PMP:                                    ;\
 
 #define RVTEST_BASEUPD(_BR,...)				;\
  /* deal with case where offset>=2047 */		;\
-       .set corr 2048-REGWIDTH				;\
+       .set corr, 2048-REGWIDTH				;\
     .if offset <2048 					;\
-       .set corr offset					;\
+       .set corr, offset				;\
     .endif						;\
     .set offset, offset-corr				;\
 							;\

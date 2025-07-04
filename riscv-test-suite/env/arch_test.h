@@ -320,6 +320,7 @@
 #define MPRV_LSB  17    //bit pos of LSB of the mstatus.MPRV field
 #define MPV_LSB    7    // bit pos of prev vmod mstatush.MPV in either mstatush or mstatus upper
 #define MPP_SMODE (1<<MPP_LSB)
+#define MPP_MMODE (3<<MPP_LSB)
 //define sizes
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 5) * 4)     // 5 is added ops before common entry pt
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
@@ -813,12 +814,14 @@
 .endm
 
 
-/**** This is a helper macro that causes harts to transition from    ****/
-/**** M-mode to a lower priv mode at the instruction that follows    ****/
-/**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/****  This uses T1,T2&T4. The H,U variations leave V unchanged.     ****/
-/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
-/**** FIXME - SATP & VSATP must point to the identity map page table ****/
+/**** This is a helper macro that causes harts to transition from               ****/
+/**** M-mode to a lower priv mode at the instruction that follows               ****/
+/**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
+/**** HUmode,Smode & Umode.                                                     ****/
+/**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
+/**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
 #define HSmode  0x9
 #define HUmode  0x8
@@ -842,15 +845,22 @@
 
   LI(    T4, MSTATUS_MPP)
   csrc   CSR_MSTATUS, T4                /* clr PP always                */
-
   .if    ((\LMODE\()==VSmode) || (\LMODE\()==HSmode) || (\LMODE\()==Smode))
+#ifdef rvtest_strap_routine
     LI(  T4, MPP_SMODE)                 /* val for Smode                */
+#else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+#endif
     csrs CSR_MSTATUS, T4                /* set in PP                    */
   .endif
         // do the same if XLEN=64
 #else                           /* XLEN=64, maybe 128? FIXME for 128    */
   .if ((\LMODE\()==Smode) || (\LMODE\()==Umode)) /* lv V unchanged here  */
-    LI(  T4,  MSTATUS_MPP)      /* but always clear PP                  */
+  #ifdef rvtest_strap_routine
+    LI(  T4, MPP_SMODE)                 /* val for Smode                */
+  #else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+  #endif
   .else
     LI(  T4, (MSTATUS_MPP | MSTATUS_MPV))       /* clr V and P          */
   .endif
@@ -860,7 +870,11 @@
     .if      (\LMODE\()==VSmode)
       LI(  T4, (MPP_SMODE | MSTATUS_MPV)) /* val for pp & v             */
     .elseif ((\LMODE\()==HSmode) || (\LMODE\()==Smode))
-      LI(  T4, (MPP_SMODE))     /* val for pp only                      */
+    #ifdef rvtest_strap_routine
+       LI(  T4, MPP_SMODE)                 /* val for Smode             */
+    #else
+       LI(  T4, MPP_MMODE)                 /* val for no Smode          */
+    #endif
     .else                       /* only VU left; set MPV only           */
       li   T4, 1                /* optimize for single bit              */
       slli T4, T4, 32+MPV_LSB   /* val for v only                       */

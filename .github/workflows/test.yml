@@ -117,7 +117,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/sail
-          key: sail-${{ env.SAIL_HASH }}-RV${{ matrix.xlen }}
+          key: sail-${{ env.SAIL_HASH }}
 
       - name: Install Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'
@@ -129,7 +129,7 @@ jobs:
           cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja
           cmake --build build
           mkdir -p $GITHUB_WORKSPACE/sail
-          mv build/c_emulator/riscv_sim_rv${{ matrix.xlen }}d $GITHUB_WORKSPACE/sail/riscv_sim_rv${{ matrix.xlen }}d
+          mv build/c_emulator/sail_riscv_sim $GITHUB_WORKSPACE/sail/sail_riscv_sim
 
       - name: Save cached Sail
         if: steps.cache-sail-restore.outputs.cache-hit != 'true'

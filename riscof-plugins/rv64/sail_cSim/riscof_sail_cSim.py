@@ -29,8 +29,7 @@ class sail_cSim(pluginTemplate):
             raise SystemExit(1)
         self.num_jobs = str(config['jobs'] if 'jobs' in config else 1)
         self.pluginpath = os.path.abspath(config['pluginpath'])
-        self.sail_exe = { '32' : os.path.join(config['PATH'] if 'PATH' in config else "","riscv_sim_rv32d"),
-                '64' : os.path.join(config['PATH'] if 'PATH' in config else "","riscv_sim_rv64d")}
+        self.sail_exe = os.path.join(config['PATH'] if 'PATH' in config else "","sail_riscv_sim")
         self.isa_spec = os.path.abspath(config['ispec']) if 'ispec' in config else ''
         self.platform_spec = os.path.abspath(config['pspec']) if 'ispec' in config else ''
         self.make = config['make'] if 'make' in config else 'make'
@@ -76,8 +75,9 @@ class sail_cSim(pluginTemplate):
         if shutil.which(compiler) is None:
             logger.error(compiler+": executable not found. Please check environment setup.")
             raise SystemExit(1)
-        if shutil.which(self.sail_exe[self.xlen]) is None:
-            logger.error(self.sail_exe[self.xlen]+ ": executable not found. Please check environment setup.")
+        if shutil.which(self.sail_exe) is None:
+            logger.error(self.sail_exe + ": executable not found. Please check environment setup.")
+            logger.error("Sail has been updated to use sail_riscv_sim instead of riscv_sim_rv(32/64)d. Please make sure that you have the latest version of Sail installed.")
             raise SystemExit(1)
         if shutil.which(self.make) is None:
             logger.error(self.make+": executable not found. Please check environment setup.")
@@ -124,15 +124,16 @@ class sail_cSim(pluginTemplate):
                 pmp_flags = ""
 
             try:
-                sail_config = subprocess.run(["riscv_sim_rv64d", "--print-default-config"], check= True, text=True, capture_output=True)
+                sail_config = subprocess.run(["sail_riscv_sim", "--print-default-config"], check= True, text=True, capture_output=True)
                 sail_config = json.loads(sail_config.stdout)
             except subprocess.CalledProcessError as e:
-                print("riscv_sim_rv64d --print-default-config failed:", e.stderr)
+                print("sail_riscv_sim --print-default-config failed:", e.stderr)
                 exit(1)
             except json.JSONDecodeError:
-                print("riscv_sim_rv64d --print-default-config output is not valid JSON.")
+                print("sail_riscv_sim --print-default-config output is not valid JSON.")
                 exit(1)
 
+            sail_config["base"]["xlen"] = int(self.xlen)
             sail_config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
             sail_config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
 
@@ -143,7 +144,7 @@ class sail_cSim(pluginTemplate):
             with open(sail_config_path, 'w', encoding='utf-8') as file:
                 json.dump(sail_config, file, indent=4)
 
-            execute += self.sail_exe[self.xlen] + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
+            execute += self.sail_exe + ' --config={0} -v --trace=step --signature-granularity=8  --test-signature={1} {2} > {3}.log 2>&1;'.format(sail_config_path, sig_file, elf, test_name)
 
             cov_str = ' '
             for label in testentry['coverage_labels']:

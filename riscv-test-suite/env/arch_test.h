@@ -1418,6 +1418,16 @@ code_adj_\__MODE__\()epc:
         bgeu    T2, T6, data_adj_\__MODE__\()epc// epc > rvtest_code_end, try data adj
         bgeu    T2, T3,      adj_\__MODE__\()epc// epc >=rvtest_code_begin, adj and save
 
+// Logic to handle Instruction Access Fault (IAF).
+// If the exception cause is code 1 (IAF), adjust mepc to return to the faulting instruction
+// This is necessary for testing IAF-related exceptions (For Example: cp_illegal_instruction in exceptionsm)   
+#ifdef IAF                                   // T5 = read exception cause (MCAUSE)
+        csrr   T5, CSR_XCAUSE                // Subtract 1: so if MCAUSE == 1 (IAF), then T5 == 0
+        addi   T5, T5, -1                    // Exception cause code 1 means Instruction Access Fault
+        addi   T2, ra, -4                    // Subtract 4 from ra to get back to the faulting instruction
+        beqz   T5, adj_\__MODE__\()epc       // If T5 == 0 (IAF), branch to adjust epc with T2
+#endif
+
 data_adj_\__MODE__\()epc:
         LREG    T3, data_bgn_off(T4)            // see if epc is in the data area
         LREG    T6, data_seg_siz(T4)

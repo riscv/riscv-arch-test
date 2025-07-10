@@ -1419,8 +1419,8 @@ sv_\__MODE__\()epc:
 
 #ifdef SKIP_MEPC
         csrr T3, CSR_XCAUSE                     // Read xcause to check trap type
-        LI (T6, 0xC)                            // Exception code, 0xC = Instruction Page Fault
-        bne T3, T6, adj_\__MODE__\()epc_rtn     // If it is not Access Fault, then skip
+        LI (T6, CAUSE_FETCH_PAGE_FAULT)         // Exception code, CAUSE_FETCH_PAGE_FAULT = 0xC
+        bne T3, T6, adj_\__MODE__\()epc_rtn     // Skip if it's not Fetch Page Fault
         LI (T6, 0xACCE)                         // A Constant value to compare if x1 has this value
         bne x3, T6, adj_\__MODE__\()epc_rtn     // If not called from macro, then skip
         csrw    CSR_XEPC, x4                    // Assign xpec with the return label

@@ -6,6 +6,13 @@
   #define ALIGNMENT 2
 #endif
 
+#ifndef RVMODEL_PMP_GRAIN
+  #define RVMODEL_PMP_GRAIN   0
+#endif
+
+#ifndef RVMODEL_NUM_PMPS
+  #define RVMODEL_NUM_PMPS    16
+#endif
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                            \

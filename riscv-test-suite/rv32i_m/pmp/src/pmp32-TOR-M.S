@@ -22,21 +22,30 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
-// Following labels are to defined in the model_test.h: RVMODEL_PMP_GRAIN & RVMODEL_NUM_PMPS.
-// Total expected faults: 2+5+3+6+8 = 24.
+// Total expected faults: 3+1+4+6 = 14.
 // ---------------------------------------------------------------------------
 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64I_Zicsr")
+RVTEST_ISA("RV32I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
 RVMODEL_BOOT
 RVTEST_CODE_BEGIN
+/*
+Following are defined in the model_test.h. If you have different implementation for PMP, please change accordingly in that file.
+*/
+#ifndef RVMODEL_PMP_GRAIN
+	#define RVMODEL_PMP_GRAIN 0
+#endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-writable'] >= 12); def TEST_CASE_1=True; mac PMP_MACROS",PMP_TOR_M)
+#ifndef RVMODEL_NUM_PMPS
+	#define RVMODEL_NUM_PMPS 16
+#endif
+
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-writable'] >= 12); def TEST_CASE_1=True; mac PMP_MACROS",PMP_TOR_M)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -45,7 +54,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
   	.align	3
   	.option norvc
 
-#define NOP 		(0x13<<32)+0x13									// Encoded Instruction of nop (64 bit case)
+#define NOP 		0x13									// Encoded Instruction of nop (64 bit case)
 
 /*
  * VERIFICATION_RWX Macro
@@ -83,9 +92,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     sw a4, 0(a5)                 							// Word store test
     nop
     nop
-    sd a4, 0(a5)                 							// Double-word store test
-    nop
-    nop
 
     // Load Access Check
     lb a4, 0(a5)                 							// Byte-level load test
@@ -100,18 +106,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-    ld a4, 0(a5)                 							// Double-word load test
-    nop
-    nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
 .endm
 
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/8
+	.rept RVMODEL_NUM_PMPS/4
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
+	.set pmpcfgi, pmpcfgi+1
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -127,8 +129,8 @@ main:
 */
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT))	//All memory region to be used by pmp3cfg2
 #define PMPREGIONRWX      	((	PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT
-#define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_TOR)&0xFF) << PMP7_CFG_SHIFT
-#define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_TOR)&0xFF) << PMP5_CFG_SHIFT
+#define PMPREGIONRX      	((	PMP_L|PMP_R|	  PMP_X|PMP_TOR)&0xFF) << PMP3_CFG_SHIFT
+#define PMPREGIONRW      	((	PMP_L|PMP_R|PMP_W|		PMP_TOR)&0xFF) << PMP1_CFG_SHIFT
 #define PMPREGIONR      	((	PMP_L|PMP_R|	  		PMP_TOR)&0xFF) << PMP3_CFG_SHIFT
 #define PMPREGIONX      	((	PMP_L|		  	  PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT
 
@@ -153,7 +155,7 @@ main:
 	csrw 	pmpaddr10, x4
 
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4
+	csrw pmpcfg3, x4
 
 //											Verification Section
 //Test Case: 1 -- RWX Permissions given to the PMP Region.
@@ -181,7 +183,7 @@ main:
 	csrw 	pmpaddr6, x4
 
 	LI(x4, PMPREGIONRX)
-	csrw pmpcfg0, x4
+	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -196,7 +198,7 @@ main:
 	csrw 	pmpaddr4, x4
 
 	LI(x4, PMPREGIONRW)
-	csrw pmpcfg0, x4
+	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
@@ -238,7 +240,7 @@ main:
 	Following section is selected based on the minimum PMP granularity set by the user.
 	Please change in model_test.h to change it here.
 */
-.align 3
+.align RVMODEL_PMP_GRAIN
 TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop

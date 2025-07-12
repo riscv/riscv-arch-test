@@ -4,10 +4,6 @@ name: CI coverage (for dev)
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push events
-  push:
-    branches: [ '**'  ]
-
   # Allows you to run this workflow Actions manually
   workflow_dispatch:
 

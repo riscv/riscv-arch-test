@@ -134,6 +134,7 @@ class sail_cSim(pluginTemplate):
                 exit(1)
 
             sail_config["base"]["xlen"] = int(self.xlen)
+            sail_config["base"]["mtval_has_illegal_instruction_bits"] = True
             sail_config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
             sail_config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
 

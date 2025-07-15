@@ -161,7 +161,7 @@ walking_ones_satp:
 	li t0, 0x400000         		// Initial value
 
 	// Loop for multiple satp writes and reads
-	li t2, 8                		// Number of iterations (8 shifts)
+	li t2, 9                		// Number of iterations (9 shifts)
 walking_ones_asid:		
     csrw satp, t0     				// Write satp with the current value
     csrr t1, satp     				

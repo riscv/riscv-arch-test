@@ -139,6 +139,7 @@ class sail_cSim(pluginTemplate):
 
             # Enabling extensions that are disabled by default
             sail_config["extensions"]["Sv32"]["supported"] = True
+            sail_config["extensions"]["Zcf"]["supported"] = True
 
             #For User-configuration: Replace this variable with your configuration. "/home/riscv-arch-test/custom_sail_config.json"
             sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')

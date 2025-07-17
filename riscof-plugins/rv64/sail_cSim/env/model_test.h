@@ -14,6 +14,14 @@
 // Uncomment only if you want to run the tests on the RISC-V Sail Model in self-checking Mode.
 // #define RVTEST_SELFCHK_MODE
 
+#ifndef RVMODEL_PMP_GRAIN
+  #define RVMODEL_PMP_GRAIN   0
+#endif
+
+#ifndef RVMODEL_NUM_PMPS
+  #define RVMODEL_NUM_PMPS    16
+#endif
+
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\
 li x1, 1                ;\

@@ -191,7 +191,7 @@ zext.h_64:
     mnemonics: 
       zext.h: 0
     base_op: packw
-    p_op_cond: rs2 == x0
+    p_op_cond: rs2 == "x0"
     rs1: 
       <<: *all_regs
     rd: 

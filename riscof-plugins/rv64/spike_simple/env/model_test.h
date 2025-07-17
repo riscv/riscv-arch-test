@@ -11,7 +11,15 @@
         .word 4;
 
 //Comment the following line if you don't want to run in the self-checking mode.
-#define RVTEST_SELFCHK_MODE
+//#define RVTEST_SELFCHK_MODE
+#ifndef RVMODEL_PMP_GRAIN
+  #define RVMODEL_PMP_GRAIN   0
+#endif
+
+#ifndef RVMODEL_NUM_PMPS
+  #define RVMODEL_NUM_PMPS    16
+#endif
+
 
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\

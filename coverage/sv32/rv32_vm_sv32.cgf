@@ -327,9 +327,7 @@ mstatus_tvm:
   #Make sure we have some value in case of satp access in M mode
     'mode == "M" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrw" and satp != 0': 0
   #Make sure we have illegal instruction fault for satp access in S mode
-    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrw" and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
-    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrc" and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
-    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrs" and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
+    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == {"csrrw", "csrrs", "csrrc"} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
 
 #If reserved PTE permissions bits (RSW) are set, then the Page table walk should give no RSW set in return
 reserved_rsw_pte_perm:

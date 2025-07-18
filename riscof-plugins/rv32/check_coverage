@@ -257,6 +257,26 @@ echo "Moving riscof_work to all_riscof_works/riscof_work_Privilege"
 mv riscof_work all_riscof_works/riscof_work_Privilege
 
 
+# Run coverage for VM_SV32 extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/sv32/rv32_vm_sv32.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/vm_sv32 \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\n        Coverage Label            (Covered)/(Total)    Percentage"
+grep -E '^[[:space:]]*(MPRV_SUM_bit|MPRV_bit|MPRV_set_bare_mode|MXR_bit|U_bit_no_sum_set_in_SMode|U_bit_set_in_UMode|U_bit_sum_set_in_SMode|U_bit_unset_in_SMode|U_bit_unset_in_UMode|VA_all_ones|a_and_d_bit_hart_upd|a_and_d_bit_soft_upd|global_pte|invalid_pte|misaligned_superpage|mstatus_sbe_set|mstatus_tvm|nonleaf_pte_level0|pmp_check_pa|pmp_check_pte|reserved_rsw_pte_perm|reserved_rwx_pte_perm|satp_access_all_modes|sum_set_U_bit_unset_SMode)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_VM_SV32"
+mv riscof_work all_riscof_works/riscof_work_VM_SV32
+
+
 # Run coverage for Zcmop Extension
 riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
   --cgf-file ../../coverage/zcmop/zcmop.cgf \

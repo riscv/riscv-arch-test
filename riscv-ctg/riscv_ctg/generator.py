@@ -1052,9 +1052,8 @@ class Generator():
                                 if self.is_fext:
                                     instr_dict[i]['flagreg'] = available_reg[1]
                                 hex_dval = hex(int(dval[0]))
-                                print(hex_dval)
                                 instr_dict[i]['val_section'].append(
-                                        template.substitute(val=dval[0],width=dval[1]))
+                                        template.substitute(val=hex_dval,width=dval[1]))
                                 instr_dict[i]['load_instr'] = self.opnode['val']['load_instr']
                     available_reg = regset.copy()
                     available_reg.remove('x0')
@@ -1081,9 +1080,8 @@ class Generator():
                             if self.is_fext:
                                 instr_dict[i]['flagreg'] = available_reg[1]
                             hex_dval = hex(int(dval[0]))
-                            print(hex_dval)
                             instr_dict[i]['val_section'].append(
-                                    template.substitute(val=dval[0],width=dval[1]))
+                                    template.substitute(hex_dval,width=dval[1]))
                             instr_dict[i]['load_instr'] = self.opnode['val']['load_instr']
             return instr_dict
         else:

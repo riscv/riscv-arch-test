@@ -60,10 +60,11 @@ sanitise_norm = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == 0'\
 sanitise_norm_nopref = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == 0'
 sanitise_nopref = lambda rm,x,iflen,flen,c,inxFlg: x + ' fcsr == 0 and rm_val == 7'
 
-get_sanitise_func = lambda opcode: sanitise_norm if any([x in opcode for x in \
-        ['fsgnj','fle','flt','feq','fclass','flw','fsw','fld','fsd','fmin','fmax']]) else \
-        (sanitise_norm_nopref if 'fmv' in opcode else ( sanitise_nopref if any([opcode.endswith(x) \
-        for x in ['.l','.w','.lu','.wu']]) else sanitise_cvpt))
+get_sanitise_func = lambda opcode: sanitise_norm if any(x in opcode for x in [
+        'fsgnj','fle','flt','feq','fclass','flw','fsw','fld','fsd','fmin','fmax']) else \
+    (sanitise_norm_nopref if any(x in opcode for x in ['fmv', 'fcvt.d.w', 'fcvt.d.wu','fcvt.d.s']) else \
+    (sanitise_nopref if any(opcode.endswith(x) for x in ['.l', '.w', '.lu', '.wu']) else \
+    sanitise_cvpt))
 
 def num_explain(flen,num):
     num_dict = {

@@ -220,7 +220,7 @@ Then build the RISC-V Sail Model:
 ```bash
 $ git clone https://github.com/riscv/sail-riscv.git
 $ cd sail-riscv
-$ ./build-simulators.sh
+$ ./build_simulators.sh
 ```
 
 This will create a C simulator in `build/c_emulator/sail_riscv_sim`. You will need to add this path to your `$PATH` or create an alias to execute it from the command line.

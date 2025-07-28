@@ -22,6 +22,7 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
+// Following labels are to defined in the model_test.h: RVMODEL_PMP_GRAIN & RVMODEL_NUM_PMPS.
 // Total expected faults: 2+5+3+6+8 = 24.
 // ---------------------------------------------------------------------------
 
@@ -56,21 +57,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 #define NOP 		(0x13<<32)+0x13									// Encoded Instruction of nop (64 bit case)
 
-/*
- * VERIFICATION_RWX Macro
- *
- * Description:
- * This macro performs comprehensive verification of Read, Write, and Execute (RWX) permissions for a given memory address.
- * It is designed to test the functionality and enforcement of PMP (Physical Memory Protection) configurations by checking access
- * permission at various granularity levels (byte, half-word, word, and double word) and for both load and store operations.
- *
- * Parameters:
- * - ADDRESS: The memory address to be tested for RWX access rights.
- *
- * Notes:
- * - The macro assumes proper PMP configuration is in place to validate the described behaviors.
- * - For double-word store and load operations, it adheres to the RISC-V Privileged Specification v1.12, ensuring the correct handling of boundary conditions.
- */
 
 .macro VERIFICATION_RWX ADDRESS
     // Execution Access Check

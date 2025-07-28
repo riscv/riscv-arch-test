@@ -316,3 +316,22 @@ grep -E '^[[:space:]]*(fencei)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]
 echo "Moving riscof_work to all_riscof_works/riscof_work_Zifencei"
 mv riscof_work all_riscof_works/riscof_work_Zifencei
 
+
+# Run coverage for Zimop Extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zimop/zimop.cgf \
+  --suite ../../riscv-test-suite/rv32i_m/Zimop \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(mop.r.0|mop.r.1|mop.r.10|mop.r.11|mop.r.12|mop.r.13|mop.r.14|mop.r.15|mop.r.16|mop.r.17|mop.r.18|mop.r.19|mop.r.2|mop.r.20|mop.r.21|mop.r.22|mop.r.23|mop.r.24|mop.r.25|mop.r.26|mop.r.27|mop.r.28|mop.r.29|mop.r.3|mop.r.30|mop.r.31|mop.r.4|mop.r.5|mop.r.6|mop.r.7|mop.r.8|mop.r.9|mop.rr.0|mop.rr.1|mop.rr.2|mop.rr.3|mop.rr.4|mop.rr.5|mop.rr.6|mop.rr.7)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Zimop"
+mv riscof_work all_riscof_works/riscof_work_Zimop

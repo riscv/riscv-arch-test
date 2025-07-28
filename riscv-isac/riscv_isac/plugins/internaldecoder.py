@@ -1389,9 +1389,15 @@ class disassembler():
                 instrObj.instr_name = 'ebreak'
                 return instrObj
 
+        MOP_R_MASK = 0xB3C00000
+        MOP_RR_MASK = 0xB2000000
+        mop_r_n = ((instr & 0x40000000) >> 26) + ((instr & 0xC000000) >> 24) + ((instr & 0x300000) >> 20)
+        mop_rr_n = ((instr & 0x40000000) >> 28) + ((instr & 0xC000000) >> 26)
+
         # Test for csr ops
         rd = ((instr & self.RD_MASK) >> 7, 'x')
         rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
         csr = (instr >> 20)
 
         instrObj.rd = rd
@@ -1404,6 +1410,20 @@ class disassembler():
             instrObj.instr_name = 'csrrs'
         if funct3 == 0b011:
             instrObj.instr_name = 'csrrc'
+        if funct3 == 0b100:
+            if (instr & MOP_R_MASK == 0x81C00000):
+                for n in range(32):
+                    if (mop_r_n == n):
+                        instrObj.instr_name = 'mop.r.' + str(n)
+                        instrObj.csr = None
+                        break     
+            elif (instr & MOP_RR_MASK == 0x82000000):
+                for n in range(8):
+                    if (mop_rr_n == n):
+                        instrObj.instr_name = 'mop.rr.' + str(n)
+                        instrObj.rs2 = rs2
+                        instrObj.csr = None
+                        break
         if funct3 == 0b101:
             instrObj.instr_name = 'csrrwi'
             instrObj.rs1 = None

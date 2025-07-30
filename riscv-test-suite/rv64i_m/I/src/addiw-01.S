@@ -17,7 +17,7 @@
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64I")
+RVTEST_ISA("RV64I_Zicsr")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -27,7 +27,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*);def TEST_CASE_1=True;",addiw)
+RVTEST_CASE(0,"//check ISA:=regex(.*64.*);check ISA:=regex(.*RV64.*I.*Zicsr.*);def rvtest_mtrap_routine=True;def TEST_CASE_1=True;",addiw)
 
 RVTEST_SIGBASE( x15,signature_x15_1)
 
@@ -3180,6 +3180,9 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 
+#ifdef RVTEST_SELFCHK_MODE
+    #include "../../../Reference/rv64i_m/I/src/addiw-01.S"
+#else
 
 signature_x15_0:
     .fill 0*(XLEN/32),4,0xdeadbeef
@@ -3208,6 +3211,8 @@ mtrap_sigptr:
     .fill 64*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
+
+#endif
 
 #endif
 

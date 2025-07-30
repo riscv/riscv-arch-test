@@ -8,7 +8,7 @@
 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV64I")
+RVTEST_ISA("RV64I_Zicsr")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -18,7 +18,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*64.*);check ISA:=regex(.*I.*);def TEST_CASE_1=True;",fence)
+RVTEST_CASE(0,"//check ISA:=regex(.*64.*);check ISA:=regex(.*I.*Zicsr.*);def rvtest_mtrap_routine=True;def TEST_CASE_1=True;",fence)
 
 LA(x9,rvtest_data_store)
 LI(x8,0xffffffff)
@@ -55,8 +55,26 @@ RVMODEL_DATA_BEGIN
 rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
+
+#ifdef RVTEST_SELFCHK_MODE
+    #include "../../../Reference/rv64i_m/I/src/add-01.S"
+#else
+
 signature_x9_1:
     .fill 2,4,0xdeadbeef
+
+#ifdef rvtest_mtrap_routine
+
+tsig_begin_canary:
+CANARY;
+mtrap_sigptr:
+    .fill 2,4,0xdeadbeef
+tsig_end_canary:
+CANARY;
+
+#endif
+
+#endif
 
 #ifdef rvtest_gpr_save
 gpr_save:

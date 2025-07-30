@@ -224,7 +224,9 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 
-
+#ifdef RVTEST_SELFCHK_MODE
+    #include "../../../Reference/rv64i_m/CMO/src/cbo.zero-01.S"
+#else
 
 signature_x3_0:
     .fill 0*((RVMODEL_CBZ_BLOCKSIZE)/4),4,0xdeadbeef
@@ -246,6 +248,8 @@ mtrap_sigptr:
 
 tsig_end_canary:
 CANARY;
+#endif
+
 #endif
 
 #ifdef rvtest_gpr_save

@@ -216,7 +216,7 @@ class sail_cSim(pluginTemplate):
             sig_header_content = '\n'.join(output)
 
             req_riscv_test_idx = test_list[test]['test_path'].find("riscv-test-suite") + len("riscv-test-suite")
-            sig_header_path = os.path.join('/home/hammad/ARCH_TESTS_WORK/SELF_CHECK/riscv-arch-test/riscv-test-suite/Reference', test_list[test]['test_path'][req_riscv_test_idx+1:-1]+'S')
+            sig_header_path = os.path.join('../../riscv-test-suite/Reference', test_list[test]['test_path'][req_riscv_test_idx+1:-1]+'S')
             os.makedirs(os.path.dirname(sig_header_path), exist_ok=True)
 
             with open(sig_header_path, 'w') as f:

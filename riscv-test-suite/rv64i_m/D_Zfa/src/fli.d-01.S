@@ -21,7 +21,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*D.*Zfa.*);def TEST_CASE_1=True;",fli.d_b1)
+RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*D.*Zicsr.*Zfa.*);def rvtest_mtrap_routine=True;def TEST_CASE_1=True;",fli.d_b1)
 
 // Registers with a special purpose
 #define SIG_BASEREG x1
@@ -169,6 +169,10 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 
+#ifdef RVTEST_SELFCHK_MODE
+    #include "../../../Reference/rv64i_m/D_Zfa/src/fli.d-01.S"
+#else
+
 signature_tc1:
 // We have 32 test cases and store for each test case:
 // - 32-bit FP register (fld)
@@ -179,16 +183,14 @@ signature_tc1:
 
 tsig_begin_canary:
 CANARY;
-tsig_begin_canary:
-CANARY;
 mtrap_sigptr:
     .fill 64*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
-tsig_end_canary:
-CANARY;
 
 #endif // rvtest_mtrap_routine
+
+#endif
 
 #ifdef rvtest_gpr_save
 

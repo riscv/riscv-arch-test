@@ -1,0 +1,35 @@
+signature_x7_0:
+signature_x7_1:
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000babe
+  .dword 0x000000000000babe
+  .dword 0x000000000000babe
+  .dword 0x000000000000babe
+  .dword 0x000000000000cafe
+  .dword 0x0000000000000000
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+signature_x3_0:
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe
+  .dword 0x000000000000cafe

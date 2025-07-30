@@ -29,7 +29,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*F.*);def TEST_CASE_1=True;",fcvt.s.l_b25)
+RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*F.*Zicsr.*);def rvtest_mtrap_routine=True;def TEST_CASE_1=True;",fcvt.s.l_b25)
 
 RVTEST_FP_ENABLE()
 RVTEST_VALBASEUPD(x2,test_dataset_0)
@@ -289,6 +289,9 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 
+#ifdef RVTEST_SELFCHK_MODE
+    #include "../../../Reference/rv64i_m/F/src/fcvt.s.l_b25-01.S"
+#else
 
 signature_x8_0:
     .fill 0*((SIGALIGN)/4),4,0xdeadbeef
@@ -305,14 +308,12 @@ signature_x1_0:
 
 tsig_begin_canary:
 CANARY;
-tsig_begin_canary:
-CANARY;
 mtrap_sigptr:
     .fill 64*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
-tsig_end_canary:
-CANARY;
+
+#endif
 
 #endif
 

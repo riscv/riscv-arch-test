@@ -593,6 +593,25 @@ Mend_PMP:                                    ;\
       .set offset,offset+(REGWIDTH)
 
 
+ /* Stores register into signature region and increment the signature pointer */
+ /* RVTEST_SIGUPD does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE and RVTEST_SIGUPD in the same program */
+ /* RVTEST_SIGWRITE(basereg, sigreg) stores sigreg at 0(basereg) and increments basereg by regwidth	 */
+ #define RVTEST_SIGWRITE(_BR,_R)            ;\
+      SREG _R, 0(_BR)					;\
+      addi _BR, _BR, REGWIDTH 
+
+ /* Stores register into signature region and increment the signature pointer*/
+ /* RVTEST_SIGUPD_F does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE_F and RVTEST_SIGUPD_F in the same program */
+ /* RVTEST_SIGWRITE_F(basereg, sigreg, flagreg) stores sigreg at 0(basereg) and increments basereg by sigalign	 */
+ /* SIGALIGN is set to the max(FREGWIDTH, REGWIDTH)*/
+#define RVTEST_SIGWRITE_F(_BR,_R,_f)        ;\
+      FSREG _R, 0(_BR)					;\
+      SREG _F, SIGALIGN(_BR)					;\
+      addi _BR, _BR, 2*SIGALIGN
+
+
 
   /* DEPRECATE this is redundant with RVTEST_BASEUPD(BR,_NR),	*/
   /* except it doesn't correct for offset overflow while moving */

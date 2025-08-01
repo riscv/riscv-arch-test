@@ -2,7 +2,7 @@
 
 vclmulh.vv:
     config:
-      - check ISA:=(.*I.*V.*Zvkb)
+      - check ISA:=(.*I.*V.*Zvbc)
     mnemonics:
       vclmulh.vv: 0
     rs1:
@@ -16,7 +16,7 @@ vclmulh.vv:
 
 vclmulh.vx:
     config:
-      - check ISA:=(.*I.*V.*Zvkb)
+      - check ISA:=(.*I.*V.*Zvbc)
     mnemonics:
       vclmulh.vx: 0
     rs1:

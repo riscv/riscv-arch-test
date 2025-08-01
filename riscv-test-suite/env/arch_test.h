@@ -1431,11 +1431,25 @@ adj_\__MODE__\()epc:
 sv_\__MODE__\()epc:
         SREG    T3, 2*REGWIDTH(T1)      // save 3rd sig value, (rel mepc) into trap sig area
 
+#ifdef SKIP_MEPC
+        LI (T6, 0xACCE)                         // A Constant value to compare if x1 has this value
+        bne x3, T6, adj_\__MODE__\()epc_rtn     // If not called from macro, then skip
+        csrr T3, CSR_XCAUSE                     // Read xcause to check trap type
+        LI (T6, CAUSE_FETCH_PAGE_FAULT)         // Exception code, CAUSE_FETCH_PAGE_FAULT = 0xC
+        beq     T3, T6, 1f                      // If Fetch Page Fault, go to label 1
+        LI (T6, CAUSE_FETCH_ACCESS)             // CAUSE_FETCH_ACCESS = 0x1        
+        bne T3, T6, adj_\__MODE__\()epc_rtn     // Skip if it's not Fetch Page Fault
+1:      csrw    CSR_XEPC, x4                    // Assign xpec with the return label
+        j skp_adj_\__MODE__\()epc
+#endif
+
+
 adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
         andi    T6, T2, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
         addi    T6, T6,  2*WDBYTSZ         // adjust mepc so it skips past op, has padding & 4B aligned
         csrw    CSR_XEPC, T6            // restore adjusted value, w/ 2,4 or 6B of padding
 
+skp_adj_\__MODE__\()epc:
   /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
         for 64b insts,  2B or 4B of padding   ****/
 

@@ -116,6 +116,8 @@ class spike_simple(pluginTemplate):
           self.isa += '_Zicond'
       if "Zicboz" in ispec["ISA"]:
           self.isa += '_Zicboz'
+      if "Zimop" in ispec["ISA"]:
+          self.isa += '_Zimop'
       if "Zfa" in ispec["ISA"]:
           self.isa += '_Zfa'
       if "Zfh" in ispec["ISA"]:
@@ -124,6 +126,8 @@ class spike_simple(pluginTemplate):
           self.isa += '_Zca'
       if "Zcb" in ispec["ISA"]:
           self.isa += '_Zcb'
+      if "Zcmop" in ispec["ISA"]:
+          self.isa += '_Zcmop'
       if "Zba" in ispec["ISA"]:
           self.isa += '_Zba'
       if "Zbb" in ispec["ISA"]:
@@ -144,6 +148,10 @@ class spike_simple(pluginTemplate):
           self.isa += '_Zbkx'
       if "Zknh" in ispec["ISA"]:
           self.isa += '_Zknh'
+      if "Zksh" in ispec["ISA"]:
+          self.isa += '_Zksh'
+      if "Zksed" in ispec["ISA"]:
+          self.isa += '_Zksed'
 
       #TODO: The following assumes you are using the riscv-gcc toolchain. If
       #      not please change appropriately

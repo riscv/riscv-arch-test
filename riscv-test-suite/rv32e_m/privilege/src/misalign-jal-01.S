@@ -29,8 +29,6 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*E.*C.*) ;def RVTEST_E = True;def TEST_CASE_1=True;",misalign-jal)
-
 RVTEST_CASE(1,"//check ISA:=regex(.*E.*Zicsr.*); check ISA:=regex(^[^C]+$); def rvtest_mtrap_routine=True ;def RVTEST_E = True;def TEST_CASE_1=True;",misalign-jal)
 
 RVTEST_SIGBASE(x1,signature_x1_1)

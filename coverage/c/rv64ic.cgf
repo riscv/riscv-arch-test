@@ -16,6 +16,7 @@ caddi4spn:
     val_comb:
       'imm_val > 0' : 0
       'imm_val == 1020': 0
+      'imm_val != 0': 0
       abstract_comb:
         'walking_ones("imm_val", 8,False,scale_func = lambda x: x*4)': 0
         'walking_zeros("imm_val", 8,False,scale_func = lambda x: x*4)': 0
@@ -153,6 +154,7 @@ cli:
   rd:
     <<: *all_regs
   val_comb:
+    'imm_val != 0': 0
     <<: [*cbfmt_immval_sgn] 
     abstract_comb:
       'walking_ones("imm_val", 6)': 0

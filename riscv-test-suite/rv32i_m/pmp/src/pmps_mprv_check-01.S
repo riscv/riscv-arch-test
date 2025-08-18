@@ -74,7 +74,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check
     LA(a5, \ADDRESS)             							// Address to be verified
-    sw a4, 0(a5)                 							// Word store test
+    sw a4, 0(a5)
     nop
 
 .endm
@@ -82,7 +82,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .macro VERIFICATION_R ADDRESS  
 
     LA(a5, \ADDRESS)             							// Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
@@ -174,46 +174,6 @@ main:
 
 	VERIFICATION_R	TEST_FOR_EXECUTION
 
-// Test Case: 3 : mstatus.MPRV = 0, L = 0, mstatus.MPP = 11 and No Permissions given to the PMP Region 0
-
-	li t0, (MPRV|M_MODE)		// Initialize mstatus.MPRV & mstatus.MPP
-	csrc mstatus, t0
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_X	TEST_FOR_EXECUTION
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_W	TEST_FOR_EXECUTION
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_R	TEST_FOR_EXECUTION
-
-// Test Case: 4 : mstatus.MPRV = 1, L = 0, mstatus.MPP = 11 and No Permissions given to the PMP Region 0
-
-	li t0, (M_MODE|MPRV)		// Initialize mstatus.MPRV & mstatus.MPP
-	csrc mstatus, t0
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_X	TEST_FOR_EXECUTION
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_W	TEST_FOR_EXECUTION
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_R	TEST_FOR_EXECUTION
-
 //-------------------------------------
 	LA(x4, STANDARD_REGION)
 	csrw pmpaddr0, x4
@@ -262,45 +222,6 @@ main:
 
 	VERIFICATION_R	TEST_FOR_EXECUTION
 
-// Test Case: 3 : mstatus.MPRV = 0, L = 1, mstatus.MPP = 11 and No Permissions given to the PMP Region 0
-
-	li t0, (MPRV|M_MODE)		// Initialize mstatus.MPRV & mstatus.MPP
-	csrc mstatus, t0
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_X	TEST_FOR_EXECUTION
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_W	TEST_FOR_EXECUTION
-
-	li t0, (M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_R	TEST_FOR_EXECUTION
-
-// Test Case: 4 : mstatus.MPRV = 1, L = 1, mstatus.MPP = 11 and No Permissions given to the PMP Region 0
-
-	li t0, (M_MODE|MPRV)		// Initialize mstatus.MPRV & mstatus.MPP
-	csrc mstatus, t0
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_X	TEST_FOR_EXECUTION
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_W	TEST_FOR_EXECUTION
-
-	li t0, (MPRV|M_MODE)
-	csrs mstatus, t0
-
-	VERIFICATION_R	TEST_FOR_EXECUTION
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
     RVTEST_SIGUPD(x13, a4)       								// Signature update

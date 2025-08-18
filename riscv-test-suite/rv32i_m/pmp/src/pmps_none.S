@@ -62,6 +62,10 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
+
+#ifdef rvtest_strap_routine
+	csrw satp, zero                // Disable address translation.
+#endif
 		
 //											Verification Section
 // Test Case: 1 -- All pmp enteries are OFF including backround region. S-mode memory accesses will fail.

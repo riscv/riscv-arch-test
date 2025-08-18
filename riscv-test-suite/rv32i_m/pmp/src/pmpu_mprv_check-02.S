@@ -70,11 +70,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check
     LA(a5, \ADDRESS)             							// Address to be verified
-    sw a4, 0(a5)                 							// Word store test
+    sw a4, 0(a5)
     nop
 
     LA(a5, \ADDRESS)             							// Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 

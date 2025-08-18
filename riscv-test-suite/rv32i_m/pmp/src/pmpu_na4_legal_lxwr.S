@@ -58,7 +58,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
   	.align	3   
   	.option norvc
 
-
 .macro VERIFICATION_RWX ADDRESS 
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler  
@@ -70,14 +69,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 1:
 	nop
 
-    addi a4, a4, -4
+    addi a4, a4, -4                     // REGIONSTART - 4
 	LA(x4, 2f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
 2:
 	nop
 
-    addi a4, a4, 8
+    addi a4, a4, 8                      // REGIONSTART + 4
 	LA(x4, 3f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
@@ -87,23 +86,23 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     LI(a4, NOP)                  							// Value to write (NOP)
     // Load & Store Access Check
     LA(a5, \ADDRESS)             							// Address to be verified
-    sw a4, 0(a5)                 							// Word store test
+    sw a4, 0(a5)
     nop
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    addi a5, a5, -4
-    sw a4, 0(a5)                 							// Word store test
+    addi a5, a5, -4                                         // REGIONSTART - 4
+    sw a4, 0(a5)
     nop
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4) 
 
-    addi a5, a5, 8            	    						// Address to be verified
-    sw a4, 0(a5)                 							// Word store test
+    addi a5, a5, 8                                          // REGIONSTART + 4            	    						// Address to be verified
+    sw a4, 0(a5)
     nop
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4) 
 

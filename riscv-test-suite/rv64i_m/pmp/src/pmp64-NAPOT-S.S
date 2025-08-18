@@ -22,6 +22,7 @@
 //               5. X-only permissions (Execute)
 //
 // Dependencies: model_test.h, arch_test.h
+// Following labels are to defined in the model_test.h: RVMODEL_PMP_GRAIN & RVMODEL_NUM_PMPS.
 // Total expected faults: 0+4+1+5+8 = 18.
 // ---------------------------------------------------------------------------
 
@@ -34,16 +35,6 @@ RVTEST_ISA("RV64I_Zicsr")
 rvtest_entry_point:
 RVMODEL_BOOT
 RVTEST_CODE_BEGIN
-/*
-Following are defined in the model_test.h. If you have different implementation for PMP, please change accordingly in that file.
-*/
-#ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
-#endif
 
 RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-writable'] >= 3); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NAPOT_S_U)
 

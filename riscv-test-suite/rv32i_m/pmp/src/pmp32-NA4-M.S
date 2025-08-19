@@ -45,7 +45,8 @@ Following are defined in the model_test.h. If you have different implementation 
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 7); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_M)
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 7); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_M)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); verify (PMP['pmp-writable'] >= 7); def TEST_CASE_1=True; mac PMP_MACROS",PMP_NA4_M)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -143,7 +144,9 @@ main:
 #define PMPADDRESS_TEST			TEST_FOR_EXECUTION 										// Test Section address
 
 //											Test Setup Section
+#ifdef rvtest_strap_routine
 	csrw satp, x0																		// Disable Address Translation
+#endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	srl x4, x4, PMP_SHIFT

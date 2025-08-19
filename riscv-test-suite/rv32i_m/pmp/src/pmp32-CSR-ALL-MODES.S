@@ -19,7 +19,6 @@
 // Dependencies: model_test.h, arch_test.h
 // Total expected faults: 2+5+3+6+8 = 24.
 // ---------------------------------------------------------------------------
-#define rvtest_strap_routine
 #include "model_test.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
@@ -31,7 +30,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 #ifdef TEST_CASE_1
     RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True",PMP_access_permission)
-    RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True",PMP_access_permission)
+    RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True; def TEST_CASE_1=True",PMP_access_permission)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.option nopic
 	.attribute unaligned_access, 0
@@ -96,7 +95,9 @@ main:
 	.set pmpcfgi, pmpcfgi+1		// increment variable to next pmpcfg reg
 	.endr			// END OF LOOP BODY
 /////////////////// Switch to S-mode ////////////////////////////////////////////
+#ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
+#endif
 	LI(t2, -1)
 	csrw pmpaddr0, t2		// Updated pmpaddr0 to define PMP region consisting
 					// of whole physical memory
@@ -152,7 +153,9 @@ main:
 	nop				// Added nop in case of trap
 	RVTEST_SIGUPD(x13,a4)
 /////////////////// Switch to U-mode ////////////////////////////////////////////
+#ifdef rvtest_strap_routine
 	csrw satp, zero                 // Disable address translation.
+#endif
 	LI(t2, -1)
 	csrw pmpaddr0, t2		// Updated pmpaddr0 to define PMP region consisting
 					// of whole physical memory

@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Muhammad Abdullah, Muhammad Zain, Hamza Ali
+// Authors     	: Umer Shahid, Allen Baum, David Harris
+//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -36,7 +37,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+	#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
@@ -356,5 +357,4 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
-PMP_region_High:
 RVMODEL_DATA_END

@@ -1,6 +1,7 @@
-//// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Muhammad Abdullah, Muhammad Zain, Hamza Ali
+// Authors     	: Umer Shahid, Allen Baum, David Harris
+//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain				
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -11,10 +12,13 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Test Cases  : 1. Full RWX permissions (Read, Write, Execute)
+// Coverpoints:  cp_cfg_A_tor0 for PMPM is fully covered in this test file.
+// Test Cases  : Checking region 0 extends from 0 to pmpaddr0 in TOR mode. 
+//				 Dropping the background region. With pmpcfg0.L=1, pmpcfg0.A=TOR,
+//				 pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0, 
+//				 pmpaddr0-4, pmpaddr0}.
 //
 // Dependencies: model_test.h, arch_test.h
-// Total expected faults: 0
 // ---------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -30,7 +34,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+	#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
@@ -241,5 +245,4 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
-PMP_region_High:
 RVMODEL_DATA_END

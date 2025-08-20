@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Muhammad Abdullah, Muhammad Zain, Hamza Ali
+// Authors     	: Umer Shahid, Allen Baum, David Harris
+//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -33,7 +34,7 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+	#define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
@@ -41,7 +42,8 @@ RVTEST_CODE_BEGIN
 #endif
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_off)
+	RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS",cp_none)
+	RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS",cp_none)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -129,5 +131,4 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
-PMP_region_High:
 RVMODEL_DATA_END

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -9,19 +9,21 @@
 //               permissions for a designated memory region, ensuring that
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
-
-// Notes        : - Ensure `model_test.h` is configured to match your PMP grain
+//
+// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : 1st test case of cp_cfg_A_tor_non-overlap for PMPM is covered in this test file. 
-
-// Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with the following cfgs
-//				  pmpcfg1.L = 1, pmpcfg1.A = TOR, pmpcfg1.XWR = 000 pmpcfg0.L =0, pmpcfg0.A = OFF, pmpcfg1.XWR = 000
-//				  This test excercises test case 1 that is when pmpaddr0 = pmpaddr1
-
+// Coverpoints : 1st test case of cp_cfg_A_tor_non-overlap for PMPM is covered
+//				 in this test file. 
+//
+// Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with
+//				  the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR = 000
+//				  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test excercises
+// 				  test case 1 that is when pmpaddr0 = pmpaddr1
+//
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -42,17 +44,17 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
-#define g 					(1<<(RVMODEL_PMP_GRAIN+2))
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_nonoverlap)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_nonoverlap)
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_nonoverlap)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
 #define NOP 			0x13
+#define g 		(1<<(RVMODEL_PMP_GRAIN+2))
 
 .macro VERIFICATION_RWX ADDRESS    
 
@@ -63,7 +65,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-
 
     LA(a5, (\ADDRESS))             						    // Address to be verified
     sw a4, 0(a5)                 							// word-level store test
@@ -76,8 +77,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-
-  
     
     LA(a5, (\ADDRESS-4))             						// Address to be verified
     lw a4, 0(a5)                 							// Word load test
@@ -85,7 +84,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-  
     LA(a5, (\ADDRESS))             						    // Address to be verified
     lw a4, 0(a5)                 							// Word load test
     nop
@@ -97,7 +95,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-
 
     LA (a4, (\ADDRESS-4))
 	LI(x3, 0xACCE)						                    // Store a value which is to be checked in trap handler
@@ -127,7 +124,6 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 	nop
 
-
 .endm
 
 main:
@@ -144,15 +140,15 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
 
 #define PMP_REGION_GLOBAL	       ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_UPPER_BOUND      ((((PMP_L				  |PMP_TOR)	 &0xFF) << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define PMP_MASK					~(1 << (RVMODEL_PMP_GRAIN - 1))
 	
-	csrw satp, x0																	// Disable Address Translation
+#ifdef rvtest_strap_routine
+	csrw satp, zero                // Disable address translation.
+#endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	csrw 	pmpaddr15, x4
@@ -187,7 +183,7 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
-//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif

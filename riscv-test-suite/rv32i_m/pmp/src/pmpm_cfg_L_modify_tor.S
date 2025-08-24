@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -24,14 +24,14 @@
 //               When L = 0, changeable.
 //
 //               Checking that pmpcfg and pmpaddr of previous region are unwritable
-//               when L = 1. With pmpcfg_i.L ={0/1}, pmpcfg_i.A = TOR, pmpcfg_i.XWR = 111,
-//               pmpaddr_i = 0x100, pmpcfg_i-1.L = 0 trying to change pmpcfg_i-1 to
+//               when L = 1. With pmpcfg_i.L={0/1}, pmpcfg_i.A=TOR, pmpcfg_i.XWR=111,
+//               pmpaddr_i = 0x100, pmpcfg_i-1.L=0 trying to change pmpcfg_i-1 to
 //               00000111, and to change pmpaddr_i-1 to 1s and reading these back.
 //               pmpaddr_i-1 should be unchanged because of lock iff pmpcfg_i.A = TOR,
 //               otherwise change. pmpcfg_i-1 is changable independent of pmpcfg_i.A.
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -52,8 +52,10 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_L_modify)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_L_modify)
+
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_L_modify)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -86,7 +88,7 @@ main:
 	csrw 	pmpaddr15, x4
 
 	//Lock the Background region.
-	LI(x4, (PMP_REGION_GLOBAL<<24))
+	LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
 	csrw pmpcfg3, x4
 
 //											Verification Section
@@ -95,7 +97,7 @@ main:
     addi x4, x0, 0x100
     csrw pmpaddr1, x4
 
-    LI(x4, ((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)<<PMP1_CFG_SHIFT)
+    LI(x4, ((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
     csrw pmpcfg0, x4
 
     // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
@@ -120,7 +122,7 @@ main:
     addi x4, x0, 0x100
     csrw pmpaddr1, x4
 
-    LI(x4, ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)<<PMP1_CFG_SHIFT)
+    LI(x4, ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
     csrw pmpcfg0, x4
 
     // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
@@ -135,7 +137,7 @@ main:
     csrw pmpaddr1, x0
     csrw pmpcfg0, x0
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
     RVTEST_SIGUPD(x13, a4)       								// Signature update

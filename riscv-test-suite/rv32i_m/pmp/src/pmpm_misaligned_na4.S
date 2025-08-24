@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -13,15 +13,16 @@
 // Notes       : - Ensure `model_test.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
-
+//
 // Coverpoints :  cp_misaligned_na4 for PMPM is fully covered in this test file. 
 //
-// Test Cases  :  Checking that misaligned read/write that crosses an NA4 PMP boundary fails.
-//                We Set up standard NA4 region with L = {0/1}, XWR = 111 and attempt
-//                misaligned lw, lh, lhu, sw, sh stradding each offset partially in start and end of region.
-
+// Test Cases  :  Checking that misaligned read/write that crosses an NA4 PMP 
+//                boundary fails. We Set up standard NA4 region with L = {0/1}, 
+//                XWR=111 and attempt misaligned {lw, lh, lhu, sw, sh} stradding
+//                each offset partially in start and end of region.
+//
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -42,12 +43,10 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-#define g                   (1<<(RVMODEL_PMP_GRAIN+2))
-#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_misaligned_na4)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_misaligned_na4)
 
-#ifdef RVMODEL_PMP_GRAIN == 0   //condition for NA4
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_misaligned_na4)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -129,10 +128,12 @@ main:
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_NA4)  &0xFF)   << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define PMP_MASK	                ~(1 << (RVMODEL_PMP_GRAIN - 1))
-#define NA4_REGION 				    (REGIONSTART >> PMP_SHIFT)
+#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
+#define NA4_REGION          (REGIONSTART >> PMP_SHIFT)
 
-	csrw satp, x0																	// Disable Address Translation
+#ifdef rvtest_strap_routine
+	csrw satp, zero                // Disable address translation.
+#endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	csrw 	pmpaddr15, x4
@@ -171,7 +172,7 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
-//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif
@@ -182,7 +183,6 @@ RETURN_INSTRUCTION:
 	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
-#endif
 #endif
 RVTEST_CODE_END
 RVMODEL_HALT

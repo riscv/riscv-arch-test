@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -22,7 +22,7 @@
 //				 proper access faults for restricted read/write regions.
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -44,12 +44,10 @@ RVTEST_FP_ENABLE()
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-#define REGIONSTART			0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
-#define g    (1<<(RVMODEL_PMP_GRAIN+2))
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F.*D[^S]*Zicsr.*Zfh.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F.*D.*S.*Zicsr.*Zfh.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F.*D.*S.*Zicsr.*Zfh.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -101,13 +99,15 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
+#define REGIONSTART			0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_MASK			~(1 << (RVMODEL_PMP_GRAIN - 1))
+#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 
-.if RVMODEL_PMP_GRAIN != 0
-    #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-.else
-    #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
-.endif
+#if RVMODEL_PMP_GRAIN != 0
+  #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
+#else
+  #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
+#endif
 
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
@@ -180,7 +180,6 @@ main:
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
 	j exit														// Verification Complete, exit the test

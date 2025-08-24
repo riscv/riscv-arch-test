@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -23,7 +23,7 @@
 //               combinations at least once.
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -44,8 +44,10 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all, cp_cfg_RW11_all)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all, cp_cfg_RW11_all)
+
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all, cp_cfg_RW11_all)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -139,7 +141,7 @@ main:
 	csrw 	pmpaddr15, x4
 
 	//Lock the Background region.
-	LI(x4, (PMP_REGION_GLOBAL<<24))
+	LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
 	csrw pmpcfg3, x4
 
 	LA(x4, PMPADDRESS)
@@ -161,138 +163,108 @@ main:
 //											Verification Section
 // Test Case: 16 -- R Permissions given to the PMP Region 14
 
-    LI(x4, (PMPREGION_XWR_001 << 16))
+    LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
 	csrw pmpcfg3, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 17 -- X Permissions given to the PMP Region 13
 
-    LI(x4, (PMPREGION_XWR_100 << 8))
+    LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
 	csrw pmpcfg3, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 18 -- No Permissions given to the PMP Region 12
 
-    LI(x4, (PMPREGION_XWR_000))
+    LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
 	csrw pmpcfg3, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-	RVTEST_GOTO_MMODE
-
 // Test Case: 19 -- XWR Permissions given to the PMP Region 11
 
-    LI(x4, (PMPREGION_XWR_111 << 24))
+    LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
 	csrw pmpcfg2, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 20 -- R Permissions given to the PMP Region 10
 
-    LI(x4, (PMPREGION_XWR_001 << 16))
+    LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
 	csrw pmpcfg2, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 21 -- XR Permissions given to the PMP Region 9
 
-    LI(x4, (PMPREGION_XWR_101 << 8))
+    LI(x4, (PMPREGION_XWR_101 << PMP1_CFG_SHIFT))
 	csrw pmpcfg2, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 22 -- R Permissions given to the PMP Region 8
 
-    LI(x4, (PMPREGION_XWR_001))
+    LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
 	csrw pmpcfg2, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-	RVTEST_GOTO_MMODE
-
 // Test Case: 23 -- X Permissions given to the PMP Region 7
 
-    LI(x4, (PMPREGION_XWR_100 << 24))
+    LI(x4, (PMPREGION_XWR_100 << PMP3_CFG_SHIFT))
 	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 24 -- No Permissions given to the PMP Region 6
 
-    LI(x4, (PMPREGION_XWR_000 << 16))
+    LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
 	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 25 -- XWR Permissions given to the PMP Region 5
 
-    LI(x4, (PMPREGION_XWR_111 << 8))
+    LI(x4, (PMPREGION_XWR_111 << PMP1_CFG_SHIFT))
 	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 26 -- WR Permissions given to the PMP Region 4
 
-    LI(x4, (PMPREGION_XWR_011))
+    LI(x4, (PMPREGION_XWR_011 << PMP0_CFG_SHIFT))
 	csrw pmpcfg1, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-	RVTEST_GOTO_MMODE
-
 // Test Case: 27 -- XR Permissions given to the PMP Region 3
 
-    LI(x4, (PMPREGION_XWR_101 << 24))
+    LI(x4, (PMPREGION_XWR_101 << PMP3_CFG_SHIFT))
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 28 -- R Permissions given to the PMP Region 2
 
-    LI(x4, (PMPREGION_XWR_001 << 16))
+    LI(x4, (PMPREGION_XWR_001 << PMP2_CFG_SHIFT))
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 29 -- X Permissions given to the PMP Region 1
 
-    LI(x4, (PMPREGION_XWR_100 << 8))
+    LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 // Test Case: 30 -- No Permissions given to the PMP Region 0
 
-    LI(x4, (PMPREGION_XWR_000))
+    LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-	RVTEST_GOTO_MMODE
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
     RVTEST_SIGUPD(x13, a4)       								// Signature update

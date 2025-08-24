@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,24 +10,24 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes        : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
-
+//
 // Coverpoints : cp_cfg_A_tor_bot for PMPM is fully covered in this test file. 
-
+//
 // Test cases  : In this test, we check that region 1 extends from pmpaddr0 to
 //				pmpaddr1. We set up a default TOR region, then make accesses
-//				{lw,sw,jalr} at addresses {pmpadr0 - 4, pmpadr0, pmpadr1-4, pmpadr1}.
-
+//				{lw,sw,jalr} at addresses {pmpadr0-4, pmpadr0, pmpadr1-4, pmpadr1}.
+//
 //				Test case 1: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, 
 //               pmpcfg0.L = 0, pmpcfg0.A = OFF, pmpcfg0.XWR = 000 
-
+//
 //              Test case 2: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, 
 //               pmpcfg0.L = 1, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -48,17 +48,17 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
-#define g (1<<(RVMODEL_PMP_GRAIN+2))
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_bot)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_bot)
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_tor_bot)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
 #define NOP 			0x13
+#define g 		(1<<(RVMODEL_PMP_GRAIN+2))
 
 .macro VERIFICATION_RWX ADDRESS    
 
@@ -67,54 +67,40 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     LA(a5, (\ADDRESS-4))             						// Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
-    nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-
 
     LA(a5, (\ADDRESS))             						    // Address to be verified
     sw a4, 0(a5)                 							// word-level store test
-    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
     LA(a5, ((\ADDRESS+g)-4))             				    // Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
-    nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
     LA(a5, (\ADDRESS+g))             				        // Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
-    nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-  
-    
     LA(a5, (\ADDRESS-4))             						// Address to be verified
     lw a4, 0(a5)                 							// Word load test
     nop
-    nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-
   
     LA(a5, (\ADDRESS))             						    // Address to be verified
     lw a4, 0(a5)                 							// Word load test
-    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
     
     LA(a5, ((\ADDRESS+g)-4))             						// Address to be verified
     lw a4, 0(a5)                 							// Word load test
     nop
-    nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-
-  
     LA(a5, (\ADDRESS+g))             						// Address to be verified
     lw a4, 0(a5)                 							// Word load test
-    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
@@ -123,36 +109,28 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	LA(x4, 1f)							                    // Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
-	nop
 1:
-	nop
 	nop
 
     LA (a4, (\ADDRESS))
 	LA(x4, 2f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
-	nop
 2:
-	nop
 	nop
 
     LA (a4, ((\ADDRESS+g)-4))
 	LA(x4, 3f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
-	nop
 3:
-	nop
 	nop
 
     LA (a4, (\ADDRESS+g))
 	LA(x4, 4f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
-	nop
 4:
-	nop
 	nop
 
 .endm
@@ -175,21 +153,19 @@ main:
 
 #define PMP_REGION_GLOBAL			((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_UPPER_BOUND      	((((PMP_L|PMP_R		 |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LOWER_BOUND_L     ((((PMP_L)      					  &0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_LOWER_BOUND       ((((PMP_L)      					  &0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define PMP_MASK					~(1 << (RVMODEL_PMP_GRAIN - 1))
-	
-	csrw satp, x0																	// Disable Address Translation
+#ifdef rvtest_strap_routine
+	csrw satp, zero             // Disable address translation.
+#endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
+	LA(x4, -1)		   			// All memory region
 	csrw 	pmpaddr15, x4
 
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
 	csrw pmpcfg3, x4
 
-	//addresses for a default TOR region starting from base address, that is TEST_FOR_EXECUTION
     LA(x4, TEST_FOR_EXECUTION)
 	addi    x5, x4, g
     srl x4, x4, PMP_SHIFT
@@ -199,18 +175,18 @@ main:
     csrw 	pmpaddr1, x5
 
 //											Verification Section
-// Test Case: 1 (For details, see test description)
+// Test Case: 1
 
 	LI(x4, PMPREGION_UPPER_BOUND)
 	csrw pmpcfg0, x4
     
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 2 (For details, see test description)
+// Test Case: 2
 
 	LI(x4, PMPREGION_UPPER_BOUND)
 	csrw pmpcfg0, x4
-    LI(x4, PMPREGION_LOWER_BOUND_L)
+    LI(x4, PMPREGION_LOWER_BOUND)
 	csrw pmpcfg0, x4
     
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
@@ -227,7 +203,7 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
-//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif

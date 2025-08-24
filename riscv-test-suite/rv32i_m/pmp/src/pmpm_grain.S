@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -13,14 +13,17 @@
 // Notes       : - Ensure `model_test.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
-
-// Test case  : Check that low bits read as 0/1s depending on grain and address-matching mode.
-//				Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write pmpaddr0 = {all 0s / all 1s / checkerboard}. 
-//				Change pmpcfg.A to {OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
+//
+// Coverpoints: cp_grain for PMPM is fully covered in this test file.
+//
+// Test case  : Checking that low bits read as 0/1s depending on grain and address
+//				matching mode. Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write
+//				pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to 
+//				{OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
 //				as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF. 
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"
@@ -41,13 +44,10 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
-#define g (1<<(RVMODEL_PMP_GRAIN+2))
-#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
-
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
+RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] >= 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
@@ -77,7 +77,6 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
 
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_OFF      	((((	 PMP_R|PMP_W|PMP_X)			   &0xFF) << PMP0_CFG_SHIFT))
@@ -85,15 +84,17 @@ main:
 #define PMPREGION_TOR      	((((	 PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define PMP_MASK					~(1 << (RVMODEL_PMP_GRAIN - 1))
-#define PMP_ADDRESS					(REGIONSTART >> PMP_SHIFT)
+#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
+#define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
 	
-	csrw satp, x0																	// Disable Address Translation
+#ifdef rvtest_strap_routine
+	csrw satp, zero                // Disable address translation.
+#endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	csrw 	pmpaddr15, x4
 
-	//Lock the Background region.
+	//Lock the Background reg#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1ion.
 	LI(x4, PMP_REGION_GLOBAL)
 	csrw pmpcfg3, x4
 
@@ -353,7 +354,7 @@ TEST_FOR_EXECUTION:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
-//We need to add a extra nop to complete the minimul NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif

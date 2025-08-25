@@ -212,7 +212,7 @@ First install the [Sail Compiler](https://github.com/rems-project/sail/). It is 
 
 ```bash
 $ sudo apt-get install libgmp-dev pkg-config zlib1g-dev curl
-$ curl --location https://github.com/rems-project/sail/releases/download/0.18-linux-binary/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
+$ curl --location https://github.com/rems-project/sail/releases/latest/download/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
 ```
 Note: Make sure to add the path `/path/to/install` to your `$PATH`.
 
@@ -220,10 +220,10 @@ Then build the RISC-V Sail Model:
 ```bash
 $ git clone https://github.com/riscv/sail-riscv.git
 $ cd sail-riscv
-$ ./build-simulators.sh
+$ ./build_simulators.sh
 ```
 
-This will create a C simulator in `build/c_emulator/riscv_sim_rv64d` and `build/c_emulator/riscv_sim_rv32d`. You will need to add this path to your `$PATH` or create an alias to execute them from the command line.
+This will create a C simulator in `build/c_emulator/sail_riscv_sim`. You will need to add this path to your `$PATH` or create an alias to execute it from the command line.
 
 
 ## Necessary Env Files

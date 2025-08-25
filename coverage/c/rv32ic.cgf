@@ -401,13 +401,6 @@ cjr:
     c.jr: 0
   rs1:
     <<: *all_regs_mx0
-  op_comb:
-    <<: *sfmt_op_comb
-  val_comb:
-    <<: *base_rs1val_sgn_rs2val_zero
-    abstract_comb:
-      'sp_dataset(xlen)': 0
-      <<: *rs1val_walking
 
 cmv:
     config: 
@@ -451,13 +444,6 @@ cjalr:
     c.jalr: 0
   rs1:
     <<: *all_regs_mx0
-  op_comb:
-    <<: *sfmt_op_comb
-  val_comb:
-    <<: *base_rs1val_sgn_rs2val_zero
-    abstract_comb:
-      'sp_dataset(xlen)': 0
-      <<: *rs1val_walking
 
 cswsp:
     config: 

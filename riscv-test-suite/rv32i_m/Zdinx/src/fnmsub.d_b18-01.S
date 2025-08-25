@@ -19,7 +19,7 @@
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32IFD_Zicsr,RV64IFD_Zicsr")
+RVTEST_ISA("RV32I_Zfinx_Zdinx")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -29,7 +29,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*I.*D.*);def TEST_CASE_1=True;",fnmsub.d_b18)
+RVTEST_CASE(0,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zfinx.*Zdinx.*);def TEST_CASE_1=True;",fnmsub.d_b18)
 
 RVTEST_FP_ENABLE()
 RVTEST_VALBASEUPD(x3,test_dataset_0)

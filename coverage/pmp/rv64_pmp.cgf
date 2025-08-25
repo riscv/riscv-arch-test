@@ -1,0 +1,217 @@
+PMP_NAPOT_M:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrw, ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    ((pmpcfg0 >> {32, 24, 16, 8, 0}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NAPOT}): 0
+  val_comb:
+    #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NAPOT region selected.
+    ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NAPOT", (pmpaddr{4, 3, 2, 1, 0})) and
+      ((pmpcfg0 >> {32, 24, 16, 8, 0}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT})
+    : 0
+    #checks for the faults.
+    #check for store access faults
+    ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> {24, 8, 0}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for Load access faults
+    ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> 0) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for Fetch access faults
+    ? ((pmpcfg0 >> {16, 8}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+PMP_NA4_M:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+       "{ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    ((pmpcfg0 >> {32, 24, 16, 8, 0}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_NA4}): 0
+  val_comb:
+    #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NA4 region selected.
+    ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NA4", (pmpaddr{4,3,2,1,0})) and
+      ((pmpcfg0 >> {32, 24, 16, 8, 0}{[$2]}) & 0xFF == {${PMP_CFG_LRWX}, ${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4})
+    : 0
+    #checks for the faults.
+    #check for store access faults
+    ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> {24, 8, 0}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for Load access faults
+    ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> 0) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for Fetch access faults
+    ? ((pmpcfg0 >> {16, 8}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+PMP_TOR_M:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+       "{ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LRWX} | ${PMP_CFG_TOR}): 0
+    ((pmpcfg0 >> {56, 40, 24, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$1]} | ${PMP_CFG_TOR}): 0
+  val_comb:
+    ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", pmpaddr9, pmpaddr8) and
+      ((pmpcfg2 >> 8) & 0xFF == ${PMP_CFG_LRWX} | ${PMP_CFG_TOR})
+    : 0
+
+    ? (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", (pmpaddr{7, 5, 3, 1}), (pmpaddr{6, 4, 2, 0}{[$2]})) and
+      ((pmpcfg0 >> {56, 40, 24, 8}{[$2]}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LRW}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR})
+    : 0
+    #checks for the faults.
+    #check for store access faults
+    ? (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> {56, 24, 8}) & 0xFF == {${PMP_CFG_LRX}, ${PMP_CFG_LR}, ${PMP_CFG_LX}}{[$2]} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for store access faults
+    ? (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> 8) & 0xFF == ${PMP_CFG_LX} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for Fetch access faults
+    ? ((pmpcfg0 >> {40, 24}) & 0xFF == {${PMP_CFG_LRW}, ${PMP_CFG_LR}}{[$1]} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+PMP_TOR_S_U:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+       "{ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    (mode == {'S', 'U'}) and ((pmpcfg0 >> ${PMP1_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_TOR}): 0
+  val_comb:
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "TOR", (pmpaddr1), (pmpaddr0)) and
+      ((pmpcfg0 >> ${PMP1_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_TOR})
+    : 0
+
+    # #checks for the faults.
+    # #check for store access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> ${PMP1_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RX}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for load access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> ${PMP1_CFG_SHIFT}) & 0xFF == ${PMP_CFG_X} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for fetch access faults
+    ? ((pmpcfg0 >> ${PMP1_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RW},${PMP_CFG_R}} | ${PMP_CFG_TOR}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+PMP_NAPOT_S_U:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrw, ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NAPOT}): 0
+  val_comb:
+    #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NAPOT region selected.
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NAPOT", (pmpaddr0)) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NAPOT})
+    : 0
+    #checks for the faults.
+    #check for store access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RX}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for Load access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == ${PMP_CFG_X} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for Fetch access faults
+    ? ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RW}, ${PMP_CFG_R}} | ${PMP_CFG_NAPOT}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+PMP_NA4_S_U:
+  config:
+  - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{ld, sd, lw, sw, lb, sb, lh, sh, jal, jalr}" : 0
+  csr_comb:
+    #All 5 cases checked here.
+    #checks for required permissions.
+    (mode == {'S', 'U'}) and ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NA4}): 0
+  val_comb:
+    #check the lb..ld, sb..sd accessed the address which was inside the TEST_FOR_EXECUTION PMP region atleast once and at that time the pmpaddr with NAPOT region selected.
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb", "sd", "sw", "sh", "sb"}) and
+      pmp_rgn_chk(rs1_val | imm_val, access_len, "NA4", (pmpaddr0)) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RWX}, ${PMP_CFG_RX}, ${PMP_CFG_RW}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NA4})
+    : 0
+    #checks for the faults.
+    #check for store access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"sd", "sw", "sh", "sb"}) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RX}, ${PMP_CFG_R}, ${PMP_CFG_X}} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_STORE_ACCESS}
+    : 0
+
+    #check for Load access faults
+    ? (mode == {'S', 'U'}) and (mnemonic == {"ld", "lw", "lh", "lb"}) and
+      ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == ${PMP_CFG_X} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_LOAD_ACCESS}
+    : 0
+
+    #check for Fetch access faults
+    ? ((pmpcfg0 >> ${PMP0_CFG_SHIFT}) & 0xFF == {${PMP_CFG_RW}, ${PMP_CFG_R}} | ${PMP_CFG_NA4}) and
+      mcause == ${CAUSE_FETCH_ACCESS}
+    : 0
+
+#This coverpoint checks the coverage of pmp-CSR-access.cgf (PMP CSRs accesses in different modes)
+#Checks pmpcgf and pmpaddr are only accessible in M mode and gets fault in S and U mode when accessed.
+PMP_access_permission:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw}" : 0
+  csr_comb:
+    #Check successful update for pmpcfg in M Mode
+    mode == 'M' and (((old_csr_val("pmpcfg{0 , 2}") ^ (pmpcfg$1)) != 0x00) and pmpcfg$1 != 0x0): 0              #pmpcfg successfully updated in M mode
+    #Check successful update for pmpaddr in M Mode
+    mode == 'M' and (((old_csr_val("pmpaddr{0 ... 15}") ^ (pmpaddr$1)) != 0x00) and pmpaddr$1 != 0x0): 0        #pmpaddr successfully updated in M mode
+    #Check for fault for pmpcfg, pmpaddr in S, U Mode
+    mode == {'S', 'U'} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}: 0 #check for illegal instruction fault

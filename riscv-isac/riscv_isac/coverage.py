@@ -524,7 +524,7 @@ class csr_registers(MutableMapping):
             "mie":int('304',16),
             "mtvec":int('305',16),
             "mcounteren":int('306',16),
-            "784":int('310',16),
+            "mstatush":int('310',16),
             "mscratch":int('340',16),
             "mepc":int('341',16),
             "mcause":int('342',16),
@@ -643,7 +643,7 @@ class archState:
             self.fcsr = 0
         elif flen == 32:
             self.f_rf = ['00000000']*32
-            
+
         else:
             self.f_rf = ['0000000000000000']*32
         self.pc = 0
@@ -961,20 +961,21 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                     old_csr_regfile[i] = int(csr_regfile[i],16)
                 else:
                     old_csr_regfile[i] = csr_regfile[i]
+
             def old_fn_csr_comb_covpt(csr_reg):
                 return old_csr_regfile[csr_reg]
 
-            #update the arch state and csr_regfile for the current instruction
-            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
             #update instr_vars using updated arch state and updated csr_regfile
             instr.evaluate_instr_vars(xlen, flen, arch_state, csr_regfile, instr_vars)
+            #update the arch state and csr_regfile for the current instruction
+            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
 
             #update the state of trap registers in csr_reg file using instr_vars
             # if instr_vars["mode_change"] is not None:  #change the state only on the instruction
             csr_regfile["mcause"] = instr_vars["mcause"]
             csr_regfile["scause"] = instr_vars["scause"]
-            csr_regfile["mtval"] = instr_vars["mtval"]
-            csr_regfile["stval"] = instr_vars["stval"]
+            csr_regfile["mtval"]  = instr_vars["mtval"]
+            csr_regfile["stval"]  = instr_vars["stval"]
 
             if 'rs1' in instr_vars:
                 rs1 = instr_vars['rs1']
@@ -1038,34 +1039,88 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                     return None
 
             def get_pte_prop(prop_name, pte_addr):
-                '''
-                Function to return whether a specific Permission is given to the PTE or not
-                :param prop_name: an input property ., example: 'U' for U bit or 'RWX' for a combination of bits
-                :param pte_addr: PTE address for which we want to get the information
+                """
+                Function to check specific permissions of a PTE.
 
-                :type prop_name: str
-                :type pte_addr: hex/int
-
-                :return: 1 or 0 depending whether the specific (or combination of) permission/s is set or not respectively.
-                '''
-                bitmask_dict = {'v': 0x01, 'r': 0x02, 'w': 0x04, 'x': 0x08, 'u': 0x10, 'g': 0x20, 'a': 0x40, 'd': 0x80}
-                
-                if pte_addr is not None:
-                    # Get the permissions bit out of the pte_addr
-                    pte_per = pte_addr & 0x3FF
-                    
-                    # Check each character in prop_name
-                    for char in prop_name.lower():
-                        if char in bitmask_dict and (pte_per & bitmask_dict[char] == 0):
-                            return 0
-                    return 1
-                else:
+                :param prop_name: string containing properties to check.
+                                Uppercase letters mean the bits should be set.
+                                Lowercase letters mean the bits should NOT be set.
+                                Example: "uAdW" checks U and D bits are NOT set,
+                                        while A and W bits are set.
+                :param pte_addr: PTE address to examine (int or hex).
+                :return: 1 if conditions are met, 0 otherwise.
+                """
+                if pte_addr is None:
                     return 0
+                
+                bitmask_dict = {
+                    'V': 0x01, 'R': 0x02, 'W': 0x04, 'X': 0x08,
+                    'U': 0x10, 'G': 0x20, 'A': 0x40, 'D': 0x80
+                }
+
+                # Get permission bits from PTE address
+                pte_per = pte_addr & 0x3FF
+
+                # Check each property in prop_name
+                for char in prop_name:
+                    # Check if uppercase character should be set or lowercase should NOT be set
+                    bitmask = bitmask_dict.get(char.upper())
+                    if bitmask is None:
+                        return 0  # If unrecognized character, then return overall zero prematurely.
+
+                    if (char.isupper() and not (pte_per & bitmask)) or (char.islower() and (pte_per & bitmask)):
+                        return 0
+
+                return 1
+
+
+            def pmp_rgn_chk(req_addr, access_len, pmp_config, pmp_addr, prev_pmp_addr = None):
+                """
+                Function to check whether the requested address is inside the required setup pmpaddr entry.
+
+                :param req_addr: value for the requested addrress (int or hex).
+                :param access_len: For instance, 1 for lb, 2 for lh and ...
+                :param pmp_config: Selected PMP Configuration for that region. i.e., TOR, NA4, NAPOT
+                :param pmp_addr: pmpaddr csr value to examine (int or hex).
+                :param prev_pmp_addr: prev pmpaddr csr value to examine required in case of TOR (int or hex).
+
+                :return: True if conditions are met, False otherwise.
+                """
+
+                #Skip the not required cases.
+                if pmp_addr is None or access_len is None:
+                    return False
+
+                #Implementation credits: Sail RISC-V Golden Reference Model.
+                if pmp_config == "NAPOT":
+                    mask = pmp_addr ^ (pmp_addr + 1)
+                    lo = pmp_addr & (~(mask))
+                    length = mask + 1
+                    #requested address is above the minimum and below the maximum + access_len.
+                    #Here, we are giving relaxation of access_len + max because we have to verify cases
+                    #in which we are crossing the boundary as well upto the access len (for instance, 8 Bytes in case of ld).
+                    return (req_addr) >= (lo*4) and (req_addr + access_len) < (((lo + length)*4) + access_len)
+
+                elif pmp_config == "TOR":
+                    if prev_pmp_addr is None:
+                        raise ValueError("The 'prev_pmp_addr' argument is required when 'TOR' is selected.")
+                    else:
+                        return (req_addr) >= prev_pmp_addr*4 and (req_addr + access_len) < (pmp_addr*4 + access_len)
+
+                elif pmp_config == "NA4":
+                    return (req_addr) >= pmp_addr and (req_addr + access_len) < (pmp_addr*4 + 4) + access_len
+
+                elif pmp_config == "OFF":
+                    return False
+                else:
+                    raise ValueError("PMP Config is not selected properly. Select b/w NA4, NAPOT, TOR only")
 
             globals()['get_addr'] = check_label_address
+            globals()['old_csr_val'] = old_fn_csr_comb_covpt
             globals()['get_mem_val'] = get_mem_val
             globals()['get_pte'] = get_pte
             globals()['get_pte_prop'] = get_pte_prop
+            globals()['pmp_rgn_chk'] = pmp_rgn_chk
 
             if enable :
                 ucovpt = []
@@ -1196,7 +1251,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                             return key
                                                     return None
                                                 #check the old_csr_value only for the register of interest
-                                                pattern_csr = r'old\("([^"]+)"\)'
+                                                pattern_csr = r'old_csr_val\("([^"]+)"\)'
                                                 match = re.search(pattern_csr, coverpoints)
                                                 if match:
                                                     required_csr = match.group(1)
@@ -1207,7 +1262,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                     coverpoints,
                                                     {
                                                         "__builtins__":None,
-                                                        "old": old_fn_csr_comb_covpt,
+                                                        "old_csr_val": old_fn_csr_comb_covpt,
                                                         "write": write_fn_csr_comb_covpt,
                                                         "get_addr": check_label_address,
                                                         "get_mem_val":get_mem_val,
@@ -1238,7 +1293,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                 coverpoints,
                                                 {
                                                     "__builtins__":None,
-                                                    "old": old_fn_csr_comb_covpt,
+                                                    "old_csr_val": old_fn_csr_comb_covpt,
                                                     "write": write_fn_csr_comb_covpt,
                                                     "get_addr": check_label_address,
                                                     "get_mem_val":get_mem_val,

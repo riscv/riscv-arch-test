@@ -91,7 +91,8 @@ class instructionObject():
         mem_val =  None,
         trap_dict = None,
         inxFlag = None,
-        is_sgn_extd = None
+        is_sgn_extd = None,
+        mip_updated_val = None
     ):
 
         '''
@@ -136,6 +137,7 @@ class instructionObject():
         self.matches_for_options = None
         self.mem_val = mem_val
         self.trap_dict = trap_dict
+        self.mip_updated_val = mip_updated_val
 
     def is_sig_update(self):
         return self.instr_name in instrs_sig_update
@@ -159,7 +161,7 @@ class instructionObject():
         instr_vars['mnemonic'] = self.instr_name
 
         instr_vars['iflen'] = flen
-        if self.instr_name.endswith(".s") or 'fmv.x.w' in self.instr_name:
+        if self.instr_name.endswith(".s") or self.instr_name in {'fmv.x.w', 'flw', 'fsw'}:
             instr_vars['iflen'] = 32
         elif self.instr_name.endswith(".d"):
             instr_vars['iflen'] = 64
@@ -199,8 +201,16 @@ class instructionObject():
                 instr_vars['access_len'] = 1
         else:
             instr_vars['access_len'] = None
+
         #Update the values for the trap registers
         self.trap_registers_update(instr_vars,self.trap_dict)
+
+        #Update the value of MIP as soon as the hart updates it.
+        if self.mip_updated_val is not None:
+            if isinstance(csr_regfile['mip'], str):
+                csr_regfile['mip'] = int(csr_regfile['mip'], 16) | self.mip_updated_val
+            else:
+                csr_regfile['mip'] = csr_regfile['mip'] | self.mip_updated_val
 
         # capture the register operand values
         rs1_val = self.evaluate_instr_var("rs1_val", instr_vars, arch_state)
@@ -337,7 +347,7 @@ class instructionObject():
         if csr_commit is not None:
             for commit in csr_commit:
                 if (commit[0] == "CSR"):
-                    csr_regfile[commit[1]] = str(commit[2][2:])
+                    csr_regfile[commit[1]] = str(commit[3][2:])
 
         mem_val = self.mem_val
         if mem_val is not None:
@@ -493,6 +503,8 @@ class instructionObject():
         instr_vars['mode_change']   = trap_dict['mode_change']
         instr_vars['call_type']     = trap_dict['call_type']
 
+        mcause_interrupt = {32: 0x80000000, 64: 0x8000000000000000}
+
         if trap_dict["mode_change"] is not None:
             #update the registers depending upon the mode change
             if trap_dict["mode_change"].split()[2] == "M":
@@ -510,6 +522,17 @@ class instructionObject():
                 if "mcause" not in instr_vars:
                     instr_vars['mcause']      = None
                     instr_vars['mtval']       = None
+        
+        #Handle interrupt Case
+        # TODO: update the interrupt case for delegation !
+        elif trap_dict["mode_change"] is None and trap_dict['call_type'] == "interrupt":
+                #upper most bit should be 1 in case of interrupt
+                instr_vars['mcause'] = mcause_interrupt[instr_vars['xlen']] | int(trap_dict['exc_num'], 16)
+                instr_vars['mtval']       = trap_dict['tval']
+                #only update on the initialization
+                if "scause" not in instr_vars:
+                    instr_vars['scause']      = None
+                    instr_vars['stval']       = None
 
         else:
                 #initialize them to None for the first time in the instr_vars
@@ -543,6 +566,10 @@ class instructionObject():
 
     @evaluator_func("rs1_val", lambda **params: not params['instr_name'] in unsgn_rs1 and not params['is_rvp'] and params['rs1'] is not None and (params['rs1'][1] == 'f' or params['inxFlag']))
     def evaluate_rs1_val_fsgn(self, instr_vars, arch_state):
+        return self.evaluate_reg_val_zdinx32_ext(self.rs1[0], self.rs1_nregs,instr_vars['flen'],instr_vars['xlen'],arch_state)
+        
+    @evaluator_func("rs1_val", lambda **params: not params['instr_name'] in unsgn_rs1 and not params['is_rvp'] and params['rs1'] is not None and (params['rs1'][1] == 'f' or params['inxFlag']))
+    def evaluate_rs1_val_fsgn(self, instr_vars, arch_state):
         return self.evaluate_reg_val_fsgn(self.rs1[0], instr_vars['flen'], instr_vars['xlen'],arch_state)
    
 
@@ -567,6 +594,10 @@ class instructionObject():
         return self.evaluate_reg_val_sgn(self.rs2[0], instr_vars['xlen'], arch_state)
 
 
+    @evaluator_func("rs2_val", lambda **params: params['is_rvp'] and params['rs2'] is not None)
+    def evaluate_rs2_val_fsgn(self, instr_vars, arch_state):
+        return self.evaluate_reg_val_zdinx32_ext(self.rs2[0],instr_vars['flen'], instr_vars['xlen'], self.rs2_nregs, arch_state)
+        
     @evaluator_func("rs2_val", lambda **params: not params['instr_name'] in unsgn_rs2 and not params['is_rvp'] and params['rs2'] is not None and (params['rs2'][1] == 'f' or params['inxFlag']))
     def evaluate_rs2_val_fsgn(self, instr_vars, arch_state):
         return self.evaluate_reg_val_fsgn(self.rs2[0], instr_vars['flen'], instr_vars['xlen'], arch_state)
@@ -638,7 +669,7 @@ class instructionObject():
 
 
     def evaluate_reg_val_fsgn(self, reg_idx, flen, xlen, arch_state):
-        fsgn_sz = '>Q' if flen == 64 and xlen >32  else '>I'  
+        fsgn_sz = '>Q' if flen == 64 else '>I'  
         if self.inxFlg:
             return struct.unpack(fsgn_sz, bytes.fromhex(arch_state.x_rf[reg_idx]))[0]
         
@@ -652,6 +683,13 @@ class instructionObject():
             reg_val = (reg_hi_val << 32) | reg_val
         return reg_val
     
+    def evaluate_reg_val_zdinx32_ext(self, reg_idx, nregs, flen,arch_state,xlen):
+        reg_val = self.evaluate_reg_val_fsgn(reg_idx,flen,arch_state,xlen)
+        if nregs == 2:
+            reg_hi_val = self.evaluate_reg_val_fsgn(reg_idx+1,flen,arch_state,xlen)
+            reg_val = (reg_hi_val << 32) | reg_val
+        return reg_val
+        
     def sign_extend(self, value, e_bits, v_bits ):
         return bin(value | ((1<<e_bits) - (1<<v_bits)))
     
@@ -690,13 +728,13 @@ class instructionObject():
         
 
         if flen > iflen:
-             if inxFlag and iflen == 16:
+            if inxFlag and iflen == 16:
                 if bin_val[16] == '1' :
                    sgnd_bin_val = bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:] 
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(sgnd_bin_val[0:iflen],2)
                 else:
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(0x0)
-             elif inxFlag and iflen == 32:
+            elif inxFlag and iflen == 32:
                 if bin_val[32] == '1' :
                    sgnd_bin_val = bin(reg_val &((1<<flen)-1) | ((1<<flen) - (1<<iflen)))[2:] 
                    f_ext_vars['rs'+postfix+'_sgn_prefix'] = int(sgnd_bin_val[0:iflen],2)

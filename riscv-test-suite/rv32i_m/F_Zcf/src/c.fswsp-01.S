@@ -19,7 +19,7 @@
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32IFC")
+RVTEST_ISA("RV32IF_Zcf")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -29,7 +29,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*I.*F.*C.*);def TEST_CASE_1=True;",c.fswsp)
+RVTEST_CASE(0,"//check ISA:=regex(.*RV32.*I.*F.*Zcf.*);def TEST_CASE_1=True;",c.fswsp)
 
 RVTEST_FP_ENABLE()
 RVTEST_VALBASEUPD(x4,test_dataset_0)

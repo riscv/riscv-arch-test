@@ -260,8 +260,7 @@ class Generator():
 
 
         is_nan_box = False
-
-        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x or 'Zhinx' in x for x in opnode['isa']])
+        is_fext = any(['F' in x or 'D' in x or 'Zfh' in x or 'Zfinx' in x  or 'Zcf' in x or 'Zcd' in x or 'Zhinx' in x or 'Zdinx' in x for x in opnode['isa']])
         is_sgn_extd = True if (inxFlag and iflen <xlen) else False
 
         if is_fext:
@@ -489,10 +488,10 @@ class Generator():
                     problem = Problem()
 
                 for var in self.val_vars:
-                    if var == 'ea_align' and var not in req_val_comb:
-                        problem.addVariable(var, [0])
-                    else:
-                        problem.addVariable(var, self.datasets[var])
+                    dataset = self.datasets[var]
+                    if var not in req_val_comb:
+                        dataset = dataset[:1]
+                    problem.addVariable(var, dataset)
 
                 def condition(*argv):
                     for var,val in zip(self.val_vars,argv):
@@ -1052,8 +1051,9 @@ class Generator():
                                     dval = (instr_dict[i]['rs{0}_val'.format(j)],width)
                                 if self.is_fext:
                                     instr_dict[i]['flagreg'] = available_reg[1]
+                                hex_dval = hex(int(dval[0]))
                                 instr_dict[i]['val_section'].append(
-                                        template.substitute(val=dval[0],width=dval[1]))
+                                        template.substitute(val=hex_dval,width=dval[1]))
                                 instr_dict[i]['load_instr'] = self.opnode['val']['load_instr']
                     available_reg = regset.copy()
                     available_reg.remove('x0')
@@ -1079,8 +1079,9 @@ class Generator():
                                 dval = (instr_dict[i]['rs{0}_val'.format(j)],width)
                             if self.is_fext:
                                 instr_dict[i]['flagreg'] = available_reg[1]
+                            hex_dval = hex(int(dval[0]))
                             instr_dict[i]['val_section'].append(
-                                    template.substitute(val=dval[0],width=dval[1]))
+                                    template.substitute(hex_dval,width=dval[1]))
                             instr_dict[i]['load_instr'] = self.opnode['val']['load_instr']
             return instr_dict
         else:

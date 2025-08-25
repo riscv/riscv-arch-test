@@ -320,6 +320,7 @@
 #define MPRV_LSB  17    //bit pos of LSB of the mstatus.MPRV field
 #define MPV_LSB    7    // bit pos of prev vmod mstatush.MPV in either mstatush or mstatus upper
 #define MPP_SMODE (1<<MPP_LSB)
+#define MPP_MMODE (3<<MPP_LSB)
 //define sizes
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 5) * 4)     // 5 is added ops before common entry pt
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
@@ -813,12 +814,14 @@
 .endm
 
 
-/**** This is a helper macro that causes harts to transition from    ****/
-/**** M-mode to a lower priv mode at the instruction that follows    ****/
-/**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/**** The H,U variations leave V unchanged. This uses T4 only.       ****/
-/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
-/**** FIXME - SATP & VSATP must point to the identity map page table ****/
+/**** This is a helper macro that causes harts to transition from               ****/
+/**** M-mode to a lower priv mode at the instruction that follows               ****/
+/**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
+/**** HUmode,Smode & Umode.                                                     ****/
+/**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
+/**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
 #define HSmode  0x9
 #define HUmode  0x8
@@ -842,15 +845,22 @@
 
   LI(    T4, MSTATUS_MPP)
   csrc   CSR_MSTATUS, T4                /* clr PP always                */
-
   .if    ((\LMODE\()==VSmode) || (\LMODE\()==HSmode) || (\LMODE\()==Smode))
+#ifdef rvtest_strap_routine
     LI(  T4, MPP_SMODE)                 /* val for Smode                */
+#else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+#endif
     csrs CSR_MSTATUS, T4                /* set in PP                    */
   .endif
         // do the same if XLEN=64
 #else                           /* XLEN=64, maybe 128? FIXME for 128    */
   .if ((\LMODE\()==Smode) || (\LMODE\()==Umode)) /* lv V unchanged here  */
-    LI(  T4,  MSTATUS_MPP)      /* but always clear PP                  */
+  #ifdef rvtest_strap_routine
+    LI(  T4, MPP_SMODE)                 /* val for Smode                */
+  #else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+  #endif
   .else
     LI(  T4, (MSTATUS_MPP | MSTATUS_MPV))       /* clr V and P          */
   .endif
@@ -860,7 +870,11 @@
     .if      (\LMODE\()==VSmode)
       LI(  T4, (MPP_SMODE | MSTATUS_MPV)) /* val for pp & v             */
     .elseif ((\LMODE\()==HSmode) || (\LMODE\()==Smode))
-      LI(  T4, (MPP_SMODE))     /* val for pp only                      */
+    #ifdef rvtest_strap_routine
+       LI(  T4, MPP_SMODE)                 /* val for Smode             */
+    #else
+       LI(  T4, MPP_MMODE)                 /* val for no Smode          */
+    #endif
     .else                       /* only VU left; set MPV only           */
       li   T4, 1                /* optimize for single bit              */
       slli T4, T4, 32+MPV_LSB   /* val for v only                       */
@@ -868,17 +882,19 @@
     csrs CSR_MSTATUS, T4        /* set correct mode and Vbit            */
   .endif
 #endif
-  csrr   sp, CSR_MSCRATCH       /* ensure sp points to Mmode datae area */
+  csrr   T2, CSR_MSCRATCH       /* ensure GPR T2 points to Mmode datae area */
         /**** mstatus MPV and PP now set up to desired mode    ****/
         /**** set MEPC to mret+4; requires relocating the pc   ****/
 .if     (\LMODE\() == Vmode)     // get trapsig_ptr & init val up 2 save areas (M<-S<-V)
-        LREG    T1, code_bgn_off + 2*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 2*sv_area_sz(T2)
+#ifdef rvtest_strap_routine
 .elseif (\LMODE\() == Smode || \LMODE\() == Umode)     // get trapsig_ptr & init val up 1 save areas (M<-S)
-        LREG    T1, code_bgn_off + 1*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 1*sv_area_sz(T2)
+#endif
 .else                            // get trapsig ptr & init val for this Mmode, (M)
-        LREG    T1, code_bgn_off + 0*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 0*sv_area_sz(T2)
 .endif
-        LREG    T4, code_bgn_off(sp)
+        LREG    T4, code_bgn_off(T2)
   sub   T1, T1,T4               /* calc addr delta between this mode (M) and lower mode code */
   addi  T1, T1, 4*WDBYTSZ       /* bias by # ops after auipc continue executing at mret+4 */
   auipc T4, 0
@@ -1377,8 +1393,17 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:
+#ifndef rvtest_strap_routine             // Access Smode sv area only if Smode is supported
+                                        // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        li T4, 0
+#endif
         add     T4, T4, sp              /* calc address of correct sv_area      */
         csrr    T2, CSR_XEPC            /* T4 now pts to trapping sv_area mode  */
+
+#ifdef SKIP_MEPC
+        addi T3, T3, 0
+        j adj_\__MODE__\()epc
+#endif
 
         LREG    T3, vmem_bgn_off(T4)            // see if epc is in the vmem area
         LREG    T6, vmem_seg_siz(T4)
@@ -1406,11 +1431,25 @@ adj_\__MODE__\()epc:
 sv_\__MODE__\()epc:
         SREG    T3, 2*REGWIDTH(T1)      // save 3rd sig value, (rel mepc) into trap sig area
 
+#ifdef SKIP_MEPC
+        LI (T6, 0xACCE)                         // A Constant value to compare if x1 has this value
+        bne x3, T6, adj_\__MODE__\()epc_rtn     // If not called from macro, then skip
+        csrr T3, CSR_XCAUSE                     // Read xcause to check trap type
+        LI (T6, CAUSE_FETCH_PAGE_FAULT)         // Exception code, CAUSE_FETCH_PAGE_FAULT = 0xC
+        beq     T3, T6, 1f                      // If Fetch Page Fault, go to label 1
+        LI (T6, CAUSE_FETCH_ACCESS)             // CAUSE_FETCH_ACCESS = 0x1        
+        bne T3, T6, adj_\__MODE__\()epc_rtn     // Skip if it's not Fetch Page Fault
+1:      csrw    CSR_XEPC, x4                    // Assign xpec with the return label
+        j skp_adj_\__MODE__\()epc
+#endif
+
+
 adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
         andi    T6, T2, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
         addi    T6, T6,  2*WDBYTSZ         // adjust mepc so it skips past op, has padding & 4B aligned
         csrw    CSR_XEPC, T6            // restore adjusted value, w/ 2,4 or 6B of padding
 
+skp_adj_\__MODE__\()epc:
   /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
         for 64b insts,  2B or 4B of padding   ****/
 
@@ -1426,6 +1465,11 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
              the mode of the mstatus.mpp that is stored in Xtrampend_sv ****/
 
         csrr    T2, CSR_XTVAL
+
+#ifdef SKIP_MTVAL
+        addi T3, T3, 0
+        j adj_\__MODE__\()tval
+#endif
 
 chk_\__MODE__\()tval:
         andi    T5, T5, EXCPT_CAUSE_MSK // ensures shift amt will be within range
@@ -1696,7 +1740,11 @@ rtn2mmode:
   #endif
         slli    T2, T2, WDSZ-MPV_LSB-1  /* but V into MSB  ****FIXME if RV128   */ 
 #endif
+#ifdef rvtest_strap_routine             // Only if S-mode is defined, then access S-mode save area
         LREG    T6, code_bgn_off+1*sv_area_sz(sp)    /* get U/S mode code begin */
+#else                                   // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        LREG    T6, code_bgn_off+0*sv_area_sz(sp)    /* get U/S mode code begin */
+#endif
         bgez    T2, from_u_s            /* V==0, not virtualized, *1 offset     */
 from_v:
         LREG    T6, code_bgn_off+2*sv_area_sz(sp)/* get VU/VS   mode code begin */

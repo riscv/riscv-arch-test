@@ -14,11 +14,11 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_cfg_X and cp_cfg_RW from PMPU are partially covered in this
+// Coverpoints : cp_cfg_X and cp_cfg_RW from PMPS are partially covered in this
 //			     test file. cp_cfg_A_napot is fully covered.
 //
 // Test Cases  : Checking XWR controls accesses in matching NAPOT region. Configuring
-//               PMP in M mode and then switching to U mode. For a standard region with
+//               PMP in M mode and then switching to S mode. For a standard region with
 //               pmpcfg_i.L = {0/1}, pmpcfg_i.A=NAPOT, all legal pmpcfg_i.XWR, making
 //               {lw, sw, jalr} at that start of region, start - 4, start + 4, highest
 //               word in region, just beyond top of the region. Observing proper access
@@ -31,7 +31,7 @@
 #define SKIP_MEPC
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -53,8 +53,7 @@ RVTEST_CODE_BEGIN
   #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_napot, cp_cfg_X, cp_cfg_RW)
-RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_napot, cp_cfg_X, cp_cfg_RW)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_X, cp_cfg_RW)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -62,7 +61,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
-#define NOP 		0x13
+#define NOP 		(0x13<<32)+0x13		
 
 .macro VERIFICATION_RWX ADDRESS  
 
@@ -112,6 +111,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     sw a4, 0(a5)
     nop
+    sd a4, 0(a5)
+    nop
 
     addi a5, a5, -4                                         // REGIONSTART - 4
     sw a4, 0(a5)
@@ -137,12 +138,18 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     RVTEST_SIGUPD(x13, a4)                                  // Signature update
 	lh a4, 0(a5)
-    nop
+    nop                                                    
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)                                  // Signature update
     lw a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    lwu a4, 0(a5)
+    nop
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    ld a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
@@ -171,9 +178,9 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 main:
 	// Loop to SET pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
+	.rept RVMODEL_NUM_PMPS/8
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
+	.set pmpcfgi, pmpcfgi+2
 	.endr
 
 	// Loop to SET pmpaddr REGs to zero
@@ -183,15 +190,15 @@ main:
 	.set pmpaddri, pmpaddri+1
 	.endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR_1000 ((((                        PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1001 ((((      PMP_R|            PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
+#define PMPREGION_LXWR_1000 ((((                        PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT))
+#define PMPREGION_LXWR_1001 ((((      PMP_R|            PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((      PMP_R|PMP_W	   |PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_1100 ((((      			  PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
 #define PMPREGION_LXWR_1101 ((((      PMP_R		 |PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region									// Test section address
+#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define REGIONSTART			0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_MASK			~(1 << (RVMODEL_PMP_GRAIN - 1))
 #define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
@@ -201,7 +208,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -211,18 +218,18 @@ main:
 
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+	csrw pmpcfg2, x4
 
 
 //											Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
-
+	
 	LA(t0, STANDARD_REGION)
 	csrw pmpaddr5, t0
     LI(t1, PMPREGION_LXWR_1000)
-	csrw pmpcfg1, t1
+	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -231,9 +238,9 @@ main:
 	LA(t0, STANDARD_REGION)
 	csrw pmpaddr4, t0
     LI(t1, PMPREGION_LXWR_1000|PMPREGION_LXWR_1001)
-	csrw pmpcfg1, t1
+	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -244,7 +251,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011)
 	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -255,7 +262,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100)
 	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -266,7 +273,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100|PMPREGION_LXWR_1101)
 	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -277,7 +284,7 @@ main:
     LI(t1, PMPREGION_LXWR_1011|PMPREGION_LXWR_1100|PMPREGION_LXWR_1101|PMPREGION_LXWR_1111)
 	csrw pmpcfg0, t1
 
-    RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
+    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
     RVTEST_GOTO_MMODE
 
@@ -321,7 +328,7 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 signature_x13_1:
-    .fill 64*(XLEN/32),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 
 #ifdef rvtest_mtrap_routine
 
@@ -344,4 +351,5 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
+PMP_region_High:
 RVMODEL_DATA_END

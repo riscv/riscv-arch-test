@@ -32,7 +32,7 @@
 #define SKIP_MEPC
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -48,8 +48,8 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_priority)
-RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_priority)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_priority)
+RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_priority)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -57,7 +57,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
-#define NOP 		0x13
+#define NOP 		(0x13<<32)+0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
 .macro VERIFICATION_RWX ADDRESS  
@@ -91,9 +91,9 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
+	.rept RVMODEL_NUM_PMPS/8
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
+	.set pmpcfgi, pmpcfgi+2
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -103,11 +103,11 @@ main:
 	.set pmpaddri, pmpaddri+1
 	.endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1101 ((((PMP_L|      PMP_R|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W|      PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LXWR_1100 ((((PMP_L|            PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W|      PMP_TOR  )&0xFF) << PMP5_CFG_SHIFT))
+#define PMPREGION_LXWR_1100 ((((PMP_L|            PMP_X|PMP_TOR  )&0xFF) << PMP7_CFG_SHIFT))
 #define PMPREGION_LXWR_1001 ((((PMP_L|PMP_R            |PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 
@@ -120,7 +120,7 @@ main:
 
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+	csrw pmpcfg2, x4
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
@@ -144,14 +144,10 @@ main:
     .endr
 
 	// Setting the even pmpcfg to 0 and odd pmpcfg to TOR & and rotating through the 6 legal XWR values.
-    LI(x4, (PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
+    LI(x4, (PMPREGION_LXWR_1100|PMPREGION_LXWR_1011|PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
     csrw pmpcfg0, x4
-    LI(x5, (PMPREGION_LXWR_1100|PMPREGION_LXWR_1011))
-    csrw pmpcfg1, x5
-    LI(x4, (PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
+    LI(x4, (PMPREGION_LXWR_1000 << PMP4_CFG_SHIFT|PMPREGION_LXWR_1111|PMPREGION_LXWR_1001))
     csrw pmpcfg2, x4
-    LI(x5, PMPREGION_LXWR_1000)
-    csrw pmpcfg3, x5
 
 //											Verification Section
 // Test Case: 1 : Accessing at end of region with No Permissions
@@ -240,4 +236,5 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
+PMP_region_High:
 RVMODEL_DATA_END

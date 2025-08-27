@@ -29,7 +29,7 @@
 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -45,8 +45,8 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_walk,cp_pmpcfg_walk)
-RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_walk,cp_pmpcfg_walk)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_walk,cp_pmpcfg_walk)
+RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_walk,cp_pmpcfg_walk)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -73,14 +73,6 @@ main:
 	.set pmpaddri, pmpaddri+1
 	.endr
 
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
-
-
     li t2, 1                     // walking one: 0x00000001
 
 1:  // Outer loop for walking ones
@@ -103,6 +95,13 @@ main:
 
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 1b                  // Continue loop while t2 != 0
+
+	// Loop to SET ALL pmpcfg REGs to zero
+	.set pmpcfgi, CSR_PMPCFG0
+	.rept RVMODEL_NUM_PMPS/8
+	csrw pmpcfgi , x0
+	.set pmpcfgi, pmpcfgi+2
+	.endr
 
     li t2, 1                     // walking one: 0x00000001
 
@@ -173,4 +172,5 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
+PMP_region_High:
 RVMODEL_DATA_END

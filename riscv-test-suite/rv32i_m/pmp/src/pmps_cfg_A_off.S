@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
 //				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -23,7 +23,7 @@
 //				 is off even though inaccessible.
 //
 // Dependencies: model_test.h, arch_test.h
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #include "model_test.h"

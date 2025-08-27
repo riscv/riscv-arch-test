@@ -14,7 +14,7 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_pmpaddr_access_s and cp_pmpcfg_access_s are fully covered in 
+// Coverpoints : cp_pmpaddr_access_u and cp_pmpcfg_access_u are fully covered in 
 //				 this test file.
 //
 // Test Cases  : Test pmpcfg and pmpaddr access from S-mode. Trying to write 
@@ -28,7 +28,7 @@
 #define SKIP_MEPC
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -44,7 +44,7 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 64
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpcfg_access_s, cp_pmpcfg_access_s)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_access_s, cp_pmpcfg_access_s)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -53,7 +53,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
   	.align	3   
   	.option norvc
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 
 #ifdef rvtest_strap_routine
@@ -65,7 +66,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+	csrw pmpcfg2, x4
 
 main:
 
@@ -85,6 +86,7 @@ main:
 
 	.set pmpcfgi, CSR_PMPCFG0
 	.rept RVMODEL_NUM_PMPS/4
+	
     RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	csrw pmpcfgi , x4
     nop
@@ -145,4 +147,5 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
+PMP_region_High:
 RVMODEL_DATA_END

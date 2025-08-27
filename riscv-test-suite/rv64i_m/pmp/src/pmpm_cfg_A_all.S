@@ -14,13 +14,12 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_pmpaddr_access_s and cp_pmpcfg_access_s are fully covered in 
-//				 this test file.
+// Coverpoints : cp_cfg_A_all for PMPM is fully covered in this test file.
 //
-// Test Cases  : Test pmpcfg and pmpaddr access from S-mode. Trying to write 
-//               all 64 pmpaddr and 16 pmpcfg registers. Should throw illegal
-//               instruction faults because PMP CSRs are only accessible to
-//               M-mode.
+// Test Cases  : Checking that A is writable in each region. For each standard
+//               region, attempt to write pmpcfg.A={OFF, TOR, NA4, NAPOT} with
+//               pmpcfg.L=0, pmpcfg.RWX = 000.  Only able to write NA4 if grain
+//       		 G = 0. Other pmpcfg bits are writable.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -28,7 +27,7 @@
 #define SKIP_MEPC
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -41,10 +40,11 @@ RVTEST_CODE_BEGIN
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 64
+	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpcfg_access_s, cp_pmpcfg_access_s)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_all)
+RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_all)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -52,9 +52,21 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
+#define NOP 		0x13
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+main:
+	// Loop to SET ALL pmpcfg REGs to zero
+	.set pmpcfgi, CSR_PMPCFG0
+	.rept RVMODEL_NUM_PMPS/8
+	csrw pmpcfgi , x0
+	.set pmpcfgi, pmpcfgi+2
+	.endr
+
+#define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
+#define NAPOT   (PMP_NAPOT & 0xFF)
+#define TOR     (PMP_TOR   & 0xFF)
+#define NA4     (PMP_NA4   & 0xFF)
 
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
@@ -64,40 +76,37 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	csrw 	pmpaddr15, x4
 
 	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+	LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
+	csrw pmpcfg2, x4
 
-main:
+//											Verification Section
+// Test Case 1 : Setting region 0-14 to be NA4, NAPOT, TOR and OFF with L->0, XWR->000
 
-// Trying to access PMP CSRs in S-mode by writing all 1s. 
+    LI(x4, (NA4   << PMP7_CFG_SHIFT|NA4   << PMP6_CFG_SHIFT|NA4   << PMP5_CFG_SHIFT|NA4   << PMP4_CFG_SHIFT|NA4   << PMP3_CFG_SHIFT|NA4   << PMP2_CFG_SHIFT|NA4   << PMP1_CFG_SHIFT|NA4  ))
+    csrw pmpcfg0, x4
+    csrw pmpcfg2, x4
 
-    // Value to write in PMP CSRs in S-mode
-	LA(x4, -1)
+    LI(x4, (NAPOT << PMP7_CFG_SHIFT|NAPOT << PMP6_CFG_SHIFT|NAPOT << PMP5_CFG_SHIFT|NAPOT << PMP4_CFG_SHIFT|NAPOT << PMP3_CFG_SHIFT|NAPOT << PMP2_CFG_SHIFT|NAPOT << PMP1_CFG_SHIFT|NAPOT))
+    csrw pmpcfg0, x4
+    csrw pmpcfg2, x4
 
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
-	csrw pmpaddri, x4
-    nop
-	RVTEST_GOTO_MMODE
-	.set pmpaddri, pmpaddri+1
-	.endr
+    LI(x4, (TOR   << PMP7_CFG_SHIFT|TOR   << PMP6_CFG_SHIFT|TOR   << PMP5_CFG_SHIFT|TOR    << PMP4_CFG_SHIFT|TOR   << PMP3_CFG_SHIFT|TOR   << PMP2_CFG_SHIFT|TOR  << PMP1_CFG_SHIFT|TOR  ))
+    csrw pmpcfg0, x4
+    csrw pmpcfg2, x4
 
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-    RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
-	csrw pmpcfgi , x4
-    nop
-	RVTEST_GOTO_MMODE
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    csrw pmpcfg0, x0
+    csrw pmpcfg2, x0
+
+
+// ---------------------------------------------------------------------------
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
     RVTEST_SIGUPD(x13, a4)       								// Signature update
 	j exit														// Verification Complete, exit the test
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
+
 RETURN_INSTRUCTION:
 	nop
 	nop
@@ -117,19 +126,20 @@ rvtest_data:
 .word 0xbabecafe
 RVTEST_DATA_END
 
+
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 signature_x13_1:
-    .fill 128*(XLEN/32),4,0xdeadbeef
+    .fill 64*(XLEN/32),4,0xdeadbeef
 
 #ifdef rvtest_mtrap_routine
 
 tsig_begin_canary:
 CANARY;
 mtrap_sigptr:
-    .fill 512*(XLEN/32),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
 
@@ -145,4 +155,5 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
+PMP_region_High:
 RVMODEL_DATA_END

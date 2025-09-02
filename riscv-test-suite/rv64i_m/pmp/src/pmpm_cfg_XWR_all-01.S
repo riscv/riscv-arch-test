@@ -96,7 +96,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	lwu a4, 0(a5)                 							// Word load test
 	nop
 	RVTEST_SIGUPD(x13, a4)       							// Signature update
-	ld a4, 0(a5)                 							// Word load test
+	ld a4, 0(a5)                 							// Doubleword load test
 	nop
 	RVTEST_SIGUPD(x13, a4)       							// Signature update
 

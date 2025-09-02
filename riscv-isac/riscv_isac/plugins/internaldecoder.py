@@ -1378,16 +1378,25 @@ class disassembler():
     def priviledged_ops(self, instrObj):
         instr = instrObj.instr
         funct3 = (instr & self.FUNCT3_MASK) >> 12
+        rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
 
-        # Test for ecall and ebreak ops
+        # Test for ecall, ebreak and sfence.vma ops
         if funct3 == 0b000:
-            etype = (instr >> 20) & 0x01
+            etype = (instr >> 20) & 0x0fff
+            funct7 = (instr >> 25) & 0x7f
             if etype == 0b0:
                 instrObj.instr_name = 'ecall'
                 return instrObj
             if etype == 0b1:
                 instrObj.instr_name = 'ebreak'
                 return instrObj
+            if funct7 == 0b0001001:
+                instrObj.instr_name = 'sfence.vma'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                return instrObj
+            
 
         MOP_R_MASK = 0xB3C00000
         MOP_RR_MASK = 0xB2000000

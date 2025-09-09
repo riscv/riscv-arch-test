@@ -88,11 +88,41 @@ main:
     csrw pmpcfg2, x4
     csrw pmpcfg3, x4
 
+.if RVMODEL_NUM_PMPS == 64
+    csrw pmpcfg4, x4
+    csrw pmpcfg5, x4
+    csrw pmpcfg6, x4
+    csrw pmpcfg7, x4
+    csrw pmpcfg8, x4
+    csrw pmpcfg9, x4
+    csrw pmpcfg10, x4
+    csrw pmpcfg11, x4
+    csrw pmpcfg12, x4
+    csrw pmpcfg13, x4
+    csrw pmpcfg14, x4
+    csrw pmpcfg15, x4
+.endif
+
     LI(x4, (NAPOT << PMP3_CFG_SHIFT|NAPOT << PMP2_CFG_SHIFT|NAPOT << PMP1_CFG_SHIFT|NAPOT << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
     csrw pmpcfg1, x4
     csrw pmpcfg2, x4
     csrw pmpcfg3, x4
+
+.if RVMODEL_NUM_PMPS == 64
+    csrw pmpcfg4, x4
+    csrw pmpcfg5, x4
+    csrw pmpcfg6, x4
+    csrw pmpcfg7, x4
+    csrw pmpcfg8, x4
+    csrw pmpcfg9, x4
+    csrw pmpcfg10, x4
+    csrw pmpcfg11, x4
+    csrw pmpcfg12, x4
+    csrw pmpcfg13, x4
+    csrw pmpcfg14, x4
+    csrw pmpcfg15, x4
+.endif
 
     LI(x4, (TOR << PMP3_CFG_SHIFT|TOR << PMP2_CFG_SHIFT|TOR << PMP1_CFG_SHIFT|TOR << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
@@ -100,10 +130,40 @@ main:
     csrw pmpcfg2, x4
     csrw pmpcfg3, x4
 
-    csrw pmpcfg0, x0
-    csrw pmpcfg1, x0
-    csrw pmpcfg2, x0
-    csrw pmpcfg3, x0
+.if RVMODEL_NUM_PMPS == 64
+    csrw pmpcfg4, x4
+    csrw pmpcfg5, x4
+    csrw pmpcfg6, x4
+    csrw pmpcfg7, x4
+    csrw pmpcfg8, x4
+    csrw pmpcfg9, x4
+    csrw pmpcfg10, x4
+    csrw pmpcfg11, x4
+    csrw pmpcfg12, x4
+    csrw pmpcfg13, x4
+    csrw pmpcfg14, x4
+    csrw pmpcfg15, x4
+.endif
+
+    csrw pmpcfg0, zero
+    csrw pmpcfg1, zero
+    csrw pmpcfg2, zero
+    csrw pmpcfg3, zero
+
+.if RVMODEL_NUM_PMPS == 64
+    csrw pmpcfg4, zero
+    csrw pmpcfg5, zero
+    csrw pmpcfg6, zero
+    csrw pmpcfg7, zero
+    csrw pmpcfg8, zero
+    csrw pmpcfg9, zero
+    csrw pmpcfg10, zero
+    csrw pmpcfg11, zero
+    csrw pmpcfg12, zero
+    csrw pmpcfg13, zero
+    csrw pmpcfg14, zero
+    csrw pmpcfg15, zero
+.endif
 
 // ---------------------------------------------------------------------------
 

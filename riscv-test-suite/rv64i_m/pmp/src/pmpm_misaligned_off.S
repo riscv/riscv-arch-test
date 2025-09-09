@@ -59,52 +59,58 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check straddling start
-    LA(a5, (\ADDRESS-1))             						// Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS-1))             						
+    sd a4, 0(a5)                 							// Doubleword-level store test
     nop
+    sw a4, 0(a5)                 							// Word-level store test
     nop
     sh a4, 0(a5)                 							// Half-word store test
-    nop
     nop
 
     // Store Access Check straddling end
-    LA(a5, (\ADDRESS+g-1))             						// Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS+g-1))             						
+    sd a4, 0(a5)                 							// Doubleword-level store test
     nop
+    sw a4, 0(a5)                 							// Word-level store test
     nop
     sh a4, 0(a5)                 							// Half-word store test
     nop
-    nop
 
     // Load Access Check straddling start
-    LA(a5, (\ADDRESS-1))             						// Address to be verified
-	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    LA(a5, (\ADDRESS-1))    
+	lh a4, 0(a5)                 							// Half-word load test                                                  
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4) 
 	lhu a4, 0(a5)                 							// Half-word load test
     nop
-    nop
-    RVTEST_SIGUPD(x13, a4)                                  // Signature update
+    RVTEST_SIGUPD(x13, a4)
     lw a4, 0(a5)                 							// Word load test
     nop
+    RVTEST_SIGUPD(x13, a4) 
+    lwu a4, 0(a5)                 							// Word load test
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4) 
+    ld a4, 0(a5)                 							// Doubleword load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
 
     // Load Access Check straddling end
-    LA(a5, (\ADDRESS+g-1))             						// Address to be verified
-	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    LA(a5, (\ADDRESS+g-1))             					
+	lh a4, 0(a5)                 							// Half-word load test                                              
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4) 
 	lhu a4, 0(a5)                 							// Half-word load test
     nop
-    nop
-    RVTEST_SIGUPD(x13, a4)                                  // Signature update
+    RVTEST_SIGUPD(x13, a4)
     lw a4, 0(a5)                 							// Word load test
     nop
+    RVTEST_SIGUPD(x13, a4) 
+    lwu a4, 0(a5)                 							// Word load test
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4) 
+    ld a4, 0(a5)                 							// Doubleword load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
 
 .endm
 

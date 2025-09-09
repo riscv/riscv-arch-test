@@ -28,7 +28,7 @@
 #define SKIP_MEPC
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32I_Zicsr")
+RVTEST_ISA("RV64I_Zicsr")
 # Test code region
 .section .text.init
 .globl rvtest_entry_point
@@ -44,8 +44,8 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
-RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
+RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -58,9 +58,9 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
+	.rept RVMODEL_NUM_PMPS/8
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
+	.set pmpcfgi, pmpcfgi+2
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -70,7 +70,7 @@ main:
 	.set pmpaddri, pmpaddri+1
 	.endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_OFF      	((((	 PMP_R|PMP_W|PMP_X)			   &0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_NAPOT     ((((	 PMP_R|PMP_W|PMP_X |PMP_NAPOT) &0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_TOR      	((((	 PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
@@ -78,6 +78,7 @@ main:
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
+#define CHECKERBOARD        0xAAAAAAAAAAAAAAAA
 	
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
@@ -88,10 +89,10 @@ main:
 
 	//Lock the Background region
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+	csrw pmpcfg2, x4
 
 	LA(x4, PMP_ADDRESS)
-    csrw pmpaddr0, x4 	
+    csrw 	pmpaddr0, x4 	
 												//Verification Section			
 // Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}  
 
@@ -128,7 +129,7 @@ main:
 	li x6, 0
 	csrw pmpaddr0, x6
 
-// Read back in  TOR
+// Read back in TOR
 
 	LI(x6, PMPREGION_TOR)
 	csrw pmpcfg0, x6
@@ -263,7 +264,7 @@ main:
 
 	LI(x6, PMPREGION_NAPOT)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -276,7 +277,7 @@ main:
 
 	LI(x6, PMPREGION_NAPOT)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -289,7 +290,7 @@ main:
 
 	LI(x6, PMPREGION_NAPOT)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in TOR
@@ -298,13 +299,13 @@ main:
 	csrw pmpcfg0, x6
 	csrr x7, pmpaddr0
 
-// Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
+// Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
 
 // Write checkerboard in OFF
 
 	LI(x6, PMPREGION_OFF)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in OFF
@@ -317,7 +318,7 @@ main:
 
 	LI(x6, PMPREGION_OFF)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in NAPOT
@@ -330,7 +331,7 @@ main:
 
 	LI(x6, PMPREGION_OFF)
 	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
+	LI(x6, CHECKERBOARD)
 	csrw pmpaddr0, x6
 
 // Read back in TOR

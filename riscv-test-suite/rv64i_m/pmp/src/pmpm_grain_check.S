@@ -14,13 +14,11 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints :  cp_misaligned_tor_wrap for PMPM is covered in this test file. 
+// Coverpoints: cp_grain_check for PMPM is fully covered in this test file.
 //
-// Test Cases  :  Checking doubleword starting before and ending after 4-byte TOR
-//                region fails. With pmpcfg_i.L={0/1},pmpcfg_i.A=TOR,pmpcfg_i.XWR=111,
-//                4-byte region. Performing {ld, sd} on doubleword that starts 2 bytes 
-//                before region and ends after 2 bytes of region. Should misaligned or
-//                access fault because doubleword access crosses boundary of word.
+// Test case  : Checking that granularity matches expectations. We write 0 
+//				to pmpcfg0, all 1s to pmpaddr0, and then read back pmpaddr0.
+//				Index of least-significant bit set should be G.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -44,8 +42,8 @@ RVTEST_CODE_BEGIN
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_misaligned_tor_wrap)
-RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] == 0); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_misaligned_tor_wrap)
+RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain_check)
+RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain_check)
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
@@ -53,19 +51,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
-#define NOP 	(0x13<<32)+0x13
-#define g   (1 << (RVMODEL_PMP_GRAIN + 2))
-
-.macro VERIFICATION_RWX ADDRESS    
-
-    LI(a4, NOP)                  							// Value to write (NOP)
-    LA(a5, (\ADDRESS-2))             					    // Address to be verified
-    sd a4, 0(a5)                 							// Doubleword-level store test
-    nop
-    ld a4, 0(a5)                 							// Doubleword-level load test
-    nop
-
-.endm
+#define NOP 			0x13
 
 main:
 	// Loop to SET ALL pmpcfg REGs to zero
@@ -82,47 +68,35 @@ main:
 	.set pmpaddri, pmpaddri+1
 	.endr
 		
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define DEFAULT_TOR_REGION  ((((PMP_L|PMP_R|PMP_W|PMP_X        )  &0xFF)   << PMP0_CFG_SHIFT))
-#define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF)   << PMP1_CFG_SHIFT))
-#define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF)   << PMP1_CFG_SHIFT))
+
+#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
-#define LOWER_BOUND         ((REGIONSTART)   >> PMP_SHIFT)
-#define UPPER_BOUND         ((REGIONSTART+g) >> PMP_SHIFT)
-
+#define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
+	
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	csrw 	pmpaddr15, x4
-
-    //Lock the Background region.
+	
+	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
 	csrw pmpcfg2, x4
 
-	LA(x4, LOWER_BOUND)
-    csrw 	pmpaddr0, x4
+	LA(x4, PMP_ADDRESS)
+    csrw pmpaddr0, x4 	
 
-	LA(x4, UPPER_BOUND)
-    csrw 	pmpaddr1, x4
-    
 //											Verification Section
-// Test Case: 1 -- XWR Permissions given to the PMP Region.
+// Test Case: Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0.
 
-	LI(x4, PMPREGION_XWR|DEFAULT_TOR_REGION)
-	csrw pmpcfg0, x4
-
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
-
-// Test Case: 2 -- LXWR Permissions given to the PMP Region.
-
-	LI(x4, PMPREGION_LXWR|DEFAULT_TOR_REGION)
-	csrw pmpcfg0, x4
-
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+	li x6, 0
+	csrw pmpcfg0, x6
+	li x6, -1
+	csrw pmpaddr0, x6
+	csrr x7, pmpaddr0
 
 	RVTEST_GOTO_MMODE
 
@@ -166,7 +140,7 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 signature_x13_1:
-    .fill 64*(XLEN/32),4,0xdeadbeef
+    .fill 32*(XLEN/32),4,0xdeadbeef
 
 #ifdef rvtest_mtrap_routine
 

@@ -92,13 +92,69 @@ main:
     csrw pmpaddr13, t2
     csrw pmpaddr14, t2
     csrw pmpaddr15, t2
+    .if RVMODEL_NUM_PMPS == 64
+        csrw pmpaddr16, t2
+        csrw pmpaddr17, t2
+        csrw pmpaddr18, t2
+        csrw pmpaddr19, t2
+        csrw pmpaddr20, t2
+        csrw pmpaddr21, t2
+        csrw pmpaddr22, t2
+        csrw pmpaddr23, t2
+        csrw pmpaddr24, t2
+        csrw pmpaddr25, t2
+        csrw pmpaddr26, t2
+        csrw pmpaddr27, t2
+        csrw pmpaddr28, t2
+        csrw pmpaddr29, t2
+        csrw pmpaddr30, t2
+        csrw pmpaddr31, t2
+        csrw pmpaddr32, t2
+        csrw pmpaddr33, t2
+        csrw pmpaddr34, t2
+        csrw pmpaddr35, t2
+        csrw pmpaddr36, t2
+        csrw pmpaddr37, t2
+        csrw pmpaddr38, t2
+        csrw pmpaddr39, t2
+        csrw pmpaddr40, t2
+        csrw pmpaddr41, t2
+        csrw pmpaddr42, t2
+        csrw pmpaddr43, t2
+        csrw pmpaddr44, t2
+        csrw pmpaddr45, t2
+        csrw pmpaddr46, t2
+        csrw pmpaddr47, t2
+        csrw pmpaddr48, t2
+        csrw pmpaddr49, t2
+        csrw pmpaddr50, t2
+        csrw pmpaddr51, t2
+        csrw pmpaddr52, t2
+        csrw pmpaddr53, t2
+        csrw pmpaddr54, t2
+        csrw pmpaddr55, t2
+        csrw pmpaddr56, t2
+        csrw pmpaddr57, t2
+        csrw pmpaddr58, t2
+        csrw pmpaddr59, t2
+        csrw pmpaddr60, t2
+        csrw pmpaddr61, t2
+        csrw pmpaddr62, t2
+        csrw pmpaddr63, t2
+    .endif
 
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 1b                  // Continue loop while t2 != 0
 
+#if RVMODEL_NUM_PMPS == 64
+    #define ITERATIONS 4
+#else
+    #define ITERATIONS 8
+#endif
+
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/8
+	.rept ITERATIONS
 	csrw pmpcfgi , x0
 	.set pmpcfgi, pmpcfgi+2
 	.endr

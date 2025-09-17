@@ -290,10 +290,6 @@ Mend_PMP:                                    ;\
     LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
     LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
     PTE_SETUP_SV48(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV48 macro */             ;\
-#define PTE_SETUP_SV48_New(PA_LBL, PERMS, VA, level)                                        ;\
-    LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
-    LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
-    PTE_SETUP_SV48(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV48 macro */             ;\
 
 #define PTE_SETUP_SV57(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
     .if (level==4)                                                ;\

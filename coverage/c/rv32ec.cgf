@@ -356,6 +356,8 @@ clwsp:
       c.lwsp: 0
     rd: 
       <<: *rv32e_regs_mx0
+    op_comb:
+      'rd != 0': 0
     val_comb:
         'imm_val > 0': 0
         'imm_val == 0': 0

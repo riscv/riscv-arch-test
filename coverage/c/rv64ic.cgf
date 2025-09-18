@@ -133,6 +133,8 @@ caddiw:
       c.addiw: 0
     rd: 
       <<: *all_regs_mx0
+    op_comb:
+      'rd != 0': 0
     val_comb: 
       'rs1_val == (-2**(xlen-1))': 0
       'rs1_val == 0': 0
@@ -465,6 +467,8 @@ clwsp:
       c.lwsp: 0
     rd: 
       <<: *all_regs_mx0
+    op_comb:
+      'rd != 0': 0
     val_comb:
         'imm_val > 0': 0
         'imm_val == 0': 0

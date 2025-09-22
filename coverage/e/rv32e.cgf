@@ -1,0 +1,752 @@
+# For Licence details look at https://github.com/riscv-software-src/riscv-ctg/-/blob/master/LICENSE.incore
+
+fence:
+  config: 
+    - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+  mnemonics: 
+    fence: 0
+
+addi:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      addi: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn] 
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+        <<: [*rs1val_walking, *ifmt_immval_walking]
+
+slti:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      slti: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [*ifmt_val_comb_sgn , *base_rs1val_sgn , *ifmt_base_immval_sgn]
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+        <<: [*rs1val_walking, *ifmt_immval_walking]
+
+sltiu:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sltiu: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [*ifmt_val_comb_unsgn , *base_rs1val_unsgn , *ifmt_base_immval_unsgn]
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)],signed=False)': 0
+        <<: [*rs1val_walking_unsgn, *ifmt_immval_walking_unsgn]
+
+andi:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      andi: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [*ifmt_val_comb_sgn , *base_rs1val_sgn , *ifmt_base_immval_sgn]
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+        <<: [*rs1val_walking, *ifmt_immval_walking]
+
+ori:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      ori: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [*ifmt_val_comb_sgn , *base_rs1val_sgn , *ifmt_base_immval_sgn]
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+        <<: [*rs1val_walking, *ifmt_immval_walking]
+
+xori:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      xori: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: [*ifmt_val_comb_sgn , *base_rs1val_sgn , *ifmt_base_immval_sgn]
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
+        <<: [*rs1val_walking, *ifmt_immval_walking]
+
+slli:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      slli: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: *ifmt_base_shift
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val"])': 0
+        <<: [*rs1val_walking]
+        'walking_ones("imm_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("imm_val", ceil(log(xlen,2)), False)': 0
+        'alternate("imm_val", ceil(log(xlen,2)), False)': 0
+
+srai:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      srai: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: *ifmt_base_shift
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val"])': 0
+        <<: [*rs1val_walking]
+        'walking_ones("imm_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("imm_val", ceil(log(xlen,2)), False)': 0
+        'alternate("imm_val", ceil(log(xlen,2)), False)': 0
+
+srli:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      srli: 0
+    rs1: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      <<: *ifmt_base_shift
+      abstract_comb:
+        'sp_dataset(xlen,["rs1_val"])': 0
+        <<: [*rs1val_walking]
+        'walking_ones("imm_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("imm_val", ceil(log(xlen,2)), False)': 0
+        'alternate("imm_val", ceil(log(xlen,2)), False)': 0
+
+add:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      add: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+sub:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sub: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+slt:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      slt: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+sltu:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sltu: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_unsgn , *base_rs2val_unsgn , *rfmt_val_comb_unsgn]
+      abstract_comb:
+        'sp_dataset(xlen,signed=False)': 0
+        <<: [*rs1val_walking_unsgn, *rs2val_walking_unsgn]
+
+and:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      and: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+or:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      or: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+xor:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      xor: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn , *base_rs2val_sgn , *rfmt_val_comb_sgn]
+      abstract_comb:
+        'sp_dataset(xlen)': 0
+        <<: [*rs1val_walking, *rs2val_walking]
+
+sll:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sll: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: *rfmt_base_shift
+      abstract_comb:
+        <<: [*rs1val_walking]
+        'sp_dataset(xlen,var_lst=["rs1_val"])': 0
+        'walking_ones("rs2_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("rs2_val", ceil(log(xlen,2)), False)': 0
+        'alternate("rs2_val", ceil(log(xlen,2)), False)': 0
+
+srl:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      srl: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: *rfmt_base_shift
+      abstract_comb:
+        <<: [*rs1val_walking]
+        'sp_dataset(xlen,var_lst=["rs1_val"])': 0
+        'walking_ones("rs2_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("rs2_val", ceil(log(xlen,2)), False)': 0
+        'alternate("rs2_val", ceil(log(xlen,2)), False)': 0
+
+sra:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sra: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      <<: *rfmt_base_shift
+      abstract_comb:
+        <<: [*rs1val_walking]
+        'sp_dataset(xlen,var_lst=["rs1_val"])': 0
+        'walking_ones("rs2_val", ceil(log(xlen,2)), False)': 0
+        'walking_zeros("rs2_val", ceil(log(xlen,2)), False)': 0
+        'alternate("rs2_val", ceil(log(xlen,2)), False)': 0
+
+beq:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      beq: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_sgn
+      abstract_comb:
+        <<: [*rs1val_walking, *rs2val_walking]
+        'sp_dataset(xlen)': 0
+
+bge:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      bge: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_sgn
+      abstract_comb:
+        <<: [*rs1val_walking, *rs2val_walking]
+        'sp_dataset(xlen)': 0
+
+bgeu:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      bgeu: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_unsgn
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn, *rs2val_walking_unsgn]
+        'sp_dataset(xlen,signed=False)': 0
+
+blt:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      blt: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_sgn
+      abstract_comb:
+        <<: [*rs1val_walking, *rs2val_walking]
+        'sp_dataset(xlen)': 0
+
+bltu:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      bltu: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_unsgn
+      abstract_comb:
+        <<: [*rs1val_walking_unsgn, *rs2val_walking_unsgn]
+        'sp_dataset(xlen,signed=False)': 0
+
+bne:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      bne: 0
+    rs1: 
+      <<: *rv32e_regs
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      <<: *bfmt_base_branch_val_align_sgn
+      abstract_comb:
+        <<: [*rs1val_walking, *rs2val_walking]
+        'sp_dataset(xlen)': 0
+
+lhu-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lhu: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+
+lh-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lh: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+
+lbu-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lbu: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'ea_align == 1 and (imm_val % 4) == 0': 0
+        'ea_align == 1 and (imm_val % 4) == 1': 0
+        'ea_align == 1 and (imm_val % 4) == 2': 0
+        'ea_align == 1 and (imm_val % 4) == 3': 0
+        'ea_align == 3 and (imm_val % 4) == 0': 0
+        'ea_align == 3 and (imm_val % 4) == 1': 0
+        'ea_align == 3 and (imm_val % 4) == 2': 0
+        'ea_align == 3 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+
+lb-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lb: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'ea_align == 1 and (imm_val % 4) == 0': 0
+        'ea_align == 1 and (imm_val % 4) == 1': 0
+        'ea_align == 1 and (imm_val % 4) == 2': 0
+        'ea_align == 1 and (imm_val % 4) == 3': 0
+        'ea_align == 3 and (imm_val % 4) == 0': 0
+        'ea_align == 3 and (imm_val % 4) == 1': 0
+        'ea_align == 3 and (imm_val % 4) == 2': 0
+        'ea_align == 3 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+
+lw-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lw: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+
+
+sh-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sh: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        <<: [  *base_rs2val_sgn]
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+        abstract_comb:
+          <<: [*rs2val_walking]
+
+sb-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sb: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'ea_align == 2 and (imm_val % 4) == 0': 0
+        'ea_align == 2 and (imm_val % 4) == 1': 0
+        'ea_align == 2 and (imm_val % 4) == 2': 0
+        'ea_align == 2 and (imm_val % 4) == 3': 0
+        'ea_align == 1 and (imm_val % 4) == 0': 0
+        'ea_align == 1 and (imm_val % 4) == 1': 0
+        'ea_align == 1 and (imm_val % 4) == 2': 0
+        'ea_align == 1 and (imm_val % 4) == 3': 0
+        'ea_align == 3 and (imm_val % 4) == 0': 0
+        'ea_align == 3 and (imm_val % 4) == 1': 0
+        'ea_align == 3 and (imm_val % 4) == 2': 0
+        'ea_align == 3 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+        <<: [  *base_rs2val_sgn]
+        abstract_comb:
+          <<: [*rs2val_walking]
+
+sw-align:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      sw: 0
+    rs1: 
+      <<: *rv32e_regs_mx0
+    rs2: 
+      <<: *rv32e_regs
+    op_comb: 
+        'rs1 != rs2': 0
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1': 0
+        'ea_align == 0 and (imm_val % 4) == 2': 0
+        'ea_align == 0 and (imm_val % 4) == 3': 0
+        'imm_val > 0': 0
+        'imm_val < 0': 0
+        'imm_val == 0': 0
+        <<: [  *base_rs2val_sgn]
+        abstract_comb:
+          <<: [*rs2val_walking]
+
+auipc:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      auipc: 0
+    rd: 
+      <<: *rv32e_regs
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val > 0': 0
+        'imm_val == ((2**20)-1)': 0
+        abstract_comb:
+            'sp_dataset(20,["imm_val"],signed=False)': 0
+            'walking_ones("imm_val", 20, False)': 0
+            'walking_zeros("imm_val", 20, False)': 0
+            'alternate("imm_val", 20, False)': 0
+
+lui:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      lui: 0
+    rd: 
+      <<: *rv32e_regs
+    val_comb:
+        'imm_val == 0': 0
+        'imm_val > 0': 0
+        'imm_val == ((2**20)-1)': 0
+        abstract_comb:
+            'sp_dataset(20,["imm_val"],signed=False)': 0
+            'walking_ones("imm_val", 20, False)': 0
+            'walking_zeros("imm_val", 20, False)': 0
+            'alternate("imm_val", 20, False)': 0
+
+jal:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      jal: 0
+    rd: 
+      <<: *rv32e_regs
+    val_comb:
+        'imm_val < 0' : 0
+        'imm_val > 0': 0
+        'imm_val == (-(2**(18)))': 0
+        'imm_val == ((2**(18)))': 0
+
+jalr:
+    config: 
+      - check ISA:=regex(.*E.*) ;def RVTEST_E = True
+    mnemonics: 
+      jalr: 0
+    rs1:
+      <<: *rv32e_regs_mx0
+    rd: 
+      <<: *rv32e_regs
+    op_comb:
+      <<: *ifmt_op_comb
+    val_comb:
+      'imm_val > 0': 0
+      'imm_val < 0': 0
+      abstract_comb:
+        <<: *ifmt_immval_walking

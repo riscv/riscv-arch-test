@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+fli.d_b1:
+    config:
+      - check ISA:=regex(.*I.*D.*Zfa.*)
+    mnemonics:
+      fli.d: 0
+    rd:
+      <<: *all_fregs

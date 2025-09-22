@@ -22,7 +22,7 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 4. If you have updated the docs, ensure that they render correctly in the respective format.
 5. Make sure to create an entry in the CHANGELOG.md. Please refer to the section on versioning below
    to choose an appropriate version number.
-6. Ensure the existing tests are not broken and still pass on the the RVI approved reference models.
+6. Ensure the existing tests are not broken and still pass on the RVI approved reference models.
 7. Please include a comment with the SPDX license identifier in all source files, for example:
    ```
    // SPDX-License-Identifier: BSD-3-Clause
@@ -34,7 +34,7 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 
 ## Uploading Test Stats
 
-If your PR is adding new tests or modifying existing tests, then you are be expected to
+If your PR is adding new tests or modifying existing tests, then you are expected to
 run the coverage on the new tests (via [RISCOF's coverage mode]((https://riscof.readthedocs.io/en/stable/commands.html#coverage)))
 and upload the coverage and data propagation reports to [this Google Drive folder](https://drive.google.com/drive/folders/153nIRznXwzu7N1rWl9CesqwAXLqwHoEx?usp=share_link).
 In this folder create a new folder with the PR number as the name. The stat files must be zipped and

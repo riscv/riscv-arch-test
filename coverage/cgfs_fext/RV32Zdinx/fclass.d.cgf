@@ -1,0 +1,14 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fclass.d_b1:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fclass.d: 0
+    rs1: 
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,64, "fclass.d", 1, True)': 0

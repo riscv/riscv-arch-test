@@ -1,0 +1,92 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fcvt.l.s_b1:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b22:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b22(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b23:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b23(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b24:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b24(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b27:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b27(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b28:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b28(flen,32, "fcvt.l.s", 1, True)': 0
+        
+fcvt.l.s_b29:
+    config: 
+      - check ISA:=regex(.*RV64.*I.*Zfinx.*)
+    mnemonics: 
+      fcvt.l.s: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    val_comb:
+      abstract_comb:
+        'ibm_b29(flen,32, "fcvt.l.s", 1, True)': 0

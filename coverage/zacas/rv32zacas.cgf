@@ -1,0 +1,36 @@
+# cover group format file for Zacas extension
+amocas.w:
+    config: 
+      - check ISA:=regex(.*Zacas.*)
+    opcode: 
+      amocas.w: 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *zacas_op_comb
+    val_comb:
+      <<: [*base_rs1val_sgn, *base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs1val_walking, *rs2val_walking]
+
+amocas.d_32:
+    config:
+      - check ISA:=regex(.*Zacas.*)
+    opcode:
+      amocas.d_32: 0
+    rs1:
+      <<: *all_regs_mx0
+    rs2:
+      <<: *pair_regs
+    rd:
+      <<: *pair_regs
+    op_comb:
+      <<: *zacas_op_comb
+    val_comb:
+      <<: [*zacas_dcas_rs1val_sgn, *zacas_dcas_rs2val_sgn, *rfmt_val_comb_sgn]
+      abstract_comb:
+        <<: [*zacas64_rs1val_walking_sgn, *zacas64_rs2val_walking_sgn]

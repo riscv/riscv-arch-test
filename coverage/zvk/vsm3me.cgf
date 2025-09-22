@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+vsm3me.vi:
+    config:
+      - check ISA:=(.*I.*V.*Zvksh)
+    mnemonics:
+      vsm3me.vi: 0
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      'rs2 == rd and rs2 != 0': 0
+      'rs2 != rd and rs2 != 0': 0

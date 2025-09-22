@@ -1,0 +1,8 @@
+
+svhad_sv32:
+  config: 
+    - check ISA:=regex(.*I.*Svhad.*)
+  opcode: 
+    nop: 0
+
+

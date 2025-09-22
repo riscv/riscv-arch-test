@@ -1,0 +1,35 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fle_b1:
+    config: 
+      - check ISA:=regex(.*I.*F.*Zfh.*)
+    opcode: 
+      fle.h: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,16, "fle.h", 2)': 0
+        
+fle_b19:
+    config: 
+      - check ISA:=regex(.*I.*F.*Zfh.*)
+    opcode: 
+      fle.h: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *sfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b19(flen,16, "fle.h", 2)': 0

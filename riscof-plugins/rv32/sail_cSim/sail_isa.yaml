@@ -1,0 +1,38 @@
+hart_ids: [0]
+hart0:
+  ISA: RV32IMACSUZicsr_Zifencei
+  physical_addr_sz: 32
+  supported_xlen: [32]
+  misa:
+    reset-val: 0x0
+    rv32:
+      mxl:
+        implemented: false
+      extensions:
+        implemented: false
+      accessible: true
+    rv64:
+      accessible: false
+  mtvec:
+    reset-val: 0x80000000
+    rv32:
+      base:
+        implemented: true
+        type:
+          warl:
+            dependency_fields: []
+            legal:
+            - base[29:0] in [0x20000000]
+            wr_illegal:
+            - Unchanged
+      mode:
+        implemented: true
+        type:
+          warl:
+            dependency_fields: []
+            legal:
+            - mode[1:0] in [0x0]
+            wr_illegal:
+            - Unchanged
+  
+      accessible: true

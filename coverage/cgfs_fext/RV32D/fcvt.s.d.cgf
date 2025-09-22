@@ -1,0 +1,106 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fcvt.s.d_b1:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b22:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b22(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b23:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b23(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b24:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b24(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b27:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b27(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b28:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b28(flen,64, "fcvt.s.d", 1)': 0
+        
+fcvt.s.d_b29:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fcvt.s.d: 0
+    rs1: 
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *ifmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b29(flen,64, "fcvt.s.d", 1)': 0

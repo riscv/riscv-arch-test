@@ -1,0 +1,17 @@
+svhad_sv39:
+  config: 
+    - check ISA:=regex(.*I.*Svhad.*)
+  opcode: 
+    nop: 0
+
+svhad_sv48:
+  config: 
+    - check ISA:=regex(.*I.*Svhad.*)
+  opcode: 
+    nop: 0
+
+svhad_sv57:
+  config: 
+    - check ISA:=regex(.*I.*Svhad.*)
+  opcode: 
+    nop: 0

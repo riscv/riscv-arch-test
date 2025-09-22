@@ -1,0 +1,154 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fmul.d_b1:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b2:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b2(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b3:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b3(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b4:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b4(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b5:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b5(flen,64, "fmul.d", 2, True)': 0
+
+fmul.d_b6:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b6(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b7:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b7(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b8:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b8(flen,64, "fmul.d", 2, True)': 0
+        
+fmul.d_b9:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fmul.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b9(flen,64, "fmul.d", 2, True)': 0

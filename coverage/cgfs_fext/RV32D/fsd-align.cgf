@@ -1,0 +1,23 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fsd-align:
+    config: 
+      - check ISA:=regex(.*D.*)
+    mnemonics: 
+      fsd: 0
+    rs1: 
+      <<: *all_regs_mx0
+    rs2: 
+      <<: *all_fregs
+    val_comb:
+        'ea_align == 0 and (imm_val % 8) == 0 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 1 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 2 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 3 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 4 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 5 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 6 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 8) == 7 and fcsr == 0': 0
+        'imm_val > 0  and fcsr == 0': 0
+        'imm_val < 0  and fcsr == 0': 0
+        'imm_val == 0 and fcsr == 0': 0

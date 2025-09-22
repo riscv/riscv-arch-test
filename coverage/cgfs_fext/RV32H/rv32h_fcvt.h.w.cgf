@@ -1,0 +1,27 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+      
+fcvt.h.w_b25:
+    config: 
+      - check ISA:=regex(.*I.*F.*Zfh.*)
+    opcode: 
+      fcvt.h.w: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_fregs
+    val_comb:
+      abstract_comb:
+        'ibm_b25(flen,32, "fcvt.h.w", 1)': 0
+        
+fcvt.h.w_b26:
+    config: 
+      - check ISA:=regex(.*I.*F.*Zfh.*)
+    opcode: 
+      fcvt.h.w: 0
+    rs1: 
+      <<: *all_regs
+    rd: 
+      <<: *all_fregs
+    val_comb:
+      abstract_comb:
+        'ibm_b26(32, "fcvt.h.w", 1)': 0

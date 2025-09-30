@@ -70,7 +70,7 @@ RVTEST_CODE_BEGIN
 */
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;  def SOFTWARE_UPDATE_A_D=True; def TEST_CASE_1=True; mac SV32_MACROS",a_and_d_bit_soft_upd, a_and_d_bit_hart_upd)
+    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;  def SOFTWARE_UPDATE_A_D=True; def TEST_CASE_1=True; mac SV32_MACROS",a_and_d_bit_soft_upd, a_and_d_bit_hart_upd)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 // ------------------------------------------------------------------------------------------------------------

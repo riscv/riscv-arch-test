@@ -399,6 +399,47 @@ Mend_PMP:                                    ;\
     or t6, t6, t5                                               ;\
     csrw satp, t6                                               ;
 
+// macro to update the signature region for hints
+#define TEST_STORE_GPRS_AND_STATUS(sigptr)  ;\
+    /* Store all general-purpose registers (x0 to x31) to the signature region */ ;\
+    RVTEST_SIGUPD(sigptr, x1)              /* Store x1 */ ;\
+    RVTEST_SIGUPD(sigptr, x2)              /* Store x2 */ ;\
+    RVTEST_SIGUPD(sigptr, x4)              /* Store x4 */ ;\
+    RVTEST_SIGUPD(sigptr, x5)              /* Store x5 */ ;\
+    RVTEST_SIGUPD(sigptr, x6)              /* Store x6 */ ;\
+    RVTEST_SIGUPD(sigptr, x7)              /* Store x7 */ ;\
+    RVTEST_SIGUPD(sigptr, x8)              /* Store x8 */ ;\
+    RVTEST_SIGUPD(sigptr, x9)              /* Store x9 */ ;\
+    RVTEST_SIGUPD(sigptr, x10)             /* Store x10 */ ;\
+    RVTEST_SIGUPD(sigptr, x11)             /* Store x11 */ ;\
+    RVTEST_SIGUPD(sigptr, x12)             /* Store x12 */ ;\
+    RVTEST_SIGUPD(sigptr, x13)             /* Store x13 */ ;\
+    RVTEST_SIGUPD(sigptr, x14)             /* Store x14 */ ;\
+    RVTEST_SIGUPD(sigptr, x15)             /* Store x15 */ ;\
+    RVTEST_SIGUPD(sigptr, x16)             /* Store x16 */ ;\
+    RVTEST_SIGUPD(sigptr, x17)             /* Store x17 */ ;\
+    RVTEST_SIGUPD(sigptr, x18)             /* Store x18 */ ;\
+    RVTEST_SIGUPD(sigptr, x19)             /* Store x19 */ ;\
+    RVTEST_SIGUPD(sigptr, x20)             /* Store x20 */ ;\
+    RVTEST_SIGUPD(sigptr, x21)             /* Store x21 */ ;\
+    RVTEST_SIGUPD(sigptr, x22)             /* Store x22 */ ;\
+    RVTEST_SIGUPD(sigptr, x23)             /* Store x23 */ ;\
+    RVTEST_SIGUPD(sigptr, x24)             /* Store x24 */ ;\
+    RVTEST_SIGUPD(sigptr, x25)             /* Store x25 */ ;\
+    RVTEST_SIGUPD(sigptr, x26)             /* Store x26 */ ;\
+    RVTEST_SIGUPD(sigptr, x27)             /* Store x27 */ ;\
+    RVTEST_SIGUPD(sigptr, x28)             /* Store x28 */ ;\
+    RVTEST_SIGUPD(sigptr, x29)             /* Store x29 */ ;\
+    /* Store the CSR registers */ ;\
+    csrr a0, mepc                          /* Read mepc register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mepc */ ;\
+    csrr a0, mtval                         /* Read mtval register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mtval */ ;\
+    csrr a0, mstatus                       /* Read mstatus register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mstatus */ ;\
+    csrr a0, mip                           /* Read mip register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mip */ ;\
+
 //Tests for atomic memory operation(AMO) instructions
 #define TEST_AMO_OP(inst, destreg, origptr, reg2, origval, updval, sigptr, ...) ;\
       .if NARG(__VA_ARGS__) == 1			;\
@@ -591,6 +632,25 @@ Mend_PMP:                                    ;\
       CHK_OFFSET(_BR,REGWIDTH,1)				;\
       SREG _F,offset(_BR)					;\
       .set offset,offset+(REGWIDTH)
+
+
+ /* Stores register into signature region and increment the signature pointer */
+ /* RVTEST_SIGUPD does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE and RVTEST_SIGUPD in the same program */
+ /* RVTEST_SIGWRITE(basereg, sigreg) stores sigreg at 0(basereg) and increments basereg by regwidth	 */
+ #define RVTEST_SIGWRITE(_BR,_R)            ;\
+      SREG _R, 0(_BR)					;\
+      addi _BR, _BR, REGWIDTH 
+
+ /* Stores register into signature region and increment the signature pointer*/
+ /* RVTEST_SIGUPD_F does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE_F and RVTEST_SIGUPD_F in the same program */
+ /* RVTEST_SIGWRITE_F(basereg, sigreg, flagreg) stores sigreg at 0(basereg) and increments basereg by sigalign	 */
+ /* SIGALIGN is set to the max(FREGWIDTH, REGWIDTH)*/
+#define RVTEST_SIGWRITE_F(_BR,_R,_f)        ;\
+      FSREG _R, 0(_BR)					;\
+      SREG _F, SIGALIGN(_BR)					;\
+      addi _BR, _BR, 2*SIGALIGN
 
 
 

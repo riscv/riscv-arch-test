@@ -314,18 +314,20 @@ satp_access_all_modes:
     'mode == "M" and mnemonic == "csrrw" and satp == 0x3FFFFF': 0
   #check walking ones on the PPN Width
     'mode == "M" and mnemonic == "csrrw" and satp == 1 << {0 ... 21}': 0
+  #check walking ones on the ASID Width
+    'mode == "M" and mnemonic == "csrrw" and satp == 1 << {22 ... 30}': 0
 
 #When mstatus TVM bit is set, accessing satp and sfence.vma in S-Mode should raise illegal instruction fault.
 mstatus_tvm:
   config:
     - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
   mnemonics:
-    csrrw: 0
+    "{csrrc, csrrs, csrrw}": 0
   csr_comb:
   #Make sure we have some value in case of satp access in M mode
     'mode == "M" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrw" and satp != 0': 0
   #Make sure we have illegal instruction fault for satp access in S mode
-    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == "csrrw" and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
+    'mode == "S" and (mstatus & ${MSTATUS_TVM} == ${MSTATUS_TVM}) and mnemonic == {"csrrw", "csrrs", "csrrc"} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}': 0
 
 #If reserved PTE permissions bits (RSW) are set, then the Page table walk should give no RSW set in return
 reserved_rsw_pte_perm:
@@ -361,3 +363,84 @@ MPRV_SUM_bit:
     'mode == "M" and old_csr_val("mstatus") == 0x00060800 and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("ADURWXV",  dptw0cont) == 1 and len_dptw == 2': 0
     'mode == "M" and old_csr_val("mstatus") == 0x00020800 and get_pte_prop("ADURWXV",   dptw1cont) ==  1 and dptw0cont == None and mcause == {${CAUSE_LOAD_PAGE_FAULT}, ${CAUSE_STORE_PAGE_FAULT}}': 0
     'mode == "M" and old_csr_val("mstatus") == 0x00020800 and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("ADURWXV",  dptw0cont) == 1 and mcause == {${CAUSE_LOAD_PAGE_FAULT}, ${CAUSE_STORE_PAGE_FAULT}}': 0
+
+# SUM bit is set. S pages are accessed in S mode which should be successful.
+sum_set_U_bit_unset_SMode:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sw, csrrc, csrrs, csrrw, lw, jalr}": 0
+  op_comb:
+    'mode == "S" and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
+  csr_comb:
+    '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
+    '(mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM}': 0
+  val_comb:
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and get_pte_prop({"uRWX", "uRwx", "urwX"}, dptw1cont) == 1 and dptw0cont == None': 0
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop({"uRWX", "uRwx", "urwX"}, dptw0cont) == 1': 0
+    #Fault Checks
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and mnemonic == "sw" and get_pte_prop("uRwx", dptw1cont) == 1 and dptw0cont == None and mcause == 15': 0
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and mnemonic == {"sw", "lw"} and get_pte_prop("urwX", dptw1cont) == 1 and dptw0cont == None and mcause == {15, 13}{[$1]}': 0
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and mnemonic == "sw" and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("uRwx", dptw0cont) == 1 and mcause == 15': 0
+    'mode == "S" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and mnemonic == {"sw", "lw"} and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("urwX", dptw0cont) == 1 and mcause == {15, 13}{[$1]}': 0
+    'mode == "M" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and (${va_data_sv32} + ${LEVEL_1_JUMP_SIZE}) == mtval and mcause == ${CAUSE_FETCH_PAGE_FAULT}': 0
+    'mode == "M" and (mstatus & ${MSTATUS_SUM}) == ${MSTATUS_SUM} and (${va_data_sv32} + ${LEVEL_0_JUMP_SIZE}) == mtval and mcause == ${CAUSE_FETCH_PAGE_FAULT}': 0
+
+# Check if G bit is set for a PTE
+global_pte:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sw, csrrc, csrrs, csrrw, lw, jalr, sfence.vma}": 0
+  op_comb:
+    'mode == {"S", "U"} and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
+  csr_comb:
+    '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
+  val_comb:
+    'mode == {"S", "U"} and get_pte_prop("RWXG", dptw1cont) == 1 and dptw0cont == None': 0
+    'mode == {"S", "U"} and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop("RWXG",   dptw0cont) ==  1': 0
+
+# Check for MPRV bit set, MPP set to S-Mode and Satp not setup. Should be successful page access
+MPRV_set_bare_mode:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sw, csrrc, csrrs, csrrw, lw, jalr}": 0
+  op_comb:
+    'mode == "M" and (satp >> 31) ==  ${SATP_MODE_OFF}': 0
+  csr_comb:
+    #check mstatus has: MPRV & U in MPP and MPRV & S in MPP
+    mstatus == {0x00020000, 0x00020800}: 0                     
+  val_comb:
+    # No Page Table Walk as we are in Bare Mode
+    'mode == "M" and (mstatus & 0x00021800) == {0x00020000, 0x00020800} and mnemonic == {"sw", "lw", "jalr"} and dptw1cont == None and dptw0cont == None': 0
+
+# Check for SBE bit set, MPP set to S-Mode and Satp not setup. Should be successful page access
+mstatus_sbe_set:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sw, csrrc, csrrs, csrrw, lw, jalr}": 0
+  op_comb:
+    'mode == "S" and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
+  csr_comb:
+    '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
+    '(mstatush & ${MSTATUSH_SBE}) == ${MSTATUSH_SBE}': 0                 
+  val_comb:
+    # Check it for both S & U pages (U pages can be accessed in S mode using SUM bit)
+    'mode == "S" and ((mstatush & ${MSTATUSH_SBE}) == ${MSTATUSH_SBE}) and get_pte_prop({"RWXV", "URWXV"}, dptw1cont) ==  1 and dptw0cont == None': 0
+    'mode == "S" and ((mstatush & ${MSTATUSH_SBE}) == ${MSTATUSH_SBE}) and get_pte_prop("rwx", dptw1cont) == 1 and get_pte_prop({"RWXV", "URWXV"}, dptw0cont) ==   1': 0
+
+# Store & Load at virtual address 0xFFFFFFFF and Fetch at virtual address 0xFFFFFFFC
+VA_all_ones:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sb, csrrc, csrrs, csrrw, lbu, jalr}": 0
+  op_comb:
+    'mode == "S" and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
+  csr_comb:
+    '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
+  val_comb:
+    'mode == "S" and mnemonic == {"sb", "lbu"} and (rs1_val & 0xFFFFFFFF) == 0xFFFFFFFF': 0
+    'mode == "S" and mnemonic == "jalr" and (rs1_val & 0xFFFFFFFF) == 0xFFFFFFFC': 0

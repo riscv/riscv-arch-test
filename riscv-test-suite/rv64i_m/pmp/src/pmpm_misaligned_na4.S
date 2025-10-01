@@ -57,59 +57,56 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .macro VERIFICATION_RWX ADDRESS    
 
     LI(a4, NOP)                  							// Value to write (NOP)
-    // Store Access Check straddling start
+    // Access Check straddling start
     LA(a5, (\ADDRESS-1))
     sd a4, 0(a5)                 							// Doubleword-level store test
     nop
+    ld a4, 0(a5)                 							// Doubleword load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+
     sw a4, 0(a5)                 							// Word-level store test
     nop
+    lw a4, 0(a5)                 							// Word load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+    lwu a4, 0(a5)                 							// Word load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+
     sh a4, 0(a5)                 							// Half-word store test
     nop
+	lh a4, 0(a5)                 							// Half-word load test                                              
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+	lhu a4, 0(a5)                 							// Half-word load test
+    nop
 
-    // Store Access Check straddling end
+    // Access Check straddling end
     LA(a5, (\ADDRESS+3))
     sd a4, 0(a5)                 							// Doubleword-level store test
     nop
+    ld a4, 0(a5)                 							// Doubleword load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+
     sw a4, 0(a5)                 							// Word-level store test
     nop
+    lw a4, 0(a5)                 							// Word load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+    lwu a4, 0(a5)                 							// Word load test
+    nop
+    RVTEST_SIGUPD(x13, a4) 
+
     sh a4, 0(a5)                 							// Half-word store test
     nop
-
-    // Load Access Check straddling start
-    LA(a5, (\ADDRESS-1))
 	lh a4, 0(a5)                 							// Half-word load test                                              
     nop
     RVTEST_SIGUPD(x13, a4) 
 	lhu a4, 0(a5)                 							// Half-word load test
     nop
     RVTEST_SIGUPD(x13, a4)
-    lw a4, 0(a5)                 							// Word load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-    lwu a4, 0(a5)                 							// Word load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-    ld a4, 0(a5)                 							// Doubleword load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-
-    // Load Access Check straddling end
-    LA(a5, (\ADDRESS+3))
-	lh a4, 0(a5)                 							// Half-word load test                                
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-	lhu a4, 0(a5)                 							// Half-word load test
-    nop
-    RVTEST_SIGUPD(x13, a4)
-    lw a4, 0(a5)                 							// Word load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-    lwu a4, 0(a5)                 							// Word load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
-    ld a4, 0(a5)                 							// Doubleword load test
-    nop
-    RVTEST_SIGUPD(x13, a4) 
 
 .endm
 
@@ -208,14 +205,14 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 signature_x13_1:
-    .fill 32*(XLEN/32),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 
 #ifdef rvtest_mtrap_routine
 
 tsig_begin_canary:
 CANARY;
 mtrap_sigptr:
-    .fill 128*(XLEN/32),4,0xdeadbeef
+    .fill 512*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
 

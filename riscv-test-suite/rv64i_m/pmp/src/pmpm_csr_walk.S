@@ -146,17 +146,11 @@ main:
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 1b                  // Continue loop while t2 != 0
 
-#if RVMODEL_NUM_PMPS == 64
-    #define ITERATIONS 4
-#else
-    #define ITERATIONS 8
-#endif
-
 	// Loop to SET ALL pmpcfg REGs to zero
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept ITERATIONS
+	.rept RVMODEL_NUM_PMPS/4
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
+	.set pmpcfgi, pmpcfgi+1
 	.endr
 
     li t2, 1                     // walking one: 0x00000001
@@ -228,5 +222,4 @@ gpr_save:
 sig_end_canary:
 CANARY;
 rvtest_sig_end:
-PMP_region_High:
 RVMODEL_DATA_END

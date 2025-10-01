@@ -52,67 +52,72 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute stack_align, 16
   	.align	3   
   	.option norvc
-#define NOP     (0x13<<32)+0x13
+#define SINGLE_NOP 	   	 0x13
+#define DOUBLE_NOP 		(0x13<<32)+0x13
 #define g (1<<(RVMODEL_PMP_GRAIN+2))
 
 .macro VERIFICATION_RWX ADDRESS    
 
-    LI(a4, NOP)                  							// Value to write (NOP)
-    // Store Access Check straddling start
+    LI(a4, SINGLE_NOP)                  				    // Value to write (NOP)
+    // Access Check straddling start
     LA(a5, (\ADDRESS-1))
-    sd a4, 0(a5)                 							// Doubleword-level store test
-    nop
-    sw a4, 0(a5)                 							// Word-level store test
-    nop
     sh a4, 0(a5)                 							// Half-word store test
     nop
-
-    // Store Access Check straddling end
-    LA(a5, (\ADDRESS+g-1))
-    sd a4, 0(a5)                 							// Doubleword-level store test
-    nop
-    sw a4, 0(a5)                 							// Word-level store test
-    nop
-    sh a4, 0(a5)                 							// Half-word store test
-    nop
-
-    // Load Access Check straddling start
-    LA(a5, (\ADDRESS-1))
-	lh a4, 0(a5)                 							// Half-word load test                                           
+	lh a4, 0(a5)                 							// Half-word load test                                              
     nop
     RVTEST_SIGUPD(x13, a4) 
 	lhu a4, 0(a5)                 							// Half-word load test
     nop
-    RVTEST_SIGUPD(x13, a4)
+    RVTEST_SIGUPD(x13, a4) 
+
+    LI(a4, SINGLE_NOP)                  					// Value to write (NOP)
+    sw a4, 0(a5)                 							// Word-level store test
+    nop
     lw a4, 0(a5)                 							// Word load test
     nop
     RVTEST_SIGUPD(x13, a4) 
     lwu a4, 0(a5)                 							// Word load test
     nop
     RVTEST_SIGUPD(x13, a4) 
+
+    LI(a4, DOUBLE_NOP)                  				    // Value to write (NOP)
+    sd a4, 0(a5)                 							// Doubleword-level store test
+    nop
     ld a4, 0(a5)                 							// Doubleword load test
     nop
     RVTEST_SIGUPD(x13, a4) 
 
-    // Load Access Check straddling end
+    LI(a4, SINGLE_NOP)                  				    // Value to write (NOP)
+    // Access Check straddling end
     LA(a5, (\ADDRESS+g-1))
-	lh a4, 0(a5)                 							// Half-word load test
+    sh a4, 0(a5)                 							// Half-word store test
+    nop
+	lh a4, 0(a5)                 							// Half-word load test                                              
     nop
     RVTEST_SIGUPD(x13, a4) 
 	lhu a4, 0(a5)                 							// Half-word load test
     nop
-    RVTEST_SIGUPD(x13, a4)
+    RVTEST_SIGUPD(x13, a4) 
+
+    LI(a4, SINGLE_NOP)                  					// Value to write (NOP)
+    sw a4, 0(a5)                 							// Word-level store test
+    nop
     lw a4, 0(a5)                 							// Word load test
     nop
-    RVTEST_SIGUPD(x13, a4)
+    RVTEST_SIGUPD(x13, a4) 
     lwu a4, 0(a5)                 							// Word load test
     nop
     RVTEST_SIGUPD(x13, a4) 
+
+    LI(a4, DOUBLE_NOP)                  				    // Value to write (NOP)
+    sd a4, 0(a5)                 							// Doubleword-level store test
+    nop
     ld a4, 0(a5)                 							// Doubleword load test
     nop
-    RVTEST_SIGUPD(x13, a4)  
+    RVTEST_SIGUPD(x13, a4) 
 
 .endm
+
 
 main:
 	// Loop to SET ALL pmpcfg REGs to zero

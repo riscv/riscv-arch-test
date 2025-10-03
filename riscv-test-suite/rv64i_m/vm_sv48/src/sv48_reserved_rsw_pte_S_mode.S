@@ -22,13 +22,13 @@
 // 8. RSW bits are Set for the page at level 1 (10):
 //		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 // 9. RSW bits are Set for the page at level 1 (11):
-//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk // ----------------------------------------------------------------------------------------------------------------------
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 // 10. RSW bits are Set for the page at level 0 (01):
 //		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 // 11. RSW bits are Set for the page at level 0 (10):
 //		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 // 12. RSW bits are Set for the page at level 0 (11):
-//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk // ----------------------------------------------------------------------------------------------------------------------
+//		Then, in S-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
 
 // Total Expected Faults :: 0
 // ----------------------------------------------------------------------------------------------------------------------
@@ -48,9 +48,8 @@ RVTEST_ISA("RV64I_Zicsr")
 rvtest_entry_point:
 RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
 
-nop
+j starting_point											// Skip test region
 .align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
-j starting_point											// Skip this data region
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGION FOR TESTING
@@ -73,7 +72,7 @@ starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV48_MACROS", sv48_tests)
+    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True", sv48_tests)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
@@ -144,16 +143,16 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x028000000404                  // Virtual Address of rvtest_data_1
+	.set va_data,          		0x028000000400                  // Virtual Address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x0300800007DC
-	.set va_rvtest_data_begin,  0x038080003530	
+	.set va_rvtest_code_begin,  0x0300800007BC
+	.set va_rvtest_data_begin,  0x038080005530	
     
 	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000
 	// Therefore, we will setup TeraPage using this imm value
     .set terapage_pa,           0x000000000000    				// Physical Address for TeraPage
-	.set va_data_l3,			0x028080000404					// Virtual Address of rvtest_data_1 (In case of Level3)
+	.set va_data_l3,			0x028080000400					// Virtual Address of rvtest_data_1 (In case of Level3)
 
 //	PTE setup for Code Region
     PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)

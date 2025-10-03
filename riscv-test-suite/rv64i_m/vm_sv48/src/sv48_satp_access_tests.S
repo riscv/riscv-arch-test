@@ -32,9 +32,8 @@ RVTEST_ISA("RV64I_Zicsr")
 rvtest_entry_point:
 RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
 
-nop
+j starting_point											// Skip test region
 .align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
-j starting_point											// Skip this data region
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGION FOR TESTING
@@ -57,7 +56,7 @@ starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV48_MACROS", sv48_tests)
+    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True", sv48_tests)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------

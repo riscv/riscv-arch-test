@@ -1,9 +1,9 @@
 // ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-48-based Virtual Memory System, available at:
+// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
 // https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
-// Developed by: Umer Shahid & Muhammad Zain
+// Developed by: Umer Shahid, Muhammad Zain, Muhammad Abdullah, Hamza Ali, Muhammad Ahmad
 // ----------------------------------------------------------------------------------------------------------------------
-// Test cases are as follows:
+// Test Explanation:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. Perform Load & Store at virtual address 0x0
 // 2. Perform Execute at virtual address 0x0
@@ -28,14 +28,14 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True", sv48_tests)
+    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV39_MACROS",sv39_template)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 
 .macro TEST_CASES_RUNNER_RW LOWER_MODE, VA, level
-
-    RVTEST_GOTO_LOWER_MODE \LOWER_MODE
+    
+	RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 	.align 2
 
 	LI(a5, \VA)
@@ -46,28 +46,29 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
 
     // Test load permission
-    lw	a4, 0(a5)        				// Load back data
+    lw  a4, 0(a5)        				// Load back data
     nop
+	nop
 
 	RVTEST_GOTO_MMODE		            // Switching back to M mode
 	
 	// Signature Update
    	SREG a2, 0(x13)
     nop
-    addi x13, x13, REGWIDTH
+	addi x13, x13, REGWIDTH
 
    	SREG a4, 0(x13)
-    nop
+	nop
     addi x13, x13, REGWIDTH
 .endm	
 
 
 .macro TEST_CASES_RUNNER_X LOWER_MODE, VA, level
-
+	
 	RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 	.align 2
 
-	LI(a5, \VA)
+	LI(a5, \VA)                    		// Load virtual address
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
 	LA(x4, 1f)							// Store the return Address in x4
 	jalr ra, 0(a5)
@@ -76,44 +77,41 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 1:
 	nop
 
-	RVTEST_GOTO_MMODE		            // Switching back to M mode
+	RVTEST_GOTO_MMODE
 .endm
 
 
 main:
-#ifdef rvtest_mtrap_routine				// Verification of existance of rvtest_mtrap_routine
+#ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
 	LI a4, 0xceed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine				// Verification of existance of rvtest_strap_routine
+#ifdef rvtest_strap_routine					                				// Verification of existance of rvtest_strap_routine
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
 	
-	ALL_MEM_PMP							// set the PMP permissions for the whole memory
-	csrw satp, zero  		            // write satp with all zeros (bare mode)
+	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
+	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//								Virtual addresses definition section for the code, data & test sections
+//								Virtual addresses definition section for the code, data, sig, vmem, test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
 	.set va_data,         	 	0x0000000000000000
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x03008000039C
-	.set va_rvtest_data_begin,  0x038080003530	
-    
-	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000
-	// Therefore, we will setup TeraPage using this imm value
-    .set terapage_pa,           0x000000000000    			// Physical Address for TeraPage
+	.set va_rvtest_code_begin,  0x18000039c                  
+	.set va_rvtest_data_begin,  0x1c0000530		     
+
 
 //	PTE setup for Code Region
-    PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
+	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
 	sfence.vma
 
 //	PTE setup for Data Region
-	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL3)
+	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -138,8 +136,8 @@ main:
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	SATP_SETUP_RV64(sv48)                                                  // Set SATP for virtualization
-	sfence.vma                                                             // Flush the TLB
+	SATP_SETUP_RV64(sv39)                                                   // Set SATP for virtualization
+	sfence.vma                                                              // Flush the TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -149,10 +147,9 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 1: Test in S-Mode | RW bit set | expected = successful page access 
-	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
-	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_SV48_New(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
 	TEST_CASES_RUNNER_RW Smode, va_data, LEVEL0
@@ -162,10 +159,9 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 	
 	// Test case 2: Test in S-Mode | X bit set | expected = successful page access 
-	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
-	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_SV48_New(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL0)
+	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	PTE_SETUP_RV39_New(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL0)
 	sfence.vma
 
 	TEST_CASES_RUNNER_X Smode, va_data, LEVEL0
@@ -201,7 +197,6 @@ rvtest_data_1_l0_x:
 	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
 	jr ra
 
-
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -212,9 +207,7 @@ rvtest_slvl1_pg_tbl:
 .align 12
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-.align 12
-rvtest_slvl3_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
+		
 #endif
 
 RVTEST_DATA_END                               

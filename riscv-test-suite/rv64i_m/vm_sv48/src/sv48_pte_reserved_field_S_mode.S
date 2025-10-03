@@ -5,10 +5,23 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. No RWX, only V bit is set for the PTE at Level 0:
-//		Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
+// --------------------------- Walking ones through the reserved bit field [63:54] of PTE -------------------------------
+//  1. Setting bit 54 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  2. Setting bit 55 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  3. Setting bit 56 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  4. Setting bit 57 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  5. Setting bit 58 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  6. Setting bit 59 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//  7. Setting bit 60 of PTE, RWX permissions given (level 3):
+//		Then, in S-Mode, the page is accessed --> required: RWX Fault
 
-// Total Expected Faults :: 3
+// Total Expected Faults :: 21
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -133,11 +146,11 @@ main:
 	.set va_data_l3,			0x028080000400					// Virtual Address of rvtest_data_1 (In case of Level3)
 
 //	PTE setup for Code Region
-    PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
+    PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
 	sfence.vma
 
 //	PTE setup for Data Region
-	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL3)
+	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL3)
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -167,19 +180,77 @@ main:
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 0
+//													TESTS AT LEVEL 3
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 	
-	// Test case 1: Test in U-Mode | Only V bit set at Level 0 | expected = RWX fault 
-	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
-	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_U | PTE_V), va_data, LEVEL0)
+	// Test case 1: Test in S-Mode | RWX bit set | Setting bit 54 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 54) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data, LEVEL0
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 2: Test in S-Mode | RWX bit set | Setting bit 55 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 55) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 3: Test in S-Mode | RWX bit set | Setting bit 56 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 56) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 4: Test in S-Mode | RWX bit set | Setting bit 57 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 57) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 5: Test in S-Mode | RWX bit set | Setting bit 58 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 58) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 6: Test in S-Mode | RWX bit set | Setting bit 59 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 59) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 7: Test in S-Mode | RWX bit set | Setting bit 60 of PTE 
+	PTE_SETUP_SV48_New(terapage_pa, ((1 << 60) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_l3, LEVEL3	
+	
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -213,7 +284,7 @@ signature_x13_1:
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 64*(XLEN/32),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

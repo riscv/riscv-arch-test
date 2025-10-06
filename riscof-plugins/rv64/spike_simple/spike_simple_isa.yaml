@@ -32,4 +32,4 @@ hart0:
     implemented: True
     pmp-grain: 0
     pmp-count: 16
-    pmp-writable: 12
+    pmp-writable: 16

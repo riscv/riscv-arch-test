@@ -62,6 +62,7 @@ def dump_yaml(foo, outfile=None, indent=None, block_seq_indent=None):
 
     if outfile is None:
         buf = io.StringIO()
+        yaml.width = 1000
         yaml.dump(foo, buf)
         return buf.getvalue()
     return yaml.dump(foo, outfile)

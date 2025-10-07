@@ -249,7 +249,15 @@ Once everything is set up, you can run the tests using the following command:
 $ riscof run --config config.ini --suite riscv-test-suite/ --env riscv-test-suite/env
 ```
 
+If you only want to use spike as the reference model to test, you can use the following command to using the sample environment:
+
+```
+$ cd riscof-plugins/rv32 #If you want to run the rv64 test, change this to rv64
+$ riscof run --config config.ini --suite ../../riscv-test-suite/ --env ../../riscv-test-suite/env
+```
+
 ## Running the coverage command
+
 You can run the coverage using the following command:
 
 ```

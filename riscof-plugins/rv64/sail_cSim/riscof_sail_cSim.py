@@ -121,6 +121,8 @@ class sail_cSim(pluginTemplate):
         sail_config["memory"]["pmp"]["grain"] = pmp_flags["pmp-grain"]
         sail_config["memory"]["pmp"]["count"] = pmp_flags["pmp-count"]
 
+        sail_config["extensions"]["Svrsw60t59b"]["supported"] = False
+
         #For User-configuration: Replace this variable with your configuration. "/home/riscv-arch-test/custom_sail_config.json"
         sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')
 

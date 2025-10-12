@@ -170,6 +170,11 @@ main:
 	.set pmpcfgi, pmpcfgi+1
 	.endr
 
+	RVTEST_GOTO_MMODE
+	li a4, 0xbeefcafe							// Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)       				// Signature update
+	j exit										// Verification Complete, exit the test
+
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)
 

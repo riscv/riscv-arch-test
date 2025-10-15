@@ -44,7 +44,7 @@ RVTEST_FP_ENABLE()
 	#define RVMODEL_NUM_PMPS 16
 #endif
 
-RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F[^S]*Zicsr.*Zcf.*); def rvtest_mtrap_routine=True; 								 verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
+RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F[^S]*Zicsr.*Zcf.*); def rvtest_mtrap_routine=True; 								verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
 RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F.*S.*Zicsr.*Zcf.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_RW)
 
 #ifdef TEST_CASE_1

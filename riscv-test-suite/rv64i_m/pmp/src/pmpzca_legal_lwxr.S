@@ -51,7 +51,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
   	.align	3   
-#define NOP 		(0x13<<32)+0x13
+#define DOUBLE_CNOP 		(0x00010001)
+#define TETRA_CNOP			(0x00010001<<32)+0x00010001
 
 .macro VERIFICATION_RWX ADDRESS  
 
@@ -64,29 +65,50 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 1:
 	c.nop
     c.nop
-    LI(x15, NOP)                  							// Value to write (NOP)
+
+    LI(x15, DOUBLE_CNOP)                  							// Value to write (NOP)
     // Store Access Check
     LA(x8, \ADDRESS)             							// Address to be verified
     c.sw x15, 0(x8)
     c.nop
     c.nop
+    LA(sp, \ADDRESS)             							// Address to be verified
+    c.swsp x15, 0(sp)
     c.nop
     c.nop
+
+    LI(x15, TETRA_CNOP)                  							// Value to write (NOP)
+    // Store Access Check
+    LA(x8, \ADDRESS)             							// Address to be verified
+    c.sd x15, 0(x8)
+    c.nop
+    c.nop
+    LA(sp, \ADDRESS)             							// Address to be verified
+    c.sdsp x15, 0(sp)
+    c.nop
+    c.nop
+
+    LI(x15, DOUBLE_CNOP)                  							// Value to write (NOP)
+    // Store Access Check
+    LA(x8, \ADDRESS)             							// Address to be verified
     c.lw x15, 0(x8)
     c.nop
     c.nop
-	c.nop
-	c.nop
+    LA(sp, \ADDRESS)             							// Address to be verified
+    c.lwsp x15, 0(sp)
+    c.nop
+    c.nop
 
-	addi sp, x8, 0
-	c.swsp x15, 0(sp)
-	c.nop
-	c.nop
-	c.nop
-	c.nop
-	c.lwsp x15, 0(sp)
-	c.nop
-	c.nop
+    LI(x15, TETRA_CNOP)                  							// Value to write (NOP)
+    // Store Access Check
+    LA(x8, \ADDRESS)             							// Address to be verified
+    c.ld x15, 0(x8)
+    c.nop
+    c.nop
+    LA(sp, \ADDRESS)             							// Address to be verified
+    c.ldsp x15, 0(sp)
+    c.nop
+    c.nop
 
 .endm
 
@@ -239,14 +261,14 @@ rvtest_sig_begin:
 sig_begin_canary:
 CANARY;
 signature_x13_1:
-    .fill 32*(XLEN/32),4,0xdeadbeef
+    .fill 128*(XLEN/32),4,0xdeadbeef
 
 #ifdef rvtest_mtrap_routine
 
 tsig_begin_canary:
 CANARY;
 mtrap_sigptr:
-    .fill 256*(XLEN/32),4,0xdeadbeef
+    .fill 512*(XLEN/32),4,0xdeadbeef
 tsig_end_canary:
 CANARY;
 

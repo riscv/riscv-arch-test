@@ -444,3 +444,15 @@ VA_all_ones:
   val_comb:
     'mode == "S" and mnemonic == {"sb", "lbu"} and (rs1_val & 0xFFFFFFFF) == 0xFFFFFFFF': 0
     'mode == "S" and mnemonic == "jalr" and (rs1_val & 0xFFFFFFFF) == 0xFFFFFFFC': 0
+
+VA_all_zeros:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    "{sw, csrrc, csrrs, csrrw, lw, jalr}": 0
+  op_comb:
+    'mode == "S" and (satp >> 31) ==  ${SATP_MODE_SV32}': 0
+  csr_comb:
+    '((satp) & 0x003FFFFF)  == get_addr("rvtest_Sroot_pg_tbl") >> 12': 0
+  val_comb:
+    'mode == "S" and mnemonic == {"sw", "lw", "jalr"} and ((rs1_val + imm_val) & 0xFFFFFFFF) == 0x0': 0

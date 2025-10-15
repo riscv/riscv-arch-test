@@ -146,13 +146,6 @@ main:
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 1b                  // Continue loop while t2 != 0
 
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
-
     li t2, 1                     // walking one: 0x00000001
 
 2:  // Outer loop for walking ones
@@ -170,6 +163,17 @@ main:
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 2b                  // Continue loop while t2 != 0
 
+	// Loop to SET ALL pmpcfg REGs to zero
+	.set pmpcfgi, CSR_PMPCFG0
+	.rept RVMODEL_NUM_PMPS/4
+	csrw pmpcfgi , x0
+	.set pmpcfgi, pmpcfgi+1
+	.endr
+
+	RVTEST_GOTO_MMODE
+	li a4, 0xbeefcafe							// Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)       				// Signature update
+	j exit										// Verification Complete, exit the test
 
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)

@@ -51,7 +51,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
   	.align	3   
-#define NOP 		0x13
+#define NOP 		0x00010001
 
 .macro VERIFICATION_RWX ADDRESS  
 
@@ -64,6 +64,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 1:
 	c.nop
     c.nop
+	
     LI(x15, NOP)                  							// Value to write (NOP)
     // Store Access Check
     LA(x8, \ADDRESS)             							// Address to be verified
@@ -85,6 +86,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	c.nop
 	c.nop
 	c.lwsp x15, 0(sp)
+	c.nop
+	c.nop
 	c.nop
 	c.nop
 

@@ -77,7 +77,6 @@ class sail_cSim(pluginTemplate):
             raise SystemExit(1)
         if shutil.which(self.sail_exe) is None:
             logger.error(self.sail_exe + ": executable not found. Please check environment setup.")
-            logger.error("Sail has been updated to use sail_riscv_sim instead of riscv_sim_rv(32/64)d. Please make sure that you have the latest version of Sail installed.")
             raise SystemExit(1)
         if shutil.which(self.make) is None:
             logger.error(self.make+": executable not found. Please check environment setup.")
@@ -124,7 +123,6 @@ class sail_cSim(pluginTemplate):
         # Enabling extensions that are disabled by default
         sail_config["extensions"]["Sv32"]["supported"] = True
         sail_config["extensions"]["Zcf"]["supported"] = True
-        sail_config["extensions"]["Svrsw60t59b"]["supported"] = False
 
         #For User-configuration: Replace this variable with your configuration. "/home/riscv-arch-test/custom_sail_config.json"
         sail_config_path = os.path.join(self.pluginpath, 'env', 'sail_config.json')

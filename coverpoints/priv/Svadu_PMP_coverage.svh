@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SVADU
-covergroup Svadu_cg with function sample(ins_t ins);
+`define COVER_SVADU_PMP
+covergroup Svadu_PMP_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
 
@@ -70,14 +70,23 @@ covergroup Svadu_cg with function sample(ins_t ins);
         }
     `endif
 
-    exec_acc: coverpoint ins.current.execute_access {
-        bins set = {1};
+    jalr: coverpoint ins.prev.insn {
+        wildcard bins jalr = {32'b????????????_?????_000_?????_1100111};
     }
-    read_acc: coverpoint ins.current.read_access {
-        bins set = {1};
+    lw: coverpoint ins.current.insn {
+        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
     }
-    write_acc: coverpoint ins.current.write_access{
-        bins set = {1};
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+    }
+    load_acc_fault: coverpoint  ins.current.csr[12'h342] {
+        bins load_acc_fault = {64'd5} iff (ins.current.trap);
+    }
+    store_acc_fault: coverpoint  ins.current.csr[12'h342] {
+        bins store_acc_fault = {64'd7} iff (ins.current.trap);
+    }
+    ins_acc_fault: coverpoint  ins.current.csr[12'h342] {
+        bins ins_acc_fault  = {64'd1} iff (ins.current.trap);
     }
 
     `ifdef XLEN64
@@ -90,17 +99,21 @@ covergroup Svadu_cg with function sample(ins_t ins);
         }
     `endif
 
-    Abit_unset_exec_s:  cross PTE_Abit_unset_s_i, PageType_i, Svadu_enabled, exec_acc, priv_mode_s;
-    Abit_unset_exec_u:  cross PTE_Abit_unset_u_i, PageType_i, Svadu_enabled, exec_acc, priv_mode_u;
-    Abit_unset_read_s:  cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, read_acc, priv_mode_s;
-    Abit_unset_read_u:  cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, read_acc, priv_mode_u;
-    Abit_unset_write_s: cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, write_acc, priv_mode_s;
-    Abit_unset_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, write_acc, priv_mode_u;
-    Dbit_unset_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, write_acc, priv_mode_s;
-    Dbit_unset_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, write_acc, priv_mode_u;
+    PMP_pagetable: coverpoint  ins.current.csr[12'h3A0][7:0] {      // PMP permission of page table
+        wildcard bins w_unset = {8'b??????01};
+    }
+
+    Abit_unset_pmpW_unset_exec_s:  cross PTE_Abit_unset_s_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_s;
+    Abit_unset_pmpW_unset_exec_u:  cross PTE_Abit_unset_u_i, PageType_i, Svadu_enabled, PMP_pagetable, jalr, ins_acc_fault, priv_mode_u;
+    Abit_unset_pmpW_unset_read_s:  cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_s;
+    Abit_unset_pmpW_unset_read_u:  cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, lw, load_acc_fault, priv_mode_u;
+    Abit_unset_pmpW_unset_write_s: cross PTE_Abit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
+    Abit_unset_pmpW_unset_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
+    Dbit_unset_pmpW_unset_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_s;
+    Dbit_unset_pmpW_unset_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, PMP_pagetable, sw, store_acc_fault, priv_mode_u;
 
 endgroup
 
-function void svadu_sample(int hart, int issue, ins_t ins);
-    Svadu_cg.sample(ins);
+function void svadu_pmp_sample(int hart, int issue, ins_t ins);
+    Svadu_PMP_cg.sample(ins);
 endfunction

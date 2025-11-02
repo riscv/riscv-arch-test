@@ -174,6 +174,9 @@
 `ifdef SVADU_COVERAGE
   `include "Svadu_coverage.svh"
 `endif
+`ifdef SVADU_PMP_COVERAGE
+  `include "Svadu_PMP_coverage.svh"
+`endif
 `ifdef SVNAPOT_COVERAGE
   `include "Svnapot_coverage.svh"
 `endif

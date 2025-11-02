@@ -94,13 +94,13 @@ covergroup Svnapot_cg with function sample(ins_t ins);
     }
 
     ins_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
-        bins ins_page_fault = {32'd12};
+        bins ins_page_fault = {32'd12} iff (ins.current.trap);
     }
     load_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
-        bins load_page_fault = {32'd13};
+        bins load_page_fault = {32'd13} iff (ins.current.trap);
     }
     store_page_fault: coverpoint  ins.current.csr[12'h342][31:0] {
-        bins store_amo_page_fault = {32'd15};
+        bins store_amo_page_fault = {32'd15} iff (ins.current.trap);
     }
 
     Svnapot_legal_enc_exec_s:  cross PTE_Svnapot_s_i, PageType_i, mode, exec_acc, priv_mode_s;

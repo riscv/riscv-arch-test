@@ -90,13 +90,13 @@ covergroup Svadu_cg with function sample(ins_t ins);
         wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
     }
     load_acc_fault: coverpoint  ins.current.csr[12'h342] {
-        bins load_acc_fault = {64'd5};
+        bins load_acc_fault = {64'd5} iff (ins.current.trap);
     }
     store_acc_fault: coverpoint  ins.current.csr[12'h342] {
-        bins store_acc_fault = {64'd7};
+        bins store_acc_fault = {64'd7} iff (ins.current.trap);
     }
     ins_acc_fault: coverpoint  ins.current.csr[12'h342] {
-        bins ins_acc_fault  = {64'd1};
+        bins ins_acc_fault  = {64'd1} iff (ins.current.trap);
     }
 
     `ifdef XLEN64

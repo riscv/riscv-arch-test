@@ -71,12 +71,12 @@ covergroup Svade_cg with function sample(ins_t ins);
         }
     `else
         PageType_i: coverpoint ins.current.page_type_i {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31]);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31]);
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31] == 1'b1);
-            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31] == 1'b1);
+            bins sv32_mega = {2'b01} iff (ins.current.csr[12'h180][31]);
+            bins sv32_kilo = {2'b00} iff (ins.current.csr[12'h180][31]);
         }
     `endif
 

@@ -10,9 +10,8 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg
+from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.immediates import modify_imm
-from testgen.utils.common import write_sigupd
 
 
 @add_coverpoint_generator("cp_align")

@@ -30,9 +30,7 @@ def format_ci_type(
         setup.append(test_data.int_regs.consume_registers([2]))
     else:
         scaled_imm = modify_imm(params.immval, 6)
-    setup.append(
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data)
-    )
+    setup.append(load_int_reg("rs1", params.rs1, params.rs1val, test_data))
     test = [
         f"{instr_name} x{params.rs1}, {scaled_imm} # perform operation",
     ]

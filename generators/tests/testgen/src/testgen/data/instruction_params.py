@@ -5,10 +5,34 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+"""
+Instruction parameter generation.
+
+This module uses metadata declared in instruction formatters to automatically
+generate the correct parameters for each instruction type.
+
+When you add a new instruction formatter in instruction_formatters/, declare its
+requirements using the decorator parameters:
+
+    @add_instruction_formatter("I",
+                               required_params={"rd", "rs1", "rs1val", "immval"},
+                               imm_bits=12,
+                               imm_signed=True)
+    def format_i_type(instr_name, test_data, params):
+        ...
+
+The decorator supports:
+  - required_params: Set of parameter names needed
+  - compressed_regs: Whether to use x8-x15 (True) or x0-x31 (False)
+  - imm_bits: Number of bits for immediate values
+  - imm_signed: Whether immediate is signed
+"""
+
 from dataclasses import dataclass
 from typing import Any
 
 from testgen.data.test_data import TestData
+from testgen.instruction_formatters import get_type_config
 from testgen.utils.immediates import gen_random_imm
 
 
@@ -27,17 +51,23 @@ class InstructionParams:
     rs3: int | None = None
     rd: int | None = None
 
+    # Integer register values
+    rs1val: int | None = None
+    rs2val: int | None = None
+    rs3val: int | None = None
+    rdval: int | None = None
+
     # Float registers
     fs1: int | None = None
     fs2: int | None = None
     fs3: int | None = None
     fd: int | None = None
 
-    # Register values
-    rs1val: int | None = None
-    rs2val: int | None = None
-    rs3val: int | None = None
-    rdval: int | None = None
+    # Float register values
+    fs1val: int | None = None
+    fs2val: int | None = None
+    fs3val: int | None = None
+    fdval: int | None = None
 
     # Immediate value
     immval: int | None = None
@@ -91,26 +121,39 @@ def generate_random_params(
         >>> # rd=5 and rs1val=0x100 are fixed, others are random
     """
     params = InstructionParams(**fixed_params)
-    exclude_regs = [0] if not allow_x0 else []
-    reg_range = range(0, 32)
-    if (instr_type in ["CA", "CS", "CLB", "CSB", "CLH", "CSH", "CU", "CB", "CBP", "CIW", "CL"]):
-        reg_range = range(8, 16)  # Compressed instructions use x8-x15
 
-    # Fill in missing integer register parameters
-    if params.rd is None:
+    # Get the required parameters for this instruction type (extracted from formatters)
+    instr_type_config = get_type_config(instr_type)
+    required_params = instr_type_config.required_params
+    if required_params is None:
+        raise ValueError(
+            f"Unknown params for instruction type '{instr_type}'. Please add it to the instruction formatter decorator."
+        )
+
+    # Determine the register range to use (extracted from formatters)
+    reg_range = instr_type_config.reg_range if instr_type_config.reg_range is not None else list(range(0, 32))
+    exclude_regs = [0] if not allow_x0 else []
+
+    # Fill in missing integer register parameters (only if required)
+    if "rd" in required_params and params.rd is None:
         params.rd = test_data.int_regs.get_register(exclude_reg=exclude_regs, reg_range=reg_range)
 
-    if params.rs1 is None:
+    if "rdval" in required_params and params.rdval is None:
+        params.rdval = gen_random_imm(test_data.xlen)
+
+    if "rs1" in required_params and params.rs1 is None:
         params.rs1 = test_data.int_regs.get_register(exclude_reg=exclude_regs, reg_range=reg_range)
-    if params.rs1val is None:
+
+    if "rs1val" in required_params and params.rs1val is None:
         params.rs1val = gen_random_imm(test_data.xlen)
 
-    if params.rs2 is None:
+    if "rs2" in required_params and params.rs2 is None:
         params.rs2 = test_data.int_regs.get_register(exclude_reg=exclude_regs, reg_range=reg_range)
-    if params.rs2val is None:
+
+    if "rs2val" in required_params and params.rs2val is None:
         params.rs2val = gen_random_imm(test_data.xlen)
 
-    if params.immval is None:
+    if "immval" in required_params and params.immval is None:
         params.immval = gen_random_imm(test_data.xlen)
 
     return params

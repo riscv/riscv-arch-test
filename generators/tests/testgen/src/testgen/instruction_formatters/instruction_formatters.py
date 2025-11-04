@@ -8,6 +8,7 @@
 """Instruction formatter registry with automatic discovery."""
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 
@@ -17,29 +18,58 @@ from testgen.data.test_data import TestData
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
 
-# Registry storage: dict mapping instruction type to formatter
-_INSTRUCTION_FORMATTERS: dict[str, InstructionFormatter] = {}
+
+@dataclass
+class InstructionTypeConfig:
+    """Configuration for an instruction type."""
+
+    formatter: InstructionFormatter
+    required_params: set[str] | None = None
+    reg_range: list[int] | None = None
+    imm_bits: int | None = None
+    imm_signed: bool = True
 
 
-def add_instruction_formatter(*instruction_types: str) -> Callable[[InstructionFormatter], InstructionFormatter]:
+# Registry: dict mapping instruction type to its configuration
+_INSTRUCTION_CONFIGS: dict[str, InstructionTypeConfig] = {}
+
+
+def add_instruction_formatter(
+    instr_type: str,
+    required_params: set[str] | None = None,
+    *,
+    reg_range: list[int] | None = None,
+    imm_bits: int | None = None,
+    imm_signed: bool = True,
+) -> Callable[[InstructionFormatter], InstructionFormatter]:
     """
-    Decorator to register an instruction formatter for one or more instruction types.
+    Decorator to register an instruction formatter for a given instruction type.
 
     Args:
-        instruction_types: One or more instruction type codes this formatter handles
-
-    Example:
-        @add_instruction_formatter("R")
-        def format_r_type(instr_name, test_data, params):
-            ...
+        instr_type: The instruction type string (e.g., "R", "I", "S")
+        required_params: Set of parameter names required by this instruction type (e.g., {"rd", "rs1", "rs1val", "immval"})
+        compressed_regs: Dict mapping register types to (min, max) range for compressed instructions
+        imm_bits: Number of bits for immediate values (e.g., 12 for I-type, 5 for shifts)
+        imm_signed: Whether immediate values should be signed (default: True)
     """
 
-    def decorator(func: InstructionFormatter) -> InstructionFormatter:
-        for instr_type in instruction_types:
-            _INSTRUCTION_FORMATTERS[instr_type] = func
-        return func
+    def decorator(formatter_func: InstructionFormatter) -> InstructionFormatter:
+        config = InstructionTypeConfig(
+            formatter=formatter_func,
+            required_params=required_params,
+            reg_range=reg_range,
+            imm_bits=imm_bits,
+            imm_signed=imm_signed,
+        )
+        _INSTRUCTION_CONFIGS[instr_type] = config
+        return formatter_func
 
     return decorator
+
+
+def get_type_config(instr_type: str) -> InstructionTypeConfig:
+    """Get the complete configuration for an instruction type."""
+    return _INSTRUCTION_CONFIGS[instr_type]
 
 
 def _discover_and_import_instruction_formatters() -> None:
@@ -62,8 +92,9 @@ _discover_and_import_instruction_formatters()
 
 def _select_instruction_formatter(instr_name: str, instr_type: str) -> InstructionFormatter:
     """Select the appropriate instruction formatter based on instruction type (exact match)."""
-    if instr_type in _INSTRUCTION_FORMATTERS:
-        return _INSTRUCTION_FORMATTERS[instr_type]
+    config = _INSTRUCTION_CONFIGS.get(instr_type)
+    if config is not None:
+        return config.formatter
     raise ValueError(
         f"No instruction formatter found for instruction type: {instr_type}. Needed by instruction: {instr_name}."
     )

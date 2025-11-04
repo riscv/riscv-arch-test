@@ -11,7 +11,7 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import write_sigupd
 
 
-@add_instruction_formatter("J")
+@add_instruction_formatter("J", required_params={"rd", "rs2"})
 def format_j_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

@@ -12,7 +12,7 @@ from testgen.utils.common import write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("JR")
+@add_instruction_formatter("JR", required_params={"rd", "rs1", "rs2", "immval"})
 def format_jr_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

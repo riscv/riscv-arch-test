@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("IS")
+@add_instruction_formatter("IS", required_params={"rd", "rs1", "rs1val", "immval"})
 def format_is_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

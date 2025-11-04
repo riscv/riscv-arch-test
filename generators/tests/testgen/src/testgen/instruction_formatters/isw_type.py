@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("ISW")
+@add_instruction_formatter("ISW", required_params={"rd", "rs1", "rs1val", "immval"})
 def format_isw_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

@@ -18,16 +18,18 @@ def format_cb_type(
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CB-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
-    assert params.rs2 is not None and params.rs2val is not None
     assert params.rd is not None
     assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 8)
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-        load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+        f"LI(x{params.rd}, 1) # initialize rd to 1 (branch taken value)",
     ]
     test = [
-        f"{instr_name} x{params.rs1}, x{params.immval} # perform operation",
+        f"{instr_name} x{params.rs1}, 1f # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [
+        f"LI(x{params.rd}, 0) # branch not taken, set rd to 0",
+        "1:",
+        write_sigupd(params.rd, test_data, "int"),
+    ]
     return (setup, test, check)

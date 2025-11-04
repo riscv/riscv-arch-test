@@ -22,7 +22,7 @@ def format_b_type(
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-        f"LI(x{params.rd}, 1) # initialize rd to 1 (branch not taken value)",
+        f"LI(x{params.rd}, 1) # initialize rd to 1 (branch taken value)",
     ]
     test = [
         f"{instr_name} x{params.rs1}, x{params.rs2}, 1f # perform operation",

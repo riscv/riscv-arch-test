@@ -18,14 +18,23 @@ def format_ci_type(
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CI-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
-    assert params.rd is not None
     assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 6)
-    setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-    ]
+    setup: list[str] = []
+    if instr_name == "c.addi16sp":
+        # For c.addi16sp, the immediate is scaled by 16 and rs1 must be x2 (sp)
+        scaled_imm = modify_imm(params.immval, 10)
+        test_data.int_regs.return_registers(params.used_int_regs)
+        params.rs2 = None
+        params.rd = None
+        params.rs1 = 2
+        setup.append(test_data.int_regs.consume_registers([2]))
+    else:
+        scaled_imm = modify_imm(params.immval, 6)
+    setup.append(
+        load_int_reg("rs1", params.rs1, params.rs1val, test_data)
+    )
     test = [
-        f"{instr_name} x{params.rd}, {scaled_imm} # perform operation",
+        f"{instr_name} x{params.rs1}, {scaled_imm} # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [write_sigupd(params.rs1, test_data, "int")]
     return (setup, test, check)

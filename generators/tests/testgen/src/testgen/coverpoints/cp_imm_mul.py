@@ -27,7 +27,7 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     elif coverpoint.endswith("_addi4spn"):
         imm_mul = range(4, 1024, 4)
     elif coverpoint.endswith("_addi16sp"):
-        imm_mul = range(-512, 512, 16)
+        imm_mul = [i for i in range(-512, 512, 16) if i != 0]
     else:
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
     test_lines: list[str] = []

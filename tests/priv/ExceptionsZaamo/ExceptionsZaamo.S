@@ -9,8 +9,8 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, Zicsr, A]
-# MARCH: rv${XLEN}i_zicsr_a
+# implemented_extensions: [I, Zicsr, Zaamo]
+# MARCH: rv${XLEN}ia_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

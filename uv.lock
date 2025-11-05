@@ -292,11 +292,15 @@ name = "testgen"
 version = "0.3.0"
 source = { editable = "generators/tests/testgen" }
 dependencies = [
+    { name = "rich" },
     { name = "typer" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "typer", specifier = ">=0.20.0" }]
+requires-dist = [
+    { name = "rich", specifier = ">=13.0.0" },
+    { name = "typer", specifier = ">=0.20.0" },
+]
 
 [[package]]
 name = "typer"

@@ -8,7 +8,6 @@
 """Test configuration for RISC-V test generation."""
 
 from dataclasses import dataclass
-from typing import Literal
 
 
 @dataclass(frozen=True)

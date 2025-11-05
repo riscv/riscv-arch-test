@@ -9,10 +9,13 @@
 # Generate directed tests for functional coverage
 ##################################
 
+import os
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Annotated
 
 import typer
+from rich.progress import track
 
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.test_config import TestConfig
@@ -39,10 +42,18 @@ def generate_all_tests(
             "--extensions", "-e", help="Comma-separated list of extensions to generate tests for (default: all)"
         ),
     ] = "all",
+    jobs: Annotated[
+        int | None,
+        typer.Option("--jobs", "-j", help="Number of parallel jobs (default: number of CPU cores)"),
+    ] = None,
 ) -> None:
     """
     Generate riscv-arch-test tests from testplan CSV files.
     """
+    # Set number of parallel jobs to CPU count if not specified
+    if jobs is None:
+        jobs = os.cpu_count() or 1
+
     # Get list of extensions
     extensions_from_testplans = get_extensions(testplan_dir)
     extension_list: list[str] = []
@@ -55,59 +66,80 @@ def generate_all_tests(
                 raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}")
             extension_list.append(ext)
 
-    # Generate tests for each extension, xlen, and E_ext combination
+    # Build list of test generation tasks (extension configs to process)
+    tasks: list[tuple[int, bool, str, Path, Path]] = []
     for xlen in [32, 64]:
         for E_ext in [False]:  # TODO: Enable E tests
             for extension in sorted(extension_list):
-                # Set extension-specific variables
-                output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else ''}/{extension}"
-                output_dir.mkdir(parents=True, exist_ok=True)
-                flen = (
-                    128
-                    if extension in ["Q", "ZfaQ", "ZfhQ"]
-                    else 64
-                    if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
-                    else 32
-                )
-                test_config = TestConfig(xlen=xlen, flen=flen, e_register_file=E_ext)
-                print(f"Generating tests for {output_dir}")
-                # Iterate through each instruction in extension
-                instructions = read_testplan(testplan_dir / f"{extension}.csv")
-                for instr_name, instr_data in sorted(instructions.items()):
-                    # Skip instructions not valid for this xlen
-                    if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
-                        continue
-                    test_data = TestData(test_config)
-                    test_file = output_dir / f"{extension}-{instr_name}.S"
-                    test_file_relative = str(test_file.relative_to(output_test_dir))
+                tasks.append((xlen, E_ext, extension, testplan_dir, output_test_dir))
 
-                    # Test header
-                    test_lines = [insert_setup_template("testgen_header.S", xlen, extension, test_file_relative)]
-                    # Enable floating point if needed
-                    if "F" in extension or "D" in extension or "Q" in extension or "Zf" in extension:
-                        test_lines.append("# set mstatus.FS to 01 to enable fp\nLI(t0,0x4000)\ncsrs mstatus, t0\n")
+    # Execute tasks in parallel
+    with ProcessPoolExecutor(max_workers=jobs) as executor:
+        futures = [executor.submit(generate_tests_for_extension, task) for task in tasks]
 
-                    # Generate tests for this instruction
-                    test_lines.append(
-                        generate_tests_for_instruction(
-                            instr_name, instr_data.instr_type, instr_data.coverpoints, test_data
-                        )
-                    )
+        # Process completed tasks with progress tracking
+        for future in track(futures, description="[cyan]Generating tests...", total=len(futures)):
+            future.result()  # Re-raise any exceptions
 
-                    # Test footer
-                    test_lines.append(insert_setup_template("testgen_footer.S", xlen, extension, test_file_relative))
 
-                    # Generate final test string with signature size
-                    sig_words = get_sig_space(test_data)
-                    test_string = "\n".join(test_lines).replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
+def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> None:
+    """
+    Worker function to generate tests for one extension configuration.
 
-                    # Clean up test data
-                    test_data.destroy()
+    Args:
+        task: Tuple of (xlen, E_ext, extension, testplan_dir, output_test_dir)
+    """
+    # Unpack task parameters
+    xlen, E_ext, extension, testplan_dir, output_test_dir = task
 
-                    # Write test file if different from existing file
-                    if not (test_file.exists()) or test_file.read_text() != test_string:
-                        test_file.write_text(test_string)
-                        print(f"Updated {test_file}")
+    # Set extension-specific variables
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else ''}/{extension}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    flen = (
+        128
+        if extension in ["Q", "ZfaQ", "ZfhQ"]
+        else 64
+        if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
+        else 32
+    )
+    test_config = TestConfig(xlen=xlen, flen=flen, e_register_file=E_ext)
+    print(f"Generating tests for {output_dir}")
+    # Iterate through each instruction in extension
+    instructions = read_testplan(testplan_dir / f"{extension}.csv")
+    for instr_name, instr_data in sorted(instructions.items()):
+        # Skip instructions not valid for this xlen
+        if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
+            continue
+        test_data = TestData(test_config)
+        test_file = output_dir / f"{extension}-{instr_name}.S"
+        test_file_relative = str(test_file.relative_to(output_test_dir))
+
+        # Test header
+        test_lines = [insert_setup_template("testgen_header.S", xlen, extension, test_file_relative)]
+
+        # Enable floating point if needed
+        if "F" in extension or "D" in extension or "Q" in extension or "Zf" in extension:
+            test_lines.append("# set mstatus.FS to 01 to enable fp\nLI(t0,0x4000)\ncsrs mstatus, t0\n")
+
+        # Generate tests for this instruction
+        test_lines.append(
+            generate_tests_for_instruction(instr_name, instr_data.instr_type, instr_data.coverpoints, test_data)
+        )
+
+        # Test footer
+        test_lines.append(insert_setup_template("testgen_footer.S", xlen, extension, test_file_relative))
+
+        # Generate final test string with signature size
+        sig_words = get_sig_space(test_data)
+        test_string = "\n".join(test_lines).replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
+
+        # Clean up test data
+        test_data.destroy()
+
+        # Write test file if different from existing file
+        if not test_file.exists() or test_file.read_text() != test_string:
+            test_file.write_text(test_string)
+            print(f"Updated {test_file}")
 
 
 def generate_tests_for_instruction(
@@ -126,20 +158,16 @@ def generate_tests_for_instruction(
     Returns:
         Generated test code as a string
     """
-    # Extract relevant data
     test_lines: list[str] = []
 
     # Iterate through each coverpoint and generate tests
     for coverpoint in coverpoints:
-        # If cp_asm_count is the only coverpoint, generate a trivial test:
-        if coverpoint == "cp_asm_count":
-            if len(coverpoints) == 1:
-                test_lines.extend(["# Testcase cp_asm_count", f"{instr_name}"])
-            continue
-        else:
+        # If cp_asm_count is the only coverpoint, generate a trivial test
+        if coverpoint == "cp_asm_count" and len(coverpoints) == 1:
+            test_lines.extend(["# Testcase cp_asm_count", f"{instr_name}"])
+        elif coverpoint != "cp_asm_count":
             test_lines.append(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
-    # Combine test lines into a single string
     return "\n".join(test_lines) + "\n"
 
 

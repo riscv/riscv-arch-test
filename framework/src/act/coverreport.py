@@ -71,7 +71,7 @@ def report_to_summary(report_path: Path, summary_path: Path) -> None:
         entries.append((name, metric_value, goal_value, bins_value, status_value))
 
     if not entries:
-        raise ValueError("No coverage entries found in report " + report_path.as_posix())
+        raise ValueError("No coverage entries found in report.")
 
     padding = 5
     headers = ["Covergroup", "Metric", "Goal", "Bins", "Status"]

@@ -65,6 +65,12 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
 	rm -rf $(SRCDIR64)/E $(SRCDIR32)/E
 	touch $@
 
+.PHONY: vector-testgen
+vector-testgen:  $(STAMP_DIR)/vector-testgen-unpriv.stamp
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
+	touch $@
+
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
@@ -77,7 +83,7 @@ $(STAMP_DIR)/illegalinstrtests.stamp: generators/tests/scripts/illegalinstrtests
 	touch $@
 
 .PHONY: tests
-tests: covergroupgen testgen privheaders
+tests: covergroupgen testgen privheaders #vector-testgen
 
 .PHONY: clean-tests
 clean-tests:

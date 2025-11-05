@@ -1,32 +1,27 @@
-//
-// Copyright (C) 2024 Harvey Mudd College & Oklahoma State University, Habib University, UET Lahore
+///////////////////////////////////////////
+// @TEST_PATH@
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
-// Define special purpose registers before including test_macros_vector.h
-#define DATA_BASE x4
-#define SIG_BASE x3
-#define VLENB_CACHE x5
-#define HELPER_GPR x6
+##### START_TEST_CONFIG #####
+# implemented_extensions: @EXTENSION_LIST@
+# params:
+#   MVLEN: @MVLEN@
+#   ELEN: @ELEN@
+#   SEWMIN: @SEWMIN@
+# MARCH: @MARCH@
+# CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
+##### END_TEST_CONFIG #####
 
+#define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
+#include "riscv_arch_test.h"
 #include "test_macros_vector.h"
 
-RVTEST_ISA("ISAEXT")
-
-.section .text.init
-.globl rvtest_entry_point
-rvtest_entry_point:
-RVMODEL_BOOT
-RVTEST_CODE_BEGIN
-
-#ifdef TEST_CASE_1
-
-RVTEST_CASE(0,"TestCase",Instruction)
-
+// Set up test environment and declare main entry point
+RVTEST_BEGIN
 RVTEST_V_ENABLE()
-RVTEST_VALBASEUPD(DATA_BASE, vector_data)
-RVTEST_SIGBASE(SIG_BASE, signature_base)
 
 #define SEWMIN 8
 #define ELEN 64

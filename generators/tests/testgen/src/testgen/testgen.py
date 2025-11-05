@@ -15,6 +15,7 @@ from typing import Annotated
 import typer
 
 from testgen.coverpoints import generate_tests_for_coverpoint
+from testgen.data.test_config import TestConfig
 from testgen.data.test_data import TestData
 from testgen.utils.common import get_sig_space
 from testgen.utils.templates import insert_setup_template
@@ -68,6 +69,7 @@ def generate_all_tests(
                     if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
                     else 32
                 )
+                test_config = TestConfig(xlen=xlen, flen=flen, e_register_file=E_ext)
                 print(f"Generating tests for {output_dir}")
                 # Iterate through each instruction in extension
                 instructions = read_testplan(testplan_dir / f"{extension}.csv")
@@ -75,7 +77,7 @@ def generate_all_tests(
                     # Skip instructions not valid for this xlen
                     if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
                         continue
-                    test_data = TestData(xlen, flen, E_ext)
+                    test_data = TestData(test_config)
                     test_file = output_dir / f"{extension}-{instr_name}.S"
                     test_file_relative = str(test_file.relative_to(output_test_dir))
 

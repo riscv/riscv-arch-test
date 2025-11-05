@@ -6,7 +6,7 @@
 CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml
 REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml
 WORKDIR     ?= work
-REF_WORKDIR ?= work-ref
+WORKDIR_REF ?= work-ref
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64
@@ -92,15 +92,15 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 .PHONY: generate-makefiles-ref
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(REF_WORKDIR) --test-dir $(TESTDIR) --coverage
+	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
 .PHONY: coverage
 
 coverage: generate-makefiles-ref Makefile
-	$(MAKE) -C $(REF_WORKDIR) coverage
+	$(MAKE) -C $(WORKDIR_REF) coverage
 
 .PHONY: clean-ref
 clean-ref:
-	rm -rf $(REF_WORKDIR)
+	rm -rf $(WORKDIR_REF)
 
 # Dev targets
 .PHONY: lint

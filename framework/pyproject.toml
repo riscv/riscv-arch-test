@@ -23,6 +23,7 @@ act = "act.act:main"
 sail-to-rvvi = "act.sail_to_rvvi:main"
 coverreport = "act.coverreport:main"
 sig_modify = "act.sig_modify:main"
+merge-summaries = "act.merge_summaries:main"
 
 ##### BUILD #####
 [build-system]

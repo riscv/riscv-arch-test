@@ -10,6 +10,10 @@
 `define FLEN64
 `define VLEN512
 
+// Virtual Memory Modes
+`define SV39
+`define SV48
+
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
 `define G 4

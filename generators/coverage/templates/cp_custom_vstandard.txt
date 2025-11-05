@@ -1,2 +1,2 @@
 
-    `include  "coverage/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints_vector.svh"

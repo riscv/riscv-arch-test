@@ -4,7 +4,7 @@
 # harris@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
@@ -17,13 +17,13 @@ def format_cr_type(
     """Format CR-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     assert params.rs2 is not None and params.rs2val is not None
-    assert params.rd is not None
+    assert params.rd is not None and params.rdval is not None
     # x0 is not allowed as rs2 for c.add and c.mv
     if instr_name in ["c.add", "c.mv"] and params.rs2 == 0:
-            test_data.int_regs.return_register(params.rs2)
-            params.rs2=test_data.int_regs.get_register(exclude_reg=[0])
+        test_data.int_regs.return_register(params.rs2)
+        params.rs2 = test_data.int_regs.get_register(exclude_reg=[0])
     setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+        load_int_reg("rd", params.rd, params.rdval, test_data),
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
     ]
     test = [

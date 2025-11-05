@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 
 # Type alias for instruction formatter functions

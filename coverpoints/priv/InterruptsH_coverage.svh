@@ -12,23 +12,6 @@
 
 `define COVER_INTERRUPTSH
 
-// If hypervisor is absent, map H/VS CSRs to zero so coverpoints don't fire
-`ifndef HAS_HYPERVISOR
-  `define HCSR(_addr) 64'h0
-`else
-  `define HCSR(_addr) ins.current.csr[_addr]
-`endif
-
-// Hook for virtualization-enabled bit (V). Override to actual model expr if available.
-`ifndef V_ENABLED_EXPR
-  `define V_ENABLED_EXPR 1'b0
-`endif
-
-// Hook for hstatus.VGEIN field slice. Override to the actual slice (e.g., 9:0) if known.
-`ifndef HSTATUS_VGEIN_SLICE
-  `define HSTATUS_VGEIN_SLICE 0:0
-`endif
-
 covergroup InterruptsH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "coverage/RISCV_coverage_standard_coverpoints.svh"

@@ -28,7 +28,7 @@ covergroup PMPM_cg with function sample(
                     logic [47:0] pmp_HIT              // for next 48 regions indicating hit of pmp_entry
                     );
   option.per_instance = 0;
-  `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+  `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
     bins at_region = {`REGIONSTART};

@@ -13,7 +13,7 @@
 `define COVER_ZICNTRS
 covergroup ZicntrS_scounters_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in supervisor mode
 
     mcounteren_ones: coverpoint ins.current.csr[12'h306]{

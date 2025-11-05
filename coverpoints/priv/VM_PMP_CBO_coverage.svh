@@ -11,7 +11,7 @@
 `define COVER_VM_PMP_CBO
 covergroup VM_PMP_CBO_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     // All PTE permissions
     PTE_s: coverpoint ins.current.pte_d[7:0] {

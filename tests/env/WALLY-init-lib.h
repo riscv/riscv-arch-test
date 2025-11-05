@@ -216,10 +216,15 @@ trap_return:                     # don't need to update mepc for interrupts
     csrrw tp, mscratch, tp   # restore tp
     mret                     # return from trap
 
-write_tohost:
-    la t1, tohost
-    li t0, 1            # 1 for success, 3 for failure
-    SREG t0, 0(t1)     # write success code to tohost
+//write_tohost:
+    // la t1, tohost
+    // li t0, 1            # 1 for success, 3 for failure
+    // SREG t0, 0(t1)     # write success code to tohost
+
+write_tohost:   
+    li x1, 1                       
+    sw x1, tohost, t0     
+    j write_tohost        
 
 self_loop:
     j self_loop         # wait

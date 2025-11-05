@@ -1,4 +1,4 @@
-    `include "coverage/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     lmul_1_through_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
         bins one    = {0};

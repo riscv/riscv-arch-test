@@ -14,7 +14,7 @@
 
 covergroup SsstrictM_mcsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
     nonzerord: coverpoint ins.current.insn[11:7] {
@@ -80,7 +80,7 @@ endgroup
 
 covergroup SsstrictM_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_instr.svh"
 
     // main coverpoints
@@ -129,7 +129,7 @@ endgroup
 
 covergroup SsstrictM_comp_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_comp_instr.svh"
 
     // main coverpoints

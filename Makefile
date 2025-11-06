@@ -4,7 +4,7 @@
 
 # Directories and files
 CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml
-REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml
+REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
 
@@ -56,25 +56,24 @@ clean: clean-tests clean-ref
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
 $(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/coverage/covergroupgen.py
-	touch $@
+	@touch $@
 
 .PHONY: testgen
 testgen:  $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) testgen testplans -o tests --extensions M
-	rm -rf $(SRCDIR64)/E $(SRCDIR32)/E
-	touch $@
+	@touch $@
 
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
 $(STAMP_DIR)/csrtests.stamp: generators/tests/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
 	$(UV_RUN) generators/tests/scripts/csrtests.py
-	touch $@
+	@touch $@
 
 $(STAMP_DIR)/illegalinstrtests.stamp: generators/tests/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
 	$(UV_RUN) generators/tests/scripts/illegalinstrtests.py
-	touch $@
+	@touch $@
 
 .PHONY: tests
 tests: covergroupgen testgen privheaders

@@ -50,7 +50,8 @@ RVTEST_CODE_BEGIN
 		.align	3
 		.option norvc
 
-		#define MTIMECMP_TEST_VALUE			0xFFFF	// Random test value for the memory-mapped machine timer-compare register.
+		#define MTIMECMP_TEST_VALUE			0xFFFFFFFF	// Test value for the memory-mapped machine timer-compare register (64-bit safe)
+		#define MTIME_INITIAL_VALUE			0x1000		// Initial value for mtime (well below mtimecmp)
 
 		main:
 			// Enable Global Interrupts:
@@ -66,16 +67,23 @@ RVTEST_CODE_BEGIN
 			csrrc  x0, CSR_MIDELEG, t0
 			nop
 
-			// Load base addresses and maximum timer value
-			// Prepare for generating timer and software interrupt
+			// Load base addresses
+			// Prepare for timer register access
 			LI(a0,     RVMODEL_MTIMECMP_BASE)
 			LI(a1,     RVMODEL_MTIME_BASE)
-			LI(t1,     MTIMECMP_TEST_VALUE)
 
 			// Reset Machine Timer Registers:
 			// Clear any existing timer interrupt conditions
 			// Establish a clean initial state before actual test
 			RVMODEL_CLR_MTIMER_INT
+
+			// Explicitly Initialize Timer Registers:
+			// Set mtimecmp to a high value and mtime to a low value
+			// Ensures mtime < mtimecmp for test cases 1 and 2
+			LI(t1,     MTIMECMP_TEST_VALUE)
+			SREG t1,   0(a0)				// mtimecmp = 0xFFFFFFFF
+			LI(t2,     MTIME_INITIAL_VALUE)
+			SREG t2,   0(a1)				// mtime = 0x1000
 
 			// Test Case 01: Disable MTIE with mtime < mtimecmp
 			// Verify interrupt behavior when MTIE is disabled and no timer interrupt is pending
@@ -92,9 +100,11 @@ RVTEST_CODE_BEGIN
 
 			// Test Case 03: Disable MTIE when mtime = mtimecmp
 			// Check program execution with pending timer interrupt but MTIE disabled
-			csrrc x0, CSR_MIE, t0
-			LREG  t1,  0(a0)
-			SREG  t1,  0(a1)
+			// Explicitly set both registers to the same value
+			csrrc x0, CSR_MIE, t0			// Disable MTIE first
+			LI(t3,     MTIMECMP_TEST_VALUE)
+			SREG t3,   0(a0)				// mtimecmp = 0xFFFFFFFF
+			SREG t3,   0(a1)				// mtime = 0xFFFFFFFF (now mtime == mtimecmp)
 			csrrs a4, CSR_MIP, x0
 			RVTEST_SIGUPD(x3,  a4)
 

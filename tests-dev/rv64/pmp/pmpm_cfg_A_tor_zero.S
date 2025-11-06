@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
 // Title       	: Comprehensive PMP (Physical Memory Protection) Verification
 // Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain				
+//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,9 +14,9 @@
 //
 // Coverpoints:  cp_cfg_A_tor0 for PMPM is fully covered in this test file.
 //
-// Test Cases  : Checking region 0 extends from 0 to pmpaddr0 in TOR mode. 
+// Test Cases  : Checking region 0 extends from 0 to pmpaddr0 in TOR mode.
 //				 Dropping the background region. With pmpcfg0.L=1, pmpcfg0.A=TOR,
-//				 pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0, 
+//				 pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0,
 //				 pmpaddr0-4, pmpaddr0}.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -49,14 +49,14 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13
 
 .macro VERIFICATION_RWX ADDRESS
 
    	LI(a4, NOP)                  							// Value to write (NOP)
-   
+
     LA(a5, (\ADDRESS))             							// Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
@@ -65,17 +65,17 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     LA(a5, (\ADDRESS-4))             						// Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update   
+    RVTEST_SIGUPD(x13, a4)       							// Signature update
 
 	LI(x3, 0xACCE)
 	li a5, 0
 	LA(x4, 4f)           				    				// Address to be verified
     sw a4, 0(a5)                 							// word-level store test
     nop
-4:	
+4:
     nop
-    RVTEST_SIGUPD(x13, a4)									// Signature update						
-    
+    RVTEST_SIGUPD(x13, a4)									// Signature update
+
 	LA(a5, (\ADDRESS))             							// Address to be verified
     lw a4, 0(a5)                 							// Word load test
     nop
@@ -96,7 +96,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     RVTEST_SIGUPD(x13, a4)									// Signature update
 
 
-	LA (a4, (\ADDRESS)) 
+	LA (a4, (\ADDRESS))
 	LA(x4, 1f)							                    // Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
@@ -136,14 +136,14 @@ main:
 
 #define PMP_REGION_GLOBAL	       ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_TOR      		   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)   << PMP0_CFG_SHIFT))
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero             // Disable address translation.
 #endif
 
 	LA(x4, -1)		   			// All memory region
 	csrw 	pmpaddr15, x4
-	
+
 	LA(x4, TEST_FOR_EXECUTION)
 	srl x4, x4, PMP_SHIFT
 	csrw 	pmpaddr0, x4

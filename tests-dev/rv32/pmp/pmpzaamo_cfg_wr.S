@@ -17,8 +17,8 @@
 // Coverpoints : cp_cfg_RW for PMPZaamo is fully covered in this test file.
 //
 // Test Cases  : Checking that WR bits control write/read access for every type
-//               of amo. Attempt all accesses with pmpcfg_i.L=1, all legal 
-//               pmpcfg_i.XWR. Observing proper access faults for restricted 
+//               of amo. Attempt all accesses with pmpcfg_i.L=1, all legal
+//               pmpcfg_i.XWR. Observing proper access faults for restricted
 //               read/write regions
 //
 // Dependencies: model_test.h, arch_test.h
@@ -50,56 +50,56 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*A.*S.*Zicsr.*);
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
-    LI(a6, NOP)                  							
+    LI(a6, NOP)
     LA(a5, \ADDRESS)             							// Address to be verified
 
-    amoadd.w a4, a6, (a5)                				
+    amoadd.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amoand.w a4, a6, (a5)                				
+    amoand.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amoor.w a4, a6, (a5)                				
+    amoor.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amoxor.w a4, a6, (a5)                				
+    amoxor.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amomax.w a4, a6, (a5)                				
+    amomax.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amomaxu.w a4, a6, (a5)                				
+    amomaxu.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amomin.w a4, a6, (a5)                				
+    amomin.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amominu.w a4, a6, (a5)                				
+    amominu.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    amoswap.w a4, a6, (a5)                				
+    amoswap.w a4, a6, (a5)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
@@ -139,7 +139,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

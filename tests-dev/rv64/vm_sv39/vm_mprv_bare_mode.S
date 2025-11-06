@@ -7,7 +7,7 @@
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// 1. MPRV bit set with S mode permission and virtualization is not enabled (Bare Mode): 
+// 1. MPRV bit set with S mode permission and virtualization is not enabled (Bare Mode):
 //		Then, in M-Mode, Load, Store & Execute is performed --> required: No Fault
 
 // Total Expected Faults :: 0
@@ -35,7 +35,7 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX	
+.macro VERIFICATION_RWX
 	// As we are in bare mode, we will test on physical address
    	LA(a5, rvtest_data_1)            	// Load address
     addi a2, a2, 16                     // Test pattern initialization
@@ -71,7 +71,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -79,12 +79,12 @@ main:
 //												Set MPRV and set MPP to S Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)           
-	csrs mstatus,s7                 
+	LI (s7, MSTATUS_MPRV)
+	csrs mstatus,s7
 	LI (s7, 0x1800)	// clear previous mode
-	csrc mstatus,s7                 
+	csrc mstatus,s7
 	LI (s7, 0x800)	// Smode
-	csrs mstatus,s7 
+	csrs mstatus,s7
 
 	.align 2
 	// Check load, store and execute in bare mode
@@ -97,10 +97,10 @@ main:
 //												Set MPRV and set MPP to U Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)           
-	csrs mstatus,s7                 
+	LI (s7, MSTATUS_MPRV)
+	csrs mstatus,s7
 	LI (s7, 0x1800)	// Set to Umode
-	csrc mstatus,s7                 
+	csrc mstatus,s7
 
 	.align 2
 	// Check load, store and execute in bare mode
@@ -123,7 +123,7 @@ RVTEST_DATA_BEGIN
 rvtest_data_1:
 	nop
 	addi ra, ra, REGWIDTH
-	jr ra																	
+	jr ra
 	nop
 	.word 0xbeefcaf1				// Random word
 	.word 0xbeefcaf2				// Random word
@@ -140,10 +140,10 @@ rvtest_slvl1_pg_tbl:
 .align 12
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-		
+
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

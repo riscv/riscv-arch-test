@@ -19,9 +19,9 @@
 // Test Cases  : Checking XWR controls accesses in matching NA4 region. G=0 Only
 //               with pmpcfg_i.L = 1, pmpcfg_i.A=NA4, all legal pmpcfg_i.XWR,
 //               reasonable address in pmpaddr: making {lw, sw, jalr} at that
-//               address, that address - 4, just beyond top of the region. 
-//               Observing proper access faults for restricted regions, and 
-//               accesses beyond the region and below the region should succeed 
+//               address, that address - 4, just beyond top of the region.
+//               Observing proper access faults for restricted regions, and
+//               accesses beyond the region and below the region should succeed
 //               because the bckground region is set to RWX.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -53,13 +53,13 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS 
+.macro VERIFICATION_RWX ADDRESS
 
-	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler  
+	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
 	LA(x4, 1f)							// Store the return Address in x4
@@ -106,7 +106,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x13, a4) 
+    RVTEST_SIGUPD(x13, a4)
 
     addi a5, a5, 8                                          // REGIONSTART + 4            	    						// Address to be verified
     sw a4, 0(a5)
@@ -115,7 +115,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x13, a4) 
+    RVTEST_SIGUPD(x13, a4)
 
 .endm
 
@@ -145,7 +145,7 @@ main:
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define REGIONSTART		0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define NA4_REGION 		(REGIONSTART >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

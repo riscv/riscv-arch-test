@@ -8,10 +8,10 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test Explanation:
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// 
+//
 // Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
 // Future updates will align with ISA version 1.13.
-// 
+//
 // This test verifies the functionality of satp register in M, S and U Mode using csrrw, csrrs, csrrc.
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        			// write satp with all zeros (bare mode)
 
@@ -154,7 +154,7 @@ walking_ones_satp:
 	bne t3, t2, walking_ones_satp
 
 // ------------------------------------------------------------------------------------------------------------
-// 							Walking ones to the ASID bitfield of satp register using csrw 
+// 							Walking ones to the ASID bitfield of satp register using csrw
 // ------------------------------------------------------------------------------------------------------------
 
 	li t1, 0                		// Temporary storage for read-back
@@ -162,13 +162,13 @@ walking_ones_satp:
 
 	// Loop for multiple satp writes and reads
 	li t2, 9                		// Number of iterations (9 shifts)
-walking_ones_asid:		
+walking_ones_asid:
     csrw satp, t0     				// Write satp with the current value
-    csrr t1, satp     				
-    RVTEST_SIGUPD(x13, t1) 			
+    csrr t1, satp
+    RVTEST_SIGUPD(x13, t1)
     slli t0, t0, 1    				// Shift left to prepare the next value
     addi t2, t2, -1   				// Decrement loop counter
-    bnez t2, walking_ones_asid 		
+    bnez t2, walking_ones_asid
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

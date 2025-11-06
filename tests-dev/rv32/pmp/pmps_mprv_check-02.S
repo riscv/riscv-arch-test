@@ -19,7 +19,7 @@
 // Test Cases  : Checking L bit doesn't matter with MPRV setting to lower privilege
 //				 mode. Configuring PMP in M-mode. Setting mstatus.MPRV = {0/1},
 //				 mstatus.MPP = {11 / 01}. While staying in M-mode doing {lw/sw/jalr}
-//				 with pmpcfg_i.L={0/1}, XWR = 111. Observing access faults for 
+//				 with pmpcfg_i.L={0/1}, XWR = 111. Observing access faults for
 //				 restricted execution regions even with L = 0 in effective S mode.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -50,11 +50,11 @@ RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_X ADDRESS  
+.macro VERIFICATION_X ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -67,7 +67,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .endm
 
-.macro VERIFICATION_W ADDRESS  
+.macro VERIFICATION_W ADDRESS
 
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check
@@ -77,7 +77,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .endm
 
-.macro VERIFICATION_R ADDRESS  
+.macro VERIFICATION_R ADDRESS
 
     LA(a5, \ADDRESS)             							// Address to be verified
     lw a4, 0(a5)
@@ -119,7 +119,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

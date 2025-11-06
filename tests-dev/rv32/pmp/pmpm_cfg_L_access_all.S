@@ -20,7 +20,7 @@
 // Test Cases  : Checking M-mode access when all PMP are off. Checking that XWR
 //				 doesn't affect M-mode acess when L=0. Setting (PMP_writable_regs-1)
 //				 as standard PMP regions, with pmp.L = 0, pmp.A=NAPOT, pmp.XWR = 0
-//				 {jalr, lw, sw} in each PMP region. Access should always succeed 
+//				 {jalr, lw, sw} in each PMP region. Access should always succeed
 //				 because L=0 doesn't enforce permissions.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -52,7 +52,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
@@ -117,7 +117,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -202,7 +202,7 @@ main:
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 8 : L -> 0 and No Permissions given to the PMP Region 7
-	
+
 	LA(x5, STANDARD_REGION)
 	csrw pmpaddr7, x5
 

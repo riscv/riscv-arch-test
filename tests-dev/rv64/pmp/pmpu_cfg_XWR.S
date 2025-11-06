@@ -15,13 +15,13 @@
 //               - Adjust PMP configurations for specific hardware if required.
 //
 // Coverpoints : cp_cfg_X and cp_cfg_RW from PMPU are partially covered in this
-//			     test file. 
+//			     test file.
 //
 // Test Cases  : Checking that X alone determines execute access and WR bits control
 //               write/read access for every type of load and store. Configuring
 //               PMP in M mode and then switching to U mode. For a standard region with
 //               pmpcfg_i.L = 1, pmpcfg_i.A=NAPOT, all legal pmpcfg_i.XWR, making
-//               {lw, sw, jalr} at that start of region. 
+//               {lw, sw, jalr} at that start of region.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -52,11 +52,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13									// Encoded Instruction of nop (64 bit case)
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -86,7 +86,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lbu a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)                                  // Signature update
-	lh a4, 0(a5)                                            
+	lh a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)
@@ -101,7 +101,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     ld a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-	
+
 .endm
 
 main:
@@ -151,7 +151,7 @@ main:
 
 //											Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
-	
+
 	LA(t0, STANDARD_REGION)
 	csrw pmpaddr5, t0
     LI(t1, PMPREGION_LXWR_1000)

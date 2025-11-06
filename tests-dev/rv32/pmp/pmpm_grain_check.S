@@ -16,7 +16,7 @@
 //
 // Coverpoints: cp_grain_check for PMPM is fully covered in this test file.
 //
-// Test case  : Checking that granularity matches expectations. We write 0 
+// Test case  : Checking that granularity matches expectations. We write 0
 //				to pmpcfg0, all 1s to pmpaddr0, and then read back pmpaddr0.
 //				Index of least-significant bit set should be G.
 //
@@ -49,7 +49,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 			0x13
 
@@ -67,27 +67,27 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 
 #define PMP_REGION_GLOBAL			((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
 
 	LA(x4, PMPADDRESS_TOP_GLOBAL)
 	csrw 	pmpaddr15, x4
-	
+
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
 	csrw pmpcfg3, x4
 
 	LA(x4, PMP_ADDRESS)
-    csrw 	pmpaddr0, x4 	
+    csrw 	pmpaddr0, x4
 
 //											Verification Section
 // Test Case: Write 0 to pmpcfg0, all 1s to pmpaddr0, read back pmpaddr0.

@@ -16,13 +16,13 @@
 //
 // Coverpoints :  cp_priority_off for PMPM is fully covered in this file.
 //
-// Test Cases  :  Testing that an OFF region does not match, and the first matching 
+// Test Cases  :  Testing that an OFF region does not match, and the first matching
 //                region takes priority.
 //                pmp0cfg0.L=1, pmpcfg0.A=OFF, pmpcfg0.XWR=000, pmpaddr0 = REGIONSTART
 //                pmp1cfg0.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=101, pmpaddr1 = REGIONSTART
 //                pmp2cfg0.L=1, pmpcfg2.A=OFF, pmpcfg2.XWR=000, pmpaddr2 = REGIONSTART
 //                pmp3cfg0.L=1, pmpcfg3.A=TOR, pmpcfg3.XWR=111, pmpaddr3 = REGIONSTART
-//                {lw, sw, jalr} to some address at REGIONSTART. It should succeed on 
+//                {lw, sw, jalr} to some address at REGIONSTART. It should succeed on
 //                X and R but not W because it hits region 1.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -54,12 +54,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -107,7 +107,7 @@ main:
 #define PMPREGION1_LXWR_1101 ((((PMP_L|PMP_R|      PMP_X|PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION2_LXWR_1000 ((((PMP_L                            )&0xFF) << PMP2_CFG_SHIFT))
 #define PMPREGION3_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -124,7 +124,7 @@ main:
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
     csrw pmpaddr2, x4
-    
+
     srl x5, x5, PMP_SHIFT
     csrw pmpaddr1, x5
     csrw pmpaddr3, x5

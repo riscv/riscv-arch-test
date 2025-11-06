@@ -14,13 +14,13 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints  : 3rd test case of cp_cfg_A_tor_non-overlap for PMPM is covered 
-//				  in this test file. 
+// Coverpoints  : 3rd test case of cp_cfg_A_tor_non-overlap for PMPM is covered
+//				  in this test file.
 //
 // Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with
 //				  the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
 //				  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test excercises
-//                test case 3 that is when pmpaddr0 =  all 1s 
+//                test case 3 that is when pmpaddr0 =  all 1s
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -51,12 +51,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13
 #define g 		(1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
     LI(a4, NOP)                  							// Value to write (NOP)
 
@@ -89,7 +89,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-    
+
     LA(a5, (\ADDRESS+4))             						// Address to be verified
     lw a4, 0(a5)                 							// Word load test
     nop
@@ -140,7 +140,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 #define PMP_REGION_GLOBAL	       ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_UPPER_BOUND      ((((PMP_L				  |PMP_TOR)	 &0xFF) << PMP1_CFG_SHIFT))
 
@@ -157,7 +157,7 @@ main:
 	LI(x4, PMP_REGION_GLOBAL)
 	csrw pmpcfg2, x4
 
-	//addresses for a default TOR region 
+	//addresses for a default TOR region
     LA(x4, TEST_FOR_EXECUTION)
 	addi    x5, x4, g
     srl x4, x4, PMP_SHIFT
@@ -172,7 +172,7 @@ main:
 
 	LI(x4, PMPREGION_UPPER_BOUND)
 	csrw pmpcfg0, x4
-    
+
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	RVTEST_GOTO_MMODE

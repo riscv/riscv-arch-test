@@ -50,7 +50,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:= regex(.*I.*S.*Zicbop.*Zic
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 			0x13
 
@@ -58,11 +58,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 	// Address must be aligned to the cache block
 	LA(t0, \ADDRESS)
-	prefetch.i 0(t0) 
+	prefetch.i 0(t0)
 	nop
-	prefetch.r 0(t0) 
+	prefetch.r 0(t0)
 	nop
-	prefetch.w 0(t0) 
+	prefetch.w 0(t0)
 
 .endm
 
@@ -80,7 +80,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 
 #define PMP_REGION_GLOBAL				((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 			((((PMP_L|                  PMP_TOR)&0xFF) << PMP6_CFG_SHIFT))
@@ -96,7 +96,7 @@ main:
 #define REGIONSTART			0x80002000
 #define REGIONEND			0x80003000
 
-#define LOWER_BOUND		(REGIONSTART >> PMP_SHIFT) 		
+#define LOWER_BOUND		(REGIONSTART >> PMP_SHIFT)
 #define UPPER_BOUND		(REGIONEND   >> PMP_SHIFT)
 
 #ifdef rvtest_strap_routine
@@ -108,14 +108,14 @@ main:
 
 	//Lock the Background region.
 	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg2, x4	
+	csrw pmpcfg2, x4
 
 	li t0, MENVCFG
 	csrrs zero, menvcfg, t0
 
 //											    Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region
-	
+
 	LA(x4, LOWER_BOUND)
 	csrw pmpaddr5, x4
 
@@ -128,7 +128,7 @@ main:
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region
-	
+
 	LA(x4, LOWER_BOUND)
 	csrw pmpaddr4, x4
 
@@ -141,7 +141,7 @@ main:
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region
-	
+
 	LA(x4, LOWER_BOUND)
 	csrw pmpaddr3, x4
 
@@ -154,7 +154,7 @@ main:
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region
-	
+
 	LA(x4, LOWER_BOUND)
 	csrw pmpaddr2, x4
 
@@ -167,7 +167,7 @@ main:
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region
-	
+
 	LA(x4, LOWER_BOUND)
 	csrw pmpaddr1, x4
 
@@ -176,7 +176,7 @@ main:
 
 	LI(x4, PMPREGION_LXWR_1101)
 	csrw pmpcfg0, x4
-	
+
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region

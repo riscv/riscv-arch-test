@@ -1,6 +1,6 @@
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// SBE (Supervisor Big Endian) Bit and SUM Bit are set 
+// SBE (Supervisor Big Endian) Bit and SUM Bit are set
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. U bit is set and the PTE is configured in big endian format at level 1 with RWX Permissions (Read, write, execute page):
 //		Then, in S-Mode, the page is accessed --> required: No fault
@@ -28,7 +28,7 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS, level	
+.macro VERIFICATION_RWX ADDRESS, level
    	LA(a5, \ADDRESS)														// Fetch the address to be checked
 	addi a2, a2, 16															// 16 stored in a2 for starting point
 	// Check store on the address.
@@ -43,14 +43,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	SREG a4, 0(s11)
 	nop
 	addi s11, s11, REGWIDTH
-	
+
 	//check if level is equal to zero, if it is then jump to the end of the 4KB to check the permissions
 	//else jump to the end of the 4MB page to check the permissions
     // Check if level is equal to zero (4KB page)
 	addi a2, a2, 16															// update the counter for execute
     LI( t1, \level)
     beqz t1, 1f  // Forward reference to avoid label redefinition
-    
+
     // 4MB - 4 = 4,194,300 bytes
 	// Access the last four bytes which contain the jr instruction
     LI (t0, (0x400000 - 4))
@@ -62,7 +62,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 	addi s11, s11, REGWIDTH
     j 2f
-    
+
 1:  // 4KB - 4 = 4,092 bytes
     LI (t0, (0x1000-4))
     srli a5, a5, 12
@@ -93,10 +93,10 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 // Address translation with SBE high will give PTE in big endian
 // PTE_SETUP_RV32 sets up the PTE in little endian, so we need to change it to big endian for proper translation
-.macro CHANGE_PTE_TO_BE 
+.macro CHANGE_PTE_TO_BE
 	// After PTE_SETUP_RV32 completes, a0 has the PTE (PPN and Permission bits) while t1 has the PTE address
-	add  t2, zero, zero			
-    andi t2, a0, 0xFF			
+	add  t2, zero, zero
+    andi t2, a0, 0xFF
     slli t2, t2, 24
     srli t3, a0, 8
     andi t3, t3, 0xFF
@@ -109,7 +109,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     srli t3, a0, 24
     andi t3, t3, 0xFF
     or   t2, t2, t3
-	SREG t2, 0(t1)	
+	SREG t2, 0(t1)
 .endm
 
 main:
@@ -121,7 +121,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -155,21 +155,21 @@ main:
 	CHANGE_PTE_TO_BE
 	sfence.vma
 //								register setup for the signature save in virtualization mode
-	LI (t0, va_rvtest_sig_begin)                                                       
-	LA (t1, rvtest_sig_begin)                                                      
-	sub t0, t0, t1 					        								// (VA-PA) Note: VA > PA 
+	LI (t0, va_rvtest_sig_begin)
+	LA (t1, rvtest_sig_begin)
+	sub t0, t0, t1 					        								// (VA-PA) Note: VA > PA
 	add s11, x13, t0				        								// Translation of Signature reg
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //													Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
+	LI (t0, va_rvtest_data_begin)
+	LA (t1, rvtest_data_begin)
+	sub t0, t0, t1
 	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
+	csrr sp, mscratch
+	add t1,sp,t3
+	csrw sscratch, t1
 	csrr sp, mscratch
 
 	//save area setup for code region
@@ -177,7 +177,7 @@ main:
 	//save area setup for data region
 	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
 	//save area setup for sig region
-	SAVE_AREA_SETUP(va_rvtest_sig_begin, rvtest_sig_begin, sig)	
+	SAVE_AREA_SETUP(va_rvtest_sig_begin, rvtest_sig_begin, sig)
 	//save area setup for vmem region
 	SAVE_AREA_SETUP(va_rvtest_vmem_begin, rvtest_data_begin, vmem)
 
@@ -193,7 +193,7 @@ main:
 	csrrsi t0, mstatush, 0x10												// Set SBE bit (Supervisor Big Endian)
 	li s7, MSTATUS_SUM
 	csrs mstatus,s7							         						// Set SUM bit
-	
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
@@ -279,7 +279,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

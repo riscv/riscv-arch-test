@@ -19,7 +19,7 @@
 // Test Cases  : Checking that pmpcfg and pmpaddr are unwritable when L = 1.
 //               With pmpcfg_i.L ={0/1}, pmpcfg_i.A = NAPOT, pmpcfg_i.XWR = 111,
 //               pmpaddr_i = 0x100, trying to change pmpcfg_i to 000000000,
-//               and to change pmpaddr_i to 0s, and reading these back. 
+//               and to change pmpaddr_i to 0s, and reading these back.
 //               When L = 1, should be unchanged because of lock.
 //               When L = 0, changeable.
 //
@@ -59,7 +59,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
 main:
@@ -76,7 +76,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 #define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 

@@ -14,10 +14,10 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_pmpaddr_access_u and cp_pmpcfg_access_u are fully covered in 
+// Coverpoints : cp_pmpaddr_access_u and cp_pmpcfg_access_u are fully covered in
 //				 this test file.
 //
-// Test Cases  : Test pmpcfg and pmpaddr access from S-mode. Trying to write 
+// Test Cases  : Test pmpcfg and pmpaddr access from S-mode. Trying to write
 //               all 64 pmpaddr and 16 pmpcfg registers. Should throw illegal
 //               instruction faults because PMP CSRs are only accessible to
 //               M-mode.
@@ -50,7 +50,7 @@ RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
 
@@ -70,7 +70,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 main:
 
-// Trying to access PMP CSRs in S-mode by writing all 1s. 
+// Trying to access PMP CSRs in S-mode by writing all 1s.
 
     // Value to write in PMP CSRs in S-mode
 	LA(x4, -1)

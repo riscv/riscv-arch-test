@@ -8,10 +8,10 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test Explanation:
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
-// 
+//
 // Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
 // Future updates will align with ISA version 1.13.
-// 
+//
 // This test verifies the functionality of mstatus.TVM bit with the satp and sfence.vma
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        			// write satp with all zeros (bare mode)
 
@@ -85,10 +85,10 @@ main:
 	nop
 
 	li t0, 1
-    csrrc t1, satp, t0  
+    csrrc t1, satp, t0
     nop
 
-    li t0, 1           
+    li t0, 1
     csrrs t1, satp, t0
     nop
 
@@ -114,7 +114,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

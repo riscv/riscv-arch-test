@@ -13,15 +13,15 @@
 // Notes       : - Ensure `model_test.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
-// 
+//
 // Coverpoints : cp_cfg_X and cp_cfg_RW from PMPU are partially covered in this
-//			     test file. 
+//			     test file.
 //
 // Test Cases  : Checking that X alone determines execute access and WR bits control
 //               write/read access for every type of load and store. Configuring
 //               PMP in M mode & then switching to U mode. For a standard region with
 //               pmpcfg_i.L = 1, pmpcfg_i.A=NAPOT, all legal pmpcfg_i.XWR, making
-//               {lw, sw, jalr} at that start of region. 
+//               {lw, sw, jalr} at that start of region.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -52,11 +52,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -84,7 +84,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lbu a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)                                  // Signature update
-	lh a4, 0(a5)                                            
+	lh a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)
@@ -93,7 +93,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
-	
+
 .endm
 
 main:
@@ -129,7 +129,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

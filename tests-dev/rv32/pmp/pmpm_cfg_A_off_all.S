@@ -16,7 +16,7 @@
 //
 // Coverpoints : cp_cfg_A_off_all for PMPM is fully covered in this test file.
 //
-// Test Cases  : Checking that A=OFF never matches for each region. For each 
+// Test Cases  : Checking that A=OFF never matches for each region. For each
 //               standard region with pmpcfg.L=1, pmpcfg.A=OFF, pmpcfg.XWR=000.
 //               Fetching, reading and writting from that region. Should succeed
 //               because region is off even though inaccessible.
@@ -50,11 +50,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS   
+.macro VERIFICATION_RWX ADDRESS
     // Execution Access Check
     LA (a4, \ADDRESS)
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
@@ -90,7 +90,7 @@ main:
 	.rept RVMODEL_NUM_PMPS
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
-	.endr		
+	.endr
 
 #define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  	// Background region with RWX enable.
 
@@ -104,7 +104,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

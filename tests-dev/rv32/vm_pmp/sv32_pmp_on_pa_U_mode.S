@@ -64,10 +64,10 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS, level	
+.macro VERIFICATION_RWX ADDRESS, level
    	LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
-	
+
     // Test store permission
     sw  a2, 20(a5)
     nop
@@ -100,7 +100,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 
 	RVTEST_GOTO_MMODE		            // Switching back to M mode
-	
+
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
     nop
@@ -121,7 +121,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	csrw satp, zero  		            // write satp with all zeros (bare mode)
 
 // PMP Macros
@@ -148,12 +148,12 @@ main:
 //								Virtual addresses definition section for the code, data & test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Virtual Address of Test section 
+	// Virtual Address of Test section
 	.set va_data,          		0x91400400
 
 	// Virtual Addresses for code & data regions
 	.set va_rvtest_code_begin,  0x900007ac
-	.set va_rvtest_data_begin,  0x910003f0	
+	.set va_rvtest_data_begin,  0x910003f0
 
 //	PTE setup for Code Region
     PTE_SETUP_RV32_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
@@ -166,21 +166,21 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
+
+	LI (t0, va_rvtest_data_begin)
+	LA (t1, rvtest_data_begin)
+	sub t0, t0, t1
 	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
+	csrr sp, mscratch
+	add t1,sp,t3
+	csrw sscratch, t1
 	csrr sp, mscratch
 
 	//save area setup for code region
 	SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
 	//save area setup for data region
 	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
-	
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -193,14 +193,14 @@ main:
 // 							Configure test data region as NAPOT with RX permissions (pmp1cfg0)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RX)							
+
+	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RX)
 	csrw pmpcfg0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 1: Test in U-Mode | RWX bit set | expected = Store access fault
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
@@ -210,7 +210,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 2: Test in U-Mode | RWX bit set | expected = Store access fault
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -225,14 +225,14 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RW)							
+	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RW)
 	csrw pmpcfg0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 3: Test in U-Mode | RWX bit set | expected = Instruction access fault 
+
+	// Test case 3: Test in U-Mode | RWX bit set | expected = Instruction access fault
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
@@ -241,7 +241,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 4: Test in U-Mode | RWX bit set | expected = Instruction access fault
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -256,13 +256,13 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_X)							
+	LI (t2, PMP_GLOBAL_RWX | PMP1CFG_X)
 	csrw pmpcfg0, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 5: Test in U-Mode | RWX bit set | expected = Store access fault, Load access fault
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
@@ -272,7 +272,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 6: Test in U-Mode | RWX bit set | expected = Store access fault, Load access fault
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -293,7 +293,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

@@ -44,7 +44,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -57,8 +57,8 @@ main:
 // ------------------------------------------------------------------------------------------------------------
 // 												satp access in M Mode
 // ------------------------------------------------------------------------------------------------------------
-    
-    li t0, 1																
+
+    li t0, 1
 	csrw satp, t0  		                                        			// Write satp with some value
 	csrr t3, satp
 	RVTEST_SIGUPD(x13,t3)
@@ -73,15 +73,15 @@ main:
 
 	RVTEST_GOTO_LOWER_MODE Smode
 
-	li t0, 1																
-	csrw satp, t0  		                                        			
-	nop
-	
 	li t0, 1
-    csrrc t1, satp, t0  
+	csrw satp, t0
+	nop
+
+	li t0, 1
+    csrrc t1, satp, t0
     nop
 
-    li t0, 1           
+    li t0, 1
     csrrs t1, satp, t0
     nop
 
@@ -107,10 +107,10 @@ rvtest_slvl1_pg_tbl:
 .align 12
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-		
+
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

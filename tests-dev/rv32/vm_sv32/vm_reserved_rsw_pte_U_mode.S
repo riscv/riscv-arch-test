@@ -10,21 +10,21 @@
 // RISC-V Privileged Architecture ISA Manual -- Section 10.3
 // Note: This test is based on RISC-V Privileged ISA version 1.12, which does not include SVADE and SVADU support.
 // Future updates will align with ISA version 1.13.
-// 
+//
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. RSW Permissions is Set for the page at level 1 (01):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // 2. RSW Permissions is Set for the page at level 1 (10):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // 3. RSW Permissions is Set for the page at level 1 (11):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // 4. RSW Permissions is Set for the page at level 0 (01):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // 5. RSW Permissions is Set for the page at level 0 (10):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // 6. RSW Permissions is Set for the page at level 0 (11):
-//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk 
+//		Then, in U-Mode, the page is accessed --> required: No affect on these bits, successful page table walk
 // Total Expected Faults :: 0
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS, level	
+.macro VERIFICATION_RWX ADDRESS, level
    	LA(a5, \ADDRESS)														// Fetch the address to be checked
 	addi a2, a2, 16															// 16 stored in a2 for starting point
 
@@ -68,7 +68,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	addi a2, a2, 16															// update the counter for execute
     LI( t1, \level)
     beqz t1, 1f  // Forward reference to avoid label redefinition
-    
+
     // 4MB - 4 = 4,194,300 bytes
 	// Access the last four bytes which contain the jr instruction
     LI (t0, (0x400000 - 4))
@@ -80,7 +80,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 	addi s11, s11, REGWIDTH
     j 2f
-    
+
 1:  // 4KB - 4 = 4,092 bytes
     LI (t0, (0x1000-4))
     srli a5, a5, 12
@@ -118,7 +118,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -148,21 +148,21 @@ main:
 	PTE_SETUP_RV32_New(rvtest_sig_begin,  (PTE_D | PTE_A | PTE_R | PTE_W | PTE_U | PTE_V), va_rvtest_sig_begin, LEVEL0)
 	sfence.vma
 //								register setup for the signature save in virtualization mode
-	LI (t0, va_rvtest_sig_begin)                                                       
-	LA (t1, rvtest_sig_begin)                                                      
-	sub t0, t0, t1 					        								// (VA-PA) Note: VA > PA 
+	LI (t0, va_rvtest_sig_begin)
+	LA (t1, rvtest_sig_begin)
+	sub t0, t0, t1 					        								// (VA-PA) Note: VA > PA
 	add s11, x13, t0				        								// Translation of Signature reg
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //													Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
+	LI (t0, va_rvtest_data_begin)
+	LA (t1, rvtest_data_begin)
+	sub t0, t0, t1
 	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
+	csrr sp, mscratch
+	add t1,sp,t3
+	csrw sscratch, t1
 	csrr sp, mscratch
 
 	//save area setup for code region
@@ -170,7 +170,7 @@ main:
 	//save area setup for data region
 	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
 	//save area setup for sig region
-	SAVE_AREA_SETUP(va_rvtest_sig_begin, rvtest_sig_begin, sig)	
+	SAVE_AREA_SETUP(va_rvtest_sig_begin, rvtest_sig_begin, sig)
 	//save area setup for vmem region
 	SAVE_AREA_SETUP(va_rvtest_vmem_begin, rvtest_data_begin, vmem)
 
@@ -213,7 +213,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 3: Test in U-Mode | RSW set to 3 | expected = successful page access with no affect on these bits 
+	// Test case 3: Test in U-Mode | RSW set to 3 | expected = successful page access with no affect on these bits
 	PTE_SETUP_RV32_New(rvtest_data_1_l1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V | PTE_SOFT), va_data, LEVEL1)
 	sfence.vma
 
@@ -259,7 +259,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	// Test case 6: Test in U-Mode | RSW set to 3 | expected = successful page access with no affect on these bits 
+	// Test case 6: Test in U-Mode | RSW set to 3 | expected = successful page access with no affect on these bits
 	PTE_SETUP_RV32_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
 	PTE_SETUP_RV32_New(rvtest_data_1_l0, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V | PTE_SOFT), va_data, LEVEL0)
 	sfence.vma
@@ -316,7 +316,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_U | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

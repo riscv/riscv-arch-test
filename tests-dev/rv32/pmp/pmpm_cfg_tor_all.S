@@ -16,7 +16,7 @@
 //
 // Coverpoints : cp_cfg_A_tor_all for PMPM is fully covered in this test file.
 //
-// Test Cases  : Checking A = TOR works in each region. Preconfigure all 
+// Test Cases  : Checking A = TOR works in each region. Preconfigure all
 //				 (PMP_writable_regs-1) PMP regions in with pmpcfg.L = 1,
 //				 pmpcfg.A = TOR, pmpcfg.XWR=00(i%2), starting with default
 //				 TOR region and moving up by g*i (each region getting larger by g).
@@ -52,11 +52,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS 
+.macro VERIFICATION_RWX ADDRESS
 
     LA(a5, \ADDRESS)             							// Address to be ve
     lw a4, 0(a5)                 							// Word load test
@@ -87,7 +87,7 @@ main:
 #define PMPREGION1_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
 #define PMPREGION2_XWR_000  (((PMP_L|                  PMP_TOR)&0xFF) << PMP2_CFG_SHIFT)
 #define PMPREGION3_XWR_001  (((PMP_L|PMP_R|            PMP_TOR)&0xFF) << PMP3_CFG_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -192,7 +192,7 @@ main:
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION_0:						// Adding nops in TOR Region from 0x80001000 to 0x80001000 + g 
+TEST_FOR_EXECUTION_0:						// Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
@@ -216,7 +216,7 @@ TEST_FOR_EXECUTION_4:						// Adding nops in TOR Region from 0x80001000 + 10g to
 	.rept (5*(1<<RVMODEL_PMP_GRAIN))
 	nop
 	.endr
-	
+
 TEST_FOR_EXECUTION_5:						// Adding nops in TOR Region from 0x80001000 + 15g to 0x80001000 + 21g
 	.rept (6*(1<<RVMODEL_PMP_GRAIN))
 	nop
@@ -241,7 +241,7 @@ TEST_FOR_EXECUTION_9:						// Adding nops in TOR Region from 0x80001000 + 45g to
 	.rept (10*(1<<RVMODEL_PMP_GRAIN))
 	nop
 	.endr
-	
+
 TEST_FOR_EXECUTION_10:						// Adding nops in TOR Region from 0x80001000 + 55g to 0x80001000 + 66g
 	.rept (11*(1<<RVMODEL_PMP_GRAIN))
 	nop

@@ -14,10 +14,10 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints :  cp_misaligned_na4 for PMPM is fully covered in this test file. 
+// Coverpoints :  cp_misaligned_na4 for PMPM is fully covered in this test file.
 //
-// Test Cases  :  Checking that misaligned read/write that crosses an NA4 PMP 
-//                boundary fails. We Set up standard NA4 region with L = {0/1}, 
+// Test Cases  :  Checking that misaligned read/write that crosses an NA4 PMP
+//                boundary fails. We Set up standard NA4 region with L = {0/1},
 //                XWR=111 and attempt misaligned {lw, lh, lhu, sw, sh} stradding
 //                each offset partially in start and end of region.
 //
@@ -50,11 +50,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		    0x13
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check straddling start
@@ -78,7 +78,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     // Load Access Check straddling start
     LA(a5, (\ADDRESS-1))             						// Address to be verified
 	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)                 							// Half-word load test
@@ -93,7 +93,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     // Load Access Check straddling end
     LA(a5, (\ADDRESS+4-1))             						// Address to be verified
 	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)                 							// Half-word load test
@@ -121,7 +121,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)  &0xFF)   << PMP0_CFG_SHIFT))
@@ -144,7 +144,7 @@ main:
 
 	LA(x4, NA4_REGION)
     csrw 	pmpaddr0, x4
-    
+
 //											Verification Section
 // Test Case: 1 -- XWR Permissions given to the PMP Region.
 

@@ -17,8 +17,8 @@
 // Coverpoints : cp_cfg_A_tor for PMPS is fully covered in this test file.
 //
 // Test Cases  : Configuring PMP in M mode and then switching to S mode.
-//               Checking XWR controls accesses in matching TOR region. With 
-//               pmpcfg_i.L =1, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, 
+//               Checking XWR controls accesses in matching TOR region. With
+//               pmpcfg_i.L =1, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR,
 //               default TOR region, address-g in pmpaddr_i-1: making {lw,sw,jalr}
 //               address, address-4, address-g, address-g-4.  Observing proper
 //               access faults for restricted regions.
@@ -51,12 +51,12 @@ RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 #define g    (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check

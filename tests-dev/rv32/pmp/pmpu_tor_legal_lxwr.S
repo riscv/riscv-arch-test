@@ -17,8 +17,8 @@
 // Coverpoints : cp_cfg_A_tor for PMPU is fully covered in this test file.
 //
 // Test Cases  : Configuring PMP in M mode and then switching to U mode.
-//               Checking XWR controls accesses in matching TOR region. With 
-//               pmpcfg_i.L =1, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, 
+//               Checking XWR controls accesses in matching TOR region. With
+//               pmpcfg_i.L =1, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR,
 //               default TOR region, address-g in pmpaddr_i-1: making {lw,sw,jalr}
 //               address, address-4, address-g, address-g-4.  Observing proper
 //               access faults for restricted regions.
@@ -52,12 +52,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 #define g    (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
@@ -172,7 +172,7 @@ main:
 #define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define TOR_UPPER_BOUND				((REGIONSTART+g) >> PMP_SHIFT)
 #define TOR_LOWER_BOUND				(REGIONSTART >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -186,7 +186,7 @@ main:
 
 //											Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 11
-	
+
 	LA(x6, TOR_UPPER_BOUND)
 	csrw pmpaddr11, x6
 	LA(x5, TOR_LOWER_BOUND)

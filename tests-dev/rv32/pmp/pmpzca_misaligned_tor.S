@@ -18,10 +18,10 @@
 //				 in this test file.
 //
 // Test Cases  : Check that misaligned 32-bit fetches that cross a TOR PMP boundary fail.
-//				 Setting up 3 standard consecutive TOR PMP regions with L=1, XWR=111 
+//				 Setting up 3 standard consecutive TOR PMP regions with L=1, XWR=111
 //				 (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
-//				 start and end of the second regions. Attempt jalr to each ret. 
-//				 
+//				 start and end of the second regions. Attempt jalr to each ret.
+//
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 
@@ -51,11 +51,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*C.*S.*Zicsr.*);
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
 #define NOP 		0x13
 #define g    				(1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
     LA(x15, \ADDRESS)             							// Address to be verified
 	c.jalr x15
@@ -85,12 +85,12 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL		    -1					// All memory region
 
-#define REGIONSTART					    0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE		
+#define REGIONSTART					    0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS_0                   ((REGIONSTART)       >> PMP_SHIFT)
 #define PMP_ADDRESS_1                   ((REGIONSTART+g)     >> PMP_SHIFT)
 #define PMP_ADDRESS_2                   ((REGIONSTART+(2*g)) >> PMP_SHIFT)
 #define PMP_ADDRESS_3                   ((REGIONSTART+(3*g)) >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -144,9 +144,9 @@ TEST_FOR_EXECUTION_1:
 	.endr
 
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0                                            // Uncompressed return straddling the start 
+    jalr x0, x1, 0                                            // Uncompressed return straddling the start
 
-TEST_FOR_EXECUTION_3:                                          
+TEST_FOR_EXECUTION_3:
 	.rept ((1<<RVMODEL_PMP_GRAIN)-1)
 	nop
 	.endr

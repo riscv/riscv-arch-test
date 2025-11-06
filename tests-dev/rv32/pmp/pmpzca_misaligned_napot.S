@@ -18,10 +18,10 @@
 //				 in this test file.
 //
 // Test Cases  : Check that misaligned 32-bit fetches that cross a NAPOT PMP boundary fail.
-//				 Setting up 3 standard consecutive NAPOT PMP regions with L=1, XWR=111 
+//				 Setting up 3 standard consecutive NAPOT PMP regions with L=1, XWR=111
 //				 (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
-//				 start and end of the second regions. Attempt jalr to each ret. 
-//				 
+//				 start and end of the second regions. Attempt jalr to each ret.
+//
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 
@@ -57,10 +57,10 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*C.*S.*Zicsr.*);
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
     LA(x15, \ADDRESS)             							// Address to be verified
 	c.jalr x15
@@ -99,7 +99,7 @@ main:
 #define STANDARD_REGION1        (((NEWREGION1 >> PMP_SHIFT) + PMP_NAPOT_ONES))
 #define STANDARD_REGION2        (((NEWREGION2 >> PMP_SHIFT) + PMP_NAPOT_ONES))
 #define STANDARD_REGION3        (((NEWREGION3 >> PMP_SHIFT) + PMP_NAPOT_ONES))
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -143,7 +143,7 @@ main:
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION_1:												
+TEST_FOR_EXECUTION_1:
 	.rept (1<<RVMODEL_PMP_GRAIN)
 	nop
 	.endr
@@ -157,7 +157,7 @@ TEST_FOR_EXECUTION_1:
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0												//uncompressed return straddling the start of the second region
 
-TEST_FOR_EXECUTION_3:											
+TEST_FOR_EXECUTION_3:
 	.rept ((1<<RVMODEL_PMP_GRAIN)-1)
 	nop
 	.endr

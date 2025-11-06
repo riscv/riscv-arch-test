@@ -14,12 +14,12 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints :  cp_na4_boundary for PMPM is partially covered in this test file. 
+// Coverpoints :  cp_na4_boundary for PMPM is partially covered in this test file.
 //
-// Test Cases  :  Checking doubleword access crossing NA4 boundary fails. With 
-//				  pmpcfg_i.L = 1, pmpcfg_i.A = NA4, pmpcfg_i.XWR = 111, and 
+// Test Cases  :  Checking doubleword access crossing NA4 boundary fails. With
+//				  pmpcfg_i.L = 1, pmpcfg_i.A = NA4, pmpcfg_i.XWR = 111, and
 //				  pmpaddr_i = {upper half of doubleword}. Performing {ld,sd}
-//				  on doubleword. Should access fault because doubleword access 
+//				  on doubleword. Should access fault because doubleword access
 //				  crosses boundary of word.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -51,12 +51,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 	(0x13<<32)+0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
     LI(a4, NOP)                  							// Value to write (NOP)
 
@@ -83,7 +83,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 #define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)  &0xFF)   << PMP1_CFG_SHIFT))
 
@@ -104,14 +104,14 @@ main:
 
 	LA(x4, NA4_REGION)
     csrw pmpaddr1, x4
-    
+
 //											Verification Section
 // Test Case: 1 -- LXWR Permissions given to the na4 Region and accessing double word.
 
 	LI(x4, PMPREGION_LXWR)
 	csrw pmpcfg0, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION 				
+	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
 	li a4, 0xbeefcafe											// Clean Test exit verification signature.
     RVTEST_SIGUPD(x13, a4)       								// Signature update

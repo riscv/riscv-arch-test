@@ -15,14 +15,14 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in 
+// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in
 //               this test file.
 //
 // Test Cases  : Test pmpaddr access. No background region, writing all 1s,
 //               walking 1s, all 0s to all defined pmpaddr CSRs. Test pmpcfg access,
 //               writing walking 1s from lsb to msb (XLEN-1) to pmpcfg CSRs 0, 2 and
 //               writing 0 to pmpcfg 1, 3. If 64 CSRs are supported, doing same
-//               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15. 
+//               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
 main:

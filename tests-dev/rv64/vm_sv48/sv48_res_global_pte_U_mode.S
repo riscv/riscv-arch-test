@@ -6,20 +6,20 @@
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. G bit is Set for the page at level 3:
-//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
-// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.
 // 		Since the page is global, it remains accessible without a new page table walk on second access.
 // 2. G bit is Set for the page at level 2:
-//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
-// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.
 // 		Since the page is global, it remains accessible without a new page table walk on second access.
 // 3. G bit is Set for the page at level 1:
-//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
-// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.
 // 		Since the page is global, it remains accessible without a new page table walk on second access.
 // 4. G bit is Set for the page at level 0:
-//		Then, in U-Mode, the page is accessed --> required: Successful page table walk 
-// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.  
+//		Then, in U-Mode, the page is accessed --> required: Successful page table walk
+// 		sfence.vma with ASID flushes TLB entries for that ASID, keeping global (G=1) entries intact.
 // 		Since the page is global, it remains accessible without a new page table walk on second access.
 
 // Total Expected Faults :: 0
@@ -69,10 +69,10 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS, level	
+.macro VERIFICATION_RWX ADDRESS, level
    	LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
-	
+
     // Test store permission
     sw  a2, 20(a5)               		// Store test data
     nop
@@ -105,7 +105,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 
 	RVTEST_GOTO_MMODE		            // Switching back to M mode
-	
+
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
     nop
@@ -126,7 +126,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP							// set the PMP permissions for the whole memory
 	csrw satp, zero  		            // write satp with all zeros (bare mode)
 
@@ -134,13 +134,13 @@ main:
 //								Virtual addresses definition section for the code, data & test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Virtual Address of Test section 
+	// Virtual Address of Test section
 	.set va_data,          		0x028000000400                  // Virtual Address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
 	.set va_rvtest_code_begin,  0x0300800007BC
-	.set va_rvtest_data_begin,  0x038080004530	
-    
+	.set va_rvtest_data_begin,  0x038080004530
+
 	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000
 	// Therefore, we will setup TeraPage using this imm value
     .set terapage_pa,           0x000000000000    				// Physical Address for TeraPage
@@ -157,21 +157,21 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
+
+	LI (t0, va_rvtest_data_begin)
+	LA (t1, rvtest_data_begin)
+	sub t0, t0, t1
 	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
+	csrr sp, mscratch
+	add t1,sp,t3
+	csrw sscratch, t1
 	csrr sp, mscratch
 
 	//save area setup for code region
 	SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
 	//save area setup for data region
 	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
-	
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -185,16 +185,16 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 1: Test in U-Mode | G bit set | expected = successful page access
 	PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_l3, LEVEL3)
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data_l3, LEVEL3
-	
+
 	csrr t2, satp			// Extract ASID (SV48, ASID is in bits 59:44 of satp)
   	slli t2, t2, 4
-    srli t2, t2, 48        
+    srli t2, t2, 48
     sfence.vma x0, t2       // Invalidate TLB entries for the ASID (Global entries remain valid)
 
 	TEST_CASES_RUNNER Umode, va_data_l3, LEVEL3  	// No pagetable walk, as the PTE is not invalidated by sfence.vma
@@ -205,17 +205,17 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 2: Test in U-Mode | G bit set | expected = successful page access
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL2
-	
+
 	csrr t2, satp			// Extract ASID (SV48, ASID is in bits 59:44 of satp)
   	slli t2, t2, 4
-    srli t2, t2, 48        
+    srli t2, t2, 48
     sfence.vma x0, t2       // Invalidate TLB entries for the ASID (Global entries remain valid)
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL2  	// No pagetable walk, as the PTE is not invalidated by sfence.vma
@@ -226,18 +226,18 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 3: Test in U-Mode | G bit set | expected = successful page access 
+
+	// Test case 3: Test in U-Mode | G bit set | expected = successful page access
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_data_1, (PTE_D | PTE_A | PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL1
-	
+
 	csrr t2, satp			// Extract ASID (SV48, ASID is in bits 59:44 of satp)
   	slli t2, t2, 4
-    srli t2, t2, 48        
+    srli t2, t2, 48
     sfence.vma x0, t2       // Invalidate TLB entries for the ASID (Global entries remain valid)
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL1  	// No pagetable walk, as the PTE is not invalidated by sfence.vma
@@ -248,8 +248,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 4: Test in U-Mode | G bit set | expected = successful page access 
+
+	// Test case 4: Test in U-Mode | G bit set | expected = successful page access
 	PTE_SETUP_SV48_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
 	PTE_SETUP_SV48_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_SV48_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -257,10 +257,10 @@ main:
 	sfence.vma
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL0
-	
+
 	csrr t2, satp			// Extract ASID (SV48, ASID is in bits 59:44 of satp)
   	slli t2, t2, 4
-    srli t2, t2, 48        
+    srli t2, t2, 48
     sfence.vma x0, t2       // Invalidate TLB entries for the ASID (Global entries remain valid)
 
 	TEST_CASES_RUNNER Umode, va_data, LEVEL0  	// No pagetable walk, as the PTE is not invalidated by sfence.vma
@@ -283,7 +283,7 @@ rvtest_slvl3_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

@@ -19,7 +19,7 @@
 //
 // Test Cases  : Rolling legal XWR starting from region with lowest priority i.e.,
 //               region 14 to region with highest priority i.e., region 0 such
-//               that each of the writable registers gets each of the 6 legal 
+//               that each of the writable registers gets each of the 6 legal
 //               combinations at least once.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -50,7 +50,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13
 
@@ -115,7 +115,7 @@ main:
 	csrw pmpaddri, x0
 	.set pmpaddri, pmpaddri+1
 	.endr
-		
+
 
 #define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
 #define PMPREGION_XWR_000   ((PMP_L|                  PMP_NAPOT)&0xFF)
@@ -129,7 +129,7 @@ main:
 #define PMPADDRESS			TEST_FOR_EXECUTION      					    // Test section address
 #define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 #define PMP_MASK			~(1 << (RVMODEL_PMP_GRAIN - 1))
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

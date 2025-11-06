@@ -19,9 +19,9 @@
 // Test Cases  : Check that 16-bit fetches adjacent to a NAPOT PMP boundary succeed.
 //				 Set up a standard NAPOT PMP region with L=1, XWR = 111. Place four
 //				 c.ret = c.jr ra statements just below, at bottom, at top, and just
-//				 above PMP region, half of which are on 16-bit boundaries.  
-//				 Attempt jalr to each c.ret.  
-//				 
+//				 above PMP region, half of which are on 16-bit boundaries.
+//				 Attempt jalr to each c.ret.
+//
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 #define SKIP_MEPC
@@ -56,10 +56,10 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*C.*Zicsr.*);
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
     LA(x15, \ADDRESS)             							// Address to be verified
 	c.jalr x15
@@ -95,7 +95,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -149,10 +149,10 @@ TEST_FOR_EXECUTION_2:
 .endif
 
 TEST_FOR_EXECUTION_3:
-    ret                       									// Compressed return at the top of the region                                  
+    ret                       									// Compressed return at the top of the region
 
 TEST_FOR_EXECUTION_4:
-    ret                                             			// Comrpessed return just above the region          
+    ret                                             			// Comrpessed return just above the region
 	nop
 
 RETURN_INSTRUCTION:

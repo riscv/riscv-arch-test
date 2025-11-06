@@ -35,7 +35,7 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS, level	
+.macro VERIFICATION_RWX ADDRESS, level
    	LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
 
@@ -71,7 +71,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	nop
 
 	RVTEST_GOTO_MMODE		                     // Switching back to M mode
-	
+
 	// Signature Update
    	SREG a2, 0(x13)                     // Record store attempt
 	nop
@@ -92,7 +92,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -100,12 +100,12 @@ main:
 //								Virtual addresses definition section for the code, data, sig, vmem, test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Virtual Address of Test section 
+	// Virtual Address of Test section
 	.set va_data,          		0x140000000                  // virtual address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x18000039c                
-	.set va_rvtest_data_begin,  0x1c0000530		     
+	.set va_rvtest_code_begin,  0x18000039c
+	.set va_rvtest_data_begin,  0x1c0000530
 
 
 //	PTE setup for Code Region
@@ -119,21 +119,21 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //													Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
+
+	LI (t0, va_rvtest_data_begin)
+	LA (t1, rvtest_data_begin)
+	sub t0, t0, t1
 	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
+	csrr sp, mscratch
+	add t1,sp,t3
+	csrw sscratch, t1
 	csrr sp, mscratch
 
 	//save area setup for code region
 	SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
 	//save area setup for data region
 	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
-	
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
+
 	// Test case 1: Test in S-Mode | Misaligned gigapage | expected = RWX Fault
 	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
 	sfence.vma
@@ -160,8 +160,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: Test in S-Mode | Misaligned megapage | expected = RWX Fault 
+
+	// Test case 2: Test in S-Mode | Misaligned megapage | expected = RWX Fault
 	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
 	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
 	sfence.vma
@@ -189,7 +189,7 @@ rvtest_data_1:
 	nop
 	.word 0xbeefcaf1				// Random word
 	.word 0xbeefcaf2				// Random word
-	jr ra	
+	jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -201,10 +201,10 @@ rvtest_slvl1_pg_tbl:
 .align 12
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-		
+
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

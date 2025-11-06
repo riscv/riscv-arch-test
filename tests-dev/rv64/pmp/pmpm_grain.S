@@ -18,9 +18,9 @@
 //
 // Test case  : Checking that low bits read as 0/1s depending on grain and address
 //				matching mode. Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write
-//				pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to 
+//				pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to
 //				{OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
-//				as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF. 
+//				as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 			0x13
 
@@ -79,7 +79,7 @@ main:
 #define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
 #define CHECKERBOARD        0xAAAAAAAAAAAAAAAA
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -92,9 +92,9 @@ main:
 	csrw pmpcfg2, x4
 
 	LA(x4, PMP_ADDRESS)
-    csrw 	pmpaddr0, x4 	
-												//Verification Section			
-// Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}  
+    csrw 	pmpaddr0, x4
+												//Verification Section
+// Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 0s in NAPOT
 
@@ -135,7 +135,7 @@ main:
 	csrw pmpcfg0, x6
 	csrr x7, pmpaddr0
 
-// Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 0s in OFF
 
@@ -217,7 +217,7 @@ main:
 	csrw pmpcfg0, x6
 	csrr x7, pmpaddr0
 
-// Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 1s in OFF
 
@@ -258,7 +258,7 @@ main:
 	csrw pmpcfg0, x6
 	csrr x7, pmpaddr0
 
-// Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
 // Write checkerboard in NAPOT
 
@@ -299,7 +299,7 @@ main:
 	csrw pmpcfg0, x6
 	csrr x7, pmpaddr0
 
-// Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write checkerboard in OFF
 

@@ -17,8 +17,8 @@
 // Coverpoints : cp_cfg_RW for PMPF is fully covered in this test file.
 //
 // Test Cases  : Checking that WR bits control write/read access for every type of
-//			     load and store. mstatus.FS = nonzero. Attempt all types of reads 
-// 			     and writes with pmpcfg_i.L=1, all legal pmpcfg_i.XWR. Observing 
+//			     load and store. mstatus.FS = nonzero. Attempt all types of reads
+// 			     and writes with pmpcfg_i.L=1, all legal pmpcfg_i.XWR. Observing
 //				 proper access faults for restricted read/write regions.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -51,10 +51,10 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*S.*Zicsr.
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
     // Store Access Check
     LA(a5, \ADDRESS)             							// Address to be verified
@@ -71,8 +71,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     flw f14, 0(a5)                 							// Byte-level load test
     nop
 	fld f14, 0(a5)                 							// Half-word load test
-    nop                                                    
-	
+    nop
+
 .endm
 
 main:
@@ -108,7 +108,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

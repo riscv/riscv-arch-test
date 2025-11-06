@@ -14,9 +14,9 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints :  cp_misaligned_off for PMPM is fully covered in this test file. 
+// Coverpoints :  cp_misaligned_off for PMPM is fully covered in this test file.
 //
-// Test Cases  :  Checking that misaligned read/write that crosses a  PMP boundary 
+// Test Cases  :  Checking that misaligned read/write that crosses a  PMP boundary
 //                with A=OFF does not fail. We Set up standard OFF region with
 //                L={0/1}, XWR = 111 and attempt misaligned {lw, lh, lhu, sw, sh}
 //                stradding each offset partially in start and end of region.
@@ -50,12 +50,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 			0x13
 #define g       (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
     LI(a4, NOP)                  							// Value to write (NOP)
     // Store Access Check straddling start
@@ -79,7 +79,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     // Load Access Check straddling start
     LA(a5, (\ADDRESS-1))             						// Address to be verified
 	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)                 							// Half-word load test
@@ -94,7 +94,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     // Load Access Check straddling end
     LA(a5, (\ADDRESS+g-1))             						// Address to be verified
 	lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    nop
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 	lhu a4, 0(a5)                 							// Half-word load test

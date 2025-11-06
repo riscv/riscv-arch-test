@@ -17,8 +17,8 @@
 // Coverpoints : cp_cfg_RW for PMPZca are fully covered in this test file.
 //
 // Test Cases  : Check that WR bits control write/read access for every type of
-//				 load and store. Attempt all types of reads and writes with 
-//				 pmpcfg_i.L=1, all legal pmpcfg_i.XWR. Observe proper access 
+//				 load and store. Attempt all types of reads and writes with
+//				 pmpcfg_i.L=1, all legal pmpcfg_i.XWR. Observe proper access
 //				 faults for restricted read/write regions
 //
 // Dependencies: model_test.h, arch_test.h
@@ -51,10 +51,10 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*F.*S.*Zicsr.*Zc
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	li    x15, 0x3f800000    // bit pattern for 1.0f (IEEE-754 single)
     fmv.w.x f8, x15          // move 32-bit integer bits into float reg f8
@@ -114,7 +114,7 @@ main:
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

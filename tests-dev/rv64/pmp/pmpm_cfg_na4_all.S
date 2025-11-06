@@ -16,7 +16,7 @@
 //
 // Coverpoints : cp_cfg_A_na4_all for PMPM is fully covered in this test file.
 //
-// Test Cases  : Checking A=NA4 works in each region with pmpcfg.L = 1, 
+// Test Cases  : Checking A=NA4 works in each region with pmpcfg.L = 1,
 //				 pmpcfg.A=NA4, pmpcfg.XWR=000, standard regions and making lw,
 //				 sw and jalr at that address, address - 4, and address + 4.
 //
@@ -49,11 +49,11 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS 
+.macro VERIFICATION_RWX ADDRESS
 
     LA(a5, \ADDRESS)             							// Address to be ve
     lw a4, 0(a5)
@@ -94,9 +94,9 @@ main:
 #define PMPREGION_XWR_000    ((PMP_L|                  PMP_NA4  )&0xFF)
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define REGIONSTART		0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE	
+#define REGIONSTART		0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
 #define NA4_REGION		(REGIONSTART >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif

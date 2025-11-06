@@ -43,10 +43,10 @@ main:
 	LI a4, 0xbeed
 	//RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
- 
+
  // ------------------------------------------------------------------------------------------------------------
 // 										satp access in M Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ main:
 	nop
 
 	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
-	
+
 // ------------------------------------------------------------------------------------------------------------
 // 										Mode Supported --- SV39 and Bare i.e., sat.2
 // ------------------------------------------------------------------------------------------------------------
@@ -133,15 +133,15 @@ main:
     csrw satp, t0              // Write satp
     csrr t1, satp              // Read back satp
     RVTEST_SIGUPD(x13, t1)     // Store read value in signature
-	
+
 	RVTEST_GOTO_MMODE
-	
+
 // ------------------------------------------------------------------------------------------------------------
 // 				PPN all zeros, ones and walking ones to the PPN bits of satp i.e., sat.4
-// ------------------------------------------------------------------------------------------------------------	
+// ------------------------------------------------------------------------------------------------------------
 
     li t0, 0x8000000000000000  // Ensure SV39 mode in [63:60]
-    mv t3, t0                  // Start with all_zero case                   
+    mv t3, t0                  // Start with all_zero case
     csrw satp, t3              // Write all_zero PPN to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
@@ -163,14 +163,14 @@ loop_walking:
     csrw satp, t3              // Write satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
-	
+
 // ------------------------------------------------------------------------------------------------------------
 // 										Satp_Asid_PPN all zeros and ones i.e., sat.4
 // ------------------------------------------------------------------------------------------------------------
 
     li t0, 0x8000000000000000  // Ensure SV39 mode in [63:60]
 
-    mv t3, t0                  // Keep lower 60 bits as zero                   
+    mv t3, t0                  // Keep lower 60 bits as zero
     csrw satp, t3              // Write all_zero case to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
@@ -180,7 +180,7 @@ loop_walking:
     csrw satp, t3              // Write to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
-	
+
 // ------------------------------------------------------------------------------------------------------------
 //                                      Satp_Asid_Length i.e., sat.5
 // ------------------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ satp_test_loop:
 // ------------------------------------------------------------------------------------------------------------
 
     li t3, 0                       // Ensure Bare mode (satp[63:60] = 0)
-	
+
     csrw satp, t3                  // Write all_zero value to satp
     csrr t2, satp                  // Read back satp
     RVTEST_SIGUPD(x13, t2)         // Store read-back value in signature
@@ -229,10 +229,10 @@ rvtest_slvl1_pg_tbl:
 .align 12
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-		
+
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

@@ -20,9 +20,9 @@
 //               Configuring PMP in M mode and then switching to U mode.
 //               with pmpcfg_i.L = 1, pmpcfg_i.A=NA4, all legal pmpcfg_i.XWR,
 //               reasonable address in pmpaddr: making {lw, sw, jalr} at that
-//               address, that address - 4, just beyond top of the region. 
-//               Observing proper access faults for restricted regions, and 
-//               accesses beyond the region and below the region should succeed 
+//               address, that address - 4, just beyond top of the region.
+//               Observing proper access faults for restricted regions, and
+//               accesses beyond the region and below the region should succeed
 //               because the bckground region is set to RWX.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -54,13 +54,13 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 
-.macro VERIFICATION_RWX ADDRESS 
+.macro VERIFICATION_RWX ADDRESS
 
-	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler  
+	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
 	LA(x4, 1f)							// Store the return Address in x4
@@ -97,14 +97,14 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x13, a4) 
+    RVTEST_SIGUPD(x13, a4)
 
     addi a5, a5, 8                                          // REGIONSTART + 4            	    						// Address to be verified
     sw a4, 0(a5)
     nop
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x13, a4) 
+    RVTEST_SIGUPD(x13, a4)
 
 .endm
 
@@ -170,7 +170,7 @@ main:
     RVTEST_GOTO_MMODE
 
 // Test Case: 3 : L -> 0 and WR Permissions given to the PMP Region 3
-	
+
 	LA(x4, NA4_REGION)
 	csrw pmpaddr3, x4
     LI(x5, PMPREGION_LXWR_0011)
@@ -181,7 +181,7 @@ main:
     RVTEST_GOTO_MMODE
 
 // Test Case: 4 : L -> 0 and X Permissions given to the PMP Region 2
-	
+
 	LA(x4, NA4_REGION)
 	csrw pmpaddr2, x4
     LI(x5, PMPREGION_LXWR_0100)
@@ -192,7 +192,7 @@ main:
     RVTEST_GOTO_MMODE
 
 // Test Case: 5 : L -> 0 and XR Permissions given to the PMP Region 1
-	
+
 	LA(x4, NA4_REGION)
 	csrw pmpaddr1, x4
     LI(x5, PMPREGION_LXWR_0101)
@@ -203,7 +203,7 @@ main:
     RVTEST_GOTO_MMODE
 
 // Test Case: 6 : L -> 0 and XWR Permissions given to the PMP Region 0
-	
+
 	LA(x4, NA4_REGION)
 	csrw pmpaddr0, x4
     LI(x5, PMPREGION_LXWR_0111)

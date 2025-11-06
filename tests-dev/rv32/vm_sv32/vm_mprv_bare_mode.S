@@ -66,7 +66,7 @@ main:
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-	
+
 	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
 	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
@@ -75,12 +75,12 @@ main:
 //												Set MPRV and set MPP to S Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)           
-	csrs mstatus,s7                 
+	LI (s7, MSTATUS_MPRV)
+	csrs mstatus,s7
 	LI (s7, 0x1800)	//clear previous mode
-	csrc mstatus,s7                 
+	csrc mstatus,s7
 	LI (s7, 0x800)	//Smode
-	csrs mstatus,s7 
+	csrs mstatus,s7
 
 	.align 2
 	// Check load, store and execute in bare mode
@@ -93,10 +93,10 @@ main:
 //												Set MPRV and set MPP to U Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)           
-	csrs mstatus,s7                 
+	LI (s7, MSTATUS_MPRV)
+	csrs mstatus,s7
 	LI (s7, 0x1800)	// Set to Umode
-	csrc mstatus,s7                 
+	csrc mstatus,s7
 
 	.align 2
 	// Check load, store and execute in bare mode
@@ -137,7 +137,7 @@ rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D  | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

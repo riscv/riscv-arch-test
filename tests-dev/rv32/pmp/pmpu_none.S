@@ -14,7 +14,7 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_none for PMPU is fully covered in this test file. 
+// Coverpoints : cp_none for PMPU is fully covered in this test file.
 //
 // Test Cases  : With all pmpcfg, pmpaddr = 0 (including background top PMP entry),
 //               switch to U-mode. Immediate trap, terminate program.
@@ -48,7 +48,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 
 main:
@@ -69,7 +69,7 @@ main:
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
-		
+
 //											Verification Section
 // Test Case: 1 -- All pmp enteries are OFF including backround region. U-mode memory accesses will fail.
 

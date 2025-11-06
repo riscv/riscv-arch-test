@@ -22,7 +22,7 @@
 //                i*g (in odd reg) so the regions partially overlap. Set the even
 //                pmpcfg to 0 (OFF). Set the odd pmpcfg to TOR and cycle through
 //                the 6 legal XWR values for each pair. Make {lw, sw, jalr} to
-//                each of (PMP_writable_regs-1) addresses at end of each region. 
+//                each of (PMP_writable_regs-1) addresses at end of each region.
 //                Access fault if the relevant (highest priority) region prohibits
 //                access.
 //
@@ -55,12 +55,12 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     // Execution Access Check

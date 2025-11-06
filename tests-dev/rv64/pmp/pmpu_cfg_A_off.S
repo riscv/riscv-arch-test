@@ -14,12 +14,12 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_cfg_A_off for PMPS is fully covered in this test file. 
+// Coverpoints : cp_cfg_A_off for PMPS is fully covered in this test file.
 //
 // Test Cases  : Checking that A=OFF never matches a region. Configuring
-//				 PMP in M and switching to U mode. For pmpaddr with all 1s 
-//				 pmpcfg.L=0, pmpcfg.A=OFF, pmpcfg.XWR=000. Fetching, reading 
-//				 and writting from that region. Should succeed because region 
+//				 PMP in M and switching to U mode. For pmpaddr with all 1s
+//				 pmpcfg.L=0, pmpcfg.A=OFF, pmpcfg.XWR=000. Fetching, reading
+//				 and writting from that region. Should succeed because region
 //				 is off even though inaccessible.
 //
 // Dependencies: model_test.h, arch_test.h
@@ -51,7 +51,7 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 RVTEST_SIGBASE( x13,signature_x13_1)
 	.attribute unaligned_access, 0
 	.attribute stack_align, 16
-  	.align	3   
+  	.align	3
   	.option norvc
 #define NOP 		(0x13<<32)+0x13									// Encoded Instruction of nop (64 bit case)
 
@@ -75,7 +75,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 	lw a4, 0(a5)                 							// Word load test
 	nop
 	RVTEST_SIGUPD(x13, a4)       							// Signature update
-	
+
 .endm
 
 main:
@@ -95,7 +95,7 @@ main:
 
 #define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  	// Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL		-1										// All memory region
-	
+
 #ifdef rvtest_strap_routine
 	csrw satp, zero                // Disable address translation.
 #endif
@@ -114,7 +114,7 @@ main:
 //											Verification Section
 // Test Case: 1 -- No Permissions given to the PMP Region 0
 
-	csrw pmpcfg0, x0    	// pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000 
+	csrw pmpcfg0, x0    	// pmp0cfg0.L = 0, pmp0cfg0.A = OFF and pmp0cfg0.WXR = 000
 
     RVTEST_GOTO_LOWER_MODE	Umode		// SWITCH TO U-mode
 	VERIFICATION_RWX	TEST_FOR_EXECUTION

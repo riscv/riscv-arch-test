@@ -1,0 +1,114 @@
+name: Build & Publish CTP
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: Create a new CTP release if set to true
+        required: false
+        default: "false"
+      release_notes:
+        description: Release Notes
+        required: false
+  push:
+    branches:
+      - cvw
+    paths:
+      - "ctp/**"
+      - "testplans/**"
+      - ".github/workflows/ctp-build.yml"
+  pull_request:
+    branches:
+      - cvw
+    paths:
+      - "ctp/**"
+      - "testplans/**"
+      - ".github/workflows/ctp-build.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Pull Container
+        run: docker pull riscvintl/riscv-docs-base-container-image:latest
+
+      - name: Build
+        run: cd  ctp && make -j2
+
+      - name: Make GitHub pages directory
+        run: |
+          mkdir github-pages
+          cp ctp/build/ctp.html github-pages/index.html
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctp.pdf
+          path: docs/ctp/build/ctp.pdf
+
+      - name: Upload HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctp.html
+          path: docs/ctp/build/ctp.html
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: github-pages
+
+  release:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/cvw') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: ctp.pdf
+          path: ./
+
+      - name: Download HTML
+        uses: actions/download-artifact@v4
+        with:
+          name: ctp.html
+          path: ./
+
+      - name: Get current date
+        run: |
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
+        with:
+          draft: false
+          prerelease: ${{ ! (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true') }}
+          make_latest: true
+          tag_name: ctp-release-${{ env.SHORT_SHA }}-${{ env.CURRENT_DATE }}
+          name: CTP Release - ${{ env.CURRENT_DATE }}
+          body: |
+            This release was created by: ${{ github.event.sender.login }}
+            Release Notes: ${{ github.event.inputs.release_notes }}
+          files: |
+            ctp.pdf
+            ctp.html
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/cvw'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

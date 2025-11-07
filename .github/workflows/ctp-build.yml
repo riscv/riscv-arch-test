@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: "recursive"
+
+      - run: git submodule update --init ctp/docs-resources
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest

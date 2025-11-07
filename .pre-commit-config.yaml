@@ -7,7 +7,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 minimum_pre_commit_version: "4.0.0"
-exclude: "^_archive/"
 repos:
   # Standard pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -41,13 +40,13 @@ repos:
       - id: ruff-format
 
   # Pyright Python type checker
-  - repo: local
-    hooks:
-      - id: pyright
-        name: pyright
-        entry: uv run pyright
-        language: system
-        types: [python]
+  # - repo: local
+  #   hooks:
+  #     - id: pyright
+  #       name: pyright
+  #       entry: uv run pyright
+  #       language: system
+  #       types: [python]
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit

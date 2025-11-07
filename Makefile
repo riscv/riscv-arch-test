@@ -21,7 +21,7 @@ TESTGEN_SRC_DIR := generators/tests/testgen/src/testgen
 COVERGROUPGEN_SRC_DIR := generators/coverage/templates
 TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/*)
 COVERGROUPGEN_DEPS := $(wildcard $(COVERGROUPGEN_SRC_DIR)/* $(COVERGROUPGEN_SRC_DIR)/**)
-TESTPLANS_DIR	:= testplans
+TESTPLANS_DIR := testplans
 TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
 
 STAMP_DIR := $(WORKDIR)/stamps

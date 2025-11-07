@@ -7,19 +7,19 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // --------------------------- Walking ones through the reserved bit field [63:54] of PTE -------------------------------
 //  1. Setting bit 54 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  2. Setting bit 55 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  3. Setting bit 56 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  4. Setting bit 57 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  5. Setting bit 58 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  6. Setting bit 59 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 //  7. Setting bit 60 of PTE, RWX permissions given (level 3):
-//		Then, in S-Mode, the page is accessed --> required: RWX Fault
+//    Then, in S-Mode, the page is accessed --> required: RWX Fault
 
 // Total Expected Faults :: 21
 // ----------------------------------------------------------------------------------------------------------------------
@@ -37,25 +37,25 @@ RVTEST_ISA("RV64I_Zicsr")
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
-RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
+RVMODEL_BOOT                        // This test supports max 255 words for RVMODEL_BOOT
 
 nop
-.align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
-j starting_point											// Skip this data region
+.align 10                          // Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
+j starting_point                      // Skip this data region
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGION FOR TESTING
+//                      PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1 and 2
 rvtest_data_1:
-	nop
-	addi ra, ra, REGWIDTH
-	jr ra
-	nop
-	.word 0xbeefcaf1					// Random word
-	.word 0xbeefcaf2					// Random word
-	nop
-	jr ra
+  nop
+  addi ra, ra, REGWIDTH
+  jr ra
+  nop
+  .word 0xbeefcaf1          // Random word
+  .word 0xbeefcaf2          // Random word
+  nop
+  jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -70,183 +70,183 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
 .macro VERIFICATION_RWX ADDRESS, level
-   	LI(a5, \ADDRESS)                    // Load virtual address
+     LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
 
     // Test store permission
-    sw  a2, 20(a5)               		// Store test data
+    sw  a2, 20(a5)                   // Store test data
     nop
 
     // Test load permission
-    lw  a4, 20(a5)        				// Load back data
+    lw  a4, 20(a5)                // Load back data
     nop
 
-   	// Test Execute Permission
-   	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
-   	LA(x4, 1f)							// Store the return Address in x4
-   	jalr ra, a5, 0
-   	nop
-   	nop
+     // Test Execute Permission
+     LI(x3, 0xACCE)            // Store a value which is to be checked in trap handler
+     LA(x4, 1f)              // Store the return Address in x4
+     jalr ra, a5, 0
+     nop
+     nop
 1:
-   	nop
+     nop
 .endm
 
 .macro TEST_CASES_RUNNER LOWER_MODE, VA, level
     .if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
+    SET_REQ_MSTATUS_VAL
     .else
-    	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+      RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
     .endif
-	.align 2
+  .align 2
 
-	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
-	VERIFICATION_RWX	\VA, \level
-	nop
-	nop
+  //JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
+  VERIFICATION_RWX  \VA, \level
+  nop
+  nop
 
-	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
+  RVTEST_GOTO_MMODE                                                // Switching back to M mode
 
-	// Signature Update
-   	SREG a2, 0(x13)                     // Record store attempt
+  // Signature Update
+     SREG a2, 0(x13)                     // Record store attempt
     nop
-	addi x13, x13, REGWIDTH
+  addi x13, x13, REGWIDTH
 
-   	SREG a4, 0(x13)                     // Record load attempt
+     SREG a4, 0(x13)                     // Record load attempt
     nop
-	addi x13, x13, REGWIDTH
+  addi x13, x13, REGWIDTH
 .endm
 
 
 main:
-#ifdef rvtest_mtrap_routine					                				// Verification of existence of rvtest_mtrap_routine
-	LI a4, 0xceed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_mtrap_routine                                  // Verification of existence of rvtest_mtrap_routine
+  LI a4, 0xceed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine					                				// Verification of existence of rvtest_strap_routine
-	LI a4, 0xbeed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_strap_routine                                  // Verification of existence of rvtest_strap_routine
+  LI a4, 0xbeed
+  RVTEST_SIGUPD(x13,a4)
 #endif
 
-	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
-	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
+  ALL_MEM_PMP                                                          // set the PMP permissions for the whole memory
+  csrw satp, zero                                                  // write satp with all zeros (bare mode)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//								Virtual addresses definition section for the code, data, sig, vmem, test sections
+//                Virtual addresses definition section for the code, data, sig, vmem, test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Virtual Address of Test section
-	.set va_data,          		0x140000404                  // virtual address of rvtest_data_1
+  // Virtual Address of Test section
+  .set va_data,              0x140000404                  // virtual address of rvtest_data_1
 
-	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x1800007dc
-	.set va_rvtest_data_begin,  0x1c0000530
+  // Virtual Addresses for code & data regions
+  .set va_rvtest_code_begin,  0x1800007dc
+  .set va_rvtest_data_begin,  0x1c0000530
 
 
-//	PTE setup for Code Region
-	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
-	sfence.vma
+//  PTE setup for Code Region
+  PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+  sfence.vma
 
-//	PTE setup for Data Region
-	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
-	sfence.vma
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//													Save area logic
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	LI (t0, va_rvtest_data_begin)
-	LA (t1, rvtest_data_begin)
-	sub t0, t0, t1
-	addi t3, t0, sv_area_sz
-	csrr sp, mscratch
-	add t1,sp,t3
-	csrw sscratch, t1
-	csrr sp, mscratch
-
-	//save area setup for code region
-	SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
-	//save area setup for data region
-	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
+//  PTE setup for Data Region
+  PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//												Test Cases Start from here
+//                          Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
-	sfence.vma                                                             // Flush the TLB
+  LI (t0, va_rvtest_data_begin)
+  LA (t1, rvtest_data_begin)
+  sub t0, t0, t1
+  addi t3, t0, sv_area_sz
+  csrr sp, mscratch
+  add t1,sp,t3
+  csrw sscratch, t1
+  csrr sp, mscratch
+
+  //save area setup for code region
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  //save area setup for data region
+  SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//                        Test Cases Start from here
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
+  sfence.vma                                                             // Flush the TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 2
+//                          TESTS AT LEVEL 2
 //---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 1: Test in S-Mode | RWX bit set | Setting bit 54 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 54) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Test case 2: Test in S-Mode | RWX bit set | Setting bit 55 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 55) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
+  // Test case 1: Test in S-Mode | RWX bit set | Setting bit 54 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 54) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 3: Test in S-Mode | RWX bit set | Setting bit 56 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 56) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Test case 4: Test in S-Mode | RWX bit set | Setting bit 57 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 57) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
+  // Test case 2: Test in S-Mode | RWX bit set | Setting bit 55 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 55) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 5: Test in S-Mode | RWX bit set | Setting bit 58 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 58) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
-
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Test case 6: Test in S-Mode | RWX bit set | Setting bit 59 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 59) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
+  // Test case 3: Test in S-Mode | RWX bit set | Setting bit 56 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 56) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Test case 7: Test in S-Mode | RWX bit set | Setting bit 60 of PTE
-	PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 60) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-	sfence.vma
+  // Test case 4: Test in S-Mode | RWX bit set | Setting bit 57 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 57) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
 
-	TEST_CASES_RUNNER Smode, va_data, LEVEL2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 5: Test in S-Mode | RWX bit set | Setting bit 58 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 58) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 6: Test in S-Mode | RWX bit set | Setting bit 59 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 59) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//          1GB PAGE  Region 1 under test at level 2 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 7: Test in S-Mode | RWX bit set | Setting bit 60 of PTE
+  PTE_SETUP_RV39_New(rvtest_data_1, ((1 << 60) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -257,10 +257,10 @@ RVTEST_DATA_BEGIN
 #ifdef rvtest_strap_routine
 .align 12
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
 
 #endif
 

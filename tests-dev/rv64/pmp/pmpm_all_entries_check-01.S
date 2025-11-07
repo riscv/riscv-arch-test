@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title         : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors       : Umer Shahid, Allen Baum, David Harris
+//          Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -37,11 +37,11 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+  #define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 64
+  #define RVMODEL_NUM_PMPS 64
 #endif
 
 #if RVMODEL_PMP_GRAIN != 0
@@ -55,39 +55,39 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3
-  	.option norvc
-#define NOP 		(0x13<<32)+0x13
+  .attribute unaligned_access, 0
+  .attribute stack_align, 16
+    .align  3
+    .option norvc
+#define NOP     (0x13<<32)+0x13
 
 .macro VERIFICATION_RWX ADDRESS
 
-    LA(a5, \ADDRESS)             							// Address to be ve
+    LA(a5, \ADDRESS)                           // Address to be ve
     sw a4, 0(a5)
     nop
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4)                     // Signature update
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
-	.endr
+  // Loop to SET ALL pmpcfg REGs to zero
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept RVMODEL_NUM_PMPS/4
+  csrw pmpcfgi , x0
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+  // Loop to SET ALL pmpaddr REGs to zero
+  .set pmpaddri, CSR_PMPADDR0
+  .rept RVMODEL_NUM_PMPS
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri+1
+  .endr
 
-#define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT // Background region with RWX enable.
+#define PMP_REGION_GLOBAL  ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT // Background region with RWX enable.
 #define PMP_REGION_62       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP6_CFG_SHIFT
 #define PMP_REGION_61       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP5_CFG_SHIFT
 #define PMP_REGION_60       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP4_CFG_SHIFT
@@ -104,10 +104,10 @@ main:
 #define PMP_REGION_49       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
 #define PMP_REGION_48       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define	REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_MASK			~(1 << (RVMODEL_PMP_GRAIN - 1))
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#define PMPADDRESS_TOP_GLOBAL    -1                        // All memory region
+#define  REGIONSTART      0x80002000    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define PMP_MASK      ~(1 << (RVMODEL_PMP_GRAIN - 1))
+#define PMP_REGION_SIZE   (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 
 #if RVMODEL_PMP_GRAIN != 0
   #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
@@ -116,186 +116,186 @@ main:
 #endif
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+  csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr63, x4
+  LA(x4, PMPADDRESS_TOP_GLOBAL)
+  csrw   pmpaddr63, x4
 
-	//Lock the Background region.
-	LI(x4, (PMP_REGION_GLOBAL))
-	csrw pmpcfg14, x4
+  //Lock the Background region.
+  LI(x4, (PMP_REGION_GLOBAL))
+  csrw pmpcfg14, x4
 
-//											Verification Section
+//                      Verification Section
 // Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 62
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr62, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr62, x5
 
     LI(x4, PMP_REGION_62)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 61
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr61, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr61, x5
 
     LI(x4, PMP_REGION_61)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 60
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr60, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr60, x5
 
     LI(x4, PMP_REGION_60)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 59
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr59, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr59, x5
 
     LI(x4, PMP_REGION_59)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 58
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr58, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr58, x5
 
     LI(x4, PMP_REGION_58)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 57
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr57, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr57, x5
 
     LI(x4, PMP_REGION_57)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 56
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr56, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr56, x5
 
     LI(x4, PMP_REGION_56)
-	csrw pmpcfg14, x4
+  csrw pmpcfg14, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 55
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr55, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr55, x5
 
     LI(x4, PMP_REGION_55)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 54
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr54, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr54, x5
 
     LI(x4, PMP_REGION_54)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 53
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr53, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr53, x5
 
     LI(x4, PMP_REGION_53)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 52
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr52, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr52, x5
 
     LI(x4, PMP_REGION_52)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 51
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr51, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr51, x5
 
     LI(x4, PMP_REGION_51)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 50
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr50, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr50, x5
 
     LI(x4, PMP_REGION_50)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 49
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr49, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr49, x5
 
     LI(x4, PMP_REGION_49)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
 // Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 48
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr48, x5
+  LA(x5, STANDARD_REGION)
+  csrw pmpaddr48, x5
 
     LI(x4, PMP_REGION_48)
-	csrw pmpcfg12, x4
+  csrw pmpcfg12, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+  VERIFICATION_RWX  TEST_FOR_EXECUTION
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x13, a4)       								// Signature update
-	j exit														// Verification Complete, exit the test
+  li a4, 0xbeefcafe                      // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)                       // Signature update
+  j exit                            // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-	.rept (1<<RVMODEL_PMP_GRAIN)
-	nop
-	.endr
+  .rept (1<<RVMODEL_PMP_GRAIN)
+  nop
+  .endr
 //We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+  nop
+  nop
+  jr ra                            // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 #endif

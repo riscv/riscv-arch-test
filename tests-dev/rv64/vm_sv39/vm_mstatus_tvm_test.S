@@ -8,8 +8,8 @@
 // This test verifies the functionality of mstatus.TVM bit with the satp and sfence.vma
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-//	1. satp and sfence.vma accessed in M Mode with mstatus.tvm bit set -> Successful
-//	2. satp and sfence.vma accessed in S Mode with mstatus.tvm bit set -> illegal instruction exception
+//  1. satp and sfence.vma accessed in M Mode with mstatus.tvm bit set -> Successful
+//  2. satp and sfence.vma accessed in S Mode with mstatus.tvm bit set -> illegal instruction exception
 //
 // Total Expected Faults: 4
 // ----------------------------------------------------------------------------------------------------------------------
@@ -36,48 +36,48 @@ RVTEST_CODE_BEGIN
 RVTEST_SIGBASE( x13,signature_x13_1)
 
 main:
-#ifdef rvtest_mtrap_routine					                				// Verification of existence of rvtest_mtrap_routine
-	LI a4, 0xceed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_mtrap_routine                                  // Verification of existence of rvtest_mtrap_routine
+  LI a4, 0xceed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine					                				// Verification of existence of rvtest_strap_routine
-	LI a4, 0xbeed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_strap_routine                                  // Verification of existence of rvtest_strap_routine
+  LI a4, 0xbeed
+  RVTEST_SIGUPD(x13,a4)
 #endif
 
-	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
-	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
+  ALL_MEM_PMP                                                          // set the PMP permissions for the whole memory
+  csrw satp, zero                                                  // write satp with all zeros (bare mode)
 
     # Set the TVM bit in mstatus
-	LI (t4, MSTATUS_TVM)
-	csrw mstatus, t4
-	csrr t3, mstatus
-	RVTEST_SIGUPD(x13,t3)
+  LI (t4, MSTATUS_TVM)
+  csrw mstatus, t4
+  csrr t3, mstatus
+  RVTEST_SIGUPD(x13,t3)
 
 // ------------------------------------------------------------------------------------------------------------
-// 												satp access in M Mode
+//                         satp access in M Mode
 // ------------------------------------------------------------------------------------------------------------
 
     li t0, 1
-	csrw satp, t0  		                                        			// Write satp with some value
-	csrr t3, satp
-	RVTEST_SIGUPD(x13,t3)
+  csrw satp, t0                                                    // Write satp with some value
+  csrr t3, satp
+  RVTEST_SIGUPD(x13,t3)
 
-	sfence.vma
-	nop
-	nop
+  sfence.vma
+  nop
+  nop
 
 // ------------------------------------------------------------------------------------------------------------
-// 										satp access in S Mode using csrrw, csrrc, csrrs
+//                     satp access in S Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
 
-	RVTEST_GOTO_LOWER_MODE Smode
+  RVTEST_GOTO_LOWER_MODE Smode
 
-	li t0, 1
-	csrw satp, t0
-	nop
+  li t0, 1
+  csrw satp, t0
+  nop
 
-	li t0, 1
+  li t0, 1
     csrrc t1, satp, t0
     nop
 
@@ -85,11 +85,11 @@ main:
     csrrs t1, satp, t0
     nop
 
-	sfence.vma
-	nop
-	nop
+  sfence.vma
+  nop
+  nop
 
-	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
+  RVTEST_GOTO_MMODE                                                // Switching back to M mode
 
 
 #endif
@@ -103,10 +103,10 @@ RVTEST_DATA_BEGIN
 #ifdef rvtest_strap_routine
 .align 12
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
 
 #endif
 

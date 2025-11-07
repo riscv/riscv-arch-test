@@ -889,68 +889,68 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [2.2] - 2021-01-28
 
     2021-01-22 Tobias Wölfel <tobias.woelfel@mailbox.org>
-    	* Add missing base ISA check in riscv-test-suite
+      * Add missing base ISA check in riscv-test-suite
 
     2021-01-20 Xiretza <xiretza@xiretza.xyz>
-    	* Deduplicate makefiles in riscv-test-suite
-    	* Makefile: Fix ordering of simulate and verify targets to allow multi-job runs (make -j)
-    	* Makefile.include: Document RISCV_TEST
-    	* Makefile: use $(TARGETDIR) variable for postverify target instead of hard-coded path
+      * Deduplicate makefiles in riscv-test-suite
+      * Makefile: Fix ordering of simulate and verify targets to allow multi-job runs (make -j)
+      * Makefile.include: Document RISCV_TEST
+      * Makefile: use $(TARGETDIR) variable for postverify target instead of hard-coded path
 
     2021-01-16 S Pawan Kumar <spawan1999@gmail.com>
-      	* Fixed NARGS macro definition to work correctly.
+        * Fixed NARGS macro definition to work correctly.
 
     2021-01-15 Xiretza <xiretza@xiretza.xyz>
-    	* style: Add a missing space to the "OK" message in verify.sh
+      * style: Add a missing space to the "OK" message in verify.sh
 
     2020-12-17 Neel Gala <neelgala@incoresemi.com>
       * remove env folder symlinks from all riscv-test-suite src folders
-    	* fixed assertion macros for ovpsim
-    	* renamed RVTEST_ASSERT to RVMODEL_ASSERT in the Makefile and ovpsim macros
-    	* tests updated with right set of "correctvals"
+      * fixed assertion macros for ovpsim
+      * renamed RVTEST_ASSERT to RVMODEL_ASSERT in the Makefile and ovpsim macros
+      * tests updated with right set of "correctvals"
 
     2020-11-24 Neel Gala <neelgala@incoresemi.com>
-    	* added MIGRATION.adoc in doc directory to indicate how old framework targets can work with
-    	  changes made as part of this PR
-    	* updated doc/README.adoc to avoid the word "compliance" and updated the section on porting a new
-    	  target to the framework.
-    	* Added an example_target directory to host dummy files which can be used as a starting point for
-    	  porting targets. This was provided by MarcKarasek.
-    	* migrated/ported existing targets (except codasip and sifive-formal) to the new framework
-    	  changes.
-    	* in riscv-test-env/p/riscv_test.h changed names of RVTEST_[CODE/DATA]_[BEGIN/END] to
-    	  RVTEST_[CODE/DATA]_[BEGIN/END]_OLD respectively to avoid conflicts with the new framework macros.
-    	* in riscv-test-env/p/riscv_test.h re-strutucture RVTEST_DATA_BEGIN_OLD/END to ensure that all
-    	  target specific data contents are introduced in RVTEST_DATA_END after the signature.
-    	* added new file riscv-test-suite/env/arch_test.h which contains the macros used by the new set of
-    	  tests. A symlink to this in the riscv-test-env directory is also created. The arch_test also
-    	  includes aliases for the old macros.
-    	* encoding.h moved to riscv-test-suite/env and a symlink to this file exists in riscv-test-env.
-    	  This was done to ensure that the arch_test.h and encoding.h are not to be modified by the
-    	  targets
-    	* Added riscv-test-stats which includes coverage and data propagation reports for the tests
-    	  available in the riscv-test-suite directory.
-    	* upddted the directory structure of the riscv-test-suite as per definition found in the
-    	  TestFormatSpec document.
-    	* new set of tests with better coverage for rv[32/64][I,M,C, Zifencei] added. Almost all tests
-    		were generated using the open source riscv_ctg tool. A few tests like fence, fencei, ebreak,
-    		ecall, etc were handwritten/modified to follow the new macro conventions.
-    	* Updated TestFormatSpec to avoid the word compliance and also updated the definitions of macros
-    	  and signatures
-    	* created a root-level Makefile.include to decouple the Makefile and target specific settings.
-    	* Added riscv-target and Makefile.include to the .gitignore file to stop tracking target specific
-    	  changes.
-    	* Added special targets for compile(build), simulate(run) and verify in the Makefiles of each
-    	  test-suite.
-    	* the existing riscv-targets have been either updated for the new framework or migrated to the
-    		framework.
+      * added MIGRATION.adoc in doc directory to indicate how old framework targets can work with
+        changes made as part of this PR
+      * updated doc/README.adoc to avoid the word "compliance" and updated the section on porting a new
+        target to the framework.
+      * Added an example_target directory to host dummy files which can be used as a starting point for
+        porting targets. This was provided by MarcKarasek.
+      * migrated/ported existing targets (except codasip and sifive-formal) to the new framework
+        changes.
+      * in riscv-test-env/p/riscv_test.h changed names of RVTEST_[CODE/DATA]_[BEGIN/END] to
+        RVTEST_[CODE/DATA]_[BEGIN/END]_OLD respectively to avoid conflicts with the new framework macros.
+      * in riscv-test-env/p/riscv_test.h re-strutucture RVTEST_DATA_BEGIN_OLD/END to ensure that all
+        target specific data contents are introduced in RVTEST_DATA_END after the signature.
+      * added new file riscv-test-suite/env/arch_test.h which contains the macros used by the new set of
+        tests. A symlink to this in the riscv-test-env directory is also created. The arch_test also
+        includes aliases for the old macros.
+      * encoding.h moved to riscv-test-suite/env and a symlink to this file exists in riscv-test-env.
+        This was done to ensure that the arch_test.h and encoding.h are not to be modified by the
+        targets
+      * Added riscv-test-stats which includes coverage and data propagation reports for the tests
+        available in the riscv-test-suite directory.
+      * upddted the directory structure of the riscv-test-suite as per definition found in the
+        TestFormatSpec document.
+      * new set of tests with better coverage for rv[32/64][I,M,C, Zifencei] added. Almost all tests
+        were generated using the open source riscv_ctg tool. A few tests like fence, fencei, ebreak,
+        ecall, etc were handwritten/modified to follow the new macro conventions.
+      * Updated TestFormatSpec to avoid the word compliance and also updated the definitions of macros
+        and signatures
+      * created a root-level Makefile.include to decouple the Makefile and target specific settings.
+      * Added riscv-target and Makefile.include to the .gitignore file to stop tracking target specific
+        changes.
+      * Added special targets for compile(build), simulate(run) and verify in the Makefiles of each
+        test-suite.
+      * the existing riscv-targets have been either updated for the new framework or migrated to the
+        framework.
 
     2020-10-15 Simon Davidmann <simond@imperas.com>
         * riscvOVPsim enhanced and moved to its own repository: github.com/riscv-ovpsim
 
     2020-04-24 Allen Baum <allen.baum@esperantotech.com>
-    	* fixed the I-SB-01.S and I-SH-01.S tests and associated reference signatures to account
-    	of tests with negative offsets (which causes stores outside the signature area)
+      * fixed the I-SB-01.S and I-SH-01.S tests and associated reference signatures to account
+      of tests with negative offsets (which causes stores outside the signature area)
 
     2020-03-19 Neel Gala <neelgala@gmail.com>
         * restructuring the riscv-test-suite to indicate clearly what is deprecated, wip and usable
@@ -971,37 +971,37 @@ Add missing check ISA fields in recently modified div and amo tests
 
     2019-12-01 Allen Baum <allen.baum@esperantotech.com>
             * modified macro names to conformn to riscof naming convention of model specific vs. pre-defined
-    	* add more complete list of macros, their uses, parameters, and whether they are required or optional
-    	* minor structural changes (moving sentences, renumbering) and typo fixes
-    	* clarified impact of debug macros
-    	* clarified how SIGUPD and BASEUPD must be used
+      * add more complete list of macros, their uses, parameters, and whether they are required or optional
+      * minor structural changes (moving sentences, renumbering) and typo fixes
+      * clarified impact of debug macros
+      * clarified how SIGUPD and BASEUPD must be used
             * remove section about test taxonomy, binary tests, emulated ops
             * clarify/fix  boundary between test target and framework responsibilities
-    	   (split test target into test target and test shell)
+         (split test target into test target and test shell)
             * remove To Be discussed items that have been discussed
-    	* remove default case condition; if conditions are unchanged, part of same case
+      * remove default case condition; if conditions are unchanged, part of same case
             *  minor grammatical changes related to the above
 
     2019-10-16 Allen Baum <allen.baum@esperantotech.com>
-    	* spec/TestFormatSpec.adoc: changed the format of the signature to fixed physical address size, fixed 32b data size extracted from COMPLIANCE_DATA_BEGIN/END range.
+      * spec/TestFormatSpec.adoc: changed the format of the signature to fixed physical address size, fixed 32b data size extracted from COMPLIANCE_DATA_BEGIN/END range.
 
-    	* more gramatical fixes, clarifications added
-    	* added To Be Discussed items regarding emulated instruction and binary tests
+      * more gramatical fixes, clarifications added
+      * added To Be Discussed items regarding emulated instruction and binary tests
 
     2019-09-11 Allen Baum <allen.baum@esperantotech.com>
-    	* spec/TestFormatSpec.adoc:   more grammar and typo corrections and changes
-    	  clarified and added To Be Discussed issues
+      * spec/TestFormatSpec.adoc:   more grammar and typo corrections and changes
+        clarified and added To Be Discussed issues
 
     2019-09-11 Allen Baum <allen.baum@esperantotech.com>
         * spec/TestFormatSpec.adoc:   many grammar and typo corrections and changes
-    	removed many "to Be Discussed items and made them official
-    	Added wording to clarify spec intent (work in progress/goal rather than final)
-    	Added macros to ease test authoring: RVTEST_SIGBASE, RVTEST_SIGUPDATE, RVTEST_CASE
-    	Added detail on proposals for connection to framework (how framework selects tests).
-    	Expanded definition of signature format
-    	Changed the (proposed) directory structure and naming convention to eliminate ambiguities, add consistency and slightly better match existing structure
-    	Added many "future work" items related to the above
-    	Added examples and comments to code examples to indicate how proposed macros would be used
+      removed many "to Be Discussed items and made them official
+      Added wording to clarify spec intent (work in progress/goal rather than final)
+      Added macros to ease test authoring: RVTEST_SIGBASE, RVTEST_SIGUPDATE, RVTEST_CASE
+      Added detail on proposals for connection to framework (how framework selects tests).
+      Expanded definition of signature format
+      Changed the (proposed) directory structure and naming convention to eliminate ambiguities, add consistency and slightly better match existing structure
+      Added many "future work" items related to the above
+      Added examples and comments to code examples to indicate how proposed macros would be used
        * .gitignore: added condition to ignore Mac file system artifacts
 
 
@@ -1047,8 +1047,8 @@ Add missing check ISA fields in recently modified div and amo tests
 
     2019-05-23 Prashanth Mundkur <prashanth.mundkur@gmail.com>
         * Added support and instructions for using the C and OCaml simulators from the Sail RISC-V formal model as targets.
-    	* added subdirectories riscv-target/sail-riscv-c and riscv-target/sail-riscv-ocaml
-    	* updated README.md and doc/README.adoc
+      * added subdirectories riscv-target/sail-riscv-c and riscv-target/sail-riscv-ocaml
+      * updated README.md and doc/README.adoc
 
     2019-04-05 Allen Baum <allen.baum@esperantotech.com>
         * spec/TestFormatSpec.adoc:  Adding details, minor corrections, ToBeDiscussed
@@ -1077,9 +1077,9 @@ Add missing check ISA fields in recently modified div and amo tests
     2019-01-29 Deborah Soung <debs@sifive.com>
         * Added Rocket Chip generated cores as a target
             * riscv-target/rocket/compliance_io.h created
-    	* riscv-target/rocket/compliance_test.h created
-    	* riscv-target/rocket/*/Makefile.include created for existing test suites
-    	* README.adoc updated with instructions for using Rocket cores as targets
+      * riscv-target/rocket/compliance_test.h created
+      * riscv-target/rocket/*/Makefile.include created for existing test suites
+      * README.adoc updated with instructions for using Rocket cores as targets
 
     2019-01-22 Premysl Vaclavik  <pvaclavik@codasip.com>
         * feature: initial version of Compliance Test Format Specification
@@ -1101,130 +1101,130 @@ Add missing check ISA fields in recently modified div and amo tests
         * Added support for using external target directories with $TARGETDIR
 
     2018-11-21 Neel Gala <neelgala@incoresemi.com>
-       	* riscv-test-suite/rv_/references/_.reference_output: changed signature
-    	  format for all tests to include only 4-bytes per line starting with the
-      	  most significant byte on the left.
-        	* riscv-target/spike/device/rv_/Makefile.include: Added a patch for
-    	  spike-device Makefiles where the old-signature format is post-processed
-          	  to generate a signature in the new format at the end of each test.
-    	* riscv-target/riscvOVPsim/device/rv_/Makefile.include: same patch as above.
-        	* Makefile: default target for Makefile is now to run all tests supported by
-    	  the target mentioned defined by RISCV_TARGET variable.
+         * riscv-test-suite/rv_/references/_.reference_output: changed signature
+        format for all tests to include only 4-bytes per line starting with the
+          most significant byte on the left.
+          * riscv-target/spike/device/rv_/Makefile.include: Added a patch for
+        spike-device Makefiles where the old-signature format is post-processed
+              to generate a signature in the new format at the end of each test.
+      * riscv-target/riscvOVPsim/device/rv_/Makefile.include: same patch as above.
+          * Makefile: default target for Makefile is now to run all tests supported by
+        the target mentioned defined by RISCV_TARGET variable.
 
     2018-10-11 Simon Davidmann <simond@imperas.com>
         * Ported github riscv/riscv-tests for RV32 processors to this compliance env
         * rv32ua rv32uc rv32ud rv32uf rv32ud rv32ui
 
     2018-09-10  Lee Moore  <moore@imperas.com>
-    	* Added tests to RV32I to improve coverage, usage of Imperas Mutating Fault Simulator to
-    	  identify untested usage cases
-    	* Macro renames to support GPR, (S)FPR, (D)FPR
-    	* Added test suite RV32IM to test 32 bit Multiply and Divide instructions
-    	* Added test suite RV32IMC to test 32 bit Compressed instructions
-    	* Added test suite RV64I to test 64 bit Integer instructions
-    	* Added test suite RV64IM to test 64 bit Multiply and Divide instructions
+      * Added tests to RV32I to improve coverage, usage of Imperas Mutating Fault Simulator to
+        identify untested usage cases
+      * Macro renames to support GPR, (S)FPR, (D)FPR
+      * Added test suite RV32IM to test 32 bit Multiply and Divide instructions
+      * Added test suite RV32IMC to test 32 bit Compressed instructions
+      * Added test suite RV64I to test 64 bit Integer instructions
+      * Added test suite RV64IM to test 64 bit Multiply and Divide instructions
 
 
     2018-06-15  Radek Hajek  <hajek@codasip.com>
 
-    	Modifications to support Codasip simulator.
+      Modifications to support Codasip simulator.
 
-    	The simulator is renamed as Codasip-simulator (was
-    	Codasip-IA-simulator), compliance_test.h has been moved to target
-    	directories and a COMPILE_TARGET has been added to Makefile to
-    	allow use of LLVM.
+      The simulator is renamed as Codasip-simulator (was
+      Codasip-IA-simulator), compliance_test.h has been moved to target
+      directories and a COMPILE_TARGET has been added to Makefile to
+      allow use of LLVM.
 
-    	* Makefile: Include Codasip simulator target.
-    	* riscv-target/codasip-IA-simulator/compliance_io.h: Renamed as
-    	riscv-target/Codasip-simulator/compliance_io.h.
-    	* riscv-target/Codasip-simulator/compliance_io.h: Renamed from
-    	riscv-target/codasip-IA-simulator/compliance_io.
-    	* riscv-target/Codasip-simulator/compliance_test.h: Created.
-    	* riscv-target/codasip-IA-simulator/device/rv32i/Makefile.include:
-    	Renamed as
-    	riscv-target/Codasip-simulator/device/rv32i/Makefile.include
-    	* riscv-target/Codasip-simulator/device/rv32i/Makefile.include:
-    	Renamed from
-    	riscv-target/codasip-IA-simulator/device/rv32i/Makefile.include.
-    	* riscv-test-env/compliance_test.h: Renamed as
-    	riscv-target/riscvOVPsim/compliance_test.h.
-    	* riscv-target/riscvOVPsim/compliance_test.h: Renamed from
-    	riscv-test-env/compliance_test.h.
-    	* riscv-target/riscvOVPsim/device/rv32i/Makefile.include: Updated
-    	for new environment.
-    	* riscv-target/spike/compliance_test.h: Created.
-    	* riscv-target/spike/device/rv32i/Makefile.include: Updated for
-    	new environment.
-    	* riscv-test-suite/rv32i/Makefile: Likewise.
-
-    2018-06-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
-
-    	Put placeholders in empty directories to make sure they show in
-    	the GitHub hierarchy.
-
-    	* riscv-test-suite/rv32i/.gitignore: Created.
-    	* riscv-test-suite/rv32m/.gitignore: Created.
+      * Makefile: Include Codasip simulator target.
+      * riscv-target/codasip-IA-simulator/compliance_io.h: Renamed as
+      riscv-target/Codasip-simulator/compliance_io.h.
+      * riscv-target/Codasip-simulator/compliance_io.h: Renamed from
+      riscv-target/codasip-IA-simulator/compliance_io.
+      * riscv-target/Codasip-simulator/compliance_test.h: Created.
+      * riscv-target/codasip-IA-simulator/device/rv32i/Makefile.include:
+      Renamed as
+      riscv-target/Codasip-simulator/device/rv32i/Makefile.include
+      * riscv-target/Codasip-simulator/device/rv32i/Makefile.include:
+      Renamed from
+      riscv-target/codasip-IA-simulator/device/rv32i/Makefile.include.
+      * riscv-test-env/compliance_test.h: Renamed as
+      riscv-target/riscvOVPsim/compliance_test.h.
+      * riscv-target/riscvOVPsim/compliance_test.h: Renamed from
+      riscv-test-env/compliance_test.h.
+      * riscv-target/riscvOVPsim/device/rv32i/Makefile.include: Updated
+      for new environment.
+      * riscv-target/spike/compliance_test.h: Created.
+      * riscv-target/spike/device/rv32i/Makefile.include: Updated for
+      new environment.
+      * riscv-test-suite/rv32i/Makefile: Likewise.
 
     2018-06-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* README.md: Make references to files in the repo into links.
+      Put placeholders in empty directories to make sure they show in
+      the GitHub hierarchy.
+
+      * riscv-test-suite/rv32i/.gitignore: Created.
+      * riscv-test-suite/rv32m/.gitignore: Created.
+
+    2018-06-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+      * README.md: Make references to files in the repo into links.
 
     2018-06-09  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* .gitignore: Ignore editor backup files.
+      * .gitignore: Ignore editor backup files.
 
     2018-06-09  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* README.md: Add better link to documentation README.md.
+      * README.md: Add better link to documentation README.md.
 
     2018-06-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* README.md: Move AsciiDoc details into new README.md in the doc
-    	directory.
+      * README.md: Move AsciiDoc details into new README.md in the doc
+      directory.
 
     2018-06-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* README.md: Fix typo in link to AsciiDoc cheat sheet
+      * README.md: Fix typo in link to AsciiDoc cheat sheet
 
     2018-06-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* COPYING.BSD: Created.
-    	* COPYING.CC: Created.
-    	* README.md: Add git process, licensing and engineering process.
+      * COPYING.BSD: Created.
+      * COPYING.CC: Created.
+      * README.md: Add git process, licensing and engineering process.
 
     2018-06-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	* README.md: Correct details for running the compliance tests and
-    	directory for OVPsim.
+      * README.md: Correct details for running the compliance tests and
+      directory for OVPsim.
 
     2018-06-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	Clean restructuring to just the work of interest.
+      Clean restructuring to just the work of interest.
 
-    	* thought-experiments: Directory removed.
-    	* .gitignore: Merged with TestStructure/.gitignore
-    	* Makefile: Renamed from TestStructure/Makefile.
-    	* TestStructure/Makefile: Renamed as Makefile.
-    	* README.md: Merged with TestStructure/README.md.
-    	* TestStructure/.gitignore: Deleted and contents moved into
-    	.gitignore.
-    	* TestStructure/README.md: Deleted and contents moved into
-    	README.md.
-    	* TestStructure/doc: Directory deleted.
-    	* TestStructure/riscv-target: Directory moved to riscv-target.
-    	* riscv-target: Directory moved from TestStructure/riscv-target
-    	* TestStructure/riscv-test-env: Directory moved to riscv-test-env.
-    	* riscv-test-env: Directory moved from
-    	TestStructure/riscv-test-env.
-    	* TestStructure/riscv-test-suite: Directory moved to
-    	riscv-test-suite.
-    	* riscv-test-suite: Directory moved from
-    	TestStructure/riscv-test-suite.
-    	* thought-experiments: Directory deleted.
+      * thought-experiments: Directory removed.
+      * .gitignore: Merged with TestStructure/.gitignore
+      * Makefile: Renamed from TestStructure/Makefile.
+      * TestStructure/Makefile: Renamed as Makefile.
+      * README.md: Merged with TestStructure/README.md.
+      * TestStructure/.gitignore: Deleted and contents moved into
+      .gitignore.
+      * TestStructure/README.md: Deleted and contents moved into
+      README.md.
+      * TestStructure/doc: Directory deleted.
+      * TestStructure/riscv-target: Directory moved to riscv-target.
+      * riscv-target: Directory moved from TestStructure/riscv-target
+      * TestStructure/riscv-test-env: Directory moved to riscv-test-env.
+      * riscv-test-env: Directory moved from
+      TestStructure/riscv-test-env.
+      * TestStructure/riscv-test-suite: Directory moved to
+      riscv-test-suite.
+      * riscv-test-suite: Directory moved from
+      TestStructure/riscv-test-suite.
+      * thought-experiments: Directory deleted.
 
     2018-05-21  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-    	Initial commit to populate the repository.
+      Initial commit to populate the repository.
 
-    	* ChangeLog: Created.
-    	* README.md: Created.
+      * ChangeLog: Created.
+      * README.md: Created.

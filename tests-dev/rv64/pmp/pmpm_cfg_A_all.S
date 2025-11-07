@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title         : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors       : Umer Shahid, Allen Baum, David Harris
+//          Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -19,7 +19,7 @@
 // Test Cases  : Checking that A is writable in each region. For each standard
 //               region, attempt to write pmpcfg.A={OFF, TOR, NA4, NAPOT} with
 //               pmpcfg.L=0, pmpcfg.RWX = 000.  Only able to write NA4 if grain
-//       		 G = 0. Other pmpcfg bits are writable.
+//            G = 0. Other pmpcfg bits are writable.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -36,11 +36,11 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+  #define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+  #define RVMODEL_NUM_PMPS 16
 #endif
 
 RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_cfg_A_all)
@@ -48,38 +48,38 @@ RVTEST_CASE(2,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3
-  	.option norvc
-#define NOP 		0x13
+  .attribute unaligned_access, 0
+  .attribute stack_align, 16
+    .align  3
+    .option norvc
+#define NOP     0x13
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/8
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
-	.endr
+  // Loop to SET ALL pmpcfg REGs to zero
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept RVMODEL_NUM_PMPS/8
+  csrw pmpcfgi , x0
+  .set pmpcfgi, pmpcfgi+2
+  .endr
 
-#define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
+#define PMP_REGION_GLOBAL  ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
+#define PMPADDRESS_TOP_GLOBAL    -1                        // All memory region
 #define NAPOT   (PMP_NAPOT & 0xFF)
 #define TOR     (PMP_TOR   & 0xFF)
 #define NA4     (PMP_NA4   & 0xFF)
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+  csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
+  LA(x4, PMPADDRESS_TOP_GLOBAL)
+  csrw   pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-	csrw pmpcfg2, x4
+  //Lock the Background region.
+  LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
+  csrw pmpcfg2, x4
 
-//											Verification Section
+//                      Verification Section
 // Test Case 1 : Setting region 0-14 to be NA4, NAPOT, TOR and OFF with L->0, XWR->000
 
     LI(x4, (NA4   << PMP7_CFG_SHIFT|NA4   << PMP6_CFG_SHIFT|NA4   << PMP5_CFG_SHIFT|NA4   << PMP4_CFG_SHIFT|NA4   << PMP3_CFG_SHIFT|NA4   << PMP2_CFG_SHIFT|NA4   << PMP1_CFG_SHIFT|NA4  ))
@@ -135,17 +135,17 @@ main:
 
 // ---------------------------------------------------------------------------
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x13, a4)       								// Signature update
-	j exit														// Verification Complete, exit the test
+  li a4, 0xbeefcafe                      // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)                       // Signature update
+  j exit                            // Verification Complete, exit the test
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+  nop
+  nop
+  jr ra                            // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 #endif

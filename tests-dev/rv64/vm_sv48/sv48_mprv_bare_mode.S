@@ -6,7 +6,7 @@
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
 // 1. MPRV bit set with S mode permission and virtualization is not enabled (Bare Mode):
-//		Then, in M-Mode, Load, Store & Execute is performed --> required: No Fault
+//    Then, in M-Mode, Load, Store & Execute is performed --> required: No Fault
 
 // Total Expected Faults :: 0
 //-------------------------------------------------------------------------------------------------------------------
@@ -34,23 +34,23 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
 .macro VERIFICATION_RWX
-	// As we are in bare mode, we will test on physical address
-   	LA(a5, rvtest_data_1)            	// Load address
+  // As we are in bare mode, we will test on physical address
+     LA(a5, rvtest_data_1)              // Load address
     addi a2, a2, 16                     // Test pattern initialization
 
     // Test store permission
-    sw  a2, 20(a5)               		// Store test data
-	RVTEST_SIGUPD(x13, a2)
+    sw  a2, 20(a5)                   // Store test data
+  RVTEST_SIGUPD(x13, a2)
     nop
 
     // Test load permission
-    lw  a4, 20(a5)        				// Load back data
-	RVTEST_SIGUPD(x13, a4)
+    lw  a4, 20(a5)                // Load back data
+  RVTEST_SIGUPD(x13, a4)
     nop
 
     // Test Execute Permission
-    LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
-    LA(x4, 1f)							// Store the return Address in x4
+    LI(x3, 0xACCE)            // Store a value which is to be checked in trap handler
+    LA(x4, 1f)              // Store the return Address in x4
     jalr ra, a5, 0
     RVTEST_SIGUPD(x13, a2)
     nop
@@ -61,51 +61,51 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 
 main:
-#ifdef rvtest_mtrap_routine					                				// Verification of existence of rvtest_mtrap_routine
-	LI a4, 0xceed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_mtrap_routine                                  // Verification of existence of rvtest_mtrap_routine
+  LI a4, 0xceed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine					                				// Verification of existence of rvtest_strap_routine
-	LI a4, 0xbeed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_strap_routine                                  // Verification of existence of rvtest_strap_routine
+  LI a4, 0xbeed
+  RVTEST_SIGUPD(x13,a4)
 #endif
 
-	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
-	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
+  ALL_MEM_PMP                                                          // set the PMP permissions for the whole memory
+  csrw satp, zero                                                  // write satp with all zeros (bare mode)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//												Set MPRV and set MPP to S Mode
+//                        Set MPRV and set MPP to S Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)
-	csrs mstatus,s7
-	LI (s7, 0x1800)	// clear previous mode
-	csrc mstatus,s7
-	LI (s7, 0x800)	// Smode
-	csrs mstatus,s7
+  LI (s7, MSTATUS_MPRV)
+  csrs mstatus,s7
+  LI (s7, 0x1800)  // clear previous mode
+  csrc mstatus,s7
+  LI (s7, 0x800)  // Smode
+  csrs mstatus,s7
 
-	.align 2
-	// Check load, store and execute in bare mode
-	VERIFICATION_RWX
-	nop
-	nop
-	RVTEST_GOTO_MMODE
+  .align 2
+  // Check load, store and execute in bare mode
+  VERIFICATION_RWX
+  nop
+  nop
+  RVTEST_GOTO_MMODE
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//												Set MPRV and set MPP to U Mode
+//                        Set MPRV and set MPP to U Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LI (s7, MSTATUS_MPRV)
-	csrs mstatus,s7
-	LI (s7, 0x1800)	// Set to Umode
-	csrc mstatus,s7
+  LI (s7, MSTATUS_MPRV)
+  csrs mstatus,s7
+  LI (s7, 0x1800)  // Set to Umode
+  csrc mstatus,s7
 
-	.align 2
-	// Check load, store and execute in bare mode
-	VERIFICATION_RWX
-	nop
-	nop
-	RVTEST_GOTO_MMODE
+  .align 2
+  // Check load, store and execute in bare mode
+  VERIFICATION_RWX
+  nop
+  nop
+  RVTEST_GOTO_MMODE
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -114,19 +114,19 @@ RVMODEL_HALT
 RVTEST_DATA_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
+//                      PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 //Physical Address region under testing for LEVEL 0, 1, 2 & 3
 .align 12
 rvtest_data_1:
-	nop
-	addi ra, ra, REGWIDTH
-	jr ra
-	nop
-	.word 0xbeefcaf1				// Random word
-	.word 0xbeefcaf2				// Random word
-	nop
-	jr ra
+  nop
+  addi ra, ra, REGWIDTH
+  jr ra
+  nop
+  .word 0xbeefcaf1        // Random word
+  .word 0xbeefcaf2        // Random word
+  nop
+  jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -134,13 +134,13 @@ rvtest_data_1:
 #ifdef rvtest_strap_routine
 .align 12
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl3_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
 RVTEST_DATA_END

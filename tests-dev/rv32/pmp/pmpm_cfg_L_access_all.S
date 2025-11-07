@@ -18,7 +18,7 @@
 //				 this test file.
 //
 // Test Cases  : Checking M-mode access when all PMP are off. Checking that XWR
-//				 doesn't affect M-mode acess when L=0. Setting (PMP_writable_regs-1)
+//				 doesn't affect M-mode access when L=0. Setting (PMP_writable_regs-1)
 //				 as standard PMP regions, with pmp.L = 0, pmp.A=NAPOT, pmp.XWR = 0
 //				 {jalr, lw, sw} in each PMP region. Access should always succeed
 //				 because L=0 doesn't enforce permissions.

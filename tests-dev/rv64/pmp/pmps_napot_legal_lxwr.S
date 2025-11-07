@@ -23,7 +23,7 @@
 //               {lw, sw, jalr} at that start of region, start - 4, start + 4, highest
 //               word in region, just beyond top of the region. Observing proper access
 //               faults for restricted regions, and accesses beyond and below the region
-//               should succeed because of backgroung region with RWX permissions.
+//               should succeed because of background region with RWX permissions.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------

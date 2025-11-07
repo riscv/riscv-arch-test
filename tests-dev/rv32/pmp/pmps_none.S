@@ -70,7 +70,7 @@ main:
 #endif
 
 //											Verification Section
-// Test Case: 1 -- All pmp enteries are OFF including backround region. S-mode memory accesses will fail.
+// Test Case: 1 -- All pmp entries are OFF including background region. S-mode memory accesses will fail.
 
 	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
     RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode

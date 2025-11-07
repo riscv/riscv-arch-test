@@ -28,7 +28,7 @@
 //               pmpaddr_i = 0x100, pmpcfg_i-1.L = 0 trying to change pmpcfg_i-1 to
 //               00000111, and to change pmpaddr_i-1 to 1s and reading these back.
 //               pmpaddr_i-1 should be unchanged because of lock iff pmpcfg_i.A = TOR,
-//               otherwise change. pmpcfg_i-1 is changable independent of pmpcfg_i.A.
+//               otherwise change. pmpcfg_i-1 is changeable independent of pmpcfg_i.A.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------

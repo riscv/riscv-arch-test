@@ -121,11 +121,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .endm
 
 main:
-#ifdef rvtest_mtrap_routine				// Verification of existance of rvtest_mtrap_routine
+#ifdef rvtest_mtrap_routine				// Verification of existence of rvtest_mtrap_routine
 	LI a4, 0xceed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine				// Verification of existance of rvtest_strap_routine
+#ifdef rvtest_strap_routine				// Verification of existence of rvtest_strap_routine
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif

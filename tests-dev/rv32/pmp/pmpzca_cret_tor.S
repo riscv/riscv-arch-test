@@ -123,7 +123,7 @@ main:
 .align (RVMODEL_PMP_GRAIN+2)
 .skip (0x1000 -2)
 TEST_FOR_EXECUTION_0:
-	ret															// Comrpessed return just before the start of region
+	ret															// Compressed return just before the start of region
 
 TEST_FOR_EXECUTION_1:
     ret                                                         // Compressed return inside the region
@@ -140,7 +140,7 @@ TEST_FOR_EXECUTION_3:
     ret                       									// Compressed return at the top of the region
 
 TEST_FOR_EXECUTION_4:
-    ret                                             			// Comrpessed return just above the region
+    ret                                             			// Compressed return just above the region
 
 RETURN_INSTRUCTION:
 	nop

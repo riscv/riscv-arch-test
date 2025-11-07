@@ -21,7 +21,7 @@
 //				  pmpaddr_i = {upper half of doubleword}, pmpcfg_i-1.A = OFF,
 //				  pmpcfg_i-1.XWR=111, pmpaddr_i-1 = pmpaddr_i - 4. Performing
 //				  {ld, sd} on doubleword. Should access fault because doubleword
-//				  access crosses boundary of word or pass if access is splitted
+//				  access crosses boundary of word or pass if access is split
 //				  into two.
 //
 // Dependencies: model_test.h, arch_test.h

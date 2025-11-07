@@ -18,7 +18,7 @@
 //
 // Test Cases  : Checking that A=OFF never matches for each region. For each
 //               standard region with pmpcfg.L=1, pmpcfg.A=OFF, pmpcfg.XWR=000.
-//               Fetching, reading and writting from that region. Should succeed
+//               Fetching, reading and writing from that region. Should succeed
 //               because region is off even though inaccessible.
 //
 // Dependencies: model_test.h, arch_test.h

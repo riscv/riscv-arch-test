@@ -21,7 +21,7 @@
 //                doubleword, pmpcfg_i.A=TOR, XWR=111, pmpaddr_i = start of the
 //                doubleword + 4, pmpcfg_i+1.A=TOR, XWR = 111, pmpaddr_i+1 = start
 //                of doubleword + 8. Should access fault because doubleword is
-//                splitted over two regions, or pass if access is splitted into two.
+//                split over two regions, or pass if access is split into two.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------

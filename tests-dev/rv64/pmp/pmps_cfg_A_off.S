@@ -19,7 +19,7 @@
 // Test Cases  : Checking that A=OFF never matches a region. Configuring
 //				 PMP in M and switching to S mode. For pmpaddr with all 1s
 //				 pmpcfg.L=0, pmpcfg.A=OFF, pmpcfg.XWR=000. Fetching, reading
-//				 and writting from that region. Should succeed because region
+//				 and writing from that region. Should succeed because region
 //				 is off even though inaccessible.
 //
 // Dependencies: model_test.h, arch_test.h

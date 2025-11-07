@@ -42,7 +42,7 @@ when reporting the status of pass/fail on the execution of the architectural sui
 
 ## Test Stats
 
-The coverage and data propogation statistics of each test are hosted on
+The coverage and data propagation statistics of each test are hosted on
 [Google-Drive](https://drive.google.com/drive/folders/1KBRy6OgxnOPTDgyfJDj0gcMi5VdMLtVo?usp=share_link) for reference. This to avoid bloating this repo in size.
 
 ## Contribution process

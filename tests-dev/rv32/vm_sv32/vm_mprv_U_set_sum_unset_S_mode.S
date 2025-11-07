@@ -125,7 +125,7 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .macro SET_REQ_MSTATUS_VAL
 		LI (s7, MSTATUS_MPRV)
-		csrw mstatus,s7			//using csrrw to remove anyother values written on the mstatus register.
+		csrw mstatus,s7			//using csrrw to remove another values written on the mstatus register.
 		LI (s7, MSTATUS_SUM)	//Clear the MSTATUS sum bit
 		csrc mstatus,s7
 		LI (s7, 0x1800)	//clear previous mode
@@ -135,11 +135,11 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 .endm
 
 main:
-#ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
+#ifdef rvtest_mtrap_routine					                				// Verification of existence of rvtest_mtrap_routine
 	LI a4, 0xceed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine					                				// Verification of existance of rvtest_strap_routine
+#ifdef rvtest_strap_routine					                				// Verification of existence of rvtest_strap_routine
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif

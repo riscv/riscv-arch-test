@@ -19,7 +19,7 @@
 //
 // Test case    : We check that there is no match when pmpaddr0 >= pmpaddr1 with
 //				  the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR = 000
-//				  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test excercises
+//				  pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
 // 				  test case 1 that is when pmpaddr0 = pmpaddr1
 //
 // Dependencies: model_test.h, arch_test.h

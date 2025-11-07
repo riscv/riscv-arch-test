@@ -15,7 +15,7 @@
 - Converted one of the CANARY words to a delta instret count (there is a variable that will enable that)
 - Converted CODE/DATA/SIG_BEGIN/END to include all the little incidental code, so the tests template improves
 - Minor bug fixes to the trap handler in the cases of traps delegated to S-mode with virtualization enabled.
-- Rewrote the identity map macro. The macro now takes 3 parameters: BASE, LVLS, PERMS and generates a page of PTE entries with the most significant PPN counting from 0..511 (or 1023 if RV32). The macro takes into account the 2 different PTE formats, based on XLEN. Whereever the macro is used, it defaults BASE to 0 (so VA==PA) and uses ALL_PERMS
+- Rewrote the identity map macro. The macro now takes 3 parameters: BASE, LVLS, PERMS and generates a page of PTE entries with the most significant PPN counting from 0..511 (or 1023 if RV32). The macro takes into account the 2 different PTE formats, based on XLEN. Wherever the macro is used, it defaults BASE to 0 (so VA==PA) and uses ALL_PERMS
 - Add misaligned c.jalr and c.jr instruction test
 - Fixed reversed order of zicboz and Zicsr in cbo.zero RVTEST_ISA/RVTET_CASE strings. Note that Sail does not yet handle cbo.zero
 - Add Github Action CI test for this repo
@@ -69,7 +69,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 ## [3.8.11] - 2024-03-26
 
 - Added test suites for Zfh extensions.
-- Introduced half word and half width in Nan boxing functionality to accomdate Zfh extensions.
+- Introduced half word and half width in Nan boxing functionality to accommodate Zfh extensions.
 - Added test suites for Zfinx extensions.
 
 ## [3.8.10] -- 2024-03-24
@@ -78,7 +78,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 - The macro no longer works when rd = x0 in versions of GCC newer than 2023.12.20
 - riscof throws a message /home/jstine/cvw/addins/riscv-arch-test/riscv-test-suite/rv32i_m/I/src/jalr-01.S:72: Error: illegal operands `la x0,5b'
 - The TEST_JALR_OP macro invokes LA, which does not like x0 as an operand
-- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceeding nops
+- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceding nops
 
 ## [3.8.9] -- 2024-01-12
 
@@ -150,7 +150,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of harcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -210,7 +210,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 ## [3.8.11] - 2024-03-26
 
 - Added test suites for Zfh extensions.
-- Introduced half word and half width in Nan boxing functionality to accomdate Zfh extensions.
+- Introduced half word and half width in Nan boxing functionality to accommodate Zfh extensions.
 - Added test suites for Zfinx extensions.
 
 ## [3.8.10] -- 2024-03-24
@@ -219,7 +219,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 - The macro no longer works when rd = x0 in versions of GCC newer than 2023.12.20
 - riscof throws a message /home/jstine/cvw/addins/riscv-arch-test/riscv-test-suite/rv32i_m/I/src/jalr-01.S:72: Error: illegal operands `la x0,5b'
 - The TEST_JALR_OP macro invokes LA, which does not like x0 as an operand
-- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceeding nops
+- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceding nops
 
 ## [3.8.9] -- 2024-01-12
 
@@ -291,7 +291,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of harcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -350,7 +350,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 ## [3.8.11] - 2024-03-26
 
 - Added test suites for Zfh extensions.
-- Introduced half word and half width in Nan boxing functionality to accomdate Zfh extensions.
+- Introduced half word and half width in Nan boxing functionality to accommodate Zfh extensions.
 - Added test suites for Zfinx extensions.
 
 ## [3.8.10] -- 2024-03-24
@@ -359,7 +359,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 - The macro no longer works when rd = x0 in versions of GCC newer than 2023.12.20
 - riscof throws a message /home/jstine/cvw/addins/riscv-arch-test/riscv-test-suite/rv32i_m/I/src/jalr-01.S:72: Error: illegal operands `la x0,5b'
 - The TEST_JALR_OP macro invokes LA, which does not like x0 as an operand
-- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceeding nops
+- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceding nops
 
 ## [3.8.9] -- 2024-01-12
 
@@ -431,7 +431,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of harcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -491,7 +491,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 ## [3.8.11] - 2024-03-26
 
 - Added test suites for Zfh extensions.
-- Introduced half word and half width in Nan boxing functionality to accomdate Zfh extensions.
+- Introduced half word and half width in Nan boxing functionality to accommodate Zfh extensions.
 - Added test suites for Zfinx extensions.
 
 ## [3.8.10] -- 2024-03-24
@@ -500,7 +500,7 @@ Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and simila
 - The macro no longer works when rd = x0 in versions of GCC newer than 2023.12.20
 - riscof throws a message /home/jstine/cvw/addins/riscv-arch-test/riscv-test-suite/rv32i_m/I/src/jalr-01.S:72: Error: illegal operands `la x0,5b'
 - The TEST_JALR_OP macro invokes LA, which does not like x0 as an operand
-- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceeding nops
+- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceding nops
 
 ## [3.8.9] -- 2024-01-12
 
@@ -572,7 +572,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of harcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -780,7 +780,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [2.6.2] - 2022-02-24
 
 - modified verify.sh to ignore comments in reference signature during diff operation [#230]
-- udpated test-format spec to include the order of lines in the signature file [#214]
+- updated test-format spec to include the order of lines in the signature file [#214]
 - RVTEST_E macro to be enabled for all rv32E tests. [#227]
 
 ## [2.6.1] - 2021-11-25
@@ -846,7 +846,7 @@ Add missing check ISA fields in recently modified div and amo tests
 
 ## [2.4.2] - 2021-04-20
 
-- changed all occurances of SPTBR to the new name SATP
+- changed all occurrences of SPTBR to the new name SATP
 
 ## [2.4.1] - 2021-04-01
 
@@ -884,7 +884,7 @@ Add missing check ISA fields in recently modified div and amo tests
 
 ### Removed
 
-    - replaced spike target with a REAMDE pointing to riscv-isa-sim/arch_test_target/README.md
+    - replaced spike target with a README pointing to riscv-isa-sim/arch_test_target/README.md
 
 ## [2.2] - 2021-01-28
 
@@ -898,7 +898,7 @@ Add missing check ISA fields in recently modified div and amo tests
     	* Makefile: use $(TARGETDIR) variable for postverify target instead of hard-coded path
 
     2021-01-16 S Pawan Kumar <spawan1999@gmail.com>
-      	* Fixed NARGS macro defintion to work correctly.
+      	* Fixed NARGS macro definition to work correctly.
 
     2021-01-15 Xiretza <xiretza@xiretza.xyz>
     	* style: Add a missing space to the "OK" message in verify.sh
@@ -946,7 +946,7 @@ Add missing check ISA fields in recently modified div and amo tests
     		framework.
 
     2020-10-15 Simon Davidmann <simond@imperas.com>
-        * riscvOVPsim enhanced and moved to its own respository: github.com/riscv-ovpsim
+        * riscvOVPsim enhanced and moved to its own repository: github.com/riscv-ovpsim
 
     2020-04-24 Allen Baum <allen.baum@esperantotech.com>
     	* fixed the I-SB-01.S and I-SH-01.S tests and associated reference signatures to account
@@ -999,7 +999,7 @@ Add missing check ISA fields in recently modified div and amo tests
     	Added macros to ease test authoring: RVTEST_SIGBASE, RVTEST_SIGUPDATE, RVTEST_CASE
     	Added detail on proposals for connection to framework (how framework selects tests).
     	Expanded definition of signature format
-    	Changed the (proposed) directory structure and naming convention to eliminate ambiguities, add consistancy and slightly better match existing structure
+    	Changed the (proposed) directory structure and naming convention to eliminate ambiguities, add consistency and slightly better match existing structure
     	Added many "future work" items related to the above
     	Added examples and comments to code examples to indicate how proposed macros would be used
        * .gitignore: added condition to ignore Mac file system artifacts
@@ -1053,7 +1053,7 @@ Add missing check ISA fields in recently modified div and amo tests
     2019-04-05 Allen Baum <allen.baum@esperantotech.com>
         * spec/TestFormatSpec.adoc:  Adding details, minor corrections, ToBeDiscussed
           items and clarifications to the specification of the future compliance test
-          suite. Also removing restrictions on having absolate addresses in signature
+          suite. Also removing restrictions on having absolute addresses in signature
 
     2019-02-21 Lee Moore <moore@imperas.com>
         * Fixed     bug in RVTEST_IO_ASSERT_GPR_EQ which was not preserving register t0

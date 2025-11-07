@@ -16,7 +16,7 @@
 //
 // Coverpoints :  cp_priority for PMPM is fully covered in this file.
 //
-// Test Cases  :  Testing that first matching region has priority to determing
+// Test Cases  :  Testing that first matching region has priority to determine
 //                XWR. Set up 7 even/odd pairs of TOR regions, where each pair
 //                starts (even) at the standard location and has pair i has size
 //                i*g (in odd reg) so the regions partially overlap. Set the even

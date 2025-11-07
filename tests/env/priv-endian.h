@@ -4,7 +4,7 @@
 // Written: mbellido@hmc.edu 18 february 2025
 // Adapted for to support both RV32 and RV64 mbellido@hmc.edu
 //
-// Purpose: has the fuctions to store and load for endianness
+// Purpose: has the functions to store and load for endianness
 // Feed in: provide the endianness for the reads the writes and the privilege
 //
 // Copyright (C) 2021-23 Harvey Mudd College & Oklahoma State University
@@ -18,7 +18,7 @@
 //   s5: endianness for read test
 //   s6: return address for calls to endiantest
 //   s7: return address for calls to endianaccess
-//   s8: stored endianess value
+//   s8: stored endianness value
 //   s10: 0 to set/clear sstatus.UBE  (any other value otherwisse )
 //   s11: To switch back to running privilege mode once set/clear endianness
 ////////////////////////////////////////////////////////////////////////////////////////////////

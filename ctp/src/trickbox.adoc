@@ -26,19 +26,19 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_IO_INIT|Initialization steps needed prior to writing to the console
 |RVMODEL_IO_WRITE_STR(_R, _STR)|Write a null-terminated ASCII string to the console, where _R is a temporary register that may be trashed by the macro and _STR is a register containing the address of the first byte of the string
 |RVMODEL_SET_MEXT_INT| Sets the Machine External Interrupt (mip.MEIP = 1, if supported)
-|RVMODEL_CLEAR_MEXT_INT|Clears the Machine External Interrupt (mip.MEIP = 0)
+|RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt (mip.MEIP = 0)
 |RVMODEL_SET_MTIMER_INT|Sets the Machine Timer Interrupt (mip.MTIP = 1, if supported)
-|RVMODEL_CLEAR_MTIMER_INT|Clears the Machine Timer Interrupt (mip.MTIP = 0)
+|RVMODEL_CLR_MTIMER_INT|Clears the Machine Timer Interrupt (mip.MTIP = 0)
 |RVMODEL_SET_MTIMER_INT_SOON|Cause the Machine Timer Interrupt to rise soon, but not immediately.  This is used to check that an interrupt can fire in the future, such as for WFI.  A delay of about 100 cycles is typically adequate to run a small amount of code after this macro.
 |RVMODEL_SET_MSW_INT|Sets the Machine Software Interrupt (mip.MSIP = 1)
-|RVMODEL_CLEAR_MSW_INT|Clears the Machine Software Interrupt (mip.MSIP = 0)
+|RVMODEL_CLR_MSW_INT|Clears the Machine Software Interrupt (mip.MSIP = 0)
 |RVMODEL_SET_SEXT_INT|Sets the Supervisor External Interrupt (sip.SEIP = 1, if supported)
-|RVMODEL_CLEAR_SEXT_INT|Clears the Supervisor External Interrupt (sip.SEIP = 0)
+|RVMODEL_CLR_SEXT_INT|Clears the Supervisor External Interrupt (sip.SEIP = 0)
 |RVMODEL_SET_STIMER_INT|Sets the Supervisor Timer Interrupt (sip.STIP = 1, if supported)
-|RVMODEL_CLEAR_STIMER_INT|Clears the Supervisor Timer Interrupt (sip.STIP = 0)
+|RVMODEL_CLR_STIMER_INT|Clears the Supervisor Timer Interrupt (sip.STIP = 0)
 |RVMODEL_SET_STIMER_INT_SOON|Cause the Supervisor Timer Interrupt to rise soon, but not immediately.
 |RVMODEL_SET_SSW_INT|Sets the Supervisor Software Interrupt (mip.SSIP = 1, if supported)
-|RVMODEL_CLEAR_SSW_INT|Clears the Supervisor Software Interrupt (mip.SSIP = 0)
+|RVMODEL_CLR_SSW_INT|Clears the Supervisor Software Interrupt (mip.SSIP = 0)
 |RVMODEL_WRITE_GEIP(_R)|Write the value in _R to the Guext External Interrupt Pending (hgeip) register, if supported.  This is used to test guest external interrupts. Only the bottom GEILEN bits are written.
 |ACCESS_FAULT_ADDRESS|An address that causes an access fault when read or written. This is used to test exceptions.
 |===

@@ -48,13 +48,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ctp.pdf
-          path: docs/ctp/build/ctp.pdf
+          path: ctp/build/ctp.pdf
 
       - name: Upload HTML
         uses: actions/upload-artifact@v4
         with:
           name: ctp.html
-          path: docs/ctp/build/ctp.html
+          path: ctp/build/ctp.html
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3

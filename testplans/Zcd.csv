@@ -1,5 +1,5 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1p,cp_fdp,cp_fs2p,cp_imm_mul,cp_fs2,cp_fd
-c.fld,CFL,x,x,x,x,x,,8,,
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_fdp,cp_fs2p,cp_imm_mul,cp_fs2,cp_fd
+c.fld,CFL,x,x,x,p,x,,8,,
 c.fldsp,CFLS,x,x,x,,,,8sp,,x
-c.fsd,CFS,x,x,x,x,,x,8,,
+c.fsd,CFS,x,x,x,p,,x,8,,
 c.fsdsp,CFSS,x,x,x,,,,8sp,x,

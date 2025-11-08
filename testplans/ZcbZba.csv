@@ -1,2 +1,2 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rd,cp_rs1_edges
-c.zext.w,CU,,x,x,p,p,x
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs1_edges
+c.zext.w,CU,,x,x,p,x

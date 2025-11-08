@@ -18,6 +18,13 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     """Generate tests for backward branch negative offsets."""
     if instr_type == "J":
         return make_offset_j(instr_name, instr_type, coverpoint, test_data)
+
+    # TODO: implement support for compressed instructions
+    if instr_type in ["CJ", "CB", "CJR"]:
+        return []
+
+    return []  # TODO
+
     params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None
     check_reg = test_data.int_regs.get_register()

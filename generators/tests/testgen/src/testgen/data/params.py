@@ -33,6 +33,7 @@ class InstructionParams:
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None
+    temp_val: int | None = None
 
     # Float registers
     fs1: int | None = None

@@ -21,9 +21,6 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         rd_regs = list(range(test_data.int_regs.reg_count))
     elif coverpoint.endswith("_nx0"):
         rd_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
-    elif coverpoint.endswith("_nx2"):
-        rd_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
-        rd_regs.remove(2)  # Exclude x2
     elif coverpoint.endswith("rd_p"):
         rd_regs = list(range(8, 16))  # x8-x15 for compressed instructions
     else:
@@ -50,6 +47,9 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         rs1_regs = range(test_data.int_regs.reg_count)
     elif coverpoint.endswith("_nx0"):
         rs1_regs = range(1, test_data.int_regs.reg_count)  # Exclude x0
+    elif coverpoint.endswith("_nx2"):
+        rs1_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
+        rs1_regs.remove(2)  # Exclude x2
     elif coverpoint.endswith("_p"):
         rs1_regs = range(8, 16)  # x8-x15 for compressed instructions
     else:

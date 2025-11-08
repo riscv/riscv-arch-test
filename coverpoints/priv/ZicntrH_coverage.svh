@@ -4,11 +4,11 @@
 //
 ///////////////////////////////////////////
 
-define COVER_ZICNTRH
+`define COVER_ZICNTRH
 covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "coverage/RISCV_coverage_standard_coverpoints.svh"
-    // counter access in supervisor mode
+    // counter access in hypervisor mode
 
     mcounteren_ones: coverpoint ins.current.csr[12'h306]{
         bins ones = {32'b11111111111111111111111111111111};
@@ -482,40 +482,42 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     `endif
    
     // M mode coverpoints
-    cp_mhscounteren_access_m: cross csrr, counters_mcounteren, counters_hcounteren, counters_scounteren, priv_mode_m;
-    cp_delta_m: cross csrr, cp_htimedelta, prive_mode_m;
+    cp_mhscounteren_access_mcnt_m: cross csrr, counters_mcounteren, priv_mode_m;
+    cp_mhscounteren_access_hcnt_m: cross csrr, counters_hcounteren, priv_mode_m;
+    cp_mhscounteren_access_scnt_m: cross csrr, counters_scounteren, priv_mode_m;
+    cp_delta_m: cross csrr, cp_htimedelta, priv_mode_m;
     `ifdef XLEN32
-    cp_deltah_m: cross csrr, cp_htimedeltah, prov_mode_m;
+    cp_deltah_m: cross csrr, cp_htimedeltah, priv_mode_m;
     `endif
 
     // HS mode coverpoints
-    cp_scounteren_acces_hs: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_hs;
-    cp_delta_hs: cross csrr, cp_htimedelta, prive_mode_hs;
+    cp_scounteren_acces_scnt_hs: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_hs;
+    cp_delta_hs: cross csrr, cp_htimedelta, priv_mode_hs;
     `ifdef XLEN32
-    cp_deltah_hs: cross csrr, cp_htimedeltah, prov_mode_hs;
+    cp_deltah_hs: cross csrr, cp_htimedeltah, priv_mode_hs;
     `endif 
 
     // VS mode coverpoints
     cp_mcounteren_acces_vs: cross csrr, counters_mcounteren, hcounteren_ones, scounteren_zeroes, priv_mode_vs;
     cp_hcounteren_access_vs: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_zeroes, priv_mode_vs;
-    cp_delta_vs: cross csrr, cp_htimedelta, prive_mode_vs;
+    cp_delta_vs: cross csrr, cp_htimedelta, priv_mode_vs;
     `ifdef XLEN32
-    cp_deltah_vs: cross csrr, cp_htimedeltah, prov_mode_vs;
+    cp_deltah_vs: cross csrr, cp_htimedeltah, priv_mode_vs;
     `endif 
 
     // U mode coverpoints
     cp_scounteren_access_u: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_u;
     cp_delta_u: cross csrr, cp_htimedelta, prive_mode_u;
     `ifdef XLEN32
-    cp_deltah_u: cross csrr, cp_htimedeltah, prov_mode_u;
+    cp_deltah_u: cross csrr, cp_htimedeltah, priv_mode_u;
     `endif 
 
     // VU mode coverpoints
     cp_hcounteren_access_vu: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_ones, priv_mode_vu;
     cp_scounteren_access_vu: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_ones, priv_mode_vu;
-    cp_delta_vu: cross csrr, cp_htimedelta, prive_mode_vu;
+    cp_delta_vu: cross csrr, cp_htimedelta, priv_mode_vu;
     `ifdef XLEN32
-    cp_deltah_vu: cross csrr, cp_htimedeltah, prov_mode_vu;
+    cp_deltah_vu: cross csrr, cp_htimedeltah, priv_mode_vu;
     `endif 
 
 endgroup

@@ -8,7 +8,7 @@
 covergroup EndianH_endian_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "coverage/RISCV_coverage_standard_coverpoints.svh"
-    // "Endianness tests in machine mode"
+    // "Endianness tests in hypervisor mode"
 
     // building blocks for the main coverpoints
         // ENDIANNESS COVERPOINTS: check writes and reads with various endianness
@@ -36,6 +36,22 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     cp_lbu: coverpoint ins.current.insn {
         wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
     }
+
+    `ifdef XLEN64
+    cp_sd: coverpoint ins.current.insn {
+            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
+        }
+        cp_ld: coverpoint ins.current.insn {
+            wildcard bins ld = {32'b????????????_?????_001_?????_0000011};
+        }
+        cp_lwu: coverpoint ins.current.insn {
+            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
+        }
+        cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
+            bins zero = {3'b000};
+        }
+    `endif
+
     cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
         // all byte offsets
     }
@@ -49,13 +65,10 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
         // all word offsets
     }
 
-    `ifdef XLEN64
-        hstatus_vsbe: coverpoint ins.current.csr[12'h600][5] { // vsbe is hstatus[5] in RV64
+    
+    hstatus_vsbe: coverpoint ins.current.csr[12'h600][5] { // vsbe is hstatus[5] in RV64
         }
-    `else
-        hstatus_vsbe: coverpoint ins.current.csr[12'h600][5] { // vsbe is hstatush[5] in RV32
-        }
-    `endif
+    
 
     mstatus_mprv: coverpoint ins.current.csr[12'h300][17] { // mprv is mstatus[17]
     }
@@ -107,18 +120,6 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     cp_vsstatus_ube_endianness_lhu: cross priv_mode_vu, vsstatus_ube, cp_lhu, cp_halfoffset;
     cp_vsstatus_ube_endianness_lbu: cross priv_mode_vu, vsstatus_ube, cp_lbu, cp_byteoffset;
     `ifdef XLEN64
-        cp_sd: coverpoint ins.current.insn {
-            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
-        }
-        cp_ld: coverpoint ins.current.insn {
-            wildcard bins ld = {32'b????????????_?????_001_?????_0000011};
-        }
-        cp_lwu: coverpoint ins.current.insn {
-            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
-        }
-        cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
-            bins zero = {3'b000};
-        }
         cp_hstatus_vbe_endianness_sd:  cross priv_mode_vs, hstatus_vsbe, cp_sd,  cp_doubleoffset;
         cp_hstatus_vbe_endianness_ld:  cross priv_mode_vs, hstatus_vsbe, cp_ld,  cp_doubleoffset;
         cp_hstatus_vbe_endianness_lwu: cross priv_mode_vs, hstatus_vsbe, cp_lwu, cp_wordoffset;

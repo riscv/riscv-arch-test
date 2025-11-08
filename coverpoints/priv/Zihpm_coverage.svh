@@ -146,7 +146,7 @@ cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0
         `endif
     }
 
-    cp_hmp_write: cross cp_hpmh_count, priv_mode_m;
+    cp_hmp_write: cross cp_hpm_count, priv_mode_m;
 
     `ifdef XLEN32  
         cp_hpmh_write: cross cp_hpmh_counth, priv_mode_m;

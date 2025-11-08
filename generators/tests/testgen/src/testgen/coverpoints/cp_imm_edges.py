@@ -98,8 +98,10 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     if instr_name == "c.jal":
         test_data.int_regs.consume_registers([1])
         params = generate_random_params(test_data, instr_type, rd=1)  # c.jal always uses x1
+        return []  # TODO: implement c.jal immediate edge tests
     elif instr_name == "c.j":
         params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
+        return []  # TODO: implement c.j immediate edge tests
     else:
         params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None

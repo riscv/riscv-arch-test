@@ -1,6 +1,6 @@
 ///////////////////////////////////////////
 //
-// RISC-V Architectural Functional Coverage Covergroups
+// RISC-V Architectural Functional Coverage Covergroups Initialization File
 //
 // Written: Julia Gong jgong@g.hmc.edu November 10, 2025
 //

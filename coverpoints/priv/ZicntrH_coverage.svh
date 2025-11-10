@@ -497,14 +497,14 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     `endif
 
     // HS mode coverpoints
-    cp_scounteren_acces_scnt_hs: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_hs;
+    cp_scounteren_access_scnt_hs: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_hs;
     cp_delta_hs: cross csrr, cp_htimedelta, priv_mode_hs;
     `ifdef XLEN32
     cp_deltah_hs: cross csrr, cp_htimedeltah, priv_mode_hs;
     `endif 
 
     // VS mode coverpoints
-    cp_mcounteren_acces_vs: cross csrr, counters_mcounteren, hcounteren_ones, scounteren_zeroes, priv_mode_vs;
+    cp_mcounteren_access_vs: cross csrr, counters_mcounteren, hcounteren_ones, scounteren_zeroes, priv_mode_vs;
     cp_hcounteren_access_vs: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_zeroes, priv_mode_vs;
     cp_delta_vs: cross csrr, cp_htimedelta, priv_mode_vs;
     `ifdef XLEN32
@@ -531,5 +531,4 @@ endgroup
 
 function void zicntrh_sample(int hart, int issue, ins_t ins);
     ZicntrH_scounters_cg.sample(ins);
-   // $display("ins; %h mcounteren; %h privmode: %h enabled: %b %b %b",ins.current.insn, ins.current.csr[12'h306][31:0], ins.prev.mode, {ins.current.insn[31:20], ins.current.csr[12'h306][31:0] } == {12'hC00, 32'b00000000000000000000000000000001}, ins.prev.mode == {2'b01}, ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[19:12] == 8'b00000010);
 endfunction

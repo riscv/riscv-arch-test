@@ -5,9 +5,11 @@
 from testgen.instruction_formatters.instruction_formatters import (
     format_instruction,
     format_single_test,
+    get_type_config,
 )
 
 __all__ = [
     "format_instruction",
     "format_single_test",
+    "get_type_config",
 ]

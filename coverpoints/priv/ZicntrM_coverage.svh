@@ -13,7 +13,7 @@
 `define COVER_ZICNTRM
 covergroup ZicntrM_mcounters_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     // Counter access in machine mode
 
     // building blocks for the main coverpoints

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
@@ -18,16 +18,13 @@ def format_cbp_type(
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CBP-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
-    assert params.rs2 is not None and params.rs2val is not None
-    assert params.rd is not None
     assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 6)
+    scaled_imm = modify_imm(params.immval, 5 if test_data.xlen == 32 else 6, signed=False, no_zero=True)
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-        load_int_reg("rs2", params.rs2, params.rs2val, test_data),
     ]
     test = [
-        f"{instr_name} x{params.rs1}, x{params.immval} # perform operation",
+        f"{instr_name} x{params.rs1}, {scaled_imm} # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [write_sigupd(params.rs1, test_data, "int")]
     return (setup, test, check)

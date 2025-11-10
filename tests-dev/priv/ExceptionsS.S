@@ -594,7 +594,7 @@ cp_medeleg_loop:
     //cp_breakpoint
     /////////////////////////////////
 
-    mv a0, a3 // Move stored return priveledge mode to a0
+    mv a0, a3 // Move stored return privilege mode to a0
     ebreak
 
     /////////////////////////////////
@@ -726,7 +726,7 @@ store_loop:
     /////////////////////////////////
 
     // test an ecall
-    mv a0, a3 // move stored return priveledge mode to a0
+    mv a0, a3 // move stored return privilege mode to a0
     ecall
 
     /////////////////////////////////

@@ -13,7 +13,7 @@
 `define COVER_ZICSRU
 covergroup ZicsrU_uprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "ZicsrU uprivinst"
 
     // building blocks for the main coverpoints

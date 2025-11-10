@@ -13,7 +13,7 @@
 
 covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;
-  `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+  `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
     bins at_region = {`REGIONSTART};

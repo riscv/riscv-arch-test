@@ -15,7 +15,7 @@
 covergroup ExceptionsHV_exceptions_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
-    `include "coverage/RISCV_coverage_standard_coverpoints_vector.svh"
+    `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_mstatus_vs_off

@@ -8,6 +8,7 @@
 ##################################
 
 import filecmp
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -23,7 +24,9 @@ def validate_udb_config(udb_config_file: Path) -> None:
         "cfg",
         f"cfgs/{udb_config_file.name}",
     ]
-    subprocess.run(validate_udb_config_cmd, check=True)
+    env = os.environ.copy()
+    env["PODMAN"] = "true"
+    subprocess.run(validate_udb_config_cmd, check=True, env=env)
 
 
 def get_config_params(udb_config_file: Path) -> dict[str, Any]:
@@ -46,7 +49,9 @@ def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
             "--output",
             f"{udb_config_file.stem}_extensions.txt",
         ]
-        subprocess.run(generate_extensions_list_cmd, check=True)
+        env = os.environ.copy()
+        env["PODMAN"] = "true"
+        subprocess.run(generate_extensions_list_cmd, check=True, env=env)
         shutil.move(f"./external/riscv-unified-db/{udb_config_file.stem}_extensions.txt", extension_list_file)
 
 

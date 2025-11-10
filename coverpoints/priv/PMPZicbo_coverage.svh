@@ -13,7 +13,7 @@
 
 covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [XLEN-1:0] pmpaddr [62:0]);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     cfg_for_menvcfg: coverpoint ins.current.csr[12'h30A][7:4] {
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1

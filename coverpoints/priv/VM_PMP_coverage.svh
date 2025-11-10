@@ -11,7 +11,7 @@
 `define COVER_VM_PMP
 covergroup VM_PMP_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
     //pte permission for leaf PTEs
     PTE_i: coverpoint ins.current.pte_i[7:0] {
         wildcard bins leaflvl_u = {8'b11?11111};

@@ -1,17 +1,23 @@
 ///////////////////////////////////////////
 //
-// RISC-V Architectural Functional Coverage Covergroups Initialization File
+// RISC-V Architectural Functional Coverage Covergroups
 //
-///////////////////////////////////////////
+// Written: Julia Gong jgong@g.hmc.edu November 10, 2025
+//
+// Copyright (C) 2025 Harvey Mudd College
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ENDIANS
+`define COVER_ENDIANH
 covergroup EndianH_endian_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "coverage/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests in hypervisor mode"
 
     // building blocks for the main coverpoints
-        // ENDIANNESS COVERPOINTS: check writes and reads with various endianness
+    // ENDIANNESS COVERPOINTS: check writes and reads with various endianness
     cp_sw: coverpoint ins.current.insn {
         wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
     }
@@ -39,17 +45,17 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
     cp_sd: coverpoint ins.current.insn {
-            wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
-        }
-        cp_ld: coverpoint ins.current.insn {
-            wildcard bins ld = {32'b????????????_?????_001_?????_0000011};
-        }
-        cp_lwu: coverpoint ins.current.insn {
-            wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
-        }
-        cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
-            bins zero = {3'b000};
-        }
+        wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
+    }
+    cp_ld: coverpoint ins.current.insn {
+        wildcard bins ld = {32'b????????????_?????_001_?????_0000011};
+    }
+    cp_lwu: coverpoint ins.current.insn {
+        wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
+    }
+    cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
+        bins zero = {3'b000};
+    }
     `endif
 
     cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {
@@ -66,8 +72,8 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     }
 
     
-    hstatus_vsbe: coverpoint ins.current.csr[12'h600][5] { // vsbe is hstatus[5] in RV64
-        }
+    hstatus_vsbe: coverpoint ins.current.csr[12'h600][5] { // vsbe is hstatus[5]
+    }
     
 
     mstatus_mprv: coverpoint ins.current.csr[12'h300][17] { // mprv is mstatus[17]
@@ -85,11 +91,11 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     }
     
     // VS and VU modes
-    priv_mode_vs: coverpoint {ins.current.VirtMode, ins.current.mode} {
+    priv_mode_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
         bins VS_mode = {3'b101}; 
     }
 
-    priv_mode_vu: coverpoint {ins.current.VirtMode, ins.current.mode} {
+    priv_mode_vu: coverpoint {ins.current.mode_virt, ins.current.mode} {
         bins VU_mode = {3'b100};
     }
 

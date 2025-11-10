@@ -1,18 +1,21 @@
 ///////////////////////////////////////////
 //
-// RISC-V Architectural Functional Coverage Covergroups Initialization File
+// RISC-V Architectural Functional Coverage Covergroups
 //
-///////////////////////////////////////////
+// Written: Julia Gong jgong@g.hmc.edu November 10, 2025
+//
+// Copyright (C) 2025 Harvey Mudd College
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZIHPM
 covergroup Zihpm_cg with function sample (ins_t, ins);
     option.per_instance = 0;
     `include "coverage/RISCV_coverage_standard_coverpoints.svh"
 
-cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0] } {
-        bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
-        bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
-        bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+    cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0] } {
         bins mhpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
         bins mhpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
         bins mhpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
@@ -43,9 +46,6 @@ cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0
         bins mhpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
         bins mhpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
 
-        bins cycle_disabled         = {44'b110000000000_11111111111111111111111111111110};
-        bins time_disabled          = {44'b110000000001_11111111111111111111111111111101};
-        bins instret_disabled       = {44'b110000000010_11111111111111111111111111111011};
         bins mhpmcounter3_disabled   = {44'b110000000011_11111111111111111111111111110111};
         bins mhpmcounter4_disabled   = {44'b110000000100_11111111111111111111111111101111};
         bins mhpmcounter5_disabled   = {44'b110000000101_11111111111111111111111111011111};
@@ -78,9 +78,6 @@ cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0
 }
         `ifdef XLEN32
         cp_hpmh_counth: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0] } {
-            bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
-            bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
-            bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
             bins mhpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
             bins mhpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
             bins mhpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
@@ -111,9 +108,6 @@ cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0
             bins mhpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
             bins mhpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
 
-            bins cycleh_disabled         = {44'b110010000000_11111111111111111111111111111110};
-            bins timeh_disabled          = {44'b110010000001_11111111111111111111111111111101};
-            bins instreth_disabled       = {44'b110010000010_11111111111111111111111111111011};
             bins mhpmcounter3h_disabled   = {44'b110010000011_11111111111111111111111111110111};
             bins mhpmcounter4h_disabled   = {44'b110010000100_11111111111111111111111111101111};
             bins mhpmcounter5h_disabled   = {44'b110010000101_11111111111111111111111111011111};

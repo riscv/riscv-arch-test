@@ -5,13 +5,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
 
 
-@add_instruction_formatter("I1")
+@add_instruction_formatter("I1", required_params={"rd", "rs1", "rs1val"})
 def format_i1_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

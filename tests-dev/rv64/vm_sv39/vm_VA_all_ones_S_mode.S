@@ -35,145 +35,145 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 
 .macro TEST_CASES_RUNNER_RW LOWER_MODE, VA, level
     .if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
+    SET_REQ_MSTATUS_VAL
     .else
-    	RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+      RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
     .endif
-	
-	.align 2
-	LI(a5, \VA)                    		// Load virtual address
+
+  .align 2
+  LI(a5, \VA)                        // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
-    
-	// Test store permission
-    sb  a2, 0(a5)               		// Store test data
+
+  // Test store permission
+    sb  a2, 0(a5)                   // Store test data
     nop
 
     // Test load permission
-    lbu  a4, 0(a5)        				// Load back data
+    lbu  a4, 0(a5)                // Load back data
     nop
-	nop
-	nop
+  nop
+  nop
 
-	RVTEST_GOTO_MMODE		            // Switching back to M mode
-	
-	// Signature Update
-   	SREG a2, 0(x13)                     // Record store attempt
-    	nop
-    	addi x13, x13, REGWIDTH
+  RVTEST_GOTO_MMODE                // Switching back to M mode
 
-   	SREG a4, 0(x13)                     // Record load attempt
-    	nop
-    	addi x13, x13, REGWIDTH
-.endm	
+  // Signature Update
+     SREG a2, 0(x13)                     // Record store attempt
+      nop
+      addi x13, x13, REGWIDTH
+
+     SREG a4, 0(x13)                     // Record load attempt
+      nop
+      addi x13, x13, REGWIDTH
+.endm
 
 
 .macro TEST_CASES_RUNNER_X LOWER_MODE, VA, level
-	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
-	.else
-		RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-	.endif
-	
-	.align 2
-	LI(a5, \VA)                    		// Load virtual address
-	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
-	LA(x4, 1f)							// Store the return Address in x4
-	jalr ra, 0(a5)
-	nop
-	nop
-1:
-	nop
-	nop
+  .if \LOWER_MODE == Mmode
+    SET_REQ_MSTATUS_VAL
+  .else
+    RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
+  .endif
 
-	RVTEST_GOTO_MMODE		            // Switching back to M mode
+  .align 2
+  LI(a5, \VA)                        // Load virtual address
+  LI(x3, 0xACCE)            // Store a value which is to be checked in trap handler
+  LA(x4, 1f)              // Store the return Address in x4
+  jalr ra, 0(a5)
+  nop
+  nop
+1:
+  nop
+  nop
+
+  RVTEST_GOTO_MMODE                // Switching back to M mode
 .endm
 
 
 main:
-#ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
-	LI a4, 0xceed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_mtrap_routine                                  // Verification of existence of rvtest_mtrap_routine
+  LI a4, 0xceed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine					                				// Verification of existance of rvtest_strap_routine
-	LI a4, 0xbeed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_strap_routine                                  // Verification of existence of rvtest_strap_routine
+  LI a4, 0xbeed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-	
-	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
-	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
+
+  ALL_MEM_PMP                                                          // set the PMP permissions for the whole memory
+  csrw satp, zero                                                  // write satp with all zeros (bare mode)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//								Virtual addresses definition section for the code, data, sig, vmem, test sections
+//                Virtual addresses definition section for the code, data, sig, vmem, test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	// Virtual Address of Test section 
-	.set va_data_rw,          	0xffffffffffffffff			// Store & Load will be performed at this VA
-	.set va_data_x,          	0xfffffffffffffffc			// Execute will be performed at this VA
+  // Virtual Address of Test section
+  .set va_data_rw,            0xffffffffffffffff      // Store & Load will be performed at this VA
+  .set va_data_x,            0xfffffffffffffffc      // Execute will be performed at this VA
 
-	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x18000039c                  
-	.set va_rvtest_data_begin,  0x1c0000530		     
+  // Virtual Addresses for code & data regions
+  .set va_rvtest_code_begin,  0x18000039c
+  .set va_rvtest_data_begin,  0x1c0000530
 
 
-//	PTE setup for Code Region
-	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
-	sfence.vma
+//  PTE setup for Code Region
+  PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+  sfence.vma
 
-//	PTE setup for Data Region
-	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
-	sfence.vma
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//													Save area logic
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	LI (t0, va_rvtest_data_begin) 
-	LA (t1, rvtest_data_begin) 
-	sub t0, t0, t1         
-	addi t3, t0, sv_area_sz
-	csrr sp, mscratch      
-	add t1,sp,t3           
-	csrw sscratch, t1      
-	csrr sp, mscratch
-
-	//save area setup for code region
-	SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
-	//save area setup for data region
-	SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
-	
-//---------------------------------------------------------------------------------------------------------------------------------
-//												Test Cases Start from here
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	SATP_SETUP_RV64(sv39)                                                   // set the SATP for virtualization
-	sfence.vma                                                             // flush the TLB
+//  PTE setup for Data Region
+  PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
+  sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
+//                          Save area logic
 //---------------------------------------------------------------------------------------------------------------------------------
-//													TESTS AT LEVEL 0
-//---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- RW permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 1: Test in S-Mode | RW bit set | expected = successful page access 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_rw, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_rw, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data_rw, LEVEL0)
-	sfence.vma
 
-	TEST_CASES_RUNNER_RW Smode, va_data_rw, LEVEL0
+  LI (t0, va_rvtest_data_begin)
+  LA (t1, rvtest_data_begin)
+  sub t0, t0, t1
+  addi t3, t0, sv_area_sz
+  csrr sp, mscratch
+  add t1,sp,t3
+  csrw sscratch, t1
+  csrr sp, mscratch
+
+  //save area setup for code region
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+  //save area setup for data region
+  SAVE_AREA_SETUP(va_rvtest_data_begin, rvtest_data_begin, data)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//					4KB PAGE	Region 1 under test at level 0 -- X permission given to the region
+//                        Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
-	
-	// Test case 2: Test in S-Mode | X bit set | expected = successful page access 
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_x, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_x, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data_x, LEVEL0)
-	sfence.vma
 
-	TEST_CASES_RUNNER_X Smode, va_data_x, LEVEL0
+  SATP_SETUP_RV64(sv39)                                                   // set the SATP for virtualization
+  sfence.vma                                                             // flush the TLB
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
+//                          TESTS AT LEVEL 0
+//---------------------------------------------------------------------------------------------------------------------------------
+//          4KB PAGE  Region 1 under test at level 0 -- RW permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 1: Test in S-Mode | RW bit set | expected = successful page access
+  PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_rw, LEVEL2)
+  PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_rw, LEVEL1)
+  PTE_SETUP_RV39_New(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data_rw, LEVEL0)
+  sfence.vma
+
+  TEST_CASES_RUNNER_RW Smode, va_data_rw, LEVEL0
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//          4KB PAGE  Region 1 under test at level 0 -- X permission given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 2: Test in S-Mode | X bit set | expected = successful page access
+  PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data_x, LEVEL2)
+  PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data_x, LEVEL1)
+  PTE_SETUP_RV39_New(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data_x, LEVEL0)
+  sfence.vma
+
+  TEST_CASES_RUNNER_X Smode, va_data_x, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -182,33 +182,33 @@ RVMODEL_HALT
 RVTEST_DATA_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGIONS FOR TESTING
+//                      PHYSICAL ADDRESS REGIONS FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0
 // This region will be used to Store and then Load from the last byte
 .align 12
 rvtest_data_1_l0_rw:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
-	.word 0xbeefcaf3
+  nop                                    // trap return back skip
+  addi ra, ra, REGWIDTH
+  jr ra                                  // jump back for the trap on level 1
+  nop
+  .word 0xbeefcaf1                            // Random word
+  .word 0xbeefcaf2                            // Random word
+  .skip ((1 << 10) - 7)*4                         // Added to make occupied space of data region 4KB
+  .word 0xbeefcaf3
 
 // Physical Address region under testing for LEVEL 0
 // This region will be used to execute the last instruction at (4KB - 4)
 .align 12
 rvtest_data_1_l0_x:
-	nop																		// trap return back skip
-	addi ra, ra, REGWIDTH
-	jr ra																	// jump back for the trap on level 1
-	nop
-	.word 0xbeefcaf1														// Random word
-	.word 0xbeefcaf2														// Random word
-	.skip ((1 << 10) - 7)*4 												// Added to make occupied space of data region 4KB 
-	jr ra
+  nop                                    // trap return back skip
+  addi ra, ra, REGWIDTH
+  jr ra                                  // jump back for the trap on level 1
+  nop
+  .word 0xbeefcaf1                            // Random word
+  .word 0xbeefcaf2                            // Random word
+  .skip ((1 << 10) - 7)*4                         // Added to make occupied space of data region 4KB
+  jr ra
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -217,14 +217,14 @@ rvtest_data_1_l0_x:
 #ifdef rvtest_strap_routine
 .align 12
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
-		
+    RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

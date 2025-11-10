@@ -8,8 +8,8 @@ members = ["framework", "generators/tests/testgen"]
 
 [dependency-groups]
 dev = [
-    "pyright>=1.1.406",
-    "ruff>=0.14.1",
+    "pyright>=1.1.407",
+    "ruff>=0.14.3",
 ]
 
 ###### RUFF CONFIG #####

@@ -8,9 +8,9 @@
 """cp_imm_mul coverpoint generator."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_mul")
@@ -27,7 +27,7 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     elif coverpoint.endswith("_addi4spn"):
         imm_mul = range(4, 1024, 4)
     elif coverpoint.endswith("_addi16sp"):
-        imm_mul = range(-512, 512, 16)
+        imm_mul = [i for i in range(-512, 512, 16) if i != 0]
     else:
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
     test_lines: list[str] = []

@@ -5,14 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("JR")
+@add_instruction_formatter("JR", required_params={"rd", "rs1", "rs2", "immval"})
 def format_jr_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

@@ -65,7 +65,7 @@ main:
     #endif
     la s3, scratch  # s3 = pointer to scratch
     li s10, 1
-    li s11, 3       #passing privilige mode: machine
+    li s11, 3       #passing privilege mode: machine
 
     // iterate over each endianness, doing all sizes of stores and loads
     li s4, 0        # endianness for write

@@ -21,7 +21,7 @@
 #include "model_test.h"
 #include "arch_test.h"
 
-// load code to initalize stack, handle interrupts, terminate
+// load code to initialize stack, handle interrupts, terminate
 // The PMP tests are sensitive to the exact addresses in this code, so unfortunately
 // modifying anything breaks those tests.
 
@@ -31,7 +31,7 @@
 //  3: change to machine mode
 //  4: terminate program
 //
-// ExceptionsS.S tests for delgated ecalls from user mode to supervisor mode.
+// ExceptionsS.S tests for delegated ecalls from user mode to supervisor mode.
 // To return back to machine mode the s_traphandler in ExceptionsS.S executes an ecall
 // To signal to the machine mode trap handler that this call was issued from supervisor mode
 // the a0 register inputs are 5-9.  The machine mode trap handler will then use sepc instead
@@ -221,10 +221,10 @@ trap_return:                     # don't need to update mepc for interrupts
     // li t0, 1            # 1 for success, 3 for failure
     // SREG t0, 0(t1)     # write success code to tohost
 
-write_tohost:   
-    li x1, 1                       
-    sw x1, tohost, t0     
-    j write_tohost        
+write_tohost:
+    li x1, 1
+    sw x1, tohost, t0
+    j write_tohost
 
 self_loop:
     j self_loop         # wait
@@ -586,7 +586,7 @@ setmsb:
     #else
         ERROR: __riscv_xlen not defined
     #endif
-    ret                 # return to calller
+    ret                 # return to caller
 
 .section .tohost
 tohost:                 # write to HTIF

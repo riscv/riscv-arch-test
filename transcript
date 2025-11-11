@@ -1,0 +1,90 @@
+# do /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/riscv-arch-test.do 		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.tracelist		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.ucdb		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints		/home/nfotenos/cvw/addins/riscv-arch-test-cvw/configs/ref/sail-rv32gc		PRIV_COVERAGE > /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.ucdb.log 2>&1
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.tracelist
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.ucdb
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/configs/ref/sail-rv32gc
+# PRIV_COVERAGE
+# +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/unpriv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/priv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv32_priv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv64_priv
+# +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/configs/ref/sail-rv32gc +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/unpriv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/priv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv32_priv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv64_priv +incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov
+# /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/rvviTrace.sv /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/riscv_arch_test.sv /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/testbench.sv
+# QuestaSim-64 vlog 2023.4_4 Compiler 2024.10 Oct 11 2024
+# Start time: 15:26:41 on Nov 04,2025
+# vlog -permissive -lint -work /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/configs/ref/sail-rv32gc" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/unpriv" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/priv" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv32_priv" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/coverpoints/rv64_priv" "+incdir+/home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov" "+define+PRIV_COVERAGE" /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/rvviTrace.sv /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/riscv_arch_test.sv /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/testbench.sv 
+# -- Compiling interface dm
+# -- Compiling interface rvviTrace
+# -- Compiling package RISCV_decode_pkg
+# -- Compiling package riscv_arch_test_sv_unit
+# -- Importing package RISCV_decode_pkg
+# -- Importing package RISCV_coverage_pkg
+# -- Compiling package RISCV_coverage_pkg
+# -- Compiling module riscv_arch_test
+# -- Compiling module testbench
+# 
+# Top level modules:
+# 	testbench
+# End time: 15:26:41 on Nov 04,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# QuestaSim-64 vopt 2023.4_4 Compiler 2024.10 Oct 11 2024
+# Start time: 15:26:41 on Nov 04,2025
+# vopt /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work.testbench -work /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work -o testbenchopt 
+# 
+# Top level modules:
+# 	testbench
+# 
+# Analyzing design...
+# -- Loading module testbench
+# -- Loading interface rvviTrace
+# -- Loading interface dm
+# -- Loading module riscv_arch_test
+# Optimizing 9 design-units (inlining 3/4 module instances):
+# -- Optimizing package RISCV_decode_pkg(fast)
+# -- Optimizing package RISCV_coverage_pkg(fast)
+# -- Optimizing package riscv_arch_test_sv_unit(fast)
+# -- Inlining interface dm(fast__1)
+# -- Inlining interface rvviTrace(fast__2)
+# -- Inlining module riscv_arch_test(fast)
+# -- Optimizing module testbench(fast)
+# -- Optimizing interface dm(fast)
+# -- Optimizing interface rvviTrace(fast)
+# Optimized design name is testbenchopt
+# End time: 15:26:41 on Nov 04,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -lib /home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/ucdb_work testbenchopt "+traceFileList=/home/nfotenos/cvw/addins/riscv-arch-test-cvw/work-ref/sail-rv32gc/coverage/priv/priv.tracelist" -fatal 7 
+# Start time: 15:26:41 on Nov 04,2025
+# //  Questa Sim-64
+# //  Version 2023.4_4 linux_x86_64 Oct 11 2024
+# //
+# //  Copyright 1991-2024 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.rvviTrace(fast)
+# Loading work.RISCV_decode_pkg(fast)
+# Loading work.RISCV_coverage_pkg(fast)
+# Loading work.riscv_arch_test_sv_unit(fast)
+# Loading work.testbench(fast)
+# 
+# //  riscv_arch_test    
+# //  adapted from riscvISACOV Version 20231026.0
+# //  SPDX-License-Identifier: Apache-2.0
+# //
+# //  Configuration:
+# //    XLEN: 32
+# //    EXTENSIONS:
+# riscv_arch_test: coverage initialized
+# All trace files completed
+# ** Note: $finish    : /home/nfotenos/cvw/addins/riscv-arch-test-cvw/framework/src/act/fcov/testbench.sv(140)
+#    Time: 60675 ns  Iteration: 1  Instance: /testbench
+# Saving coverage database on exit...
+# End time: 15:26:42 on Nov 04,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

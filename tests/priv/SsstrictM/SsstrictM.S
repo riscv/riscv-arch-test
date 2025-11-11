@@ -1,7 +1,7 @@
 ///////////////////////////////////////////
 // SsstrictM.S (SsstrictCsrM.S)
 //
-// Written: Roman De Santos rdesantos@hmc.edu 11 March 2025 
+// Written: Roman De Santos rdesantos@hmc.edu 11 March 2025
 //
 // Purpose: Functional coverage test for Ssstrict Csrs in M mode
 //

@@ -2,17 +2,19 @@
 
 == Profiles & Test Suites
 
-This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles:
+This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with machine mode, no PMP
-* Microcontroller Profile (Not Ratified, but market demand): Phase 1
-** RV{32/64}IMZca_Zcb_Zifencei_Zicsr_Zicntr with machine mode, user mode, interrupts, PMP16 footnote:[Tentative; may need updating based on the MRD Market Requirements Document]
+* MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
+** RV{32/64}IMZca_Zcb_Zifencei_Zicsr_Zicntr with machine mode, user mode, interrupts, PMP16 footnote:[Tentative; may need updating based on the MRD Market Requirements Document] ***update
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
 ** Application processor without vector, hypervisor, and other newer extensions
 * https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified): Phase 1.8, stepping stone to phase 2
 ** RVA23 less vector and hypervisor
-* https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc#rva23s64-profile[RVA23S64 Profile] (Ratified): Phase 2
+* RVA23 Profile (https://riscv-software-src.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
+
+Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
 
 === Profile Coverage Matrix
 
@@ -28,7 +30,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 [cols="1, 4, 1, 1, 1, 1, 1, 1" options=header]
 [%AUTOWIDTH]
 |===
-|Coverage File|Description|Test Plan|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
+|Coverage File|Description|Test Plan|RVI20|MC100|RVA22S64|RVB23S64|RVA23S64
 |XLEN|||32/64|32|64|64|64
 8+^|Unprivileged
 |I|Integer|<<t-I-coverpoints>>|x|x|x|x|x
@@ -123,6 +125,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |VMPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-VMPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
+|SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
 |Sscofpmf|Counter Filtering|<<t-Sscofpmf-coverpoints>>|||o|x|x
@@ -165,8 +168,11 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvknha32|Vector Hash 32-bit|<<t-Zvknh-coverpoints>>|||||
 |Zvknhb64|Vector Hash 64-bit|<<t-Zvknh-coverpoints>>||||o|o
 8+^|Vector Privileged
-|ExceptionsV|Vector Exceptions|<<t-ExceptionsV-coverpoints>>|||o|o|x
+|ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
+|ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
+|ExceptionsVls|Vector Load/Store Exceptions|<<t-ExceptionsVls-coverpoints>>|||o|o|x
 |ZicsrV|Vector CSRs|<<t-ZicsrV-coverpoints>>|||o|o|x
+|ZicsrVF|Vector FP CSRs|<<t-ZicsrVF-coverpoints>>|||o|o|x
 |ZicsrUV|User Vector CSRs|<<t-ZicsrUV-coverpoints>>|||o|o|x
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor

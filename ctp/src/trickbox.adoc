@@ -6,8 +6,8 @@ Each DUT requires a trick box to perform the following non-ISA functions:
 * Run DUT-specific boot code
 * Deliver each supported type of interrupt to the core (Machine/Supervisor External/Timer/Software + guest external interrupts)
 * Send a character to a terminal to log a success message or test failure information
-* Terminate a test
-* If a debug module is supported, send commands to the DM
+* Terminate a test with a pass or fail indication
+* If a debug module is supported, send abstract commands to the DM and receive responses
 
 === Trick Box Macros
 
@@ -21,10 +21,11 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |===
 |Macro|Description
 |RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller
-|RVMODEL_HALT|Terminate test.  When the test is run in simulation, this should end the simulation.
+|RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.
+|RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_IO_INIT|Initialization steps needed prior to writing to the console
-|RVMODEL_IO_WRITE_STR(_R, _STR)|Write a null-terminated ASCII string to the console, where _R *** and _STR ***
-|RVMODE_SET_MEXT_INT| Sets the Machine External Interrupt (mip.MEIP = 1, if supported)
+|RVMODEL_IO_WRITE_STR(_R, _STR)|Write a null-terminated ASCII string to the console, where _R is a temporary register that may be trashed by the macro and _STR is a register containing the address of the first byte of the string
+|RVMODEL_SET_MEXT_INT| Sets the Machine External Interrupt (mip.MEIP = 1, if supported)
 |RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt (mip.MEIP = 0)
 |RVMODEL_SET_MTIMER_INT|Sets the Machine Timer Interrupt (mip.MTIP = 1, if supported)
 |RVMODEL_CLR_MTIMER_INT|Clears the Machine Timer Interrupt (mip.MTIP = 0)
@@ -34,7 +35,7 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_SET_SEXT_INT|Sets the Supervisor External Interrupt (sip.SEIP = 1, if supported)
 |RVMODEL_CLR_SEXT_INT|Clears the Supervisor External Interrupt (sip.SEIP = 0)
 |RVMODEL_SET_STIMER_INT|Sets the Supervisor Timer Interrupt (sip.STIP = 1, if supported)
-|RVMODEL_CLR_STIMER_INT|Clears the Supervisor Timer Interrupt (sip.STIP = 0)\
+|RVMODEL_CLR_STIMER_INT|Clears the Supervisor Timer Interrupt (sip.STIP = 0)
 |RVMODEL_SET_STIMER_INT_SOON|Cause the Supervisor Timer Interrupt to rise soon, but not immediately.
 |RVMODEL_SET_SSW_INT|Sets the Supervisor Software Interrupt (mip.SSIP = 1, if supported)
 |RVMODEL_CLR_SSW_INT|Clears the Supervisor Software Interrupt (mip.SSIP = 0)
@@ -42,10 +43,9 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |ACCESS_FAULT_ADDRESS|An address that causes an access fault when read or written. This is used to test exceptions.
 |===
 
-*** way to send success/fail code when terminating sim
-*** is STIMER_INT_SOON necessary?
+*** give a parameter defining delay for RVMODEL_SET_MTIMER_INT_SOON
 
-The macros are defined in ***. *** shows sample implementations of these macros compatible with Spike.
+The macros are defined in model_test.h. sail_test.h shows sample implementations of these macros compatible with Sail and Spike***.
 
 
 === Linker Script

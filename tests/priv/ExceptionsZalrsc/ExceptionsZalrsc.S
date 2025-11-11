@@ -8,6 +8,12 @@
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
+##### START_TEST_CONFIG #####
+# implemented_extensions: [I, Zicsr, Zalrsc]
+# MARCH: rv${XLEN}ia_zicsr
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
 #include "WALLY-init-lib.h"
 
 main:
@@ -96,7 +102,7 @@ atomic_instr:
     // As a proxy we can check that the rd value changes as expected for rd when an
     // sc.x instruction is executed. Load rd with a value > 1.
     // Faulting instructions should not modify this value
-    // Succesful instructions modify rd to be 0
+    // Successful instructions modify rd to be 0
 
     li t2, 2
 
@@ -123,7 +129,7 @@ atomic_instr:
 
             // Load rd with a value > 1.
             // Faulting instructions should not modify this value
-            // Succesful instructions modify rd to be 0
+            // Successful instructions modify rd to be 0
 
             li t2, 2
 

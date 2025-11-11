@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title         : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors       : Umer Shahid, Allen Baum, David Harris
+//          Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -16,13 +16,13 @@
 //
 // Coverpoints :  cp_priority for PMPM is fully covered in this file.
 //
-// Test Cases  :  Testing that first matching region has priority to determing
+// Test Cases  :  Testing that first matching region has priority to determine
 //                XWR. Set up 7 even/odd pairs of TOR regions, where each pair
 //                starts (even) at the standard location and has pair i has size
 //                i*g (in odd reg) so the regions partially overlap. Set the even
 //                pmpcfg to 0 (OFF). Set the odd pmpcfg to TOR and cycle through
 //                the 6 legal XWR values for each pair. Make {lw, sw, jalr} to
-//                each of (PMP_writable_regs-1) addresses at end of each region. 
+//                each of (PMP_writable_regs-1) addresses at end of each region.
 //                Access fault if the relevant (highest priority) region prohibits
 //                access.
 //
@@ -41,11 +41,11 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+  #define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+  #define RVMODEL_NUM_PMPS 16
 #endif
 
 RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_priority)
@@ -53,57 +53,57 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3   
-  	.option norvc
-#define NOP 		0x13
+  .attribute unaligned_access, 0
+  .attribute stack_align, 16
+    .align  3
+    .option norvc
+#define NOP     0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
-	LI(x3, 0xACCE)						// Store a value which is to be checked in trap handler
+  LI(x3, 0xACCE)            // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
-	LA(x4, 1f)							// Store the return Address in x4
-	jalr ra, 0(a4)
-	nop
-	nop
+  LA(x4, 1f)              // Store the return Address in x4
+  jalr ra, 0(a4)
+  nop
+  nop
 1:
-	nop
-	nop
+  nop
+  nop
 
-    LI(a4, NOP)                  							// Value to write (NOP)
+    LI(a4, NOP)                                // Value to write (NOP)
     // Store Access Check
-    LA(a5, \ADDRESS)             							// Address to be verified
+    LA(a5, \ADDRESS)                           // Address to be verified
     sw a4, 0(a5)
     nop
     nop
 
-    LA(a5, \ADDRESS)             							// Address to be verified
+    LA(a5, \ADDRESS)                           // Address to be verified
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x13, a4)       							// Signature update
+    RVTEST_SIGUPD(x13, a4)                     // Signature update
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+  // Loop to SET ALL pmpcfg REGs to zero
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept RVMODEL_NUM_PMPS/4
+  csrw pmpcfgi , x0
+  .set pmpcfgi, pmpcfgi+1
+  .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+  // Loop to SET ALL pmpaddr REGs to zero
+  .set pmpaddri, CSR_PMPADDR0
+  .rept RVMODEL_NUM_PMPS
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri+1
+  .endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP_REGION_GLOBAL  ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR_1000 ((((PMP_L|                  PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
 #define PMPREGION_LXWR_1101 ((((PMP_L|      PMP_R|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_LXWR_1011 ((((PMP_L|PMP_R|PMP_W|      PMP_TOR  )&0xFF) << PMP1_CFG_SHIFT))
@@ -112,15 +112,15 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF) << PMP3_CFG_SHIFT))
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero                 // Disable address translation.
+  csrw satp, zero                 // Disable address translation.
 #endif
 
-	LA(x4, -1)                      // All memory region
-	csrw 	pmpaddr15, x4
+  LA(x4, -1)                      // All memory region
+  csrw   pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+  //Lock the Background region.
+  LI(x4, PMP_REGION_GLOBAL)
+  csrw pmpcfg3, x4
 
     LA(x4, TEST_FOR_EXECUTION)
     srl x4, x4, PMP_SHIFT
@@ -143,7 +143,7 @@ main:
     .set pmpaddri, pmpaddri+2
     .endr
 
-	// Setting the even pmpcfg to 0 and odd pmpcfg to TOR & and rotating through the 6 legal XWR values.
+  // Setting the even pmpcfg to 0 and odd pmpcfg to TOR & and rotating through the 6 legal XWR values.
     LI(x4, (PMPREGION_LXWR_1101|PMPREGION_LXWR_1000))
     csrw pmpcfg0, x4
     LI(x5, (PMPREGION_LXWR_1100|PMPREGION_LXWR_1011))
@@ -153,7 +153,7 @@ main:
     LI(x5, PMPREGION_LXWR_1000)
     csrw pmpcfg3, x5
 
-//											Verification Section
+//                      Verification Section
 // Test Case: 1 : Accessing at end of region with No Permissions
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + g - 4)
@@ -182,21 +182,21 @@ main:
 
     VERIFICATION_RWX   (TEST_FOR_EXECUTION + 7*g - 4)
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x13, a4)       								// Signature update
-	j exit														// Verification Complete, exit the test
+  li a4, 0xbeefcafe                      // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)                       // Signature update
+  j exit                            // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:     // Largest Region of size 7*g
-	.rept 7*(1<<RVMODEL_PMP_GRAIN)
-	nop
-	.endr
+  .rept 7*(1<<RVMODEL_PMP_GRAIN)
+  nop
+  .endr
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+  nop
+  nop
+  jr ra                            // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 #endif

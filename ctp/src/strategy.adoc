@@ -175,7 +175,7 @@ _rs2_.#[#norm:inst:sub:operation]#SUB performs the subtraction of _rs2_ from _rs
 
 === Coverpoints
 
-Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ``ifdef XLEN32` or `XLEN64` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ``ifdef`` to exclude tests based on the parameter value.
+Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef XLEN32`` or ``XLEN64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.
 
 === Tests
 

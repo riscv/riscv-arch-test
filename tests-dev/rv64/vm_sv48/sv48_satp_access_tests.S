@@ -10,8 +10,8 @@
 //  2. Accessing the satp register in U mode -> Illegal Instruction exception
 //  3. Testing satp mode field (SV48 and Bare mode) -> Successful
 //  4. All zeroes, ones and walking ones on the PPN field of satp  -> Successful
-//	5. All zeroes and ones on the ASID of satp -> Successful
-//	6. Walking ones on the ASID of satp -> Successful
+//  5. All zeroes and ones on the ASID of satp -> Successful
+//  6. Walking ones on the ASID of satp -> Successful
 //  7. Verifying Bare mode operation -> Successful
 
 // Total Expected Faults: 3
@@ -30,24 +30,24 @@ RVTEST_ISA("RV64I_Zicsr")
 .section .text.init
 .globl rvtest_entry_point
 rvtest_entry_point:
-RVMODEL_BOOT												// This test supports max 255 words for RVMODEL_BOOT
+RVMODEL_BOOT                        // This test supports max 255 words for RVMODEL_BOOT
 
-j starting_point											// Skip test region
-.align 10													// Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
+j starting_point                      // Skip test region
+.align 10                          // Aligning so that RVMODEL_BOOT doesn't change address of rvtest_data_1
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//											PHYSICAL ADDRESS REGION FOR TESTING
+//                      PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0, 1, 2 and 3
 rvtest_data_1:
-	nop
-	addi ra, ra, REGWIDTH
-	jr ra
-	nop
-	.word 0xbeefcaf1					// Random word
-	.word 0xbeefcaf2					// Random word
-	nop
-	jr ra
+  nop
+  addi ra, ra, REGWIDTH
+  jr ra
+  nop
+  .word 0xbeefcaf1          // Random word
+  .word 0xbeefcaf2          // Random word
+  nop
+  jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -62,96 +62,96 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 
 main:
-#ifdef rvtest_mtrap_routine				// Verification of existance of rvtest_mtrap_routine
-	LI a4, 0xceed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_mtrap_routine        // Verification of existence of rvtest_mtrap_routine
+  LI a4, 0xceed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine				// Verification of existance of rvtest_strap_routine
-	LI a4, 0xbeed
-	RVTEST_SIGUPD(x13,a4)
+#ifdef rvtest_strap_routine        // Verification of existence of rvtest_strap_routine
+  LI a4, 0xbeed
+  RVTEST_SIGUPD(x13,a4)
 #endif
-	
-	ALL_MEM_PMP							// set the PMP permissions for the whole memory
-	csrw satp, zero  		            // write satp with all zeros (bare mode)
+
+  ALL_MEM_PMP              // set the PMP permissions for the whole memory
+  csrw satp, zero                  // write satp with all zeros (bare mode)
 
 
 // ------------------------------------------------------------------------------------------------------------
-// 										satp access in M Mode using csrrw, csrrc, csrrs
+//                     satp access in M Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
 
-	li t0, 1																//initial value for t0 = 1
-	csrw satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
+  li t0, 1                                //initial value for t0 = 1
+  csrw satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
-	csrs satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
+  csrs satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
-	csrc satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
-
-// ------------------------------------------------------------------------------------------------------------
-// 										satp access in S Mode using csrrw, csrrc, csrrs
-// ------------------------------------------------------------------------------------------------------------
-
-	//Go to S mode
-	RVTEST_GOTO_LOWER_MODE Smode
-
-	li t0, 1																//initial value for t0 = 1
-	csrw satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
-
-	csrs satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
-
-	csrc satp, t0  		                                        			// write satp with some value
-	//read back the value from the satp and store in the signature to make sure they match !
-	csrr t1, satp
-	RVTEST_SIGUPD(x13,t1)
-	slli t0, t0, 1															//walking ones to have different values in each satp store
-
-	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
+  csrc satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
 // ------------------------------------------------------------------------------------------------------------
-// 										satp access in U Mode using csrrw, csrrc, csrrs
+//                     satp access in S Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
 
-	RVTEST_GOTO_LOWER_MODE Umode
+  //Go to S mode
+  RVTEST_GOTO_LOWER_MODE Smode
 
-	li t0, 1																//initial value for t0 = 1
-	csrw satp, t0  		                                        			// write satp with some value
-	nop
-	nop
+  li t0, 1                                //initial value for t0 = 1
+  csrw satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
-	csrs satp, t0  		                                        			// write satp with some value
-	nop
-	nop
+  csrs satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
-	csrc satp, t0  		                                        			// write satp with some value
-	nop
-	nop
+  csrc satp, t0                                                    // write satp with some value
+  //read back the value from the satp and store in the signature to make sure they match !
+  csrr t1, satp
+  RVTEST_SIGUPD(x13,t1)
+  slli t0, t0, 1                              //walking ones to have different values in each satp store
 
-	RVTEST_GOTO_MMODE		                                        		// Switching back to M mode
-	
+  RVTEST_GOTO_MMODE                                                // Switching back to M mode
+
 // ------------------------------------------------------------------------------------------------------------
-// 										Mode Supported --- SV48 and Bare i.e., sat.2
+//                     satp access in U Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
 
-	li t0, 0x9000000000000000  // Set t0 to have 1001 in [63:60] (SV48)
+  RVTEST_GOTO_LOWER_MODE Umode
+
+  li t0, 1                                //initial value for t0 = 1
+  csrw satp, t0                                                    // write satp with some value
+  nop
+  nop
+
+  csrs satp, t0                                                    // write satp with some value
+  nop
+  nop
+
+  csrc satp, t0                                                    // write satp with some value
+  nop
+  nop
+
+  RVTEST_GOTO_MMODE                                                // Switching back to M mode
+
+// ------------------------------------------------------------------------------------------------------------
+//                     Mode Supported --- SV48 and Bare i.e., sat.2
+// ------------------------------------------------------------------------------------------------------------
+
+  li t0, 0x9000000000000000  // Set t0 to have 1001 in [63:60] (SV48)
     csrw satp, t0              // Write satp
     csrr t1, satp              // Read back satp
     RVTEST_SIGUPD(x13, t1)     // Store read value in signature
@@ -160,15 +160,15 @@ main:
     csrw satp, t0              // Write satp
     csrr t1, satp              // Read back satp
     RVTEST_SIGUPD(x13, t1)     // Store read value in signature
-	
-	RVTEST_GOTO_MMODE
-	
+
+  RVTEST_GOTO_MMODE
+
 // ------------------------------------------------------------------------------------------------------------
-// 				PPN all zeros, ones and walking ones to the PPN bits of satp i.e., sat.4
-// ------------------------------------------------------------------------------------------------------------	
+//         PPN all zeros, ones and walking ones to the PPN bits of satp i.e., sat.4
+// ------------------------------------------------------------------------------------------------------------
 
     li t0, 0x9000000000000000  // Ensure SV48 mode in [63:60]
-    mv t3, t0                  // Start with all_zero case                   
+    mv t3, t0                  // Start with all_zero case
     csrw satp, t3              // Write all_zero PPN to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
@@ -190,14 +190,14 @@ loop_walking:
     csrw satp, t3              // Write satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
-	
+
 // ------------------------------------------------------------------------------------------------------------
-// 										Satp_Asid_PPN all zeros and ones i.e., sat.4
+//                     Satp_Asid_PPN all zeros and ones i.e., sat.4
 // ------------------------------------------------------------------------------------------------------------
 
     li t0, 0x9000000000000000  // Ensure SV48 mode in [63:60]
 
-    mv t3, t0                  // Keep lower 60 bits as zero                   
+    mv t3, t0                  // Keep lower 60 bits as zero
     csrw satp, t3              // Write all_zero case to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
@@ -207,7 +207,7 @@ loop_walking:
     csrw satp, t3              // Write to satp
     csrr t2, satp              // Read back satp
     RVTEST_SIGUPD(x13, t2)     // Store read value in signature
-	
+
 // ------------------------------------------------------------------------------------------------------------
 //                                      Satp_Asid_Length i.e., sat.5
 // ------------------------------------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ satp_test_loop:
 // ------------------------------------------------------------------------------------------------------------
 
     li t3, 0                       // Ensure Bare mode (satp[63:60] = 0)
-	
+
     csrw satp, t3                  // Write all_zero value to satp
     csrr t2, satp                  // Read back satp
     RVTEST_SIGUPD(x13, t2)         // Store read-back value in signature
@@ -252,16 +252,16 @@ RVTEST_DATA_BEGIN
 #ifdef rvtest_strap_routine
 .align 12
 rvtest_slvl1_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl2_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
 rvtest_slvl3_pg_tbl:
-		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
+    RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-RVTEST_DATA_END                               
+RVTEST_DATA_END
 .align 12
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:

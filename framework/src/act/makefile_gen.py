@@ -271,6 +271,7 @@ def gen_coverage_targets(
     # Generate tracelist file for each extension/test group and a target to generate the UCDB coverage file
     makefile_lines = ["#################### Coverage targets ####################\n"]
     coverage_reports: list[Path] = []
+    coverage_summaries: list[Path] = []
     for coverage_group, traces in coverage_targets.items():
         # Define paths
         base_name = base_dir / coverage_group / coverage_group.stem
@@ -279,6 +280,7 @@ def gen_coverage_targets(
         work_dir = base_name.parent / "ucdb_work"
         report_file_base = config_report_dir / coverage_group.stem
         report_file = Path(f"{report_file_base}_report.txt")
+        summary_file = Path(f"{report_file_base}_summary.txt")
 
         # Write the tracefile
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
@@ -308,6 +310,7 @@ def gen_coverage_targets(
 
         # Generate coverage report
         coverage_reports.append(report_file)
+        coverage_summaries.append(summary_file)
         makefile_lines.append(
             f"# Generate coverage report for {coverage_group.stem}\n"
             f".PHONY: {coverage_group.stem}-report\n"
@@ -317,6 +320,20 @@ def gen_coverage_targets(
             f"\t\t{ucdb_file}\\\n"
             f"\t\t{report_file_base}\n"
         )
+
+    # Generate overall summary target that concatenates all individual summaries
+    if coverage_summaries:
+        overall_summary = config_report_dir / "_overall_summary.txt"
+        # Use merge_summaries script to properly format the combined output
+        summary_files = " ".join([str(s) for s in coverage_summaries])
+
+        makefile_lines.append(
+            f"# Generate overall coverage summary by merging all individual summaries\n"
+            f"{overall_summary}: {' '.join([str(s) for s in coverage_summaries])}\n"
+            f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
+        )
+        coverage_reports.append(overall_summary)
+
     return ("\n".join(makefile_lines), coverage_reports)
 
 

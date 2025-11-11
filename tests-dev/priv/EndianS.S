@@ -63,7 +63,7 @@ main:
     la s3, scratch                    # s3 = pointer to scratch
     // s10, s11 used in WALLY-priv-endian.h
     li s10, 1  # setendianess function: 1 to stay in func since running mstatus
-    li s11, 1  # resetting privilige after accessing mstatush
+    li s11, 1  # resetting privilege after accessing mstatush
 
     // Iterate over each endianness, doing all sizes of stores and loads
     li  s4, 0           # endianness for write

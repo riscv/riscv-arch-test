@@ -9,8 +9,8 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, C, S, Zicsr]
-# MARCH: rv${XLEN}ic_zicsr
+# implemented_extensions: [I, S, Zicsr, Ssstrict]
+# MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

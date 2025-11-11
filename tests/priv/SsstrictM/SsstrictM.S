@@ -1,12 +1,18 @@
 ///////////////////////////////////////////
-// SsstrictCsrM.S
+// SsstrictM.S (SsstrictCsrM.S)
 //
-// Written: Roman De Santos rdesantos@hmc.edu 11 March 2025
+// Written: Roman De Santos rdesantos@hmc.edu 11 March 2025 
 //
 // Purpose: Functional coverage test for Ssstrict Csrs in M mode
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
+
+##### START_TEST_CONFIG #####
+# implemented_extensions: [I, Zicsr]
+# MARCH: rv${XLEN}i_zicsr
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
 
 #include "WALLY-init-lib.h"
 

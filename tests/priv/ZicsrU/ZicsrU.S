@@ -13,7 +13,7 @@
 
 //There is no better place to test pause instruction and so it is included here. 
 //Therefore, Zihintpause is needed in the March to compile the pause instruction.
-//If Zihint pause is not supported on the DUT, the pause instrucion behaves as a nop. 
+//If Zihint pause is not supported on the DUT, the pause instruction behaves as a nop. 
 //Therefore, Zihintpause is not needed int he implemented_extensions.
 
 ##### START_TEST_CONFIG #####

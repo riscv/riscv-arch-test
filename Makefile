@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Directories and files
-CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml
+CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
 REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref

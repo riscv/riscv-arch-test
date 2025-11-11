@@ -11,10 +11,10 @@
 // General notes:
 // Use csrrw/csrrs/csrrc t6, csr, rs1    when modifying a CSR to also check the old value.
 
-//There is no better place to test pause instruction and so it is included here. 
-//Therefore, Zihintpause is needed in the March to compile the pause instruction.
-//If Zihint pause is not supported on the DUT, the pause instruction behaves as a nop. 
-//Therefore, Zihintpause is not needed int he implemented_extensions.
+// There is no better place to test the pause instruction, so it is included here.
+// Therefore, Zihintpause is needed in the MARCH to compile the pause instruction.
+// If Zihintpause is not supported on the DUT, the pause instruction behaves as a NOP.
+// Therefore, Zihintpause is not needed in the implemented_extensions.
 
 ##### START_TEST_CONFIG #####
 # implemented_extensions: [I, Zicsr]

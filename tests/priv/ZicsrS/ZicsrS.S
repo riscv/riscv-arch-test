@@ -11,6 +11,12 @@
 // General notes:
 // Use csrrw/csrrs/csrrc t6, csr, rs1    when modifying a CSR to also check the old value.
 
+##### START_TEST_CONFIG #####
+# implemented_extensions: [I, S, Zicsr]
+# MARCH: rv${XLEN}i_zicsr
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
 #include "WALLY-init-lib.h"
 
 main:

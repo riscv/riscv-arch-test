@@ -251,9 +251,13 @@ def build_coverpoint_groups(yaml_data):
     return groups
 
 
-def make_adoc_table(rows, outpath):
+def make_adoc_table(rows, outpath, base=None):
     # rows: list of (name, text, coverpoints)
     lines = []
+    # Optional anchor and title for the table per-extension
+    if base:
+        lines.append(f'[[t-{base}-normative_rules]]')
+        lines.append(f'.{base} Normative Rules')
     lines.append('[cols="1,4,3", options="header"]')
     lines.append('|===')
     lines.append('|Normative Rule |Rule Text |Coverpoints')
@@ -465,8 +469,8 @@ def main():
             # Write adoc for this yaml
             out_dir = ensure_dir(out_dir)
             report_dir = ensure_dir(report_dir)
-            outpath = os.path.join(out_dir, base + '.adoc')
-            make_adoc_table(rows, outpath)
+            outpath = os.path.join(out_dir, base + '_norm_rules.adoc')
+            make_adoc_table(rows, outpath, base=base)
 
         # After processing all YAMLs, create a single combined mismatch report
         # missing_in_yaml = JSON names that did not appear in any YAML
@@ -479,16 +483,16 @@ def main():
         report_lines.append(f'Total JSON rules: {len(json_names)}')
         report_lines.append(f'Total YAML coverpoints (unique names seen): {len(all_yaml_names)}')
         report_lines.append('')
-        # Per-YAML sections
+        # Per-YAML sections: only include files that have missing names
         for base in sorted(per_yaml_missing.keys()):
+            missing = per_yaml_missing[base]
+            if not missing:
+                # omit files with no missing names from the report
+                continue
             report_lines.append(f'YAML file: {base}.yaml')
             report_lines.append('-' * (10 + len(base)))
-            missing = per_yaml_missing[base]
             report_lines.append('Names present in YAML but missing from JSON:')
-            if missing:
-                report_lines.extend(['  ' + n for n in missing])
-            else:
-                report_lines.append('  (none)')
+            report_lines.extend(['  ' + n for n in missing])
             report_lines.append('')
 
         # Now list JSON-only names organized by def_filename (chapter)
@@ -553,13 +557,13 @@ def main():
     # ensure it exists and write into it using the yaml basename.
     if args.out.endswith(os.sep) or os.path.isdir(args.out):
         out_dir = ensure_dir(args.out.rstrip(os.sep))
-        outpath = os.path.join(out_dir, os.path.splitext(os.path.basename(args.yaml))[0] + '.adoc')
+        base = os.path.splitext(os.path.basename(args.yaml))[0]
+        outpath = os.path.join(out_dir, base + '_norm_rules.adoc')
     else:
         out_parent = os.path.dirname(args.out) or '.'
         ensure_dir(out_parent)
         outpath = args.out
-
-    make_adoc_table(rows, outpath)
+    make_adoc_table(rows, outpath, base=base if 'base' in locals() else None)
 
     # Write the mismatch report only to the report file (do not print to stdout)
     report_lines = []

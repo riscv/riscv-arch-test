@@ -8,7 +8,7 @@ Usage:
 Defaults:
     json: coverpoints/norm/norm-rules.json
     yaml: coverpoints/norm/yaml
-    out:  coverpoints/norm/adoc/
+    out:  ctp/src/norm/
 
 The script writes an .adoc file containing a table with columns:
   - normative rule name
@@ -358,7 +358,7 @@ def main():
     p = argparse.ArgumentParser(description='Generate ASCIIDoc table from normative rules JSON and coverpoints YAML')
     p.add_argument('--json', default='coverpoints/norm/norm-rules.json', help='Path to norm-rules.json')
     p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
-    p.add_argument('--out', default='coverpoints/norm/adoc/', help='Output ASCIIDoc file or directory when --yaml is a directory (default dir: coverpoints/norm/adoc/)')
+    p.add_argument('--out', default='ctp/src/norm/', help='Output ASCIIDoc file or directory when --yaml is a directory (default dir: coverpoints/norm/adoc/)')
     p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
     args = p.parse_args()
 

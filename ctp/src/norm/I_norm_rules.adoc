@@ -28,7 +28,7 @@ first sign-extended to XLEN bits then treated as an unsigned number). |I_sltiu_c
 |x0eq0 |Register x0 is hardwired with all bits equal to 0. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
 
 |imm_always_sex |Except for the 5-bit immediates used in CSR instructions (&lt;&lt;csrinsts&gt;&gt;),
-immediates are always sign-extended |I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset] # *** need to add this coverpoint in Zicsr rule table
+immediates are always sign-extended |I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset
 
 |addi_op |ADDI adds the sign-extended 12-bit immediate to register rs1. |I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
@@ -57,7 +57,7 @@ offset to the address of the AUIPC instruction, then places the result
 in register rd. |I_auipc_cg/{cp_rd, cp_imm_edges_20bit}
 
 |R-type_operands |All operations read
-the rs1 and rs2 registers as source operands and write the result into register rd. |{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}]
+the rs1 and rs2 registers as source operands and write the result into register rd. |{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}
 
 |add_op |ADD performs the addition of rs1 and rs2. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 

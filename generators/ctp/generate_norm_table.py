@@ -114,11 +114,15 @@ def parse_coverpoints_fallback(text):
             elif m_cover:
                 cover = m_cover.group(1).strip()
 
+        # Normalize name/name-lists: split comma-separated names into individual
+        # entries so downstream code always sees a list of simple names.
         all_names = []
         if name:
-            all_names.append(name)
+            all_names.extend(split_name_list(name))
         if names:
-            all_names.extend(names)
+            # 'names' may already be a list; ensure each member is split further
+            for n in names:
+                all_names.extend(split_name_list(n))
 
         if all_names:
             groups.append({'names': all_names, 'coverpoint': cover})
@@ -174,6 +178,24 @@ def extract_rule_text(tags):
     return ' '.join([t for t in texts if t])
 
 
+def split_name_list(val):
+    """Split a name or names expression into a list of names.
+    Handles bracketed lists ([a, b]), comma-separated strings, and
+    strips surrounding quotes and whitespace.
+    """
+    if not val:
+        return []
+    v = str(val).strip()
+    v = v.strip('"\'')
+    if v.startswith('[') and v.endswith(']'):
+        inner = v[1:-1]
+        parts = [p.strip() for p in inner.split(',') if p.strip()]
+        return parts
+    if ',' in v:
+        return [p.strip() for p in v.split(',') if p.strip()]
+    return [v]
+
+
 def build_coverpoint_groups(yaml_data):
     """Return a list of groups: each group is {'names': [name,...], 'coverpoint': <str>}.
     Accept multiple YAML shapes (list of dicts, dict mapping name->obj, nested 'coverpoints').
@@ -189,7 +211,8 @@ def build_coverpoint_groups(yaml_data):
             if 'names' in item:
                 n = item.get('names')
                 if isinstance(n, list):
-                    names.extend([str(x) for x in n if x])
+                    for el in n:
+                        names.extend(split_name_list(el))
                 elif isinstance(n, str):
                     s = n.strip()
                     if s.startswith('[') and s.endswith(']'):
@@ -199,7 +222,11 @@ def build_coverpoint_groups(yaml_data):
                     else:
                         names.extend([p.strip() for p in s.split(',') if p.strip()])
             if 'name' in item:
-                names.insert(0, str(item.get('name')))
+                raw = item.get('name')
+                parts = split_name_list(raw)
+                # insert parts at the front preserving order
+                for p in reversed(parts):
+                    names.insert(0, p)
             cover = item.get('coverpoint')
             if names:
                 groups.append({'names': names, 'coverpoint': cover})
@@ -221,7 +248,8 @@ def build_coverpoint_groups(yaml_data):
                         if 'names' in item:
                             n = item.get('names')
                             if isinstance(n, list):
-                                names.extend([str(x) for x in n if x])
+                                for el in n:
+                                    names.extend(split_name_list(el))
                             elif isinstance(n, str):
                                 s = n.strip()
                                 if s.startswith('[') and s.endswith(']'):
@@ -231,7 +259,10 @@ def build_coverpoint_groups(yaml_data):
                                 else:
                                     names.extend([p.strip() for p in s.split(',') if p.strip()])
                         if 'name' in item:
-                            names.insert(0, str(item.get('name')))
+                            raw = item.get('name')
+                            parts = split_name_list(raw)
+                            for p in reversed(parts):
+                                names.insert(0, p)
                         cover = item.get('coverpoint')
                         if names:
                             groups.append({'names': names, 'coverpoint': cover})
@@ -240,13 +271,13 @@ def build_coverpoint_groups(yaml_data):
         # First, check for top-level mapping where each key is a name
         for k, v in yaml_data.items():
             if isinstance(v, dict) and 'coverpoint' in v:
-                groups.append({'names': [k], 'coverpoint': v.get('coverpoint')})
+                groups.append({'names': split_name_list(k), 'coverpoint': v.get('coverpoint')})
 
         # Also handle nested 'coverpoints' key
         if 'coverpoints' in yaml_data and isinstance(yaml_data['coverpoints'], dict):
             for k, v in yaml_data['coverpoints'].items():
                 if isinstance(v, dict) and 'coverpoint' in v:
-                    groups.append({'names': [k], 'coverpoint': v.get('coverpoint')})
+                    groups.append({'names': split_name_list(k), 'coverpoint': v.get('coverpoint')})
 
     return groups
 
@@ -266,12 +297,25 @@ def make_adoc_table(rows, outpath, base=None):
         # sanitize pipes
         n = name.replace('|', r'\|')
         t = text.replace('|', r'\|')
-        # Normalize coverpoint string and drop any leading '[' or trailing ']' if present
-        c = (str(cp) if cp is not None else '').strip()
-        if c.startswith('['):
-            c = c[1:].strip()
-        if c.endswith(']'):
-            c = c[:-1].strip()
+        # Normalize coverpoint value. If cp is a list (from YAML), join items
+        # without quotes. If it's a scalar string, use it. Then remove any
+        # surrounding list brackets and surrounding quotes so the ADOC cell
+        # contains the bare coverpoint text.
+        if isinstance(cp, list):
+            # join list items with comma+space
+            c = ', '.join([str(x) for x in cp])
+        else:
+            c = (str(cp) if cp is not None else '').strip()
+
+        # If the value was written as a flow list string like "['x','y']",
+        # strip enclosing brackets first.
+        if c.startswith('[') and c.endswith(']'):
+            c = c[1:-1].strip()
+
+        # Remove surrounding single or double quotes if present
+        if (c.startswith("'") and c.endswith("'")) or (c.startswith('"') and c.endswith('"')):
+            c = c[1:-1]
+
         # Collapse consecutive closing braces '}}' into a single '}' to remove excess
         c = re.sub(r"\}{2,}", "}", c)
         c = c.replace('|', r'\\|')
@@ -279,6 +323,7 @@ def make_adoc_table(rows, outpath, base=None):
         lines.append('')
 
     lines.append('|===')
+    lines.append('')
 
     os.makedirs(os.path.dirname(outpath) or '.', exist_ok=True)
     with open(outpath, 'w', encoding='utf-8') as f:
@@ -310,12 +355,24 @@ def pick_cover_for_name(coverpoint, names, idx):
     attempt to select the item corresponding to position `idx` in `names`.
     Otherwise return the original coverpoint.
     """
-    if not coverpoint or not isinstance(coverpoint, str):
+    if not coverpoint:
+        return coverpoint
+
+    # Accept a single-element list containing the string (common when YAML
+    # coverpoint is written as a flow list). If coverpoint is a list with
+    # multiple elements, leave it unchanged.
+    if isinstance(coverpoint, list):
+        if len(coverpoint) == 1 and isinstance(coverpoint[0], str):
+            s = coverpoint[0]
+        else:
+            return coverpoint
+    elif isinstance(coverpoint, str):
+        s = coverpoint
+    else:
         return coverpoint
 
     # If there is a slash, keep the entire right-hand side and select the
     # corresponding element from the left-hand brace-list.
-    s = coverpoint
     slash_pos = s.find('/')
     if slash_pos != -1:
         left = s[:slash_pos]

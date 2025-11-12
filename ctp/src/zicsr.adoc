@@ -69,9 +69,21 @@ These test additional CSRs that exist when vector is supported.
 ,===
 //include::{testplansdir}/ZicsrV.adoc[]
 ,===
-*** need link
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800[Google Sheet Testplan]
 
-==== ZicsrUF Unprivileged Floating-Point CSRs
+==== ZicsrV Vector CSRs
+
+These test additional CSRs that exist when vector is supported.
+
+[[t-ZicsrVF-coverpoints]]
+.ZicsrVF Coverpoints
+,===
+//include::{testplansdir}/ZicsrVF.adoc[]
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886[Google Sheet Testplan]
+
+
+==== ZicsrUF User-Mode Floating-Point CSRs
 
 These test additional CSR scenarios that exist when floating-point and user mode are supported.
 
@@ -82,7 +94,7 @@ These test additional CSR scenarios that exist when floating-point and user mode
 ,===
 https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=242878857#gid=242878857[Google Sheet Testplan]
 
-==== ZicsrUV Unprivileged Vector CSRs
+==== ZicsrUV User-Mode Vector CSRs
 
 These test additional CSR scenarios that exist when vector and user mode are supported.
 

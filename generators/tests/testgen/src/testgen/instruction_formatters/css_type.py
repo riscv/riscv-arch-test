@@ -15,9 +15,9 @@ def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CSS-type instruction."""
-    assert params.rs1 is not None and params.rs1val is not None
-    assert params.rs2 is not None and params.rs2val is not None
-    assert params.immval is not None
+    # assert params.rs1 is not None and params.rs1val is not None
+    # assert params.rs2 is not None and params.rs2val is not None
+    # assert params.immval is not None
     # TODO: Implement CSS-type instruction formatting
     # scaled_imm = modify_imm(params.immval, 8)
     # setup = [

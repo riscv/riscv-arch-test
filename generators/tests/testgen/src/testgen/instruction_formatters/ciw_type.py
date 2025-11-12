@@ -25,7 +25,9 @@ def format_ciw_type(
         # For c.addi4spn, rs1 must be x2 (sp)
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = 2
-        setup.append(test_data.int_regs.consume_registers([params.rs1]) if params.rd != 2 else "") # ensure sp is reserved
+        setup.append(
+            test_data.int_regs.consume_registers([params.rs1]) if params.rd != 2 else ""
+        )  # ensure sp is reserved
     scaled_imm = modify_imm(params.immval, 10)
     setup = [
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),

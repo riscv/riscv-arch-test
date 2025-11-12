@@ -25,7 +25,7 @@ def format_cls_type(
     test_data.int_regs.return_register(params.rs1)
     params.rs1 = 2
     setup = [
-        test_data.int_regs.consume_registers([params.rs1]) if params.rd != 2 else "", # ensure sp is reserved
+        "" if params.rd == 2 else test_data.int_regs.consume_registers([params.rs1]),  # ensure sp is reserved
         load_int_reg("value to load", params.temp_reg, params.temp_val, test_data),
         f"LA(x{params.rs1}, scratch) # base address",
         f"addi x{params.rs1}, x{params.rs1}, {-scaled_imm} # adjust base address for load",

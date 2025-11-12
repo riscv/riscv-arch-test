@@ -96,7 +96,7 @@ def generate_random_params(
         params.rs2val = gen_random_imm(test_data.xlen)
 
     if "temp_reg" in required_params and params.temp_reg is None:
-        params.temp_reg = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+        params.temp_reg = test_data.int_regs.get_register(exclude_regs=[*exclude_regs, 2], reg_range=reg_range)
 
     if "temp_val" in required_params and params.temp_val is None:
         params.temp_val = gen_random_imm(test_data.xlen)

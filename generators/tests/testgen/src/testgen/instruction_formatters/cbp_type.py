@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("CBP", required_params={"rs1", "rs1val", "immval"})
+@add_instruction_formatter("CBP", required_params={"rs1", "rs1val", "immval"}, reg_range=range(8, 16))
 def format_cbp_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

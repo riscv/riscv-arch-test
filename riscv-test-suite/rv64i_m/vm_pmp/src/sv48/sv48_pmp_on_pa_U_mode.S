@@ -27,6 +27,10 @@
 
 #include "arch_test.h"
 
+#ifndef RVMODEL_PMP_GRAIN
+	#define RVMODEL_PMP_GRAIN 0
+#endif
+
 RVTEST_ISA("RV64I_Zicsr")
 
 # Test code region
@@ -49,14 +53,15 @@ rvtest_data_1:
 	nop
 	.word 0xbeefcaf1					// Random word
 	.word 0xbeefcaf2					// Random word
-	.rept(8)
-		nop
-	.endr
+	nop
 	jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
+.align 11
+// The preceding test region is aligned to 2KB by default. If G increases, adjusting alignment to expand the test region accordingly.
+.align (RVMODEL_PMP_GRAIN+2)
 starting_point:
 RVTEST_CODE_BEGIN
 
@@ -141,9 +146,16 @@ main:
 	li t2, -1
 	csrw pmpaddr3, t2
 
-	LI (t2, 0x80000400)					// Configure test region as NAPOT, Start = 0x8000_0400
+	LI (t2, 0x80000000)					// Configure test region as NAPOT, Start = 0x8000_0000
 	srl t2, t2, 2
-	ori t2, t2, 0x7						// Range = 2^(3+3) = 64 bytes
+
+	.if (RVMODEL_PMP_GRAIN < 10)
+		LI (t1, 0xFF)								// Range = 2^(8+3) = 2048 Bytes
+	.else
+		LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)		// Range = 2^(G+3) Bytes
+	.endif
+
+	or t2, t2, t1						
 	csrw pmpaddr1, t2
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -154,7 +166,12 @@ main:
 	.set va_data,          		0x028000000400              	// Virtual Address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x0300800007DC
+	// If G increases more than 9, size of test region increases. Therefore, adjust address of rvtest_code_begin accordingly
+	.if (RVMODEL_PMP_GRAIN < 10)
+		.set va_rvtest_code_begin,  0x030080000B9C
+	.else
+		.set va_rvtest_code_begin,  0x03008000039C | (1<<(RVMODEL_PMP_GRAIN+2))
+	.endif
 	.set va_rvtest_data_begin,  0x038080005530	
     
 	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000

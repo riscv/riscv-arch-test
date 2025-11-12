@@ -5,9 +5,11 @@
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
+// .if (RVMODEL_PMP_GRAIN < 10)
 // Configure level 3 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 3 with RWX permissions
 //      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+// .endif
 // ----------------------------------------------------------------------------------------------------------------------
 // Configure level 2 PTE as NAPOT with X permission (pmp0cfg0)
 // 2. Setup a PTE at Level 2 with RWX permissions
@@ -20,8 +22,12 @@
 // Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
 // 4. Setup a PTE at Level 0 with RWX permissions
 //      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-
-// Total Expected Faults :: 12
+//
+// .if (RVMODEL_PMP_GRAIN < 10)
+// 		Total Expected Faults :: 12
+// .else
+// 		Total Expected Faults :: 9
+// .endif
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -30,6 +36,10 @@
 #include "model_test.h"
 
 #include "arch_test.h"
+
+#ifndef RVMODEL_PMP_GRAIN
+	#define RVMODEL_PMP_GRAIN 0
+#endif
 
 RVTEST_ISA("RV64I_Zicsr")
 
@@ -146,16 +156,16 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x028000000400              	// Virtual Address of rvtest_data_1
+	.set va_data,          		0x000000000400              	// Virtual Address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x0500800007BC
-	.set va_rvtest_data_begin,  0x058080004530	
+	.set va_rvtest_code_begin,  0xFFFFFF00800007BC
+	.set va_rvtest_data_begin,  0xFFFFFF8080004530	
     
 	// TeraPage must have PA bits [38:0] equal to zero, but our PA range starts from 0x8000_0000
 	// Therefore, we will setup TeraPage using this imm value
     .set terapage_pa,           0x000000000000    				// Physical Address for TeraPage
-	.set va_data_l3,			0x028080000400					// Virtual Address of rvtest_data_1 (In case of Level3)
+	.set va_data_l3,			0x000080000400					// Virtual Address of rvtest_data_1 (In case of Level3)
 
 //	PTE setup for Code Region
     PTE_SETUP_SV48_New(terapage_pa, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
@@ -190,15 +200,19 @@ main:
 	SATP_SETUP_RV64(sv48)                                                  	// Set SATP for virtualization
 	sfence.vma                                                            	// Flush the TLB
 
+// This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+// the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+.if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 // 								Configure level 3 PTE as NAPOT region with X permission
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_Sroot_pg_tbl)			// Configure first 8 (level 3) PTEs as NAPOT region
+	LA (t2, rvtest_Sroot_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -216,16 +230,17 @@ main:
 
 	TEST_CASES_RUNNER Smode, va_data_l3
 
-		
+.endif	
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 // 								Configure level 2 PTE as NAPOT region with X permission
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_slvl3_pg_tbl)			// Configure first 8 (level 2) PTEs as NAPOT region
+	LA (t2, rvtest_slvl3_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -250,9 +265,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_slvl2_pg_tbl)			// Configure first 8 (level 1) PTEs as NAPOT region
+	LA (t2, rvtest_slvl2_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -278,9 +294,10 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_slvl1_pg_tbl)			// Configure first 8 (level 0) PTEs as NAPOT region
+	LA (t2, rvtest_slvl1_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -310,18 +327,23 @@ RVTEST_DATA_BEGIN
 
 #ifdef rvtest_strap_routine
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl3_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
+.align (RVMODEL_PMP_GRAIN+2)
 RVTEST_DATA_END                               
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:
 sig_begin_canary:

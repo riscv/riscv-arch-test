@@ -323,6 +323,10 @@ def pick_cover_for_name(coverpoint, names, idx):
         # Try to find a brace-delimited list on the left side first
         m_left = re.search(r"\{([^}]*)\}", left)
         if m_left:
+            # If the YAML group contains a single normative name, preserve
+            # the entire brace-delimited list (don't pick a single element).
+            if len(names) == 1:
+                return left + '/' + right
             inner = m_left.group(1)
             parts = [p.strip() for p in inner.split(',') if p.strip()]
             if 0 <= idx < len(parts):
@@ -332,6 +336,10 @@ def pick_cover_for_name(coverpoint, names, idx):
             # No brace group on left. Try splitting on commas (single or multiple names).
             parts = [p.strip() for p in left.split(',') if p.strip()]
             if parts:
+                # If the YAML group contains a single normative name, preserve
+                # the entire left-hand listing instead of selecting an element.
+                if len(names) == 1:
+                    return left + '/' + right
                 if 0 <= idx < len(parts):
                     return parts[idx] + '/' + right
                 # If only one part and names indicates a single normative name, prefer that

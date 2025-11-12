@@ -1,0 +1,5 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: add_op
+    coverpoint: [I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}]

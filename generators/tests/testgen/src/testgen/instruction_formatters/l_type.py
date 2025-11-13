@@ -26,7 +26,7 @@ def format_l_type(
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
         test_data.int_regs.return_register(params.rs1)
-        params.rs1 = test_data.int_regs.get_register(exclude_reg=[0])
+        params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),

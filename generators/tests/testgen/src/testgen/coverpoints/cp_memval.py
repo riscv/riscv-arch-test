@@ -31,7 +31,7 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     test_lines: list[str] = []
     for val in memvals:
         test_lines.append("")
-        params = generate_random_params(test_data, instr_type, allow_x0=False, rs2val=val)
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=val)
         desc = f"{coverpoint} (memory value = {val:#x})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
         test_data.int_regs.return_registers(params.used_int_regs)

@@ -26,12 +26,12 @@ def format_s_type(
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
         test_data.int_regs.return_register(params.rs1)
-        params.rs1 = test_data.int_regs.get_register(exclude_reg=[0])
+        params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
     # Ensure rd is not x0
     if params.rd == 0:
         test_data.int_regs.return_register(params.rd)
-        params.rd = test_data.int_regs.get_register(exclude_reg=[0])
+        params.rd = test_data.int_regs.get_register(exclude_regs=[0])
 
     # Move sig_reg to rs1
     setup = [

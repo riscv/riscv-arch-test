@@ -7,42 +7,7 @@
 .M Instruction Coverpoints
 include::{testplansdir}/M.adoc[]
 
-[[t-M-normative-rules]]
-.M Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|12.1|MUL performs an XLEN-bit×XLEN-bit multiplication of
-`rs1` by `rs2` and places the lower XLEN bits in the destination
-register. |mul/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
-|12.1|MULH, MULHU, and MULHSU perform the same multiplication but
-return the upper XLEN bits of the full 2×XLEN-bit
-product, for signed×signed,
-unsigned×unsigned, and `rs1`×unsigned `rs2` multiplication.|{mulh/mulhu/mulhsu}/cr_rs1_rs2_edges
-|12.1|MULW is an RV64 instruction that multiplies the lower 32 bits of the
-source registers, placing the sign extension of the lower 32 bits of the
-result into the destination register.|mulw/cr_rs1_rs2_edges
-|12.2|DIV and DIVU perform an XLEN bits by XLEN bits signed and unsigned
-integer division of `rs1` by `rs2`, rounding towards zero.|{div/divu}/cr_rs1_rs2_edges
-|12.2|REM and REMU
-provide the remainder of the corresponding division operation. For REM,
-the sign of a nonzero result equals the sign of the dividend.|{rem/remu}/cr_rs1_rs2_edges
-|12.2|DIVW and DIVUW are RV64 instructions that divide the lower 32 bits of
-`rs1` by the lower 32 bits of `rs2`, treating them as signed and
-unsigned integers, placing the 32-bit quotient in `rd`,
-sign-extended to 64 bits. |{divw/divuw}/cr_rs1_rs2_edges
-|12.2|REMW and REMUW are RV64 instructions that
-provide the corresponding signed and unsigned remainder operations. Both
-REMW and REMUW always sign-extend the 32-bit result
-to 64 bits, including on a divide by zero.|{remw/remuw}/cr_rs1_rs2_edges
-|12.2|The semantics for division by zero and division overflow are summarized
-in <<divby0>>. The quotient of division by zero has all bits
-set, and the remainder of division by zero equals the dividend. Signed
-division overflow occurs only when the most-negative integer is divided
-by latexmath:[$-1$]. The quotient of a signed division with overflow is
-equal to the dividend, and the remainder is zero. Unsigned division
-overflow cannot occur.|cp_rs1_rs2_edges
-|===
+include::norm/M_norm_rules.adoc[]
 
 
 ==== Zmmul
@@ -53,14 +18,4 @@ The Zmmul extension is a subset of the M extension that includes only the multip
 .Zmmul Instruction Coverpoints
 include::{testplansdir}/Zmmul.adoc[]
 
-[[t-Zmmul-normative-rules]]
-.Zmmul Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|12.3|The `Zmmul` extension implements the multiplication subset of the M
-extension. It adds all of the instructions defined in
-<<Multiplication Operations>>, namely: MUL, MULH, MULHU,
-MULHSU, and (for RV64 only) MULW. The encodings are identical to those
-of the corresponding M-extension instructions. |{mul/mulh/mulhu/mulhsu/mulw}/cr_rs1_rs2_edges
-|===
+include::norm/Zmmul_norm_rules.adoc[]

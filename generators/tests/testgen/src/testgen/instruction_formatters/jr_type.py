@@ -24,7 +24,7 @@ def format_jr_type(
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
         test_data.int_regs.return_register(params.rs1)
-        params.rs1 = test_data.int_regs.get_register(exclude_reg=[0])
+        params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
     setup = [
         f"LA(x{params.rs1}, 1f) # load jump target address",
@@ -46,7 +46,7 @@ def format_jr_type(
     test = [
         f"{instr_name} x{params.rd}, x{params.rs1}, {scaled_imm} # perform jump with offset",
     ]
-    temp_reg = test_data.int_regs.get_register(exclude_reg=[0])
+    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     check = [
         f"LI(x{params.rs2}, 0) # should not execute (jump not taken)",
         "1:",

@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("CBP")
+@add_instruction_formatter("CBP", required_params={"rs1", "rs1val", "immval"}, reg_range=range(8, 16))
 def format_cbp_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
@@ -21,7 +21,7 @@ def format_cbp_type(
     assert params.immval is not None
     scaled_imm = modify_imm(params.immval, 5 if test_data.xlen == 32 else 6, signed=False, no_zero=True)
     setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+        load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data),
     ]
     test = [
         f"{instr_name} x{params.rs1}, {scaled_imm} # perform operation",

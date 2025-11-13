@@ -7,7 +7,7 @@
 
 """Instruction formatter registry with automatic discovery."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
@@ -25,7 +25,7 @@ class InstructionTypeConfig:
 
     formatter: InstructionFormatter
     required_params: set[str] | None = None
-    reg_range: list[int] | None = None
+    reg_range: Iterable[int] | None = None
     imm_bits: int | None = None
     imm_signed: bool = True
 
@@ -38,7 +38,7 @@ def add_instruction_formatter(
     instr_type: str,
     required_params: set[str] | None = None,
     *,
-    reg_range: list[int] | None = None,
+    reg_range: Iterable[int] | None = None,
     imm_bits: int | None = None,
     imm_signed: bool = True,
 ) -> Callable[[InstructionFormatter], InstructionFormatter]:

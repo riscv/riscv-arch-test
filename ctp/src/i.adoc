@@ -32,6 +32,8 @@ include::{testplansdir}/I.adoc[]
 * Edge values (cp_rs1_edges, cp_rs2_edges, cp_imm_edges, cr_rs1_rs2_edges, cr_rs1_imm_edges)
 * All other bitfields in the instruction
 
+include::norm/I_norm_rules.adoc[]
+
 [[t-I-normative-rules]]
 .I Normative Rules
 [cols="1, 4, 2" options=header]

@@ -17,20 +17,26 @@ def printwalk(regs):
     for reg in regs:
         if reg == "satp": # satp requires a special case to avoid accidentally turning on vmem
             continue
-        print("\n// Testing walking zeros and ones for CSR "+reg)
-        print("\tcsrr s0, "+reg+"\t# save CSR")
+        print("\n// Testing walking zeros and ones for CSR " + reg)
+        print("\tcsrr s0, " + reg + "\t# save CSR")
+        #print("\tRVTEST_SIGWRITE(x3, s0)\t# save CSR to Signature")
         print("\tli t1, -1           # all 1s")
         print("\tli t0, 1            # 1 in lsb")
-        print("\t1: csrrc t6, "+reg+", t1    # clear all bits")
-        print("\tcsrrs t6, "+reg+", t0    # set walking 1")
+        print("1:  csrrc t6, " + reg + ", t1    # clear all bits")
+        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        print("\tcsrrs t6, " + reg + ", t0    # set walking 1")
+        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tslli t0, t0, 1      # walk the 1")
         print("\tbnez t0, 1b         # repeat until all bits are walked")
         print("\tli t0, 1            # 1 in lsb")
-        print("1:  csrrs t6, "+reg+", t1    # set all bits")
-        print("\tcsrrc t6, "+reg+", t0    # clear walking 1")
+        print("1:  csrrs t6, " + reg + ", t1    # set all bits")
+        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        print("\tcsrrc t6, " + reg + ", t0    # clear walking 1")
+        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tslli t0, t0, 1      # walk the 1")
         print("\tbnez t0, 1b         # repeat until all bits are walked")
-        print("\tcsrrw t6, "+reg+", s0    # restore CSR")
+        print("\tcsrrw t6, " + reg + ", s0    # restore CSR")
+        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
 
 
 def csrwalk(pathname, regs, hregs):
@@ -179,6 +185,7 @@ def cp_vsetvl_i_rd_nx0_rs1_x0(pathname):
                 print("\t// SEW = " + sew + ", LMUL = " + lmul)
                 print("\tvsetvli  x8, x0, e" + sew + ", m" + lmul + ", tu, mu")
                 print("\tcsrr     x1, vl")
+                print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
 
         for i in range(32):
@@ -187,6 +194,7 @@ def cp_vsetvl_i_rd_nx0_rs1_x0(pathname):
                 print(f"\t// vtype[7:0] = 0_0_{format(i >> 3, '03b')}_{format(i & 0b111, '03b')}")
                 print("\tli       t2, " + str(ih))
                 print("\tcsrr     x1, vl")
+                print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
     outfile.close()
 
@@ -202,6 +210,7 @@ def cp_vsetivli_avl_edges(pathname):
                 print("\t// SEW = " + sew + " and LMUL = 1")
                 print("\tvsetivli x8, " + str(i) + ", e" + sew + ", m1, tu, mu")
                 print("\tcsrr     x1, vl")
+                print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
     outfile.close()
 

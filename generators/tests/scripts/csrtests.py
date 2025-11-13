@@ -15,7 +15,7 @@ from random import randint, seed
 
 def printwalk(regs):
     for reg in regs:
-        if reg == "satp": # satp requires a special case to avoid accidentally turning on vmem
+        if reg == "satp":  # satp requires a special case to avoid accidentally turning on vmem
             continue
         print("\n// Testing walking zeros and ones for CSR " + reg)
         print("\tcsrr s0, " + reg + "\t# save CSR")

@@ -516,6 +516,14 @@
 .endm
 /* init regs, to ensure you catch any errors */
 .macro RVTEST_INIT_GPRS
+     LI  (x1, 0)
+     // Initialising CSR registers (mpec, mtval, mstatus, mip)
+     csrw  CSR_MSTATUS,    x1
+     csrw  CSR_MEPC,       x1
+     csrw  CSR_MIP,        x1
+     csrw  CSR_MTVAL,      x1
+     csrw  CSR_MCAUSE,     x1
+
    #ifndef RVTEST_E
      LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
      DBLSHIFT7 x17, x16

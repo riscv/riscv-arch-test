@@ -957,6 +957,7 @@ ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
       1:				;\
       inst destreg, imm			;\
       sub destreg, destreg, testreg	;\
+      li testreg, 0 ;\
       )
 
 //Tests for instructions with register-immediate operand

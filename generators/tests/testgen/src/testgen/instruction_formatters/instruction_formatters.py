@@ -9,43 +9,15 @@
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from difflib import get_close_matches
 from importlib import import_module
 from pathlib import Path
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
+from testgen.utils.exceptions import MissingInstructionFormatterError
 
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
-
-
-class MissingFormatterError(KeyError):
-    """Raised when no instruction formatter is registered for a given instruction type."""
-
-    def __init__(self, instr_type: str, available_types: list[str] | None = None) -> None:
-        """
-        Initialize the exception with helpful context.
-
-        Args:
-            instr_type: The instruction type that was not found
-            available_types: List of all registered instruction types
-        """
-        if available_types:
-            # Find similar instruction types using difflib
-            similar_types = get_close_matches(instr_type, available_types, n=5, cutoff=0.4)
-
-            formatter_dir = Path(__file__).parent
-            msg = (
-                f"No instruction formatter registered for type '{instr_type}'. "
-                f"Similar types: {', '.join(similar_types) if similar_types else 'none found'}. "
-                f"To add support, create a new formatter file in '{formatter_dir}'."
-            )
-            super().__init__(msg)
-        else:
-            # Minimal message for unpickling
-            super().__init__(instr_type)
-        self.instr_type = instr_type
 
 
 @dataclass
@@ -108,7 +80,7 @@ def add_instruction_formatter(
 def get_instr_type_config(instr_type: str) -> InstructionTypeConfig:
     """Get the complete configuration for an instruction type."""
     if instr_type not in _INSTRUCTION_CONFIGS:
-        raise MissingFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
+        raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
     return _INSTRUCTION_CONFIGS[instr_type]
 
 

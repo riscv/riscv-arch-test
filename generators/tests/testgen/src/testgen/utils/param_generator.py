@@ -33,7 +33,7 @@ from typing import Any
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import get_type_config
-from testgen.utils.immediates import gen_random_imm
+from testgen.utils.random_values import random_int, random_range
 
 
 def generate_random_params(
@@ -72,7 +72,8 @@ def generate_random_params(
         )
 
     # Determine the register range to use (extracted from formatters)
-    reg_range = instr_type_config.reg_range if instr_type_config.reg_range is not None else list(range(0, 32))
+    reg_range_raw = instr_type_config.reg_range if instr_type_config.reg_range is not None else range(0, 32)
+    reg_range = list(reg_range_raw) if not isinstance(reg_range_raw, list) else reg_range_raw
     if exclude_regs is None:
         exclude_regs = []
 
@@ -81,27 +82,59 @@ def generate_random_params(
         params.rd = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
 
     if "rdval" in required_params and params.rdval is None:
-        params.rdval = gen_random_imm(test_data.xlen)
+        params.rdval = random_int(bits=test_data.xlen)
 
     if "rs1" in required_params and params.rs1 is None:
         params.rs1 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
 
     if "rs1val" in required_params and params.rs1val is None:
-        params.rs1val = gen_random_imm(test_data.xlen)
+        params.rs1val = random_int(bits=test_data.xlen)
 
     if "rs2" in required_params and params.rs2 is None:
         params.rs2 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
 
     if "rs2val" in required_params and params.rs2val is None:
-        params.rs2val = gen_random_imm(test_data.xlen)
+        params.rs2val = random_int(bits=test_data.xlen)
 
     if "temp_reg" in required_params and params.temp_reg is None:
         params.temp_reg = test_data.int_regs.get_register(exclude_regs=[*exclude_regs, 2], reg_range=reg_range)
 
     if "temp_val" in required_params and params.temp_val is None:
-        params.temp_val = gen_random_imm(test_data.xlen)
+        params.temp_val = random_int(bits=test_data.xlen)
 
     if "immval" in required_params and params.immval is None:
-        params.immval = gen_random_imm(test_data.xlen)
+        # Get immediate metadata from formatter config
+        imm_bits = instr_type_config.imm_bits
+        imm_range = instr_type_config.imm_range
+        imm_signed = instr_type_config.imm_signed
+        imm_nonzero = instr_type_config.imm_nonzero
+
+        # Resolve xlen/flen expressions in imm_bits
+        if isinstance(imm_bits, str):
+            if imm_bits == "xlen":
+                imm_bits = test_data.xlen
+            elif imm_bits == "flen":
+                imm_bits = test_data.flen
+            elif imm_bits == "xlen_log2":
+                imm_bits = test_data.xlen_log2
+            elif imm_bits == "flen_log2":
+                imm_bits = test_data.flen_log2
+            else:
+                raise ValueError(
+                    f"Unknown imm_bits expression: {imm_bits}. Expected 'xlen', 'flen', 'xlen_log2', 'flen_log2', or an integer."
+                )
+
+        # Generate immediate value
+        if imm_range is not None:
+            # Explicit range specified (e.g., IR type with 0-10 range)
+            min_val, max_val = imm_range
+            params.immval = random_range(min_val, max_val, nonzero=imm_nonzero)
+        elif imm_bits is not None:
+            # Regular immediate: generate at actual bit width
+            params.immval = random_int(imm_bits, signed=imm_signed, nonzero=imm_nonzero)
+        else:
+            raise ValueError(
+                f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
+            )
 
     return params

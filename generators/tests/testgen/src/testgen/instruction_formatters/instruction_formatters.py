@@ -26,8 +26,10 @@ class InstructionTypeConfig:
     formatter: InstructionFormatter
     required_params: set[str] | None = None
     reg_range: Iterable[int] | None = None
-    imm_bits: int | None = None
+    imm_bits: int | str | None = None  # int or "xlen"/"xlen_log2"/etc.
+    imm_range: tuple[int, int] | None = None  # Explicit (min, max) range
     imm_signed: bool = True
+    imm_nonzero: bool = False
 
 
 # Registry: dict mapping instruction type to its configuration
@@ -36,11 +38,13 @@ _INSTRUCTION_CONFIGS: dict[str, InstructionTypeConfig] = {}
 
 def add_instruction_formatter(
     instr_type: str,
-    required_params: set[str] | None = None,
     *,
+    required_params: set[str] | None = None,
     reg_range: Iterable[int] | None = None,
-    imm_bits: int | None = None,
+    imm_bits: int | str | None = None,
+    imm_range: tuple[int, int] | None = None,
     imm_signed: bool = True,
+    imm_nonzero: bool = False,
 ) -> Callable[[InstructionFormatter], InstructionFormatter]:
     """
     Decorator to register an instruction formatter for a given instruction type.
@@ -48,9 +52,12 @@ def add_instruction_formatter(
     Args:
         instr_type: The instruction type string (e.g., "R", "I", "S")
         required_params: Set of parameter names required by this instruction type (e.g., {"rd", "rs1", "rs1val", "immval"})
-        compressed_regs: Dict mapping register types to (min, max) range for compressed instructions
-        imm_bits: Number of bits for immediate values (e.g., 12 for I-type, 5 for shifts)
+        reg_range: Allowed register range for this type (e.g., range(8, 16) for compressed instructions)
+        imm_bits: Number of bits for immediate values - can be an integer (e.g., 12 for I-type, 5 for shifts)
+            or a string expression "xlen_log2" for xlen-dependent shift widths (5 for RV32, 6 for RV64)
+        imm_range: Explicit (min, max) value range for immediate (e.g., (0, 10) for IR type rnum field)
         imm_signed: Whether immediate values should be signed (default: True)
+        imm_nonzero: If True, exclude zero from generated immediate values (e.g., for compressed instructions)
     """
 
     def decorator(formatter_func: InstructionFormatter) -> InstructionFormatter:
@@ -59,7 +66,9 @@ def add_instruction_formatter(
             required_params=required_params,
             reg_range=reg_range,
             imm_bits=imm_bits,
+            imm_range=imm_range,
             imm_signed=imm_signed,
+            imm_nonzero=imm_nonzero,
         )
         _INSTRUCTION_CONFIGS[instr_type] = config
         return formatter_func

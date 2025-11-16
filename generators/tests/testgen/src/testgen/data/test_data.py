@@ -79,8 +79,16 @@ class TestData:
         return self._config.xlen
 
     @property
+    def xlen_log2(self) -> int:
+        return self._config.xlen.bit_length() - 1
+
+    @property
     def flen(self) -> int:
         return self._config.flen
+
+    @property
+    def flen_log2(self) -> int:
+        return self._config.flen.bit_length() - 1
 
     @property
     def xlen_format_str(self) -> str:

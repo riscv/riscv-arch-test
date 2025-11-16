@@ -9,6 +9,7 @@
 
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from difflib import get_close_matches
 from importlib import import_module
 from pathlib import Path
 
@@ -17,6 +18,34 @@ from testgen.data.test_data import TestData
 
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
+
+
+class MissingFormatterError(KeyError):
+    """Raised when no instruction formatter is registered for a given instruction type."""
+
+    def __init__(self, instr_type: str, available_types: list[str] | None = None) -> None:
+        """
+        Initialize the exception with helpful context.
+
+        Args:
+            instr_type: The instruction type that was not found
+            available_types: List of all registered instruction types
+        """
+        if available_types:
+            # Find similar instruction types using difflib
+            similar_types = get_close_matches(instr_type, available_types, n=5, cutoff=0.4)
+
+            formatter_dir = Path(__file__).parent
+            msg = (
+                f"No instruction formatter registered for type '{instr_type}'. "
+                f"Similar types: {', '.join(similar_types) if similar_types else 'none found'}. "
+                f"To add support, create a new formatter file in '{formatter_dir}'."
+            )
+            super().__init__(msg)
+        else:
+            # Minimal message for unpickling
+            super().__init__(instr_type)
+        self.instr_type = instr_type
 
 
 @dataclass
@@ -76,8 +105,10 @@ def add_instruction_formatter(
     return decorator
 
 
-def get_type_config(instr_type: str) -> InstructionTypeConfig:
+def get_instr_type_config(instr_type: str) -> InstructionTypeConfig:
     """Get the complete configuration for an instruction type."""
+    if instr_type not in _INSTRUCTION_CONFIGS:
+        raise MissingFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
     return _INSTRUCTION_CONFIGS[instr_type]
 
 
@@ -99,16 +130,6 @@ def _discover_and_import_instruction_formatters() -> None:
 _discover_and_import_instruction_formatters()
 
 
-def _select_instruction_formatter(instr_name: str, instr_type: str) -> InstructionFormatter:
-    """Select the appropriate instruction formatter based on instruction type (exact match)."""
-    config = _INSTRUCTION_CONFIGS.get(instr_type)
-    if config is not None:
-        return config.formatter
-    raise ValueError(
-        f"No instruction formatter found for instruction type: {instr_type}. Needed by instruction: {instr_name}."
-    )
-
-
 def format_instruction(
     instr_name: str, instr_type: str, test_data: TestData, params: InstructionParams
 ) -> tuple[str, str, str]:
@@ -127,7 +148,7 @@ def format_instruction(
     Returns:
         Tuple of (setup_code, test_code, check_code) as strings
     """
-    formatter = _select_instruction_formatter(instr_name, instr_type)
+    formatter = get_instr_type_config(instr_type).formatter
     setup, test, check = formatter(instr_name, test_data, params)
     return "\n".join(setup), "\n".join(test), "\n".join(check)
 

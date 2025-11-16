@@ -32,7 +32,7 @@ from typing import Any
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters import get_type_config
+from testgen.instruction_formatters import get_instr_type_config
 from testgen.utils.random_values import random_int, random_range
 
 
@@ -64,7 +64,7 @@ def generate_random_params(
     params = InstructionParams(**fixed_params)
 
     # Get the required parameters for this instruction type (extracted from formatters)
-    instr_type_config = get_type_config(instr_type)
+    instr_type_config = get_instr_type_config(instr_type)
     required_params = instr_type_config.required_params
     if required_params is None:
         raise ValueError(

@@ -209,7 +209,7 @@ Mend_PMP:                                    ;\
 // More Robust version of PTE_SETUP_32 to setup a PTE for a PA using Va
 // in a single line.
 //args: PA: Label of Physical Address, PERMS: permissions in hex
-//args: VA: Virtual Address in hex, level: Level to store at
+//args: VA: Virtual Address in hex, level: Level to  at
 #define PTE_SETUP_RV32_New(PA_LBL, PERMS, VA, level)           ;\
     LA(a0, PA_LBL)                                             ;\
     LI(a1, PERMS)                                              ;\
@@ -249,12 +249,12 @@ Mend_PMP:                                    ;\
         LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
     .endif                                                                                  ;\
     add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
-    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+    SREG _PAR, 0(_TR1)                  /*  PTE at calculated address */               ;\
 
 // More Robust version of PTE_SETUP_SV39 to setup a PTE for a PA using VA
 // in a single line.
 // args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
-// args: VA: Virtual Address in hex, level: Level to store at (0, 1, or 2)
+// args: VA: Virtual Address in hex, level: Level to  at (0, 1, or 2)
 #define PTE_SETUP_RV39_New(PA_LBL, PERMS, VA, level)                                         \
     LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
     LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
@@ -281,11 +281,11 @@ Mend_PMP:                                    ;\
         LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
     .endif                                                                                  ;\
     add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
-    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+    SREG _PAR, 0(_TR1)                  /*  PTE at calculated address */               ;\
 
 // More Robust version of PTE_SETUP_SV48 to setup a PTE for a PA using VA in a single line.
 // args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
-// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2 or 3)
+// args: VA: Virtual Address in hex, level: Level to  at (0, 1, 2 or 3)
 #define PTE_SETUP_SV48_New(PA_LBL, PERMS, VA, level)                                        ;\
     LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
     LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
@@ -316,11 +316,11 @@ Mend_PMP:                                    ;\
         LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
     .endif                                                                                  ;\
     add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
-    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+    SREG _PAR, 0(_TR1)                  /*  PTE at calculated address */               ;\
 
 // More Robust version of PTE_SETUP_SV57 to setup a PTE for a PA using VA in a single line.
 // args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
-// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2, 3 or 4)
+// args: VA: Virtual Address in hex, level: Level to  at (0, 1, 2, 3 or 4)
 #define PTE_SETUP_SV57_New(PA_LBL, PERMS, VA, level)                                        ;\
     LA(a0, PA_LBL)                                                                          ;\
     LI(a1, PERMS)                                                                           ;\
@@ -433,7 +433,7 @@ Mend_PMP:                                    ;\
     csrw satp, t6                                               ;
 
 // macro to update the signature region for hints
-#define TEST_STORE_GPRS_AND_STATUS(sigptr)  ;\
+#define TEST__GPRS_AND_STATUS(sigptr)  ;\
     /* Store all general-purpose registers (x0 to x31) to the signature region */ ;\
     RVTEST_SIGUPD(sigptr, x1)              /* Store x1 */ ;\
     RVTEST_SIGUPD(sigptr, x2)              /* Store x2 */ ;\
@@ -463,7 +463,8 @@ Mend_PMP:                                    ;\
     RVTEST_SIGUPD(sigptr, x27)             /* Store x27 */ ;\
     RVTEST_SIGUPD(sigptr, x28)             /* Store x28 */ ;\
     RVTEST_SIGUPD(sigptr, x29)             /* Store x29 */ ;\
-    /* Store the CSR registers */ ;\
+	#ifdef rvtest_mtrap_routine			;\
+	/* Store the CSR registers */ ;\
     csrr a0, mepc                          /* Read mepc register */ ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mepc */ ;\
     csrr a0, mtval                         /* Read mtval register */ ;\
@@ -472,6 +473,7 @@ Mend_PMP:                                    ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mstatus */ ;\
     csrr a0, mip                           /* Read mip register */ ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mip */ ;\
+	#endif
 
 //Tests for atomic memory operation(AMO) instructions
 #define TEST_AMO_OP(inst, destreg, origptr, reg2, origval, updval, sigptr, ...) ;\

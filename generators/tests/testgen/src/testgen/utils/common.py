@@ -81,7 +81,7 @@ def write_sigupd(rd: int, test_data: TestData, sig_type: Literal["int", "float"]
     if sig_type == "int":
         test_data.sigupd_count += 1
         return (
-            f"# Check if x{rd} contians the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            f"# Check if x{rd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
             + f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
         )
     elif sig_type == "float":

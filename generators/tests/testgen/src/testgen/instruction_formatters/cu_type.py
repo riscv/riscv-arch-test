@@ -1,7 +1,7 @@
 ##################################
-# i_type.py
+# ca_type.py
 #
-# jcarlin@hmc.edu Oct 2025
+# harris@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -11,19 +11,17 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import load_int_reg, write_sigupd
 
 
-@add_instruction_formatter("I", required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits=12, imm_signed=True)
-def format_i_type(
+@add_instruction_formatter("CU", required_params={"rs1", "rs1val"}, reg_range=range(8, 16))
+def format_ca_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format I-type instruction."""
+    """Format CA-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
-    assert params.rd is not None
-    assert params.immval is not None
     setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+        load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data),
     ]
     test = [
-        f"{instr_name} x{params.rd}, x{params.rs1}, {params.immval} # perform operation",
+        f"{instr_name} x{params.rs1} # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [write_sigupd(params.rs1, test_data, "int")]
     return (setup, test, check)

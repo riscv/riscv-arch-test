@@ -12,14 +12,26 @@ Common utilities for riscv-arch-test test generation.
 from typing import Literal
 
 from testgen.data.test_data import TestData
-from testgen.utils.immediates import modify_imm
+
+
+def to_hex(value: int, bits: int) -> str:
+    """
+    Convert an integer to a hex string for assembly output.
+
+    Args:
+        value: The integer value (should already be in correct range)
+        bits: Number of bits (used to handle negative values)
+    """
+    # For negative values, convert to unsigned representation
+    if value < 0:
+        value = value + (2**bits)
+    return f"0x{value:x}"
 
 
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
-    xlen = test_data.xlen
-    formatstr = test_data.xlen_format_str
-    return f"LI(x{reg}, {formatstr.format(modify_imm(val, xlen, hex_format=True))}) # initialize {name}"
+    hex_val = to_hex(val, test_data.xlen)
+    return f"LI(x{reg}, {hex_val}) # initialize {name}"
 
 
 def load_float_reg(name: str, reg: int, val: float, precision: Literal[16, 32, 64, 128], test_data: TestData) -> str:
@@ -68,7 +80,10 @@ def write_sigupd(rd: int, test_data: TestData, sig_type: Literal["int", "float"]
     temp_reg = test_data.int_regs.temp_reg
     if sig_type == "int":
         test_data.sigupd_count += 1
-        return f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+        return (
+            f"# Check if x{rd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            + f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+        )
     elif sig_type == "float":
         raise NotImplementedError("Floating point signature updates are not yet implemented.")
         # test_data.sigupd_count_float += 2

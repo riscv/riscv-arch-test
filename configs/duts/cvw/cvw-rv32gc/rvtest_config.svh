@@ -1,4 +1,4 @@
-// riscv-arch-test_coverage.svh
+// rvtest_config.svh
 // David_Harris@hmc.edu 7 September 2024
 // SPDX-License-Identifier: Apache-2.0
 
@@ -6,13 +6,9 @@
 // It defines which extensions are enabled for that config.
 
 // Define XLEN, used in covergroups
-`define XLEN64
+`define XLEN32
 `define FLEN64
 `define VLEN512
-
-// Virtual Memory Modes
-`define SV39
-`define SV48
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)

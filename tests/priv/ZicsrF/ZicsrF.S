@@ -14,7 +14,7 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#include "rvtest_config.h" 
+#include "rvtest_config.h"
 #include "WALLY-init-lib.h"
 
 main:
@@ -759,7 +759,7 @@ fp_instructions:
     csrs mstatus, s2
     fcvt.s.w f6, t2
 
-    // write a1 to 
+    // write a1 to
     #ifdef D_SUPPORTED
         csrc mstatus, s1
         csrs mstatus, s2
@@ -810,8 +810,8 @@ fp_instructions:
     fmin.s f12, f0, f1
 
     // --- Zfa Extension Instructions ---
-    // write a1 to mstatus.FS
     #ifdef ZFA_SUPPORTED
+        // write a1 to mstatus.FS
         csrc mstatus, s1
         csrs mstatus, s2
         fround.s f14, f0
@@ -912,8 +912,8 @@ fp_instructions:
         csrs mstatus, s2
         fmv.x.w t1, f0
 
-        // write a1 to mstatus.FS
         #ifdef D_SUPPORTED
+         // write a1 to mstatus.FS
             csrc mstatus, s1
             csrs mstatus, s2
             fmvh.x.d t2, f0

@@ -3,3 +3,5 @@
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
 #define ZFA_SUPPORTED
+#define F_SUPPORTED
+#define ZFH_SUPPORTED

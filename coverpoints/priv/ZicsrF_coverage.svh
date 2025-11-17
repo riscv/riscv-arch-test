@@ -102,7 +102,7 @@ covergroup ZicsrF_fcsr_cg with function sample(ins_t ins);
         wildcard bins fmv_f_x      = {32'b11110_??_00000_?????_000_?????_1010011};
         wildcard bins fclass       = {32'b11100_??_00000_?????_001_?????_1010011};
         wildcard bins fmin         = {32'b00101_??_?????_?????_000_?????_1010011};
-        `ifdef ZFA_SUPPORTED 
+        `ifdef ZFA_SUPPORTED
             wildcard bins fli          = {32'b11110_??_00001_?????_000_?????_1010011};
             wildcard bins fround       = {32'b01000_??_00100_?????_???_?????_1010011};
         `endif
@@ -122,8 +122,8 @@ covergroup ZicsrF_fcsr_cg with function sample(ins_t ins);
         `ifdef XLEN32
             `ifdef D_SUPPORTED
                 wildcard bins fmvh         = {32'b1110001_00001_?????_000_?????_1010011};
+                wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
             `endif
-            wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
         `endif
     }
     mstatus_FS: coverpoint ins.prev.csr[12'h300][14:13] {

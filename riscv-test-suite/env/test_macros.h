@@ -320,7 +320,7 @@ Mend_PMP:                                    ;\
 
 // More Robust version of PTE_SETUP_SV57 to setup a PTE for a PA using VA in a single line.
 // args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
-// args: VA: Virtual Address in hex, level: Level to  at (0, 1, 2, 3 or 4)
+// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2, 3 or 4)
 #define PTE_SETUP_SV57_New(PA_LBL, PERMS, VA, level)                                        ;\
     LA(a0, PA_LBL)                                                                          ;\
     LI(a1, PERMS)                                                                           ;\

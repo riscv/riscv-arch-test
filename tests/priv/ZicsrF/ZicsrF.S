@@ -9,11 +9,12 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, D, Zicsr, Zfa]
-# MARCH: rv${XLEN}id_zicsr_zfa
+# implemented_extensions: [I, F]
+# MARCH: rv${XLEN}ifdzfa
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
+#include "rvtest_config.h" 
 #include "WALLY-init-lib.h"
 
 main:
@@ -715,209 +716,213 @@ fp_instructions:
 
     // --- Floating-Point Memory Operations ---
 
-        // write a0 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a0 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fsw    f0, 0(a4)
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     flw    f1, 0(a4)
 
     // --- Floating-Point Arithmetic Operations ---
         // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    csrc mstatus, s1
+    csrs mstatus, s2
     fadd.s f2, f0, f1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fsub.s f3, f0, f1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fmul.s f4, f0, f1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fdiv.s f5, f0, f1
 
     // --- Floating‑Point Conversions ---
 
         // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    csrc mstatus, s1
+    csrs mstatus, s2
     fcvt.w.s t2, f0
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fcvt.s.w f6, t2
 
-        // write a1 to mstatus.FS
+    // write a1 to 
+    #ifdef D_SUPPORTED
         csrc mstatus, s1
         csrs mstatus, s2
-    fcvt.s.d f7, f0
-
+        fcvt.s.d f7, f0
+    #endif
     // --- Floating Point Arithmetic ---
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fmadd.s f8, f0, f1, f2
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fsqrt.s f9, f0
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fsgnj.s f10, f0, f1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     feq.s  t3, f0, f1
 
     // --- Move Bit Representations ---
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fmv.x.w t4, f0
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fmv.w.x f11, t4
 
     // --- Floating‑Point Classification and Minimum ---
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fclass.s t5, f0
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     fmin.s f12, f0, f1
 
     // --- Zfa Extension Instructions ---
-        // write a1 to mstatus.FS
+    // write a1 to mstatus.FS
+    #ifdef ZFA_SUPPORTED
         csrc mstatus, s1
         csrs mstatus, s2
-    fround.s f14, f0
+        fround.s f14, f0
 
-        // write a1 to mstatus.FS
+    // write a1 to mstatus.FS
         csrc mstatus, s1
         csrs mstatus, s2
-    fli.s  f2, 2.5
-
+        fli.s  f2, 2.5
+    #endif
     // --- CSR Operations on Floating‑Point Status Registers ---
 
     // Note for the following csrrw and  csrrc instructions:
     // Since fcsr, frm, and fflags are part of the same csr, frm is restored after each
     // csrrw/csrrc instruction. This prevents accidental modification of the frm register.
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrw  t1, fcsr, x0
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrw  t0, frm, a1   // a1 stores the value of frm
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrw  t1, fflags, x0
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrs  t1, fcsr, t1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrs  t1, fflags, t1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrs  t0, frm, a1   // a1 stores the value of frm
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrc  t1, fcsr, t1
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrc  t1, fcsr, t1
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrc  t1, frm, a1   // a1 stores the value of frm
 
-        // Restore frm
-        csrw frm, a1
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // Restore frm
+    csrw frm, a1
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrrc  t1, fflags, t1
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrr t1,  frm
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrr t1,  fflags
 
-        // write a1 to mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
+    // write a1 to mstatus.FS
+    csrc mstatus, s1
+    csrs mstatus, s2
     csrr t1,  fcsr
 
     // 32-bit only instructions
     #ifdef __riscv_xlen
     #if __riscv_xlen == 32
-            // write a1 to mstatus.FS
-            csrc mstatus, s1
-            csrs mstatus, s2
+        // write a1 to mstatus.FS
+        csrc mstatus, s1
+        csrs mstatus, s2
         fmv.x.w t1, f0
 
-            // write a1 to mstatus.FS
+        // write a1 to mstatus.FS
+        #ifdef D_SUPPORTED
             csrc mstatus, s1
             csrs mstatus, s2
-        fmvh.x.d t2, f0
+            fmvh.x.d t2, f0
 
             // write a1 to mstatus.FS
             csrc mstatus, s1
             csrs mstatus, s2
-        fmvp.d.x f1, t1, t2
+            fmvp.d.x f1, t1, t2
+        #endif
     #endif
     #endif
 

@@ -9,10 +9,9 @@ from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("CI", required_params={"rs1", "rs1val", "immval"})
+@add_instruction_formatter("CI", required_params={"rs1", "rs1val", "immval"}, imm_bits=6, imm_signed=True)
 def format_ci_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
@@ -21,16 +20,17 @@ def format_ci_type(
     assert params.immval is not None
     setup: list[str] = []
     if instr_name == "c.addi16sp":
-        # For c.addi16sp, the immediate is scaled by 16 and rs1 must be x2 (sp)
-        scaled_imm = modify_imm(params.immval, 10)
+        # For c.addi16sp, the immediate is scaled by 16 (left shift by 4) and rs1 must be x2 (sp)
+        # params.immval <<= 4
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = 2
         setup.append(test_data.int_regs.consume_registers([params.rs1]))
-    else:
-        scaled_imm = modify_imm(params.immval, 6)
+    # elif instr_name == "c.lui":
+    # For c.lui, immediate is shifted left by 12 bits
+    # params.immval = params.immval << 12
     setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
     test = [
-        f"{instr_name} x{params.rs1}, {scaled_imm} # perform operation",
+        f"{instr_name} x{params.rs1}, {params.immval} # perform operation",
     ]
     check = [write_sigupd(params.rs1, test_data, "int")]
     return (setup, test, check)

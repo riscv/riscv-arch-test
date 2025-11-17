@@ -14,11 +14,11 @@ c.jal,CJ,x,,x,,,,,,,,,,x,,c_jal,
 c.jalr,CR,x,x,x,nx0,,,,,,,,,c_jr,,,
 c.jr,CR,x,x,x,nx0,,,,,,,,,c_jr,,,
 c.ld,CL,,x,x,p,,p,,,,,,c,,,,8
-c.ldsp,CI,,x,x,nx0,,,,,,,,,,,,8sp
+c.ldsp,CILS,,x,x,nx0,,,,,,,,,,,,8sp
 c.li,CI,x,x,x,nx0,,,,,,,,,,,6bit,
 c.lui,CI,x,x,x,nx2,,,,,,,,,,,6bit_n0,
 c.lw,CL,x,x,x,p,,p,,,,,,c,,,,x
-c.lwsp,CLS,x,x,x,,,nx0,,,,,,,,,,4sp
+c.lwsp,CILS,x,x,x,,,nx0,,,,,,,,,,4sp
 c.mv,CR,x,x,x,nx0,nx0,,,x,,,nx0,,,,,
 c.nop,CN,x,x,x,,,,,,,,,,,,,
 c.or,CA,x,x,x,p,p,,x,x,,,c,,,,,

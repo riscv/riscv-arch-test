@@ -20,7 +20,7 @@ from rich.progress import track
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.test_config import TestConfig
 from testgen.data.test_data import TestData
-from testgen.utils.common import get_sig_space
+from testgen.utils.common import generate_test_data_section, get_sig_space
 from testgen.utils.templates import insert_setup_template
 from testgen.utils.testplans import get_extensions, read_testplan
 
@@ -129,9 +129,14 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         # Test footer
         test_lines.append(insert_setup_template("testgen_footer.S", xlen, extension, test_file_relative))
 
-        # Generate final test string with signature size
+        # Generate final test string with signature size and test data section
         sig_words = get_sig_space(test_data)
-        test_string = "\n".join(test_lines).replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
+        test_data_section = generate_test_data_section(test_data)
+        test_string = (
+            "\n".join(test_lines)
+            .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
+            .replace("@TEST_DATA@", test_data_section)
+        )
 
         # Clean up test data
         test_data.destroy()

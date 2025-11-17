@@ -9,10 +9,9 @@ from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.immediates import modify_imm
 
 
-@add_instruction_formatter("L", required_params={"rd", "rs1", "rs2", "rs2val", "immval"})
+@add_instruction_formatter("L", required_params={"rd", "rs1", "rs2", "rs2val", "immval"}, imm_bits=12, imm_signed=True)
 def format_l_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
@@ -21,7 +20,6 @@ def format_l_type(
     assert params.rs2 is not None and params.rs2val is not None
     assert params.rd is not None
     assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 12)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -34,7 +32,7 @@ def format_l_type(
     ]
 
     # Handle special case where offset is -2048 (can't represent +2048 in 12 bits)
-    if scaled_imm == -2048:
+    if params.immval == -2048:
         setup.extend(
             [
                 f"addi x{params.rs1}, x{params.rs1}, 2047 # increment by 2047",
@@ -42,12 +40,12 @@ def format_l_type(
             ]
         )
     else:
-        neg_scaled_imm = -scaled_imm
-        setup.append(f"addi x{params.rs1}, x{params.rs1}, {neg_scaled_imm} # adjust base address for offset")
+        neg_immval = -params.immval
+        setup.append(f"addi x{params.rs1}, x{params.rs1}, {neg_immval} # adjust base address for offset")
 
-    setup.append(f"SREG x{params.rs2}, {scaled_imm}(x{params.rs1}) # store test value to memory")
+    setup.append(f"SREG x{params.rs2}, {params.immval}(x{params.rs1}) # store test value to memory")
     test = [
-        f"{instr_name} x{params.rd}, {scaled_imm}(x{params.rs1}) # perform load",
+        f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
     ]
     check = [write_sigupd(params.rd, test_data, "int")]
     return (setup, test, check)

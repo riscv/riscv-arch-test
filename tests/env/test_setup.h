@@ -49,6 +49,8 @@
       nop
       nop
     #endif
+    // Initialize test data pointer
+    LA(x4, rvtest_data_begin)
   .option pop
 .endm
 /*********************************** end of RVTEST_BEGIN ***********************************/

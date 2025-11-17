@@ -53,7 +53,6 @@ class RegisterFile:
     ) -> list[int]:
         """Get a specified number of unique registers from the register file."""
         # Handle exclusions and range limitations)
-        print(f"{exclude_regs=}")
         if exclude_regs is None:
             exclude_regs = []
         if reg_range is not None:

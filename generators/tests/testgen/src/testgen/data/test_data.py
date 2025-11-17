@@ -23,6 +23,7 @@ class TestData:
         float_regs: Floating-point register file for allocation
         sigupd_count: Running count of integer signature updates
         sigupd_count_float: Running count of floating-point signature updates
+        test_data_values: List of values to be stored in test_data section
     """
 
     def __init__(self, test_config: TestConfig) -> None:
@@ -37,6 +38,7 @@ class TestData:
         self._float_regs = FloatRegisterFile()
         self._sigupd_count = 10  # Start with a margin of 10 spaces in signature
         self._sigupd_count_float = 0
+        self._test_data_values: list[int] = []  # List of integer values
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, sigupd_count_float={self._sigupd_count_float})"
@@ -97,6 +99,20 @@ class TestData:
     @property
     def flen_format_str(self) -> str:
         return self._config.flen_format_str
+
+    @property
+    def test_data_values(self) -> list[int]:
+        """Get the list of test data values to be stored in .data section."""
+        return self._test_data_values
+
+    def add_test_data_value(self, value: int) -> None:
+        """
+        Add a test data value to be stored in .data section.
+
+        Args:
+            value: The integer value to store
+        """
+        self._test_data_values.append(value)
 
     def destroy(self) -> None:
         """Clean up resources used by TestData."""

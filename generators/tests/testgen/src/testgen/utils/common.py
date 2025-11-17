@@ -25,13 +25,13 @@ def to_hex(value: int, bits: int) -> str:
     # For negative values, convert to unsigned representation
     if value < 0:
         value = value + (2**bits)
-    return f"0x{value:x}"
+    return f"0x{value:0{bits // 4}x}"
 
 
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
-    hex_val = to_hex(val, test_data.xlen)
-    return f"LI(x{reg}, {hex_val}) # initialize {name}"
+    test_data.add_test_data_value(val)
+    return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.link_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
 def load_float_reg(name: str, reg: int, val: float, precision: Literal[16, 32, 64, 128], test_data: TestData) -> str:
@@ -123,3 +123,25 @@ def myhash(s: str) -> int:
     for c in s:
         h = (h * 31 + ord(c)) & 0xFFFFFFFF
     return h
+
+
+def generate_test_data_section(test_data: TestData) -> str:
+    """
+    Generate the .data section containing all test values.
+
+    Args:
+        test_data: TestData object containing the values to generate
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = []
+
+    # Use .word for 32-bit, .dword for 64-bit
+    directive = ".word" if test_data.xlen == 32 else ".dword"
+
+    for value in test_data.test_data_values:
+        hex_value = to_hex(value, test_data.xlen)
+        lines.append(f"    {directive} {hex_value}")
+
+    return "\n".join(lines)

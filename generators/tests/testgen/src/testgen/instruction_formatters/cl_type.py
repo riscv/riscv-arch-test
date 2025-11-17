@@ -10,7 +10,9 @@ from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 
 
-@add_instruction_formatter("CL", required_params={"rd", "rs1", "immval", "temp_reg", "temp_val"})
+@add_instruction_formatter(
+    "CL", required_params={"rd", "rs1", "immval", "temp_reg", "temp_val"}, reg_range=range(8, 16), imm_bits=5
+)
 def format_cl_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

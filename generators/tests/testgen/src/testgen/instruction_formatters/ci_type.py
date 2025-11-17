@@ -21,13 +21,13 @@ def format_ci_type(
     setup: list[str] = []
     if instr_name == "c.addi16sp":
         # For c.addi16sp, the immediate is scaled by 16 (left shift by 4) and rs1 must be x2 (sp)
-        params.immval <<= 4
+        # params.immval <<= 4
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = 2
         setup.append(test_data.int_regs.consume_registers([params.rs1]))
-    elif instr_name == "c.lui":
-        # For c.lui, immediate is shifted left by 12 bits
-        params.immval = params.immval << 12
+    # elif instr_name == "c.lui":
+    # For c.lui, immediate is shifted left by 12 bits
+    # params.immval = params.immval << 12
     setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
     test = [
         f"{instr_name} x{params.rs1}, {params.immval} # perform operation",

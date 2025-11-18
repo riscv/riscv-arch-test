@@ -139,7 +139,8 @@ main:
 	csrw pmpcfg3, x4
 
 	LA(x4, TEST_FOR_EXECUTION)
-	addi    x5, x4, g
+	LI(x5, g)
+	add    x5, x4, x5
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
     
@@ -153,6 +154,7 @@ main:
 	csrw pmpcfg0, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
+
 
 // Test Case: 2 -- LXWR Permissions given to the PMP Region.
 

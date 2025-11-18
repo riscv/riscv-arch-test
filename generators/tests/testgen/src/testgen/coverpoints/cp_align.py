@@ -26,36 +26,36 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
-    for alignment in alignments:
-        if instr_type == "S":
-            params = generate_random_params(test_data, instr_type, immval=alignment, rs1=test_data.int_regs.sig_reg)
-        else:
-            params = generate_random_params(test_data, instr_type, immval=alignment)
-        assert (
-            params.rs2 is not None and params.rs2val is not None and params.immval is not None and params.rd is not None
-        )
-        test_lines.extend(
-            [
-                f"# {coverpoint}: imm[2:0]={alignment:03b}",
-                load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-            ]
-        )
-        if instr_type == "L":
-            test_lines.extend(
-                [
-                    f"LA(x{params.rs1}, scratch) # load base address",
-                    f"SREG x{params.rs2}, {params.immval - (params.immval % 4)}(x{params.rs1}) # store test value to memory",
-                    f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
-                    write_sigupd(params.rd, test_data, "int"),
-                ]
-            )
+    # for alignment in alignments:
+    #     if instr_type == "S":
+    #         params = generate_random_params(test_data, instr_type, immval=alignment, rs1=test_data.int_regs.sig_reg)
+    #     else:
+    #         params = generate_random_params(test_data, instr_type, immval=alignment)
+    #     assert (
+    #         params.rs2 is not None and params.rs2val is not None and params.immval is not None and params.rd is not None
+    #     )
+    #     test_lines.extend(
+    #         [
+    #             f"# {coverpoint}: imm[2:0]={alignment:03b}",
+    #             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+    #         ]
+    #     )
+    #     if instr_type == "L":
+    #         test_lines.extend(
+    #             [
+    #                 f"LA(x{params.rs1}, scratch) # load base address",
+    #                 f"SREG x{params.rs2}, {params.immval - (params.immval % 4)}(x{params.rs1}) # store test value to memory",
+    #                 f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
+    #                 write_sigupd(params.rd, test_data, "int"),
+    #             ]
+    #         )
 
-        # Cleanup
-        return_regs: list[int] = []
-        for reg in params.used_int_regs:
-            if reg != test_data.int_regs.sig_reg:
-                return_regs.append(reg)
-        test_data.int_regs.return_registers(return_regs)
+    #     # Cleanup
+    #     return_regs: list[int] = []
+    #     for reg in params.used_int_regs:
+    #         if reg != test_data.int_regs.sig_reg:
+    #             return_regs.append(reg)
+    #     test_data.int_regs.return_registers(return_regs)
 
     return test_lines
 

@@ -223,8 +223,9 @@ trap_return:                     # don't need to update mepc for interrupts
 
 write_tohost:
     li x1, 1
-    sw x1, tohost, t0
-    j write_tohost
+    la t0, tohost
+    sw x1, 0(t0)
+    sw x0, 4(t0)
 
 self_loop:
     j self_loop         # wait

@@ -4,6 +4,9 @@ normative_rule_definitions:
   - name: mul_op
     coverpoint: ["M_mul_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]
   - names: [mulh_op, mulhu_op, mulhsu_op]
-    coverpoint: ["{M_mulh_cg, M_mulhu_cg, M_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}}"]
+    coverpoint:
+      [
+        "{M_mulh_cg, M_mulhu_cg, M_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}}",
+      ]
   - name: mulw_op
     coverpoint: ["M_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]

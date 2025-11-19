@@ -10,7 +10,6 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.immediates import modify_imm
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -35,7 +34,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         assert (
             params.rs2 is not None and params.rs2val is not None and params.immval is not None and params.rd is not None
         )
-        scaled_imm = modify_imm(params.immval, 12)
         test_lines.extend(
             [
                 f"# {coverpoint}: imm[2:0]={alignment:03b}",
@@ -47,7 +45,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                 [
                     f"LA(x{params.rs1}, scratch) # load base address",
                     f"SREG x{params.rs2}, {params.immval - (params.immval % 4)}(x{params.rs1}) # store test value to memory",
-                    f"{instr_name} x{params.rd}, {scaled_imm}(x{params.rs1}) # perform load",
+                    f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
                     write_sigupd(params.rd, test_data, "int"),
                 ]
             )

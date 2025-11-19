@@ -123,7 +123,7 @@ def write_makefile(
         makefile_lines.append(f"\n{command}: $({variable_name})\n")
 
     # Directory creation rules
-    makefile_lines.extend([f"{' '.join(directory_set)}:", "\tmkdir -p $@", ""])
+    makefile_lines.extend([f"{' '.join(sorted(directory_set))}:", "\tmkdir -p $@", ""])
 
     # Write out Makefile
     makefile_path.parent.mkdir(parents=True, exist_ok=True)
@@ -154,7 +154,7 @@ def generate_common_makefile(
     ]
 
     # Build Makefile targets for each test
-    for test_name, test_metadata in common_test_list.items():
+    for test_name, test_metadata in sorted(common_test_list.items()):
         test_name = Path(test_name)
         elf_name = test_name.with_suffix(".elf")
         final_elf = common_elf_dir / elf_name
@@ -200,7 +200,7 @@ def generate_config_makefile(
     ]
 
     # Build Makefile targets for each test
-    for test_name, test_metadata in config_test_list.items():
+    for test_name, test_metadata in sorted(config_test_list.items()):
         # Test specific paths
         test_name = Path(test_name)
         elf_name = test_name.with_suffix(".elf")
@@ -271,15 +271,13 @@ def gen_coverage_targets(
     # Generate tracelist file for each extension/test group and a target to generate the UCDB coverage file
     makefile_lines = ["#################### Coverage targets ####################\n"]
     coverage_reports: list[Path] = []
-    coverage_summaries: list[Path] = []
-    for coverage_group, traces in coverage_targets.items():
+    for coverage_group, traces in sorted(coverage_targets.items()):
         # Define paths
         base_name = base_dir / coverage_group / coverage_group.stem
         tracelist_file = base_name.with_suffix(".tracelist")
         ucdb_file = base_name.with_suffix(".ucdb")
         work_dir = base_name.parent / "ucdb_work"
         report_file_base = config_report_dir / coverage_group.stem
-        report_file = Path(f"{report_file_base}_report.txt")
         summary_file = Path(f"{report_file_base}_summary.txt")
 
         # Write the tracefile
@@ -287,7 +285,7 @@ def gen_coverage_targets(
         tracelist_file.write_text(
             f"# Tests for coverage group: {coverage_group}\n"
             + "# Generated automatically by riscv-arch-test act framework\n"
-            + "\n".join([str(trace) for trace in traces])
+            + "\n".join([str(trace) for trace in sorted(traces)])
         )
 
         # Add UCDB file to the list
@@ -297,7 +295,7 @@ def gen_coverage_targets(
         ):
             makefile_lines.append(
                 f"# Generate UCDB file for {coverage_group.stem}\n"
-                f"{ucdb_file}: {' '.join([str(trace) for trace in traces])}\n"
+                f"{ucdb_file}: {' '.join([str(trace) for trace in sorted(traces)])}\n"
                 f'\tvsim -c -do "do {vsim_do_path.absolute()} \\\n'
                 f"\t\t{tracelist_file}\\\n"
                 f"\t\t{ucdb_file}\\\n"
@@ -309,27 +307,26 @@ def gen_coverage_targets(
             )
 
         # Generate coverage report
-        coverage_reports.append(report_file)
-        coverage_summaries.append(summary_file)
+        coverage_reports.append(summary_file)
         makefile_lines.append(
             f"# Generate coverage report for {coverage_group.stem}\n"
             f".PHONY: {coverage_group.stem}-report\n"
-            f"{coverage_group.stem}-report: {report_file}\n"
-            f"{report_file}: {ucdb_file}\n"
+            f"{coverage_group.stem}-report: {summary_file}\n"
+            f"{summary_file}: {ucdb_file}\n"
             f"\tuv run coverreport\\\n"
             f"\t\t{ucdb_file}\\\n"
             f"\t\t{report_file_base}\n"
         )
 
     # Generate overall summary target that concatenates all individual summaries
-    if coverage_summaries:
+    if coverage_reports:
         overall_summary = config_report_dir / "_overall_summary.txt"
         # Use merge_summaries script to properly format the combined output
-        summary_files = " ".join([str(s) for s in coverage_summaries])
+        summary_files = " ".join([str(s) for s in sorted(coverage_reports)])
 
         makefile_lines.append(
             f"# Generate overall coverage summary by merging all individual summaries\n"
-            f"{overall_summary}: {' '.join([str(s) for s in coverage_summaries])}\n"
+            f"{overall_summary}: {summary_files}\n"
             f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
         )
         coverage_reports.append(overall_summary)

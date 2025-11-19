@@ -30,7 +30,7 @@ def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: T
             s = sbox | sbox << 8 | sbox << 16 | sbox << 24 | sbox << 32 | sbox << 40 | sbox << 48 | sbox << 56
 
         test_lines.append("")
-        params = generate_random_params(test_data, instr_type, allow_x0=False, rs1val=s, rs2val=s)
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=s, rs2val=s)
         desc = f"{coverpoint} = {sbox}"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
         test_data.int_regs.return_registers(params.used_int_regs)

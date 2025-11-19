@@ -8,15 +8,21 @@
 ##### START_TEST_CONFIG #####
 # implemented_extensions: @EXTENSION_LIST@
 # params:
-#   MVLEN: @MVLEN@
-#   ELEN: @ELEN@
-#   SEWMIN: @SEWMIN@
+#   MXLEN: @XLEN@
 # MARCH: @MARCH@
 # CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
 ##### END_TEST_CONFIG #####
 
-#define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
-#include "riscv_arch_test.h"
+// TODO: add params: MVLEN, ELEN, SEWMIN
+
+// Define special purpose registers before including test_macros_vector.h
+#define DATA_BASE x4
+#define SIG_BASE x3
+#define VLENB_CACHE x5
+#define HELPER_GPR x6
+#define SEW@SEW@
+
+#define SIGUPD_COUNT 500 // TODO: change
 #include "test_macros_vector.h"
 
 // Set up test environment and declare main entry point

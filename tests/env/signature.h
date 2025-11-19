@@ -19,7 +19,15 @@
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _R - Register containing value to store/compare
-#ifdef SELFCHECK
+#ifdef SEW64
+  #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
+    LREG _TEMP_REG,0(_SIG_BASE)                            ;\
+    beq _TEMP_REG, _R, 1f                                  ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+    nop                                                    ;\
+    1:                                                     ;\
+    addi _SIG_BASE, _SIG_BASE, 8
+#elif defined(SELFCHECK)
   #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
     LREG _TEMP_REG,0(_SIG_BASE)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\

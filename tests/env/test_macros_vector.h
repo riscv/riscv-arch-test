@@ -7,7 +7,7 @@
 #define RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 
 #include "model_test.h"
-#include "arch_test.h"
+#include "riscv_arch_test.h"
 
 // We require four GPRs to be reserved for special purposes:
 // - SIG_BASE: Base address of signature memory region
@@ -52,23 +52,69 @@
     csrrs zero, mstatus, HELPER_GPR ;                                   \
     csrr VLENB_CACHE, vlenb ;
 
-// RVTEST_SIGUPD_V() stores the contests of a vector register in the signature
-// _BR is basereg, not hard coded to account for VX instructions
-// _TMPR is the original HELPER_GPR, used as a scratch register
-// AVL is the application vector length
-// SEW defines the element size in bits (8, 16, 32, or 64)
-// VREG is a VR that holds the data
-// offset will be updated (to the next 8-byte boundary)
-#define RVTEST_SIGUPD_V(_BR, _TMPR, AVL, SEW, VREG)         \
-    .if (offset & 7) > 0 ;                                              \
-    .set offset, (offset + 8) & ~7 ;                                    \
-    .endif ;                                                            \
-    CHK_OFFSET(_BR, REGWIDTH, 0) ;                                           \
-    addi _TMPR, _BR, offset ;                                                     \
-    vse ## SEW ##.v VREG, (_TMPR) ;                                          \
-    .set offset, offset + (AVL * SEW / 8) + 4;                          \
-    .if (offset & 7) > 0 ;                                              \
-    .set offset, (offset + 8) & ~7 ;                                    \
-    .endif ;
+// RVTEST_SIGUPD_V(_SIG_BASE, _TMP, AVL, SEW, VREG)
+//   _SIG_BASE - Base register for signature region (will be incremented)
+//   _TMP      - Temporary integer register
+//   AVL       - Application vector length (immediate constant)
+//   SEW       - Element width in bits (8, 16, 32, or 64)
+//   VREG      - Vector register containing data
+// TODO: implement SELFCHECK version
+#define RVTEST_SIGUPD_V(_SIG_BASE, _TMP, SEW, OFFSET, VREG)      \
+  vse ## SEW ##.v VREG, (_SIG_BASE)                           ;\
+  nop                                                         ;\
+  nop                                                         ;\
+  addi _SIG_BASE, _SIG_BASE, OFFSET
+
+
+/************************************* RVTEST_SIG_SETUP ************************************/
+/**** RVTEST_SIG_SETUP creates signature region to support self-checking tests          ****/
+/**** - Main signature region for results from test, initialized with correct values    ****/
+/****   for self-checking                                                               ****/
+/**** - Trap handler signature region                                                   ****/
+/*******************************************************************************************/
+.macro RVTEST_SIG_SETUP_V
+  .align 4
+  .global begin_signature
+  begin_signature:
+  .global rvtest_sig_begin
+  rvtest_sig_begin:
+
+    // Create canary at beginning of signature region to detect overwrites
+    sig_begin_canary:
+      CANARY
+
+    // Main signature region
+    .align 3
+    signature_base:
+      #ifdef SELFCHECK
+        // Preload signature region with correct values for self-checking
+        #include SIGNATURE_FILE
+      #else
+        // Initialize signature region to known value for initial pass
+        .fill SIGUPD_COUNT*(XLEN/32),4,0xdeadbeef
+      #endif
+
+    // Signature region for trap handlers
+    #ifdef rvtest_mtrap_routine
+      tsig_begin_canary:
+        CANARY
+      mtrap_sigptr:
+        .fill 64*(XLEN/32),4,0xdeadbeef
+      tsig_end_canary:
+        CANARY
+    #endif
+
+    // Create canary at end of signature region to detect overwrites
+    sig_end_canary:
+      CANARY
+
+  .align 4
+  .global rvtest_sig_end
+  rvtest_sig_end:
+  .global end_signature
+  end_signature:
+.endm
+/*********************************** end of RVTEST_SIG_SETUP *********************************/
+
 
 #endif // RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H

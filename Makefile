@@ -83,7 +83,7 @@ $(STAMP_DIR)/illegalinstrtests.stamp: generators/tests/scripts/illegalinstrtests
 	touch $@
 
 .PHONY: tests
-tests: covergroupgen testgen privheaders #vector-testgen
+tests: covergroupgen testgen privheaders
 
 .PHONY: clean-tests
 clean-tests:
@@ -99,8 +99,8 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
 	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
-.PHONY: coverage
 
+.PHONY: coverage
 coverage: generate-makefiles-ref Makefile
 	$(MAKE) -C $(WORKDIR_REF) coverage
 
@@ -117,3 +117,16 @@ lint:
 .PHONY: format
 format:
 	$(UV_RUN) ruff format
+
+###### Vector coverage targets ######
+.PHONY: vector-tests
+vector-tests: covergroupgen vector-testgen
+
+.PHONY: generate-makefiles-ref-vector
+generate-makefiles-ref-vector: # too many dependencies to track; always regenerate Makefile
+	$(MAKE) vector-tests
+	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
+
+.PHONY: vector-coverage
+vector-coverage: generate-makefiles-ref-vector Makefile
+	$(MAKE) -C $(WORKDIR_REF) coverage

@@ -21,17 +21,17 @@ from random import randint, seed
 import vector_testgen_common as common
 from vector_testgen_common import (
   ARCH_VERIF,
-  fcorners,
-  fcornersD,
-  fcornersH,
+  fedges,
+  fedgesD,
+  fedgesH,
   flen,
   freg_count,
   frmList,
   genRandomVector,
   genRandomVectorLS,
-  genVMaskCorners,
-  genVsCorners,
-  genVsCornersFP,
+  genVMaskedges,
+  genVsedges,
+  genVsedgesFP,
   getBaseLmul,
   getBaseSuiteTestCount,
   getInstructionEEW,
@@ -58,22 +58,22 @@ from vector_testgen_common import (
   setExtension,
   setFlen,
   setXlen,
-  v_corners_ls,
-  vcornerseew1,
-  vcornersemul1,
-  vcornersemul2,
-  vcornersemul4,
-  vcornersemul8,
-  vcornersemulf2,
-  vcornersemulf4,
-  vcornersemulf8,
+  v_edges_ls,
+  vedgeseew1,
+  vedgesemul1,
+  vedgesemul2,
+  vedgesemul4,
+  vedgesemul8,
+  vedgesemulf2,
+  vedgesemulf4,
+  vedgesemulf8,
   vd_widen_ins,
   vector_loads,
   vector_ls_ins,
   vector_stores,
   vextins,
-  vfcornersemul1,
-  vfcornersemul2,
+  vfedgesemul1,
+  vfedgesemul2,
   vfloattypes,
   vmlogicalins,
   vreg_count,
@@ -229,11 +229,11 @@ def make_rs2_v(instruction, sew, rng, lmul = 1):
     writeTest(description, instruction, instruction_data, sew=sew, lmul = lmul)
     incrementBasetestCount()
 
-def make_rs2_corners_v(instruction, sew, rcorners, lmul=1):
+def make_rs2_edges_v(instruction, sew, redges, lmul=1):
   vlvals = ["vlmax"]
   for vl in vlvals:
-    for r in rcorners:
-      description       = f"cp_rs2_corners (Test rs2 corner val = {r})"
+    for r in redges:
+      description       = f"cp_rs2_edges (Test rs2 corner val = {r})"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, rs2_val = r)
 
       writeTest(description, instruction, instruction_data, sew=sew, vl=vl, lmul = lmul)
@@ -294,112 +294,112 @@ def make_fdv(instruction, sew, rng):
     incrementBasetestCount()
     vsAddressCount()
 
-def make_vs2_corners(instruction, sew, vcorners, vl=1, lmul = 1):
+def make_vs2_edges(instruction, sew, vedges, vl=1, lmul = 1):
 
-  for v in vcorners:
-    description       = "cp_vs2_corners (Test source vs2 value = " + v + ")"
+  for v in vedges:
+    description       = "cp_vs2_edges (Test source vs2 value = " + v + ")"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), lmul = lmul, vs2_val_pointer = v)
 
     writeTest(description, instruction, instruction_data, sew=sew, vl=vl, lmul = lmul)
     incrementBasetestCount()
 
-def make_vs1_corners(instruction, sew, vcorners, vl=1):
+def make_vs1_edges(instruction, sew, vedges, vl=1):
 
-  for v in vcorners:
-    description       = "cp_vs1_corners (Test source vs1 value = " + v + ")"
+  for v in vedges:
+    description       = "cp_vs1_edges (Test source vs1 value = " + v + ")"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs1_val_pointer = v)
 
     writeTest(description, instruction, instruction_data, sew=sew, vl=vl)
     incrementBasetestCount()
 
-def make_rs1_corners_v(instruction, sew, rcornersv):
+def make_rs1_edges_v(instruction, sew, redgesv):
 
-  for rcorner in rcornersv:
-    description       = "cp_rs1_corners (Test source rs1 value = " + hex(rcorner) + ")"
+  for rcorner in redgesv:
+    description       = "cp_rs1_edges (Test source rs1 value = " + hex(rcorner) + ")"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), rs1_val = rcorner)
 
     writeTest(description, instruction, instruction_data, sew=sew)
     incrementBasetestCount()
 
-def make_fs1_corners_v(instruction, sew):
+def make_fs1_edges_v(instruction, sew):
   if sew == 64:
-    fcornersv = fcornersD
+    fedgesv = fedgesD
   elif sew == 16:
-    fcornersv = fcornersH
+    fedgesv = fedgesH
   else:
-    fcornersv = fcorners
+    fedgesv = fedges
 
-  for fcorner in fcornersv:
-    fcorner_val       = fcornersv[fcorner]
-    description       = "cp_fs1_corners (Test source fs1 value = " + fcorner + ")"
+  for fcorner in fedgesv:
+    fcorner_val       = fedgesv[fcorner]
+    description       = "cp_fs1_edges (Test source fs1 value = " + fcorner + ")"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), fs1_val = fcorner_val)
 
     writeTest(description, instruction, instruction_data, sew=sew)
     incrementBasetestCount()
 
-def make_vs2_vs1_corners(instruction, sew, vs2corners, vs1corners, vl=1):
-  for v1 in vs1corners:
-    for v2 in vs2corners:
-      description = "cr_vs2_vs1_corners"
+def make_vs2_vs1_edges(instruction, sew, vs2edges, vs1edges, vl=1):
+  for v1 in vs1edges:
+    for v2 in vs2edges:
+      description = "cr_vs2_vs1_edges"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs1_val_pointer = v1, vs2_val_pointer = v2, additional_no_overlap=[['vs1', 'vs2']])
 
       writeTest(description, instruction, instruction_data, sew=sew, vl=vl)
 
-def make_vs2_rs1_corners(instruction, sew, vs2corners):
-  for r1 in rcornersv:
-    for v2 in vs2corners:
-      description = "cr_vs2_rs1_corners"
+def make_vs2_rs1_edges(instruction, sew, vs2edges):
+  for r1 in redgesv:
+    for v2 in vs2edges:
+      description = "cr_vs2_rs1_edges"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, rs1_val = r1)
 
       writeTest(description, instruction, instruction_data, sew=sew)
 
-def make_vs2_fs1_corners(instruction, sew, vs2corners):
+def make_vs2_fs1_edges(instruction, sew, vs2edges):
   if sew == 64:
-    fcornersv = fcornersD
+    fedgesv = fedgesD
   elif sew == 16:
-    fcornersv = fcornersH
+    fedgesv = fedgesH
   else:
-    fcornersv = fcorners
+    fedgesv = fedges
 
-  for f1 in fcornersv:
-    for v2 in vs2corners:
-      f1_val = fcornersv[f1]
-      description = "cr_vs2_rs1_corners"
+  for f1 in fedgesv:
+    for v2 in vs2edges:
+      f1_val = fedgesv[f1]
+      description = "cr_vs2_rs1_edges"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, fs1_val = f1_val)
 
       writeTest(description, instruction, instruction_data, sew=sew)
 
-def make_vs2_imm_corners(instruction, sew, vs2corners):
-  for imm in immcornersv:
-    for v2 in vs2corners:
-      description = "cr_vs2_imm_corners"
+def make_vs2_imm_edges(instruction, sew, vs2edges):
+  for imm in immedgesv:
+    for v2 in vs2edges:
+      description = "cr_vs2_imm_edges"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, imm = imm)
 
       writeTest(description, instruction, instruction_data, sew=sew)
 
-def make_vxrm_vs2_vs1_corners(instruction, sew, vs2corners, vs1corners):
+def make_vxrm_vs2_vs1_edges(instruction, sew, vs2edges, vs1edges):
   for vxrm in vxrmList:
-    for v1 in vs1corners:
-      for v2 in vs2corners:
-        description = "cr_vxrm_vs2_vs1_corners (Test vxrm = " + vxrm + ")"
+    for v1 in vs1edges:
+      for v2 in vs2edges:
+        description = "cr_vxrm_vs2_vs1_edges (Test vxrm = " + vxrm + ")"
         instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, vs1_val_pointer = v1, additional_no_overlap=[['vs1','vs2']])
 
         writeTest(description, instruction, instruction_data, sew=sew, vxrm=vxrm)
 
-def make_vxrm_vs2_rs1_corners(instruction, sew, vs2corners):
+def make_vxrm_vs2_rs1_edges(instruction, sew, vs2edges):
   for vxrm in vxrmList:
-    for r1 in rcornersv:
-      for v2 in vs2corners:
-        description = "cr_vxrm_vs2_rs1_corners (Test vxrm = " + vxrm + ")"
+    for r1 in redgesv:
+      for v2 in vs2edges:
+        description = "cr_vxrm_vs2_rs1_edges (Test vxrm = " + vxrm + ")"
         instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, rs1_val = r1)
 
         writeTest(description, instruction, instruction_data, sew=sew, vxrm=vxrm)
 
-def make_vxrm_vs2_imm_corners(instruction, sew, vs2corners):
+def make_vxrm_vs2_imm_edges(instruction, sew, vs2edges):
   for vxrm in vxrmList:
-    for imm in immcornersv:
-      for v2 in vs2corners:
-        description = "cr_vxrm_vs2_imm_corners (Test vxrm = " + vxrm + ")" + str(imm)
+    for imm in immedgesv:
+      for v2 in vs2edges:
+        description = "cr_vxrm_vs2_imm_edges (Test vxrm = " + vxrm + ")" + str(imm)
         instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vs2_val_pointer = v2, imm = imm)
 
         writeTest(description, instruction, instruction_data, sew=sew, vxrm=vxrm)
@@ -456,14 +456,14 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None):
       incrementLengthtestCount()
       vsAddressCount("length")
 
-def make_mask_corners(instruction, sew, lmul = 1):
+def make_mask_edges(instruction, sew, lmul = 1):
   vma = randint(0,1)
-  cp_masking_corners_data = ["ones", "zeroes", "vlmaxm1_ones", "vlmaxd2p1_ones", "cp_mask_random"]
+  cp_masking_edges_data = ["ones", "zeroes", "vlmaxm1_ones", "vlmaxd2p1_ones", "cp_mask_random"]
 
-  for m in cp_masking_corners_data:
+  for m in cp_masking_edges_data:
     vma = randint(0,1)
 
-    description = f"cp_masking_corners (Test v0 = {m})"
+    description = f"cp_masking_edges (Test v0 = {m})"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), lmul=lmul, suite="length", additional_no_overlap=[['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']])
 
     writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="vlmax", maskval=m, vma=vma)
@@ -688,16 +688,16 @@ def make_custom_vshift_upperbits_r1_ones(instruction, sew, r1, narrow=False):
   incrementBasetestCount()
   vsAddressCount()
 
-def make_custom_vindexCorners_index_ge_vlmax(instruction, sew):
-  description = "cp_custom_vindexCorners_index_ge_vlmax"
+def make_custom_vindexedges_index_ge_vlmax(instruction, sew):
+  description = "cp_custom_vindexedges_index_ge_vlmax"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite="base", vs1_val=-1)
 
   writeTest(description, instruction, instruction_data, sew=sew)
   incrementBasetestCount()
   vsAddressCount()
 
-def make_custom_vindexCorners_index_gt_vl_lt_vlmax(instruction, sew):
-  description = "cp_custom_vindexCorners_index_gt_vl_lt_vlmax"
+def make_custom_vindexedges_index_gt_vl_lt_vlmax(instruction, sew):
+  description = "cp_custom_vindexedges_index_gt_vl_lt_vlmax"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite="base", lmul=2, vs1_val=2)
 
   writeTest(description, instruction, instruction_data, sew=sew, lmul=2)
@@ -728,12 +728,12 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_rs1"                       : make_rs1_v(test, sew, range(xreg_count))
     elif coverpoint == "cp_rs1_nx0"                   : make_rs1_v(test, sew, range(1, xreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cp_rs2"                       : make_rs2_v(test, sew, range(xreg_count), getBaseLmul(test, sew))
-    elif coverpoint == "cp_rs2_corners_ls_e8"         : make_rs2_corners_v(test, sew, rcorners_ls_e8, lmul = getBaseLmul(test, sew))
-    elif coverpoint == "cp_rs2_corners_ls_e16"        : make_rs2_corners_v(test, sew, rcorners_ls_e16, lmul = getBaseLmul(test, sew))
-    elif coverpoint == "cp_rs2_corners_ls_e32"        : make_rs2_corners_v(test, sew, rcorners_ls_e32, lmul = getBaseLmul(test, sew))
-    elif coverpoint == "cp_rs2_corners_ls_e64"        : make_rs2_corners_v(test, sew, rcorners_ls_e64, lmul = getBaseLmul(test, sew))
-    elif coverpoint == "cp_rs1_corners"               : make_rs1_corners_v(test, sew, rcornersv)
-    elif coverpoint == "cp_fs1_corners_v"             : make_fs1_corners_v(test, sew)
+    elif coverpoint == "cp_rs2_edges_ls_e8"         : make_rs2_edges_v(test, sew, redges_ls_e8, lmul = getBaseLmul(test, sew))
+    elif coverpoint == "cp_rs2_edges_ls_e16"        : make_rs2_edges_v(test, sew, redges_ls_e16, lmul = getBaseLmul(test, sew))
+    elif coverpoint == "cp_rs2_edges_ls_e32"        : make_rs2_edges_v(test, sew, redges_ls_e32, lmul = getBaseLmul(test, sew))
+    elif coverpoint == "cp_rs2_edges_ls_e64"        : make_rs2_edges_v(test, sew, redges_ls_e64, lmul = getBaseLmul(test, sew))
+    elif coverpoint == "cp_rs1_edges"               : make_rs1_edges_v(test, sew, redgesv)
+    elif coverpoint == "cp_fs1_edges_v"             : make_fs1_edges_v(test, sew)
     elif coverpoint == "cmp_rs1_rs2"                  : make_rs1_rs2_v(test, sew, range(xreg_count))
     elif coverpoint == "cp_imm_5bit"                  : make_imm_v(test, sew)
     elif coverpoint == "cp_imm_5bit_u"                : make_imm_v(test, sew)
@@ -788,50 +788,50 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cmp_vs3_vs2_lte26"            : make_vs3_vs2(test, sew, range(vreg_count-5), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte25"            : make_vs3_vs2(test, sew, range(vreg_count-6), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vs3_vs2_lte24"            : make_vs3_vs2(test, sew, range(vreg_count-7), getBaseLmul(test, sew))
-    elif coverpoint == "cp_vs2_corners"               : make_vs2_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cp_vs2_corners_emul2"         : make_vs2_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cp_vs2_corners_emul4"         : make_vs2_corners(test, sew, vcornersemul4)
-    elif coverpoint == "cp_vs2_corners_emul8"         : make_vs2_corners(test, sew, vcornersemul8)
-    elif coverpoint == "cp_vs2_corners_emulf2"        : make_vs2_corners(test, sew, vcornersemulf2)
-    elif coverpoint == "cp_vs2_corners_emulf4"        : make_vs2_corners(test, sew, vcornersemulf4)
-    elif coverpoint == "cp_vs2_corners_emulf8"        : make_vs2_corners(test, sew, vcornersemulf8)
-    elif coverpoint == "cp_vs2_corners_eew1"          : make_vs2_corners(test, sew, vcornerseew1, vl=8)  # assume vl = 8 for mask logical instr
-    elif coverpoint == "cp_vs2_corners_ls"            : make_vs2_corners(test, sew, v_corners_ls, lmul=getBaseLmul(test, sew))
-    elif coverpoint == "cp_vs2_corners_f"             : make_vs2_corners(test, sew, vfcornersemul1)
-    elif coverpoint == "cp_vs2_corners_f_emul2"       : make_vs2_corners(test, sew, vfcornersemul2)
-    elif coverpoint == "cp_vs1_corners"               : make_vs1_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cp_vs1_corners_emul2"         : make_vs1_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cp_vs1_corners_eew1"          : make_vs1_corners(test, sew, vcornerseew1, vl=8)  # assume vl = 8 for mask logical instr
-    elif coverpoint == "cp_vs1_corners_f"             : make_vs1_corners(test, sew, vfcornersemul1)
-    elif coverpoint == "cp_vs1_corners_f_emul2"       : make_vs1_corners(test, sew, vfcornersemul2)
-    elif coverpoint == "cr_vs2_vs1_corners"           : make_vs2_vs1_corners(test, sew, vcornersemul1, vcornersemul1)
-    elif coverpoint == "cr_vs2_vs1_corners_wv"        : make_vs2_vs1_corners(test, sew, vcornersemul2, vcornersemul1)
-    elif coverpoint == "cr_vs2_vs1_corners_wred"      : make_vs2_vs1_corners(test, sew, vcornersemul1, vcornersemul2)
-    elif coverpoint == "cr_vs2_vs1_corners_mm"        : make_vs2_vs1_corners(test, sew, vcornerseew1, vcornerseew1, vl=8)
-    elif coverpoint == "cr_vs2_vs1_corners_f"         : make_vs2_vs1_corners(test, sew, vfcornersemul1, vfcornersemul1)
-    elif coverpoint == "cr_vs2_vs1_corners_fwv"       : make_vs2_vs1_corners(test, sew, vfcornersemul2, vfcornersemul1)
-    elif coverpoint == "cr_vs2_vs1_corners_fwred"     : make_vs2_vs1_corners(test, sew, vfcornersemul1, vfcornersemul2)
-    elif coverpoint == "cr_vs2_rs1_corners"           : make_vs2_rs1_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cr_vs2_rs1_corners_wx"        : make_vs2_rs1_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cr_vs2_fs1_corners"           : make_vs2_fs1_corners(test, sew, vfcornersemul1)
-    elif coverpoint == "cr_vs2_fs1_corners_wf"        : make_vs2_fs1_corners(test, sew, vfcornersemul2)
-    elif coverpoint == "cr_vs2_imm_corners"           : make_vs2_imm_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cr_vs2_imm_corners_u"         : make_vs2_imm_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cr_vs2_imm_corners_wi"        : make_vs2_imm_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cr_vs2_imm_corners_wiu"       : make_vs2_imm_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cr_vxrm_vs2_vs1_corners"      : make_vxrm_vs2_vs1_corners(test, sew, vcornersemul1, vcornersemul1)
-    elif coverpoint == "cr_vxrm_vs2_vs1_corners_wv"   : make_vxrm_vs2_vs1_corners(test, sew, vcornersemul2, vcornersemul1)
-    elif coverpoint == "cr_vxrm_vs2_rs1_corners"      : make_vxrm_vs2_rs1_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cr_vxrm_vs2_rs1_corners_wx"   : make_vxrm_vs2_rs1_corners(test, sew, vcornersemul2)
-    elif coverpoint == "cr_vxrm_vs2_imm_corners"      : make_vxrm_vs2_imm_corners(test, sew, vcornersemul1)
-    elif coverpoint == "cr_vxrm_vs2_imm_corners_wi"   : make_vxrm_vs2_imm_corners(test, sew, vcornersemul2)
+    elif coverpoint == "cp_vs2_edges"               : make_vs2_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cp_vs2_edges_emul2"         : make_vs2_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cp_vs2_edges_emul4"         : make_vs2_edges(test, sew, vedgesemul4)
+    elif coverpoint == "cp_vs2_edges_emul8"         : make_vs2_edges(test, sew, vedgesemul8)
+    elif coverpoint == "cp_vs2_edges_emulf2"        : make_vs2_edges(test, sew, vedgesemulf2)
+    elif coverpoint == "cp_vs2_edges_emulf4"        : make_vs2_edges(test, sew, vedgesemulf4)
+    elif coverpoint == "cp_vs2_edges_emulf8"        : make_vs2_edges(test, sew, vedgesemulf8)
+    elif coverpoint == "cp_vs2_edges_eew1"          : make_vs2_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
+    elif coverpoint == "cp_vs2_edges_ls"            : make_vs2_edges(test, sew, v_edges_ls, lmul=getBaseLmul(test, sew))
+    elif coverpoint == "cp_vs2_edges_f"             : make_vs2_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)
+    elif coverpoint == "cp_vs1_edges"               : make_vs1_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cp_vs1_edges_emul2"         : make_vs1_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cp_vs1_edges_eew1"          : make_vs1_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
+    elif coverpoint == "cp_vs1_edges_f"             : make_vs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cp_vs1_edges_f_emul2"       : make_vs1_edges(test, sew, vfedgesemul2)
+    elif coverpoint == "cr_vs2_vs1_edges"           : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_wv"        : make_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_wred"      : make_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul2)
+    elif coverpoint == "cr_vs2_vs1_edges_mm"        : make_vs2_vs1_edges(test, sew, vedgeseew1, vedgeseew1, vl=8)
+    elif coverpoint == "cr_vs2_vs1_edges_f"         : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_fwv"       : make_vs2_vs1_edges(test, sew, vfedgesemul2, vfedgesemul1)
+    elif coverpoint == "cr_vs2_vs1_edges_fwred"     : make_vs2_vs1_edges(test, sew, vfedgesemul1, vfedgesemul2)
+    elif coverpoint == "cr_vs2_rs1_edges"           : make_vs2_rs1_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cr_vs2_rs1_edges_wx"        : make_vs2_rs1_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cr_vs2_fs1_edges"           : make_vs2_fs1_edges(test, sew, vfedgesemul1)
+    elif coverpoint == "cr_vs2_fs1_edges_wf"        : make_vs2_fs1_edges(test, sew, vfedgesemul2)
+    elif coverpoint == "cr_vs2_imm_edges"           : make_vs2_imm_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cr_vs2_imm_edges_u"         : make_vs2_imm_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cr_vs2_imm_edges_wi"        : make_vs2_imm_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cr_vs2_imm_edges_wiu"       : make_vs2_imm_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cr_vxrm_vs2_vs1_edges"      : make_vxrm_vs2_vs1_edges(test, sew, vedgesemul1, vedgesemul1)
+    elif coverpoint == "cr_vxrm_vs2_vs1_edges_wv"   : make_vxrm_vs2_vs1_edges(test, sew, vedgesemul2, vedgesemul1)
+    elif coverpoint == "cr_vxrm_vs2_rs1_edges"      : make_vxrm_vs2_rs1_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cr_vxrm_vs2_rs1_edges_wx"   : make_vxrm_vs2_rs1_edges(test, sew, vedgesemul2)
+    elif coverpoint == "cr_vxrm_vs2_imm_edges"      : make_vxrm_vs2_imm_edges(test, sew, vedgesemul1)
+    elif coverpoint == "cr_vxrm_vs2_imm_edges_wi"   : make_vxrm_vs2_imm_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_csr_frm_v"                 : make_frm(test, sew)
     elif "cp_csr_fflags" in coverpoint                : pass # flags are expected to be raised by edge values of input
-    elif coverpoint == "cp_imm_corners_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_corners
-    elif coverpoint == "cp_imm_corners_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_corners
+    elif coverpoint == "cp_imm_edges_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
+    elif coverpoint == "cp_imm_edges_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_csr_vxrm"                  : pass # already tested in cross coverpoints with vs2 and vs1/rs1/imm
     ############################ length suite ############################
-    elif coverpoint == "cp_masking_corners"             : make_mask_corners(test, sew, getBaseLmul(test, sew))
+    elif coverpoint == "cp_masking_edges"             : make_mask_edges(test, sew, getBaseLmul(test, sew))
     elif coverpoint == "cp_vl_0"                        : make_vl_0(test, sew, lmul = getBaseLmul(test, sew))
     elif "cr_vl_lmul_lmul4max"      in coverpoint       : make_vl_lmul(test, sew, maxemul=4) # includes tests for legal LMUL up to 4
     elif "cr_vl_lmul_lmul2max"      in coverpoint       : make_vl_lmul(test, sew, maxemul=2) # includes tests for legal LMUL up to 4
@@ -910,8 +910,8 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_custom_vshift_upperbits_rs1_ones"          : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1")
     elif coverpoint == "cp_custom_vshiftn_upperbits_vs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "vs1", narrow=True)
     elif coverpoint == "cp_custom_vshiftn_upperbits_rs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1", narrow=True)
-    elif coverpoint == "cp_custom_vindexCorners_index_ge_vlmax"       : make_custom_vindexCorners_index_ge_vlmax(test, sew)
-    elif coverpoint == "cp_custom_vindexCorners_index_gt_vl_lt_vlmax" : make_custom_vindexCorners_index_gt_vl_lt_vlmax(test, sew)
+    elif coverpoint == "cp_custom_vindexedges_index_ge_vlmax"       : make_custom_vindexedges_index_ge_vlmax(test, sew)
+    elif coverpoint == "cp_custom_vindexedges_index_gt_vl_lt_vlmax" : make_custom_vindexedges_index_gt_vl_lt_vlmax(test, sew)
     elif coverpoint[:2] != "cp"                                       : pass # skip all the helper coverpoints
     else:
       print("Warning: " + coverpoint + " not implemented yet for " + test)
@@ -1021,11 +1021,11 @@ def coverpointInclusions(coverpoints):
         applicable_coverpoints.append(f"cp_custom_voffgroup_vs2_lmul{lmul}")
     elif coverpoint == "cp_custom_vindexVV":
       applicable_coverpoints.remove(coverpoint)
-      applicable_coverpoints.append("cp_custom_vindexCorners_index_ge_vlmax")
-      applicable_coverpoints.append("cp_custom_vindexCorners_index_gt_vl_lt_vlmax")
+      applicable_coverpoints.append("cp_custom_vindexedges_index_ge_vlmax")
+      applicable_coverpoints.append("cp_custom_vindexedges_index_gt_vl_lt_vlmax")
     elif coverpoint == "cp_custom_vindexVX":
       applicable_coverpoints.remove(coverpoint)
-      # cp_custom_vindexVX_rs1_not_truncated_32, cp_custom_vindexVX_rs1_not_truncated_64 are covered with cp_rs1_corners
+      # cp_custom_vindexVX_rs1_not_truncated_32, cp_custom_vindexVX_rs1_not_truncated_64 are covered with cp_rs1_edges
   return applicable_coverpoints
 
 #####################################               rewrite               #####################################
@@ -1084,7 +1084,7 @@ if __name__ == '__main__':
   author = "kacassidy@g.hmc.edu"
   xlens = [32, 64]
   numrand = 3
-  corners = []
+  edges = []
 
   # setup
   seed(0) # make tests reproducible
@@ -1114,11 +1114,11 @@ if __name__ == '__main__':
         storecmd = "sd"
         wordsize = 8
 
-      rcornersv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
+      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
       if (xlen == 32):
-        rcornersv = rcornersv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
+        redgesv = redgesv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
       else:
-        rcornersv = rcornersv + [0b0101101110111100100010000111011101100011101011101000011011110010, # random
+        redgesv = redgesv + [0b0101101110111100100010000111011101100011101011101000011011110010, # random
                             0b1010101010101010101010101010101010101010101010101010101010101010, # walking odd
                             0b0101010101010101010101010101010101010101010101010101010101010101, # walking even
                             0b0000000000000000000000000000000011111111111111111111111111111111, # Wmax
@@ -1126,10 +1126,10 @@ if __name__ == '__main__':
                             0b0000000000000000000000000000000100000000000000000000000000000000, # Wmaxp1
                             0b0000000000000000000000000000000100000000000000000000000000000001] # Wmaxp2
 
-      rcorners_ls_e8  = [-2, -1, 0, 1, 2]
-      rcorners_ls_e16 = [-4, -2, 0, 2, 4]
-      rcorners_ls_e32 = [-8, -4, 0, 4, 8]
-      rcorners_ls_e64 = [-16,-8, 0, 8,16]
+      redges_ls_e8  = [-2, -1, 0, 1, 2]
+      redges_ls_e16 = [-4, -2, 0, 2, 4]
+      redges_ls_e32 = [-8, -4, 0, 4, 8]
+      redges_ls_e64 = [-16,-8, 0, 8,16]
 
       # global NaNBox_tests
       NaNBox_tests = False
@@ -1161,11 +1161,11 @@ if __name__ == '__main__':
         newInstruction()
 
         if (test in imm_31):
-          immcornersv = [0, 1, 2, 15, 16, 30, 31]
+          immedgesv = [0, 1, 2, 15, 16, 30, 31]
         else:
-          immcornersv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
+          immedgesv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
 
-        basename = "WALLY-COV-" + extension + "-" + test
+        basename = extension + "-" + test
         fname = pathname + "/" + basename + ".S"
         tempfname = pathname + "/" + basename + "_temp.S"
 
@@ -1180,7 +1180,7 @@ if __name__ == '__main__':
         #f.write(line)
 
         # insert generic header
-        insertTemplate(test, 0, "testgen_header_vector.S")
+        insertTemplate(test, 0, "testgen_header_vector.S", sew=sew)
 
         # add assembly lines to enable fp where needed
         if test in vfloattypes:
@@ -1226,54 +1226,54 @@ if __name__ == '__main__':
         insertTemplate(test, 0, "testgen_footer_vector1.S")
 
         if test in vector_loads:
-          genVsCorners(test, 64, "8") # max size corners to ave all zeros availible
+          genVsedges(test, 64, "8") # max size edges to ave all zeros availible
           genRandomVector(test, sew, vs="vd")
           if test in indexed_loads:
             genRandomVector(test, getInstructionEEW(test), vs="vs2")
           genRandomVectorLS()
         if test in vector_stores:
-          genVsCorners(test, 64, "8") # max size corners to ave all zeros availible
+          genVsedges(test, 64, "8") # max size edges to ave all zeros availible
           genRandomVector(test, sew, vs="vs3")
           if test in indexed_stores:
             genRandomVector(test, getInstructionEEW(test), vs="vs2")
           genRandomVectorLS()
         if test not in vector_ls_ins:
-          # generate vector data (random and corners)
+          # generate vector data (random and edges)
           if   test in vd_widen_ins                         : genRandomVector(test, sew, vs="vd", emul = 2)
           elif (test not in xvtype and test not in xvmtype) : genRandomVector(test, sew, vs="vd")
           if (test in wvsins): # needs to be first since in vd_widen_ins
             genRandomVector(test, sew, vs="vs2")
             genRandomVector(test, sew, vs="vs1", emul=2)
             if (test in vfloattypes):
-              genVsCornersFP(test, sew, "1")
-              genVsCornersFP(test, sew, "2")
+              genVsedgesFP(test, sew, "1")
+              genVsedgesFP(test, sew, "2")
             else:
-              genVsCorners(test, sew, "1")
-              genVsCorners(test, sew, "2")
+              genVsedges(test, sew, "1")
+              genVsedges(test, sew, "2")
           elif (test in narrowins) or (test in vs2_widen_ins):
             genRandomVector(test, sew, vs="vs2", emul=2)
             if (test in vs1ins):
               genRandomVector(test, sew, vs="vs1")
             if (test in vfloattypes):
-              genVsCornersFP(test, sew, "1")
-              genVsCornersFP(test, sew, "2")
+              genVsedgesFP(test, sew, "1")
+              genVsedgesFP(test, sew, "2")
             else:
-              genVsCorners(test, sew, "1")
-              genVsCorners(test, sew, "2")
+              genVsedges(test, sew, "1")
+              genVsedges(test, sew, "2")
           else:
             genRandomVector(test, sew, vs="vs2")
             if (test in vs1ins):
               genRandomVector(test, sew, vs="vs1")
             if (test in vextins):
-              genVsCorners(test, sew, test[-2:])
+              genVsedges(test, sew, test[-2:])
             elif (test in mmins) or (test in xvmtype) or (test in vmlogicalins):
-              genVsCorners(test, sew, "eew1")
+              genVsedges(test, sew, "eew1")
             elif (test in vfloattypes):
-              genVsCornersFP(test, sew, "1")
+              genVsedgesFP(test, sew, "1")
             else:
-              genVsCorners(test, sew, "1")
+              genVsedges(test, sew, "1")
 
-        genVMaskCorners()
+        genVMaskedges()
 
 
         # print footer

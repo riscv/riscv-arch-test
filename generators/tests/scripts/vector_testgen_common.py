@@ -18,7 +18,7 @@ import sys
 from random import getrandbits, randint
 
 # change these to suite your tests
-ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), ".."))
+ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
 
 ##################################
 # Global Constants
@@ -59,10 +59,10 @@ sigupd_countF           = 0  # initialize signature update count for F tests
 mtrap_sig_count         = 64 # signature space for priviliged, default to 64
 
 ##################################
-# Corners
+# edges
 ##################################
 
-fcorners = {"pos0":                 0x00000000, # 0
+fedges = {"pos0":                 0x00000000, # 0
             "neg0":                 0x80000000, # -0
             "pos1":                 0x3f800000, # 1.0
             "neg1":                 0xbf800000, # -1.0
@@ -83,7 +83,7 @@ fcorners = {"pos0":                 0x00000000, # 0
             "negNoncanonicalQNaN":  0xffffffff, # noncanonical quiet NaN
             "sNaN_payload1":        0x7f800001} # signaling NaN with lsb set
 
-fcornersD  = {"pos0":                 0x0000000000000000, # 0
+fedgesD  = {"pos0":                 0x0000000000000000, # 0
               "neg0":                 0x8000000000000000, # -0
               "pos1":                 0x3FF0000000000000, # 1.0
               "neg1":                 0xBFF0000000000000, # -1.0
@@ -104,7 +104,7 @@ fcornersD  = {"pos0":                 0x0000000000000000, # 0
               "negNoncanonicalQNaN":  0xFFFFFFFFFFFFFFFF, # noncanonical quiet NaN
               "sNaN_payload1":        0x7FF0000000000001} # signaling NaN with lsb set
 
-fcornersH  = {"pos0":                 0x0000, # 0
+fedgesH  = {"pos0":                 0x0000, # 0
               "neg0":                 0x8000, # -0
               "pos1":                 0x3C00, # 1.0
               "neg1":                 0xBC00, # -1.0
@@ -125,26 +125,26 @@ fcornersH  = {"pos0":                 0x0000, # 0
               "negNoncanonicalQNaN":  0xFFFF, # noncanonical quiet NaN
               "sNaN_payload1":        0x7D01} # signaling NaN with lsb set
 
-# fcornersQ = [] # TODO: Fill out quad precision F corners
+# fedgesQ = [] # TODO: Fill out quad precision F edges
 
-vectorcorners = ["vs_corner_zero", "vs_corner_one", "vs_corner_two", "vs_corner_ones", "vs_corner_onesm1", "vs_corner_min", "vs_corner_minm1",
+vectoredges = ["vs_corner_zero", "vs_corner_one", "vs_corner_two", "vs_corner_ones", "vs_corner_onesm1", "vs_corner_min", "vs_corner_minm1",
                   "vs_corner_max", "vs_corner_maxm1", "vs_corner_walkeven", "vs_corner_walkodd", "vs_corner_random"]
-vcornersemul1  = [(vcorner + "_emul1" ) for vcorner in vectorcorners]
-vcornersemul2  = [(vcorner + "_emul2" ) for vcorner in vectorcorners]
-vcornersemul4  = [(vcorner + "_emul4" ) for vcorner in vectorcorners]
-vcornersemul8  = [(vcorner + "_emul8" ) for vcorner in vectorcorners]
-vcornersemulf2 = [(vcorner + "_emulf2") for vcorner in vectorcorners]
-vcornersemulf4 = [(vcorner + "_emulf4") for vcorner in vectorcorners]
-vcornersemulf8 = [(vcorner + "_emulf8") for vcorner in vectorcorners]
-vcornerseew1   = [(vcorner + "_eew1"  ) for vcorner in vectorcorners]
-v_corners_ls   = ["vs_corner_zero_emul8", "vs_corner_random_within_2vlmax"]
+vedgesemul1  = [(vcorner + "_emul1" ) for vcorner in vectoredges]
+vedgesemul2  = [(vcorner + "_emul2" ) for vcorner in vectoredges]
+vedgesemul4  = [(vcorner + "_emul4" ) for vcorner in vectoredges]
+vedgesemul8  = [(vcorner + "_emul8" ) for vcorner in vectoredges]
+vedgesemulf2 = [(vcorner + "_emulf2") for vcorner in vectoredges]
+vedgesemulf4 = [(vcorner + "_emulf4") for vcorner in vectoredges]
+vedgesemulf8 = [(vcorner + "_emulf8") for vcorner in vectoredges]
+vedgeseew1   = [(vcorner + "_eew1"  ) for vcorner in vectoredges]
+v_edges_ls   = ["vs_corner_zero_emul8", "vs_corner_random_within_2vlmax"]
 
-vectorfpcorners = ["vs_corner_f_pos0", "vs_corner_f_neg0", "vs_corner_f_pos1", "vs_corner_f_neg1", "vs_corner_f_posminnorm", "vs_corner_f_negmaxnorm",
+vectorfpedges = ["vs_corner_f_pos0", "vs_corner_f_neg0", "vs_corner_f_pos1", "vs_corner_f_neg1", "vs_corner_f_posminnorm", "vs_corner_f_negmaxnorm",
                    "vs_corner_f_posinfinity", "vs_corner_f_neginfinity", "vs_corner_f_pos0p5", "vs_corner_f_pos1p5", "vs_corner_f_neg2", "vs_corner_f_pi",
                    "vs_corner_f_twoToEmax", "vs_corner_f_onePulp", "vs_corner_f_largestsubnorm", "vs_corner_f_negSubnormLeadingOne", "vs_corner_f_min_subnorm",
                    "vs_corner_f_canonicalQNaN", "vs_corner_f_negNoncanonicalQNaN", "vs_corner_f_sNaN_payload1"]
-vfcornersemul1  = [(vcorner + "_emul1" ) for vcorner in vectorfpcorners]
-vfcornersemul2  = [(vcorner + "_emul2" ) for vcorner in vectorfpcorners]
+vfedgesemul1  = [(vcorner + "_emul1" ) for vcorner in vectorfpedges]
+vfedgesemul2  = [(vcorner + "_emul2" ) for vcorner in vectorfpedges]
 
 ##################################
 # Functions to be implemented by importer
@@ -937,7 +937,7 @@ def genRandomVectorLS():
 
   writeLine("")
 
-def genVMaskCorners():
+def genVMaskedges():
   num_words = math.ceil(maxVLEN / 32)
 
   # generating random masks for length suite
@@ -949,9 +949,9 @@ def genVMaskCorners():
       word = (val >> (32 * i)) & 0xFFFFFFFF
       writeLine(f"    .word 0x{word:08x}")
 
-  # generating random mask for cp_masking_corners
+  # generating random mask for cp_masking_edges
   regenerate = True
-  while regenerate: # prevent overlapping with other mask corners
+  while regenerate: # prevent overlapping with other mask edges
     regenerate = False
     random_mask = getrandbits(maxVLEN)
     for i in range(3, int(math.log2(maxVLEN))): # getting all powers of 2: 8 through maxVLEN
@@ -967,7 +967,7 @@ def genVMaskCorners():
 
   writeLine("")
 
-def genVsCorners(test, sew, emul):
+def genVsedges(test, sew, emul):
   def convert(val, bitwidth):
     if (sew == 64) or (eew == 64):
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFFFFFFFFFF:016x}" for i
@@ -986,7 +986,7 @@ def genVsCorners(test, sew, emul):
     eew = sew * int(emul)
     ending = "emul" + emul
 
-  v_register_corners = {
+  v_register_edges = {
     "zero":   0,
     "one":    1,
     "two":    2,
@@ -1000,14 +1000,14 @@ def genVsCorners(test, sew, emul):
     "walkodd":  sum(1 << i for i in range(eew) if i % 2 == 1),
   }
 
-  while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_corners.values()): pass
-  v_register_corners["random_within_2vlmax"] = r
-  while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_corners.values()): pass
-  v_register_corners["random"] = r
+  while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
+  v_register_edges["random_within_2vlmax"] = r
+  while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
+  v_register_edges["random"] = r
 
   writeLine("    .align 3")
-  for corner in v_register_corners:
-      val = v_register_corners[corner]
+  for corner in v_register_edges:
+      val = v_register_edges[corner]
       val &= (1 << eew) - 1
       writeLine(f"vs_corner_{corner}_{ending}:")
       for w in convert(val, eew):
@@ -1016,7 +1016,7 @@ def genVsCorners(test, sew, emul):
         else:
           writeLine(f"    .word {w}")
 
-def genVsCornersFP(test, sew, emul):
+def genVsedgesFP(test, sew, emul):
   def convert(val, bitwidth):
     if (sew == 64) or (eew == 64):
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFFFFFFFFFF:016x}" for i
@@ -1026,22 +1026,22 @@ def genVsCornersFP(test, sew, emul):
               in range((bitwidth + (eew-1)) // eew)]
 
   if sew == 64:
-    vs_corners_f = fcornersD
+    vs_edges_f = fedgesD
   elif sew == 16:
-    vs_corners_f = fcornersH
+    vs_edges_f = fedgesH
   else:
-    vs_corners_f = fcorners
+    vs_edges_f = fedges
 
   eew = sew * int(emul)
   ending = "emul" + emul
 
   writeLine("\n")
   writeLine("///////////////////////////////////////////")
-  writeLine("// vector corners data (floating point)")
+  writeLine("// vector edges data (floating point)")
   writeLine("///////////////////////////////////////////\n")
   writeLine("    .align 3")
-  for corner in vs_corners_f:
-      val = vs_corners_f[corner]
+  for corner in vs_edges_f:
+      val = vs_edges_f[corner]
       writeLine(f"vs_corner_f_{corner}_{ending}:")
       val &= (1 << eew) - 1
       for w in convert(val, eew):
@@ -1061,14 +1061,13 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def insertTemplate(test, signatureWords, name):
+def insertTemplate(test, signatureWords, name, sew=0):
     writeLine(f"\n# {name}")
-    with open(f"{ARCH_VERIF}/templates/testgen/{name}") as h:
+    with open(f"{ARCH_VERIF}/generators/tests/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
     if (test == "ExceptionsV"):
-      ISAEXT = "RV32IMV_Zicsr, RV64IMV_Zicsr"
-      test_case_line = "//check ISA:=regex(.*I.*M.*V.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def rvtest_dtrap_routine=True; def TEST_CASE_1=True"
+      march = f"rv{xlen}i_m_v_zicsr"
     else:
       # Split extension into components based on capital letters
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
@@ -1077,22 +1076,26 @@ def insertTemplate(test, signatureWords, name):
         if (test in vfloattypes):
           ext_parts_no_I = ['F'] + ext_parts_no_I
         ext_parts_no_I = ['M'] + ext_parts_no_I
-      ISAEXT = f"RV{xlen}I{''.join(ext_parts_no_I)}"
-      # Construct the regex part
-      ext_regex = ".*I.*" + "".join([f"{ext}.*" for ext in ext_parts_no_I])
-      test_case_line = f"//check ISA:=regex(.*{xlen}.*);check ISA:=regex({ext_regex});def TEST_CASE_1=True;"
+      ext_str = "I"
+      for ext in ext_parts_no_I:
+        if len(ext_str) > 0:
+            ext_str += "_"
+        ext_str += ext
+      march = f"rv{xlen}{ext_str}"
 
     # Replace placeholders
     template = template.replace("sigupd_count", str(signatureWords))
     template = template.replace("mtrap_sig_count", str(mtrap_sig_count))
-    template = template.replace("ISAEXT", ISAEXT)
-    template = template.replace("TestCase", test_case_line)
     template = template.replace("Instruction", test)
     template = (
-        template.replace("@TEST_PATH@", f"{test_file}")
-        .replace("@EXTENSION_LIST@", f"{ext_components}")
+        template.replace("@TEST_PATH@", f"{test}")
+        .replace("@EXTENSION_LIST@", f"{['I'] + ext_parts_no_I}")
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))
+        .replace("@SEW@", str(sew))
+        .replace("@VLEN@", str(maxVLEN)) # TODO: make this configurable
+        .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
+        .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
     )
     writeLine(template)
@@ -1100,7 +1103,13 @@ def insertTemplate(test, signatureWords, name):
 def writeSIGUPD(rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
-    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{rd})", f"# store x{rd} in signature")
+    linkReg = 4
+    linkOptions = [4, 7, 12]
+    while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == rd or linkReg + 1 == rd:
+      linkInd = randint(0,2)
+      linkReg = linkOptions[linkInd - 1]
+    tempReg = linkReg + 1
+    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd})", f"# store x{rd} in signature")
 
 def writeSIGUPD_F(fd):
     global sigupd_count  # Allow modification of global variable
@@ -1126,14 +1135,31 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
     while tempReg == sigReg:
       tempReg = randint(1,31)
 
+    offset = (int((avl) * (sew) / 8 + 4 + 7) & ~7)
+    offsetRem = offset % 2047
+    fullOffsets = offset // 2047
+
     if ("SEWMIN" in str(sew)):
       if sig_whole_register_store:
         writeLine(f"vsetvli x{tempReg}, x0, SEWSIZE, m{sig_lmul}, ta, ma",       f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
-      writeLine(f"RVTEST_SIGUPD_V_SEWMIN(x{sigReg}, x{tempReg}, {avl}, v{vd})",  f"# stores v{vd} (sew = SEWMIN, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+      
+      if offset > 2047:
+        writeLine(f"RVTEST_SIGUPD_V_SEWMIN(x{sigReg}, x{tempReg}, {offsetRem}, v{vd})",  f"# stores v{vd} (sew = SEWMIN, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+        for x in range(fullOffsets):
+          writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
+      else:
+        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+
     else:
       if sig_whole_register_store:
         writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
-      writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {avl}, {sew},  v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+  
+      if offset > 2047:
+        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offsetRem}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+        for x in range(fullOffsets):
+          writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
+      else:
+        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
 def vsAddressCount(suite="base"):
     global base_suite_test_count, length_suite_test_count
@@ -2184,7 +2210,7 @@ def readTestplans(priv=False):
                                 if(key == "Type"):
                                     cps.append("sample_" + value)
                                 else:
-                                    if (value != "x"): # for special entries, append the entry name (e.g. cp_rd_corners becomes cp_rd_corners_lui)
+                                    if (value != "x"): # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
                                         key = key + "_" + value
                                     cps.append(key)
                         tp[instr] = cps

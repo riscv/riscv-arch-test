@@ -55,9 +55,9 @@ RVTEST_BEGIN
         li s0, 31 // s0 = 5'b11111 (Mie/Sie x MtvecMode x MtvecMode) -> 32 combinations
         
         for_mti_cross:
-            // Clear MIE/SIE and MTVEC
-            li t0, 0x00000008 // MIE=1, SIE=1 bits
-            csrrci t6, mstatus, t0
+            // Clear MIE and MTVEC
+            li t0, 0x00000008 // only bit 8 becaue of mie
+            csrrc t6, mstatus, t0 //clear MIE=1 bits
             csrrci t6, mtvec, 3
 
             // 1. Set MTVEC Mode (Bit 1 of s0)
@@ -74,7 +74,7 @@ RVTEST_BEGIN
 
             // 4. Set mie.MTIE = 1 (Bit 1 of s0 is unused for this test)
             li t0, 0x080 // MTIE bit
-            csrrsi t6, mie, t0
+            csrrs t6, mie, t0
 
             // can we execute the test here? umode?
             RVTEST_GOTO_LOWER_MODE Umode
@@ -104,8 +104,8 @@ RVTEST_BEGIN
         li s0, 3 // 4 combinations (mie x mtvec) 
         
         for_msi_cross:
-            li t0, 0x00000008
-            csrrci t6, mstatus, t0
+            li t0, 0x00000008 // only bit 8 becaue of mie
+            csrrc t6, mstatus, t0 // clear mie
             csrrci t6, mtvec, 3
 
             // 1. Set MTVEC Mode (Bit 1)
@@ -122,7 +122,7 @@ RVTEST_BEGIN
 
             // 4. Set mie.MSIE = 1
             li t0, 0x008 // MSIE bit
-            csrrsi t6, mie, t0
+            csrrs t6, mie, t0
 
             // u-mode?
             RVTEST_GOTO_LOWER_MODE Umode
@@ -153,7 +153,7 @@ RVTEST_BEGIN
         
         for_mei_cross:
             li t0, 0x00000008 // only bit 8 becaue of mie
-            csrrci t6, mstatus, t0
+            csrrc t6, mstatus, t0 // clear mie bit 3 0 indexed (8 - 1000)
             csrrci t6, mtvec, 3
 
             // 1. Set MTVEC Mode (Bit 1)
@@ -170,7 +170,7 @@ RVTEST_BEGIN
 
             // 4. Set mie.MEIE = 1
             li t0, 0x800 // MEIE bit
-            csrrsi t6, mie, t0
+            csrrs t6, mie, t0
 
             // u-mode?
             RVTEST_GOTO_LOWER_MODE Umode
@@ -201,7 +201,7 @@ RVTEST_BEGIN
         for_wfi:
 
             li t0, 0x00200008 // clear mie and tw
-            csrrci t6, mstatus, t0 // Clear MIE, TW
+            csrrc t6, mstatus, t0 // Clear MIE, TW
 
             // Set MIE (Bit 1 of s2)
             andi t0, s2, 2
@@ -213,7 +213,7 @@ RVTEST_BEGIN
             andi t0, s2, 1 
             beqz t0, case_end_wfi 
             li t0, 0x200000 // TW bit
-            csrrsi t6, mstatus, t0 
+            csrrs t6, mstatus, t0 
 
         case_end_wfi:        
             // 1. Set mie.MTIE = 1
@@ -256,12 +256,12 @@ RVTEST_BEGIN
 
         // Force TW=1 for the whole test block
         li t0, 0x200000 // TW bit
-        csrrsi t6, mstatus, t0 
+        csrrs t6, mstatus, t0 
 
         for_wfi_timeout:
 
             li t0, 0x00000008
-            csrrci t6, mstatus, t0 // Clear MIE
+            csrrc t6, mstatus, t0 // Clear MIE
 
             // Set MIE (Bit 1 of s2)
             andi t0, s2, 2
@@ -273,9 +273,9 @@ RVTEST_BEGIN
             andi t0, s2, 1 
             li t1, 0x080
             beqz t0, case_end_timeout // Clear MTIE if bit is 0
-            csrrsi t6, mie, t1 // Set MTIE if bit is 1
+            csrrs t6, mie, t1 // Set MTIE if bit is 1
             j case_end_timeout
-            csrrci t6, mie, t1 // If bit 0 is 0, MTIE must be 0
+            csrrc t6, mie, t1 // If bit 0 is 0, MTIE must be 0
 
         case_end_timeout:        
             // 1. Set MTIMECMP to a max value for a timeout

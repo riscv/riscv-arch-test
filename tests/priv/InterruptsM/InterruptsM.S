@@ -338,9 +338,11 @@ RVTEST_BEGIN
             case_end_wfi:        
                 li t0, 0x080
                 csrrw t6, mie, t0 # trap handler clears mie, so set mie.MTIE = 1 just before triggering interrupt
-                jal cause_mtimer_interrupt_soon
-                // RVMODEL_CAUSE_MTIMER_INT_SOON
+                //jal cause_mtimer_interrupt_soon
+                RVMODEL_CAUSE_MTIMER_INT_SOON
+                nop
                 wfi
+                nop
                 addi s2, s2, -1
                 bge s2, zero, for_wfi
 

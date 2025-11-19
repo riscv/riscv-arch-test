@@ -201,14 +201,14 @@
         `ifdef SEW64_SUPPORTED
         bins sixtyfour  = {3};
         `endif
-        
-        // Make sure bin is always hit if the sew isnt supported
+
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW16_SUPPORTED
         `ifndef SEW32_SUPPORTED
         `ifndef SEW64_SUPPORTED
         bins sew_not_supported  = {111:000};
-        `endif 
-        `endif 
+        `endif
+        `endif
         `endif
 
     }
@@ -218,10 +218,10 @@
         bins eight = {0};
         `endif
 
-        // Make sure bin is always hit if the sew isnt supported
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW8_SUPPORTED
         bins sew_not_supported  = {111:000};
-        `endif 
+        `endif
     }
 
     vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
@@ -229,10 +229,10 @@
         bins sixteen = {1};
         `endif
 
-        // Make sure bin is always hit if the sew isnt supported
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW16_SUPPORTED
         bins sew_not_supported  = {111:000};
-        `endif 
+        `endif
     }
 
     vtype_sew_32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
@@ -240,10 +240,10 @@
         bins thirtytwo = {2};
         `endif
 
-        // Make sure bin is always hit if the sew isnt supported
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW32_SUPPORTED
         bins sew_not_supported  = {111:000};
-        `endif 
+        `endif
     }
 
     vtype_sew_64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
@@ -251,10 +251,10 @@
         bins sixtyfour = {3};
         `endif
 
-        // Make sure bin is always hit if the sew isnt supported
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW64
         bins sew_not_supported  = {111:000};
-        `endif 
+        `endif
     }
 
     vtype_all_sew_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
@@ -271,16 +271,16 @@
         bins sixtyfour  = {3};
         `endif
 
-        // Make sure bin is always hit if the sew isnt supported
+        // Make sure bin is always hit if the sew isn't supported
         `ifndef SEW8_SUPPORTED
         `ifndef SEW16_SUPPORTED
         `ifndef SEW32_SUPPORTED
         `ifndef SEW64_SUPPORTED
         bins sew_not_supported  = {111:000};
-        `endif 
-        `endif 
         `endif
-        `endif 
+        `endif
+        `endif
+        `endif
     }
 
     vtype_sew_supported : coverpoint check_vtype_sew_supported(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")) {

@@ -20,12 +20,15 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
     hideleg_bits: coverpoint `HCSR(12'h603)[15:0] {
         wildcard bins vs_all_zero = {16'b?????0???0???0??};
         wildcard bins vs_all_one  = {16'b?????1???1???1??};
+        bins exact_zero           = {16'h0000};
     }
     hie_bits: coverpoint `HCSR(12'h604)[15:0] {
         wildcard bins vs_all_zero = {16'b?????0???0???0??};
         wildcard bins vs_all_one  = {16'b?????1???1???1??};
-        bins exact_0444 = {16'h0444};
-        bins exact_1444 = {16'h1444};
+        bins exact_0444           = {16'h0444};
+        bins exact_1444           = {16'h1444};
+        bins exact_1000           = {16'h1000};
+        bins exact_zero           = {16'h0000};
     }
     hip_bits: coverpoint `HCSR(12'h644)[15:0] {
         wildcard bins vs_all_zero = {16'b?????0???0???0??};
@@ -69,8 +72,8 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
         bins one  = {1};
     }
 
-    // Virtualization enabled indicator (macro-provided expression)
-    v_enabled: coverpoint (`V_ENABLED_EXPR) {
+    // Virtualization enabled indicator
+    mode_virt_cp: coverpoint mode_virt {
         bins zero = {0};
         bins one  = {1};
     }
@@ -168,6 +171,7 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
         wildcard bins vs_bits_one      = {16'b?????1???1???1??};
         wildcard bins vs_bits_zero     = {16'b?????0???0???0??};
         bins exact_0444                = {16'h0444};
+        bins exact_zero                = {16'h0000};
     }
 
     hie_vsi_walking: coverpoint {`HCSR(12'h604)[10],
@@ -190,14 +194,28 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
         wildcard bins vsi_ro1_gei  = {16'b???1?1???1???1??};
     }
 
-    // Following tests are done in M-mode
-    cp_mie: cross mie_bits, hie_bits {
+    cp_mideleg_geilen: cross mideleg_bits, hgeie_any {
+        bins mideleg_zero_geilen_gt0 = binsof(mideleg_bits.exact_zero) && binsof(hgeie_any.any_nonzero);
     }
 
-    cp_mip: cross mip_bits, hip_bits {
+    // Following tests are done in M-mode
+    cp_mie: cross priv_mode_m, mie_bits, hie_bits {
+        bins mie_m_hie_0444 = binsof(priv_mode_m) && binsof(mie_bits.exact_0444) && binsof(hie_bits.exact_0444);
+        ignore_bins others = default;
+    }
+
+    cp_mip: cross priv_mode_m, mip_bits, hip_bits {
+        bins mip_m_hip_0444 = binsof(priv_mode_m) && binsof(mip_bits.exact_0444) && binsof(hip_bits.exact_0444);
+        ignore_bins others = default;
     }
 
     cp_nohint_m: cross priv_mode_m, mstatus_mie, hideleg_bits, mie_bits, mip_bits {
+        bins nohint_m = binsof(priv_mode_m) &&
+                        binsof(mstatus_mie.one) &&
+                        binsof(hideleg_bits.exact_zero) &&
+                        binsof(mie_bits.exact_0444) &&
+                        binsof(mip_bits.exact_0444);
+        ignore_bins others = default;
     }
 
     // Following tests are done in M-mode if GILEN > 0
@@ -264,15 +282,15 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
     }
 
     // Following tests are done in VS-mode
-    cp_hideleg_hip_vs: cross v_enabled, hideleg_bits, hip_bits, hie_bits, vsstatus_sie {
+    cp_hideleg_hip_vs: cross priv_mode_vs, hideleg_bits, hip_bits, hie_bits, vsstatus_sie {
     }
-    cp_hideleg_hie_vs: cross v_enabled, hideleg_bits, hie_bits, hip_bits, vsstatus_sie {
+    cp_hideleg_hie_vs: cross priv_mode_vs, hideleg_bits, hie_bits, hip_bits, vsstatus_sie {
     }
-    cp_hip_hie_vs: cross v_enabled, hip_bits, hie_bits, hideleg_bits, vsstatus_sie {
+    cp_hip_hie_vs: cross priv_mode_vs, hip_bits, hie_bits, hideleg_bits, vsstatus_sie {
     }
-    cp_sie_vs: cross v_enabled, hideleg_bits, hip_bits, hie_bits, vsstatus_sie {
+    cp_sie_vs: cross priv_mode_vs, hideleg_bits, hip_bits, hie_bits, vsstatus_sie {
     }
-    cp_mideleg_mip_vs: cross v_enabled, mstatus_mie, mideleg_bits, mip_bits, vsstatus_sie, mie_bits {
+    cp_mideleg_mip_vs: cross priv_mode_vs, mstatus_mie, mideleg_bits, mip_bits, vsstatus_sie, mie_bits {
     }
     // Interrupt recording CSRs on interrupt entry
     cp_mtinst: coverpoint ins.current.csr[12'h34a][31:0] {
@@ -283,13 +301,13 @@ covergroup InterruptsH_cg with function sample(ins_t ins);
     }
 
     // Following tests are done in VU-mode
-    cp_hideleg_hip_vu: cross v_enabled, hideleg_bits, hip_bits, hie_bits {
+    cp_hideleg_hip_vu: cross priv_mode_vu, hideleg_bits, hip_bits, hie_bits {
     }
-    cp_hideleg_hie_vu: cross v_enabled, hideleg_bits, hie_bits, hip_bits {
+    cp_hideleg_hie_vu: cross priv_mode_vu, hideleg_bits, hie_bits, hip_bits {
     }
-    cp_hip_hie_vu: cross v_enabled, hip_bits, hie_bits, hideleg_bits {
+    cp_hip_hie_vu: cross priv_mode_vu, hip_bits, hie_bits, hideleg_bits {
     }
-    cp_mideleg_mip_vu: cross v_enabled, mstatus_mie, mideleg_bits, mip_bits, mie_bits {
+    cp_mideleg_mip_vu: cross priv_mode_vu, mstatus_mie, mideleg_bits, mip_bits, mie_bits {
     }
 
     // Following tests are done in U-mode
@@ -300,5 +318,3 @@ endgroup
 function void interruptsh_sample(int hart, int issue, ins_t ins);
     InterruptsH_cg.sample(ins);
 endfunction
-
-

@@ -2,7 +2,7 @@
 
 normative_rule_definitions:
 - name: addiw_op
-  coverpoint: [""I_addw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}""]
+  coverpoint: ["I_addw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
 - name: addiw_overflow
   coverpoint: ["I_addw_cg/cr_rs1_imm_edges"]
 - names: ["addw_op, subw_op"]

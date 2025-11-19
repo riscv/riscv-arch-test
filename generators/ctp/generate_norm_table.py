@@ -27,11 +27,10 @@ import re
 import urllib.request
 import urllib.error
 import urllib.parse
-import html
 
-try:
+try:  # pylint: disable=import-error
     import yaml
-except Exception:
+except Exception:  # pragma: no cover - optional dependency
     yaml = None
 
 
@@ -87,73 +86,78 @@ def load_yaml(path):
 
 
 def parse_coverpoints_fallback(text):
-    """Parse a relaxed subset of the YAML file and return a mapping
-    where each key is a rule name and value is a dict with 'coverpoint'.
-    This handles coverpoint values that include braces, slashes, or other
-    characters that break the YAML parser.
+    """Parse a relaxed subset of the YAML file and return a list of
+    groups where each group is a dict: {'names': [name,...], 'coverpoint': <str>}.
+
+    This tolerant parser scans the file for occurrences of 'name:',
+    'names:' and 'coverpoint:' lines and builds groups from contiguous
+    entries. It's intended as a fallback when PyYAML fails to parse the
+    file due to non-YAML expressions present in coverpoint values.
     """
     lines = text.splitlines()
-    entries = []
     groups = []
-    in_block = False
-    cur = []
-    for ln in lines:
-        stripped = ln.lstrip()
-        # Detect list item start (e.g., "- name:" or "- names:")
-        if stripped.startswith('- '):
-            if in_block and cur:
-                entries.append('\n'.join(cur))
-                cur = []
-            in_block = True
-            cur.append(stripped[2:])
-        else:
-            if in_block:
-                cur.append(stripped)
 
-    if in_block and cur:
-        entries.append('\n'.join(cur))
+    name = None
+    names = []
+    cover = None
 
-    for block in entries:
-        # find name: or names: and coverpoint:
+    def flush_group():
+        nonlocal name, names, cover
+        all_names = []
+        if name:
+            all_names.extend(split_name_list(name))
+        for n in names:
+            all_names.extend(split_name_list(n))
+        if all_names:
+            groups.append({'names': all_names, 'coverpoint': cover})
         name = None
         names = []
         cover = None
 
-        for bline in block.splitlines():
-            m_name = re.match(r"^name:\s*(.+)$", bline)
-            m_names = re.match(r"^names:\s*(.+)$", bline)
-            m_cover = re.match(r"^coverpoint:\s*(.+)$", bline)
-            if m_name:
-                val = m_name.group(1).strip()
-                # strip quotes if present
-                val = val.strip('\"\'')
+    for line in lines:
+        bline = line.strip()
+        if not bline:
+            # blank line separates entries
+            if name or names or cover:
+                flush_group()
+            continue
+
+        m_name = re.match(r"^name:\s*(.+)$", bline)
+        m_names = re.match(r"^names:\s*(.+)$", bline)
+        m_cover = re.match(r"^coverpoint:\s*(.+)$", bline)
+
+        if m_name:
+            val = m_name.group(1).strip()
+            val = val.strip('"\'')
+            # finalize any previous group
+            if name or names or cover:
+                flush_group()
+            name = val
+        elif m_names:
+            val = m_names.group(1).strip()
+            # Expect bracketed list like [a, b] or comma list
+            if val.startswith('[') and val.endswith(']'):
+                inner = val[1:-1]
+                parts = [p.strip() for p in inner.split(',') if p.strip()]
+                names.extend(parts)
+            else:
+                parts = [p.strip() for p in val.split(',') if p.strip()]
+                names.extend(parts)
+        elif m_cover:
+            cover = m_cover.group(1).strip().strip('"\'')
+        else:
+            # Try to catch list-style '- name: value' entries
+            m_dash_name = re.match(r"^-+\s*name:\s*(.+)$", bline)
+            if m_dash_name:
+                val = m_dash_name.group(1).strip().strip('"\'')
+                if name or names or cover:
+                    flush_group()
                 name = val
-            elif m_names:
-                val = m_names.group(1).strip()
-                # Expect bracketed list like [a, b]
-                if val.startswith('[') and val.endswith(']'):
-                    inner = val[1:-1]
-                    parts = [p.strip() for p in inner.split(',') if p.strip()]
-                    names.extend(parts)
-                else:
-                    # fallback: comma split
-                    parts = [p.strip() for p in val.split(',') if p.strip()]
-                    names.extend(parts)
-            elif m_cover:
-                cover = m_cover.group(1).strip()
+            # otherwise ignore unrecognized lines
 
-        # Normalize name/name-lists: split comma-separated names into individual
-        # entries so downstream code always sees a list of simple names.
-        all_names = []
-        if name:
-            all_names.extend(split_name_list(name))
-        if names:
-            # 'names' may already be a list; ensure each member is split further
-            for n in names:
-                all_names.extend(split_name_list(n))
-
-        if all_names:
-            groups.append({'names': all_names, 'coverpoint': cover})
+    # flush any trailing group
+    if name or names or cover:
+        flush_group()
 
     return groups
 
@@ -550,10 +554,9 @@ def main():
             continue
         json_names.add(name)
         tags = entry.get('tags') or entry.get('tag') or []
-        # Build ASCIIDoc linked text for tags associated with this rule.
-        # The link should apply to the tagged text (tag['text']) and the
-        # tag 'name' (e.g. 'norm:...') should not be printed.
-        links = []
+    # Build ASCIIDoc linked text for tags associated with this rule.
+    # The link should apply to the tagged text (tag['text']) and the
+    # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
         UNPRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
         PRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html'
@@ -601,6 +604,11 @@ def main():
             # the display text.
             if disp:
                 esc = disp.replace('\\', '\\\\').replace('"', '\\"').replace(']', '\\]')
+                # encode comma as HTML entity so Asciidoctor won't treat it
+                # as an attribute separator and we can emit an unquoted
+                # link:URL[display text] form (no visible quotes).
+                if ',' in esc:
+                    esc = esc.replace(',', '&#44;')
                 # final safety: replace any remaining '|' with '&#124;'
                 if '|' in esc:
                     esc = esc.replace('|', '&#124;')
@@ -628,45 +636,33 @@ def main():
             # some renderers were showing as a visible 'a'.
             if len(linked_text_parts) == 1:
                 url, esc = linked_text_parts[0]
-                # Emit Asciidoc link macro without surrounding double quotes
-                # around the display text. We previously used quotes to
-                # work around commas being treated as attribute separators,
-                # but Asciidoc link:URL[Text] allows commas in the text.
-                # Keep esc safely escaped for brackets/backslashes.
+                # We've encoded commas to '&#44;' and escaped ']' already,
+                # so emit the simple inline link form without surrounding
+                # quotes to avoid visible quotation marks in the ADOC.
                 joined = f'link:{url}[{esc}]'
             else:
-                # Build HTML paragraphs with safe escaping for text and
-                # attributes. Also replace any '|' with '&#124;' so the
-                # source .adoc table cell is not broken by literal pipes.
+                # For multiple links, emit simple inline Asciidoc link macros
+                # separated by single spaces (no HTML/passthrough and no
+                # blank lines between parts). This collapses any paragraph
+                # separation into single-space separated links so the table
+                # cell remains a single-line cell and avoids emitting 'a|'.
                 parts = []
                 for url, esc in linked_text_parts:
-                    # Escape URL for inclusion in double-quoted attribute
-                    safe_url = html.escape(url, quote=True)
-                    # esc is already sanitized for Asciidoc; re-escape for HTML
-                    safe_text = html.escape(esc)
-                    # Replace any literal '|' characters to avoid breaking
-                    # Asciidoc table column parsing.
-                    if '|' in safe_text:
-                        safe_text = safe_text.replace('|', '&#124;')
-                    # Build the HTML paragraph/anchor fragment and escape any
-                    # closing bracket so it cannot prematurely close the
-                    # passthrough macro.
-                    html_fragment = f'<p><a href="{safe_url}">{safe_text}</a></p>'
-                    html_fragment = html_fragment.replace(']', '\\]')
-                    # Use the Asciidoc passthrough macro so the raw HTML is
-                    # passed to the backend renderer unchanged.
-                    parts.append(f'pass:[{html_fragment}]')
-                # Join paragraphs with a blank line so they render as
-                # distinct paragraphs inside the table cell.
-                joined = '\n\n'.join(parts)
+                    # commas are encoded and brackets escaped above; emit
+                    # the plain inline link macro to avoid visible quotes.
+                    parts.append(f'link:{url}[{esc}]')
+                joined = ' '.join(parts)
 
             json_text_map[name] = joined
             json_links_map[name] = []
         else:
-            text = extract_rule_text(tags)
-            # Also truncate extracted rule text at first '|' to avoid
-            # introducing table-breaking pipe characters when no tag
-            # hyperlinks are available.
+            # Extract rule text and collapse any internal newlines/whitespace
+            # into single spaces so we never emit multi-paragraph cells
+            # (which previously required the 'a|' marker).
+            raw_text = extract_rule_text(tags) or ''
+            text = ' '.join(str(raw_text).split())
+            # Replace any literal '|' characters with the HTML entity
+            # to avoid breaking Asciidoc table parsing.
             if '|' in text:
                 text = text.replace('|', '&#124;')
             json_text_map[name] = text

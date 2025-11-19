@@ -4,176 +4,124 @@
 |===
 |Normative Rule |Rule Text |Coverpoints
 
-|rv32i_xreg_sz |For RV32I, the 32 x registers are each 32 bits wide,
-i.e., XLEN=32. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
+|rv32i_xreg_sz |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Arv32i_xreg_sz[For RV32I&#44; the 32 x registers are each 32 bits wide&#44; i.e.&#44; XLEN=32.] |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
 
-|rv32i_other_xregs |General purpose registers x1-x31 hold values that various
-instructions interpret as a collection of Boolean values, or as two's
-complement signed binary integers or unsigned binary integers. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
+|rv32i_other_xregs |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Arv32i_rv64i_other_xregs[General purpose registers x1-x31 hold values that various instructions interpret as a collection of Boolean values&#44; or as two's complement signed binary integers or unsigned binary integers.] |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
 
-|pcreg_op |There is one additional unprivileged register: the program counter pc holds the address of the current instruction. |I_auipc_cg/cp_rs1_imm_edges
+|pcreg_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Apcreg_op[There is one additional unprivileged register: the program counter pc holds the address of the current instruction.] |I_auipc_cg/cp_rs1_imm_edges
 
-|slti_op |SLTI (set less than immediate) places the value 1 in register rd if
-register rs1 is less than the sign-extended immediate when both are
-treated as signed numbers, else 0 is written to rd. SLTIU is similar
-but compares the values as unsigned numbers (i.e., the immediate is
-first sign-extended to XLEN bits then treated as an unsigned number). |I_slti_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
+|slti_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslti_sltiu_op[SLTI (set less than immediate) places the value 1 in register rd if register rs1 is less than the sign-extended immediate when both are treated as signed numbers&#44; else 0 is written to rd. SLTIU is similar but compares the values as unsigned numbers (i.e.&#44; the immediate is first sign-extended to XLEN bits then treated as an unsigned number).] |I_slti_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
-|sltiu_op |SLTI (set less than immediate) places the value 1 in register rd if
-register rs1 is less than the sign-extended immediate when both are
-treated as signed numbers, else 0 is written to rd. SLTIU is similar
-but compares the values as unsigned numbers (i.e., the immediate is
-first sign-extended to XLEN bits then treated as an unsigned number). |I_sltiu_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
+|sltiu_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslti_sltiu_op[SLTI (set less than immediate) places the value 1 in register rd if register rs1 is less than the sign-extended immediate when both are treated as signed numbers&#44; else 0 is written to rd. SLTIU is similar but compares the values as unsigned numbers (i.e.&#44; the immediate is first sign-extended to XLEN bits then treated as an unsigned number).] |I_sltiu_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
-|x0eq0 |Register x0 is hardwired with all bits equal to 0. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
+|x0eq0 |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ax0eq0[Register x0 is hardwired with all bits equal to 0.] |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}
 
-|imm_always_sex |Except for the 5-bit immediates used in CSR instructions (&lt;&lt;csrinsts&gt;&gt;),
-immediates are always sign-extended |I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset
+|imm_always_sex |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aimm_always_sex[Except for the 5-bit immediates used in CSR instructions (&lt;&lt;csrinsts&gt;&gt;)&#44; immediates are always sign-extended] |I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset
 
-|addi_op |ADDI adds the sign-extended 12-bit immediate to register rs1. |I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
+|addi_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddi_op[ADDI adds the sign-extended 12-bit immediate to register rs1.] |I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
-|addi_overflow |Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result. |I_addi_cg/cr_rs1_imm_edges
+|addi_overflow |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddi_overflow[Arithmetic overflow is ignored and the result is simply the low XLEN bits of the result.] |I_addi_cg/cr_rs1_imm_edges
 
-|andi_op |ANDI, ORI, XORI are logical operations that perform bitwise AND, OR, and
-XOR on register rs1 and the sign-extended 12-bit immediate and place
-the result in rd. |I_andi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
+|andi_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aandi_ori_xori_op[ANDI&#44; ORI&#44; XORI are logical operations that perform bitwise AND&#44; OR&#44; and XOR on register rs1 and the sign-extended 12-bit immediate and place the result in rd.] |I_andi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
 |ori_op |see above |I_ori_op/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
 |xori_op |see above |I_xori_op/{cp_rs1, cp_rd, cr_rs1_imm_edges}
 
-|slli_op |SLLI is a logical left shift (zeros are shifted into the lower bits); |I_slli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
+|slli_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslli_op[SLLI is a logical left shift (zeros are shifted into the lower bits);] |I_slli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
 
-|srli_op |SRLI is a logical right shift (zeros are shifted into the upper bits); |I_srli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
+|srli_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asrli_op[SRLI is a logical right shift (zeros are shifted into the upper bits);] |I_srli_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
 
-|srai_op |SRAI is an arithmetic right shift (the original sign bit is copied into the vacated upper bits). |I_srai_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
+|srai_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asrai_op[SRAI is an arithmetic right shift (the original sign bit is copied into the vacated upper bits).] |I_srai_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges_uimm}
 
-|lui_op |LUI places the 32-bit U-immediate value into the
-destination register rd, filling in the lowest 12 bits with zeros. |I_lui_cg/{cp_rd, cp_imm_edges_20bit}
+|lui_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alui_op[LUI places the 32-bit U-immediate value into the destination register rd&#44; filling in the lowest 12 bits with zeros.] |I_lui_cg/{cp_rd, cp_imm_edges_20bit}
 
-|auipc_op |AUIPC forms a 32-bit offset from
-the U-immediate, filling in the lowest 12 bits with zeros, adds this
-offset to the address of the AUIPC instruction, then places the result
-in register rd. |I_auipc_cg/{cp_rd, cp_imm_edges_20bit}
+|auipc_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aauipc_op[AUIPC forms a 32-bit offset from the U-immediate&#44; filling in the lowest 12 bits with zeros&#44; adds this offset to the address of the AUIPC instruction&#44; then places the result in register rd.] |I_auipc_cg/{cp_rd, cp_imm_edges_20bit}
 
-|R-type_operands |All operations read
-the rs1 and rs2 registers as source operands and write the result into register rd. |{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}
+|R-type_operands |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3AR-type_operands[All operations read the rs1 and rs2 registers as source operands and write the result into register rd.] |{I_add_cg, I_sub_cg, I_and_cg, I_or_cg, I_xor_cg, I_sll_cg, I_srl_cg, I_sra_cg, I_slt_sg, I_sltu_cg}/{cp_rs1, cp_rs2, cp_rd, cmp_rs1_rs2, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}
 
-|add_op |ADD performs the addition of rs1 and rs2. |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|add_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aadd_op[ADD performs the addition of rs1 and rs2.] |I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|sub_op |SUB performs the subtraction of rs2 from rs1. |I_sub_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|sub_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asub_op[SUB performs the subtraction of rs2 from rs1.] |I_sub_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|add_overflow |Overflows are ignored and the low XLEN bits of results are written to the destination rd. |I_add_cg/cr_rs1_rs2_edges
+|add_overflow |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aadd_sub_overflow[Overflows are ignored and the low XLEN bits of results are written to the destination rd.] |I_add_cg/cr_rs1_rs2_edges
 
 |sub_overflow |see above |I_sub_cg/cr_rs1_rs2_edges
 
-|slt_op |SLT and SLTU perform signed and unsigned compares respectively, writing 1 to rd if
-rs1 &lt; rs2, 0 otherwise. |I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|slt_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslt_sltu_op[SLT and SLTU perform signed and unsigned compares respectively&#44; writing 1 to rd if rs1 &lt; rs2&#44; 0 otherwise.] |I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|sltu_op |SLT and SLTU perform signed and unsigned compares respectively, writing 1 to rd if
-rs1 &lt; rs2, 0 otherwise. |I_sltu_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|sltu_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslt_sltu_op[SLT and SLTU perform signed and unsigned compares respectively&#44; writing 1 to rd if rs1 &lt; rs2&#44; 0 otherwise.] |I_sltu_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|and_op |AND, OR, and XOR perform bitwise logical operations. |I_and_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|and_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aand_or_xor_op[AND&#44; OR&#44; and XOR perform bitwise logical operations.] |I_and_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
 |or_op |see above |I_or_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
 |xor_op |see above |I_xor_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|sll_op |SLL, SRL, and SRA perform logical left, logical right, and arithmetic
-right shifts on the value in register rs1 by the shift amount held in
-the lower 5 bits of register rs2. |I_sll_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+|sll_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asll_srl_sra_op[SLL&#44; SRL&#44; and SRA perform logical left&#44; logical right&#44; and arithmetic right shifts on the value in register rs1 by the shift amount held in the lower 5 bits of register rs2.] |I_sll_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
 |srl_op |see above |I_srl_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
 |sra_op |see above |I_sra_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
 
-|no_cti_delay_slots |Control transfer instructions in RV32I
-do not have architecturally visible delay slots. |{I_beq_cg, I_bne_cg, I_blt_cg, I_bltu_cg, I_bge_cg, I_bgeu_cg}/{cr_rs1_rs2_edges_offset}
+|no_cti_delay_slots |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ano_cti_delay_slots[Control transfer instructions in RV32I do not have architecturally visible delay slots.] |{I_beq_cg, I_bne_cg, I_blt_cg, I_bltu_cg, I_bge_cg, I_bgeu_cg}/{cr_rs1_rs2_edges_offset}
 
-|jal_target |The offset is sign-extended and added to the address of the jump instruction to
-form the jump target address. |I_jal_cg/cp_offset
+|jal_target |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ajal_target[The offset is sign-extended and added to the address of the jump instruction to form the jump target address.] |I_jal_cg/cp_offset
 
-|jal_op |JAL stores the address of the instruction
-following the jump ('pc'+4) into register rd. |I_jal_cg/{cp_rd}
+|jal_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ajal_op[JAL stores the address of the instruction following the jump ('pc'+4) into register rd.] |I_jal_cg/{cp_rd}
 
-|jalr_target |The target address is obtained by adding the
-sign-extended 12-bit I-immediate to the register rs1, then setting the
-least-significant bit of the result to zero. |I_jalr_cg/{cp_imm_edges, cp_offset_lsbs}
+|jalr_target |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ajalr_target[The target address is obtained by adding the sign-extended 12-bit I-immediate to the register rs1&#44; then setting the least-significant bit of the result to zero.] |I_jalr_cg/{cp_imm_edges, cp_offset_lsbs}
 
-|jalr_op |The address of the
-instruction following the jump (pc+4) is written to register rd. |I_jalr_cg/{cp_rd }
+|jalr_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ajalr_op[The address of the instruction following the jump (pc+4) is written to register rd.] |I_jalr_cg/{cp_rd}
 
-|br_target |The 12-bit B-immediate encodes signed offsets in multiples of 2 bytes. The offset
-is sign-extended and added to the address of the branch instruction to give the target address. |{I_beq_cg, I_bne_cg, I_blt_cg, I_bltu_cg, I_bge_cg, I_bgeu_cg}/{cr_rs1_rs2_edges_offset}
+|br_target |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Abr_target[The 12-bit B-immediate encodes signed offsets in multiples of 2 bytes. The offset is sign-extended and added to the address of the branch instruction to give the target address.] |{I_beq_cg, I_bne_cg, I_blt_cg, I_bltu_cg, I_bge_cg, I_bgeu_cg}/{cr_rs1_rs2_edges_offset}
 
-|beq_op |BEQ and BNE take the branch if registers rs1 and rs2 are equal or unequal respectively. |I_beq_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
+|beq_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Abeq_bne_op[BEQ and BNE take the branch if registers rs1 and rs2 are equal or unequal respectively.] |I_beq_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
 |bne_op |see above |I_bne_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
-|blt_op |BLT and BLTU take the branch if rs1 is less than rs2, using signed and
-unsigned comparison respectively. |I_blt_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
+|blt_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ablt_bltu_op[BLT and BLTU take the branch if rs1 is less than rs2&#44; using signed and unsigned comparison respectively.] |I_blt_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
 |bltu_op |see above |I_bltu_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
-|bge_op |BGE and BGEU take the branch if rs1 is greater than or equal to rs2,
-using signed and unsigned comparison respectively. |I_bge_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
+|bge_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Abge_bgeu_op[BGE and BGEU take the branch if rs1 is greater than or equal to rs2&#44; using signed and unsigned comparison respectively.] |I_bge_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
 |bgeu_op |see above |I_bgeu_cg/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}
 
-|ldst_ea |The effective address is obtained by adding register rs1 to the
-sign-extended 12-bit offset. |{I_lw_op, I_lh_op, I_lhu_op, I_lb_op, I_lbu_op, I_sw_op, I_sh_op, I_sb_op}/{cp_imm_edges}
+|ldst_ea |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aldst_ea[The effective address is obtained by adding register rs1 to the sign-extended 12-bit offset.] |{I_lw_op, I_lh_op, I_lhu_op, I_lb_op, I_lbu_op, I_sw_op, I_sh_op, I_sb_op}/{cp_imm_edges}
 
-|ldst_no_exc_aligned |loads and stores whose effective addresses are
-naturally aligned shall not raise an address-misaligned exception. |I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte
+|ldst_no_exc_aligned |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aldst_no_exc_aligned[loads and stores whose effective addresses are naturally aligned shall not raise an address-misaligned exception.] |I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte
 
-|load_op |Loads copy a value from memory to register rd. |I_lw_cg/{cp_memval_word}
+|load_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aload_op[Loads copy a value from memory to register rd.] |I_lw_cg/{cp_memval_word}
 
-|store_op |Stores copy the value in register rs2 to memory. |I_sw_cg/{cp_rs2_edges}
+|store_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Astore_op[Stores copy the value in register rs2 to memory.] |I_sw_cg/{cp_rs2_edges}
 
-|lw_op |The LW instruction loads a 32-bit value from memory into rd. |I_lw_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_word}
+|lw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alw_op[The LW instruction loads a 32-bit value from memory into rd.] |I_lw_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_word}
 
-|lh_op |LH loads a 16-bit value from memory, then sign-extends to 32-bits before storing
-in rd. |I_lh_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}
+|lh_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alh_op[LH loads a 16-bit value from memory&#44; then sign-extends to 32-bits before storing in rd.] |I_lh_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}
 
-|lhu_op |LHU loads a 16-bit value from memory but then zero extends to
-32-bits before storing in rd. |I_lhu_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}
+|lhu_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alhu_op[LHU loads a 16-bit value from memory but then zero extends to 32-bits before storing in rd.] |I_lhu_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_hword}
 
-|lb_op |LB and LBU are defined analogously for 8-bit values. LH loads a 16-bit value from memory, then sign-extends to 32-bits before storing
-in rd. |I_lb_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}
+|lb_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alb_lbu_op[LB and LBU are defined analogously for 8-bit values.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alh_op[LH loads a 16-bit value from memory&#44; then sign-extends to 32-bits before storing in rd.] |I_lb_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}
 
-|lbu_op |LB and LBU are defined analogously for 8-bit values. LHU loads a 16-bit value from memory but then zero extends to
-32-bits before storing in rd. |I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte  }
+|lbu_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alb_lbu_op[LB and LBU are defined analogously for 8-bit values.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alhu_op[LHU loads a 16-bit value from memory but then zero extends to 32-bits before storing in rd.] |I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte}
 
-|sw_op |The SW, SH, and SB instructions store 32-bit, 16-bit, and
-8-bit values from the low bits of register rs2 to memory. |I_sw_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
+|sw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asw_sh_sb_op[The SW&#44; SH&#44; and SB instructions store 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory.] |I_sw_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
 
-|sh_op |The SW, SH, and SB instructions store 32-bit, 16-bit, and
-8-bit values from the low bits of register rs2 to memory. |I_sh_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
+|sh_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asw_sh_sb_op[The SW&#44; SH&#44; and SB instructions store 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory.] |I_sh_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
 
-|sb_op |The SW, SH, and SB instructions store 32-bit, 16-bit, and
-8-bit values from the low bits of register rs2 to memory. |I_sb_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
+|sb_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asw_sh_sb_op[The SW&#44; SH&#44; and SB instructions store 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory.] |I_sb_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}
 
-|ldst_atomicity_for_aligned |naturally aligned
-loads and stores are guaranteed to execute atomically |I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte
+|ldst_atomicity_for_aligned |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aldst_atomicity_for_aligned[naturally aligned loads and stores are guaranteed to execute atomically] |I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte
 
-|fence_op |A FENCE
-(with fm=0000) orders all memory operations in its predecessor set
-before all memory operations in its successor set. |I_fence_cg/{cp_custom_fence}
+|fence_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Afence_op[A FENCE (with fm=0000) orders all memory operations in its predecessor set before all memory operations in its successor set.] |I_fence_cg/{cp_custom_fence}
 
-|fence-tso_op |FENCE.TSO orders
-all load operations in its predecessor set before all memory operations
-in its successor set, and all store operations in its predecessor set
-before all store operations in its successor set. This leaves non-AMO
-store operations in the FENCE.TSO's predecessor set unordered with
-non-AMO loads in its successor set. |I_fence_cg/{cp_custom_fence}
+|fence-tso_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Afence-tso_op[FENCE.TSO orders all load operations in its predecessor set before all memory operations in its successor set&#44; and all store operations in its predecessor set before all store operations in its successor set. This leaves non-AMO store operations in the FENCE.TSO's predecessor set unordered with non-AMO loads in its successor set.] |I_fence_cg/{cp_custom_fence}
 
-|fence-tso_ordering_rw_rw_ok |Because FENCE RW,RW imposes a superset of the orderings that FENCE.TSO imposes, it is correct to ignore the fm field and implement FENCE.TSO as FENCE RW,RW. |I_fence_cg/{cp_custom_fence}
+|fence-tso_ordering_rw_rw_ok |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Afence-tso_ordering_rw_rw_ok[Because FENCE RW&#44;RW imposes a superset of the orderings that FENCE.TSO imposes&#44; it is correct to ignore the fm field and implement FENCE.TSO as FENCE RW&#44;RW.] |I_fence_cg/{cp_custom_fence}
 
-|fence_unused_flds_rsv |The unused fields in the FENCE
-instructions--rs1 and rd--are reserved
-for finer-grain fences in future extensions. For forward compatibility,
-base implementations shall ignore these fields |TODO
+|fence_unused_flds_rsv |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Afence_unused_flds_rsv[The unused fields in the FENCE instructions--rs1 and rd--are reserved for finer-grain fences in future extensions. For forward compatibility&#44; base implementations shall ignore these fields] |TODO
 
-|fence_cons_ok |We chose a relaxed memory model to allow high performance from simple machine implementations and from likely future coprocessor or accelerator extensions. We separate out I/O ordering from memory R/W ordering to avoid unnecessary serialization within a device-driver hart and also to support alternative non-memory paths to control added coprocessors or I/O devices. Simple implementations may additionally ignore the predecessor and successor fields and always execute a conservative FENCE on all operations. |I_fence_cg/{cp_custom_fence}
+|fence_cons_ok |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Afence_cons_ok[We chose a relaxed memory model to allow high performance from simple machine implementations and from likely future coprocessor or accelerator extensions. We separate out I/O ordering from memory R/W ordering to avoid unnecessary serialization within a device-driver hart and also to support alternative non-memory paths to control added coprocessors or I/O devices. Simple implementations may additionally ignore the predecessor and successor fields and always execute a conservative FENCE on all operations.] |I_fence_cg/{cp_custom_fence}
 
 |===

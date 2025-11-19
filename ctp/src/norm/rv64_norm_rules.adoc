@@ -1,0 +1,69 @@
+[[t-rv64-normative_rules]]
+.rv64 Normative Rules
+[cols="1,4,3", options="header"]
+|===
+|Normative Rule |Rule Text |Coverpoints
+
+|addiw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddiw_op[ADDIW is an RV64I instruction that adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign extension of a 32-bit result in rd.] |"I_addw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"
+
+|addiw_overflow |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddiw_overflow[Overflows are ignored and the result is the low 32 bits of the result sign-extended to 64 bits.] |{I_addw_cg, I_subw_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|addw_overflow |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddw_subw_overflow[Overflows are ignored&#44; and the low 32-bits of the result is sign-extended to 64-bits and written to the destination register.] |I_addw_cg/cr_rs1_rs2_edges
+
+|auipc_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aauipc_op_rv64i[AUIPC forms a 32-bit offset from the U-immediate&#44; filling in the lowest 12 bits with zeros&#44; sign-extends the result to 64 bits&#44; adds it to the address of the AUIPC instruction&#44; then places the result in register rd.] |I_lb_cg/cp_memval_byte
+
+|lbu_rv64i_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ald_op_rv64i[The LD instruction loads a 64-bit value from memory into register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alw_op_rv64i[The LW instruction loads a 32-bit value from memory and sign-extends this to 64 bits before storing it in register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alh_lhu_lb_lbu_op_rv64i[LH and LHU are defined analogously for 16-bit values&#44; as are LB and LBU for 8-bit values.] |I_lbu_cg/cp_memval_byte
+
+|ld_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ald_op_rv64i[The LD instruction loads a 64-bit value from memory into register rd for RV64I.] |I_ld_cg/cp_memval_double
+
+|lh_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ald_op_rv64i[The LD instruction loads a 64-bit value from memory into register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alw_op_rv64i[The LW instruction loads a 32-bit value from memory and sign-extends this to 64 bits before storing it in register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alh_lhu_lb_lbu_op_rv64i[LH and LHU are defined analogously for 16-bit values&#44; as are LB and LBU for 8-bit values.] |I_lh_cg/cp_memval_half
+
+|lhu_rv64i_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Ald_op_rv64i[The LD instruction loads a 64-bit value from memory into register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alw_op_rv64i[The LW instruction loads a 32-bit value from memory and sign-extends this to 64 bits before storing it in register rd for RV64I.] link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alh_lhu_lb_lbu_op_rv64i[LH and LHU are defined analogously for 16-bit values&#44; as are LB and LBU for 8-bit values.] |I_lhu_cg/cp_memval_half
+
+|lui_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alui_op_rv64i[LUI places the 32-bit U-immediate into register rd&#44; filling in the lowest 12 bits with zeros. The 32-bit result is sign-extended to 64 bits.] |I_lui_cg/cp_imm_edges_20bit
+
+|lw_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alw_op_rv64i[The LW instruction loads a 32-bit value from memory and sign-extends this to 64 bits before storing it in register rd for RV64I.] |I_lw_cg/cp_memval_word
+
+|lwu_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Alwu_op[The LWU instruction&#44; on the other hand&#44; zero-extends the 32-bit value from memory for RV64I.] |I_lwu_cg/cp_memval_word
+
+|rv64_w_sex |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Arv64_w_sex[These \"*W\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values&#44; sign-extending them to 64 bits&#44; i.e. bits XLEN-1 through 31 are equal.] |{I_addw_cg, I_subw_cg, I_sllw_cg, I_srlw_cg, I_sraw_cg}/cr_rs1_rs2_edges
+
+|rv64i_other_xregs |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Arv32i_rv64i_other_xregs[General purpose registers x1-x31 hold values that various instructions interpret as a collection of Boolean values&#44; or as two's complement signed binary integers or unsigned binary integers.] |I_addw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|rv64i_xreg_sz |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Arv64i_xreg_sz[RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in &lt;&lt;gprs&gt;&gt;).] |I_addw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|sb_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asd_sw_sh_sb_op_rv64i[The SD&#44; SW&#44; SH&#44; and SB instructions store 64-bit&#44; 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory respectively.] |I_sb_cg/cp_rs2_edges
+
+|sd_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asd_sw_sh_sb_op_rv64i[The SD&#44; SW&#44; SH&#44; and SB instructions store 64-bit&#44; 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory respectively.] |I_sd_cg/cp_rs2_edges
+
+|sh_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asd_sw_sh_sb_op_rv64i[The SD&#44; SW&#44; SH&#44; and SB instructions store 64-bit&#44; 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory respectively.] |I_sh_cg/cp_rs2_edges
+
+|sll_sh_amt_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asll_srl_sra_sh_amt_rv64i[In RV64I&#44; only the low 6 bits of rs2 are considered for the shift amount.] |I_sll_cg/cr_rs1_rs2_edges
+
+|slliw_imm5_rsv |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_imm5_rsv[SLLIW&#44; SRLIW&#44; and SRAIW encodings with imm[5\] &amp;#8800; 0 are reserved.] |I_slliw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>
+
+|slliw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_op[SLLIW&#44; SRLIW&#44; and SRAIW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits.] |I_slliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}
+
+|sllw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asllw_srlw_sraw_op[SLLW&#44; SRLW&#44; and SRAW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits. The shift amount is given by rs2[4:0\].] |I_sllw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|sra_sh_amt_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asll_srl_sra_sh_amt_rv64i[In RV64I&#44; only the low 6 bits of rs2 are considered for the shift amount.] |I_sra_cg/cr_rs1_rs2_edges
+
+|sraiw_imm5_rsv |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_imm5_rsv[SLLIW&#44; SRLIW&#44; and SRAIW encodings with imm[5\] &amp;#8800; 0 are reserved.] |I_sraiw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>
+
+|sraiw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_op[SLLIW&#44; SRLIW&#44; and SRAIW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits.] |I_sraiw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}
+
+|sraw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asllw_srlw_sraw_op[SLLW&#44; SRLW&#44; and SRAW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits. The shift amount is given by rs2[4:0\].] |I_sraw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|srl_sh_amt_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asll_srl_sra_sh_amt_rv64i[In RV64I&#44; only the low 6 bits of rs2 are considered for the shift amount.] |I_srl_cg/cr_rs1_rs2_edges
+
+|srliw_imm5_rsv |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_imm5_rsv[SLLIW&#44; SRLIW&#44; and SRAIW encodings with imm[5\] &amp;#8800; 0 are reserved.] |I_srliw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>
+
+|srliw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aslliw_srliw_sraiw_op[SLLIW&#44; SRLIW&#44; and SRAIW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits.] |I_srliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}
+
+|srlw_op |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asllw_srlw_sraw_op[SLLW&#44; SRLW&#44; and SRAW are RV64I-only instructions that are analogously defined but operate on 32-bit values and sign-extend their 32-bit results to 64 bits. The shift amount is given by rs2[4:0\].] |I_srlw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}
+
+|subw_overflow |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Aaddw_subw_overflow[Overflows are ignored&#44; and the low 32-bits of the result is sign-extended to 64-bits and written to the destination register.] |I_subw_cg/cr_rs1_imm_edges
+
+|sw_op_rv64i |link:https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm%3Asd_sw_sh_sb_op_rv64i[The SD&#44; SW&#44; SH&#44; and SB instructions store 64-bit&#44; 32-bit&#44; 16-bit&#44; and 8-bit values from the low bits of register rs2 to memory respectively.] |I_sw_cg/cp_rs2_edges
+
+|===

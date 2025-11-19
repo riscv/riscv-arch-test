@@ -21,8 +21,4 @@
     cp_custom_vfp_register_state_mstatus_dirty   : cross std_vec, fd_changed_value, mstatus_prev_clean;
     cp_custom_vfp_csr_state_mstatus_dirty        : cross std_vec, vfsqrt_flag_set, mstatus_prev_clean, fp_flags_clear;
 
-<<<<<<< HEAD
     //// end cp_custom_vfp_state////////////////////////////////////////////////
-=======
-    //// end cp_custom_vfp_state////////////////////////////////////////////////
->>>>>>> bcb24c55002fb0025117137e5bddfeb74ee2da52

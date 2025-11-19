@@ -37,8 +37,4 @@
 
     cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, fp_flags_clear;
 
-<<<<<<< HEAD
     //// end cp_custom_vfp_flags////////////////////////////////////////////////
-=======
-    //// end cp_custom_vfp_flags////////////////////////////////////////////////
->>>>>>> bcb24c55002fb0025117137e5bddfeb74ee2da52

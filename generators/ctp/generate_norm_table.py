@@ -628,7 +628,12 @@ def main():
             # some renderers were showing as a visible 'a'.
             if len(linked_text_parts) == 1:
                 url, esc = linked_text_parts[0]
-                joined = f'link:{url}["{esc}"]'
+                # Emit Asciidoc link macro without surrounding double quotes
+                # around the display text. We previously used quotes to
+                # work around commas being treated as attribute separators,
+                # but Asciidoc link:URL[Text] allows commas in the text.
+                # Keep esc safely escaped for brackets/backslashes.
+                joined = f'link:{url}[{esc}]'
             else:
                 # Build HTML paragraphs with safe escaping for text and
                 # attributes. Also replace any '|' with '&#124;' so the

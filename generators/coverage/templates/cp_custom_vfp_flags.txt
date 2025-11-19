@@ -1,5 +1,5 @@
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_csr_fflags_vdoun
+    // cp_custom_vfp_flags
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_fflags_vdoun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
@@ -16,4 +16,25 @@
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
 
-    //// end cp_csr_fflags_vdoun////////////////////////////////////////////////
+    fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
+        bins clear = {0};
+    }
+
+    vfsqrt_flag_set : coverpoint (ins.current.insn == "vfrsqrt7.v" & ins.current.vs2_val == 0) {
+        bins target = {1};
+    }
+
+    vl_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        //Any value between max and 1
+        bins target = {1};
+    }
+
+    v0_element_1_active : coverpoint (ins.current.v0_val[0]) {
+        bins target = {1};
+    }
+
+    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun;
+
+    cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, fp_flags_clear;
+
+    //// end cp_custom_vfp_flags////////////////////////////////////////////////

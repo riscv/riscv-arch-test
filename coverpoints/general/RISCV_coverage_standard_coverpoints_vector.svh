@@ -503,3 +503,64 @@
     vs2_vd_no_overlap_lmul4: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
         bins overlapping = {1'b0};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // Vector fp coverpoints
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef SEW16_SUPPORTED
+        bins canonicalQNaN          = {16'h7E00};
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        `endif
+    }
+
+    vs2_element0_sNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef SEW16_SUPPORTED
+        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        `endif
+    }
+
+    vs2_element0_qNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef SEW16_SUPPORTED
+        bins canonicalQNaN          = {16'h7E00};
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        `endif
+    }
+
+    vs2_element0_sqNAN : get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef SEW16_SUPPORTED
+        bins sNaN_payload1          = {16'h7D01};                // Signaling NaN with payload 1
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+        `endif
+        `ifdef SEW16_SUPPORTED
+        bins canonicalQNaN          = {16'h7E00};
+        `endif
+        `ifdef SEW32_SUPPORTED
+        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        `endif
+        `ifdef SEW64_SUPPORTED
+        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
+        `endif
+    }

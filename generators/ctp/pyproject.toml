@@ -1,0 +1,6 @@
+[project]
+name = "ctp"
+version = "0.1.0"
+description = "Scripts for certification test plan generation"
+requires-python = ">=3.9"
+dependencies = ["ruamel-yaml>=0.18.16"]

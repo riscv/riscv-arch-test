@@ -41,7 +41,7 @@
 //   6: Change to supervisor mode (mret to address in sepc)
 //   8: Change to machine mode    (mret to address in sepc)
 //Macros
-#define ACCESS_FAULT_ADDRESS 0
+//#define ACCESS_FAULT_ADDRESS 0  //defined again in rvtest_config.h
 #define CLINT_BASE_ADDR 0x02000000
 #define PLIC_BASE_ADDR 0x0C000000
 #define GPIO_BASE_ADDR 0x10060000
@@ -223,8 +223,9 @@ trap_return:                     # don't need to update mepc for interrupts
 
 write_tohost:
     li x1, 1
-    sw x1, tohost, t0
-    j write_tohost
+    la t0, tohost
+    sw x1, 0(t0)
+    sw x0, 4(t0)
 
 self_loop:
     j self_loop         # wait

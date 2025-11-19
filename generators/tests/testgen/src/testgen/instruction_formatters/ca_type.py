@@ -11,7 +11,7 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import load_int_reg, write_sigupd
 
 
-@add_instruction_formatter("CA", required_params={"rs1", "rs1val", "rs2", "rs2val"})
+@add_instruction_formatter("CA", required_params={"rs1", "rs1val", "rs2", "rs2val"}, reg_range=range(8, 16))
 def format_ca_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

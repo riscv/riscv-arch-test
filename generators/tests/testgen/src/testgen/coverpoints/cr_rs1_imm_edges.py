@@ -39,7 +39,7 @@ def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, tes
         for imm_edge_val in edges_imm:
             test_lines.append("")
             params = generate_random_params(
-                test_data, instr_type, allow_x0=False, rs1val=reg_edge_val, immval=imm_edge_val
+                test_data, instr_type, exclude_regs=[0], rs1val=reg_edge_val, immval=imm_edge_val
             )
             desc = f"{coverpoint} (rs1 = {test_data.xlen_format_str.format(reg_edge_val)}, imm = {imm_edge_val})"
             test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

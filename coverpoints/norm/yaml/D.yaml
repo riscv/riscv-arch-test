@@ -2,86 +2,86 @@
 
 normative_rule_definitions:
 - name: D_fpr_regs
-  coverpoint: [D_fadd_d_cg/{cp_fs1_fs2_edges_frm_D}] # one of many possible
+  coverpoint: ["D_fadd_d_cg/{cp_fs1_fs2_edges_frm_D}"] # one of many possible
 - name: fld_op
-  coverpoint: [D_fld_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}]
+  coverpoint: ["D_fld_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}"]
 - name: fsd_op
-  coverpoint: [D_fsd_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}]
-- names: [fsd_atomic_align, fld_atomic_align]
-  coverpoint: [UNCHECKED]
+  coverpoint: ["D_fsd_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}"]
+- names: ["fsd_atomic_align, fld_atomic_align"]
+  coverpoint: ["UNCHECKED"]
 - name: fsd_bits_maintained
-  coverpoint: [TODO]
+  coverpoint: ["TODO"]
 - name: fld_bits_maintained
-  coverpoint: [TODO]
-- names: [fadd-d_op, fmul-d_op]
-  coverpoint: [{D_fadd_d_cg, D_fmul-d_op}/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_frm_D}]
+  coverpoint: ["TODO"]
+- names: ["fadd-d_op, fmul-d_op"]
+  coverpoint: ["{D_fadd_d_cg, D_fmul-d_op}/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_frm_D}"]
 - name: fsub-d_op
-  coverpoint: [D_fsub_d_cg/{cp_fs1, cp_fs2, cp_fd}]
+  coverpoint: ["D_fsub_d_cg/{cp_fs1, cp_fs2, cp_fd}"]
 - name: fdiv-d_op
-  coverpoint: [D_fdiv_d_cg/{cp_fs1, cp_fs2, cp_fd}]
+  coverpoint: ["D_fdiv_d_cg/{cp_fs1, cp_fs2, cp_fd}"]
 - name: fsqrt-d_op
-  coverpoint: [D_fsqrt_d_cg/{cp_fs1, cp_fd}]
+  coverpoint: ["D_fsqrt_d_cg/{cp_fs1, cp_fd}"]
 - name: fmadd-d_op
-  coverpoint: [D_fmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}]
+  coverpoint: ["D_fmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}"]
 - name: fmsub-d_op
-  coverpoint: [D_fmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}]
+  coverpoint: ["D_fmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}"]
 - name: fnmsub-d_op
-  coverpoint: [D_fnmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}]
+  coverpoint: ["D_fnmsub_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}"]
 - name: fnmadd-d_op
-  coverpoint: [D_fnmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}]
+  coverpoint: ["D_fnmadd_d_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd}"]
 - name: fcvt-w-d_op
-  coverpoint: [D_fcvt_w_d_cg/{cp_fs1}]
+  coverpoint: ["D_fcvt_w_d_cg/{cp_fs1}"]
 - name: fcvt-l-d_op
-  coverpoint: [D_fcvt_l_d_cg/{cp_fs1}]
+  coverpoint: ["D_fcvt_l_d_cg/{cp_fs1}"]
 - name: fcvt-d-w_op
-  coverpoint: [D_fcvt_d_w_cg/{cp_rs1, cp_fd}]
+  coverpoint: ["D_fcvt_d_w_cg/{cp_rs1, cp_fd}"]
 - name: fcvt-d-l_op
-  coverpoint: [D_fcvt_d_l_cg/{cp_rs1, cp_fd}]
+  coverpoint: ["D_fcvt_d_l_cg/{cp_rs1, cp_fd}"]
 - name: fcvt-wu-d_op
-  coverpoint: [D_fcvt_wu_d_cg/{cp_fs1}]
+  coverpoint: ["D_fcvt_wu_d_cg/{cp_fs1}"]
 - name: fcvt-lu-d_op
-  coverpoint: [D_fcvt_lu_d_cg/{cp_fs1}]
+  coverpoint: ["D_fcvt_lu_d_cg/{cp_fs1}"]
 - name: fcvt-d-wu_op
-  coverpoint: [D_fcvt_d_wu_cg/{cp_rs1, cp_fd}]
+  coverpoint: ["D_fcvt_d_wu_cg/{cp_rs1, cp_fd}"]
 - name: fcvt-d-lu_op
-  coverpoint: [D_fcvt_d_lu_cg/{cp_rs1, cp_fd}]
+  coverpoint: ["D_fcvt_d_lu_cg/{cp_rs1, cp_fd}"]
 - name: fcvt-s-d_op
-  coverpoint: [D_fcvt_s_d_cg/{cp_fs1, cp_fd}]
+  coverpoint: ["D_fcvt_s_d_cg/{cp_fs1, cp_fd}"]
 - name: fcvt-d-s_op
-  coverpoint: [D_fcvt_d_s_cg/{cp_fs1, cp_fd}]
+  coverpoint: ["D_fcvt_d_s_cg/{cp_fs1, cp_fd}"]
 - name: fsgnj-d_op
-  coverpoint: [D_fsgnj_d_cg/{cp_fs1, cp_fs2, cp_fd}]
+  coverpoint: ["D_fsgnj_d_cg/{cp_fs1, cp_fs2, cp_fd}"]
 - name: fsgnjn-d_op
-  coverpoint: [D_fsgnjn_d_cg/{cp_fs1, cp_fs2, cp_fd}]
+  coverpoint: ["D_fsgnjn_d_cg/{cp_fs1, cp_fs2, cp_fd}"]
 - name: fsgnjx-d_op
-  coverpoint: [D_fsgnjx_d_cg/{cp_fs1, cp_fs2, cp_fd}]
+  coverpoint: ["D_fsgnjx_d_cg/{cp_fs1, cp_fs2, cp_fd}"]
 - name: fmv-x-d_op
-  coverpoint: [D_fmv_x_d_cg/{cp_fs1}]
+  coverpoint: ["D_fmv_x_d_cg/{cp_fs1}"]
 - name: fmv-d-x_op
-  coverpoint: [D_fmv_d_x_cg/{cp_rs1, cp_fd}]
+  coverpoint: ["D_fmv_d_x_cg/{cp_rs1, cp_fd}"]
 - name: fmv-x-d_op_bits_preserved
-  coverpoint: []
+  coverpoint: [""]
 - name: fmv-d-x_op_bits_preserved
-  coverpoint: []
+  coverpoint: [""]
 - name: feq-d_op
-  coverpoint: [D_feq_d_cg/{cp_fs1, cp_fs2}]
+  coverpoint: ["D_feq_d_cg/{cp_fs1, cp_fs2}"]
 - name: flt-d_op
-  coverpoint: [D_flt_d_cg/{cp_fs1, cp_fs2}]
+  coverpoint: ["D_flt_d_cg/{cp_fs1, cp_fs2}"]
 - name: fle-d_op
-  coverpoint: [D_fle_d_cg/{cp_fs1, cp_fs2}]
+  coverpoint: ["D_fle_d_cg/{cp_fs1, cp_fs2}"]
 - name: feq-d_NaN
-  coverpoint: []
+  coverpoint: [""]
 - name: flt-d_NaN
-  coverpoint: []
+  coverpoint: [""]
 - name: fle-d_NaN
-  coverpoint: []
+  coverpoint: [""]
 - name: fclass-d_op
-  coverpoint: [D_fclass_d_cg/{cp_fs1}]
+  coverpoint: ["D_fclass_d_cg/{cp_fs1}"]
 - name: fp_nan-boxing
-  coverpoint: []
+  coverpoint: [""]
 - name: FP_transfer_instrs_narrow_transfer_in
-  coverpoint: []
+  coverpoint: [""]
 - name: FP_transfer_instrs_narrow_transfer_out
-  coverpoint: []
+  coverpoint: [""]
 - name: fcvt-w-d_fcvt-wu-d_sign_ext
-  coverpoint: []
+  coverpoint: [""]

@@ -24,6 +24,10 @@ import os
 import glob
 import sys
 import re
+import urllib.request
+import urllib.error
+import urllib.parse
+import html
 
 try:
     import yaml
@@ -31,7 +35,31 @@ except Exception:
     yaml = None
 
 
-def load_json(path):
+def load_json(path, cache_path=None):
+    """Load JSON from a local file path or an HTTP/HTTPS URL.
+
+    If `path` starts with 'http://' or 'https://', attempt to download it.
+    If `cache_path` is provided, write the downloaded JSON to that path.
+    Otherwise read it from the filesystem.
+    """
+    if isinstance(path, str) and (path.startswith('http://') or path.startswith('https://')):
+        try:
+            with urllib.request.urlopen(path, timeout=20) as resp:
+                data = resp.read()
+                text = data.decode('utf-8')
+                # Optionally cache the downloaded JSON
+                if cache_path:
+                    try:
+                        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+                        with open(cache_path, 'w', encoding='utf-8') as cf:
+                            cf.write(text)
+                    except Exception:
+                        # Don't fail the whole run if caching fails; just warn
+                        print(f'Warning: failed to write cache to {cache_path}', file=sys.stderr)
+                return json.loads(text)
+        except urllib.error.URLError as e:
+            raise RuntimeError(f'Failed to download JSON from {path}: {e}')
+    # local file
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
@@ -293,10 +321,23 @@ def make_adoc_table(rows, outpath, base=None):
     lines.append('|===')
     lines.append('|Normative Rule |Rule Text |Coverpoints')
     lines.append('')
+
     for name, text, cp in rows:
-        # sanitize pipes
-        n = name.replace('|', r'\|')
-        t = text.replace('|', r'\|')
+        # Replace any pipe in the name with the HTML entity so table parsing
+        # cannot be broken by literal '|' characters.
+        n = name.replace('|', '&#124;')
+
+        # Rule Text: replace any '|' characters with the HTML entity so
+        # Asciidoc table column parsing is not broken by literal vertical
+        # bars inside cells. If the rule text contains newlines, emit an
+        # 'a|' multi-paragraph table cell so paragraph breaks are
+        # preserved and multiple links appear separated by blank lines.
+        t = (text or '')
+        # Always replace any literal '|' characters to the HTML
+        # entity so the source .adoc table cell is not broken.
+        if '|' in t:
+            t = t.replace('|', '&#124;')
+
         # Normalize coverpoint value. If cp is a list (from YAML), join items
         # without quotes. If it's a scalar string, use it. Then remove any
         # surrounding list brackets and surrounding quotes so the ADOC cell
@@ -318,8 +359,27 @@ def make_adoc_table(rows, outpath, base=None):
 
         # Collapse consecutive closing braces '}}' into a single '}' to remove excess
         c = re.sub(r"\}{2,}", "}", c)
-        c = c.replace('|', r'\\|')
-        lines.append(f'|{n} |{t} |{c}')
+        # Replace any pipe characters in the coverpoint text as well.
+        c = c.replace('|', '&#124;')
+
+        # If the rule text contains newline(s) we previously emitted an
+        # 'a|' multi-paragraph cell. That marker was visible in some
+        # renderers. To avoid the visible 'a' while still preserving
+        # paragraphs, we now treat embedded HTML paragraphs or anchor
+        # content as safe (emit inline cell), and only fall back to the
+        # Asciidoc 'a|' marker for raw plaintext that contains newlines.
+        # Treat Asciidoc passthroughs and raw HTML paragraphs as safe
+        # inline content so we don't emit the Asciidoc 'a|' multi-paragraph
+        # table cell marker which was visible in some renderers. Detect
+        # both raw '<p'/'<a href=' fragments and 'pass:[' passthroughs.
+        if '\n' in t and not (t.strip().startswith('<p') or '<a href=' in t or 'pass:[' in t):
+            # write a multi-paragraph cell using Asciidoc marker
+            lines.append(f'|{n} |a|{t} |{c}')
+        else:
+            # inline cell — includes HTML paragraph/anchor strings we
+            # generated for multi-link cases, or single-line text.
+            lines.append(f'|{n} |{t} |{c}')
+
         lines.append('')
 
     lines.append('|===')
@@ -425,22 +485,29 @@ def pick_cover_for_name(coverpoint, names, idx):
 
 def main():
     p = argparse.ArgumentParser(description='Generate ASCIIDoc table from normative rules JSON and coverpoints YAML')
-    p.add_argument('--json', default='coverpoints/norm/norm-rules.json', help='Path to norm-rules.json')
+    # Default: download the canonical norm-rules.json from the ISA manual snapshot
+    # canonical remote JSON used as default and as the fetch target when
+    # --always-fetch is requested
+    canonical_json_url = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
+    p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
     p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
     p.add_argument('--out', default='ctp/src/norm/', help='Output ASCIIDoc file or directory when --yaml is a directory (default dir: coverpoints/norm/adoc/)')
     p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
+    p.add_argument('--always-fetch', action='store_true', help='Always fetch the canonical remote JSON and update local cache even when --json is a local path')
     args = p.parse_args()
 
     # If paths are relative and not found from current CWD, try resolving
     # them relative to the script directory so running from repo root still works.
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    if not os.path.exists(args.json):
-        alt = os.path.join(script_dir, args.json)
-        if os.path.exists(alt):
-            args.json = alt
-        else:
-            print(f'Error: JSON file not found: {args.json}', file=sys.stderr)
-            sys.exit(2)
+    # If args.json is an HTTP(S) URL, we'll download it later; skip filesystem checks.
+    if not (isinstance(args.json, str) and (args.json.startswith('http://') or args.json.startswith('https://'))):
+        if not os.path.exists(args.json):
+            alt = os.path.join(script_dir, args.json)
+            if os.path.exists(alt):
+                args.json = alt
+            else:
+                print(f'Error: JSON file not found: {args.json}', file=sys.stderr)
+                sys.exit(2)
 
     if not os.path.exists(args.yaml):
         alt = os.path.join(script_dir, args.yaml)
@@ -449,13 +516,30 @@ def main():
         else:
             print(f'Error: YAML file not found: {args.yaml}', file=sys.stderr)
             sys.exit(2)
+    # Compute a cache path under the repository's coverpoints/norm directory.
+    # script_dir is the script's directory; the repo root is four levels up.
+    repo_root = os.path.abspath(os.path.join(script_dir, '..', '..', '..', '..'))
+    cache_dir = os.path.join(repo_root, 'coverpoints', 'norm')
+    cache_path = os.path.join(cache_dir, 'norm-rules.json')
 
-    # Load JSON once
-    jdata = load_json(args.json)
+    # Load JSON. Default behavior: if args.json is a URL it will be downloaded
+    # and cached. If args.json is a local path the local file will be read.
+    # If --always-fetch is set, force a download from the canonical remote
+    # URL and update the cache; this ensures the run uses the remote copy.
+    if args.always_fetch:
+        try:
+            jdata = load_json(canonical_json_url, cache_path=cache_path)
+        except Exception as e:
+            print(f'Error: failed to fetch canonical JSON ({canonical_json_url}): {e}', file=sys.stderr)
+            sys.exit(2)
+    else:
+        # If args.json is a URL the loader will download it; otherwise load locally
+        jdata = load_json(args.json, cache_path=cache_path)
     rules_list = find_normative_rules(jdata)
 
     # Build a mapping of JSON rule name -> text for fast lookup
     json_text_map = {}
+    json_links_map = {}
     json_names = set()
     json_def_map = {}
     for entry in rules_list:
@@ -466,8 +550,122 @@ def main():
             continue
         json_names.add(name)
         tags = entry.get('tags') or entry.get('tag') or []
-        text = extract_rule_text(tags)
-        json_text_map[name] = text
+        # Build ASCIIDoc linked text for tags associated with this rule.
+        # The link should apply to the tagged text (tag['text']) and the
+        # tag 'name' (e.g. 'norm:...') should not be printed.
+        links = []
+        linked_text_parts = []
+        UNPRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
+        PRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html'
+        if isinstance(tags, dict):
+            tags_iter = [tags]
+        else:
+            tags_iter = list(tags) if tags is not None else []
+        for tg in tags_iter:
+            if not isinstance(tg, dict):
+                continue
+            tag_name = tg.get('name')
+            tag_fn = tg.get('tag_filename', '') or ''
+            tag_text = tg.get('text') or ''
+            if not tag_name:
+                continue
+            # choose privileged or unprivileged base URL based on filename
+            # do a case-insensitive check and test for 'unprivileged' first
+            tag_fn_l = (tag_fn or '').lower()
+            if 'unprivileged' in tag_fn_l:
+                base = UNPRIV_BASE
+            elif 'privileged' in tag_fn_l:
+                base = PRIV_BASE
+            else:
+                base = UNPRIV_BASE
+            # assemble URL with fragment pointing to the tag name
+            # Percent-encode the fragment to produce a safe URL fragment.
+            # Use urllib.parse.quote with an empty 'safe' to encode reserved
+            # characters (e.g., ':') so the fragment is valid when embedded in
+            # a link target.
+            frag = urllib.parse.quote(str(tag_name), safe='')
+            url = f"{base}#{frag}"
+            # Prepare display text: collapse whitespace and remove surrounding newlines
+            disp = ' '.join(str(tag_text).split())
+            # Replace any vertical bar '|' with the HTML entity '&#124;'
+            # instead of truncating. This preserves more of the text while
+            # preventing Asciidoc table column parsing from being broken by
+            # literal '|' characters appearing inside quoted link or cell
+            # text.
+            if '|' in disp:
+                disp = disp.replace('|', '&#124;')
+            # ASCIIDoc inline link: link:url["display text"]
+            # Use quoted display text to allow commas in the text (otherwise
+            # Asciidoctor will treat commas as attribute separators). Also
+            # escape double-quotes, backslashes and closing brackets inside
+            # the display text.
+            if disp:
+                esc = disp.replace('\\', '\\\\').replace('"', '\\"').replace(']', '\\]')
+                # final safety: replace any remaining '|' with '&#124;'
+                if '|' in esc:
+                    esc = esc.replace('|', '&#124;')
+                # Store as a tuple so we can render multi-link cases as HTML
+                # paragraphs (anchors) later to avoid relying on the Asciidoc
+                # 'a|' multi-paragraph cell marker which was showing up as a
+                # visible 'a' in some renderers.
+                linked_text_parts.append((url, esc))
+            else:
+                # fallback to linking the tag name (without printing 'norm:')
+                # but per request do not print the tag name; so skip if no display text
+                pass
+
+        # If we created linked parts, use them as the rule text; when there
+        # are multiple linked parts, join them with a blank line so they
+        # render as separate paragraphs. The presence of newlines will
+        # cause the adoc table generator to emit an 'a|' (asciidoc) cell
+        # so the paragraphs are preserved.
+        if linked_text_parts:
+            # If there's only a single linked part, keep the original
+            # Asciidoc link: macro so existing consumers that prefer it
+            # keep working. If there are multiple link parts, convert
+            # them into HTML paragraphs with anchor tags. This avoids
+            # emitting the Asciidoc 'a|' multi-paragraph marker which
+            # some renderers were showing as a visible 'a'.
+            if len(linked_text_parts) == 1:
+                url, esc = linked_text_parts[0]
+                joined = f'link:{url}["{esc}"]'
+            else:
+                # Build HTML paragraphs with safe escaping for text and
+                # attributes. Also replace any '|' with '&#124;' so the
+                # source .adoc table cell is not broken by literal pipes.
+                parts = []
+                for url, esc in linked_text_parts:
+                    # Escape URL for inclusion in double-quoted attribute
+                    safe_url = html.escape(url, quote=True)
+                    # esc is already sanitized for Asciidoc; re-escape for HTML
+                    safe_text = html.escape(esc)
+                    # Replace any literal '|' characters to avoid breaking
+                    # Asciidoc table column parsing.
+                    if '|' in safe_text:
+                        safe_text = safe_text.replace('|', '&#124;')
+                    # Build the HTML paragraph/anchor fragment and escape any
+                    # closing bracket so it cannot prematurely close the
+                    # passthrough macro.
+                    html_fragment = f'<p><a href="{safe_url}">{safe_text}</a></p>'
+                    html_fragment = html_fragment.replace(']', '\\]')
+                    # Use the Asciidoc passthrough macro so the raw HTML is
+                    # passed to the backend renderer unchanged.
+                    parts.append(f'pass:[{html_fragment}]')
+                # Join paragraphs with a blank line so they render as
+                # distinct paragraphs inside the table cell.
+                joined = '\n\n'.join(parts)
+
+            json_text_map[name] = joined
+            json_links_map[name] = []
+        else:
+            text = extract_rule_text(tags)
+            # Also truncate extracted rule text at first '|' to avoid
+            # introducing table-breaking pipe characters when no tag
+            # hyperlinks are available.
+            if '|' in text:
+                text = text.replace('|', '&#124;')
+            json_text_map[name] = text
+            json_links_map[name] = []
         # capture def_filename for later grouping in reports
         def_fn = entry.get('def_filename') or entry.get('def_file') or entry.get('definition_filename')
         json_def_map[name] = def_fn or 'unknown'
@@ -519,6 +717,11 @@ def main():
                     yaml_names.add(n)
                     if idx == 0:
                         text = json_text_map.get(n, '')
+                        # append tag links (if any) to the rule text
+                        tlinks = json_links_map.get(n, [])
+                        if tlinks:
+                            # separate text and links with two spaces so ADOC treats it as appended content
+                            text = (text + '  ' + ' '.join(tlinks)).strip()
                     else:
                         text = 'see above'
                     rows.append((n, text, chosen_cp))
@@ -610,6 +813,9 @@ def main():
             # Only include the rule text for the first name in the group
             if idx == 0:
                 text = json_text_map.get(n, '')
+                tlinks = json_links_map.get(n, [])
+                if tlinks:
+                    text = (text + '  ' + ' '.join(tlinks)).strip()
             else:
                 text = 'see above'
             rows.append((n, text, chosen_cp))

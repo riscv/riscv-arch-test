@@ -8,4 +8,8 @@
 
     cp_custom_vfp_NaN_input : cross std_vec, fp_flags_clear, vs2_element0_sqNAN;
 
+<<<<<<< HEAD
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+=======
+    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+>>>>>>> bcb24c55002fb0025117137e5bddfeb74ee2da52

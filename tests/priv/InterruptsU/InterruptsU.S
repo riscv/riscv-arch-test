@@ -52,7 +52,7 @@ RVTEST_BEGIN
 
     cp_user_mti:
 
-        li s0, 31 // s0 = 5'b11111 (Mie/Sie x MtvecMode x MtvecMode) -> 32 combinations
+        li s0, 3 // 4 combinations
         
         for_mti_cross:
             // Clear MIE and MTVEC

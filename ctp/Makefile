@@ -125,7 +125,6 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	#../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/yaml --out $(SRC_DIR)/norm --report mismatch_report.txt --always_fetch
 	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/yaml --out $(SRC_DIR)/norm --report mismatch_report.txt
 
 # Update docker image to latest

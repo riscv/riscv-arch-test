@@ -495,7 +495,7 @@ def main():
     canonical_json_url = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
     p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
     p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
-    p.add_argument('--out', default='ctp/src/norm/', help='Output ASCIIDoc file or directory when --yaml is a directory (default dir: coverpoints/norm/adoc/)')
+    p.add_argument('--out', default='ctp/src/norm/', help='Output directory for ASCIIDoc files (default: ctp/src/norm/)')
     p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
     p.add_argument('--always-fetch', action='store_true', help='Always fetch the canonical remote JSON and update local cache even when --json is a local path')
     args = p.parse_args()
@@ -678,16 +678,8 @@ def main():
             print(f'No YAML files found in directory: {args.yaml}', file=sys.stderr)
             sys.exit(2)
 
-        # Determine output directory for adoc files.
-        # Treat an --out ending with a path separator as a directory. If it's an
-        # existing directory, use it. Otherwise fall back to dirname or the yaml
-        # directory.
-        if os.path.isdir(args.out):
-            out_dir = args.out
-        elif args.out.endswith(os.sep) or args.out.endswith('/'):
-            out_dir = args.out.rstrip(os.sep)
-        else:
-            out_dir = os.path.dirname(args.out) or args.yaml
+        # Always treat --out as a directory
+        out_dir = args.out
 
         # Determine report directory
         if os.path.isdir(args.report):
@@ -824,18 +816,11 @@ def main():
     missing_in_json = sorted(list(yaml_names - json_names))
     missing_in_yaml = sorted(list(json_names - yaml_names))
 
-    # Write adoc
-    # If args.out looks like a directory (ends with / or is an existing dir),
-    # ensure it exists and write into it using the yaml basename.
-    if args.out.endswith(os.sep) or os.path.isdir(args.out):
-        out_dir = ensure_dir(args.out.rstrip(os.sep))
-        base = os.path.splitext(os.path.basename(args.yaml))[0]
-        outpath = os.path.join(out_dir, base + '_norm_rules.adoc')
-    else:
-        out_parent = os.path.dirname(args.out) or '.'
-        ensure_dir(out_parent)
-        outpath = args.out
-    make_adoc_table(rows, outpath, base=base if 'base' in locals() else None)
+    # Always treat --out as a directory
+    out_dir = ensure_dir(args.out)
+    base = os.path.splitext(os.path.basename(args.yaml))[0]
+    outpath = os.path.join(out_dir, base + '_norm_rules.adoc')
+    make_adoc_table(rows, outpath, base=base)
 
     # Write the mismatch report only to the report file (do not print to stdout)
     report_lines = []

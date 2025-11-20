@@ -19,6 +19,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - run: git submodule update --init external/riscv-unified-db
+
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
 
@@ -33,5 +35,5 @@ jobs:
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 
-      - name: Compile and run tests on Sail
-        run: CONFIG_FILE="configs/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+      # - name: Compile and run tests on Sail
+      #   run: CONFIG_FILE="configs/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)

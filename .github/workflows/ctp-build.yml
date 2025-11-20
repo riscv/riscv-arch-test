@@ -12,6 +12,7 @@ on:
       - cvw
     paths:
       - "ctp/**"
+      - "generators/ctp/**"
       - "testplans/**"
       - ".github/workflows/ctp-build.yml"
   pull_request:
@@ -19,6 +20,7 @@ on:
       - cvw
     paths:
       - "ctp/**"
+      - "generators/ctp/**"
       - "testplans/**"
       - ".github/workflows/ctp-build.yml"
 

@@ -252,7 +252,7 @@ def get_effew(arch: str) -> str:
     match = re.search(r"(\d+)$", arch)
     if match:
         effew = match.group(1)
-    elif (arch == "Zvfhmin"):
+    elif (arch in ["Zvfhmin", "Zvfbfmin"]):
         effew = "16"
     else:
         raise ValueError(f"Arch does not contain an expected integer: '{arch}'")

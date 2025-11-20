@@ -558,8 +558,8 @@ def main():
     # The link should apply to the tagged text (tag['text']) and the
     # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
-        UNPRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
-        PRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html'
+        UNPRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
+        PRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/privileged/index.html'
         if isinstance(tags, dict):
             tags_iter = [tags]
         else:

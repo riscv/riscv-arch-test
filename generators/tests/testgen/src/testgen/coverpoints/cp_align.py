@@ -9,21 +9,19 @@
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
 def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for alignment coverpoints."""
-    if coverpoint == "cp_align_byte":
-        alignments = [0, 1, 2, 3, 4, 5, 6, 7]
-    elif coverpoint == "cp_align_hword":
-        alignments = [0, 2, 4, 6]
-    elif coverpoint == "cp_align_word":
-        alignments = [0, 4]
-    else:
-        raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
+    # if coverpoint == "cp_align_byte":
+    #     alignments = [0, 1, 2, 3, 4, 5, 6, 7]
+    # elif coverpoint == "cp_align_hword":
+    #     alignments = [0, 2, 4, 6]
+    # elif coverpoint == "cp_align_word":
+    #     alignments = [0, 4]
+    # else:
+    #     raise ValueError(f"Unknown cp_align coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
     # for alignment in alignments:

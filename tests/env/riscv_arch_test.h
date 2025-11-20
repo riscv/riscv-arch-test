@@ -5,6 +5,7 @@
 
 #include "rvtest_config.h"
 #include "encoding.h"
+#include "utils.h"
 #ifdef SELFCHECK
   #include "model_test.h"
 #else

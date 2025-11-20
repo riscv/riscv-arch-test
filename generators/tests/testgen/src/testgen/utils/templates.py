@@ -11,11 +11,12 @@ Insert templates into test files.
 
 import importlib.resources
 import re
+from pathlib import Path
 
 from testgen.data.test_data import TestData
 
 
-def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: str) -> str:
+def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path) -> str:
     """Insert a header/footer template file into the test file."""
     ext_components, march = canonicalize_extension(extension, xlen)
     with importlib.resources.open_text("testgen.templates", template_name) as template_file:
@@ -23,6 +24,7 @@ def insert_setup_template(template_name: str, xlen: int, extension: str, test_fi
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
+        .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))

@@ -1,0 +1,23 @@
+# jcarlin@hmc.edu 19 Nov 2025
+# SPDX-License-Identifier: Apache-2.0
+
+name: ACT Regression
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: ACT Regression
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Generate tests and coverpoints
+        run: make tests

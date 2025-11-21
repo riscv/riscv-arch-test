@@ -36,13 +36,13 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |I|Integer|<<t-I-coverpoints>>|x|x|x|x|x
 |M|Mult/Div|<<t-M-coverpoints>>|o|x|x|x|x
 |Zmmul|Mult Only|<<t-Zmmul-coverpoints>>|||||
-|Zaamo|Atomic Memory Ops|<<t-Zaamo-coverpoints>>|o|x|x|x|x
-|Zalrsc|Load Reserved / Store Cond|<<t-Zalrsc-coverpoints>>|o|x|x|x|x
+|Zaamo|Atomic Memory Ops|<<t-Zaamo-coverpoints>>|o||x|x|x
+|Zalrsc|Load Reserved / Store Cond|<<t-Zalrsc-coverpoints>>|o||x|x|x
 |Zca|Compressed|<<t-Zca-coverpoints>>|o|x|x|x|x
-|Zcb|Extra Compressed|<<t-Zcb-coverpoints>>||x||x|x
-|ZcbM|Compressed Multiply|<<t-ZcbM-coverpoints>>||x||x|x
-|ZcbZba|Compressed Zero Extend|<<t-ZcbZba-coverpoints>>||x||x|x
-|ZcbZbb|Compressed Sign Extend|<<t-ZcbZbb-coverpoints>>||x||x|x
+|Zcb|Extra Compressed|<<t-Zcb-coverpoints>>||||x|x
+|ZcbM|Compressed Multiply|<<t-ZcbM-coverpoints>>||||x|x
+|ZcbZba|Compressed Zero Extend|<<t-ZcbZba-coverpoints>>||||x|x
+|ZcbZbb|Compressed Sign Extend|<<t-ZcbZbb-coverpoints>>||||x|x
 |Zcf|Compressed Float|<<t-Zcf-coverpoints>>|o||||
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
@@ -55,11 +55,11 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZfaD|Additional Double|<<t-ZfaD-coverpoints>>||||x|x
 |ZfaZfh|Additional Half|<<t-ZfaZfh-coverpoints>>||||o|o
 |ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
-|Zba|Address Generation|<<t-Zba-coverpoints>>||x|x|x|x
-|Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>||x|x|x|x
+|Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
+|Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
 |Zbc|Carryless Multiplication|<<t-Zbc-coverpoints>>|||||o
-|Zbs|Single-Bit|<<t-Zbs-coverpoints>>||x|x|x|x
-|Zbkb|Bit Manip for Crypto|<<t-Zbkb-coverpoints>>||o||o|
+|Zbs|Single-Bit|<<t-Zbs-coverpoints>>|||x|x|x
+|Zbkb|Bit Manip for Crypto|<<t-Zbkb-coverpoints>>||||o|
 |Zbkc|Carryless Multiply for Crypto|<<t-Zbkc-coverpoints>>||||o|
 |Zbkx|Permutations|<<t-Zbkx-coverpoints>>||||o|
 |Zknd|AES Decryption|<<t-Zknd-coverpoints>>||||o|
@@ -79,16 +79,16 @@ All privileged suites require at least version 1.12 of the privileged specificat
 8+^|Privileged
 |ZicsrM|Machine CSRs|<<t-ZicsrM-coverpoints>>||x|x|x|x
 |ZicsrS|Supervisor CSRs|<<t-ZicsrS-coverpoints>>|||x|x|x
-|ZicsrU|User CSRs|<<t-ZicsrU-coverpoints>>||x|x|x|x
+|ZicsrU|User CSRs|<<t-ZicsrU-coverpoints>>|||x|x|x
 |ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |ZicsrUF|User Float CSRs|<<t-ZicsrUF-coverpoints>>|||x|x|x
 |ZicsrZkr|Entropy CSR|<<t-ZicsrZkr-coverpoints>>|||o|o|o
 |ExceptionsM|Machine Exceptions|<<t-ExceptionsM-coverpoints>>||x|x|x|x
 |ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
-|ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>||x|x|x|x
-|ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>||x|x|x|x
-|ExceptionsZalrsc|LR/SC Exceptions|<<t-ExceptionsZalrsc-coverpoints>>||x|x|x|x
-|ExceptionsZaamo|AMO Exceptions|<<t-ExceptionsZaamo-coverpoints>>||x|x|x|x
+|ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
+|ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
+|ExceptionsZalrsc|LR/SC Exceptions|<<t-ExceptionsZalrsc-coverpoints>>|||x|x|x
+|ExceptionsZaamo|AMO Exceptions|<<t-ExceptionsZaamo-coverpoints>>|||x|x|x
 |ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
 |ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
 |ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
@@ -98,11 +98,11 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|||x|x|x
 |InterruptsM|Machine Interrupts|<<t-InterruptsM-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
-|InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>||x|x|x|x
+|InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
 |InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
 |ZicntrM|Machine Counters|<<t-ZicntrM-coverpoints>>|o|x|x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
-|ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>||x|x|x|x
+|ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |EndianM|Machine Endian|<<t-EndianM-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
@@ -111,7 +111,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |PMPM|Machine PMP|<<t-PMPM-coverpoints>>||x|x|x|x
 |PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
-|PMPU|User PMP|<<t-PMPU-coverpoints>>||x|x|x|x
+|PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
 |PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
 |PMPZca|Compressed PMP|<<t-PMPZca-coverpoints>>|||x|x|x
 |PMPZicbo|PMP + CBOM/CBOZ|<<t-PMPZicbo-coverpoints>>|||x|x|x

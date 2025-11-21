@@ -2,12 +2,12 @@
 
 == Profiles & Test Suites
 
-This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.
+This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with machine mode, no PMP
+** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs.
 * MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
-** RV{32/64}IMZca_Zcb_Zifencei_Zicsr_Zicntr with machine mode, user mode, interrupts, PMP16 footnote:[Tentative; may need updating based on the MRD Market Requirements Document] ***update
+** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
 ** Application processor without vector, hypervisor, and other newer extensions
 * https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified): Phase 1.8, stepping stone to phase 2
@@ -284,7 +284,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ziccrse|Main memory PMA supports RsrvEventual|||x|x|x
 |Ziccamoa|Main memory PMA supports atomics |||x|x|x
 |Ziccamoc|Main memory PMA supports AMOCASQ ||||x|x
-|Zama16b|Main memory PMPA supports misaligned atomics within 16-byte regions|||||x
+|Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|||||x
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x

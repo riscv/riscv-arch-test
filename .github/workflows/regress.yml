@@ -8,16 +8,32 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: ACT Regression
+  regress:
+    name: ACT Regression (${{ matrix.config }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config: [rv32gc, rv64gc, rv32imc]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - run: git submodule update --init external/riscv-unified-db
+
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
 
+      - name: Install sail-riscv model
+        run: |
+          sudo mkdir -p /usr/local
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+
+      - name: Install RISC-V GCC toolchain
+        run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
+
       - name: Generate tests and coverpoints
-        run: make tests
+        run: make tests --jobs $(nproc)
+
+      # - name: Compile and run tests on Sail
+      #   run: CONFIG_FILE="configs/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)

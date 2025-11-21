@@ -1,4 +1,10 @@
-# testgen/coverpoints/special/cp_custom.py
+##################################
+# cp_custom.py
+#
+# jcarlin@hmc.edu Oct 2025
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
 """Custom coverpoint generator (cp_custom)."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator

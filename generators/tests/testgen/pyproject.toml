@@ -1,3 +1,8 @@
+# pyproject.toml
+# testgen python project configuration file for riscv-arch-test
+# Jordan Carlin jcarlin@hmc.edu October 2025
+# SPDX-License-Identifier: Apache-2.0
+
 [project]
 name = "testgen"
 version = "0.3.0"
@@ -8,7 +13,8 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "typer>=0.19.2",
+    "typer>=0.20.0",
+    "rich>=13.0.0",
 ]
 
 [project.scripts]

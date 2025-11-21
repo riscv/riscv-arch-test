@@ -2,7 +2,7 @@
 # coverreport.py
 #
 # jcarlin@hmc.edu 9 May 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Generate txt coverage reports from UCDB file
 ##################################
@@ -104,7 +104,6 @@ def main() -> None:
     report_dir.mkdir(parents=True, exist_ok=True)
 
     vcover_cmd = ["vcover", "report", "-details", str(args.ucdb)]
-
     subprocess.run([*vcover_cmd, "-output", str(full_report)], check=True)
     remove_duplicates_after_second_header(full_report)
 

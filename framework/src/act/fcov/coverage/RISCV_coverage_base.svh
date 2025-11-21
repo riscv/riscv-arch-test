@@ -49,9 +49,9 @@ class RISCV_coverage
     this.rvvi = rvvi;
 
     // Print header information
-    `cover_info("\n//  cvw_arch_verif    ");
+    `cover_info("\n//  riscv_arch_test    ");
     `cover_info("//  adapted from riscvISACOV Version 20231026.0");
-    `cover_info("//  SPDX-License-Identifier: Apache-2.0 WITH SHL-2.0\n//");
+    `cover_info("//  SPDX-License-Identifier: Apache-2.0\n//");
     `cover_info("//  Configuration:");
     `ifdef XLEN32
         `cover_info("//    XLEN: 32");

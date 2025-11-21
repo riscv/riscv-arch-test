@@ -1,3 +1,8 @@
+# riscv_arch_test.h
+# Top-level riscv-arch-test header file
+# Jordan Carlin jcarlin@hmc.edu October 2025
+# SPDX-License-Identifier: Apache-2.0
+
 #include "rvtest_config.h"
 #include "encoding.h"
 #ifdef SELFCHECK

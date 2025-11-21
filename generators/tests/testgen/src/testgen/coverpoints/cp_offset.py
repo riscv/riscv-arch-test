@@ -1,10 +1,16 @@
-# testgen/coverpoints/cp_offset.py
+##################################
+# cp_offset.py
+#
+# jcarlin@hmc.edu Oct 2025
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
 """cp_offset coverpoint generator."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
 from testgen.utils.common import write_sigupd
+from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_offset")
@@ -12,6 +18,13 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     """Generate tests for backward branch negative offsets."""
     if instr_type == "J":
         return make_offset_j(instr_name, instr_type, coverpoint, test_data)
+
+    # TODO: implement support for compressed instructions
+    if instr_type in ["CJ", "CB", "CJR"]:
+        return []
+
+    return []  # TODO
+
     params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None
     check_reg = test_data.int_regs.get_register()
@@ -20,21 +33,20 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     if instr_type == "B":
         # B-type: beq, bne, blt, bge, bltu, bgeu - always branches when comparing x0 with x0
         branch_instr = f"{instr_name} x0, x0, 1b # backward branch"
-    elif instr_type == "JR":
-        # JR-type: jalr
-        branch_instr = f"{instr_name} x{params.rd}, x{params.rs2}, 0 # backward jalr"
-    elif instr_type in ["CJR", "CJALR"]:
+    elif instr_type in ["JR"]:
+        branch_instr = f"{instr_name} x{params.rs2} # backward jump"
+    elif instr_type in ["CR"]:
         # Compressed register jumps
         if instr_name == "c.jalr":
             test_data.int_regs.return_register(params.rd)
             test_data.int_regs.consume_registers([1])  # c.jalr always uses x1
             params.rd = 1
-        branch_instr = f"{instr_name} x{params.rs2} # backward jump"
+        branch_instr = f"{instr_name} x{params.rs2}"
     elif instr_type == "CJ":
         # Compressed unconditional jump
-        branch_instr = f"{instr_name} 1b # backward jump"
+        branch_instr = f"{instr_name} 1b"
     elif instr_type == "CB":
-        branch_instr = f"{instr_name} x{params.rs1}, 1b # backward branch"
+        branch_instr = f"{instr_name} x{params.rs1}, 1b"
     else:
         raise ValueError(f"cp_offset coverpoint not supported for instruction {instr_name} with type {instr_type}")
 
@@ -60,7 +72,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     )
     # For jalr, check return address too
     if instr_type in ["JR", "CJR", "CJALR"]:
-        temp_reg = test_data.int_regs.get_register(exclude_reg=[0])
+        temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
         test_lines.extend(
             [
                 f"auipc x{temp_reg}, 0 # get current PC",
@@ -81,9 +93,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
 def make_offset_j(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for J-type forward and backward offsets."""
-    params = generate_random_params(test_data, instr_type, allow_x0=False)
+    params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rd is not None
-    check_reg = test_data.int_regs.get_register(exclude_reg=[0])
+    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     test_lines = [
         "\n# Testcase cp_offset",
@@ -111,7 +123,7 @@ def make_offset_j(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
 
 def make_offset_lsbs(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
-    params = generate_random_params(test_data, instr_type, allow_x0=False)
+    params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rd is not None
     test_lines = ["# Testcase cp_offset_lsbs"]
     if instr_type == "JR":

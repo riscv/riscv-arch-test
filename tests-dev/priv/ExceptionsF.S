@@ -5,7 +5,7 @@
 //
 // Purpose: Functional coverage test for Exceptions in F mode
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
 #include "WALLY-init-lib.h"
@@ -155,7 +155,7 @@ fp_instructions:
     slli s2, a0, 13  // shift a0 to mstatus.FS bits
 
     // After initialization set frm to the value in a1
-    // incase the value in a1 is illegal
+    // in case the value in a1 is illegal
     csrw frm, a1
 
     // --- Floating-Point Memory Operations ---

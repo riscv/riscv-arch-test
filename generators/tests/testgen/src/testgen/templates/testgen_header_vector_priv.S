@@ -1,7 +1,7 @@
 //
 // Copyright (C) 2024 Harvey Mudd College & Oklahoma State University, Habib University, UET Lahore
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
 // Define special purpose registers before including test_macros_vector.h

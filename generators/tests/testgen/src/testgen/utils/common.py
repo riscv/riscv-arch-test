@@ -2,24 +2,36 @@
 # common.py
 #
 # jcarlin@hmc.edu 5 Oct 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """
-Common utilities for cvw-arch-verif test generation.
+Common utilities for riscv-arch-test test generation.
 """
 
 from typing import Literal
 
 from testgen.data.test_data import TestData
-from testgen.utils.immediates import modify_imm
+
+
+def to_hex(value: int, bits: int) -> str:
+    """
+    Convert an integer to a hex string for assembly output.
+
+    Args:
+        value: The integer value (should already be in correct range)
+        bits: Number of bits (used to handle negative values)
+    """
+    # For negative values, convert to unsigned representation
+    if value < 0:
+        value = value + (2**bits)
+    return f"0x{value:0{bits // 4}x}"
 
 
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
-    xlen = test_data.xlen
-    formatstr = test_data.xlen_format_str
-    return f"LI(x{reg}, {formatstr.format(modify_imm(val, xlen, hex_format=True))}) # initialize {name}"
+    test_data.add_test_data_value(val)
+    return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.link_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
 def load_float_reg(name: str, reg: int, val: float, precision: Literal[16, 32, 64, 128], test_data: TestData) -> str:
@@ -68,7 +80,10 @@ def write_sigupd(rd: int, test_data: TestData, sig_type: Literal["int", "float"]
     temp_reg = test_data.int_regs.temp_reg
     if sig_type == "int":
         test_data.sigupd_count += 1
-        return f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+        return (
+            f"# Check if x{rd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            + f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+        )
     elif sig_type == "float":
         raise NotImplementedError("Floating point signature updates are not yet implemented.")
         # test_data.sigupd_count_float += 2
@@ -108,3 +123,25 @@ def myhash(s: str) -> int:
     for c in s:
         h = (h * 31 + ord(c)) & 0xFFFFFFFF
     return h
+
+
+def generate_test_data_section(test_data: TestData) -> str:
+    """
+    Generate the .data section containing all test values.
+
+    Args:
+        test_data: TestData object containing the values to generate
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = []
+
+    # Use .word for 32-bit, .dword for 64-bit
+    directive = ".word" if test_data.xlen == 32 else ".dword"
+
+    for value in test_data.test_data_values:
+        hex_value = to_hex(value, test_data.xlen)
+        lines.append(f"    {directive} {hex_value}")
+
+    return "\n".join(lines)

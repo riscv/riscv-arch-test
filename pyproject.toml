@@ -1,34 +1,39 @@
+# pyproject.toml
+# Top-level python project configuration file for riscv-arch-test
+# Jordan Carlin jcarlin@hmc.edu October 2025
+# SPDX-License-Identifier: Apache-2.0
+
 [tool.uv.workspace]
-members = ["framework", "generators/tests/testgen"]
+members = ["framework", "generators/tests/testgen", "generators/ctp"]
 
 [dependency-groups]
-dev = [
-    "pyright>=1.1.406",
-    "ruff>=0.14.1",
-]
+dev = ["pyright>=1.1.407", "ruff>=0.14.3"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-  "external", "_archive", "ctp",
-  "generators/coverage", "generators/tests/scripts" # Old scripts that still need to be updated
+  "external",
+  "_archive",
+  "ctp",
+  "generators/coverage",
+  "generators/tests/scripts", # Old scripts that still need to be updated
 ]
 
 [tool.ruff.lint]
 select = [
-  "F",    # various basic rules (pyflakes)
-  "E",    # errors (pycodestyle)
-  "W",    # warnings (pycodestyle)
-  "I",    # Import related rules (isort)
-  "UP",   # Upgraded version available in newer Python
-  "B",    # bugbear rules
-  "A",    # shadow builtins
-  "EXE",  # Executable file shebangs
-  "ANN",  # type annotation rules
-  "RUF",  # Ruff specific rules
-  "PTH",  # Pathlib usage
-  "SIM",  # Simplifications
+  "F",   # various basic rules (pyflakes)
+  "E",   # errors (pycodestyle)
+  "W",   # warnings (pycodestyle)
+  "I",   # Import related rules (isort)
+  "UP",  # Upgraded version available in newer Python
+  "B",   # bugbear rules
+  "A",   # shadow builtins
+  "EXE", # Executable file shebangs
+  "ANN", # type annotation rules
+  "RUF", # Ruff specific rules
+  "PTH", # Pathlib usage
+  "SIM", # Simplifications
 ]
 
 ignore = [
@@ -54,8 +59,13 @@ exclude = ["external", "_archive"]
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
 exclude = [
-  "**/__pycache__", ".venv",
-  "external", "_archive", "ctp",
-  "generators/coverage", "generators/tests/scripts" # Old scripts that still need to be updated
+  "**/__pycache__",
+  ".venv",
+  "external",
+  "_archive",
+  "ctp",
+  "generators/ctp",
+  "generators/coverage",
+  "generators/tests/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"

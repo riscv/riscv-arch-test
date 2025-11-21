@@ -2,10 +2,10 @@
 # sail-to-rvvi.py
 #
 # jcarlin@hmc.edu 9 May 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Convert a Sail log file into a trace format for use
-# with RVVI input to cvw-arch-verif
+# with RVVI input to riscv-arch-test
 ##################################
 
 import re

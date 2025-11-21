@@ -2,7 +2,7 @@
 # act.py
 #
 # jcarlin@hmc.edu 14 Sept 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Main entry point for RISC-V architecture verification framework
 ##################################

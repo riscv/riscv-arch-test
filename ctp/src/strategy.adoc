@@ -31,7 +31,7 @@ It uses UDB to produce supplementary configuration files including:
 * Sail JSON file configuring reference model to match DUT
 * Configuration files for other optional simulators, such as Spike, https://github.com/openhwgroup/cvw/blob/main/config/rv64gc/imperas.ic[ImperasFPM]
 * SystemVerilog coverage.svh file describing which coverage files and parameter values to use for coverage measurement
-* Optional DUT configuration files https://github.com/openhwgroup/cvw/blob/main/config/rv64gc/coverage.svh[(CORE-V Wally Example)] providing parameter values to configurable RTL
+* Optional DUT configuration files https://github.com/riscv-non-isa/riscv-arch-test/blob/cvw/configs/duts/cvw/cvw-rv64gc[(CORE-V Wally Example)] providing parameter values to configurable RTL
 
 ==== Configuration Parameters
 
@@ -175,7 +175,7 @@ _rs2_.#[#norm:inst:sub:operation]#SUB performs the subtraction of _rs2_ from _rs
 
 === Coverpoints
 
-Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ``ifdef XLEN32` or `XLEN64` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ``ifdef`` to exclude tests based on the parameter value.
+Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef XLEN32`` or ``XLEN64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.
 
 === Tests
 

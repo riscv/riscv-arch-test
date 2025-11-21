@@ -1,3 +1,8 @@
+# signature.h
+# Signature region handling macros
+# Jordan Carlin jcarlin@hmc.edu October 2025
+# SPDX-License-Identifier: Apache-2.0
+
 // RVTEST_SIGBASE(sigbase, label) initializes the sigbase register to the
 // address of the signature region.
 // _SIG_BASE - Base register for signature region

@@ -2,11 +2,11 @@
 # testplans.py
 #
 # jcarlin@hmc.edu 5 October 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """
-Read testplans for cvw-arch-verif test generation.
+Read testplans for riscv-arch-test test generation.
 """
 
 import csv
@@ -45,7 +45,13 @@ def read_testplan(testplan_path: Path) -> dict[str, TestPlanData]:
         reader = csv.DictReader(csvfile)
         for row in reader:
             instr = row["Instruction"]
-            instr_type = row["Type"]
+            try:
+                instr_type = row["Type"]
+            except KeyError:
+                print(
+                    f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
+                )
+                raise
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             del row["Instruction"]

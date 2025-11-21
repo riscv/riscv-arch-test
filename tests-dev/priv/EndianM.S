@@ -5,8 +5,17 @@
 //
 // Purpose: Functional coverage tests for endianness in machine mode
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
+
+##### START_TEST_CONFIG #####
+# implemented_extensions: ['I', 'Zicsr', 'NotSupportedInSail']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i_zicsr
+# CONFIG_DEPENDENT: false
+##### END_TEST_CONFIG #####
+
 
 #include "WALLY-init-lib.h"
 #include "priv-endian.h"
@@ -56,7 +65,7 @@ main:
     #endif
     la s3, scratch  # s3 = pointer to scratch
     li s10, 1
-    li s11, 3       #passing privilige mode: machine
+    li s11, 3       #passing privilege mode: machine
 
     // iterate over each endianness, doing all sizes of stores and loads
     li s4, 0        # endianness for write

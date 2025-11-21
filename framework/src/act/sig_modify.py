@@ -2,7 +2,7 @@
 # sig_modify.py
 #
 # jcarlin@hmc.edu 29 Sept 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Update signature file to be compatible with assembler
 ##################################

@@ -1,10 +1,16 @@
-# testgen/coverpoints/compare.py
+##################################
+# compare.py
+#
+# jcarlin@hmc.edu Oct 2025
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
 """Compare register coverpoint generators (cmp_rd_rs1, cmp_rd_rs2, cmp_rs1_rs2, cmp_rd_rs1_rs2)."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cmp_rd_rs1")

@@ -5,7 +5,7 @@ I think we might want to rethink some of our privileged testing structure and sw
 
 === Current Status
 
-At present, coverpoints and tests are being developed in the https://github.com/openhwgroup/cvw-arch-verif/[cvw-arch-verif] repository and being tested on the https://github.com/openhwgroup/cvw[CORE-V Wally] processor.  The goal is to be able to certify RVA23S64 as well as spec-compliant machine mode.
+At present, coverpoints and tests are being developed in the https://github.com/riscv-non-isa/riscv-arch-test/[riscv-arch-test] repository cvw branch and being tested on the https://github.com/openhwgroup/cvw[CORE-V Wally] processor.  The goal is to be able to certify RVA23S64 as well as spec-compliant machine mode.
 
 This test plan exists in the form of spreadsheets, and is being converted to ASCII Doc.
 

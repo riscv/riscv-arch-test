@@ -5,7 +5,7 @@
 //
 // Purpose: Functional coverage tests for endianness in user mode
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
 #include "WALLY-init-lib.h"
@@ -55,7 +55,7 @@ main:
     #endif
     la s3, scratch       # s3 = pointer to scratch
     // s10, s11 used in WALLY-priv-endian.h
-    li s10, 1   # setendianess function: aready branch in s9, but 1 just in case
+    li s10, 1   # setendianess function: already branch in s9, but 1 just in case
     li s11, 0   #resseting user mode
     // iterate over each endianness, doing all sizes of stores and loads
     li s4, 0        # endianness for write

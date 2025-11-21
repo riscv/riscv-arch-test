@@ -6,7 +6,7 @@
 //
 // Purpose: Functional coverage tests for Interrupts in machine mode
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
 // General notes:

@@ -179,8 +179,7 @@ As with other unprivileged testplans, an x in the spreadsheet indicates to use t
 * ls_e{8/16/32/64}: load/store edges with EEW=8,...,64.  Used to convert strided loads from elements to bytes.
 * ls: load/store edges instead of integer edges: vs2={0, random < 2*VLMAX}.  rs2= {1, 2, -1, -2, 0}
 * f: floating-point edges instead of integer edges: ***
-
-*** discuss special cases
+* cp_custom_*: custom coverpoint defined in the coverage file.  See definitions for https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=389766666#gid=389766666[CustomVx], https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158[CustomVf], https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158[CustomVls].
 
 The coverpoints for each vector instruction are given in the following sections.
 
@@ -212,9 +211,7 @@ Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions,
 Zvfhmin only exercises the widening and narrowing conversions: `vfwcvt.f.f.v` and `vfncvt.f.f.w`.
 [[t-Zvfhmin-coverpoints]]
 .Zvfhmin Instruction Coverpoints
-,===
-//include::{testplansdir}/Zvfhmin.adoc[]
-,===
+include::{testplansdir}/Zvfhmin.adoc[]
 
 ==== ZfaZvfh Half-Precision Load Immediate
 
@@ -228,17 +225,13 @@ include::{testplansdir}/ZfaZvfh.adoc[]
 
 [[t-Zvfbfmin-coverpoints]]
 .Zvfbfmin Instruction Coverpoints
-,===
-//include::{testplansdir}/Zvfbfmin.adoc[]
-,===
+include::{testplansdir}/Zvfbfmin.adoc[]
 
 ==== Zvfbfwma BF16 MAC
 
 [[t-Zvfbfwma-coverpoints]]
 .Zvfbfwma Instruction Coverpoints
-,===
 //include::{testplansdir}/Zvfbfwma.adoc[]
-,===
 
 === Zvb* Vector Bit Manipulation Extension
 
@@ -247,17 +240,13 @@ Vector bit manipulation extensions include Zvbb and Zvbc.
 ==== Zvbb Vector Basic Bit Manipulation Extension
 [[t-Zvbb-coverpoints]]
 .Zvbb Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvbb.adoc[]
-,===
 
 ==== Zvbc Vector Caryless Multiplication Extension
 
 [[t-Zvbc-coverpoints]]
 .Zvbc Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvbc.adoc[]
-,===
 
 === Zvk* Vector Cryptography Extension
 
@@ -267,26 +256,20 @@ There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions 
 
 [[t-Zvkb-coverpoints]]
 .Zvkb Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvkb.adoc[]
-,===
 
 ==== Zvkg Vector Crypto Galois Field Extension
 
 [[t-Zvkg-coverpoints]]
 .Zvkg Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvkg.adoc[]
-,===
 
 
 ==== Zvkned Vector NIST Encryption and Decryption
 
 [[t-Zvkned-coverpoints]]
 .Zvkned Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvkned.adoc[]
-,===
 
 
 ==== Zvknh{a/b} Vector NIST Hashing
@@ -295,6 +278,4 @@ There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions 
 
 [[t-Zvknh-coverpoints]]
 .Zvknh Instruction Coverpoints
-,===
 // include::{testplansdir}/Zvknh.adoc[]
-,===

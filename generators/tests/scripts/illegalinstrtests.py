@@ -3,7 +3,7 @@
 # illegalinstrtests.py
 #
 # David_Harris@hmc.edu 28 November 2024
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Emit tests of illegal instructions
 # Some fields are deterministic, others are swept over a range, and the rest are randomized

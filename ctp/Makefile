@@ -99,11 +99,11 @@ build: build-pdf build-html
 
 ALL_SRCS := $(shell git ls-files $(SRC_DIR))
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(ARTIFACT_CLEANUP)
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(ARTIFACT_CLEANUP)
 
@@ -117,11 +117,15 @@ testplans: $(TESTPLANS)
 	@if [ -d ../testplans ]; then \
 		mkdir -p $(BUILD_DIR); \
 		rm -rf $(BUILD_DIR)/testplans; \
-		./transpose_csv.py ../testplans $(BUILD_DIR)/testplans 10; \
+		../generators/ctp/transpose_csv.py ../testplans $(BUILD_DIR)/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi
 	@echo "Test plans copied to build directory."
+
+normrules:
+	@echo "Generating normative rule tables...."
+	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/yaml --out $(SRC_DIR)/norm --report mismatch_report.txt
 
 # Update docker image to latest
 docker-pull-latest:

@@ -1,3 +1,8 @@
+# failure_code.h
+# riscv-arch-test assembly test failure handling code
+# Jordan Carlin jcarlin@hmc.edu October 2025
+# SPDX-License-Identifier: Apache-2.0
+
 # Log failure. x4 contains return address of jal from the failure and x5 is a vacant temporary register
 failedtest_x4_x5:
     la x5, begin_failure_scratch

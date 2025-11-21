@@ -5,18 +5,8 @@
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // Written: Jordan Carlin jcarlin@hmc.edu February 2024
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 //
-// Licensed under the Solderpad Hardware License v 2.1 (the “License”); you may not use this file
-// except in compliance with the License, or, at your option, the Apache License version 2.0. You
-// may obtain a copy of the License at
-//
-// https://solderpad.org/licenses/SHL-2.1/
-//
-// Unless required by applicable law or agreed to in writing, any work distributed under the
-// License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-// either express or implied. See the License for the specific language governing permissions
-// and limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Unprivileged extensions
@@ -178,6 +168,21 @@
 `ifdef VM_PMP_CBO_COVERAGE
   `include "VM_PMP_CBO_coverage.svh"
 `endif
+`ifdef SVADE_COVERAGE
+  `include "Svade_coverage.svh"
+`endif
+`ifdef SVADU_COVERAGE
+  `include "Svadu_coverage.svh"
+`endif
+`ifdef SVADU_PMP_COVERAGE
+  `include "Svadu_PMP_coverage.svh"
+`endif
+`ifdef SVNAPOT_COVERAGE
+  `include "Svnapot_coverage.svh"
+`endif
+`ifdef SVPBMT_COVERAGE
+  `include "Svpbmt_coverage.svh"
+`endif
 `ifdef RV64PMP_COVERAGE
   `include "PMPM_coverage.svh"
   `include "PMPU_coverage.svh"
@@ -248,6 +253,9 @@
 `endif
 `ifdef EXCEPTIONSHV_COVERAGE
   `include "ExceptionsHV_coverage.svh"
+`endif
+`ifdef EXCEPTIONSVF_COVERAGE
+  `include "ExceptionsVF_coverage.svh"
 `endif
 `ifdef EXCEPTIONSZC_COVERAGE
   `include "ExceptionsZc_coverage.svh"

@@ -2,7 +2,7 @@
 # select_tests.py
 #
 # jcarlin@hmc.edu 6 Sept 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Select tests to run based on UDB config and test list
 ##################################

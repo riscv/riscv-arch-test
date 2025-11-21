@@ -3,7 +3,7 @@
 # Custom Test
 #
 # Written: mbellido@hmc.edu       June 12 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # CUSTOM TESTS GUIDE (Short Version)
 #

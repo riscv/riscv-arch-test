@@ -75,7 +75,7 @@ main:
 	LA(x4, -1)
 
 	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
+	.rept 64
     RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	csrw pmpaddri, x4
     nop
@@ -84,7 +84,7 @@ main:
 	.endr
 
 	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
+	.rept 16
     RVTEST_GOTO_LOWER_MODE	Smode		// SWITCH TO S-mode
 	csrw pmpcfgi , x4
     nop

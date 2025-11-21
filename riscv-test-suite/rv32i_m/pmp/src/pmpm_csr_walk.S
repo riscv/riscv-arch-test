@@ -171,6 +171,10 @@ main:
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 2b                  // Continue loop while t2 != 0
 
+	RVTEST_GOTO_MMODE
+	li a4, 0xbeefcafe							// Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)       				// Signature update
+	j exit										// Verification Complete, exit the test
 
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)

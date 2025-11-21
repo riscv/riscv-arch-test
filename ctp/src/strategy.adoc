@@ -38,6 +38,7 @@ It uses UDB to produce supplementary configuration files including:
 The UDB parameters for each extension are defined in:
 
 https://github.com/riscv-software-src/riscv-unified-db/tree/main/spec/std/isa/ext
+https://riscv-software-src.github.io/riscv-unified-db/index.html
 
 *** The CSC Tests and Models working group developed the following list of configuration parameters.
 Need to check if they match the parameters in UDB extensions.

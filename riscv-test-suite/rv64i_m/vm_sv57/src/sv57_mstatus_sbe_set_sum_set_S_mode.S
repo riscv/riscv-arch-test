@@ -1,29 +1,23 @@
 // ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-39-based Virtual Memory System, available at:
+// This test is part of the test plan for the SV57 based Virtual Memory System, available at:
 // https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
 // Developed by: Umer Shahid & Muhammad Zain
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
-// .if (RVMODEL_PMP_GRAIN < 10)
-// Configure level 2 PTE as NAPOT with X permission (pmp0cfg0)
-// 1. Setup a PTE at Level 2 with RWX permissions
-//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-// .endif
-// ----------------------------------------------------------------------------------------------------------------------
-// Configure level 1 PTE as NAPOT with X permission (pmp0cfg0)
-// 2. Setup a PTE at Level 1 with RWX permissions
-//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-// ----------------------------------------------------------------------------------------------------------------------
-// Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
-// 3. Setup a PTE at Level 0 with RWX permissions
-//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-//
-// .if (RVMODEL_PMP_GRAIN < 10)
-// 		Total Expected Faults :: 9
-// .else
-// 		Total Expected Faults :: 6
-// .endif
+// ------------------------------------------- SBE and SUM in mstatus set -----------------------------------------------
+// 1. U bit set for page at level 4 with RWX Permissions (Read, write, execute):
+//		Then, in S-Mode, the page is accessed --> required: No Fault
+// 2. U bit set for page at level 3 with RWX Permissions (Read, write, execute):
+//		Then, in S-Mode, the page is accessed --> required: No Fault
+// 3. U bit set for page at level 2 with RWX Permissions (Read, write, execute):
+//		Then, in S-Mode, the page is accessed --> required: No Fault
+// 4. U bit set for page at level 1 with RWX Permissions (Read, write, execute):
+//		Then, in S-Mode, the page is accessed --> required: No Fault
+// 5. U bit set for page at level 0 with RWX Permissions (Read, write, execute):
+//		Then, in S-Mode, the page is accessed --> required: No Fault
+
+// Total Expected Faults :: 0
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -32,10 +26,6 @@
 #include "model_test.h"
 
 #include "arch_test.h"
-
-#ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
-#endif
 
 RVTEST_ISA("RV64I_Zicsr")
 
@@ -51,7 +41,7 @@ j starting_point											// Skip test region
 //---------------------------------------------------------------------------------------------------------------------------------
 //											PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-// Physical Address region under testing for LEVEL 0, 1 and 2
+// Physical Address region under testing for LEVEL 0, 1, 2, 3 and 4
 rvtest_data_1:
 	nop
 	addi ra, ra, REGWIDTH
@@ -69,21 +59,21 @@ starting_point:
 RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (PMP['implemented']); verify (PMP['pmp-grain'] <= 4); def TEST_CASE_1=True;", sv39_tests)
+    RVTEST_CASE(1,"//check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True", sv57_tests)
 
 RVTEST_SIGBASE( x13,signature_x13_1)
 # ---------------------------------------------------------------------------------------------
 // Test the RWX permissions
-.macro VERIFICATION_RWX ADDRESS	
+.macro VERIFICATION_RWX ADDRESS, level	
    	LI(a5, \ADDRESS)                    // Load virtual address
     addi a2, a2, 16                     // Test pattern initialization
-	
+
     // Test store permission
-    sw  a2, 20(a5)
+    sw  a2, 20(a5)               		// Store test data
     nop
 
     // Test load permission
-    lw  a4, 20(a5)
+    lw  a4, 20(a5)        				// Load back data
     nop
 
     // Test Execute Permission
@@ -96,76 +86,80 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
 .endm
 
-.macro TEST_CASES_RUNNER LOWER_MODE, VA
-	.if \LOWER_MODE == Mmode
-		SET_REQ_MSTATUS_VAL
-	.else
-		RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
-	.endif
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level
+    RVTEST_GOTO_LOWER_MODE \LOWER_MODE   // Switch to the specified lower mode
 	.align 2
 
 	//JUMP TO LOAD, STORE, EXECUTE CHECK MACRO (SEE ON TOP)
-	VERIFICATION_RWX	\VA
+	VERIFICATION_RWX	\VA, \level
 	nop
 	nop
 
-	RVTEST_GOTO_MMODE		            // Switching back to M mode
+	RVTEST_GOTO_MMODE					// Switching back to M mode
 	
 	// Signature Update
-   	SREG a2, 0(x13)                     // Record store attempt
-    nop
+   	SREG a2, 0(x13)						// Record store attempt
+	nop
 	addi x13, x13, REGWIDTH
 
-   	SREG a4, 0(x13)                     // Record load attempt
-    nop
+   	SREG a4, 0(x13)						// Record load attempt
+	nop
 	addi x13, x13, REGWIDTH
 .endm
 
+.macro CHANGE_PTE_TO_BE 
+	// After PTE_SETUP_SV57_New completes, a0 has the PTE (PPN and Permission bits) while t1 has the PTE address
+	add t2, zero, zero
+	add t4, zero, zero
+	addi t5, zero, 56
+	.rept(8)
+		srl  t3, a0, t4
+		andi t3, t3, 0xFF
+		sll  t3, t3, t5
+		or   t2, t2, t3
+		addi t4, t4, 8
+		addi t5, t5, -8
+	.endr
+	SREG t2, 0(t1)	
+.endm	
 
 main:
-#ifdef rvtest_mtrap_routine				// Verification of existance of rvtest_mtrap_routine
+#ifdef rvtest_mtrap_routine					                				// Verification of existance of rvtest_mtrap_routine
 	LI a4, 0xceed
 	RVTEST_SIGUPD(x13,a4)
 #endif
-#ifdef rvtest_strap_routine				// Verification of existance of rvtest_strap_routine
+#ifdef rvtest_strap_routine					                				// Verification of existance of rvtest_strap_routine
 	LI a4, 0xbeed
 	RVTEST_SIGUPD(x13,a4)
 #endif
 	
-	csrw satp, zero  		            // write satp with all zeros (bare mode)
-
-// PMP Macros
-#define PMP_GLOBAL_RWX		(((PMP_TOR | PMP_X | PMP_W | PMP_R) & 0xFF) << PMP2_CFG_SHIFT)
-#define PMP0CFG_X			(((PMP_NAPOT | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
-
-//---------------------------------------------------------------------------------------------------------------------------------
-//													Setup pmpaddr registers
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	li t2, 0								// Set PMP permission for all memory in pmp2cfg0 (TOR)
-	csrw pmpaddr1, t2
-	li t2, -1
-	csrw pmpaddr2, t2
+	ALL_MEM_PMP          		                  	                      	// set the PMP permissions for the whole memory
+	csrw satp, zero  		                                        		// write satp with all zeros (bare mode)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //								Virtual addresses definition section for the code, data & test sections
 //---------------------------------------------------------------------------------------------------------------------------------
 
-
 	// Virtual Address of Test section 
-	.set va_data,          		0x000000400
+	.set va_data,          		0x5000000000400				// Virtual Address of rvtest_data_1
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0xFFFFFFFF800007BC                  
-	.set va_rvtest_data_begin,  0xFFFFFFFFC0000530	    
+	.set va_rvtest_code_begin,  0x60000800007BC
+	.set va_rvtest_data_begin,  0x7000080005530
+    
+	// PetaPage must have PA[47:0] == 0 and TeraPage must have PA[38:0] == 0, but our PA range starts from 0x8000_0000
+	// Therefore, we will setup these pages using a physical address of zero
+    .set pa_zero,				0x0000000000000				// Physical Address for Peta & TeraPages
+	.set va_data_34,			0x5000080000400				// Virtual Address of rvtest_data_1 (In case of Level 3 & 4)
 
-
-//	PTE setup for Code Region
-	PTE_SETUP_RV39_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
+	// PTE setup for Code Region
+    PTE_SETUP_SV57_New(pa_zero, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
-//	PTE setup for Data Region
-	PTE_SETUP_RV39_New(rvtest_data_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL2)
+	// PTE setup for Data Region
+	PTE_SETUP_SV57_New(pa_zero, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_rvtest_data_begin, LEVEL4)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -190,97 +184,103 @@ main:
 //												Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	SATP_SETUP_RV64(sv39)                                                  	// Set SATP for virtualization
-	sfence.vma                                                            	// Flush the TLB
+	SATP_SETUP_RV64(sv57)											// Set SATP for virtualization
+	sfence.vma														// Flush the TLB
 
-// This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-// the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
-.if (RVMODEL_PMP_GRAIN < 10)
+	LI (s7, (1 << 36))
+	csrs mstatus, s7												// Set SBE (Supervisor Big Endian) bit
+	LI (s7, MSTATUS_SUM)
+	csrs mstatus, s7												// Set SUM bit
+	
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
-// 								Configure level 2 PTE as NAPOT region with X permission
+//													TESTS AT LEVEL 4
+//---------------------------------------------------------------------------------------------------------------------------------
+//					256TB PAGE	Region 1 under test at level 4 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 1: Test in S-Mode | RWX bit set | expected = successful page access
+	PTE_SETUP_SV57_New(pa_zero, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_34, LEVEL4)
+	CHANGE_PTE_TO_BE
+	sfence.vma
+
+	TEST_CASES_RUNNER Smode, va_data_34, LEVEL4
+
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
+//													TESTS AT LEVEL 3
+//---------------------------------------------------------------------------------------------------------------------------------
+//					512GB PAGE	Region 1 under test at level 3 -- RWX permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+	
+	// Test case 2: Test in S-Mode | RWX bit set | expected = successful page access
+	PTE_SETUP_SV57_New(rvtest_slvl4_pg_tbl, (PTE_V), va_data_34, LEVEL4)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(pa_zero, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data_34, LEVEL3)
+	CHANGE_PTE_TO_BE
+	sfence.vma
 
-	LA (t2, rvtest_Sroot_pg_tbl)
-	srl t2, t2, 2
-	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
-	or t2, t2, t1
-	csrw pmpaddr0, t2
+	TEST_CASES_RUNNER Smode, va_data_34, LEVEL3
 
-	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
-	csrw pmpcfg0, t2
-
+//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 2
 //---------------------------------------------------------------------------------------------------------------------------------
 //					1GB PAGE	Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 2: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	
+	// Test case 3: Test in S-Mode | RWX bit set | expected = successful page access
+	PTE_SETUP_SV57_New(rvtest_slvl4_pg_tbl, (PTE_V), va_data, LEVEL4)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data
+	TEST_CASES_RUNNER Smode, va_data, LEVEL2
 
-.endif
 //---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-// 								Configure level 1 PTE as NAPOT region with X permission
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	LA (t2, rvtest_slvl2_pg_tbl)
-	srl t2, t2, 2
-	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
-	or t2, t2, t1
-	csrw pmpaddr0, t2
-
-	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
-	csrw pmpcfg0, t2
-
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
 //					2MB PAGE	Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 3: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	
+	// Test case 4: Test in S-Mode | RWX bit set | expected = successful page access 
+	PTE_SETUP_SV57_New(rvtest_slvl4_pg_tbl, (PTE_V), va_data, LEVEL4)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data
+	TEST_CASES_RUNNER Smode, va_data, LEVEL1
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-// 								Configure level 0 PTE as NAPOT region with X permission
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-
-	LA (t2, rvtest_slvl1_pg_tbl)
-	srl t2, t2, 2
-	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
-	or t2, t2, t1
-	csrw pmpaddr0, t2
-
-	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
-	csrw pmpcfg0, t2
-
 //---------------------------------------------------------------------------------------------------------------------------------
 //													TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
 //					4KB PAGE	Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
-
-	// Test case 4: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-	PTE_SETUP_RV39_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
-	PTE_SETUP_RV39_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
-	PTE_SETUP_RV39_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	
+	// Test case 5: Test in S-Mode | RWX bit set | expected = successful page access 
+	PTE_SETUP_SV57_New(rvtest_slvl4_pg_tbl, (PTE_V), va_data, LEVEL4)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL3)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL2)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL1)
+	CHANGE_PTE_TO_BE
+	PTE_SETUP_SV57_New(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+	CHANGE_PTE_TO_BE
 	sfence.vma
 
-	TEST_CASES_RUNNER Umode, va_data
-
+	TEST_CASES_RUNNER Smode, va_data, LEVEL0
 
 #endif
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -290,19 +290,21 @@ RVTEST_DATA_BEGIN
 
 #ifdef rvtest_strap_routine
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl2_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 2, PTE_V | PTE_A | PTE_D | PTE_G)
+.align 12
+rvtest_slvl3_pg_tbl:
+		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
+.align 12
+rvtest_slvl4_pg_tbl:
+		RVTEST_PTE_IDENT_MAP(0, 3, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
-.align (RVMODEL_PMP_GRAIN+2)
 RVTEST_DATA_END                               
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:
 sig_begin_canary:
@@ -310,12 +312,12 @@ CANARY;
 
 // test signatures initialization
 signature_x13_1:
-    .fill 64*(XLEN/32),4,0xcafebeef
+    .fill 32*(XLEN/32),4,0xcafebeef
 
 // trap signatures initialization
 #ifdef rvtest_mtrap_routine
 mtrap_sigptr:
-    .fill 64*(XLEN/32),4,0xdeadbeef
+    .fill 32*(XLEN/32),4,0xdeadbeef
 #endif
 
 sig_end_canary:

@@ -1,19 +1,23 @@
 // ----------------------------------------------------------------------------------------------------------------------
-// This test is part of the test plan for the SV-48-based Virtual Memory System, available at:
-// https://docs.google.com/spreadsheets/d/1rZQbz8gJc3RRbTG4rbw9SoEGYkArA8ileVldBX_gxUc/edit?gid=1688601426#gid=1688601426
 // Developed by: Umer Shahid & Muhammad Zain
 // ----------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // ----------------------------------------------------------------------------------------------------------------------
+// .if (RVMODEL_PMP_GRAIN < 10)
 // Configure level 1 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 1 with RWX permissions
 //      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+// .endif
 // ----------------------------------------------------------------------------------------------------------------------
 // Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
 // 2. Setup a PTE at Level 0 with RWX permissions
 //      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-
-// Total Expected Faults :: 6
+//
+// .if (RVMODEL_PMP_GRAIN < 10)
+// 		Total Expected Faults :: 6
+// .else
+// 		Total Expected Faults :: 3
+// .endif
 // ----------------------------------------------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -22,6 +26,10 @@
 #include "model_test.h"
 
 #include "arch_test.h"
+
+#ifndef RVMODEL_PMP_GRAIN
+	#define RVMODEL_PMP_GRAIN 0
+#endif
 
 RVTEST_ISA("RV32I_Zicsr")
 
@@ -138,11 +146,11 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
 	// Virtual Address of Test section 
-	.set va_data,          		0x01400400
+	.set va_data,          		0x00000400
 
 	// Virtual Addresses for code & data regions
-	.set va_rvtest_code_begin,  0x9000078c
-	.set va_rvtest_data_begin,  0x910003f0	
+	.set va_rvtest_code_begin,  0xFF80078C
+	.set va_rvtest_data_begin,  0xFFC003F0	
 
 //	PTE setup for Code Region
     PTE_SETUP_RV32_New(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
@@ -177,15 +185,19 @@ main:
 	SATP_SETUP_SV32                                                         // Set SATP for virtualization
 	sfence.vma                                                              // Flush the TLB
 
+// This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
+// the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
+.if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 // 								Configure level 1 PTE as NAPOT region with X permission
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_Sroot_pg_tbl)			// Configure first 16 (level 1) PTEs as NAPOT region
+	LA (t2, rvtest_Sroot_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -203,15 +215,17 @@ main:
 
 	TEST_CASES_RUNNER Umode, va_data
 
+.endif
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 // 								Configure level 0 PTE as NAPOT region with X permission
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-	LA (t2, rvtest_slvl1_pg_tbl)			// Configure first 16 (level 0) PTEs as NAPOT region
+	LA (t2, rvtest_slvl1_pg_tbl)
 	srl t2, t2, 2
-	ori t2, t2, 0x7							// Range = 2^(3+3) = 64 bytes
+	LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)	// Minimum range is 8 Bytes (1 PTE). Increases as G increases
+	or t2, t2, t1
 	csrw pmpaddr0, t2
 
 	LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)							
@@ -239,12 +253,15 @@ RVTEST_DATA_BEGIN
 
 #ifdef rvtest_strap_routine
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl1_pg_tbl:
 		RVTEST_PTE_IDENT_MAP(0, 1, PTE_V | PTE_A | PTE_D | PTE_G)
 #endif
 
+.align (RVMODEL_PMP_GRAIN+2)
 RVTEST_DATA_END                               
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 RVMODEL_DATA_BEGIN
 rvtest_sig_begin:
 sig_begin_canary:

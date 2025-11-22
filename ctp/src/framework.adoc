@@ -22,7 +22,7 @@ be silicon connected to memories and a serial console. The user is also responsi
 scripting that launches tests for all self-checking ELF files in a hierarchical directory.  For
 a nontrivial RTL model, this generally is done in parallel on a server or compute farm.
 
-*** riscof
+*** remove reference to riscof
 
 === Using the Framework
 

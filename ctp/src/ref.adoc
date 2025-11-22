@@ -52,7 +52,7 @@ Tests can receive a qualification waiver if they fail in certain simulators for 
 ** Self-checking tests must accept undisturbed and all 1s in each element
 * Traps on misaligned accesses
 ** If mtval is written with a nonzero value, it can be any address within the access***
-** When it also causes access fault, Allen has list of 7ish possible outcomes.
+** When it also causes access fault / misaligned store, Allen has list of 7ish possible outcomes.
 
 *** need to identify all coverpoints whose behavior is nondeterministic, and list all acceptable test outcomes as part of the test spec.
 

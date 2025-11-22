@@ -463,7 +463,8 @@ Mend_PMP:                                    ;\
     RVTEST_SIGUPD(sigptr, x27)             /* Store x27 */ ;\
     RVTEST_SIGUPD(sigptr, x28)             /* Store x28 */ ;\
     RVTEST_SIGUPD(sigptr, x29)             /* Store x29 */ ;\
-    /* Store the CSR registers */ ;\
+	#ifdef rvtest_mtrap_routine			;\
+	/* Store the CSR registers */ ;\
     csrr a0, mepc                          /* Read mepc register */ ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mepc */ ;\
     csrr a0, mtval                         /* Read mtval register */ ;\
@@ -472,6 +473,7 @@ Mend_PMP:                                    ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mstatus */ ;\
     csrr a0, mip                           /* Read mip register */ ;\
     RVTEST_SIGUPD(sigptr, a0)              /* Store mip */ ;\
+	#endif
 
 //Tests for atomic memory operation(AMO) instructions
 #define TEST_AMO_OP(inst, destreg, origptr, reg2, origval, updval, sigptr, ...) ;\

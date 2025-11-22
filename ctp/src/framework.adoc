@@ -1,13 +1,17 @@
 
 == Framework
 
+TODO: This section needs a complete rewrite.  riscof no longer used.  Support tests that have expected values built in without needing a reference model.
+
 The Certification Framework is the tool to:
 
 * select the appropriate tests for the DUT configuration
 * build these tests for the DUT
+
+Furthermore, if the self-checking tests rely in values from a reference model (as opposed to values provided by the test writer):
+
 * generate expected values specific to the DUT configuration parameters, using the reference model
 * rebuild the tests in self-checking form
-* check log files to confirm all required tests ran successfully on the DUT
 
 The framework also provides developer tools to check that the tests hit 100% of the coverpoints, and
 to run the tests on multiple simulators to check for consistency.

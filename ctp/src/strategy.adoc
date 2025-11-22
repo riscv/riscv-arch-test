@@ -139,7 +139,7 @@ Coverpoints are written with one file that covers both RV32 and RV64, to reduce 
 Not all normative rules have coverpoints and tests.  A normative rule that a behavior is UNSPECIFIED is not tested because there is no wrong answer.  For example, writing satp.MODE = Bare with nonzero values in other fields has unspecified behavior and is untested.  The CTP may declare that other normative rules are too difficult to test relative to their value (low return on investment) and choose not to test them.  For example, if the Zcf extension is supported, misa.C depends on whether misa.F is supported.  misa.F is *WARL* and may be read-only one, so it is not always possible to test the misa.C dependence on misa.F = 0 and, for simplicity, this dependence might never be tested.
 
 To the extent that there are any normative rules associated with instruction opcodes or CSR numbers,
-if these rules can be tested by coverpoints that execute the instruction or access the CSR, then no other coverpoints are needed.  For example, a normative rule that an add instruction has op = 0110011, funct3 = 000, and funct7 = 0000000 is tested by the ordinary coverpoints that add exercise the add instruction.
+if these rules can be tested by coverpoints that execute the instruction or access the CSR, then no other coverpoints are needed.  For example, a normative rule that an add instruction has op = 0110011, funct3 = 000, and funct7 = 0000000 is tested by the ordinary coverpoints that exercise the add instruction.
 
 === Tests
 

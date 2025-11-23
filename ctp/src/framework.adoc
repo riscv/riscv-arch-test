@@ -8,7 +8,7 @@ The Certification Framework is the tool to:
 * select the appropriate tests for the DUT configuration
 * build these tests for the DUT
 
-Furthermore, if the self-checking tests rely in values from a reference model (as opposed to values provided by the test writer):
+Furthermore, if the self-checking tests rely on values from a reference model (as opposed to values provided by the test writer):
 
 * generate expected values specific to the DUT configuration parameters, using the reference model
 * rebuild the tests in self-checking form

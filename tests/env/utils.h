@@ -132,7 +132,7 @@
   .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
   .set cry,     (BIT(immx, IMMSGN))                                             ;\
   .set imm12,   (SEXT_IMM(immx))                                                ;\
-/***************** used in code that gnerates bitmasks                  */      ;\
+/***************** used in code that generates bitmasks                  */      ;\
   .set even,    (1-BIT(imm, 0)) /* imm has at least 1 trailing zero     */      ;\
   .set cryh,    (BIT(immx, IMMSGN+32))                                          ;\
 /******** loop finding rising/falling edge fm LSB-MSB given even operand ****/  ;\
@@ -187,7 +187,7 @@
   .elseif ((immx==imme)&&((absimmsh>>IMMSGN)==0))/* fits 12b after shift? */    ;\
         li      reg, imm12sh            /* <= 12bit, will be simple li    */    ;\
         slli    reg, reg, edge1         /* add trailing zeros             */    ;\
-  .elseif ((immx==imme)&&(((absimmsh>>WDSGN)+crysh)==0)) /* fits 32 <<shft? */  ;\
+  .elseif ((immx==imme)&&(((absimmsh>>WDSGN)+crysh)==0)) /* fits 32 <<shift? */  ;\
         lui     reg, ((immxsh>>IMMSZ)+crysh)&LIMMMSK /* <=32b, use lui/addi */  ;\
     .if   ((imm12sh&IMMMSK)!=0)         /* but skip this if low bits ==0  */    ;\
         addi    reg, reg, imm12sh                                               ;\

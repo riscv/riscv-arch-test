@@ -1,7 +1,7 @@
 
 == To Do
 
-I think we might want to rethink some of our privileged testing structure and switch to having Sm, S, and U testplans/coverpoints/tests instead of lumping most of that into ZicsrM/S/U. I will also be more apparent what is being tested where that way.
+I think we might want to rethink some of our privileged testing structure and switch to having Sm, S, and U testplans/coverpoints/tests instead of lumping most of that into ZicsrM/S/U. It will also be more apparent what is being tested where that way.
 
 === Current Status
 

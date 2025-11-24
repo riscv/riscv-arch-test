@@ -166,7 +166,7 @@ RVTEST_SIGUPD(x10, x16)
 li x8, 0x00000000 # initialize rs1 in randomly selected register
 li x5, 0x80000000 # initialize rs2 in randomly selected register
 add x16, x8, x5 # perform operation, write randomly selected destination register
-# load expected value of 0x800000000 into x20 from table pointed to by x10. Check x20 against x16 and report mismmatch
+# load expected value of 0x800000000 into x20 from table pointed to by x10. Check x20 against x16 and report mismatch
 RVTEST_SIGUPD(x10, x16, x20)
 ----
 

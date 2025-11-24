@@ -8,7 +8,7 @@ unprivileged Zicsr tests of <<Zicsr Control/Status Register Instructions>>.
 
 `wfi` is tested in <<Interrupts>> and `sfence.vma` is tested in <<Sv* Virtual Memory>>.
 
-Zicsr does not test reserved or custom instructions or CSRs because their behavior is Unspecified.
+Zicsr does not test reserved or custom instructions or CSRs because their behavior is UNSPECIFIED.
 Reserved instructions and CSRs are tested in the <<Ssstrict>> Ssstrict tests,
 where they should throw an Illegal Instruction exception if not implemented.
 

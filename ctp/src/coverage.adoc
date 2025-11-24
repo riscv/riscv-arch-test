@@ -63,7 +63,7 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |other|reserved
 |===
 
-Some accesses touch more than one physical page.  Examples include misaligned accesses wrapping a page boundary, and some vector accesses.  Extended RVVI provideds the signals corresponding to the base address of the access. For vector, they correspond to the base address of the initial element access.
+Some accesses touch more than one physical page.  Examples include misaligned accesses wrapping a page boundary, and some vector accesses.  Extended RVVI provides the signals corresponding to the base address of the access. For vector, they correspond to the base address of the initial element access.
 
 === riscvISACOV Signals
 
@@ -112,7 +112,7 @@ RVVI and riscvISACOV support the notion of multiple harts that retire multiple i
 
 [NOTE]
 ====
-Our riscvISACOV implementation uses a SystemVerilog disassmbler in fcov/disassemble.svh, replacing a proprietery disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
+Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disassemble.svh, replacing a proprietary disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
 ====
 
 

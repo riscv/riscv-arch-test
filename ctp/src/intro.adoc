@@ -17,11 +17,15 @@ When in doubt, it is better to test slightly more than strictly necessary for no
 
 An implementation that passes certification tests is said to be certified for the relevant certificate. The process of certification is described in ***.
 
-=== Coverpoints and Tests
+=== Normative Rules, Coverpoints, and Tests
 
-Coverpoints are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  Each coverpoint has a set of tests that exercise it, and each test has a set of coverpoints that it hits.
+Normative rules are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  However, normative rules are human-readable portions of a specification and cannot be checked in an automated manner.
 
-This test plan defines the coverpoints that must be hit for each profile, and outlines the tests that hit those coverpoints.  The tests are self-checking, and report pass/fail results.  The coverage report confirms that the tests hit all the coverpoints.
+Instead, certification relies on coverpoints, which are machine-readable descriptions of the features to be tested.  Every normative rule is tied to one or more coverpoints, such that if the coverpoints are hit, the normative rule is considered to be certified.
+
+Each coverpoint has a set of tests that exercise it, and each test has a set of coverpoints that it hits.
+
+This test plan defines the normative rules that must be hit for each profile, specifies the coverpoints that measure those rules, and outlines the tests that hit those coverpoints.  The tests are self-checking, and report pass/fail results.  The coverage report confirms that the tests hit all the coverpoints and thus all the normative rules.
 
 Coverpoints are written in SystemVerilog, and are designed to be used with the Extended https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI).  They are written to be independent of the DUT (Device Under Test), so that they can be used with any RISC-V implementation. footnote:[Extended RVVI adds signals for virtual memory verification, including physical and virtual instruction and data addresses, and I/D TLB entries.] Functional coverage is collected using SystemVerilog infrastructure adapted from https://github.com/riscv-verification/riscvISACOV[riscvISACOV] footnote:[Portions of riscvISACOV that depend on proprietary Synopsys code such as a disassembler have been replaced with open-source equivalents].
 

@@ -107,7 +107,7 @@ tests
 
 When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, vwadd.vv is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.
 
-The tests also account for unsupported register group overlap.  For example, a widening add vwadd.wv v0, v2, v2 is unspported because the source registers cannot be read with different EEWs.  On the other hand vwadd.vv v0, v1, v8 with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
+The tests also account for unsupported register group overlap.  For example, a widening add vwadd.wv v0, v2, v2 is unsupported because the source registers cannot be read with different EEWs.  On the other hand vwadd.vv v0, v1, v8 with LMUL=1 is supported even though the destination vd=v0 widens to write [v0-v1], which overlaps with vs2=v1.  The tests exercise all supported overlaps, but do not attempt any unsupported overlaps because the behavior is reserved and unpredictable.
 
 ==== Vector Configuration Parameters
 
@@ -115,7 +115,7 @@ The coverpoints and tests are parameterized by the minimum supported element wid
 
 ==== Vector Coverpoints
 
-Running long vectors is computationally expensive, so only a subset of vectors tests run on mult-element vectors.  Coverpoints for source and destination registers, edge values, etc. run on a vector length of vl = 1.
+Running long vectors is computationally expensive, so only a subset of vectors tests run on multi-element vectors.  Coverpoints for source and destination registers, edge values, etc. run on a vector length of vl = 1.
 
 <<t-vector-coverpoints>> defines the coverpoints used in vector instructions.  Unless otherwise specified, each coverpoint uses vector length vl=1 and length multiplier LMUL=1, no mask (vm=1), and vstart=0. Hence, they act on exactly one vector element. For such coverpoints, instructions that require a mask use v0=0.
 

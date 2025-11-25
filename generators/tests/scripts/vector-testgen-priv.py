@@ -3,7 +3,7 @@
 # vector-testgen-priv.py
 #
 # Georgia Tai ytai@hmc.edu 26 June 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Generate directed privilaged tests for functional coverage of the vector extension
 ##################################

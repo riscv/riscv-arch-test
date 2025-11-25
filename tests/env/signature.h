@@ -73,3 +73,16 @@
     nop                                                    ;\
     addi _SIG_BASE, _SIG_BASE, REGWIDTH+FREGWIDTH
 #endif
+
+// Canary value to indicate bounds of signature region
+#if SIGALIGN==8
+  #define CANARY_VALUE \
+      0x6F5CA309E7D4B281
+  #define CANARY \
+      .dword CANARY_VALUE
+#else
+  #define CANARY_VALUE \
+      0x6F5CA309
+  #define CANARY \
+      .word CANARY_VALUE
+#endif

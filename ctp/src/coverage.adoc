@@ -36,27 +36,34 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |virt_adr_d|XLEN|Virtual address of data accessed by instruction
 |phys_adr_i|PA_BITS|Physical address of instruction
 |phys_adr_d|PA_BITS|Physical address of data accessed by instruction
-|pte_i|XLEN|Instruction page table entry
-|pte_d|XLEN|Data page table entry
-|ppn_i|PPN_BITS|Instruction physical page number
-|ppn_d|PPN_BITS|Data physical page number
-|page_type_i|2|Instruction page type ***explain
-|page_type_d|2|Data page type
-|read_access|1|Instruction reads data (loads, AMOs, ***CMO)
-|write_access|1|Instruction writes data (stores, AMO, ***cbo.zero)
-|execute_access|1|***define - is this jumps?  when asserted, and does it only affect data accesses?
+|g_phys_adr_i|PA_BITS|Guest physical address of instruction (when Hypervisor is active, 0 when inactive)
+|g_phys_adr_d|PA_BITS|Guest physical address of data accessed by instruction (when Hypervisor is active, 0 when inactive)
+|pte_i|XLEN|Instruction page table entry (VS-stage when Hypervisor is active)
+|pte_d|XLEN|Data page table entry (VS-stage when Hypervisor is active)
+|g_pte_i|XLEN|Instruction page table entry (G-stage when Hypervisor is active, 0 when inactive)
+|g_pte_d|XLEN|Data page table entry (G-stage when Hypervisor is active, 0 when inactive)
+|page_type_i|3|Instruction page type (VS-stage when hypervisor is active))
+|page_type_d|3|Data page type (VS-stage when hypervisor is active))
+|g_page_type_i|3|Instruction page type (G-stage when hypervisor is inactive, 0 when inactive)
+|g_page_type_d|3|Data page type (G-stage when hypervisor is inactive, 0 when inactive)
 |===
 
-*** PA_BITS
-PPN_BITS = PA_BITS - 12
-*** why do we need ppn when we have phys_addr?  Why not derive locally?
+[[t-pagetypes]]
+.Page Types
+[options=header]
+[cols="1, 4" options=header]
+[%AUTOWIDTH]
+|===
+|Code|Type
+|000|kilopage
+|001|megapage
+|010|gigapage
+|011|terapage
+|100|petapage
+|other|reserved
+|===
 
-*** do we need to add guest physical address?  Such as
-
-* gpa_adr_i
-* gpa_adr_d
-
-maybe guest page table entries?
+Some accesses touch more than one physical page.  Examples include misaligned accesses wrapping a page boundary, and some vector accesses.  Extended RVVI provides the signals corresponding to the base address of the access. For vector, they correspond to the base address of the initial element access.
 
 === riscvISACOV Signals
 
@@ -105,7 +112,7 @@ RVVI and riscvISACOV support the notion of multiple harts that retire multiple i
 
 [NOTE]
 ====
-Our riscvISACOV implementation uses a SystemVerilog disassmbler in fcov/disassemble.svh, replacing a proprietery disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
+Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disassemble.svh, replacing a proprietary disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
 ====
 
 

@@ -76,6 +76,14 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 //include::{testplansdir}/Svadu.adoc[]
 ,===
 
+==== Svadu A/D Bit Hardware Update + PMP
+
+[[t-SvaduPMP-coverpoints]]
+.SvaduPMP Coverpoints
+,===
+//include::{testplansdir}/SvaduPMP.adoc[]
+,===
+
 ==== Svpbmt Page-Based Memory Types
 
 [[t-Svpbmt-coverpoints]]

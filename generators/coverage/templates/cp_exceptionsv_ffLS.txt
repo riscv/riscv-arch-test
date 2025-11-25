@@ -1,0 +1,13 @@
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_exceptionsv_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector mask load/store operations
+
+    rs1_eq_0: coverpoint unsigned'(ins.current.rs1_val) {
+        bins zero = {0};
+    }
+
+    cp_exceptionsv_ffLS_first_elm_trap : cross std_trap_vec, mask_disabled, rs1_eq_0;
+
+    //// end cp_exceptionsv_ffLS////////////////////////////////////////////////

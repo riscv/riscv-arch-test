@@ -451,6 +451,18 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
         wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
     }
 
+    `ifdef XLEN64
+        csrr_time: coverpoint ins.current.insn {
+            wildcard bins csrr_time = {32'b011000000101_00000_010_?????_1110011}; // 0x605
+    }
+    `else 
+        csrr_time: coverpoint ins.current.insn {
+            wildcard bins csrr_time = {32'b011000010101_00000_010_?????_1110011}; // 0x615
+            wildcard bins csrr_time = {32'b011000000101_00000_010_?????_1110011}; // 0x605
+    }
+    `endif 
+
+
     // new hypervisor priv modes
 
     priv_mode_hs: coverpoint {ins.current.mode_virt, ins.current.mode} {
@@ -465,66 +477,49 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
         bins VU_mode = {3'b100};
     }
 
-    counters_hcounteren: coverpoint {ins.current.insn[31:20], ins.current.csr[12'h606][31:0]}
-
+    `ifdef XLEN64
     cp_htimedelta: coverpoint {ins.current.csr[12'h605][63:0]} {
-        bins htimedelta_zero  = {64'd0};
-        bins htimedelta_2p30  = {64'd1073741824};           //  2^30
-        bins htimedelta_2p60  = {64'd1152921504606846976};  //  2^60
+        bins htimedelta_zero  = {64'h0};
+        bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30
+        bins htimedelta_2p60  = {64'h1000000000000000};     //  2^60
         bins htimedelta_n2p30 = {64'hFFFFFFFFC0000000};     // -2^30
-        bins htimedelta_n2p60 = {64'hFFC0000000000000};     // -2^60 
+        bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60 
     }
-
-    `ifdef XLEN32
-
-    cp_htimedeltah: coverpoint {ins.current.csr[12'h615][31:0]}1 {
-        bins htimedeltah_zero = {{32'd0, 32'd0}};
-        bins htimedeltah_2p30 = {{32'd1073741824, 32'd0}};   //  2^30
-        bins htimedeltah_2p60 = {{32'd0, 32'd1073741824}};   // 2^60
-        bins htimedeltah_n2p30 = {{32'hC0000000, 32'd0}};    // -2^30
-        bins htimedeltah_n2p60 = {{32'd0, 32'hC0000000}};    // -2^60
+    `else
+    cp_htimedelta: coverpoint {ins.current.csr[12'h615][31:0], ins.current.csr[12'h605][31:0]} {
+        bins htimedeltah_zero = {{32'h0}, {32'h0}};
+        bins htimedeltah_2p30 = {{32'h0}, {32'h40000000}};            //  2^30
+        bins htimedeltah_2p60 = {{32'h1000000}, {32'h0}};             // 2^60
+        bins htimedeltah_n2p30 = {{32'hFFFFFFFF}, {32'hC0000000}};    // -2^30
+        bins htimedeltah_n2p60 = {{32'hF0000000}, {32'h0}};           // -2^60
     }
-
     `endif
+
+
    
     // M mode coverpoints
     cp_mhscounteren_access_mcnt_m: cross csrr, counters_mcounteren, priv_mode_m;
     cp_mhscounteren_access_hcnt_m: cross csrr, counters_hcounteren, priv_mode_m;
     cp_mhscounteren_access_scnt_m: cross csrr, counters_scounteren, priv_mode_m;
-    cp_delta_m: cross csrr, cp_htimedelta, priv_mode_m;
-    `ifdef XLEN32
-    cp_deltah_m: cross csrr, cp_htimedeltah, priv_mode_m;
-    `endif
+    cp_delta_m: cross csrr_time, cp_htimedelta, priv_mode_m;
 
     // HS mode coverpoints
     cp_scounteren_access_scnt_hs: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_hs;
-    cp_delta_hs: cross csrr, cp_htimedelta, priv_mode_hs;
-    `ifdef XLEN32
-    cp_deltah_hs: cross csrr, cp_htimedeltah, priv_mode_hs;
-    `endif 
+    cp_delta_hs: cross csrr_time, cp_htimedelta, priv_mode_hs;
 
     // VS mode coverpoints
     cp_mcounteren_access_vs: cross csrr, counters_mcounteren, hcounteren_ones, scounteren_zeroes, priv_mode_vs;
     cp_hcounteren_access_vs: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_zeroes, priv_mode_vs;
-    cp_delta_vs: cross csrr, cp_htimedelta, priv_mode_vs;
-    `ifdef XLEN32
-    cp_deltah_vs: cross csrr, cp_htimedeltah, priv_mode_vs;
-    `endif 
+    cp_delta_vs: cross csrr_time, cp_htimedelta, priv_mode_vs;
 
     // U mode coverpoints
     cp_scounteren_access_u: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_u;
-    cp_delta_u: cross csrr, cp_htimedelta, prive_mode_u;
-    `ifdef XLEN32
-    cp_deltah_u: cross csrr, cp_htimedeltah, priv_mode_u;
-    `endif 
+    cp_delta_u: cross csrr_time, cp_htimedelta, prive_mode_u;
 
     // VU mode coverpoints
     cp_hcounteren_access_vu: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_ones, priv_mode_vu;
     cp_scounteren_access_vu: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_ones, priv_mode_vu;
-    cp_delta_vu: cross csrr, cp_htimedelta, priv_mode_vu;
-    `ifdef XLEN32
-    cp_deltah_vu: cross csrr, cp_htimedeltah, priv_mode_vu;
-    `endif 
+    cp_delta_vu: cross csrr_time, cp_htimedelta, priv_mode_vu;
 
 endgroup
 

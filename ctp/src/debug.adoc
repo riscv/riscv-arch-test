@@ -1,7 +1,7 @@
 
 === Debug
 
-This section describes debug-related extensions not required in RVA23.
+This section describes ISA and non-ISA debug-related extensions not required in RVA23.
 
 ==== DM Debug Module
 

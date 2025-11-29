@@ -115,7 +115,7 @@ Waits until timeout on a single hart that cannot modify the reservation set.
 
 ==== Sdtrig Debug Triggers
 
-Located here because it is part of RVA23 even though it is not very interesting without the Sdext debug extension.
+Located here because it is part of RVA23 and can function without the rest of the https://docs.riscv.org/reference/debug-trace-ras/debug/_attachments/riscv-debug-specification.pdf[Debug Specification].  See <<Debug>> for non-RVA23 debug extensions.
 
 [[t-Sdtrig-coverpoints]]
 .Sdtrig Coverpoints

@@ -1,7 +1,7 @@
 
 == Non-ISA Test Plan
 
-This chapter contains test plans for ratified RISC-V non-ISA features.
+This chapter contains test plans for ratified RISC-V outside the Unprivileged and Privileged ISA specifications.
 
 include::debug.adoc[]
 include::aia.adoc[]

@@ -112,7 +112,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
             continue
         test_data = TestData(test_config)
         test_file = output_dir / f"{extension}-{instr_name}.S"
-        test_file_relative = str(test_file.relative_to(output_test_dir))
+        test_file_relative = test_file.relative_to(output_test_dir)
 
         # Test header
         test_lines = [insert_setup_template("testgen_header.S", xlen, extension, test_file_relative)]

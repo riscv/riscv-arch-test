@@ -103,13 +103,13 @@
   // Instantiate trap handlers for each priv mode
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
 
-  // Include headers at end of test that would throw off addresses
-  RVTEST_END_INCLUDES
+  // Include test failure handling code
+  RVTEST_FAILURE_CODE
 
   // Terminate test
   exit_cleanup:
-    # LA(T1, successstr)
-    # RVMODEL_IO_WRITE_STR(T1, successstr)
+    LA(T1, successstr)
+    RVMODEL_IO_WRITE_STR(T1, successstr)
     RVMODEL_HALT_PASS
   .option pop
 .endm
@@ -164,6 +164,9 @@
       #endif
     #endif
   #endif
+
+  // Failure detection data (strings and scratch space)
+  RVTEST_FAILURE_DATA
 
   // End of data region
   .global rvtest_data_end

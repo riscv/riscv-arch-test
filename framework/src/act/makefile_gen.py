@@ -36,6 +36,7 @@ def gen_compile_targets(
     sig_elf = build_dir / test_name.with_suffix(".sig.elf")
     sig_file = build_dir / test_name.with_suffix(".sig")
     result_file = build_dir / test_name.with_suffix(".results")
+    sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
 
@@ -55,9 +56,16 @@ def gen_compile_targets(
         f"\t\t-march={march} -mabi={mabi} -DSIGNATURE -DXLEN={xlen} -DFLEN={flen} \\\n"
         f"\t\t{test_path}\n"
         f"\n"
+        # Objdump
+        f"{
+            f'\n\t{config.objdump_exe} -Stsxd -M no-aliases,numeric \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
+            if config.objdump_exe is not None
+            else '# skipping objdump generation\n'
+        }"
         "# Generate signature file\n"
         f"{sig_file}: {sig_elf}\n"
-        f"\t{config.ref_model_exe} \\\n"
+        f"\t{config.ref_model_exe} --trace-all \\\n"
+        f"\t\t--trace-output {sig_trace_file} \\\n"
         f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
         f"\t\t{ref_model_sig_flags} \\\n"
         f"\t\t{sig_elf} \\\n"

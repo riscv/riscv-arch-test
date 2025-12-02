@@ -17,11 +17,15 @@ When in doubt, it is better to test slightly more than strictly necessary for no
 
 An implementation that passes certification tests is said to be certified for the relevant certificate. The process of certification is described in ***.
 
-=== Coverpoints and Tests
+=== Normative Rules, Coverpoints, and Tests
 
-Coverpoints are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  Each coverpoint has a set of tests that exercise it, and each test has a set of coverpoints that it hits.
+Normative rules are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  However, normative rules are human-readable portions of a specification and cannot be checked in an automated manner.
 
-This test plan defines the coverpoints that must be hit for each profile, and outlines the tests that hit those coverpoints.  The tests are self-checking, and report pass/fail results.  The coverage report confirms that the tests hit all the coverpoints.
+Instead, certification relies on coverpoints, which are machine-readable descriptions of the features to be tested.  Every normative rule is tied to one or more coverpoints, such that if the coverpoints are hit, the normative rule is considered to be certified.
+
+Each coverpoint has a set of tests that exercise it, and each test has a set of coverpoints that it hits.
+
+This test plan defines the normative rules that must be hit for each profile, specifies the coverpoints that measure those rules, and outlines the tests that hit those coverpoints.  The tests are self-checking, and report pass/fail results.  The coverage report confirms that the tests hit all the coverpoints and thus all the normative rules.
 
 Coverpoints are written in SystemVerilog, and are designed to be used with the Extended https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI).  They are written to be independent of the DUT (Device Under Test), so that they can be used with any RISC-V implementation. footnote:[Extended RVVI adds signals for virtual memory verification, including physical and virtual instruction and data addresses, and I/D TLB entries.] Functional coverage is collected using SystemVerilog infrastructure adapted from https://github.com/riscv-verification/riscvISACOV[riscvISACOV] footnote:[Portions of riscvISACOV that depend on proprietary Synopsys code such as a disassembler have been replaced with open-source equivalents].
 
@@ -43,7 +47,9 @@ Parameters will eventually all have formal names in UDB when they are all identi
 
 * Configuration: A set of extensions and parameters partially or fully describing the behavior of a RISC-V hart.  A full configuration is sufficient for a reference model to exactly match the behavior of a DUT except with regard to non-deterministic behaviors.
 
-* Non-deterministic Behaviors: behaviors that are unpredictable despite a full configuration.  For example, a tail-agnostic vector instruction might copy vector elements from the source, or might provide elements that are all 1s.  Either behavior is correct, and the hart might change behaviors from one instruction to the next, so the DUT and reference model cannot be guaranteed to exactly match.  Self-checking tests must accept all legal outcomes for non-deterministic behaviors.
+* Constrained Non-Deterministic Behaviors: behaviors that cannot be predicted based on either architectural configuration or defined parameters, but whose result are constrained to be a small number of possible values. The example of a tail-agnostic vector instruction is one of those, where the number of legal results is limited to just two: either the previous value, or all ones. Either behavior is correct, and the hart might change behaviors from one instruction to the next, so the DUT and reference model cannot be guaranteed to exactly match. Self-checking tests must accept all legal outcomes for non-deterministic behaviors.
+
+* Unconstrained Non-Deterministic Behaviors: behaviors that cannot be predicted based on either architectural configuration or defined parameters, and whose result is not constrained to a small number of possible values.  For example, the value of an integer register after reset is an unconstrained non-deterministic behavior.  Tests must not make any assumptions about the value of such behaviors, and must not check them against the reference model.
 
 * Profile: A named collection of required and optional extensions, such as RVI20 or RVA23S64.  Profiles may be ratified by RISC-V or developed by the Certification Steering Committee to meet certification market needs, such as a simple microcontroller. A profile is a partial configuration.  The test plan must allow the DUT configuration to indicate which optional extensions and other parameters are used, and fully test all optional profile extensions provided by the DUT.
 

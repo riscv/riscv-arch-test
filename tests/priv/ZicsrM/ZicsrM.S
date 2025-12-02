@@ -147,11 +147,13 @@ tmp:
     #endif
 
     // C bit
-    li t0, 4            # 1 in C bit
-    csrrc t6, misa, t0       # clear C bit
-    .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
-    csrrs t6, misa, t0       # set C bit
-    .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+    #ifdef ZCA_SUPPORTED
+      li t0, 4            # 1 in C bit
+      csrrc t6, misa, t0       # clear C bit
+      .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+      csrrs t6, misa, t0       # set C bit
+      .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+    #endif
 
     // F bit
     li t0, 0x2000       # 1 in bit 13

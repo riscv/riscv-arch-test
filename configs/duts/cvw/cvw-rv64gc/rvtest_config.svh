@@ -1,4 +1,4 @@
-// riscv-arch-test_coverage.svh
+// rvtest_config.svh
 // David_Harris@hmc.edu 7 September 2024
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,6 +9,10 @@
 `define XLEN64
 `define FLEN64
 `define VLEN512
+
+// Virtual Memory Modes
+`define SV39
+`define SV48
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -27,3 +31,12 @@
 // Define relevant addresses
 `define ACCESS_FAULT_ADDRESS 64'h00000000
 `define CLINT_BASE 64'h02000000
+
+//define extra supported extensions to collect full coverage in ZicsrF
+`define D_SUPPORTED
+`define ZFA_SUPPORTED
+`define F_SUPPORTED
+`define ZFH_SUPPORTED
+`define ZBB_SUPPORTED
+`define ZBA_SUPPORTED
+`define ZBS_SUPPORTED

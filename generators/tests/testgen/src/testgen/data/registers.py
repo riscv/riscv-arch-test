@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 def select_registers(num_regs: int, reg_list: list[int]) -> list[int]:
     """Select a specified number of unique registers from a list of available registers."""
     if num_regs > len(reg_list):
-        raise ValueError("Not enough registers available to select from.")
+        raise ValueError(
+            f"Not enough registers available to select from. Requested {num_regs}, but only {len(reg_list)} available."
+        )
 
     selected_regs = random.sample(reg_list, num_regs)
     return selected_regs

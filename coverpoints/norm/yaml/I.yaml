@@ -15,18 +15,13 @@ normative_rule_definitions:
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]
   - name: imm_always_sex
     coverpoint: [
-        "I_addi_cg/cr_rs1_imm_edges",
-        "I_lw_cg/cp_imm_edges",
-        "I_sw_cg/cp_imm_edges",
-        "I_lui_cg/cp_imm_edges_20bit",
-        "I_beq_cg/cp_imm_edges_branch",
-        "I_jal_cg/cp_offset",
+        "I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset",
       ] # *** need to add this coverpoint in Zicsr rule table
   - name: addi_op
     coverpoint: ["I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: addi_overflow
     coverpoint: ["I_addi_cg/cr_rs1_imm_edges"]
-  - names: [andi_op, ori_op, xori_op]
+  - names: ["andi_op, ori_op, xori_op"]
     coverpoint:
       ["{I_andi_cg, I_ori_op, I_xori_op}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: slli_op
@@ -48,18 +43,18 @@ normative_rule_definitions:
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: sub_op
     coverpoint: ["I_sub_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
-  - names: [add_overflow, sub_overflow]
+  - names: ["add_overflow, sub_overflow"]
     coverpoint: ["{I_add_cg, I_sub_cg}/cr_rs1_rs2_edges"]
   - name: slt_op
     coverpoint: ["I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: sltu_op
     coverpoint: ["I_sltu_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
-  - names: [and_op, or_op, xor_op]
+  - names: ["and_op, or_op, xor_op"]
     coverpoint:
       [
         "{I_and_cg, I_or_cg, I_xor_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
       ]
-  - names: [sll_op, srl_op, sra_op]
+  - names: ["sll_op, srl_op, sra_op"]
     coverpoint:
       [
         "{I_sll_cg, I_srl_cg, I_sra_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
@@ -82,13 +77,13 @@ normative_rule_definitions:
       [
         "{I_beq_cg, I_bne_cg, I_blt_cg, I_bltu_cg, I_bge_cg, I_bgeu_cg}/{cr_rs1_rs2_edges_offset}",
       ]
-  - names: [beq_op, bne_op]
+  - names: ["beq_op, bne_op"]
     coverpoint:
       ["{I_beq_cg, I_bne_cg}/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}"]
-  - names: [blt_op, bltu_op]
+  - names: ["blt_op, bltu_op"]
     coverpoint:
       ["{I_blt_cg, I_bltu_cg}/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}"]
-  - names: [bge_op, bgeu_op]
+  - names: ["bge_op, bgeu_op"]
     coverpoint:
       ["{I_bge_cg, I_bgeu_cg}/{cp_rs1, cp_rs2, cr_rs1_rs2_edges_offset}"]
   - name: ldst_ea
@@ -114,7 +109,7 @@ normative_rule_definitions:
   - name: lb_op
     coverpoint: ["I_lb_cg/{cp_rs1_nx0, cp_rd, cp_imm_edges, cp_memval_byte}"]
   - name: lbu_op
-    coverpoint: ["I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte  }"]
+    coverpoint: ["I_lbu_cg/{cp_rd, cp_imm_edges, cp_memval_byte}"]
   - name: sw_op
     coverpoint: ["I_sw_cg/{cp_rs1_nx0, cp_rs2, cp_rs2_edges, cp_imm_edges}"]
   - name: sh_op
@@ -124,14 +119,7 @@ normative_rule_definitions:
   - name: ldst_atomicity_for_aligned
     coverpoint:
       [
-        "I_lw_cg/cp_align_word",
-        "I_lh_cg/cp_align_half",
-        "I_lhu_cg/cp_align_half",
-        "I_lb_cg/cp_align_byte",
-        "I_lbu_cg/cp_align_byte",
-        "I_sw_cg/cp_align_word",
-        "I_sh_cg/cp_align_half",
-        "I_sb_cg/cp_align_byte",
+        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte",
       ]
   - name: fence_op
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]
@@ -140,6 +128,6 @@ normative_rule_definitions:
   - name: fence-tso_ordering_rw_rw_ok
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]
   - name: fence_unused_flds_rsv
-    coverpoint: [TODO]
+    coverpoint: ["TODO"]
   - name: fence_cons_ok
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]

@@ -11,6 +11,14 @@
 // General notes:
 // Use csrrw/csrrs/csrrc t6, csr, rs1    when modifying a CSR to also check the old value.
 
+##### START_TEST_CONFIG #####
+# implemented_extensions: [I, Zicsr]
+# MARCH: rv${XLEN}imacfd_zicsr_zba_zbb_zbs
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
 #include "WALLY-init-lib.h"
 
 main:
@@ -108,45 +116,68 @@ tmp:
     li t0, 1            # 1 in A bit
     csrrc t6, misa, t0       # clear A bit
     la t1, scratch      # scratch memory location
-    lr.w t2, (t1)       # try an A (Zalrsc) instruction
-    amoadd.w t2, s0, (t1)   # try an A (Zaamo) instruction
-    csrrs t6, misa, t0       # set A bit
-    lr.w t2, (t1)       # try an A (Zalrsc) instruction
-    amoadd.w t2, s0, (t1)   # try an A (Zaamo) instruction
-
+    #ifdef A_SUPPORTED
+      lr.w t2, (t1)       # try an A (Zalrsc) instruction
+      amoadd.w t2, s0, (t1)   # try an A (Zaamo) instruction
+      csrrs t6, misa, t0       # set A bit
+      lr.w t2, (t1)       # try an A (Zalrsc) instruction
+      amoadd.w t2, s0, (t1)   # try an A (Zaamo) instruction
+    #endif
     // B bit
     li t0, 2            # 1 in B bit
     csrrc t6, misa, t0       # clear B bit
-    sh1add t2, x0, t0   # try a Zba instruction
-    min t2, x0, t0      # try a Zbb instruction
-    bset t2, x0, t0     # try a Zbs instruction
+    #ifdef ZBA_SUPPOTED
+      sh1add t2, x0, t0   # try a Zba instruction
+    #endif
+    #ifdef ZBB_SUPPORTED
+      min t2, x0, t0      # try a Zbb instruction
+    #endif
+    #ifdef ZBS_SUPPORTED
+      bset t2, x0, t0     # try a Zbs instruction
+    #endif
     csrrs t6, misa, t0       # set B bit
-    sh1add t2, x0, t0   # try a Zba instruction
-    min t2, x0, t0      # try a Zbb instruction
-    bset t2, x0, t0     # try a Zbs instruction
+    #ifdef ZBA_SUPPOTED
+      sh1add t2, x0, t0   # try a Zba instruction
+    #endif
+    #ifdef ZBB_SUPPORTED
+      min t2, x0, t0      # try a Zbb instruction
+    #endif
+    #ifdef ZBS_SUPPORTED
+      bset t2, x0, t0     # try a Zbs instruction
+    #endif
 
     // C bit
-    li t0, 4            # 1 in C bit
-    csrrc t6, misa, t0       # clear C bit
-    .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
-    csrrs t6, misa, t0       # set C bit
-    .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+    #ifdef ZCA_SUPPORTED
+      li t0, 4            # 1 in C bit
+      csrrc t6, misa, t0       # clear C bit
+      .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+      csrrs t6, misa, t0       # set C bit
+      .word 0x00019396    # try C instructions: c.add x7, x5 = 0x9396; c.nop = 0x0001
+    #endif
 
     // F bit
     li t0, 0x2000       # 1 in bit 13
     csrrs t6, mstatus, t0    # turn on FS to enable floating-point
     li t0, 0x20         # 1 in F bit
     csrrc t6, misa, t0       # clear F bit
-    fcvt.s.w f0, t0     # try a F instruction
+    #ifdef F_SUPPORTED
+      fcvt.s.w f0, t0     # try a F instruction
+    #endif
     csrrs t6, misa, t0       # set F bit
-    fcvt.s.w f0, t0     # try a F instruction
+    #ifdef F_SUPPORTED
+      fcvt.s.w f0, t0     # try a F instruction
+    #endif
 
     // D bit (with F already on, if possible)
     li t0, 0x08         # 1 in D bit
     csrrc t6, misa, t0       # clear D bit
-    fcvt.d.w f0, t0     # try a D instruction
+    #ifdef D_SUPPORTED
+      fcvt.d.w f0, t0     # try a D instruction
+    #endif
     csrrs t6, misa, t0       # set D bit
-    fcvt.d.w f0, t0     # try a D instruction
+    #ifdef D_SUPPORTED
+      fcvt.d.w f0, t0     # try a D instruction
+    #endif
 
     // I bit
     li t0, 0x100        # 1 in I bit

@@ -10,7 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Load which extensions are supported in this configuration (from $WALLY/config/<config>/coverage.svh)
-`include "riscv-arch-test_coverage.svh"
+`include "rvtest_config.svh"
 
 // Load disassembler
 `include "disassemble.svh"

@@ -76,7 +76,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard.
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
-|cp_rnum|11|Round nummber for AES instructions
+|cp_rnum|11|Round number for AES instructions
 |cp_sc|2|Store conditional instruction has a success and failure case.
 |===
 
@@ -90,7 +90,7 @@ Notes:
 
 * Cross-products exercise all combinations of two or more coverpoints. They can have a large number of bins.
 
-* Each of these coverpoints can optionally have a modifer appended.  For example, cp_rs1_nx0 is a modified version of cp_rs1, covering all 31 rs1 register numbers excluding x0.  It is used for load/store/jalr instructions that can't rely on address 0 specified by x0 being legal. Modifiers are defined in the extensions that they apply to.
+* Each of these coverpoints can optionally have a modifier appended.  For example, cp_rs1_nx0 is a modified version of cp_rs1, covering all 31 rs1 register numbers excluding x0.  It is used for load/store/jalr instructions that can't rely on address 0 specified by x0 being legal. Modifiers are defined in the extensions that they apply to.
 
 * The cmp_* and cp_*_hazard coverpoints occupy the fuzzy land at the edge of certification and verification.  They are included because they are easy.
 
@@ -183,7 +183,7 @@ Notes:
 
 [NOTE]
 ====
-The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and a random number to exercise intermediate values.  RV64 adds edge casess near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
+The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and a random number to exercise intermediate values.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
 ====
 
 include::i.adoc[]

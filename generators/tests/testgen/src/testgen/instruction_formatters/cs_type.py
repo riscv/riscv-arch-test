@@ -10,7 +10,9 @@ from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 
 
-@add_instruction_formatter("CS", required_params={"rs1", "rs1val", "rs2", "rs2val", "immval"})
+@add_instruction_formatter(
+    "CS", required_params={"rs1", "rs1val", "rs2", "rs2val", "immval"}, imm_bits=5, imm_signed=False
+)
 def format_cs_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

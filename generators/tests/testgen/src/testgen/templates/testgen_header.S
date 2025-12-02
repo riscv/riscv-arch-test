@@ -13,6 +13,7 @@
 # CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
 ##### END_TEST_CONFIG #####
 
+#define TEST_FILE "@TEST_FILE_NAME@"
 #define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
 #include "riscv_arch_test.h"
 

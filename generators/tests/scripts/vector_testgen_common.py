@@ -1075,7 +1075,8 @@ def genVsedgesFP(test, sew, emul):
 
 
 def genVtestdata(test, sew):
-  test_data = ""
+  test_data = ".align 4\n"
+  test_data += "vector_data:\n"
 
   if test in vector_loads:
     test_data += genVsedges(test, 64, "8") # max size edges to ave all zeros availible
@@ -1178,6 +1179,7 @@ def insertTemplate(test, signatureWords, name, sew=0, test_data=""):
         .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
         .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
+        .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
     )
     writeLine(template)
 

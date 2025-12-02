@@ -1224,7 +1224,7 @@ if __name__ == '__main__':
 
         # print footer
         signatureWords = getSigSpace(xlen, flen) #figure out how many words are needed for signature
-        insertTemplate(test, signatureWords, "testgen_footer_vector.S", test_data=test_data)
+        insertTemplate(test, signatureWords, "testgen_footer.S", test_data=test_data)
 
         # Finish
         f.close()

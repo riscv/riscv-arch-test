@@ -4,7 +4,7 @@
 # vector-testgen-unpriv.py
 #
 # James Kaden Cassidy jacassidy@g.hmc.edu June 26 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Generate directed tests for functional coverage
 ##################################
@@ -27,11 +27,7 @@ from vector_testgen_common import (
   flen,
   freg_count,
   frmList,
-  genRandomVector,
-  genRandomVectorLS,
-  genVMaskedges,
-  genVsedges,
-  genVsedgesFP,
+  genVtestdata,
   getBaseLmul,
   getBaseSuiteTestCount,
   getInstructionEEW,
@@ -1223,62 +1219,12 @@ if __name__ == '__main__':
 
         if (test in vd_widen_ins) or (test in vs2_widen_ins):
           f.write("#endif\n")
-        insertTemplate(test, 0, "testgen_footer_vector1.S")
 
-        if test in vector_loads:
-          genVsedges(test, 64, "8") # max size edges to ave all zeros availible
-          genRandomVector(test, sew, vs="vd")
-          if test in indexed_loads:
-            genRandomVector(test, getInstructionEEW(test), vs="vs2")
-          genRandomVectorLS()
-        if test in vector_stores:
-          genVsedges(test, 64, "8") # max size edges to ave all zeros availible
-          genRandomVector(test, sew, vs="vs3")
-          if test in indexed_stores:
-            genRandomVector(test, getInstructionEEW(test), vs="vs2")
-          genRandomVectorLS()
-        if test not in vector_ls_ins:
-          # generate vector data (random and edges)
-          if   test in vd_widen_ins                         : genRandomVector(test, sew, vs="vd", emul = 2)
-          elif (test not in xvtype and test not in xvmtype) : genRandomVector(test, sew, vs="vd")
-          if (test in wvsins): # needs to be first since in vd_widen_ins
-            genRandomVector(test, sew, vs="vs2")
-            genRandomVector(test, sew, vs="vs1", emul=2)
-            if (test in vfloattypes):
-              genVsedgesFP(test, sew, "1")
-              genVsedgesFP(test, sew, "2")
-            else:
-              genVsedges(test, sew, "1")
-              genVsedges(test, sew, "2")
-          elif (test in narrowins) or (test in vs2_widen_ins):
-            genRandomVector(test, sew, vs="vs2", emul=2)
-            if (test in vs1ins):
-              genRandomVector(test, sew, vs="vs1")
-            if (test in vfloattypes):
-              genVsedgesFP(test, sew, "1")
-              genVsedgesFP(test, sew, "2")
-            else:
-              genVsedges(test, sew, "1")
-              genVsedges(test, sew, "2")
-          else:
-            genRandomVector(test, sew, vs="vs2")
-            if (test in vs1ins):
-              genRandomVector(test, sew, vs="vs1")
-            if (test in vextins):
-              genVsedges(test, sew, test[-2:])
-            elif (test in mmins) or (test in xvmtype) or (test in vmlogicalins):
-              genVsedges(test, sew, "eew1")
-            elif (test in vfloattypes):
-              genVsedgesFP(test, sew, "1")
-            else:
-              genVsedges(test, sew, "1")
-
-        genVMaskedges()
-
+        test_data = genVtestdata(test, sew)
 
         # print footer
         signatureWords = getSigSpace(xlen, flen) #figure out how many words are needed for signature
-        insertTemplate(test, signatureWords, "testgen_footer_vector2.S")
+        insertTemplate(test, signatureWords, "testgen_footer_vector.S", test_data=test_data)
 
         # Finish
         f.close()

@@ -2,7 +2,7 @@
 # vector_testgen_common.py
 #
 # James Kaden Cassidy kacassidy@hmc.edu 25 Jun 2025
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 #
 # Generate directed tests for functional coverage
 ##################################
@@ -15,6 +15,7 @@ import math
 import os
 import re
 import sys
+import textwrap
 from random import getrandbits, randint
 
 # change these to suite your tests
@@ -886,14 +887,25 @@ seg_vv_load   = [
 # Data Generation
 ##################################
 
+def writeData(argument: str, comment=""):
+    tab_over_distance = 50
+    argument = str(argument)
+
+    if comment:
+        padding = max(0, tab_over_distance - len(argument))
+        comment = " " * padding + str(comment)
+
+    return argument + comment + "\n"
+
 def genRandomVector(test, sew, vs="vs2", emul=1):
-  writeLine("\n")
-  writeLine("///////////////////////////////////////////")
-  writeLine(f"// {test}_{vs}_data for {vs}")
-  writeLine("///////////////////////////////////////////\n")
-  writeLine(".section .data\n")
-  writeLine("    .align 3")
-  writeLine("// Corner Vectors")
+  vectordata = ""
+  vectordata += writeData("\n")
+  vectordata += writeData("///////////////////////////////////////////")
+  vectordata += writeData(f"// {test}_{vs}_data for {vs}")
+  vectordata += writeData("///////////////////////////////////////////\n")
+  vectordata += writeData(".section .data\n")
+  vectordata += writeData("    .align 3")
+  vectordata += writeData("// Corner Vectors")
 
   eew = sew * emul
   for suite in ["base", "length"]:
@@ -908,46 +920,50 @@ def genRandomVector(test, sew, vs="vs2", emul=1):
       else:
         num_words = math.ceil(maxVLEN / 32)
     for t in range(maxVtests):
-        writeLine(f"{vs}_random_{suite}_{t:03d}:")
+        vectordata += writeData(f"{vs}_random_{suite}_{t:03d}:")
         for i in range(num_words):
             randomElem = getrandbits(32)
-            writeLine(f"    .word 0x{randomElem:08x}")
+            vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
-  writeLine("")
+  vectordata += writeData("")
+  return vectordata
 
 def genRandomVectorLS():
-  writeLine("\n")
-  writeLine("///////////////////////////////////////////")
-  writeLine("// vector_ls_random_base data")
-  writeLine("///////////////////////////////////////////\n")
-  writeLine(".section .data\n")
-  writeLine("    .align 4")
-  writeLine("// Corner Vectors")
+  vectordata = ""
+  vectordata += writeData("\n")
+  vectordata += writeData("///////////////////////////////////////////")
+  vectordata += writeData("// vector_ls_random_base data")
+  vectordata += writeData("///////////////////////////////////////////\n")
+  vectordata += writeData(".section .data\n")
+  vectordata += writeData("    .align 4")
+  vectordata += writeData("// Corner Vectors")
 
   num_words_either_side = int(maxELEN / 64) * 2 * 2 * maxVLEN # 2 times max vlen elements on either side of pointer (sewMAX = 64)
 
-  writeLine("vector_ls_random_base_header:")
+  vectordata += writeData("vector_ls_random_base_header:")
   for i in range(num_words_either_side):
       randomElem = getrandbits(32)
-      writeLine(f"    .word 0x{randomElem:08x}")
-  writeLine("vector_ls_random_base:")
+      vectordata += writeData(f"    .word 0x{randomElem:08x}")
+  vectordata += writeData("vector_ls_random_base:")
   for i in range(num_words_either_side):
       randomElem = getrandbits(32)
-      writeLine(f"    .word 0x{randomElem:08x}")
+      vectordata += writeData(f"    .word 0x{randomElem:08x}")
 
-  writeLine("")
+  vectordata += writeData("")
+  return vectordata
 
 def genVMaskedges():
+  vectordata = ""
   num_words = math.ceil(maxVLEN / 32)
 
   # generating random masks for length suite
-  writeLine("    .align 3")
+  vectordata += writeData("    .align 3")
   for name in range(3):
-    writeLine(f"random_mask_{name}:")
+    vectordata += writeData(f"random_mask_{name}:")
     val = getrandbits(maxVLEN)
     for i in range(num_words):
       word = (val >> (32 * i)) & 0xFFFFFFFF
-      writeLine(f"    .word 0x{word:08x}")
+      vectordata += writeData(f"    .word 0x{word:08x}")
 
   # generating random mask for cp_masking_edges
   regenerate = True
@@ -960,12 +976,13 @@ def genVMaskedges():
       if (random_mask_bottom_vlen_bits == 0) or (random_mask_bottom_vlen_bits % 2 == 1): # if any of them overlap with a mask corner
         regenerate = True
 
-  writeLine("cp_mask_random:")
+  vectordata += writeData("cp_mask_random:")
   for i in range(num_words):
       word = (random_mask >> (32 * i)) & 0xFFFFFFFF
-      writeLine(f"    .word 0x{word:08x}")
+      vectordata += writeData(f"    .word 0x{word:08x}")
 
-  writeLine("")
+  vectordata += writeData("")
+  return vectordata
 
 def genVsedges(test, sew, emul):
   def convert(val, bitwidth):
@@ -976,6 +993,7 @@ def genVsedges(test, sew, emul):
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFF:08x}" for i
               in range((bitwidth + (eew-1)) // eew)]
 
+  vectordata = ""
   if (emul[0] == "f"):
     eew = int(sew / int(emul[1]))
     ending = "emul" + emul
@@ -1005,16 +1023,18 @@ def genVsedges(test, sew, emul):
   while (r := randint(3, 2**(eew - 1) - 3)) in set(v_register_edges.values()): pass
   v_register_edges["random"] = r
 
-  writeLine("    .align 3")
+  vectordata += writeData("    .align 3")
   for corner in v_register_edges:
       val = v_register_edges[corner]
       val &= (1 << eew) - 1
-      writeLine(f"vs_corner_{corner}_{ending}:")
+      vectordata += writeData(f"vs_corner_{corner}_{ending}:")
       for w in convert(val, eew):
         if (sew == 64) or (eew == 64):
-          writeLine(f"    .dword {w}")
+          vectordata += writeData(f"    .dword {w}")
         else:
-          writeLine(f"    .word {w}")
+          vectordata += writeData(f"    .word {w}")
+  
+  return vectordata
 
 def genVsedgesFP(test, sew, emul):
   def convert(val, bitwidth):
@@ -1035,20 +1055,80 @@ def genVsedgesFP(test, sew, emul):
   eew = sew * int(emul)
   ending = "emul" + emul
 
-  writeLine("\n")
-  writeLine("///////////////////////////////////////////")
-  writeLine("// vector edges data (floating point)")
-  writeLine("///////////////////////////////////////////\n")
-  writeLine("    .align 3")
+  vectordata = ""
+  vectordata += writeData("\n")
+  vectordata += writeData("///////////////////////////////////////////")
+  vectordata += writeData("// vector edges data (floating point)")
+  vectordata += writeData("///////////////////////////////////////////\n")
+  vectordata += writeData("    .align 3")
   for corner in vs_edges_f:
       val = vs_edges_f[corner]
-      writeLine(f"vs_corner_f_{corner}_{ending}:")
+      vectordata += writeData(f"vs_corner_f_{corner}_{ending}:")
       val &= (1 << eew) - 1
       for w in convert(val, eew):
         if (sew == 64) or (eew == 64):
-          writeLine(f"    .dword {w}")
+          vectordata += writeData(f"    .dword {w}")
         else:
-          writeLine(f"    .word {w}")
+          vectordata += writeData(f"    .word {w}")
+  
+  return vectordata
+
+
+def genVtestdata(test, sew):
+  test_data = ""
+
+  if test in vector_loads:
+    test_data += genVsedges(test, 64, "8") # max size edges to ave all zeros availible
+    test_data += genRandomVector(test, sew, vs="vd")
+    if test in indexed_loads:
+      test_data += genRandomVector(test, getInstructionEEW(test), vs="vs2")
+    test_data += genRandomVectorLS()
+  if test in vector_stores:
+    test_data += genVsedges(test, 64, "8") # max size edges to ave all zeros availible
+    test_data += genRandomVector(test, sew, vs="vs3")
+    if test in indexed_stores:
+      test_data += genRandomVector(test, getInstructionEEW(test), vs="vs2")
+    test_data += genRandomVectorLS()
+  if test not in vector_ls_ins:
+    # generate vector data (random and edges)
+    if   test in vd_widen_ins                         : test_data += genRandomVector(test, sew, vs="vd", emul = 2)
+    elif (test not in xvtype and test not in xvmtype) : test_data += genRandomVector(test, sew, vs="vd")
+    if (test in wvsins): # needs to be first since in vd_widen_ins
+      test_data += genRandomVector(test, sew, vs="vs2")
+      test_data += genRandomVector(test, sew, vs="vs1", emul=2)
+      if (test in vfloattypes):
+        test_data += genVsedgesFP(test, sew, "1")
+        test_data += genVsedgesFP(test, sew, "2")
+      else:
+        test_data += genVsedges(test, sew, "1")
+        test_data += genVsedges(test, sew, "2")
+    elif (test in narrowins) or (test in vs2_widen_ins):
+      test_data += genRandomVector(test, sew, vs="vs2", emul=2)
+      if (test in vs1ins):
+        test_data += genRandomVector(test, sew, vs="vs1")
+      if (test in vfloattypes):
+        test_data += genVsedgesFP(test, sew, "1")
+        test_data += genVsedgesFP(test, sew, "2")
+      else:
+        test_data += genVsedges(test, sew, "1")
+        test_data += genVsedges(test, sew, "2")
+    else:
+      test_data += genRandomVector(test, sew, vs="vs2")
+      if (test in vs1ins):
+        test_data += genRandomVector(test, sew, vs="vs1")
+      if (test in vextins):
+        test_data += genVsedges(test, sew, test[-2:])
+      elif (test in mmins) or (test in xvmtype) or (test in vmlogicalins):
+        test_data += genVsedges(test, sew, "eew1")
+      elif (test in vfloattypes):
+        test_data += genVsedgesFP(test, sew, "1")
+      else:
+        test_data += genVsedges(test, sew, "1")
+
+  test_data += genVMaskedges()
+  
+  return test_data
+
 
 ##################################
 # Common functions
@@ -1061,7 +1141,7 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def insertTemplate(test, signatureWords, name, sew=0):
+def insertTemplate(test, signatureWords, name, sew=0, test_data=""):
     writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/tests/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
@@ -1074,7 +1154,7 @@ def insertTemplate(test, signatureWords, name, sew=0):
       ext_parts_no_I = [ext for ext in ext_parts if ext != "I"]
       if 'V' in ext_parts_no_I:
         if (test in vfloattypes):
-          ext_parts_no_I = ['F'] + ext_parts_no_I
+          ext_parts_no_I = ['F'] + ['Zfhmin'] + ext_parts_no_I
         ext_parts_no_I = ['M'] + ext_parts_no_I
       ext_str = "I"
       for ext in ext_parts_no_I:
@@ -1093,6 +1173,7 @@ def insertTemplate(test, signatureWords, name, sew=0):
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))
         .replace("@SEW@", str(sew))
+        .replace("@TEST_DATA@", test_data)
         .replace("@VLEN@", str(maxVLEN)) # TODO: make this configurable
         .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
         .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable

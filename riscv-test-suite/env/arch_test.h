@@ -828,7 +828,7 @@
 /**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
 /**** HUmode,Smode & Umode.                                                     ****/
 /**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
-/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/****  This uses T1,T2&T4. The S,U variations leave V unchanged.                ****/
 /**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
 /**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
@@ -894,7 +894,7 @@
   csrr   T2, CSR_MSCRATCH       /* ensure GPR T2 points to Mmode datae area */
         /**** mstatus MPV and PP now set up to desired mode    ****/
         /**** set MEPC to mret+4; requires relocating the pc   ****/
-.if     (\LMODE\() == Vmode)     // get trapsig_ptr & init val up 2 save areas (M<-S<-V)
+.if     ((\LMODE\() == VSmode)||(\LMODE\() == VUmode))     // get trapsig_ptr & init val up 2 save areas (M<-S<-V)
         LREG    T1, code_bgn_off + 2*sv_area_sz(T2)
 #ifdef rvtest_strap_routine
 .elseif (\LMODE\() == Smode || \LMODE\() == Umode)     // get trapsig_ptr & init val up 1 save areas (M<-S)

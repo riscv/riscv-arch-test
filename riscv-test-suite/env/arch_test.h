@@ -1205,8 +1205,11 @@ spcl_\__MODE__\()2mmode_test:
         beqz    T2, rtn2mmode                   // spcl code 0 in T2 means spcl ECALL goto_mmode, just rtn after ECALL
 //------pre-update trap_sig pointer so handlers can themselves trap-----
 \__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. excpt, int type, and h mode
+#ifdef rvtest_vtrap_routine
+        li      T2, 6*REGWIDTH                  // hypervisor mode adds 2 more fields
+#else
         li      T2, 4*REGWIDTH                  // standard entry length
-        bgez    T5, \__MODE__\()xcpt_sig_sv     // Keep std length if cause is an exception for now (MSB==0)
+#endif
 \__MODE__\()int_sig_sv:
         slli    T3, T5, 1                       // remove MSB, cause<<1
         addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an extint or larger? ( (cause<<1) > (8<<1) )?
@@ -1224,13 +1227,6 @@ rvtest_\__MODE__\()endtest:                     // target may be too far away, s
         LA(     T1, rvtest_\__MODE__\()end)     // FIXME: must be identity mapped if its a VA
         jalr    x0, T1
 
-\__MODE__\()xcpt_sig_sv:
-.ifc \__MODE__ , M                               // exception case, don't adjust if hypervisor mode disabled
-        csrr    T1, CSR_MISA
-        slli    T1, T1, XLEN-8                  // shift H bit into msb
-        bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
-        li      T2, 6*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 6*regsz
-.endif
 
 \__MODE__\()trap_sig_sv:
         // This replaces an LA(rvtest_trap_sig) calculating initial_Xtrap_sigptr +

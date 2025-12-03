@@ -88,7 +88,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
 3:
 	nop
 
-    addi a4, a4, (g-8)                  // REGIONSTART + g - 4
+    LI(t0, (g-8))
+    add a4, a4, t0                      // REGIONSTART + g - 4
 	LA(x4, 4f)							// Store the return Address in x4
 	jalr ra, 0(a4)
 	nop
@@ -120,7 +121,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     sw a4, 0(a5)
     nop
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LI(t0, (g-8))
+    add a5, a5, t0                                          // REGIONSTART + g - 4
     sw a4, 0(a5)
     nop
 
@@ -155,7 +157,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+    LI(t0, (g-8))
+    add a5, a5, t0                                          // REGIONSTART + g - 4
     lw a4, 0(a5)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update

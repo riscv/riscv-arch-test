@@ -75,7 +75,8 @@ RVTEST_SIGBASE( x13,signature_x13_1)
     nop
     RVTEST_SIGUPD(x13, a4)       							// Signature update
 
-	addi a5, a5, (g+4)
+	LI(t0, g)
+	add a5, a5, t0
     lw a4, 0(a5)
     nop
     nop

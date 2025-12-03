@@ -1175,11 +1175,15 @@ def insertTemplate(test, signatureWords, name, sew=0, test_data=""):
         .replace("@XLEN@", str(xlen))
         .replace("@SEW@", str(sew))
         .replace("@TEST_DATA@", test_data)
+        .replace("@TEST_FILE_NAME@", f"{test}.S")
+        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(500)) # TODO: change this to a dynamic value
         .replace("@VLEN@", str(maxVLEN)) # TODO: make this configurable
         .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
         .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
+        .replace("RVTEST_BEGIN", "RVTEST_BEGIN\nRVTEST_V_ENABLE(x5, x6)")
+        .replace('''#include "riscv_arch_test.h"''', f'''#define SEW {str(sew)}\n#include "test_macros_vector.h"''')
     )
     writeLine(template)
 

@@ -32,6 +32,16 @@
 #define REGWIDTH (XLEN>>3)      // in units of #bytes
 #define ALIGNSZ ((XLEN>>5)+2)   // log2(XLEN): 2,3,4 for XLEN 32,64,128
 
+# SEW signature update stride
+#ifndef SEW
+  #define SEW 0
+#endif
+#if (SEW > XLEN)                // max(SEW, XLEN)
+  #define SIG_STRIDE (SEW / 8)
+#else
+  #define SIG_STRIDE (XLEN / 8) 
+#endif
+
 #if XLEN>FLEN
   #define SIGALIGN REGWIDTH
 #else

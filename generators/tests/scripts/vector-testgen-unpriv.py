@@ -1176,7 +1176,7 @@ if __name__ == '__main__':
         #f.write(line)
 
         # insert generic header
-        insertTemplate(test, 0, "testgen_header_vector.S", sew=sew)
+        insertTemplate(test, 0, "testgen_header.S", sew=sew)
 
         # add assembly lines to enable fp where needed
         if test in vfloattypes:

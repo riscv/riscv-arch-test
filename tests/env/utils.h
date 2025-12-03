@@ -39,7 +39,7 @@
 #if (SEW > XLEN)                // max(SEW, XLEN)
   #define SIG_STRIDE (SEW / 8)
 #else
-  #define SIG_STRIDE (XLEN / 8) 
+  #define SIG_STRIDE (XLEN / 8)
 #endif
 
 #if XLEN>FLEN

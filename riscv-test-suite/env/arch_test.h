@@ -1741,7 +1741,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 rtn2mmode:
         addi    T4,T5, -CAUSE_MACHINE_ECALL
         beqz    T4, rtn_fm_mmode        /* shortcut if called from Mmode        */
-#if (rvtest_vtrap_routine)
+#ifdef rvtest_vtrap_routine
   #if (XLEN==32)
         csrr    T2, CSR_MSTATUSH        /* find out originating mode if  RV32   */
   #else

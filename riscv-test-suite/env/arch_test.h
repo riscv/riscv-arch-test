@@ -1556,7 +1556,11 @@ resto_\__MODE__\()rtn:                  // restore and return
         LREG    T6, trap_sv_off+6*REGWIDTH(sp)
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)      // restore temporaries
 
-        \__MODE__\()RET                 // return to test, after padding adjustment (macro to handle case)
+.ifc \__MODE__ , V
+       sret                            // V-mode handler uses standard sret.
+.else
+       \__MODE__\()ret                 // return to test, after padding adjustment (macro to handle case)
+.endif
 
  /***************************************************/
  /**** This is the interrupt specific code. It   ****/

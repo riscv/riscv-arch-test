@@ -1337,7 +1337,7 @@ common_\__MODE__\()excpt_handler:
   // can use T3, T6 because relocation will overwrite them
   //********************************************************************************
         
-        // create an index from these values: vMPP, x.GVA , H-ext
+        // create an index from these values: vMPP, H-ext, x.GVA
         // where vMPP = m.PRV ? svedMPP : m.MPP
         
   .ifc \__MODE__ ,  M
@@ -1348,12 +1348,16 @@ common_\__MODE__\()excpt_handler:
         LREG    T6, mpp_sv_off(sp)      /* saved MPP, overwritten if MPRV=1     */
 1:
 // create a mask in T4[2:0] with (xMPP==3, H-ext, GVA)        
+// extract vMPP into bit 2
         srli    T4, T6, MPP_LSB         /* now cvt MPP (in its natural position)*/
         andi    T4, T4, 3               /* to a single bit in bit2 iff ==3      */
         addi    T4, T4, 1
         andi    T4, T4, 4               
+    #ifdef rvtest_vtrap_routine
+// put H-extension implemented into bit 1
+        ori     T4, T4, 2               /* set bit 1 if H-ext is present        */
+        //****FIXME: this doesn't work if misa.H is RW but set to zero ****/
 // extract GVA into bit 0
-    #if (rvtest_vtrap_routine)
       #if (XLEN==32)
         csrr    T3, CSR_MSTATUSH        /* get CSR with GVA bit, but only H-ext */
         srli    T3, T3, GVA_LSB         /* reposition RV32 mstatush into bit1   */
@@ -1361,13 +1365,10 @@ common_\__MODE__\()excpt_handler:
         srli    T3, T4, GVA_LSB+32      /* reposition RV32 mstatus  into bit1   */
       #endif
         andi    T3, T3, 1
-        or      T4, T4, T3              /* extract GVA in bit1, insert into msk */
-// put H-extension implemented into bit 0       
-        ori     T4, T4, 1               /* set LSB if H-ext present             */
-        //****FIXME: this doesn't work if misa.H is RW but set to zero ****/
+        or      T4, T4, T3              /* extract GVA in bit0, insert into msk */
     #endif
 // chk for illegal combination
-        LI(     T6, 0x5D)               /*lglmsk(vMPP,H,GVA)=(1x1,011,0x0)=0x5D */
+        LI(     T6, 0x5D)               /*lglmsk(vMPP,H,GVA)=(1x1,0x1)=0x5D */
         srl     T6, T6, T4
         andi    T6, T6, 1               /* extract lgl bit val & end test if 0  */
         beq     T6, x0, rvtest_\__MODE__\()endtest 
@@ -1385,11 +1386,11 @@ common_\__MODE__\()excpt_handler:
 // vMPP cannot be 11 because you it cannot handle at a lower mode than trap mode
 // MPRV cannot be 1  because that only applies to Mmode
 // GVA can only exist if there is H-ext
-      #if rvtest_vtrap_routine
+      #ifdef rvtest_vtrap_routine
         LI(     T6, sv_area_sz)
         csrr    T3, CSR_HSTATUS         /* get CSR with GVA bit, but only H-ext */
         slli    T3, T3, XLEN-1-GVA_LSB  /* sign extend rt justified GVA bit     */
-        slri    T3, T3, XLEN-1
+        srli    T3, T3, XLEN-1
         and     T4, T3, T6              /* clr delta if GVA=0                   */
       #else
         li      T4,0                    /* clr delta if no H-ext                */

@@ -1019,7 +1019,7 @@ init_\__MODE__\()scratch:
 init_\__MODE__\()edeleg:
         li      T2, 0                   // save and clear edeleg so we can exit to Mmode
 .ifc \__MODE__ , V
-        csrrw   T2, CSR_VEDELEG, T2     // special case: VS EDELEG available from Vmode
+        csrrw   T2, CSR_HEDELEG, T2     // special case: VS EDELEG available from Vmode
 .else
   .ifc \__MODE__ , M
     #ifdef rvtest_strap_routine
@@ -1805,7 +1805,7 @@ resto_\__MODE__\()edeleg:
         LREG    T2, xedeleg_sv_off(T1)          // get saved xedeleg at offset -32
 
 .ifc \__MODE__ , V
-        csrw    CSR_VEDELEG, T2 //special case: VS EDELEG available from Vmode
+        csrw    CSR_HEDELEG, T2 //special case: VS EDELEG available from Vmode
 .else
   .ifc \__MODE__ , M
 #ifdef rvtest_strap_routine

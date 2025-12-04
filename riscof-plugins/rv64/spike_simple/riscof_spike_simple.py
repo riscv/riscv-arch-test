@@ -110,6 +110,8 @@ class spike_simple(pluginTemplate):
           self.isa += 'c'
       if "V" in ispec["ISA"]:
           self.isa += 'v'
+      if "H" in ispec["ISA"]:
+          self.isa += 'h'
       if "Zicsr" in ispec["ISA"]:
           self.isa += '_Zicsr'
       if "Zicond" in ispec["ISA"]:
@@ -152,6 +154,8 @@ class spike_simple(pluginTemplate):
           self.isa += '_Zksh'
       if "Zksed" in ispec["ISA"]:
           self.isa += '_Zksed'
+      if "Svukte" in ispec["ISA"]:
+          self.isa += '_Svukte'
 
       #TODO: The following assumes you are using the riscv-gcc toolchain. If
       #      not please change appropriately

@@ -223,6 +223,15 @@ Mend_PMP:                                    ;\
 	add t2, t1, t0                                              ;\
 	SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
 
+#define V_SAVE_AREA_SETUP(VVA, SVA, PA_LBL, _REG_NAME)                ;\
+    SAVE_AREA_SETUP(SVA, PA_LBL, _REG_NAME)                      ;\
+	LI (t0, VVA)                                                 ;\
+	LA (t1, PA_LBL)                                             ;\
+	sub t0, t0, t1                                              ;\
+	LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
+	add t2, t1, t0                                              ;\
+	SREG t2, _REG_NAME##_bgn_off+2*sv_area_sz(sp)               ;\
+
 #define PTE_SETUP_SV32(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
     .if (level==1)                                                ;\
         LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
@@ -251,11 +260,35 @@ Mend_PMP:                                    ;\
     add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
     SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
 
+#define V_PTE_SETUP_SV39(_PAR, _PR, _TR0, _TR1, VA, level)                                     \
+    srli _PAR, _PAR, 12                 /* Shift PA right by 12 to get PPN */               ;\
+    slli _PAR, _PAR, 10                 /* Shift left by 10 to align PPN in PTE format */   ;\
+    or _PAR, _PAR, _PR                  /* Combine PPN with permissions */                  ;\
+    .if (level==2)                      /* Level 2 (1GB superpage) */                       ;\
+        LA(_TR1, rvtest_Vroot_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>30)&0x1FF)<<3)   /* Calculate index for LEVEL2 (bits 38:30) */       ;\
+    .endif                                                                                  ;\
+    .if (level==1)                      /* Level 1 (2MB superpage) */                       ;\
+        LA(_TR1, rvtest_vlvl2_pg_tbl)   /* Load level 2 page table address */               ;\
+        LI(_TR0, ((VA>>21)&0x1FF)<<3)   /* Calculate index for LEVEL1 (bits 29:21) */       ;\
+    .endif                                                                                  ;\
+    .if (level==0)                      /* Level 0 (4KB page) */                            ;\
+        LA(_TR1, rvtest_vlvl1_pg_tbl)   /* Load level 1 page table address */               ;\
+        LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
+    .endif                                                                                  ;\
+    add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
+    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+
 // More Robust version of PTE_SETUP_SV39 to setup a PTE for a PA using VA
 // in a single line.
 // args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
 // args: VA: Virtual Address in hex, level: Level to store at (0, 1, or 2)
 #define PTE_SETUP_RV39_New(PA_LBL, PERMS, VA, level)                                         \
+    LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
+    LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
+    PTE_SETUP_SV39(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV39 macro */             ;\
+
+#define V_PTE_SETUP_RV39_New(PA_LBL, PERMS, VA, level)                                         \
     LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
     LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
     PTE_SETUP_SV39(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV39 macro */             ;\
@@ -431,6 +464,24 @@ Mend_PMP:                                    ;\
     srli t6, t6, 12                                             ;\
     or t6, t6, t5                                               ;\
     csrw satp, t6                                               ;
+
+#define VSATP_SETUP_RV64(MODE)                                   ;\
+    LA(t6, rvtest_Vroot_pg_tbl)                                 ;\
+    .if (MODE == sv39)                                          ;\
+    LI(t5, (SATP64_MODE) & (SATP_MODE_SV39 << 60))              ;\
+    .endif                                                      ;\
+    .if (MODE == sv48)                                          ;\
+    LI(t5, (SATP64_MODE) & (SATP_MODE_SV48 << 60))              ;\
+    .endif                                                      ;\
+    .if (MODE == sv57)                                          ;\
+    LI(t5, (SATP64_MODE) & (SATP_MODE_SV57 << 60))              ;\
+    .endif                                                      ;\
+    .if (MODE == sv64)                                          ;\
+    LI(t5, (SATP64_MODE) & (SATP_MODE_SV64 << 60))              ;\
+    .endif                                                      ;\
+    srli t6, t6, 12                                             ;\
+    or t6, t6, t5                                               ;\
+    csrw vsatp, t6                                              ;
 
 // macro to update the signature region for hints
 #define TEST_STORE_GPRS_AND_STATUS(sigptr)  ;\

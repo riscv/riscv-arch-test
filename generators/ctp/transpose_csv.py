@@ -7,6 +7,8 @@
 import csv
 import os
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
 
 def transpose_csv(rows):
@@ -61,6 +63,16 @@ def split_columns_with_blanks(transposed, max_columns):
 def write_asciidoc(filepath, tables):
     """Write all tables directly into .adoc file."""
     with open(filepath, "w", encoding="utf-8") as f:
+        # Add auto-generation header comment with absolute paths
+        argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
+        command_line = ' '.join(argv_abs)
+        gen_date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+        f.write('// WARNING: This file was automatically generated.\n')
+        f.write('// Do not modify by hand.\n')
+        f.write('// Generation command: ' + command_line + '\n')
+        f.write('// Generation date: ' + gen_date + '\n')
+        f.write('\n')
+        
         for table in tables:
             f.write("[options=header]\n")
             f.write("[%autofit]\n")

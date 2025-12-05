@@ -17,7 +17,7 @@
 // Therefore, Zihintpause is not needed in the implemented_extensions.
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, Zicsr]
+# implemented_extensions: [I, U, Zicsr]
 # MARCH: rv${XLEN}i_zicsr_zihintpause
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

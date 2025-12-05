@@ -19,7 +19,7 @@ c.li,CI,x,x,x,nx0,,,,,,,,,,,6bit,
 c.lui,CI,x,x,x,nx2,,,,,,,,,,,6bit_n0,
 c.lw,CL,x,x,x,p,,p,,,,,,c,,,,x
 c.lwsp,CILS,x,x,x,,,nx0,,,,,,,,,,4sp
-c.mv,CR,x,x,x,nx0,nx0,,,x,,,nx0,,,,,
+c.mv,CR,x,x,x,,nx0,nx0,,x,,,nx0,,,,,
 c.nop,CN,x,x,x,,,,,,,,,,,,,
 c.or,CA,x,x,x,p,p,,x,x,,x,c,,,,,
 c.sd,CS,,x,x,p,p,,,x,,,,,,,,8

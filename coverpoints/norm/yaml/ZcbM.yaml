@@ -1,0 +1,6 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: c-mul_op
+    coverpoint: ["Zcb_c_mul_cg/{cp_rs1p, cp_rs2p, cr_rs1_rs2_edges}"]
+      # multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.

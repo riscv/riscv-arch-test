@@ -1,0 +1,14 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Zc_fp_regs
+    // Use a representative coverpoint; applies to others too
+    coverpoint: ["Zcf_c_flw_cg/{cp_fdp}"]
+  - name: c-flw_op
+    coverpoint: ["Zcf_c_flw_cg/{cp_rs1p, cp_fdp, cp_imm_mul4}"]
+  - name: c-flwsp_op
+    coverpoint: ["Zcf_c_flwsp_cg/{cp_rs1p, cp_fdp, cp_imm_mul4sp}"]
+  - name: c-fsw_op
+    coverpoint: ["Zcf_c_fsw_cg/{cp_rs1p, cp_fs2p, cp_imm_mul4}"]
+  - name: c-fswsp_op
+    coverpoint: ["Zcf_c_fswsp_cg/{cp_rs1p, cp_fs2p, cp_imm_mul4sp}"]

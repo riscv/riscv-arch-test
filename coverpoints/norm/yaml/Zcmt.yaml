@@ -1,0 +1,68 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+# *** needs flushing out 12/5/25 david_harris@hmc.edu; needs pulling out privileged parts, also see Zca.yaml
+
+normative_rule_definitions:
+  - name: cm-jalt_op
+    coverpoint: ["TODO"]
+      # cm.jalt reads an entry from the jump vector table in memory and jumps to the address that was read, linking to ra.
+  - name: cm-jt_op
+    coverpoint: ["TODO"]
+      # cm.jt reads an entry from the jump vector table in memory and jumps to the address that was read.
+  - name: cm-mva01s_op
+    coverpoint: ["TODO"]
+      # moves r1s' into a0 and r2s' into a1.
+  - name: cm-mva01s_sreg
+    coverpoint: ["TODO"]
+      # The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.
+  - name: cm-mvsa01_op
+    coverpoint: ["TODO"]
+      # moves a0 into r1s' and a1 into r2s'.  r1s' and r2s' must be different.
+  - name: cm-mvsa01_sreg
+    coverpoint: ["TODO"]
+      # The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.
+  - name: cm-pop_op
+    coverpoint: ["TODO"]
+      # This instruction pops (loads) the registers in reg_list from stack memory, and then adjusts the stack pointer by stack_adj.
+  - name: cm-popret_op
+    coverpoint: ["TODO"]
+      # pops (loads) the registers in reg_list from stack memory, adjusts the stack pointer by stack_adj and then returns to ra.
+  - name: cm-popretz_op
+    coverpoint: ["TODO"]
+      # pops (loads) the registers in reg_list from stack memory, adjusts the stack pointer by stack_adj, moves zero into a0 and then returns to ra.
+  - name: cm-push_op
+    coverpoint: ["TODO"]
+      # pushes (stores) the registers in reg_list to the memory below the stack pointer, and then creates the stack frame by decrementing the stack pointer by stack_adj, including any additional stack space requested by the value of spimm.
+  - name: interrupts_allowed_in_pushpop
+    coverpoint: ["TODO"]
+      # NOTE: It is implementation defined whether interrupts can also be taken during the sequence execution.
+  - name: jvt_base_vm
+    coverpoint: ["TODO"]
+      # jvt.base is a virtual address, whenever virtual memory is enabled.
+  - name: jvt_en
+    coverpoint: ["TODO"]
+      # If the Smstateen extension is implemented, then bit 2 in mstateen0, sstateen0, and hstateen0 is implemented.  If bit 2 of a controlling stateen0 CSR is zero, then access to the jvt CSR and execution of a cm.jalt or cm.jt instruction by a lower privilege level results in an illegal-instruction trap (or, if appropriate, a virtual-instruction trap).
+  - name: jvt_mode_acc
+    coverpoint: ["TODO"]
+      # jvt.mode is a WARL field, so can only be programmed to modes which are implemented.
+  - name: jvt_op
+    coverpoint: ["TODO"]
+      # If &lt;&lt;Zcmt&gt;&gt; is implemented then jvt must also be implemented, but can contain a read-only value. If jvt is writable, the set of values the register may hold can vary by implementation. The value in the BASE field must always be aligned on a 64-byte boundary. Note that the CSR contains only bits XLEN-1 through 6 of the address base. When computing jump-table accesses, the lower six bits of base are filled with zeroes to obtain an XLEN-bit jump-table base address jvt.base that is always aligned on a 64-byte boundary.
+  - name: jvt_reg
+    coverpoint: []
+      # The jvt register is an XLEN-bit WARL read/write register that holds the jump table configuration, consisting of the jump table base address (BASE) and the jump table mode (MODE).
+  - name: Zcmt_endian
+    coverpoint: ["TODO"]
+      # Table entries follow the current data endianness. This is different from normal instruction fetch which is always little-endian.
+  - name: Zcmt_entry_sz
+    coverpoint: ["TODO"]
+      # The base of the table is in the jvt CSR (see &lt;&lt;csrs-jvt&gt;&gt;), each table entry is XLEN bits.
+  - name: Zcmt_fetch
+    coverpoint: ["TODO"]
+      # For a table jump instruction, the table entry that the instruction selects is considered an extension of the instruction itself. Hence, the execution of a table jump instruction involves two instruction fetches, the first to read the instruction (cm.jt/cm.jalt) and the second to read from the jump vector table (JVT). Both instruction fetches are implicit reads, and both require execute permission; read permission is irrelevant. It is recommended that the second fetch be ignored for hardware triggers and breakpoints.
+  - name: Zcmt_table
+    coverpoint: ["TODO"]
+      # Table jump uses a 256-entry XLEN wide table in instruction memory to contain function addresses. The table must be a minimum of 64-byte aligned.
+  - name: Zcmt_trap
+    coverpoint: ["TODO"]
+      # If an exception occurs on either instruction fetch, xEPC is set to the PC of the table jump instruction,  xCAUSE is set as expected for the type of fault and xTVAL (if not set to zero) contains the fetch address which caused the fault.

@@ -1,0 +1,12 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: c-sext-b_op
+    coverpoint: ["Zcb_c_sext_b_cg/{cp_rs1p, cp_rdp, cp_rs1_edges}"]
+      # sign-extends the least-significant byte in the operand to XLEN bits by copying the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
+  - name: c-sext-h_op
+    coverpoint: ["Zcb_c_sext_h_cg/{}"]
+      # sign-extends the least-significant halfword in the operand to XLEN bits by copying the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
+  - name: c-zext-h_op
+    coverpoint: ["Zcb_c_zext_h_cg/{}"]
+      # zero-extends the least-significant halfword of the operand to XLEN bits by inserting zeros into all of the bits more significant than 15.

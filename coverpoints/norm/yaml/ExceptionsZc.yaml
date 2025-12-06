@@ -1,0 +1,19 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+
+  // From c-st-ext chapter
+  - name: c-ebreak
+    coverpoint: ["ExceptionsZca_exceptions_cg/cp_breakpoint"]
+  - name: c-ebreak_op
+    coverpoint: ["ExceptionsZca_exceptions_cg/cp_breakpoint"]
+  - name: Zca_align16
+    coverpoint: ["ExceptionsM_exceptions_cg/cp_instr_access_fault"]
+  - name: Zca_illegal
+    coverpoint: ["ExceptionsZca_exceptions_cg/cp_illegal_instruction"]
+  - name: Zca_no_misaligned
+    coverpoint: ["TODO"]
+
+  - name: misa-c_set
+    coverpoint: []
+      # MISA.C is set if the following extensions are selected: | Zca and not F Zca, Zcf and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified (RV32 only)  this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified (RV64 only)  this configuration excludes Zcmp, Zcmt

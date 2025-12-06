@@ -1,0 +1,213 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Zc_fp_regs
+    coverpoint: []
+      # Compressed register-based floating-point loads and stores also use the CL and CS formats respecti...
+  - name: Zca_align16
+    coverpoint: []
+      # The C extension allows 16-bit instructions to be freely intermixed with 32-bit instructions, with...
+  - name: Zca_hints
+    coverpoint: []
+      # A portion of the RVC encoding space is reserved for microarchitectural HINTs. Like the HINTs in t...
+  - name: Zca_illegal
+    coverpoint: []
+      # A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.
+  - name: Zca_no_misaligned
+    coverpoint: []
+      # With the addition of the C extension, no instructions can raise instruction-address-misaligned ex...
+  - name: Zca_offsets_mul2
+    coverpoint: []
+      # As with base RVI instructions, the offsets of all RVC control transfer instructions are in multip...
+  - name: Zca_regs8
+    coverpoint: []
+      # CIW, CL, CS, CA, and CB are limited to just 8 of them. &lt;&lt;registers&gt;&gt; lists these popu...
+  - name: c-add_hint
+    coverpoint: []
+      # The code points with rs2≠x0 and rd=x0 are HINTs.
+  - name: c-add_op
+    coverpoint: []
+      # C.ADD adds the values in registers rd and rs2 and writes the result to register rd. C.ADD expands...
+  - name: c-add_val
+    coverpoint: []
+      # C.ADD is only valid when rs2≠x0; the code points with rs2=x0 correspond to the C.JALR and C.EBREA...
+  - name: c-addi16sp_op
+    coverpoint: []
+      # C.ADDI16SP (add immediate to stack pointer) shares the opcode with C.LUI, but has a destination f...
+  - name: c-addi16sp_rsv
+    coverpoint: []
+      # C.ADDI16SP is valid only when nzimm≠0; the code point with nzimm=0 is reserved.
+  - name: c-addi4spn_op
+    coverpoint: []
+      # C.ADDI4SPN (add immediate to stack pointer, non-destructive) is a CIW-format instruction that add...
+  - name: c-addi4spn_rsv
+    coverpoint: []
+      # C.ADDI4SPN is valid only when nzuimm≠0; the code points with nzuimm=0 are reserved.
+  - name: c-addi_hint
+    coverpoint: []
+      # The code points with rd≠0 and imm=0 are HINTs.
+  - name: c-addi_nop
+    coverpoint: []
+      # The code points with rd=x0 encode the C.NOP instruction, of which the code points with imm≠0 are ...
+  - name: c-addi_op
+    coverpoint: []
+      # C.ADDI adds the non-zero sign-extended 6-bit immediate to the value in register rd then writes th...
+  - name: c-addiw_op
+    coverpoint: []
+      # C.ADDIW is an RV64C-only instruction that performs the same computation but produces a 32-bit res...
+  - name: c-addiw_rsv
+    coverpoint: []
+      # C.ADDIW is valid only when rd≠x0; the code points with rd=x0 are reserved.
+  - name: c-addw_op
+    coverpoint: []
+      # C.ADDW is an RV64C-only instruction that adds the values in registers rd′ and rs2′, then sign-ext...
+  - name: c-and_op
+    coverpoint: []
+      # C.AND computes the bitwise AND of the values in registers rd′ and rs2′, then writes the result to...
+  - name: c-andi_op
+    coverpoint: []
+      # C.ANDI is a CB-format instruction that computes the bitwise AND of the value in register rd′ and ...
+  - name: c-beqz_op
+    coverpoint: []
+      # C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to...
+  - name: c-bnez_op
+    coverpoint: []
+      # C.BNEZ is defined analogously, but it takes the branch if rs1′ contains a nonzero value. It expan...
+  - name: c-ebreak
+    coverpoint: []
+      # C.JALR is valid only when rs1≠x0; the code point with rs1=x0 corresponds to the C.EBREAK instruct...
+  - name: c-ebreak_op
+    coverpoint: []
+      # Debuggers can use the C.EBREAK instruction, which expands to ebreak, to cause control to be trans...
+  - name: c-fdwsp_op
+    coverpoint: []
+      # C.FLDSP is an RV32DC/RV64DC-only instruction that loads a double-precision floating-point value f...
+  - name: c-fld_op
+    coverpoint: []
+      # C.FLD is an RV32DC/RV64DC-only instruction that loads a double-precision floating-point value fro...
+  - name: c-flw_op
+    coverpoint: []
+      # C.FLW is an RV32FC-only instruction that loads a single-precision floating-point value from memor...
+  - name: c-flwsp_op
+    coverpoint: []
+      # C.FLWSP is an RV32FC-only instruction that loads a single-precision floating-point value from mem...
+  - name: c-fsd_op
+    coverpoint: []
+      # C.FSD is an RV32DC/RV64DC-only instruction that stores a double-precision floating-point value in...
+  - name: c-fsdwsp_op
+    coverpoint: []
+      # C.FSDSP is an RV32DC/RV64DC-only instruction that stores a double-precision floating-point value ...
+  - name: c-fsw_op
+    coverpoint: []
+      # C.FSW is an RV32FC-only instruction that stores a single-precision floating-point value in floati...
+  - name: c-fswsp_op
+    coverpoint: []
+      # C.FSWSP is an RV32FC-only instruction that stores a single-precision floating-point value in floa...
+  - name: c-j_op
+    coverpoint: []
+      # C.J performs an unconditional control transfer. The offset is sign-extended and added to the pc t...
+  - name: c-jal_op
+    coverpoint: []
+      # C.JAL is an RV32C-only instruction that performs the same operation as C.J, but additionally writ...
+  - name: c-jalr
+    coverpoint: []
+      # C.JALR is valid only when rs1≠x0; the code point with rs1=x0 corresponds to the C.EBREAK instruct...
+  - name: c-jalr_op
+    coverpoint: []
+      # C.JALR (jump and link register) performs the same operation as C.JR, but additionally writes the ...
+  - name: c-jr_op
+    coverpoint: []
+      # C.JR (jump register) performs an unconditional control transfer to the address in register rs1. C...
+  - name: c-jr_rsv
+    coverpoint: []
+      # C.JR is valid only when rs1≠x0; the code point with rs1=x0 is reserved.
+  - name: c-ld_op
+    coverpoint: []
+      # C.LD is an RV64C-only instruction that loads a 64-bit value from memory into register rd′. It com...
+  - name: c-ldsp_op
+    coverpoint: []
+      # C.LDSP is an RV64C-only instruction that loads a 64-bit value from memory into register rd. It co...
+  - name: c-ldsp_rsv
+    coverpoint: []
+      # C.LDSP is valid only when rd≠x0; the code points with rd=x0 are reserved.
+  - name: c-li_hint
+    coverpoint: []
+      # The C.LI code points with rd=x0 are HINTs.
+  - name: c-li_op
+    coverpoint: []
+      # C.LI loads the sign-extended 6-bit immediate, imm, into register rd. C.LI expands into addi rd, x...
+  - name: c-lui_op
+    coverpoint: []
+      # C.LUI loads the non-zero 6-bit immediate field into bits 17–12 of the destination register, clear...
+  - name: c-lui_rsv
+    coverpoint: []
+      # C.LUI is valid only when rd≠x2, and when the immediate is not equal to zero. The code points with...
+  - name: c-lw_op
+    coverpoint: []
+      # C.LW loads a 32-bit value from memory into register rd′. It computes an effective address by addi...
+  - name: c-lwsp_op
+    coverpoint: []
+      # C.LWSP loads a 32-bit value from memory into register rd. It computes an effective address by add...
+  - name: c-lwsp_rsv
+    coverpoint: []
+      # C.LWSP is valid only when rd≠x0; the code points with rd=x0 are reserved.
+  - name: c-mv_hint
+    coverpoint: []
+      # The code points with rs2≠x0 and rd=x0 are HINTs.
+  - name: c-mv_jr
+    coverpoint: []
+      # C.MV is valid only when rs2≠x0; the code points with rs2=x0 correspond to the C.JR instruction.
+  - name: c-mv_op
+    coverpoint: []
+      # C.MV copies the value in register rs2 into register rd. C.MV expands into add rd, x0, rs2.
+  - name: c-nop_hint
+    coverpoint: []
+      # The C.NOP code points with imm≠0 encode HINTs.
+  - name: c-nop_op
+    coverpoint: []
+      # C.NOP is a CI-format instruction that does not change any user-visible state, except for advancin...
+  - name: c-or_op
+    coverpoint: []
+      # C.OR computes the bitwise OR of the values in registers rd′ and rs2′, then writes the result to r...
+  - name: c-sd_op
+    coverpoint: []
+      # C.SD is an RV64C-only instruction that stores a 64-bit value in register rs2′ to memory. It compu...
+  - name: c-sdsp_op
+    coverpoint: []
+      # C.SDSP is an RV64C-only instruction that stores a 64-bit value in register rs2 to memory. It comp...
+  - name: c-slli_hint
+    coverpoint: []
+      # The C.SLLI code points with shamt=0 or with rd=x0 are HINTs.
+  - name: c-slli_op
+    coverpoint: []
+      # C.SLLI is a CI-format instruction that performs a logical left shift of the value in register rd ...
+  - name: c-slli_shamt5
+    coverpoint: []
+      # For RV32C, shamt[5] must be zero; the code points with shamt[5]=1 are designated for custom exten...
+  - name: c-srai_op
+    coverpoint: []
+      # C.SRAI is defined analogously to C.SRLI, but instead performs an arithmetic right shift. C.SRAI e...
+  - name: c-srli_hint
+    coverpoint: []
+      # The C.SRLI code points with shamt=0 are HINTs.
+  - name: c-srli_op
+    coverpoint: []
+      # C.SRLI is a CB-format instruction that performs a logical right shift of the value in register rd...
+  - name: c-srli_shamt5
+    coverpoint: []
+      # For RV32C, shamt[5] must be zero; the code points with shamt[5]=1 are designated for custom exten...
+  - name: c-sub_op
+    coverpoint: []
+      # C.SUB subtracts the value in register rs2′ from the value in register rd′, then writes the result...
+  - name: c-subw_op
+    coverpoint: []
+      # C.SUBW is an RV64C-only instruction that subtracts the value in register rs2′ from the value in r...
+  - name: c-sw_op
+    coverpoint: []
+      # C.SW stores a 32-bit value in register rs2′ to memory. It computes an effective address by adding...
+  - name: c-swsp_op
+    coverpoint: []
+      # C.SWSP stores a 32-bit value in register rs2 to memory. It computes an effective address by addin...
+  - name: c-xor_op
+    coverpoint: []
+      # C.XOR computes the bitwise XOR of the values in registers rd′ and rs2′, then writes the result to...

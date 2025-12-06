@@ -1,0 +1,24 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: c-lbu_op
+    coverpoint: ["Zcb_c_lbu_cg/{cp_rs1p, cp_rdp}"]
+      # loads a byte from the memory address formed by adding rs1' to the zero extended immediate uimm. The resulting byte is zero extended to XLEN bits and is written to rd'.
+  - name: c-lh_op
+    coverpoint: ["Zcb_c_lh_cg/{cp_rs1p, cp_rdp}"]
+      # loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm. The resulting halfword is sign extended to XLEN bits and is written to rd'.
+  - name: c-lhu_op
+    coverpoint: ["Zcb_c_lhu_cg/{cp_rs1p, cp_rdp}"]
+      # loads a halfword from the memory address formed by adding rs1' to the zero extended immediate uimm. The resulting halfword is zero extended to XLEN bits and is written to rd'.
+  - name: c-not_op
+    coverpoint: ["Zcb_c_not_cg/{cp_rs1p, cp_rs1_edges}"]
+      # takes the one's complement of rd'/rs1' and writes the result to the same register.
+  - name: c-sb_op
+    coverpoint: ["Zcb_c_sb_cg/{cp_rs1p, cp_rs2p}"]
+      # stores the least significant byte of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.
+  - name: c-sh_op
+    coverpoint: ["Zcb_c_sh_cg/{cp_rs1p, cp_rs2p}"]
+      # stores the least significant halfword of rs2' to the memory address formed by adding rs1' to the zero extended immediate uimm.
+  - name: c-zext-b_op
+    coverpoint: ["Zcb_c_zext_b_cg/{}"]
+      # zero-extends the least-significant byte of the operand to XLEN bits by inserting zeros into all of the bits more significant than 7.

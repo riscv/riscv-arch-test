@@ -24,6 +24,7 @@ def make_cp_bs(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
     test_lines: list[str] = []
     for bs in bs_vals:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=bs)
         desc = f"{coverpoint}: bs={bs}"

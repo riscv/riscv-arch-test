@@ -24,7 +24,7 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_IO_INIT|Initialization steps needed prior to writing to the console
-|RVMODEL_IO_WRITE_STR(_R, _STR)|Write a null-terminated ASCII string to the console, where _R is a temporary register that may be trashed by the macro and _STR is a register containing the address of the first byte of the string
+|RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string
 |RVMODEL_SET_MEXT_INT| Sets the Machine External Interrupt (mip.MEIP = 1, if supported)
 |RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt (mip.MEIP = 0)
 |RVMODEL_SET_MTIMER_INT|Sets the Machine Timer Interrupt (mip.MTIP = 1, if supported)

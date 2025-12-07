@@ -26,8 +26,8 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         raise ValueError(f"Unknown cp_rs1_edges coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
-
     for edge_val in edges:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val)
         desc = f"{coverpoint} (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"
@@ -46,8 +46,8 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         raise ValueError(f"Unknown cp_rs2_edges coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
-
     for edge_val in edges:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=edge_val)
         desc = f"{coverpoint} (Test source rs2 value = {test_data.xlen_format_str.format(edge_val)})"
@@ -67,9 +67,9 @@ def make_cr_rs1_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
         raise ValueError(f"Unknown cr_rs1_rs2_edges coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
-
     for edge_val1 in edges1:
         for edge_val2 in edges2:
+            test_data.add_testcase_string(coverpoint)
             test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             desc = f"{coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})"
@@ -92,6 +92,7 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
+            test_data.add_testcase_string(coverpoint)
             test_lines.extend(
                 [
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",

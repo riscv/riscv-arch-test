@@ -9,7 +9,7 @@ RVTEST_DATA_BEGIN
 @TEST_DATA@
 
     // Testcase strings
-// @TESTCASE_STRINGS@ TODO: Add strings for each testcase indicating number, cp, and normative rule
+@TESTCASE_STRINGS@
 
 // End of test data section and model specific data
 RVTEST_DATA_END

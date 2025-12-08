@@ -9,7 +9,7 @@ on:
         default: "false"
   push:
     branches:
-      - cvw
+      - act4
     paths:
       - "ctp/**"
       - "generators/ctp/**"
@@ -17,7 +17,7 @@ on:
       - ".github/workflows/ctp-build.yml"
   pull_request:
     branches:
-      - cvw
+      - act4
     paths:
       - "ctp/**"
       - "generators/ctp/**"
@@ -64,7 +64,7 @@ jobs:
           path: github-pages
 
   release:
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/cvw') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/act4') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -101,7 +101,7 @@ jobs:
             ctp.html
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/cvw'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/act4'
     needs: build
     runs-on: ubuntu-latest
     permissions:

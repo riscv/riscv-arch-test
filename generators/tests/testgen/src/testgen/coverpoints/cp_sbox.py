@@ -23,6 +23,7 @@ def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     test_lines: list[str] = []
     for sbox in sbox_vals:
+        test_data.add_testcase_string(coverpoint)
         # repeat sbox value in each byte
         if test_data.xlen == 32:
             s = sbox | sbox << 8 | sbox << 16 | sbox << 24

@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title         : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors       : Umer Shahid, Allen Baum, David Harris
+//          Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -15,14 +15,14 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in 
+// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in
 //               this test file.
 //
 // Test Cases  : Test pmpaddr access. No background region, writing all 1s,
 //               walking 1s, all 0s to all defined pmpaddr CSRs. Test pmpcfg access,
 //               writing walking 1s from lsb to msb (XLEN-1) to pmpcfg CSRs 0, 2 and
 //               writing 0 to pmpcfg 1, 3. If 64 CSRs are supported, doing same
-//               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15. 
+//               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -38,11 +38,11 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+  #define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+  #define RVMODEL_NUM_PMPS 16
 #endif
 
 RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_pmpaddr_walk,cp_pmpcfg_walk)
@@ -50,35 +50,35 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3   
-  	.option norvc
+  .attribute unaligned_access, 0
+  .attribute stack_align, 16
+    .align  3
+    .option norvc
 
 main:
     RVTEST_GOTO_MMODE
 
-	// Loop to SET ALL pmpaddr REGs to zeros
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+  // Loop to SET ALL pmpaddr REGs to zeros
+  .set pmpaddri, CSR_PMPADDR0
+  .rept RVMODEL_NUM_PMPS
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri+1
+  .endr
 
     li t0, -1
-	// Loop to SET ALL pmpaddr REGs to ones
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, t0
-	.set pmpaddri, pmpaddri+1
-	.endr
+  // Loop to SET ALL pmpaddr REGs to ones
+  .set pmpaddri, CSR_PMPADDR0
+  .rept RVMODEL_NUM_PMPS
+  csrw pmpaddri, t0
+  .set pmpaddri, pmpaddri+1
+  .endr
 
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+  // Loop to SET ALL pmpcfg REGs to zero
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept RVMODEL_NUM_PMPS/4
+  csrw pmpcfgi , x0
+  .set pmpcfgi, pmpcfgi+1
+  .endr
 
 
     li t2, 1                     // walking one: 0x00000001
@@ -171,18 +171,18 @@ main:
     slli t2, t2, 1               // Shift walking one to left
     bnez t2, 2b                  // Continue loop while t2 != 0
 
-	RVTEST_GOTO_MMODE
-	li a4, 0xbeefcafe							// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x13, a4)       				// Signature update
-	j exit										// Verification Complete, exit the test
+  RVTEST_GOTO_MMODE
+  li a4, 0xbeefcafe              // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)               // Signature update
+  j exit                    // Verification Complete, exit the test
 
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+  nop
+  nop
+  jr ra                            // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 #endif

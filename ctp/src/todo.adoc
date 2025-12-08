@@ -1,11 +1,11 @@
 
 == To Do
 
-I think we might want to rethink some of our privileged testing structure and switch to having Sm, S, and U testplans/coverpoints/tests instead of lumping most of that into ZicsrM/S/U. I will also be more apparent what is being tested where that way.
+I think we might want to rethink some of our privileged testing structure and switch to having Sm, S, and U testplans/coverpoints/tests instead of lumping most of that into ZicsrM/S/U. It will also be more apparent what is being tested where that way.
 
 === Current Status
 
-At present, coverpoints and tests are being developed in the https://github.com/riscv-non-isa/riscv-arch-test/[riscv-arch-test] repository cvw branch and being tested on the https://github.com/openhwgroup/cvw[CORE-V Wally] processor.  The goal is to be able to certify RVA23S64 as well as spec-compliant machine mode.
+At present, coverpoints and tests are being developed in the https://github.com/riscv-non-isa/riscv-arch-test/[riscv-arch-test] repository act4 branch and being tested on the https://github.com/openhwgroup/cvw[CORE-V Wally] processor.  The goal is to be able to certify RVA23S64 as well as spec-compliant machine mode.
 
 This test plan exists in the form of spreadsheets, and is being converted to ASCII Doc.
 

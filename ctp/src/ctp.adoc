@@ -56,12 +56,13 @@ _This document is released under a Creative Commons Attribution 4.0 Internationa
 
 This is a draft Certification Test Plan.  It reflects the coverpoints and tests
 presently being developed in the https://github.com/riscv-non-isa/riscv-arch-test[riscv-arch-test] repository
-cvw branch.  It is intended for discussion as a possible format of test plan for RISC-V Certification.
+act4 branch.  It is intended for discussion as a possible format of test plan for RISC-V Certification.
 
 include::intro.adoc[]
 include::cert.adoc[]
 include::profiles.adoc[]
 include::strategy.adoc[]
+include::req.adoc[]
 include::unpriv.adoc[]
 include::priv.adoc[]
 include::nonisa.adoc[]

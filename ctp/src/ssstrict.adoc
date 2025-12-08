@@ -44,4 +44,4 @@ Test that all behaviors called out as "reserved" in the vector specification cau
 //include::{testplansdir}/SsstrictV.adoc[]
 ,===
 
-*** need link
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=743730639#gid=743730639[Google Sheet Testplan]

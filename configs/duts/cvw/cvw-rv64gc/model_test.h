@@ -35,16 +35,20 @@
         .popsection;
 
 #define RVMODEL_HALT_PASS  \
+  li x1, 1                ;\
+  la t0, tohost           ;\
   write_tohost_pass:      ;\
-    li x1, 1              ;\
-    sw x1, tohost, t0     ;\
+    sw x1, 0(t0)          ;\
+    sw x0, 4(t0)          ;\
   self_loop_pass:         ;\
     j self_loop_pass      ;\
 
 #define RVMODEL_HALT_FAIL \
+  li x1, 3                ;\
+  la t0, tohost           ;\
   write_tohost_fail:      ;\
-    li x1, 3              ;\
-    sw x1, tohost, t0     ;\
+    sw x1, 0(t0)          ;\
+    sw x0, 4(t0)          ;\
   self_loop_fail:         ;\
     j self_loop_fail      ;\
 

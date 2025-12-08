@@ -1,7 +1,7 @@
 
 === E Base Embedded Extension
 
-The E extension is a variant of I with 16 general purpose registers.  This test plan also includes tests restricted to these 16 registers for simple extensions most likely to be implemented on an enbedded core.
+The E extension is a variant of I with 16 general purpose registers.  This test plan also includes tests restricted to these 16 registers for simple extensions most likely to be implemented on an embedded core.
 
 The test plans are identical to the integer equivalents.  For example, E and I are the same, and EM is the same as M.  The coverpoints and tests are almost identical but use 16 instead of 32 registers.
 

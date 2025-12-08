@@ -6,7 +6,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: @EXTENSION_LIST@
+# REQUIRED_EXTENSIONS: @EXTENSION_LIST@
 # params:
 #   MXLEN: @XLEN@
 # MARCH: @MARCH@

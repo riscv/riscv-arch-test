@@ -27,8 +27,7 @@ def select_tests(
     selected_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
         # Check if all required extensions are implemented
-        required_exts = set(test_metadata.implemented_extensions)
-        if required_exts.issubset(implemented_extensions):
+        if (test_metadata.required_extensions).issubset(implemented_extensions):
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):

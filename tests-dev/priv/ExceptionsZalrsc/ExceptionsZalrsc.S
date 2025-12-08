@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, Zicsr, Zalrsc]
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zalrsc]
 # MARCH: rv${XLEN}ia_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

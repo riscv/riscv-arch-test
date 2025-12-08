@@ -2,7 +2,7 @@
 
 normative_rule_definitions:
   - name: Zc_fp_regs
-    // Use a representative coverpoint; applies to others too
+    # Use a representative coverpoint; applies to others too
     coverpoint: ["Zcf_c_flw_cg/{cp_fdp}"]
   - name: c-flw_op
     coverpoint: ["Zcf_c_flw_cg/{cp_rs1p, cp_fdp, cp_imm_mul4}"]

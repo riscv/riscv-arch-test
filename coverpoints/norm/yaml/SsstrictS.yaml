@@ -1,8 +1,7 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-
-  // Compressed rules
+  # Compressed rules
 
   - name: c-addi16sp_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
@@ -20,5 +19,6 @@ normative_rule_definitions:
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
 
   - name: cm-mvsa01_res
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+    coverpoint:
+      ["SsstrictS_comp_instr_cg/cp_compressed10"]
       # For the encoding to be legal r1s' != r2s'.

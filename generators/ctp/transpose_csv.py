@@ -72,7 +72,7 @@ def write_asciidoc(filepath, tables):
         f.write('// Generation command: ' + command_line + '\n')
         f.write('// Generation date: ' + gen_date + '\n')
         f.write('\n')
-        
+
         for table in tables:
             f.write("[options=header]\n")
             f.write("[%autofit]\n")

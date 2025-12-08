@@ -2,9 +2,12 @@
 
 normative_rule_definitions:
   - name: Zca_offsets_mul2
-    coverpoint: ["Zca_c_beqz_cg/cp_offset, Zca_c_bnez_cg/cp_offset, Zca_c_j_cg/cp_offset, Zca_c_jal_cg/cp_offset, Zca_c_jalr_cg/cp_offset_c_jr, Zca_c_jr_cg/cp_offset_c_jr"]
+    coverpoint:
+      [
+        "Zca_c_beqz_cg/cp_offset, Zca_c_bnez_cg/cp_offset, Zca_c_j_cg/cp_offset, Zca_c_jal_cg/cp_offset, Zca_c_jalr_cg/cp_offset_c_jr, Zca_c_jr_cg/cp_offset_c_jr",
+      ]
   - name: Zca_regs8
-    // Use a representative coverpoint; applies to others too
+    # Use a representative coverpoint; applies to others too
     coverpoint: ["Zca_c_and_cg/{cp_rs1p, cp_rs2p}"]
   - name: c-add_op
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0, cr_rs1_rs2_edges}"]
@@ -85,7 +88,7 @@ normative_rule_definitions:
   - name: c-xor_op
     coverpoint: ["Zca_c_xor_cg/{cp_rs1p, cp_rs2p, cr_rs1_rs2_edges}"]
 
-  // compressed Zca_hints
+  # compressed Zca_hints
   - name: Zca_hints
     coverpoint: [NOT IMPLEMENTED"]
   - name: c-addi_hint

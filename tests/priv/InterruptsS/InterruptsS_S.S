@@ -13,9 +13,7 @@
 //#include "arch_test.h"
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, S, Zicsr]
-# params:
-#   M_MODE_ENDIANNESS: dynamic
+# REQUIRED_EXTENSIONS: [I, S, Zicsr]
 # MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

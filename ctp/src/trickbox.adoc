@@ -58,7 +58,7 @@ The macros are defined in model_test.h. sail_test.h shows sample implementations
 
 === Reference Trick Box for Spike and SAIL
 
-https://github.com/riscv-non-isa/riscv-arch-test/blob/cvw/configs/ref/sail-rv64gc/model_test.h shows a trick box implementation that works for Spike and SAIL.
+https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/configs/ref/sail-rv64gc/model_test.h shows a trick box implementation that works for Spike and SAIL.
 
 *** HTIF (write_tohost followed by j to selfloop) for termination and UART, memory-mapped PLIC and CLINT
 *** not implemented yet on Sail

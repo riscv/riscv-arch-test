@@ -20,7 +20,6 @@
 // and limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 // Individual cross coverage for each exception type with delegation registers
 
 // Building block coverpoints (similar to ExceptionsM pattern)

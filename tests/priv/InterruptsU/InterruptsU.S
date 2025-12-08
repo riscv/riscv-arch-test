@@ -23,7 +23,6 @@
 #include "riscv_arch_test.h"
 
 
-
 # # Test code region
 # .section .text.init
 # .globl rvtest_entry_point

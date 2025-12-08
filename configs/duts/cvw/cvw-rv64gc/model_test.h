@@ -1,15 +1,6 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-# Expects a PC16550-compatible UART.
-# Change these addresses to match your memory map
-.EQU UART_ENABLED, 1                     # set to 0 to not print
-.EQU UART_BASE_ADDR, 0x10000000
-.EQU UART_THR, (UART_BASE_ADDR + 0)
-.EQU UART_RBR, (UART_BASE_ADDR + 0)
-.EQU UART_LCR, (UART_BASE_ADDR + 3)
-.EQU UART_LSR, (UART_BASE_ADDR + 5)
-
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
         .align 8; .global tohost; tohost: .dword 0;         \
@@ -36,14 +27,19 @@
 
 #define RVMODEL_BOOT
 
+# Expects a PC16550-compatible UART.
+# Change these addresses to match your memory map
+.EQU UART_BASE_ADDR, 0x10000000
+.EQU UART_THR, (UART_BASE_ADDR + 0)
+.EQU UART_RBR, (UART_BASE_ADDR + 0)
+.EQU UART_LCR, (UART_BASE_ADDR + 3)
+.EQU UART_LSR, (UART_BASE_ADDR + 5)
+
 #define RVMODEL_IO_INIT    \
   uart_init:                ;\
-    LI(T1, UART_ENABLED)    ;\
-    beqz T1, 1f             ; /* skip if UART is not enabled */ \
     li T1, UART_LCR         ; /* Load address of UART LCR */    \
     li T2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
-    sb T2, 0(T1)
-
+    sb T2, 0(T1)            ; \
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -54,8 +50,6 @@
   lbu _R1, 0(_STR_PTR)        ;/* Load byte */        \
   beqz _R1, 3f                ;/* Exit if null */     \
 2: /* uart_putc */           ;                      \
-  li _R2, UART_ENABLED   ;\
-  beqz _R2, 3f        ;/* skip if UART is not enabled */ \
   li _R2, UART_LSR ;\
   4: /* uart_putc_wait_busy */ \
     lbu _R3, 0(_R2) ;\

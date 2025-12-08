@@ -234,7 +234,8 @@ sw t1, 0x0C(t0); /* write high -> trigger */ \
 nop; \
 nop; \
 nop;
- #define RVMODEL_CAUSE_SEXT_INT \
+
+#define RVMODEL_CAUSE_SEXT_INT \
 la t0, THRESHOLD_0; \
 li t1, 7; \
 sw t1, 0(t0); \

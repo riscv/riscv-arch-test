@@ -20,7 +20,7 @@ from rich.progress import track
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.test_config import TestConfig
 from testgen.data.test_data import TestData
-from testgen.utils.common import generate_test_data_section, get_sig_space
+from testgen.utils.common import generate_test_data_section, generate_test_data_string_section, get_sig_space
 from testgen.utils.templates import insert_setup_template
 from testgen.utils.testplans import get_extensions, read_testplan
 
@@ -110,7 +110,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
             continue
-        test_data = TestData(test_config)
+        test_data = TestData(test_config, extension, instr_name)
         test_file = output_dir / f"{extension}-{instr_name}.S"
         test_file_relative = test_file.relative_to(output_test_dir)
 
@@ -132,10 +132,12 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         # Generate final test string with signature size and test data section
         sig_words = get_sig_space(test_data)
         test_data_section = generate_test_data_section(test_data)
+        test_data_string_section = generate_test_data_string_section(test_data)
         test_string = (
             "\n".join(test_lines)
             .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
             .replace("@TEST_DATA@", test_data_section)
+            .replace("@TESTCASE_STRINGS@", test_data_string_section)
         )
 
         # Clean up test data
@@ -144,7 +146,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         # Write test file if different from existing file
         if not test_file.exists() or test_file.read_text() != test_string:
             test_file.write_text(test_string)
-            print(f"Updated {test_file}")
+            # print(f"Updated {test_file}")
 
 
 def generate_tests_for_instruction(

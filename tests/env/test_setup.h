@@ -41,7 +41,7 @@
     RVTEST_SIGBASE(x3, signature_base)
     LI(T1, CANARY_VALUE)
     #ifdef SELFCHECK
-      RVTEST_SIGUPD(x3, x4, x5, T1) # sig_begin_canary
+      RVTEST_SIGUPD(x3, x4, x5, T1, "canary_mismatch") # sig_begin_canary
     #else
       # nops to match selfchecking test length
       nop
@@ -108,8 +108,8 @@
 
   // Terminate test
   exit_cleanup:
-    LA(T1, successstr)
-    RVMODEL_IO_WRITE_STR(T1, successstr)
+    LA(T4, successstr)
+    RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
     RVMODEL_HALT_PASS
   .option pop
 .endm

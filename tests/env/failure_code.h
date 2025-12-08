@@ -118,46 +118,77 @@
         addi x6, x4, -16    # address of the failing instruction (possibly including half of previous instruction)
         SREG x6, 264(x5)
 
+        # Get pointer to failure string
+        # In SELFCHECK mode, after the jal instruction there is an XLEN-sized pointer to the test name string
+        # The jal returns to x4, which points to the instruction after jal (i.e., the pointer itself)
+        LREG x6, 0(x4)      # load the string pointer from memory
+        SREG x6, 288(x5)    # save the string pointer
+
     failedtest_report:
         # RVMODEL_IO_INIT
-        RVMODEL_IO_WRITE_STR(a0, failstr)
+      print_failstr:
+        LA(x9, failstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        # Print test name string
+      print_testnamestr:
+        LA(x9, testnamestr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+      print_failure_test_name_str:
+        LREG x9, failure_string_ptr
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+      print_newline_str:
+        LA(x9, newlinestr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
         # Print failing instruction (32-bit)
-        RVMODEL_IO_WRITE_STR(a0, inststr)
+        LA(x9, inststr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         lw a0, failing_instruction
         li a1, 32
         jal failedtest_hex_to_str
-        RVMODEL_IO_WRITE_STR(a0, ascii_buffer)
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
         # Print failing address (XLEN-bit)
-        RVMODEL_IO_WRITE_STR(a0, addrstr)
+        LA(x9, addrstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         LREG a0, failing_addr
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        RVMODEL_IO_WRITE_STR(a0, ascii_buffer)
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
         # Print failing register (32-bit)
-        RVMODEL_IO_WRITE_STR(a0, regstr)
+        LA(x9, regstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         lw a0, failing_reg
         li a1, 32
         jal failedtest_hex_to_str
-        RVMODEL_IO_WRITE_STR(a0, ascii_buffer)
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
         # Print failing value (XLEN-bit)
-        RVMODEL_IO_WRITE_STR(a0, badvalstr)
+        LA(x9, badvalstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         LREG a0, failing_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        RVMODEL_IO_WRITE_STR(a0, ascii_buffer)
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
         # Print expected value (XLEN-bit)
-        RVMODEL_IO_WRITE_STR(a0, expvalstr)
+        LA(x9, expvalstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         LREG a0, expected_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        RVMODEL_IO_WRITE_STR(a0, ascii_buffer)
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
-        RVMODEL_IO_WRITE_STR(a0, endstr)
+        # Print end string
+        LA(x9, endstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
     failedtest_terminate:
         RVMODEL_HALT_FAIL
@@ -218,6 +249,8 @@
         .fill 1, 8, 0xfeedf00dbaaaaaad
     expected_value:
         .fill 1, 8, 0xfeedf00dbaaaaaad
+    failure_string_ptr:
+        .fill 1, 8, 0xfeedf00dbaaaaaad
     ascii_buffer:
         .fill 20, 1, 0          # Buffer for hex string conversion (max "0x" + 16 hex digits + "\n" + null)
     end_failure_scratch:
@@ -230,6 +263,10 @@
         #endif
     failstr:
         .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+    testnamestr:
+        .string "RVCP: Test Info: "
+    newlinestr:
+        .string "\n"
     inststr:
         .string "RVCP: Instruction: "
     addrstr:

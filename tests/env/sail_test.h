@@ -60,18 +60,17 @@
   j 1b                       ;/* Loop */             \
 2:
 
-//#define RVMODEL_SET_MSW_INT
+
 #define RVMODEL_SET_MSW_INT       \
  li t1, 1;                         \
  li t2, 0x2000000;                 \
  sw t1, 0(t2);
 
-//#define RVMODEL_CLEAR_MSW_INT TODO CHANGING THIS FROM CLEAR TO CLR
+
 #define RVMODEL_CLR_MSW_INT     \
  li t2, 0x2000000;                 \
  sw x0, 0(t2);
 
-// #define RVMODEL_CLEAR_MTIMER_INT
 #define RVMODEL_CLR_MTIMER_INT \
 li t0, -1; \
 la t2, MTIMECMP; \
@@ -84,20 +83,20 @@ SREG t0, 0(t2); \
     ERROR: __riscv_xlen not defined; \
 #endif
 
-// TODO: I am adding this
+
 #define RVMODEL_MCLR_SSW_INT \
 csrrci t6, mip, 2;
 
-// TODO: I am adding this
+
 #define RVMODEL_SCLR_SSW_INT \
 csrrci t6, sip, 2;
 
-// TODO: I am adding this
+
 #define RVMODEL_MCLR_STIMER_INT \
 li t0, 32; \
 csrrc t6, mip, t0;
 
-// TODO: I am adding this
+
 #define RVMODEL_CLR_SEXT_INT \
 la t0, THRESHOLD_0; \
 li t2, 7; \
@@ -119,8 +118,6 @@ sw zero, 0x30(t0);
 la t0, CLINT_BASE_ADDR; \
 SREG zero, 0(t0);
 
-//#define RVMODEL_CLEAR_MEXT_INT
-// TODO i am changing this from CLEAR to CLR
 #define RVMODEL_CLR_MEXT_INT \
 la t0, THRESHOLD_0; \
 li t2, 7; \
@@ -138,7 +135,6 @@ sw zero, 0x20(t0); \
 sw zero, 0x28(t0); \
 sw zero, 0x30(t0);
 
-
 #define RVMODEL_CAUSE_MTIMER_INT_NOW \
 la t0, MTIME; \
 la t1, MTIMECMP; \
@@ -154,7 +150,6 @@ nop; \
 #else \
     ERROR: __riscv_xlen not defined; \
 #endif
-
 
 #define RVMODEL_CAUSE_MTIMER_INT_SOON \
 la t0, MTIME; \

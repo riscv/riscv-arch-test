@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: ['I', 'Zicsr', 'NotSupportedInSail']
+# REQUIRED_EXTENSIONS: ['I', 'Zicsr', 'NotSupportedInSail']
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr

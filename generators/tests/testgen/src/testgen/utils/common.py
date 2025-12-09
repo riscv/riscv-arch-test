@@ -82,7 +82,7 @@ def write_sigupd(rd: int, test_data: TestData, sig_type: Literal["int", "float"]
         test_data.sigupd_count += 1
         return (
             f"# Check if x{rd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            + f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+            + f'RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd}, "test_{test_data.test_count}")'
         )
     elif sig_type == "float":
         raise NotImplementedError("Floating point signature updates are not yet implemented.")
@@ -143,5 +143,21 @@ def generate_test_data_section(test_data: TestData) -> str:
     for value in test_data.test_data_values:
         hex_value = to_hex(value, test_data.xlen)
         lines.append(f"    {directive} {hex_value}")
+
+    return "\n".join(lines)
+
+
+def generate_test_data_string_section(test_data: TestData) -> str:
+    """
+    Generate the .data section containing all test strings.
+
+    Args:
+        test_data: TestData object containing the strings to generate
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
+    lines.extend(test_data.test_data_strings)
 
     return "\n".join(lines)

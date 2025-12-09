@@ -9,10 +9,12 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, Zicsr, Zicntr, Zihpm]
-# MARCH: rv${XLEN}i_zicsr_zicntr_zihpm
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zicntr, Zihpm]
+# MARCH: rv${XLEN}i_zicsr_zicntr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
+
+.option norvc
 
 #include "WALLY-init-lib.h"
 

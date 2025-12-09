@@ -18,7 +18,7 @@ normative_rule_definitions:
   - name: c-addi4spn_op
     coverpoint: ["Zca_c_addi4spn_cg/{cp_imm_mul_addi4spn}"]
   - name: c-addi_nop
-    coverpoint: ["Zca_c_addi_cg/{cp_nop_asm_count}"]
+    coverpoint: ["Zca_c_nop_cg/{cp_asm_count}"]
   - name: c-addi_op
     coverpoint: ["Zca_c_addi_cg/{cp_rs1_nx0, cp_rs1_imm_edges_6bit_n0}"]
   - name: c-addiw_op
@@ -37,8 +37,6 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_j_cg/{cp_imm_edges_c_jal}"]
   - name: c-jal_op
     coverpoint: ["Zca_c_jal_cg/{cp_imm_edges_c_jal}"]
-  - name: c-jalr
-    coverpoint: ["Zca_c_jalr_cg/{cp_rs1_nx0, cp_offset_c_jr}"]
   - name: c-jalr_op
     coverpoint: ["Zca_c_jalr_cg/{cp_rs1_nx0, cp_offset_c_jr}"]
   - name: c-jr_op

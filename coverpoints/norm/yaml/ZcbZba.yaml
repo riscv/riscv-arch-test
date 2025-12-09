@@ -3,5 +3,5 @@
 normative_rule_definitions:
   - name: c-zext-w_op
     coverpoint:
-      ["Zcb_c_zext_w_cg/{}"]
+      ["Zcb_c_zext_w_cg/{cp_rs1p, cp_rs1_edges}"]
       # zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.

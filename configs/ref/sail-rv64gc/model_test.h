@@ -2,6 +2,7 @@
 #define _COMPLIANCE_MODEL_H
 
 
+
 #define CLINT_BASE_ADDR 0x02000000
 #define PLIC_BASE_ADDR 0x0C000000
 #define GPIO_BASE_ADDR 0x10060000
@@ -23,70 +24,56 @@
 #define GPIO_OUTPUT_EN  (GPIO_BASE_ADDR + 0x08)
 #define GPIO_OUTPUT_VAL (GPIO_BASE_ADDR + 0x0C)
 
-
-# Expects a PC16550-compatible UART.
-# Change these addresses to match your memory map
-.EQU UART_ENABLED, 1                     # set to 0 to not print
-.EQU UART_BASE_ADDR, 0x10000000
-.EQU UART_THR, (UART_BASE_ADDR + 0)
-.EQU UART_RBR, (UART_BASE_ADDR + 0)
-.EQU UART_LCR, (UART_BASE_ADDR + 3)
-.EQU UART_LSR, (UART_BASE_ADDR + 5)
-
-
 #define RVMODEL_DATA_SECTION \
-       .pushsection .tohost,"aw",@progbits;                \
-       .align 8; .global tohost; tohost: .dword 0;         \
-       .align 8; .global fromhost; fromhost: .dword 0;     \
-       .popsection;
-
+        .pushsection .tohost,"aw",@progbits;                \
+        .align 8; .global tohost; tohost: .dword 0;         \
+        .align 8; .global fromhost; fromhost: .dword 0;     \
+        .popsection
 
 #define RVMODEL_HALT_PASS  \
- write_tohost_pass:      ;\
-   li x1, 1              ;\
-   sw x1, tohost, t0     ;\
- self_loop_pass:         ;\
-   j self_loop_pass      ;\
-
+  li x1, 1                ;\
+  la t0, tohost           ;\
+  write_tohost_pass:      ;\
+    sw x1, 0(t0)          ;\
+    sw x0, 4(t0)          ;\
+    j write_tohost_pass   ;\
 
 #define RVMODEL_HALT_FAIL \
- write_tohost_fail:      ;\
-   li x1, 3              ;\
-   sw x1, tohost, t0     ;\
- self_loop_fail:         ;\
-   j self_loop_fail      ;\
-
+  li x1, 3                ;\
+  la t0, tohost           ;\
+  write_tohost_fail:      ;\
+    sw x1, 0(t0)          ;\
+    sw x0, 4(t0)          ;\
+    j write_tohost_fail   ;\
 
 #define RVMODEL_BOOT
 
+#define RVMODEL_IO_INIT
 
-#define RVMODEL_IO_INIT    \
- uart_init:                ;\
-   LI(T1, UART_ENABLED)    ;\
-   beqz T1, 1f             ; /* skip if UART is not enabled */ \
-   li T1, UART_LCR         ; /* Load address of UART LCR */    \
-   li T2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
-   sb T2, 0(T1)
-
-
-// # Prints a null-terminated string (_STR) using a DUT specific
-// # mechanism. _R can be used as a temporary register if needed.
-// # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_WRITE_STR(_R, _STR)               \
- la x30, _STR               ;/* Load string addr */ \
+# Prints a null-terminated string using a DUT specific mechanism.
+# A pointer to the string is passed in _STR_PTR.
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
+#define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)               \
 1:                           ;                       \
- lbu a0, 0(x30)             ; /* Load byte */       \
- beqz a0, 2f                ; /* Exit if null */    \
- call uart_putc             ; /* Print char */      \
- addi x30, x30, 1           ; /* Next char */       \
- j 1b                       ; /* Loop */            \
-2:
-
+  lbu _R1, 0(_STR_PTR)        ;/* Load byte */        \
+  beqz _R1, 3f                ;/* Exit if null */     \
+2: /* htif_putc */           ;                      \
+  la _R2, tohost       ;   \
+  sw _R1, 0(_R2)     ; \
+  /* device=1 (terminal), cmd=1 (output) */ \
+  li _R1, 0x01010000 ;\
+  sw _R1, 4(_R2)   ;\
+  addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
+  j 1b                       ;/* Loop */             \
+3:
 
 #define RVMODEL_SET_MSW_INT       \
 li t1, 1;                         \
 li t2, 0x2000000;                 \
 sw t1, 0(t2);
+
+
 
 
 #define RVMODEL_CLR_MSW_INT     \
@@ -107,17 +94,25 @@ SREG t0, 0(t2); \
 #endif
 
 
+
+
 #define RVMODEL_MCLR_SSW_INT \
 csrrci t6, mip, 2;
+
+
 
 
 #define RVMODEL_SCLR_SSW_INT \
 csrrci t6, sip, 2;
 
 
+
+
 #define RVMODEL_MCLR_STIMER_INT \
 li t0, 32; \
 csrrc t6, mip, t0;
+
+
 
 
 #define RVMODEL_CLR_SEXT_INT \
@@ -161,8 +156,6 @@ sw zero, 0x28(t0); \
 sw zero, 0x30(t0);
 
 
-
-
 #define RVMODEL_CAUSE_MTIMER_INT_NOW \
 la t0, MTIME; \
 la t1, MTIMECMP; \
@@ -178,8 +171,6 @@ nop; \
 #else \
    ERROR: __riscv_xlen not defined; \
 #endif
-
-
 
 
 #define RVMODEL_CAUSE_MTIMER_INT_SOON \
@@ -264,26 +255,4 @@ nop; \
 nop;
 
 
-
-
-uart_putc:
-   li t1, UART_ENABLED
-   beqz t1, 1f             # skip if UART is not enabled
-   li t1, UART_LSR
- uart_putc_wait_busy:
-   lbu t2, 0(t1)
-   andi t2, t2, 0x20 # check line status register bit 5
-   beqz t2, uart_putc_wait_busy # wait until Transmit Holding Register Empty is set
- uart_putc_send:
-   li t1, UART_THR # transmit character
-   sb a0, 0(t1)
- 1:
-   ret
-
-
 #endif // _COMPLIANCE_MODEL_H
-
-
-
-
-

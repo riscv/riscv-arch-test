@@ -13,6 +13,7 @@ from testgen.utils.common import write_sigupd
 from testgen.utils.param_generator import generate_random_params
 
 
+# TODO: Update coverpoint error message
 @add_coverpoint_generator("cp_offset")
 def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for backward branch negative offsets."""

@@ -14,10 +14,10 @@
 // There is no better place to test the pause instruction, so it is included here.
 // Therefore, Zihintpause is needed in the MARCH to compile the pause instruction.
 // If Zihintpause is not supported on the DUT, the pause instruction behaves as a NOP.
-// Therefore, Zihintpause is not needed in the implemented_extensions.
+// Therefore, Zihintpause is not needed in the REQUIRED_EXTENSIONS.
 
 ##### START_TEST_CONFIG #####
-# implemented_extensions: [I, U, Zicsr]
+# REQUIRED_EXTENSIONS: [I, U, Zicsr]
 # MARCH: rv${XLEN}i_zicsr_zihintpause
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

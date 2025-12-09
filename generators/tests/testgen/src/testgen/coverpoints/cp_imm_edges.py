@@ -31,6 +31,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
     test_lines: list[str] = []
 
     for edge_val in edges_imm:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=edge_val)
         desc = f"{coverpoint} (imm = {edge_val})"
@@ -43,6 +44,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
 @add_coverpoint_generator("cp_imm_edges_branch")
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for branch immediate edge values."""
+    # TODO: Update coverpoint error message
     test_lines: list[str] = ["\n# Testcase cp_imm_edges_branch"]
     params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None

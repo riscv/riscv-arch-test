@@ -370,6 +370,36 @@ covergroup ZicsrV_cg with function sample(ins_t ins);
 
     cp_vstart_out_of_bounds : cross vstart_csr, csr_write, rs1_2_to_16;
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vl_walking1s_sew_lmul
+    // attempts to write walking ones to the vl register for each sew lmul combination
+    //////////////////////////////////////////////////////////////////////////////////
+
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+    }
+
+    csr_vl: coverpoint ins.current.insn[31:20]  {
+        bins user_std0[] = {[12'hC20]};
+
+    }
+
+    walking_ones_rs1: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        bins b_1[] = { [0:`XLEN-1] };
+    }
+
+
+    vsetivli_prev_instruction: coverpoint ins.prev.insn {
+        wildcard bins vsetivli  =   {32'b1100_?_?_???_???_?????_111_?????_1010111};
+    }
+
+    vsetivli_prev_sew_lmul : coverpoint ins.prev.insn[24:20] iff (~ins.prev.insn[25]){
+        // all bins 
+        wildcard ignore_bins undefined_lmul = {5'b??100};
+    }
+
+    cp_vl_walking1s_sew_lmul : cross vsetivli_prev_instruction, vsetivli_prev_sew_lmul, csrrw, csr_vl, walking_ones_rs1;
+
 endgroup
 
 function void zicsrv_sample(int hart, int issue, ins_t ins);

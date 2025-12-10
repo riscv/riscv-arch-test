@@ -15,7 +15,7 @@ from random import randint, seed
 
 def printwalk(regs):
     for reg in regs:
-        if reg == "satp":  # satp requires a special case to avoid accidentally turning on vmem
+        if reg == "satp": # satp requires a special case to avoid accidentally turning on vmem
             continue
         if "#ifdef" in reg or "#endif" in reg:
                 print(reg)

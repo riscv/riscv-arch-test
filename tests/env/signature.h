@@ -10,32 +10,34 @@
   #define RVTEST_WORD_PTR .word
 #endif
 
-// RVTEST_SIGUPD(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg
-// with the value in memory at 0(sigbase). If they are different, it jumps to
-// a failure handler whose label is formed from linkreg and tempreg. On success,
-// it increments sigbase by REGWIDTH. In non-SELFCHECK mode, it simply stores
-// sigreg to memory at 0(sigbase) and increments sigbase by REGWIDTH.
-//  _SIG_BASE - Base register for signature region
+// RVTEST_SIGUPD(sigptr, linkreg, tempreg, sigreg, strptr)
+// compares the value in sigreg with the value in memory at 0(sigptr).
+// If they are different, it jumps to a failure handler whose label is formed
+// from linkreg and tempreg. On success, it increments sigptr by REGWIDTH.
+// In non-SELFCHECK mode, it simply stores sigreg to memory at 0(sigptr)
+// and increments sigptr by REGWIDTH. strptr is included as a .word/.dword
+// directive so a pointer to the string can be retrieved from the failure handler.
+//  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _R - Register containing value to store/compare
 //  _STR_PTR - label to string describing the test
 #ifdef SELFCHECK
-  #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
-    LREG _TEMP_REG, 0(_SIG_BASE)                            ;\
+  #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
+    LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _STR_PTR                                ;\
     1:                                                     ;\
-    addi _SIG_BASE, _SIG_BASE, REGWIDTH
+    addi _SIG_PTR, _SIG_PTR, REGWIDTH
 #else
-  #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
-    SREG _R, 0(_SIG_BASE)                                   ;\
+  #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
+    SREG _R, 0(_SIG_PTR)                                   ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _STR_PTR                                ;\
     1:                                                     ;\
-    addi _SIG_BASE, _SIG_BASE, REGWIDTH
+    addi _SIG_PTR, _SIG_PTR, REGWIDTH
 #endif
 
 // RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops
@@ -56,36 +58,36 @@
   nop
 #endif
 
-// RVTEST_SIGUPD_F(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg
-// with the value in memory at 0(sigbase) and the value in FCSR with the value in
-// memory at REGWIDTH(sigbase). If either are different, it jumps to a failure handler
-// whose label is formed from linkreg and tempreg. On success, it increments sigbase
-// by 2*REGWIDTH. In non-SELFCHECK mode, it simply stores sigreg to memory at 0(sigbase),
-// fcsr to memory at REGWIDTH(sigbase), and increments sigbase by 2*REGWIDTH.
-//  _SIG_BASE - Base register for signature region
+// RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, sigreg) compares the value in sigreg
+// with the value in memory at 0(sigptr) and the value in FCSR with the value in
+// memory at REGWIDTH(sigptr). If either are different, it jumps to a failure handler
+// whose label is formed from linkreg and tempreg. On success, it increments sigptr
+// by 2*REGWIDTH. In non-SELFCHECK mode, it simply stores sigreg to memory at 0(sigptr),
+// fcsr to memory at REGWIDTH(sigptr), and increments sigptr by 2*REGWIDTH.
+//  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _R - Register containing value to store/compare
 #ifdef SELFCHECK
-  #define RVTEST_SIGUPD_F(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
-    FLREG _TEMP_REG,0(_SIG_BASE)                           ;\
+  #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _R)  \
+    FLREG _TEMP_REG,0(_SIG_PTR)                           ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     1:                                                     ;\
     csrr _R, fcsr                                          ;\
-    LREG _TEMP_REG,FREGWIDTH(_SIG_BASE)                    ;\
+    LREG _TEMP_REG,FREGWIDTH(_SIG_PTR)                    ;\
     beq _TEMP_REG, _R, 2f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     2:                                                     ;\
-    addi _SIG_BASE, _SIG_BASE, REGWIDTH+FREGWIDTH
+    addi _SIG_PTR, _SIG_PTR, REGWIDTH+FREGWIDTH
 #else
-  #define RVTEST_SIGUPD_F(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
-    FSREG _R,0(_SIG_BASE)                                  ;\
+  #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _R)  \
+    FSREG _R,0(_SIG_PTR)                                  ;\
     csrr _R, fcsr                                          ;\
-    SREG _TEMP_REG,FREGWIDTH(_SIG_BASE)                    ;\
+    SREG _TEMP_REG,FREGWIDTH(_SIG_PTR)                    ;\
     nop                                                    ;\
     nop                                                    ;\
-    addi _SIG_BASE, _SIG_BASE, REGWIDTH+FREGWIDTH
+    addi _SIG_PTR, _SIG_PTR, REGWIDTH+FREGWIDTH
 #endif
 
 // Canary value to indicate bounds of signature region

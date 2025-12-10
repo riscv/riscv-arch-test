@@ -106,11 +106,11 @@
         srai x7, x6, 20     # extract immediate (sign-extended)
         srli x6, x6, 15
         andi x6, x6, 31     # extract rs1 (base register)
-        # Load the value of the sig_base register from saved state
+        # Load the value of the sigptr register from saved state
         slli x6, x6, 3      # rs1 * 8
-        add x6, x5, x6      # address of sig_base register
-        LREG x6, 0(x6)      # get sig_base register value
-        add x6, x6, x7      # sig_base + offset = address of expected value
+        add x6, x5, x6      # address of sigptr register
+        LREG x6, 0(x6)      # get sigptr register value
+        add x6, x6, x7      # sigptr + offset = address of expected value
         LREG x6, 0(x6)      # load expected value
         SREG x6, 280(x5)    # record expected value
 

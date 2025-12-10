@@ -5,7 +5,7 @@
 # Georgia Tai ytai@hmc.edu 26 June 2025
 # SPDX-License-Identifier: Apache-2.0
 #
-# Generate directed privilaged tests for functional coverage of the vector extension
+# Generate directed privileged tests for functional coverage of the vector extension
 ##################################
 
 ##################################
@@ -148,7 +148,7 @@ def writePrivTestLine(instruction, instruction_data, vl=1, lmul=1, maskval=None)
             if maskval is not None:
                 testline = testline + "v0.t"
             else:
-                testline = testline[:-2] # remove the ", " since theres no argument
+                testline = testline[:-2] # remove the ", " since there's no argument
         elif argument == 'v0':
             testline = testline + "v0"
         elif argument == 'imm':

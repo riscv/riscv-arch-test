@@ -10,13 +10,6 @@
   #define RVTEST_WORD_PTR .word
 #endif
 
-// RVTEST_SIGBASE(sigbase, label) initializes the sigbase register to the
-// address of the signature region.
-// _SIG_BASE - Base register for signature region
-// _TAG - Tag to identify signature region
-#define RVTEST_SIGBASE(_SIG_BASE,_TAG)      ;\
-  LA(_SIG_BASE,_TAG)
-
 // RVTEST_SIGUPD(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg
 // with the value in memory at 0(sigbase). If they are different, it jumps to
 // a failure handler whose label is formed from linkreg and tempreg. On success,
@@ -43,6 +36,24 @@
     RVTEST_WORD_PTR _STR_PTR                                ;\
     1:                                                     ;\
     addi _SIG_BASE, _SIG_BASE, REGWIDTH
+#endif
+
+// RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops
+#if __riscv_xlen == 64
+  #define RVTEST_SIGUPD_NOPS \
+    nop ;\
+    nop ;\
+    nop ;\
+    nop ;\
+    nop
+#else
+#define RVTEST_SIGUPD_NOPS \
+  nop ;\
+  nop ;\
+  nop ;\
+  nop ;\
+  nop ;\
+  nop
 #endif
 
 // RVTEST_SIGUPD_F(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg

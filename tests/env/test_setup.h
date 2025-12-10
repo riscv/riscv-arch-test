@@ -200,6 +200,7 @@
       CANARY
 
     // Main signature region
+    .align 3
     signature_base:
       #ifdef SELFCHECK
         // Preload signature region with correct values for self-checking

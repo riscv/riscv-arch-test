@@ -3,14 +3,6 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
-// RVTEST_SIGBASE(sigbase, label) initializes the sigbase register to the
-// address of the signature region.
-// _SIG_BASE - Base register for signature region
-// _TAG - Tag to identify signature region
-#define RVTEST_SIGBASE(_SIG_BASE,_TAG)      ;\
-  LA(_SIG_BASE,_TAG)
-
-
 // SEW signature update stride
 #ifdef RVTEST_VECTOR
   #if (VDSEW > XLEN)                // max(VDSEW, XLEN)

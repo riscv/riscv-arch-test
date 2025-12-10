@@ -6,8 +6,6 @@
 #ifndef RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 #define RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 
-#include "model_test.h"
-
 // Bits mstatus[10:9] have the vector state
 #define MSTATUS_VS_SHIFT 9
 
@@ -75,57 +73,3 @@
   nop                                                         ;\
   nop                                                         ;\
   addi _SIG_BASE, _SIG_BASE, OFFSET
-
-
-/************************************* RVTEST_SIG_SETUP ************************************/
-/**** RVTEST_SIG_SETUP creates signature region to support self-checking tests          ****/
-/**** - Main signature region for results from test, initialized with correct values    ****/
-/****   for self-checking                                                               ****/
-/**** - Trap handler signature region                                                   ****/
-/*******************************************************************************************/
-.macro RVTEST_SIG_SETUP_V
-  .align 4
-  .global begin_signature
-  begin_signature:
-  .global rvtest_sig_begin
-  rvtest_sig_begin:
-
-    // Create canary at beginning of signature region to detect overwrites
-    sig_begin_canary:
-      CANARY
-
-    // Main signature region
-    .align 3
-    signature_base:
-      #ifdef SELFCHECK
-        // Preload signature region with correct values for self-checking
-        #include SIGNATURE_FILE
-      #else
-        // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*(XLEN/32),4,0xdeadbeef
-      #endif
-
-    // Signature region for trap handlers
-    #ifdef rvtest_mtrap_routine
-      tsig_begin_canary:
-        CANARY
-      mtrap_sigptr:
-        .fill 64*(XLEN/32),4,0xdeadbeef
-      tsig_end_canary:
-        CANARY
-    #endif
-
-    // Create canary at end of signature region to detect overwrites
-    sig_end_canary:
-      CANARY
-
-  .align 4
-  .global rvtest_sig_end
-  rvtest_sig_end:
-  .global end_signature
-  end_signature:
-.endm
-/*********************************** end of RVTEST_SIG_SETUP *********************************/
-
-
-#endif // RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H

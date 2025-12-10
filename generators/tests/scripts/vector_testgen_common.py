@@ -1201,12 +1201,8 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
-        .replace("@VLEN@", str(maxVLEN)) # TODO: make this configurable
-        .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
-        .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
         .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "riscv_arch_test.h"''')
     )
     writeLine(template)
@@ -1214,24 +1210,28 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
 def writeSIGUPD(rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
+    str_ptr = "test_" + str(testcase_count)
     linkReg = 4
     linkOptions = [4, 7, 12]
     while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == rd or linkReg + 1 == rd:
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
     tempReg = linkReg + 1
-    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd})", f"# store x{rd} in signature")
+    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {str_ptr})", f"# store x{rd} in signature")
 
 def writeSIGUPD_F(fd):
     global sigupd_count  # Allow modification of global variable
     global sigupd_countF
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
-    tempReg = 4
-    while tempReg == sigReg:
-      tempReg = randint(1,31)
+    linkReg = 4
+    linkOptions = [4, 7, 12]
+    while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == fd or linkReg + 1 == fd:
+      linkInd = randint(0,2)
+      linkReg = linkOptions[linkInd - 1]
+    tempReg = linkReg + 1
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
-    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, f{fd}, x{tempReg})", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
+    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{fd})", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
 def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
     global sigupd_count        # Allow modification of global variable

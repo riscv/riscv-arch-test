@@ -2,7 +2,7 @@ Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs1_edges,cp_rs2_
 c.lbu,CLB,x,x,x,p,,p,,,c
 c.lh,CLH,x,x,x,p,,p,,,c
 c.lhu,CLH,x,x,x,p,,p,,,c
-c.not,CU,x,x,x,p,,p,x,,
+c.not,CU,x,x,x,p,,,x,,
 c.sb,CSB,x,x,x,p,p,,,x,
 c.sh,CSH,x,x,x,p,p,,,x,
 c.zext.b,CU,x,x,x,p,,,x,,

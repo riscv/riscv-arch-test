@@ -1,7 +1,7 @@
 
 == Unprivileged Test Plan
 
-Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not test all difficult floating-point cases.
+Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
@@ -44,7 +44,6 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
-|cp_gpr_hazard|4|General-purpose register hazard detection: RAW, WAR, WAW, and no hazard.
 3+^|Coverpoints for Compressed Instructions
 |cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
 |cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.

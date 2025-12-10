@@ -37,17 +37,17 @@
   // Start of test
   .global rvtest_code_begin
   rvtest_code_begin:
-    // Setup signature pointer and canary check
-    RVTEST_SIGBASE(x3, signature_base)
+
+    // Initialize signature pointer
+    LA(x3, signature_base)
+
+    // Initial signature check to confirm self-checking is working
     LI(T1, CANARY_VALUE)
     #ifdef SELFCHECK
-      RVTEST_SIGUPD(x3, x4, x5, T1) # sig_begin_canary
+      RVTEST_SIGUPD(x3, x4, x5, T1, "canary_mismatch") # sig_begin_canary
     #else
-      # nops to match selfchecking test length
-      nop
-      nop
-      nop
-      nop
+      // nops to match selfchecking test length
+      RVTEST_SIGUPD_NOPS
     #endif
     // Initialize test data pointer
     LA(x4, rvtest_data_begin)
@@ -108,8 +108,8 @@
 
   // Terminate test
   exit_cleanup:
-    LA(T1, successstr)
-    RVMODEL_IO_WRITE_STR(T1, successstr)
+    LA(T4, successstr)
+    RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
     RVMODEL_HALT_PASS
   .option pop
 .endm

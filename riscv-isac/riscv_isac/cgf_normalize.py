@@ -623,8 +623,7 @@ def expand_cgf(cgf_files, xlen,flen, log_redundant=False):
                                     # so only do it for the first 100 entries.
                                     if i < 100:
                                         cgf[labels][label].yaml_add_eol_comment(comment, key=cp)
-                                    else:
-                                        cgf[labels][label][cp] = coverage
 
+                                    cgf[labels][label][cp] = coverage
                                     i += 1
     return dict(cgf)

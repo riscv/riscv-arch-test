@@ -32,7 +32,7 @@
 `define ACCESS_FAULT_ADDRESS 64'h00000000
 `define CLINT_BASE 64'h02000000
 
-//define extra supported extensions to collect full coverage in ZicsrF
+//define extra supported extensions to collect full coverage in Privileged files
 `define D_SUPPORTED
 `define ZFA_SUPPORTED
 `define F_SUPPORTED
@@ -40,3 +40,4 @@
 `define ZBB_SUPPORTED
 `define ZBA_SUPPORTED
 `define ZBS_SUPPORTED
+`define ZIHPM_SUPPORTED

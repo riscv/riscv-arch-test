@@ -59,6 +59,27 @@ sigupd_count            = 10 # number of entries in signature - start with a mar
 sigupd_countF           = 0  # initialize signature update count for F tests
 mtrap_sig_count         = 64 # signature space for privileged, default to 64
 
+# Testcase string collection (similar to TestData.add_testcase_string)
+testcase_count = 0
+testcase_strings = []
+
+def reset_testcase_strings():
+  global testcase_count, testcase_strings
+  testcase_count = 0
+  testcase_strings = []
+
+def add_testcase_string(cp: str, instr_name: str) -> None:
+  global testcase_count, testcase_strings, extension
+  testcase_count += 1
+  testcase_strings.append(
+    f'test_{testcase_count}: .string "\\"test: {testcase_count}; cp: {extension}_{instr_name}_cg/{cp}\\""'
+  )
+
+def generate_testcase_string_section() -> str:
+  lines = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
+  lines.extend(testcase_strings)
+  return "\n".join(lines)
+
 ##################################
 # edges
 ##################################
@@ -169,6 +190,9 @@ def newInstruction():
   base_suite_test_count     = 0
   length_suite_test_count   = 0
   sigupd_count              = 0
+
+  # reset testcase strings for the new instruction file
+  reset_testcase_strings()
 
 def setXlen(new_xlen):
     global xlen, formatstr
@@ -1181,6 +1205,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
         .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
+        .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
         .replace("RVTEST_BEGIN", "RVTEST_BEGIN\nRVTEST_V_ENABLE(x5, x6)")
         .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "test_macros_vector.h"''')
@@ -1691,6 +1716,9 @@ def writeTest(description, instruction, instruction_data,
     writeLine(getSEWMINIfdef(instruction))
 
     writeLine("# Testcase " + str(description))
+
+    # record testcase string
+    add_testcase_string(str(description), instruction)
 
     if instruction in vfloattypes:
       writeLine("fsflagsi 0b00000", "# clear all fflags")

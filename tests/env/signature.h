@@ -11,7 +11,7 @@
   LA(_SIG_BASE,_TAG)
 
 
-# SEW signature update stride
+// SEW signature update stride
 #ifdef RVTEST_VECTOR
   #if (VDSEW > XLEN)                // max(VDSEW, XLEN)
     #define SIG_STRIDE (VDSEW / 8)
@@ -22,28 +22,6 @@
   #define SIG_STRIDE REGWIDTH
 #endif
 
-// RVTEST_SIGUPD(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg
-// with the value in memory at 0(sigbase). If they are different, it jumps to
-// a failure handler whose label is formed from linkreg and tempreg. On success,
-// it increments sigbase by REGWIDTH. In non-SELFCHECK mode, it simply stores
-// sigreg to memory at 0(sigbase) and increments sigbase by REGWIDTH.
-//  _SIG_BASE - Base register for signature region
-//  _LINK_REG - Link register to use for failure jump
-//  _TEMP_REG - Temporary register to use for loading signature
-//  _R - Register containing value to store/compare
-#ifdef SELFCHECK
-  #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
-    LREG _TEMP_REG,0(_SIG_BASE)                            ;\
-    beq _TEMP_REG, _R, 1f                                  ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    1:                                                     ;\
-    addi _SIG_BASE, _SIG_BASE, SIG_STRIDE
-#else
-  #define RVTEST_SIGUPD(_SIG_BASE, _LINK_REG, _TEMP_REG, _R)  \
-    SREG _R,0(_SIG_BASE)                                   ;\
-    nop                                                    ;\
-    nop                                                    ;\
-    addi _SIG_BASE, _SIG_BASE, SIG_STRIDE
 // Define XLEN-sized pointer directive
 #if __riscv_xlen == 64
   #define RVTEST_WORD_PTR .dword
@@ -70,7 +48,7 @@
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _STR_PTR                                ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, REGWIDTH
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
     SREG _R, 0(_SIG_PTR)                                   ;\
@@ -78,7 +56,7 @@
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _STR_PTR                                ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, REGWIDTH
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #endif
 
 // RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops

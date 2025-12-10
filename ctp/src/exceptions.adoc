@@ -47,17 +47,41 @@ These additional exception tests are run on configurations with floating-point (
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1241522932#gid=1241522932[Google Sheet Testplan]
 
-==== ExceptionsV Vector Exceptions
+==== ExceptionsVx Vector Integer Exceptions
 
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS).
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector integer instructions.
 
-[[t-ExceptionsV-coverpoints]]
-.ExceptionsV Coverpoints
+[[t-ExceptionsVx-coverpoints]]
+.ExceptionsVx Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsV.adoc[]
+//include::{testplansdir}/ExceptionsVx.adoc[]
 ,===
 
-*** add link
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1139310135#gid=1139310135[Google Sheet Testplan]
+
+[[t-ExceptionsVf-coverpoints]]
+.ExceptionsVf Coverpoints
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions.
+
+
+,===
+//include::{testplansdir}/ExceptionsVf.adoc[]
+,===
+
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1839120623#gid=1839120623[Google Sheet Testplan]
+
+
+[[t-ExceptionsVls-coverpoints]]
+.ExceptionsVls Coverpoints
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions.
+
+,===
+//include::{testplansdir}/ExceptionsVls.adoc[]
+,===
+
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1814229778#gid=1814229778[Google Sheet Testplan]
 
 ==== ExceptionsZalrsc Atomic LR/SC Exceptions
 
@@ -87,6 +111,8 @@ These additional exception tests are run on configurations with compressed instr
 //include::{testplansdir}/ExceptionsZc.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067[Google Sheet Testplan]
+
+include::norm/ExceptionsZc_norm_rules.adoc[]
 
 ==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
 

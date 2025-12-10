@@ -14,8 +14,8 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.11.9",
-    "ruamel-yaml>=0.18.15",
-    "typer>=0.19.2",
+    "ruamel-yaml>=0.18.16",
+    "typer>=0.20.0",
 ]
 
 [project.scripts]
@@ -23,6 +23,7 @@ act = "act.act:main"
 sail-to-rvvi = "act.sail_to_rvvi:main"
 coverreport = "act.coverreport:main"
 sig_modify = "act.sig_modify:main"
+merge-summaries = "act.merge_summaries:main"
 
 ##### BUILD #####
 [build-system]

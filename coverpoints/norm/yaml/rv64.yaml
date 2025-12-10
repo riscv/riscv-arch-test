@@ -1,0 +1,73 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: addiw_op
+    coverpoint: ["I_addw_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
+  - name: addiw_overflow
+    coverpoint: ["I_addw_cg/cr_rs1_imm_edges"]
+  - names: ["addw_op, subw_op"]
+    coverpoint:
+      ["{I_addw_cg, I_subw_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: addw_overflow
+    coverpoint: ["I_addw_cg/cr_rs1_rs2_edges"]
+  - name: auipc_op_rv64i
+    coverpoint: ["I_auipc_cg/{cp_rd, cp_imm_edges_20bit}"]
+  - names: ["lb_rv64i_op"]
+    coverpoint: ["I_lb_cg/cp_memval_byte"]
+  - name: lbu_rv64i_op
+    coverpoint: ["I_lbu_cg/cp_memval_byte"]
+  - name: ld_op_rv64i
+    coverpoint: ["I_ld_cg/cp_memval_double"]
+  - name: lh_op_rv64i
+    coverpoint: ["I_lh_cg/cp_memval_half"]
+  - name: lhu_rv64i_op
+    coverpoint: ["I_lhu_cg/cp_memval_half"]
+  - name: lui_op_rv64i
+    coverpoint: ["I_lui_cg/cp_imm_edges_20bit"]
+  - name: lw_op_rv64i
+    coverpoint: ["I_lw_cg/cp_memval_word"]
+  - name: lwu_op
+    coverpoint: ["I_lwu_cg/cp_memval_word"]
+  - name: rv64_w_sex
+    coverpoint:
+      [
+        "{I_addw_cg, I_subw_cg, I_sllw_cg, I_srlw_cg, I_sraw_cg}/cr_rs1_rs2_edges",
+      ]
+  - name: rv64i_other_xregs
+    coverpoint: ["I_addw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: rv64i_xreg_sz
+    coverpoint: ["I_addw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: sb_op_rv64i
+    coverpoint: ["I_sb_cg/cp_rs2_edges"]
+  - name: sd_op_rv64i
+    coverpoint: ["I_sd_cg/cp_rs2_edges"]
+  - name: sh_op_rv64i
+    coverpoint: ["I_sh_cg/cp_rs2_edges"]
+  - name: sll_sh_amt_rv64i
+    coverpoint: ["I_sll_cg/cr_rs1_rs2_edges"]
+  - name: slliw_imm5_rsv
+    coverpoint: ["I_slliw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>"]
+  - name: slliw_op
+    coverpoint: ["I_slliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}"]
+  - name: sllw_op
+    coverpoint: ["I_sllw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: sra_sh_amt_rv64i
+    coverpoint: ["I_sra_cg/cr_rs1_rs2_edges"]
+  - name: sraiw_imm5_rsv
+    coverpoint: ["I_sraiw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>"]
+  - name: sraiw_op
+    coverpoint: ["I_sraiw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}"]
+  - name: sraw_op
+    coverpoint: ["I_sraw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: srl_sh_amt_rv64i
+    coverpoint: ["I_srl_cg/cr_rs1_rs2_edges"]
+  - name: srliw_imm5_rsv
+    coverpoint: ["I_srliw_cg/cp_uimm_5, See also Ssstrict in <<Ssstrict>>"]
+  - name: srliw_op
+    coverpoint: ["I_srliw_cg/{cp_rs1, cp_rd, cp_uimm_5, cr_rs1_imm_edges_uimm}"]
+  - name: srlw_op
+    coverpoint: ["I_srlw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+  - name: subw_overflow
+    coverpoint: ["I_subw_cg/cr_rs1_imm_edges"]
+  - name: sw_op_rv64i
+    coverpoint: ["I_sw_cg/cp_rs2_edges"]

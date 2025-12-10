@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1_edges,cp_rs1p,cp_rdp
-c.sext.b,CU,x,x,x,x,x,x
-c.sext.h,CU,x,x,x,x,x,x
-c.zext.h,CU,x,x,x,x,x,x
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs1_edges
+c.sext.b,CU,x,x,x,p,x
+c.sext.h,CU,x,x,x,p,x
+c.zext.h,CU,x,x,x,p,x

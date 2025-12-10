@@ -96,7 +96,7 @@ vfncvt.f.xu.w,VVM,x,x,,x,x,,x,x,,emul2,,,,,,,f_emul2,,,,,x,lmul4max,lmul4max,x,n
 vfcvt.f.x.v,VVM,x,x,,x,x,x,x,x,,x,,,x,,,,f,,,,,x,x,x,x,n,v
 vfwcvt.f.x.v,VVM,x,x,,x,x,,x,emul2,,x,,,,,,,f,,,,,x,lmul4max,lmul4max,x,,
 vfncvt.f.x.w,VVM,x,x,,x,x,,x,x,,emul2,,,,,,,f_emul2,,,,,x,lmul4max,lmul4max,x,n,v
-vfwcvt.f.f.v,VVM,x,x,,x,x,,x,emul2,,x,,,,,,,f,,,,,x,lmul4max,lmul4max,x,v,
-vfncvt.f.f.w,VVM,x,x,,x,x,,x,x,,emul2,,,,,,,f_emul2,,,,,x,lmul4max,lmul4max,x,voun,v
+vfwcvt.f.f.v,VVM,x,x,,x,,,x,emul2,,x,,,,,,,f,,,,,x,lmul4max,lmul4max,x,v,
+vfncvt.f.f.w,VVM,x,x,,,x,,x,x,,emul2,,,,,,,f_emul2,,,,,x,lmul4max,lmul4max,x,voun,v
 vfncvt.rod.f.f.w,VVM,x,x,,x,x,,x,x,,emul2,,,,,,,f_emul2,,,,,x,lmul4max,lmul4max,x,voun,
 vfclass.v,VVM,x,x,,x,x,x,x,x,,x,,,x,,,,f,,,,,x,x,x,x,,

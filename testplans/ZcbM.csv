@@ -1,2 +1,2 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cmp_rd_rs2,cp_rs2p,cp_rdp
-c.mul,CA,x,x,x,c,x,x
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cr_rs1_rs2_edges,cmp_rs1_rs2
+c.mul,CA,x,x,x,p,p,x,c

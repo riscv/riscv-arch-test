@@ -14,7 +14,7 @@
 `define COVER_EXCEPTIONSVMZALRSC
 covergroup ExceptionsVMZalrsc_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
 

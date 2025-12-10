@@ -13,7 +13,7 @@
 `define COVER_SSSTRICTS
 covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
     nonzerord: coverpoint ins.current.insn[11:7] {
@@ -93,7 +93,7 @@ endgroup
 
 covergroup SsstrictS_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_instr.svh"
 
     // main coverpoints
@@ -141,7 +141,7 @@ endgroup
 
 covergroup SsstrictS_comp_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "RISCV_coverage_comp_instr.svh"
 
     // main coverpoints

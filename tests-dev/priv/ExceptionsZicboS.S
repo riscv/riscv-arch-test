@@ -58,7 +58,7 @@ finished:
 
 // Function: cbieFunction
 // Tests cbo.inval with all possible combinations of cbze in the menvcfg and senvcfg csr.
-// Program returns in privledge mode specified by a1.
+// Program returns in privilege mode specified by a1.
 //
 // a1: Sets the privilege mode to test (0 = user, 1 = supervisor, 3 = machine).
 cbieFunction:
@@ -100,7 +100,7 @@ innerCbieLoop:
 
 // Function: cbcfeFunction
 // Tests cbo.clean and cbo.flush with all possible combinations of cbcfe in the menvcfg and senvcfg csr.
-// Program returns in privledge mode specified by a1.
+// Program returns in privilege mode specified by a1.
 //
 // a1: Sets the privilege mode to test (0 = user, 1 = supervisor, 3 = machine).
 cbcfeFunction:
@@ -144,7 +144,7 @@ innerCbcfeLoop:
 
 // Function: cbzeFunction
 // Tests cbo.zero with all possible combinations of cbze in the menvcfg and senvcfg csr.
-// Program returns in privledge mode specified by a1.
+// Program returns in privilege mode specified by a1.
 //
 // a1: Sets the privilege mode to test (0 = user, 1 = supervisor, 3 = machine).
 cbzeFunction:

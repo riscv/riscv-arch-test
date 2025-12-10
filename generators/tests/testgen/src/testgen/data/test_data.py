@@ -6,23 +6,63 @@
 ##################################
 
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
+from testgen.data.test_config import TestConfig
 
 
 class TestData:
     """
-    Context and state for test generation. Includes register files, xlen/flen, and signature space tracking.
+    Context and state for test generation. Created per instruction (test file).
+
+    This class manages mutable state during test generation, including register
+    file allocation and signature space tracking. The immutable configuration
+    (xlen, flen, etc.) is stored in a TestConfig object.
+
+    Attributes:
+        config: Immutable test configuration (xlen, flen, register file type)
+        int_regs: Integer register file for allocation
+        float_regs: Floating-point register file for allocation
+        sigupd_count: Running count of integer signature updates
+        sigupd_count_float: Running count of floating-point signature updates
+        test_data_values: List of values to be stored in test_data section
     """
 
-    def __init__(self, xlen: int, flen: int, e_register_file: bool = False) -> None:
-        self._int_regs = IntegerRegisterFile(e_register_file)
+    def __init__(self, test_config: TestConfig, extension: str, instr_name: str) -> None:
+        """
+        Initialize test data with configuration and empty state.
+
+        Args:
+            test_config: Immutable test configuration
+        """
+        self._config = test_config
+        self._extension = extension
+        self._instr_name = instr_name
+        self._int_regs = IntegerRegisterFile(test_config.e_register_file)
         self._float_regs = FloatRegisterFile()
         self._sigupd_count = 10  # Start with a margin of 10 spaces in signature
         self._sigupd_count_float = 0
-        self.__xlen = xlen
-        self.__flen = flen
+        self._test_count = 0
+        self._test_data_values: list[int] = []  # List of integer values
+        self._test_data_strings: list[str] = []  # List of string values
 
     def __repr__(self) -> str:
-        return f"TestData with xlen={self.__xlen}, flen={self.__flen}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, sigupd_count_float={self._sigupd_count_float}"
+        return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, sigupd_count_float={self._sigupd_count_float})"
+
+    # Configuration accessor
+    @property
+    def config(self) -> TestConfig:
+        """Get the immutable test configuration."""
+        return self._config
+
+    # Extension and instruction name accessors
+    @property
+    def extension(self) -> str:
+        """Get the RISC-V extension this test is exercising."""
+        return self._extension
+
+    @property
+    def instr_name(self) -> str:
+        """Get the instruction name this test is exercising."""
+        return self._instr_name
 
     # Register file accessors
     @property
@@ -50,22 +90,71 @@ class TestData:
     def sigupd_count_float(self, value: int) -> None:
         self._sigupd_count_float = value
 
-    # Read only properties
+    # Read-only properties delegated to config
     @property
     def xlen(self) -> int:
-        return self.__xlen
+        return self._config.xlen
+
+    @property
+    def xlen_log2(self) -> int:
+        return self._config.xlen.bit_length() - 1
 
     @property
     def flen(self) -> int:
-        return self.__flen
+        return self._config.flen
+
+    @property
+    def flen_log2(self) -> int:
+        return self._config.flen.bit_length() - 1
 
     @property
     def xlen_format_str(self) -> str:
-        return f"0x{{:0{int(self.__xlen / 4)}x}}"
+        return self._config.xlen_format_str
 
     @property
     def flen_format_str(self) -> str:
-        return f"0x{{:0{int(self.__flen / 4)}x}}"
+        return self._config.flen_format_str
+
+    # Test count management
+    @property
+    def test_count(self) -> int:
+        """Get the current test count."""
+        return self._test_count
+
+    def increment_test_count(self) -> None:
+        """Increment the test count by 1."""
+        self._test_count += 1
+
+    @property
+    def test_data_values(self) -> list[int]:
+        """Get the list of test data values to be stored in .data section."""
+        return self._test_data_values
+
+    def add_test_data_value(self, value: int) -> None:
+        """
+        Add a test data value to be stored in .data section.
+
+        Args:
+            value: The integer value to store
+        """
+        self._test_data_values.append(value)
+
+    @property
+    def test_data_strings(self) -> list[str]:
+        """Get the list of test data strings to be stored in .data section."""
+        return self._test_data_strings
+
+    def add_testcase_string(self, cp: str) -> None:
+        """
+        Add a test data string to be stored in .data section.
+
+        Args:
+            value: The string value to store
+        """
+        self.increment_test_count()
+        self._test_data_strings.append(
+            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {self.extension}_{self.instr_name}_cg/{cp}\\""'
+        )
 
     def destroy(self) -> None:
         """Clean up resources used by TestData."""

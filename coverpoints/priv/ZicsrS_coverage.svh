@@ -13,7 +13,7 @@
 
 covergroup ZicsrS_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     csrrw_scause: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b000101000010_?????_001_?????_1110011};
@@ -76,7 +76,7 @@ endgroup
 
 covergroup ZicsrS_sstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     cp_sstatus_sd: coverpoint ins.current.rs1_val[XLEN-1]  {
     }
@@ -96,7 +96,7 @@ endgroup
 
 covergroup ZicsrS_sprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     privinstrs: coverpoint ins.current.insn  {
         bins ecall  = {32'h00000073};

@@ -12,7 +12,7 @@
 module testbench;
 
   // Load configuration
-  `include "riscv-arch-test_coverage.svh"
+  `include "rvtest_config.svh"
 
   // Set up variable lengths
   `ifdef XLEN32

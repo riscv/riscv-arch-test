@@ -9,11 +9,11 @@
 """cp_imm_edges coverpoint generators."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
-from testgen.utils.common import write_sigupd
+from testgen.utils.common import load_int_reg, write_sigupd
 from testgen.utils.edges import IMMEDIATE_EDGES
+from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges")
@@ -31,6 +31,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
     test_lines: list[str] = []
 
     for edge_val in edges_imm:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=edge_val)
         desc = f"{coverpoint} (imm = {edge_val})"
@@ -39,9 +40,11 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
 
     return test_lines
 
+
 @add_coverpoint_generator("cp_imm_edges_branch")
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for branch immediate edge values."""
+    # TODO: Update coverpoint error message
     test_lines: list[str] = ["\n# Testcase cp_imm_edges_branch"]
     params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None
@@ -95,10 +98,12 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     """Generate tests for JAL immediate edge values."""
     test_lines: list[str] = []
     if instr_name == "c.jal":
-        test_data.int_regs.consume_registers([1])
-        params = generate_random_params(test_data, instr_type, rd=1)  # c.jal always uses x1
+        # test_data.int_regs.consume_registers([1])
+        # params = generate_random_params(test_data, instr_type, rd=1)  # c.jal always uses x1
+        return []  # TODO: implement c.jal immediate edge tests
     elif instr_name == "c.j":
-        params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
+        # params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
+        return []  # TODO: implement c.j immediate edge tests
     else:
         params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None

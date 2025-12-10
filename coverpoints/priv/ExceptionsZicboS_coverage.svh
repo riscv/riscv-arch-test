@@ -13,7 +13,7 @@
 `define COVER_EXCEPTIONSZICBOS
 covergroup ExceptionsZicboS_exceptions_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
     cbo_inval: coverpoint ins.current.insn {

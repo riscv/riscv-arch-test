@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title         : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors       : Umer Shahid, Allen Baum, David Harris
+//          Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -17,10 +17,10 @@
 // Coverpoints: cp_grain for PMPM is fully covered in this test file.
 //
 // Test case  : Checking that low bits read as 0/1s depending on grain and address
-//				matching mode. Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write
-//				pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to 
-//				{OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
-//				as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF. 
+//        matching mode. Set up pmpcfg0.L = 0, pmpcfg.A = {OFF/NAPOT}, write
+//        pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to
+//        {OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
+//        as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -37,11 +37,11 @@ RVMODEL_BOOT
 RVTEST_CODE_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 0
+  #define RVMODEL_PMP_GRAIN 0
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+  #define RVMODEL_NUM_PMPS 16
 #endif
 
 RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I[^S]*Zicsr.*); def rvtest_mtrap_routine=True;                                verify (PMP['implemented']); def TEST_CASE_1=True; mac PMP_MACROS; mac PMP_helper_Coverpoints",cp_grain)
@@ -49,317 +49,317 @@ RVTEST_CASE(2,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); de
 
 #ifdef TEST_CASE_1
 RVTEST_SIGBASE( x13,signature_x13_1)
-	.attribute unaligned_access, 0
-	.attribute stack_align, 16
-  	.align	3   
-  	.option norvc
-#define NOP 			0x13
+  .attribute unaligned_access, 0
+  .attribute stack_align, 16
+    .align  3
+    .option norvc
+#define NOP       0x13
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+  // Loop to SET ALL pmpcfg REGs to zero
+  .set pmpcfgi, CSR_PMPCFG0
+  .rept RVMODEL_NUM_PMPS/4
+  csrw pmpcfgi , x0
+  .set pmpcfgi, pmpcfgi+1
+  .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+  // Loop to SET ALL pmpaddr REGs to zero
+  .set pmpaddri, CSR_PMPADDR0
+  .rept RVMODEL_NUM_PMPS
+  csrw pmpaddri, x0
+  .set pmpaddri, pmpaddri+1
+  .endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_OFF      	((((	 PMP_R|PMP_W|PMP_X)			   &0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGION_NAPOT     ((((	 PMP_R|PMP_W|PMP_X |PMP_NAPOT) &0xFF) << PMP0_CFG_SHIFT))
-#define PMPREGION_TOR      	((((	 PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
+#define PMP_REGION_GLOBAL  ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMPREGION_OFF        ((((   PMP_R|PMP_W|PMP_X)         &0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_NAPOT     ((((   PMP_R|PMP_W|PMP_X |PMP_NAPOT) &0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_TOR        ((((   PMP_R|PMP_W|PMP_X |PMP_TOR)   &0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_ADDRESS			(REGIONSTART >> PMP_SHIFT)
-	
+#define PMPADDRESS_TOP_GLOBAL    -1                        // All memory region
+#define REGIONSTART      0x80002000    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define PMP_ADDRESS      (REGIONSTART >> PMP_SHIFT)
+
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+  csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
+  LA(x4, PMPADDRESS_TOP_GLOBAL)
+  csrw   pmpaddr15, x4
 
-	//Lock the Background region
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+  //Lock the Background region
+  LI(x4, PMP_REGION_GLOBAL)
+  csrw pmpcfg3, x4
 
-	LA(x4, PMP_ADDRESS)
-    csrw pmpaddr0, x4 	
-												//Verification Section			
-// Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}  
+  LA(x4, PMP_ADDRESS)
+    csrw pmpaddr0, x4
+                        //Verification Section
+// Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 0s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 0s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 0s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in  TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
-// Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 0s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 0s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 0s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0
+  csrw pmpaddr0, x6
 
 // Read back in TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Test Case 3: Writing all 1s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 1s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 1s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 1s in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
-// Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write all 1s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 1s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write all 1s in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, -1
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, -1
+  csrw pmpaddr0, x6
 
 // Read back in TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
-// Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}  
+// Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
 // Write checkerboard in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write checkerboard in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write checkerboard in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
 // Write checkerboard in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write checkerboard in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in NAPOT
 
-	LI(x6, PMPREGION_NAPOT)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_NAPOT)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
 // Write checkerboard in OFF
 
-	LI(x6, PMPREGION_OFF)
-	csrw pmpcfg0, x6
-	li x6, 0xAAAAAAAA
-	csrw pmpaddr0, x6
+  LI(x6, PMPREGION_OFF)
+  csrw pmpcfg0, x6
+  li x6, 0xAAAAAAAA
+  csrw pmpaddr0, x6
 
 // Read back in TOR
 
-	LI(x6, PMPREGION_TOR)
-	csrw pmpcfg0, x6
-	csrr x7, pmpaddr0
+  LI(x6, PMPREGION_TOR)
+  csrw pmpcfg0, x6
+  csrr x7, pmpaddr0
 
-	RVTEST_GOTO_MMODE
+  RVTEST_GOTO_MMODE
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x13, a4)       								// Signature update
-	j exit														// Verification Complete, exit the test
+  li a4, 0xbeefcafe                      // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x13, a4)                       // Signature update
+  j exit                            // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-	.rept (1<<RVMODEL_PMP_GRAIN)
-	nop
-	.endr
+  .rept (1<<RVMODEL_PMP_GRAIN)
+  nop
+  .endr
 // We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
 .if RVMODEL_PMP_GRAIN == 0
     nop
 .endif
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+  nop
+  nop
+  jr ra                            // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 #endif

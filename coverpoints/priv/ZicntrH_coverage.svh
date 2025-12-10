@@ -455,12 +455,12 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
         csrr_time: coverpoint ins.current.insn {
             wildcard bins csrr_time = {32'b011000000101_00000_010_?????_1110011}; // 0x605
     }
-    `else 
+    `else
         csrr_time: coverpoint ins.current.insn {
-            wildcard bins csrr_time = {32'b011000010101_00000_010_?????_1110011}; // 0x615
-            wildcard bins csrr_time = {32'b011000000101_00000_010_?????_1110011}; // 0x605
+            wildcard bins csrr_timeh = {32'b011000010101_00000_010_?????_1110011}; // 0x615
+            wildcard bins csrr_timeh = {32'b011000000101_00000_010_?????_1110011}; // 0x605
     }
-    `endif 
+    `endif
 
 
     // new hypervisor priv modes
@@ -470,7 +470,7 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     }
 
     priv_mode_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins VS_mode = {3'b101}; 
+        bins VS_mode = {3'b101};
     }
 
     priv_mode_vu: coverpoint {ins.current.mode_virt, ins.current.mode} {
@@ -483,20 +483,20 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
         bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30
         bins htimedelta_2p60  = {64'h1000000000000000};     //  2^60
         bins htimedelta_n2p30 = {64'hFFFFFFFFC0000000};     // -2^30
-        bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60 
+        bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60
     }
     `else
     cp_htimedelta: coverpoint {ins.current.csr[12'h615][31:0], ins.current.csr[12'h605][31:0]} {
         bins htimedeltah_zero = {{32'h0}, {32'h0}};
         bins htimedeltah_2p30 = {{32'h0}, {32'h40000000}};            //  2^30
-        bins htimedeltah_2p60 = {{32'h1000000}, {32'h0}};             // 2^60
+        bins htimedeltah_2p60 = {{32'h10000000}, {32'h0}};             // 2^60
         bins htimedeltah_n2p30 = {{32'hFFFFFFFF}, {32'hC0000000}};    // -2^30
         bins htimedeltah_n2p60 = {{32'hF0000000}, {32'h0}};           // -2^60
     }
     `endif
 
 
-   
+
     // M mode coverpoints
     cp_mhscounteren_access_mcnt_m: cross csrr, counters_mcounteren, priv_mode_m;
     cp_mhscounteren_access_hcnt_m: cross csrr, counters_hcounteren, priv_mode_m;

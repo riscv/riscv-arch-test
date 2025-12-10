@@ -25,7 +25,7 @@
 // Covergroup for H-extension CSR access testing
 covergroup ZicsrH_csr_access_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     // Machine H-Extension CSRs
     mhcsrname: coverpoint ins.current.insn[31:20] {
@@ -108,6 +108,12 @@ covergroup ZicsrH_csr_access_cg with function sample(ins_t ins);
         bins csrrci = {3'b111};
     }
 
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
+    }
+
     // Write patterns for access testing
     write_pattern: coverpoint ins.current.rs1_val {
         bins all_zeros = {'0};
@@ -125,43 +131,73 @@ covergroup ZicsrH_csr_access_cg with function sample(ins_t ins);
     cp_hscsr_access_m: cross priv_mode_m, hscsrname, csrop, write_pattern;
     cp_vscsr_access_m: cross priv_mode_m, vscsrname, csrop, write_pattern;
 
-    // HS-mode access to HS and VS CSRs
-    cp_hscsr_access_hs: cross priv_mode_s, hscsrname, csrop, write_pattern {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};  // Only S-mode (HS)
+    // HS-mode access to HS and VS CSRs (hstatus.V=0)
+    cp_hscsr_access_hs: cross priv_mode_s, hscsrname, csrop, write_pattern, hstatus_v_bit {
+        ignore_bins not_hs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VS mode (hstatus.V=1)
     }
-    cp_vscsr_access_hs: cross priv_mode_s, vscsrname, csrop, write_pattern {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    // HS-mode (hstatus.V=0) access to VS CSRs
+    cp_vscsr_access_hs: cross priv_mode_s, vscsrname, csrop, write_pattern, hstatus_v_bit {
+        ignore_bins not_hs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VS mode (hstatus.V=1)
+    }
+    // VS-mode (hstatus.V=1) access to VS CSRs
+    cp_vscsr_access_vs: cross priv_mode_s, vscsrname, csrop, write_pattern, hstatus_v_bit {
+        ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
     }
 
-    // M-mode CSRs should be inaccessible from HS-mode (expect illegal instruction)
-    cp_mhcsr_inaccessible_hs: cross priv_mode_s, mhcsrname, csrop, exception {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
-        ignore_bins no_trap = binsof(exception) intersect {0};
+    // M-mode CSRs should be inaccessible from HS-mode (hstatus.V=0), expecting an illegal instruction trap
+    cp_mhcsr_inaccessible_hs: cross priv_mode_s, mhcsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_hs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VS mode (hstatus.V=1)
+        ignore_bins no_illegal_instr_trap = binsof(exception) intersect {0}; // Expect a trap (illegal instruction)
     }
 
     // VS-mode: HS and VS CSRs should cause virtual instruction fault
-    cp_hscsr_virtualfault_vs: cross priv_mode_s, hscsrname, csrop;  // V=1, S-mode
-    cp_vscsr_virtualfault_vs: cross priv_mode_s, vscsrname, csrop;  // V=1, S-mode
+    // VS-mode (hstatus.V=1): HS CSRs should cause virtual instruction fault
+    cp_hscsr_virtualinstructionfault_vs: cross priv_mode_s, hscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
+        ignore_bins no_virtual_instr_fault_trap = binsof(exception) intersect {0}; // Expect a trap (virtual instruction fault)
+    }
+    // VS-mode (hstatus.V=1): VS CSRs should cause virtual instruction fault
+    cp_vscsr_virtualinstructionfault_vs: cross priv_mode_s, vscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
+        ignore_bins no_virtual_instr_fault_trap = binsof(exception) intersect {0}; // Expect a trap (virtual instruction fault)
+    }
+
+    // VS-mode (hstatus.V=1): M-mode CSRs should cause virtual instruction fault
+    cp_mhcsr_virtualinstructionfault_vs: cross priv_mode_s, mhcsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
+        ignore_bins no_virtual_instr_fault_trap = binsof(exception) intersect {0}; // Expect a trap (virtual instruction fault)
+    }
 
     // U-mode: All H-extension CSRs should be inaccessible
-    cp_hcsr_inaccessible_u: cross priv_mode_u, mhcsrname, csrop, exception {
+    // U-mode (hstatus.V=0): M-H-extension CSRs should be inaccessible
+    cp_hcsr_inaccessible_u: cross priv_mode_u, mhcsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_u_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VU mode (hstatus.V=1)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
-    cp_hscsr_inaccessible_u: cross priv_mode_u, hscsrname, csrop, exception {
+    // U-mode (hstatus.V=0): HS-H-extension CSRs should be inaccessible
+    cp_hscsr_inaccessible_u: cross priv_mode_u, hscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_u_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VU mode (hstatus.V=1)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
-    cp_vscsr_inaccessible_u: cross priv_mode_u, vscsrname, csrop, exception {
+    // U-mode (hstatus.V=0): VS-H-extension CSRs should be inaccessible
+    cp_vscsr_inaccessible_u: cross priv_mode_u, vscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_u_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode}; // Exclude VU mode (hstatus.V=1)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
 
-    // VU-mode: All CSRs inaccessible
-    cp_hcsr_inaccessible_vu: cross priv_mode_u, mhcsrname, csrop, exception {
+    // VU-mode (hstatus.V=1): All H-extension CSRs should be inaccessible
+    cp_hcsr_inaccessible_vu: cross priv_mode_u, mhcsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_vu_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude U mode (hstatus.V=0)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
-    cp_hscsr_inaccessible_vu: cross priv_mode_u, hscsrname, csrop, exception {
+    // VU-mode (hstatus.V=1): HS-H-extension CSRs should be inaccessible
+    cp_hscsr_inaccessible_vu: cross priv_mode_u, hscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_vu_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude U mode (hstatus.V=0)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
-    cp_vscsr_inaccessible_vu: cross priv_mode_u, vscsrname, csrop, exception {
+    // VU-mode (hstatus.V=1): VS-H-extension CSRs should be inaccessible
+    cp_vscsr_inaccessible_vu: cross priv_mode_u, vscsrname, csrop, hstatus_v_bit, exception {
+        ignore_bins not_actual_vu_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude U mode (hstatus.V=0)
         ignore_bins no_trap = binsof(exception) intersect {0};
     }
 
@@ -179,7 +215,7 @@ endgroup
 // Covergroup for CSR bit walking tests
 covergroup ZicsrH_csr_walk_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     // Machine H-Extension CSRs
     mhcsrname: coverpoint ins.current.insn[31:20] {
@@ -237,6 +273,12 @@ covergroup ZicsrH_csr_walk_cg with function sample(ins_t ins);
         bins csrrc = {3'b011};
     }
 
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
+    }
+
     // Main coverpoints: Bit walking in M-mode
     cp_mhcsrwalk_m: cross priv_mode_m, mhcsrname, csrop_walk, walking_ones;
     cp_mhcsrwalk_zeros_m: cross priv_mode_m, mhcsrname, csrop_walk, walking_zeros;
@@ -247,26 +289,27 @@ covergroup ZicsrH_csr_walk_cg with function sample(ins_t ins);
     cp_vscsrwalk_m: cross priv_mode_m, vscsrname_walk, csrop_walk, walking_ones;
     cp_vscsrwalk_zeros_m: cross priv_mode_m, vscsrname_walk, csrop_walk, walking_zeros;
 
-    // Bit walking in HS-mode
-    cp_hscsrwalk_hs: cross priv_mode_s, hscsrname_walk, csrop_walk, walking_ones {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    // Bit walking in HS-mode (hstatus.V=0)
+    cp_hscsrwalk_hs: cross priv_mode_s, hscsrname_walk, csrop_walk, walking_ones, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
-    cp_hscsrwalk_zeros_hs: cross priv_mode_s, hscsrname_walk, csrop_walk, walking_zeros {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_hscsrwalk_zeros_hs: cross priv_mode_s, hscsrname_walk, csrop_walk, walking_zeros, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 
-    cp_vscsrwalk_hs: cross priv_mode_s, vscsrname_walk, csrop_walk, walking_ones {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    // Bit walking in VS-mode (hstatus.V=1)
+    cp_vscsrwalk_vs: cross priv_mode_s, vscsrname_walk, csrop_walk, walking_ones, hstatus_v_bit {
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
     }
-    cp_vscsrwalk_zeros_hs: cross priv_mode_s, vscsrname_walk, csrop_walk, walking_zeros {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vscsrwalk_zeros_vs: cross priv_mode_s, vscsrname_walk, csrop_walk, walking_zeros, hstatus_v_bit {
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
     }
 endgroup
 
 // Covergroup for VS CSR replica testing
 covergroup ZicsrH_replica_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     // S CSRs with VS replicas
     scsrname_replica: coverpoint ins.current.insn[31:20] {
@@ -307,23 +350,33 @@ covergroup ZicsrH_replica_cg with function sample(ins_t ins);
         bins csrrc = {3'b011};
     }
 
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
+    }
+
     // Test that S and VS CSRs are independent in M-mode and HS-mode
     cp_replica_independent_m: cross priv_mode_m, scsrname_replica, csrop;
-    cp_replica_independent_hs: cross priv_mode_s, scsrname_replica, csrop {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_replica_independent_hs: cross priv_mode_s, scsrname_replica, csrop, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 
     // Test that in VS-mode, accessing S CSRs affects VS replicas
-    cp_replica_redirect_vs: cross priv_mode_s, scsrname_replica, csrop;  // V=1
+    cp_replica_redirect_vs: cross priv_mode_s, scsrname_replica, csrop, hstatus_v_bit {
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
+    }
 
     // Test that non-replicated S CSRs behave normally in VS-mode
-    cp_nonreplica_vs: cross priv_mode_s, scsrname_noreplica, csrop;  // V=1
+    cp_nonreplica_vs: cross priv_mode_s, scsrname_noreplica, csrop, hstatus_v_bit {
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
+    }
 endgroup
 
 // Covergroup for hstatus.VGEIN field testing
 covergroup ZicsrH_hstatus_vgein_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     csrrw_hstatus: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b011000000000_?????_001_?????_1110011};  // csrrw to hstatus
@@ -339,21 +392,34 @@ covergroup ZicsrH_hstatus_vgein_cg with function sample(ins_t ins);
         bins mid_range[] = {[2:61]};
     }
 
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
+    }
+
+    // Exception check
+    exception: coverpoint ins.trap {
+        bins trapped = {1};
+        bins no_trap = {0};
+    }
+
     cp_vgein_write: cross priv_mode_m, csrrw_hstatus, vgein_value;
-    cp_vgein_write_hs: cross priv_mode_s, csrrw_hstatus, vgein_value {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vgein_write_hs: cross priv_mode_s, csrrw_hstatus, vgein_value, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 
     // Write from VS mode (should trap)
-    cp_vgein_write_vs: cross priv_mode_s, csrrw_hstatus, vgein_value {
-        ignore_bins not_s = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vgein_write_vs: cross priv_mode_s, csrrw_hstatus, vgein_value, hstatus_v_bit, exception {
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
+        ignore_bins no_trap = binsof(exception) intersect {0};
     }
 endgroup
 
 // Covergroup for vscause testing
 covergroup ZicsrH_vscause_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     csrrw_vscause: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b001001000010_?????_001_?????_1110011};  // csrrw to vscause
@@ -365,6 +431,12 @@ covergroup ZicsrH_vscause_cg with function sample(ins_t ins);
 
     vscause_exception: coverpoint ins.current.rs1_val[XLEN-1] {
         bins exception = {0};
+    }
+
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
     }
 
     vscause_exception_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
@@ -419,18 +491,18 @@ covergroup ZicsrH_vscause_cg with function sample(ins_t ins);
     cp_vscause_write_exception_m: cross csrrw_vscause, priv_mode_m, vscause_exception_values, vscause_exception;
     cp_vscause_write_interrupt_m: cross csrrw_vscause, priv_mode_m, vscause_interrupt_values, vscause_interrupt;
 
-    cp_vscause_write_exception_hs: cross csrrw_vscause, priv_mode_s, vscause_exception_values, vscause_exception {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vscause_write_exception_hs: cross csrrw_vscause, priv_mode_s, vscause_exception_values, vscause_exception, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
-    cp_vscause_write_interrupt_hs: cross csrrw_vscause, priv_mode_s, vscause_interrupt_values, vscause_interrupt {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vscause_write_interrupt_hs: cross csrrw_vscause, priv_mode_s, vscause_interrupt_values, vscause_interrupt, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 endgroup
 
 // Covergroup for vsstatus.SD testing
 covergroup ZicsrH_vsstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     csrrw_vsstatus: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b001000000000_?????_001_?????_1110011};  // csrrw to vsstatus
@@ -452,19 +524,25 @@ covergroup ZicsrH_vsstatus_cg with function sample(ins_t ins);
     cp_vsstatus_xs: coverpoint ins.current.rs1_val[16:15] {
     }
 
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
+    }
+
     // Test SD affected by FS/VS in M-mode
     cp_vsstatus_sd_write_m: cross priv_mode_m, csrrw_vsstatus, cp_vsstatus_sd, cp_vsstatus_fs, cp_vsstatus_vs, cp_vsstatus_xs;
 
     // Test SD affected by FS/VS in HS-mode
-    cp_vsstatus_sd_write_hs: cross priv_mode_s, csrrw_vsstatus, cp_vsstatus_sd, cp_vsstatus_fs, cp_vsstatus_vs, cp_vsstatus_xs {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_vsstatus_sd_write_hs: cross priv_mode_s, csrrw_vsstatus, cp_vsstatus_sd, cp_vsstatus_fs, cp_vsstatus_vs, cp_vsstatus_xs, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 endgroup
 
 // Covergroup for TVM/VTVM trap testing
 covergroup ZicsrH_tvm_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     // satp and hgatp CSR accesses
     csr_tvm: coverpoint ins.current.insn[31:20] {
@@ -484,27 +562,28 @@ covergroup ZicsrH_tvm_cg with function sample(ins_t ins);
         bins tvm_set = {1};
     }
 
-    // hstatus.VTVM bit [20]
-    hstatus_vtvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus", "vtvm") {
-        bins vtvm_clear = {0};
-        bins vtvm_set = {1};
+    // HSTATUS.V bit to distinguish between HS and VS mode
+    hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
+        bins hs_mode = {0};
+        bins vs_mode = {1};
     }
 
     // TVM trap in HS-mode accessing satp/hgatp
-    cp_tvm_hs: cross priv_mode_s, csr_tvm, csrop, mstatus_tvm {
-        ignore_bins not_hs = binsof(priv_mode_s) intersect {2'b00, 2'b11};
+    cp_tvm_hs: cross priv_mode_s, csr_tvm, csrop, mstatus_tvm, hstatus_v_bit {
+        ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 
     // VTVM trap in VS-mode accessing satp
-    cp_vtvm_vs: cross priv_mode_s, csr_tvm, csrop, mstatus_tvm, hstatus_vtvm {
+    cp_vtvm_vs: cross priv_mode_s, csr_tvm, csrop, mstatus_tvm, hstatus_v_bit {
         ignore_bins not_satp = binsof(csr_tvm) intersect {12'h680};  // Only satp for VTVM
+        ignore_bins not_vs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode};
     }
 endgroup
 
 // Covergroup for mtval non-zero test
 covergroup ZicsrH_mtval_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     csrrw_mtval: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b001101000011_?????_001_?????_1110011};  // csrrw to mtval
@@ -521,24 +600,26 @@ endgroup
 // Covergroup for hypervisor privileged instructions
 covergroup ZicsrH_hprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "../general/RISCV_coverage_standard_coverpoints.svh"
 
     // Hypervisor load/store instructions
-    hv_loadstore: coverpoint ins.current.insn[6:0] {
-        bins hlv_b   = {7'b1110011};  // with funct3=100, rs2=00000
-        bins hlv_bu  = {7'b1110011};  // with funct3=100, rs2=00001
-        bins hlv_h   = {7'b1110011};  // with funct3=100, rs2=00010
-        bins hlv_hu  = {7'b1110011};  // with funct3=100, rs2=00011
-        bins hlvx_hu = {7'b1110011};  // with funct3=100, rs2=00111
-        bins hlv_w   = {7'b1110011};  // with funct3=100, rs2=01000
-        bins hlvx_wu = {7'b1110011};  // with funct3=100, rs2=01011
-        bins hsv_b   = {7'b1110011};  // with funct3=100, rs2=00100
-        bins hsv_h   = {7'b1110011};  // with funct3=100, rs2=00110
-        bins hsv_w   = {7'b1110011};  // with funct3=100, rs2=01010
+    hv_loadstore: coverpoint {ins.current.insn[31:25], ins.current.insn[24:20]} iff (ins.current.insn[6:0] == 7'b1110011 && ins.current.insn[14:12] == 3'b100) {
+        bins hlv_b   = {7'b0110000, 5'b00000};
+        bins hlv_bu  = {7'b0110000, 5'b00001};
+        bins hlv_h   = {7'b0110000, 5'b00010};
+        bins hlv_hu  = {7'b0110000, 5'b00011};
+        bins hsv_b   = {7'b0110000, 5'b00100};
+        bins hsv_h   = {7'b0110000, 5'b00110};
+        bins hlvx_hu = {7'b0110000, 5'b00111};
+        bins hlv_w   = {7'b0110000, 5'b01000};
         `ifdef XLEN64
-            bins hlv_wu  = {7'b1110011};  // with funct3=100, rs2=01001
-            bins hlv_d   = {7'b1110011};  // with funct3=100, rs2=01100
-            bins hsv_d   = {7'b1110011};  // with funct3=100, rs2=01110
+        bins hlv_wu  = {7'b0110000, 5'b01001};
+        `endif
+        bins hsv_w   = {7'b0110000, 5'b01010};
+        bins hlvx_wu = {7'b0110000, 5'b01011};
+        `ifdef XLEN64
+        bins hlv_d   = {7'b0110000, 5'b01100};
+        bins hsv_d   = {7'b0110000, 5'b01110};
         `endif
     }
 

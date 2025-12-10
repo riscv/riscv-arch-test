@@ -17,6 +17,9 @@ def printwalk(regs):
     for reg in regs:
         if reg == "satp":  # satp requires a special case to avoid accidentally turning on vmem
             continue
+        if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
+                continue
         print("\n// Testing walking zeros and ones for CSR " + reg)
         print("\tcsrr s0, " + reg + "\t# save CSR")
         #print("\tRVTEST_SIGWRITE(x3, s0)\t# save CSR to Signature")
@@ -88,12 +91,18 @@ def readandswitchmode(regs, mode):
         for reg in regs:
             if reg == "satp":  # Skip satp to avoid enabling virtual memory
                 continue
+            if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
+                continue
             print(f"\tcsrr t2, {reg} # read from {reg} in {mode}-mode")
         print("\tli a0, 3")
         print("\tecall             # switch back to M-mode")
     else:
         for reg in regs:
             if reg == "satp":  # Skip satp to avoid enabling virtual memory
+                continue
+            if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
                 continue
             print(f"\tcsrr t2, {reg} # read from {reg} in M-mode")
 
@@ -265,6 +274,7 @@ mcntrs = [
     "mcycle",
     "mcountinhibit",
     "minstret",
+    "#ifdef ZIHPM_SUPPORTED",
     "mhpmcounter3",
     "mhpmcounter4",
     "mhpmcounter5",
@@ -323,10 +333,12 @@ mcntrs = [
     "mhpmevent29",
     "mhpmevent30",
     "mhpmevent31",
+    "#endif",
 ]
 mcntrsh = [
     "mcycleh",
     "minstreth",
+    "#ifdef ZIHPM_SUPPORTED",
     "mhpmcounter3h",
     "mhpmcounter4h",
     "mhpmcounter5h",
@@ -385,11 +397,13 @@ mcntrsh = [
     "mhpmevent29h",
     "mhpmevent30h",
     "mhpmevent31h",
+    "#endif",
 ]
 cntrs = [
     "cycle",
     "time",
     "instret",
+    "#ifdef ZIHPM_SUPPORTED",
     "hpmcounter3",
     "hpmcounter4",
     "hpmcounter5",
@@ -419,11 +433,13 @@ cntrs = [
     "hpmcounter29",
     "hpmcounter30",
     "hpmcounter31",
+    "#endif",
 ]
 cntrsh = [
     "cycleh",
     "timeh",
     "instreth",
+    "#ifdef ZIHPM_SUPPORTED",
     "hpmcounter3h",
     "hpmcounter4h",
     "hpmcounter5h",
@@ -453,6 +469,7 @@ cntrsh = [
     "hpmcounter29h",
     "hpmcounter30h",
     "hpmcounter31h",
+    "#endif",
 ]
 
 uCsrSkip = list(range(0x800, 0x900)) + list(range(0xCC0, 0xD00))

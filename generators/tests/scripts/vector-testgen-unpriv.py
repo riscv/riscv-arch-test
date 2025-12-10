@@ -85,7 +85,7 @@ from vector_testgen_common import (
   xvtype,
 )
 
-unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed bellow
+unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed below
   "vnclip.wi",      # Sail issue 1071
   "vnclipu.wi",     # Sail issue 1071
   "vnsra.wi",       # Sail issue 1071
@@ -1165,6 +1165,8 @@ if __name__ == '__main__':
         fname = pathname + "/" + basename + ".S"
         tempfname = pathname + "/" + basename + "_temp.S"
 
+        vdsew = sew * (2 if (test in vd_widen_ins) else 1)
+
         # print custom header part
         f = open(tempfname, "w")
         line = "///////////////////////////////////////////\n"
@@ -1176,7 +1178,7 @@ if __name__ == '__main__':
         #f.write(line)
 
         # insert generic header
-        insertTemplate(test, 0, "testgen_header.S", sew=sew)
+        insertTemplate(test, 0, "testgen_header.S", sew=sew, vdsew=vdsew)
 
         # add assembly lines to enable fp where needed
         if test in vfloattypes:

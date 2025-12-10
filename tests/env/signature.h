@@ -10,6 +10,18 @@
 #define RVTEST_SIGBASE(_SIG_BASE,_TAG)      ;\
   LA(_SIG_BASE,_TAG)
 
+
+# SEW signature update stride
+#ifdef RVTEST_VECTOR
+  #if (VDSEW > XLEN)                // max(VDSEW, XLEN)
+    #define SIG_STRIDE (VDSEW / 8)
+  #else
+    #define SIG_STRIDE (XLEN / 8)
+  #endif
+#else
+  #define SIG_STRIDE REGWIDTH
+#endif
+
 // RVTEST_SIGUPD(sigbase, linkreg, tempreg, sigreg) compares the value in sigreg
 // with the value in memory at 0(sigbase). If they are different, it jumps to
 // a failure handler whose label is formed from linkreg and tempreg. On success,

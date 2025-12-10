@@ -1142,7 +1142,7 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def insertTemplate(test, signatureWords, name, sew=0, test_data=""):
+def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
     writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/tests/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
@@ -1176,14 +1176,14 @@ def insertTemplate(test, signatureWords, name, sew=0, test_data=""):
         .replace("@SEW@", str(sew))
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
-        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(500)) # TODO: change this to a dynamic value
+        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
         .replace("@VLEN@", str(maxVLEN)) # TODO: make this configurable
         .replace("@ELEN@", str(maxELEN)) # TODO: make this configurable
         .replace("@SEWMIN@", str(minSEW_MIN)) # TODO: make this configurable
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
         .replace("RVTEST_BEGIN", "RVTEST_BEGIN\nRVTEST_V_ENABLE(x5, x6)")
-        .replace('''#include "riscv_arch_test.h"''', f'''#define SEW {str(sew)}\n#include "test_macros_vector.h"''')
+        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "test_macros_vector.h"''')
     )
     writeLine(template)
 

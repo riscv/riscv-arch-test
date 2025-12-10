@@ -124,12 +124,3 @@ format:
 ###### Vector coverage targets ######
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
-
-.PHONY: generate-makefiles-ref-vector
-generate-makefiles-ref-vector: # too many dependencies to track; always regenerate Makefile
-	$(MAKE) vector-tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
-
-.PHONY: vector-coverage
-vector-coverage: generate-makefiles-ref-vector Makefile
-	$(MAKE) -C $(WORKDIR_REF) coverage

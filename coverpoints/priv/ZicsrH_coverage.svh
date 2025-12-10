@@ -151,12 +151,12 @@ covergroup ZicsrH_csr_access_cg with function sample(ins_t ins);
     }
 
     // VS-mode: HS and VS CSRs should cause virtual instruction fault
-    // VS-mode (hstatus.V=1): HS CSRs should cause virtual instruction fault
+    // In VS-mode (hstatus.V=1), accesses to HS CSRs (cp_hscsr_virtualinstructionfault_vs) should cause a virtual instruction fault
     cp_hscsr_virtualinstructionfault_vs: cross priv_mode_s, hscsrname, csrop, hstatus_v_bit, exception {
         ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
         ignore_bins no_virtual_instr_fault_trap = binsof(exception) intersect {0}; // Expect a trap (virtual instruction fault)
     }
-    // VS-mode (hstatus.V=1): VS CSRs should cause virtual instruction fault
+    // In VS-mode (hstatus.V=1), accesses to VS CSRs (cp_vscsr_virtualinstructionfault_vs) should cause a virtual instruction fault
     cp_vscsr_virtualinstructionfault_vs: cross priv_mode_s, vscsrname, csrop, hstatus_v_bit, exception {
         ignore_bins not_vs_mode = binsof(hstatus_v_bit) intersect {hstatus_v_bit.hs_mode}; // Exclude HS mode (hstatus.V=0)
         ignore_bins no_virtual_instr_fault_trap = binsof(exception) intersect {0}; // Expect a trap (virtual instruction fault)
@@ -562,6 +562,11 @@ covergroup ZicsrH_tvm_cg with function sample(ins_t ins);
         bins tvm_set = {1};
     }
 
+    hstatus_vtvm: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 7) & 1 {
+        bins vtvm_clear = {0};
+        bins vtvm_set   = {1};
+    }
+
     // HSTATUS.V bit to distinguish between HS and VS mode
     hstatus_v_bit: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "hstatus") >> 20) & 1 {
         bins hs_mode = {0};
@@ -569,7 +574,7 @@ covergroup ZicsrH_tvm_cg with function sample(ins_t ins);
     }
 
     // TVM trap in HS-mode accessing satp/hgatp
-    cp_tvm_hs: cross priv_mode_s, csr_tvm, csrop, mstatus_tvm, hstatus_v_bit {
+    cp_tvm_hs: cross priv_mode_s, csr_tvm, csrop, hstatus_vtvm, hstatus_v_bit {
         ignore_bins not_hs = binsof(hstatus_v_bit) intersect {hstatus_v_bit.vs_mode};
     }
 

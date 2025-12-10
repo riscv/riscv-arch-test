@@ -394,7 +394,7 @@ covergroup ZicsrV_cg with function sample(ins_t ins);
     }
 
     vsetivli_prev_sew_lmul : coverpoint ins.prev.insn[24:20] iff (~ins.prev.insn[25]){
-        // all bins 
+        // all bins
         wildcard ignore_bins undefined_lmul = {5'b??100};
     }
 

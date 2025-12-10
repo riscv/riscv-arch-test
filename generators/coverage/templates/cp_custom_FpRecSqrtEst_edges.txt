@@ -1,8 +1,8 @@
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_FPrecSqrt_edges
     //////////////////////////////////////////////////////////////////////////////////
-    
-    FpRecSqrtEst_all_inputs_vs2_0 : coverpoint 
+
+    FpRecSqrtEst_all_inputs_vs2_0 : coverpoint
     `ifdef SEW16_SUPPORTED
     get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[10:4]
     `endif
@@ -18,5 +18,5 @@
 
 
     cp_custom_FpRecSqrtEst_edges: cross std_vec, FpRecSqrtEst_all_inputs_vs2_0;
-    
+
     //// end cp_custom_FPrecSqrt_edges////////////////////////////////////////////////

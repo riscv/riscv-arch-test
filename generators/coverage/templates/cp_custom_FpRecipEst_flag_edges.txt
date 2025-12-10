@@ -79,5 +79,5 @@
 
 
     cp_custom_FpRecSqrtEst_flag_edges: cross std_vec, vs1_0_recip7_edges, fp_flags_clear;
-    
+
     //// end cp_custom_FpRecipEst_flag_edges////////////////////////////////////////////////

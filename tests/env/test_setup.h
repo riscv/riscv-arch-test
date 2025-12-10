@@ -37,8 +37,7 @@
   // Start of test
   .global rvtest_code_begin
   rvtest_code_begin:
-    // Initialize test data pointer
-    LA(x4, rvtest_data_begin)
+
     // Initialize signature pointer
     LA(x3, signature_base)
 
@@ -50,6 +49,8 @@
       // nops to match selfchecking test length
       RVTEST_SIGUPD_NOPS
     #endif
+    // Initialize test data pointer
+    LA(x4, rvtest_data_begin)
   .option pop
 .endm
 /*********************************** end of RVTEST_BEGIN ***********************************/

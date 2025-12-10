@@ -49,13 +49,13 @@
     nop ;\
     nop
 #else
-#define RVTEST_SIGUPD_NOPS \
-  nop ;\
-  nop ;\
-  nop ;\
-  nop ;\
-  nop ;\
-  nop
+  #define RVTEST_SIGUPD_NOPS \
+    nop ;\
+    nop ;\
+    nop ;\
+    nop ;\
+    nop ;\
+    nop
 #endif
 
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, sigreg) compares the value in sigreg

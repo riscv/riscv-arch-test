@@ -7,7 +7,6 @@
 #define RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H
 
 #include "model_test.h"
-#include "riscv_arch_test.h"
 
 // Bits mstatus[10:9] have the vector state
 #define MSTATUS_VS_SHIFT 9
@@ -18,8 +17,8 @@
 #define MSTATUS_VS_DIRTY   (0x3 << MSTATUS_VS_SHIFT)
 #define MSTATUS_VS_MASK    (0x3 << MSTATUS_VS_SHIFT)
 
-// Define which LMUL fractions are supported based on SEWMIN and ELEN
-#if SEWMIN == 8
+// Define which LMUL fractions are supported based on SEW_MIN and ELEN
+#if SEW_MIN == 8
     #if ELEN == 64
         #define LMULf8_SUPPORTED
         #define LMULf4_SUPPORTED
@@ -31,9 +30,9 @@
         #define LMULf2_SUPPORTED
     #elif ELEN == 8
     #else
-        #error "ELEN unsupported, check SEWMIN"
+        #error "ELEN unsupported, check SEW_MIN"
     #endif
-#elif SEWMIN == 16
+#elif SEW_MIN == 16
     #if ELEN == 64
         #define LMULf4_SUPPORTED
         #define LMULf2_SUPPORTED
@@ -41,14 +40,14 @@
         #define LMULf2_SUPPORTED
     #elif ELEN == 16
     #else
-        #error "ELEN unsupported, check SEWMIN"
+        #error "ELEN unsupported, check SEW_MIN"
     #endif
-#elif SEWMIN == 32
+#elif SEW_MIN == 32
     #if ELEN == 64
         #define LMULf2_SUPPORTED
     #elif ELEN == 32
     #else
-        #error "ELEN unsupported, check SEWMIN"
+        #error "ELEN unsupported, check SEW_MIN"
     #endif
 #endif
 

@@ -1207,8 +1207,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("RVTEST_SIG_SETUP", "RVTEST_SIG_SETUP_V")
-        .replace("RVTEST_BEGIN", "RVTEST_BEGIN\nRVTEST_V_ENABLE(x5, x6)")
-        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "test_macros_vector.h"''')
+        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "riscv_arch_test.h"''')
     )
     writeLine(template)
 

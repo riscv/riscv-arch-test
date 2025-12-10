@@ -4,7 +4,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: sail-rv32gcv
-description: The rv32gc configuration of Core-V Wally;
+description: The rv32gc configuration with the "V" (vector) for testing vector tests;
 implemented_extensions:
   - { name: I, version: "2.1" }
   - { name: A, version: "2.1.0" }

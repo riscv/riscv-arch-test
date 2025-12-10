@@ -2,6 +2,6 @@
 #define RVMODEL_PMP_GRAIN 4
 #define RVMODEL_NUM_PMPS 16
 
-#define SEWMIN 8
+#define SEW_MIN 8
 #define ELEN 64
-#define MAXINDEXEEW 64
+#define VECTOR_LS_INDEX_MAX_EEW 64

@@ -51,6 +51,10 @@
     #endif
     // Initialize test data pointer
     LA(x4, rvtest_data_begin)
+
+    #ifdef RVTEST_VECTOR
+      RVTEST_V_ENABLE(x5, x6)
+    #endif
   .option pop
 .endm
 /*********************************** end of RVTEST_BEGIN ***********************************/

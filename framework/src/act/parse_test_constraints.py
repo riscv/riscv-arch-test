@@ -18,7 +18,7 @@ class TestMetadata(BaseModel):
     """Metadata for a RISC-V test case extracted from YAML configuration."""
 
     test_path: FilePath
-    implemented_extensions: set[str] = Field(min_length=1)
+    required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     config_dependent: bool = Field(alias="CONFIG_DEPENDENT")
     params: dict[str, Any] = Field(default_factory=dict)
@@ -37,7 +37,7 @@ class TestMetadata(BaseModel):
     @property
     def flen(self) -> str:
         """Get floating-point register length: '64' if D extension present, else '32'."""
-        return "128" if "Q" in self.implemented_extensions else "64" if "D" in self.implemented_extensions else "32"
+        return "128" if "Q" in self.required_extensions else "64" if "D" in self.required_extensions else "32"
 
 
 def extract_yaml_config(file: Path) -> TestMetadata:

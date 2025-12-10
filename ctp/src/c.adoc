@@ -42,154 +42,7 @@ implementations that ignore them.|Hints are not tested
 .Zca Instruction Coverpoints
 include::{testplansdir}/Zca.adoc[]
 
-[[t-Zca-normative-rules]]
-.Zca Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|27.3.1|C.LWSP loads a 32-bit value from memory into register rd. It computes an effective address by adding
-the zero-extended offset, scaled by 4, to the stack pointer, x2. It expands to lw rd, offset(x2). C.LWSP
-is valid only when rd≠x0; the code points with rd=x0 are reserved.|c.lwsp/{cp_imm_mul_4sp, rd_nx0}
-|27.3.1|C.LDSP is an RV64C-only instruction that loads a 64-bit value from memory into register rd. It
-computes its effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, x2.
-It expands to ld rd, offset(x2). C.LDSP is valid only when rd≠x0; the code points with rd=x0 are
-reserved.|c.ldsp/{cp_imm_mul_8sp, rd_nx0}
-|27.3.1|C.SWSP stores a 32-bit value in register rs2 to memory. It computes an effective address by adding
-the zero-extended offset, scaled by 4, to the stack pointer, x2. It expands to sw rs2, offset(x2).|c.swsp/{imm_mul_4sp, cp_rs2_edges}
-|27.3.1|C.SDSP is an RV64C-only instruction that stores a 64-bit value in register rs2 to memory. It computes
-an effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, x2. It
-expands to sd rs2, offset(x2).|c.sdsp/{imm_mul_8sp, cp_rs2_edges}
-|27.3.2|C.LW loads a 32-bit value from memory into register
-`_rd′_`. It computes an effective address by adding the
-_zero_-extended offset, scaled by 4, to the base address in register
-`_rs1′_`. It expands to `lw rd′, offset(rs1′)`.|c.lw/{cp_imm_mul, cp_rs1p, cp_rdp}
-|27.3.2|C.LD is an RV64C-only instruction that loads a 64-bit value from
-memory into register `_rd′_`. It computes an effective
-address by adding the _zero_-extended offset, scaled by 8, to the base
-address in register `_rs1′_`. It expands to
-`ld rd′, offset(rs1′)`.|c.ld/{cp_imm_mul_8, cp_rs1p, cp_rdp}
-|27.3.2|C.SW stores a 32-bit value in register rs2′ to memory. It computes an effective address by adding the
-zero-extended offset, scaled by 4, to the base address in register rs1′. It expands to sw rs2′, offset(rs1′).|c.sw/{cp_imm_mul, cp_rs1p, cp_rs2_edges}
-|27.3.2|C.SD is an RV64C-only instruction that stores a 64-bit value in
-register `_rs2′_` to memory. It computes an effective
-address by adding the _zero_-extended offset, scaled by 8, to the base
-address in register `_rs1′_`. It expands to
-`sd rs2′, offset(rs1′)`.|c.sd/{cp_imm_mul_8, cp_rs1p, cp_rs2_edges}
-|27.4|C.J performs an unconditional control transfer. The offset is
-sign-extended and added to the `pc` to form the jump target address. C.J
-can therefore target a &#177;2 KiB range. C.J expands to
-`jal x0, offset`.|c.j/{cp_imm_edges_c_jal}
-|27.4|C.JAL is an RV32C-only instruction that performs the same operation as
-C.J, but additionally writes the address of the instruction following
-the jump (`pc+2`) to the link register, `x1`. C.JAL expands to
-`jal x1, offset`.|c.jal/{cp_imm_edges_c_jal}
-|27.4|C.JR (jump register) performs an unconditional control transfer to the
-address in register _rs1_. C.JR expands to `jalr x0, 0(rs1)`. C.JR is
-valid only when _rs1_≠`x0`; the code
-point with _rs1_=`x0` is reserved.|c.jr/{cp_rs1_nx0}
-|27.4|C.JALR (jump and link register) performs the same operation as C.JR, but
-additionally writes the address of the instruction following the jump
-(`pc`+2) to the link register, `x1`. C.JALR expands to
-`jalr x1, 0(rs1)`. C.JALR is valid only when
-_rs1_≠`x0`; the code point with
-_rs1_=`x0` corresponds to the C.EBREAK
-instruction.|c.jalr/{cp_rs1_nx0}, ExceptionsZc/cp_breakpoint
-|27.4|C.BEQZ performs conditional control transfers. The offset is
-sign-extended and added to the `pc` to form the branch target address.
-It can therefore target a &#177;256 B range. C.BEQZ takes the
-branch if the value in register _rs1′_ is zero. It
-expands to `beq rs1′, x0, offset`.|c.beqz/{cp_offset, cp_rs1_edges}
-|27.4|C.BNEZ is defined analogously, but it takes the branch if
-_rs1′_ contains a nonzero value. It expands to
-`bne rs1′, x0, offset`.|c.bnez/{cp_offset, cp_rs1_edges}
-|27.5.1|C.LI loads the sign-extended 6-bit immediate, _imm_, into register _rd_.
-C.LI expands into `addi rd, x0, imm`.
-The C.LI code points with _rd_=`x0` are HINTs.|c.li/{cp_imm_edges_6bit, cp_rd_nx0}
-|27.5.1|C.LUI loads the non-zero 6-bit immediate field into bits 17–12 of the
-destination register, clears the bottom 12 bits, and sign-extends bit 17
-into all higher bits of the destination. C.LUI expands into
-`lui rd, imm`. C.LUI is valid only when
-_rd_≠`x2`,
-and when the immediate is not equal to zero. The code points with
-_imm_=0 are reserved.|c.lui/{cp_imm_edges_6bit, cp_rd_nx2}
-|27.5.2|C.ADDI adds the non-zero sign-extended 6-bit immediate to the value in register rd then writes the
-result to rd. C.ADDI expands into addi rd, rd, imm. C.ADDI is valid only when rd≠x0 and imm≠0.|c.addi/{cr_rs1_imm_edges_6bit_n0, cp_rd_nx0}
-|27.5.2|C.ADDIW is an RV64C-only instruction that performs the same
-computation but produces a 32-bit result, then sign-extends result to 64
-bits. C.ADDIW expands into `addiw rd, rd, imm`. The immediate can be
-zero for C.ADDIW, where this corresponds to `sext.w rd`.|c.addiw/{cr_rs1_imm_edges_6bit, cp_rd_nx0}
-|27.5.2|C.ADDI16SP (add immediate to stack pointer)
-shares the opcode with C.LUI, but has a destination field of
-`x2`. C.ADDI16SP adds the non-zero sign-extended 6-bit immediate to the
-value in the stack pointer (`sp=x2`), where the immediate is scaled to
-represent multiples of 16 in the range [-512, 496]. C.ADDI16SP is used to
-adjust the stack pointer in procedure prologues and epilogues. It
-expands into `addi x2, x2, nzimm[9:4]`. C.ADDI16SP is valid only when
-_nzimm_≠0; the code point with _nzimm_=0 is reserved.|c.addi16sp/{cp_imm_mul_addi16sp}
-|27.5.2|C.ADDI4SPN (add immediate to stack pointer, non-destructive)
-is a CIW-format instruction that adds a _zero_-extended
-non-zero immediate, scaled by 4, to the stack pointer, `x2`, and writes
-the result to `rd′`. This instruction is used to generate
-pointers to stack-allocated variables, and expands to
-`addi rd′, x2, nzuimm[9:2]`. C.ADDI4SPN is valid only when
-_nzuimm_≠0; the code points with _nzuimm_=0 are
-reserved.|c.addi4spn/{cp_imm_mul_addi4spn, cp_rdp}
-|27.5.2|C.SLLI is a CI-format instruction that performs a logical left shift of
-the value in register _rd_ then writes the result to _rd_. The shift
-amount is encoded in the _shamt_ field.
-C.SLLI expands into `slli rd, rd, shamt[5:0]`.|c.slli/{cr_rs1_imm_edges_c}
-|27.5.2|The C.SLLI code points with _shamt_=0 or with _rd_=`x0` are HINTs.|c.slli/{cp_rd_nx0, cr_rs1_imm_edges_c}
-|27.5.2|C.SRLI is a CB-format instruction that performs a logical right shift of
-the value in register _rd′_ then writes the result to
-_rd′_. The shift amount is encoded in the _shamt_ field.
-C.SRLI expands into `srli rd′, rd′, shamt`.|c.srli/{ cr_rs1_imm_edges_c, cp_rdp}
-|27.5.2|C.SRAI is defined analogously to C.SRLI, but instead performs an
-arithmetic right shift. C.SRAI expands to
-`srai rd′, rd′, shamt`.|c.srai/{cr_rs1_imm_edges_c, cp_rdp}
-|27.5.2|For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1
-are designated for custom extensions.|c.{slli,srli, srai}/{cr_rs1_imm_edges_c}
-|27.5.2|C.ANDI is a CB-format instruction that computes the bitwise AND of the
-value in register _rd′_ and the sign-extended 6-bit
-immediate, then writes the result to _rd′_. C.ANDI
-expands to `andi rd′, rd′, imm`.|c.andi/{cr_rs1_imm_edges_6bit, cp_rdp}
-|27.5.3|C.MV copies the value in register _rs2_ into register _rd_. C.MV expands
-into `add rd, x0, rs2`. C.MV is valid only when
-_rs2_≠`x0`|c.mv/{cp_rd_nx0, cp_rs2_nx0}
-|27.5.3|C.ADD adds the values in registers _rd_ and _rs2_ and writes the result
-to register _rd_. C.ADD expands into `add rd, rd, rs2`. C.ADD is only
-valid when _rs2_≠`x0`|c.add/{cp_rs1_rs2_edges, cp_rs2_nx0, cp_rd_nx0}
-|27.5.3|`C.AND` computes the bitwise `AND` of the values in registers
-_rd′_ and _rs2′_, then writes the result
-to register _rd′_. `C.AND` expands into
-`and rd′, rd′, rs2′`.|c.and/{cp_rdp, cp_rs2p}
-|27.5.3|`C.OR` computes the bitwise `OR` of the values in registers
-_rd′_ and _rs2′_, then writes the result
-to register _rd′_. `C.OR` expands into
-`or rd′, rd′, rs2′`.|c.or/{cp_rdp, cp_rs2p}
-|27.5.3|`C.XOR` computes the bitwise `XOR` of the values in registers
-_rd′_ and _rs2′_, then writes the result
-to register _rd′_. `C.XOR` expands into
-`xor rd′, rd′, rs2′`.|c.xor/{cp_rdp, cp_rs2p}
-|27.5.3|`C.SUB` subtracts the value in register _rs2′_ from the
-value in register _rd′_, then writes the result to
-register _rd′_. `C.SUB` expands into
-`sub rd′, rd′, rs2′`.|c.sub/{cp_rdp, cp_rs2p}
-|27.5.3|`C.ADDW` is an RV64C-only instruction that adds the values in
-registers _rd′_ and _rs2′_, then
-sign-extends the lower 32 bits of the sum before writing the result to
-register _rd′_. `C.ADDW` expands into
-`addw rd′, rd′, rs2′`.|c.addw/{cp_rdp, cp_rs2p}
-|27.5.3|`C.SUBW` is an RV64C-only instruction that subtracts the value in
-register _rs2′_ from the value in register
-_rd′_, then sign-extends the lower 32 bits of the
-difference before writing the result to register _rd′_.
-`C.SUBW` expands into `subw rd′, rd′, rs2′`.|c.subw/{cp_rdp, cp_rs2p}
-|27.5.6|`C.NOP` is a CI-format instruction that does not change any user-visible
-state, except for advancing the `pc` and incrementing any applicable
-performance counters. `C.NOP` expands to `nop`.|c.nop/{cp_asm_count}
-|===
-
-
+include::norm/Zca_norm_rules.adoc[]
 
 ==== Zcf Compressed Floating-Point Extension
 
@@ -199,32 +52,7 @@ performance counters. `C.NOP` expands to `nop`.|c.nop/{cp_asm_count}
 .Zcf Instruction Coverpoints
 include::{testplansdir}/Zcf.adoc[]
 
-[[t-Zcf-normative-rules]]
-.Zcf Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|27.3.1|C.FLWSP is an RV32FC-only instruction that loads a single-precision floating-point value from memory
-into floating-point register rd. It computes its effective address by adding the zero-extended offset,
-scaled by 4, to the stack pointer, x2. It expands to flw rd, offset(x2).|c.flwsp/***
-|27.3.1|C.FSWSP is an RV32FC-only instruction that stores a single-precision floating-point value in floating-
-point register rs2 to memory. It computes an effective address by adding the zero-extended offset,
-scaled by 4, to the stack pointer, x2. It expands to fsw rs2, offset(x2).|c.fswsp/***
-|27.3.2|C.FLW is an RV32FC-only instruction that loads a single-precision
-floating-point value from memory into floating-point register
-`_rd′_`. It computes an effective address by adding the
-_zero_-extended offset, scaled by 4, to the base address in register
-`_rs1′_`. It expands to
-`flw rd′, offset(rs1′)`.|c.flw/{}
-|27.3.2|C.FSW is an RV32FC-only instruction that stores a single-precision
-floating-point value in floating-point register `_rs2′_` to
-memory. It computes an effective address by adding the _zero_-extended
-offset, scaled by 4, to the base address in register
-`_rs1′_`. It expands to
-`fsw rs2′, offset(rs1′)`.|c.fsw/{}
-
-|===
-
+include::norm/Zcf_norm_rules.adoc[]
 
 ==== Zcd Compressed Double-Precision FP Extension
 
@@ -234,30 +62,7 @@ offset, scaled by 4, to the base address in register
 .Zcd Instruction Coverpoints
 include::{testplansdir}/Zcd.adoc[]
 
-[[t-Zcd-normative-rules]]
-.Zcd Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|27.3.1|C.FLDSP is an RV32DC/RV64DC-only instruction that loads a double-precision floating-point value
-from memory into floating-point register rd. It computes its effective address by adding the zero
--extended offset, scaled by 8, to the stack pointer, x2. It expands to fld rd, offset(x2).|c.fldsp/***
-|27.3.1|C.FSDSP is an RV32DC/RV64DC-only instruction that stores a double-precision floating-point value in
-floating-point register rs2 to memory. It computes an effective address by adding the zero-extended
-offset, scaled by 8, to the stack pointer, x2. It expands to fsd rs2, offset(x2).|c.fsdsp/***
-|27.3.2|C.FLD is an RV32DC/RV64DC-only instruction that loads a double-precision
-floating-point value from memory into floating-point register
-`_rd′_`. It computes an effective address by adding the
-_zero_-extended offset, scaled by 8, to the base address in register
-`_rs1′_`. It expands to
-`fld rd′, offset(rs1′)`.|c.fld/{}
-|27.3.2|C.FSD is an RV32DC/RV64DC-only instruction that stores a
-double-precision floating-point value in floating-point register
-`_rs2′_` to memory. It computes an effective address by
-adding the _zero_-extended offset, scaled by 8, to the base address in
-register `_rs1′_`. It expands to
-`fsd rs2′, offset(rs1′)`.|c.fsd/{}
-|===
+include::norm/Zcd_norm_rules.adoc[]
 
 ==== Zcb Additional Compressed Instructions
 
@@ -267,21 +72,7 @@ register `_rs1′_`. It expands to
 .Zcb Instruction Coverpoints
 include::{testplansdir}/Zcb.adoc[]
 
-[[t-Zcb-normative-rules]]
-.Zcb Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|28.12.1|c.lbu loads a byte from the memory address formed by adding _rs1'_ to the zero extended immediate _uimm_. The resulting byte is zero extended to XLEN bits and is written to _rd'_.|c.lbu/{}
-|28.12.2|c.lhu loads a halfword from the memory address formed by adding _rs1'_ to the zero extended immediate _uimm_. The resulting halfword is zero extended to XLEN bits and is written to _rd'_.|c.lhu/{}
-|28.12.3|c.lh loads a halfword from the memory address formed by adding _rs1'_ to the zero extended immediate _uimm_. The resulting halfword is sign extended to XLEN bits and is written to _rd'_.|c.lh/{}
-|28.12.4|c.sb stores the least significant byte of _rs2'_ to the memory address formed by adding _rs1'_ to the zero extended immediate _uimm_.|c.sb/{}
-|28.12.5|c.sh stores the least significant halfword of _rs2'_ to the memory address formed by adding _rs1'_ to the zero extended immediate _uimm_.|c.sh/{}
-|28.12.6|c.zext.b takes a single source/destination operand.
-It zero-extends the least-significant byte of the operand to XLEN bits by inserting zeros into all of
-the bits more significant than 7.|c.zext.b/{}
-|28.12.11|c.not takes the one's complement of _rd'/rs1'_ and writes the result to the same register.|c.not/{}
-|===
+include::norm/Zcb_norm_rules.adoc[]
 
 ===== ZcbM
 
@@ -291,13 +82,7 @@ When both Zcb and M are supported, add the instruction in <<t-ZcbM-coverpoints>>
 .ZcbM Instruction Coverpoints
 include::{testplansdir}/ZcbM.adoc[]
 
-[[t-ZcbM-normative-rules]]
-.ZcbM Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|28.12.12|c.mul multiplies XLEN bits of the source operands from _rsd'_ and _rs2'_ and writes the lowest XLEN bits of the result to _rsd'_.|c.mul/{}
-|===
+include::norm/ZcbM_norm_rules.adoc[]
 
 ===== ZcbZba
 
@@ -307,15 +92,8 @@ When both Zcb and Zba are supported, add the instruction in <<t-ZcbZba-coverpoin
 .ZcbZba Instruction Coverpoints
 include::{testplansdir}/ZcbZba.adoc[]
 
-[[t-ZcbZba-normative-rules]]
-.ZcbZba Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|28.12.10|c.zext.w takes a single source/destination operand.
-It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of
-the bits more significant than 31.|c.zext.w/{}
-|===
+include::norm/ZcbZba_norm_rules.adoc[]
+
 ===== ZcbZbb
 
 When both Zcb and Zbb are supported, add the instructions in <<t-ZcbZbb-coverpoints>> to the Zcb coverpoints.
@@ -324,17 +102,4 @@ When both Zcb and Zbb are supported, add the instructions in <<t-ZcbZbb-coverpoi
 .ZcbZbb Instruction Coverpoints
 include::{testplansdir}/ZcbZbb.adoc[]
 
-[[t-ZcbZbb-normative-rules]]
-.ZcbZbb Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|28.12.7|c.sext.b takes a single source/destination operand. It sign-extends the least-significant byte in
-the operand to XLEN bits by copying the most-significant bit in the byte (i.e., bit 7) to all of the more-
-significant bits.|c.sext.b/{}
-|28.12.8|c.zext.h takes a single source/destination operand. It zero-extends the least-significant
-halfword of the operand to XLEN bits by inserting zeros into all of the bits more significant than 15.|c.zext.h/{}
-|28.12.9|c.sext.h takes a single source/destination operand.
-It sign-extends the least-significant halfword in the operand to XLEN bits by copying the most-significant bit
-in the halfword (i.e., bit 15) to all of the more-significant bits.|c.sext.h/{}
-|===
+include::norm/ZcbZbb_norm_rules.adoc[]

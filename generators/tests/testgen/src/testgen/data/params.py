@@ -26,12 +26,14 @@ class InstructionParams:
     rs2: int | None = None
     rs3: int | None = None
     rd: int | None = None
+    temp_reg: int | None = None  # Temporary register for use in test setup/teardown
 
     # Integer register values
     rs1val: int | None = None
     rs2val: int | None = None
     rs3val: int | None = None
     rdval: int | None = None
+    temp_val: int | None = None
 
     # Float registers
     fs1: int | None = None
@@ -56,7 +58,7 @@ class InstructionParams:
     def used_int_regs(self) -> list[int]:
         """Return list of all integer registers used in this test."""
         regs: list[int] = []
-        for reg in [self.rs1, self.rs2, self.rs3, self.rd]:
+        for reg in [self.rs1, self.rs2, self.rs3, self.rd, self.temp_reg]:
             if reg is not None:
                 regs.append(reg)
         return regs

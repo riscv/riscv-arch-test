@@ -7,4 +7,4 @@ The following requirements appear to be non-controversial.
 *
 The following requirements need analysis
 
-*** Update profile for MC100, remove U requirements
+TODO

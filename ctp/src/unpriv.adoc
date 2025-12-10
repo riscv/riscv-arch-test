@@ -1,7 +1,7 @@
 
 == Unprivileged Test Plan
 
-Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not test all difficult floating-point cases.
+Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
@@ -44,7 +44,6 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
-|cp_gpr_hazard|4|General-purpose register hazard detection: RAW, WAR, WAW, and no hazard.
 3+^|Coverpoints for Compressed Instructions
 |cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
 |cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.
@@ -76,7 +75,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard.
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
-|cp_rnum|11|Round nummber for AES instructions
+|cp_rnum|11|Round number for AES instructions
 |cp_sc|2|Store conditional instruction has a success and failure case.
 |===
 
@@ -90,7 +89,7 @@ Notes:
 
 * Cross-products exercise all combinations of two or more coverpoints. They can have a large number of bins.
 
-* Each of these coverpoints can optionally have a modifer appended.  For example, cp_rs1_nx0 is a modified version of cp_rs1, covering all 31 rs1 register numbers excluding x0.  It is used for load/store/jalr instructions that can't rely on address 0 specified by x0 being legal. Modifiers are defined in the extensions that they apply to.
+* Each of these coverpoints can optionally have a modifier appended.  For example, cp_rs1_nx0 is a modified version of cp_rs1, covering all 31 rs1 register numbers excluding x0.  It is used for load/store/jalr instructions that can't rely on address 0 specified by x0 being legal. Modifiers are defined in the extensions that they apply to.
 
 * The cmp_* and cp_*_hazard coverpoints occupy the fuzzy land at the edge of certification and verification.  They are included because they are easy.
 
@@ -183,7 +182,7 @@ Notes:
 
 [NOTE]
 ====
-The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and a random number to exercise intermediate values.  RV64 adds edge casess near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
+The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and a random number to exercise intermediate values.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
 ====
 
 include::i.adoc[]

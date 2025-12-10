@@ -9,16 +9,18 @@ on:
         default: "false"
   push:
     branches:
-      - cvw
+      - act4
     paths:
       - "ctp/**"
+      - "generators/ctp/**"
       - "testplans/**"
       - ".github/workflows/ctp-build.yml"
   pull_request:
     branches:
-      - cvw
+      - act4
     paths:
       - "ctp/**"
+      - "generators/ctp/**"
       - "testplans/**"
       - ".github/workflows/ctp-build.yml"
 
@@ -28,13 +30,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
       - run: git submodule update --init ctp/docs-resources
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       - name: Build
-        run: cd  ctp && make -j2
+        run: cd ctp && make -j2
 
       - name: Make GitHub pages directory
         run: |
@@ -59,7 +64,7 @@ jobs:
           path: github-pages
 
   release:
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/cvw') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/act4') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -96,7 +101,7 @@ jobs:
             ctp.html
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/cvw'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/act4'
     needs: build
     runs-on: ubuntu-latest
     permissions:

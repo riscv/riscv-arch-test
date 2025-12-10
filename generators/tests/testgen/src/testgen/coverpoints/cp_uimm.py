@@ -27,6 +27,7 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     test_lines: list[str] = []
     for uimm in uimm_vals:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=uimm)
         desc = f"{coverpoint}: imm={uimm}"

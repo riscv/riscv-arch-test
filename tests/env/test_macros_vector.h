@@ -73,3 +73,5 @@
   nop                                                         ;\
   nop                                                         ;\
   addi _SIG_BASE, _SIG_BASE, OFFSET
+
+#endif // RISCV_TEST_SUITE_TEST_MACROS_VECTOR_H

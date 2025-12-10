@@ -200,7 +200,9 @@
       CANARY
 
     // Main signature region
-    .align 3
+    #ifdef RVTEST_VECTOR
+      .align 3
+    #endif
     signature_base:
       #ifdef SELFCHECK
         // Preload signature region with correct values for self-checking

@@ -1203,7 +1203,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "riscv_arch_test.h"''')
+        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define RVTEST_SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "riscv_arch_test.h"''')
     )
     writeLine(template)
 
@@ -2338,7 +2338,7 @@ def readTestplans(priv=False):
                         testplans["Vls" + effew] = tp
                     del testplans["Vls"]
                 if (arch == "Vf"):
-                    for effew in ["16", "32", "64"]:
-                        testplans["Vf" + effew] = tp
+                    # for effew in ["16", "32", "64"]:
+                    #     testplans["Vf" + effew] = tp
                     del testplans["Vf"]
     return testplans

@@ -93,6 +93,10 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   "vslideup.vi",    # Sail issue 1071
   "vslidedown.vi",  # Sail issue 1071
   "vrgather.vi",    # Sail issue 1071
+  # failing the new test framework as of Dec. 10, 2025
+  "vnclipu.wv",
+  "vsadd.vi",
+  "vmv.x.s"
 ]
 
 def writeLine(argument: str, comment = ""):

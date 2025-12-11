@@ -21,7 +21,7 @@ def format_css_type(
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CSS instructions
     # Ensure sp is allocated
-    if params.rd != 2:
+    if params.rs2 != 2:
         setup.append(test_data.int_regs.consume_registers([2]))
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
@@ -30,4 +30,7 @@ def format_css_type(
         f"{instr_name} x{params.rs2}, {params.immval}(sp) # perform operation",
     ]
     check = ["# TODO: Add check code for CSS instruction"]
+    # Return sp to the pool if it was consumed
+    if params.rs2 != 2:
+        test_data.int_regs.return_register(2)
     return (setup, test, check)

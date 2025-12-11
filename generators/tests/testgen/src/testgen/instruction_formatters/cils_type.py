@@ -18,10 +18,10 @@ from testgen.utils.common import load_int_reg, write_sigupd
     imm_bits=6,
     imm_signed=True,
 )
-def format_cls_type(
+def format_cils_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format CI-type stack-pointer-based loads instruction."""
+    """Format CILS-type stack-pointer-based loads instruction."""
     assert params.temp_reg is not None and params.temp_val is not None
     assert params.rd is not None and params.immval is not None
     setup: list[str] = []

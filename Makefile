@@ -4,7 +4,7 @@
 
 # Directories and files
 CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
-REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
+REF_CONFIG_FILES ?= configs/ref/sail-rvi20/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
 
@@ -59,13 +59,13 @@ $(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGR
 	@touch $@
 
 .PHONY: testgen
-testgen:  $(STAMP_DIR)/testgen.stamp
+testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests --extensions M
+	$(UV_RUN) testgen testplans -o tests --extensions I,M,Zca,Zifencei # I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei
 	@touch $@
 
 .PHONY: vector-testgen
-vector-testgen:  $(STAMP_DIR)/vector-testgen-unpriv.stamp
+vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
 	touch $@

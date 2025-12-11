@@ -23,7 +23,7 @@ def format_css_type(
     assert params.immval is not None, "immval must be provided for CSS-type instructions"
 
     return (["#TODO: CSS tests are still a work in progress"], [], [])
-    # TODO: Fix CSS trapping bug and reenable these tests
+    # TODO: Fix CSS trapping bug and re-enable these tests
 
     # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte
     if instr_name == "c.sdsp":

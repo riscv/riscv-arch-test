@@ -8,6 +8,14 @@
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Svinval]
+# MARCH: rv${XLEN}i_zicsr_svinval
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
 #include "WALLY-init-lib.h"
 
 main:

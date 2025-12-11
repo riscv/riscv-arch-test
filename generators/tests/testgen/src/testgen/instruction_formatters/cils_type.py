@@ -8,7 +8,7 @@
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_int_reg, to_hex, write_sigupd
 
 
 @add_instruction_formatter(
@@ -40,23 +40,28 @@ def format_cils_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
+    # Add value to load data region
+    test_data.add_test_data_value(params.temp_val)
+
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CILS instructions
     # Ensure sp is allocated
     if params.rd != 2:
         setup.append(test_data.int_regs.consume_registers([2]))
+
     setup.extend(
         [
-            load_int_reg("value to load", params.temp_reg, params.temp_val, test_data),
-            "LA(sp, scratch) # base address",
+            f"mv sp, x{test_data.int_regs.link_reg} # move data_ptr to sp",
             f"addi sp, sp, {-params.immval} # adjust base address for load",
-            f"SREG x{params.temp_reg}, {params.immval}(sp) # store value to load",
         ]
     )
     test = [
-        f"{instr_name} x{params.rd}, {params.immval}(sp) # perform operation",
+        f"{instr_name} x{params.rd}, {params.immval}(sp) # perform load ({to_hex(params.temp_val, test_data.xlen)})",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [
+        write_sigupd(params.rd, test_data, "int"),
+        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
+    ]
     # Return sp if it was allocated specially for this testcase
     if params.rd != 2:
         test_data.int_regs.return_register(2)

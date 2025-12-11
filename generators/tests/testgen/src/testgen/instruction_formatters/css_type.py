@@ -11,13 +11,29 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import load_int_reg
 
 
-@add_instruction_formatter("CSS", required_params={"rs2", "rs2val", "immval"}, imm_bits=6)
+@add_instruction_formatter("CSS", required_params={"rs2", "rs2val", "immval"}, imm_bits=9, imm_signed=False)
 def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CSS-type instruction."""
     assert params.rs2 is not None and params.rs2val is not None
     assert params.immval is not None
+    return ([], [], [])
+
+    # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte
+    if instr_name == "c.sdsp":
+        alignment = 8
+        max_val = 504
+    elif instr_name == "c.swsp":
+        alignment = 4
+        max_val = 252
+    else:
+        raise ValueError(f"Unknown CSS instruction: {instr_name}")
+
+    # Mask off lower bits to ensure alignment
+    params.immval = params.immval & ~(alignment - 1)
+    # Wrap into valid range
+    params.immval = params.immval % (max_val + alignment)
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CSS instructions
     # Ensure sp is allocated

@@ -457,6 +457,7 @@ covergroup ZicntrH_counters_cg with function sample(ins_t ins);
     }
     `else
         csrr_time: coverpoint ins.current.insn {
+            wildcard bins csrr_time =  {32'b011000000101_00000_010_?????_1110011}; // 0x605
             wildcard bins csrr_timeh = {32'b011000010101_00000_010_?????_1110011}; // 0x615
     }
     `endif

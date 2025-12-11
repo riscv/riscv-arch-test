@@ -38,17 +38,17 @@
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    RVTEST_WORD_PTR _STR_PTR                                ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                   ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
     SREG _R, 0(_SIG_PTR)                                   ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    RVTEST_WORD_PTR _STR_PTR                                ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                  ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #endif
 
 // RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops

@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 
 @add_instruction_formatter("CU", required_params={"rs1", "rs1val"}, reg_range=range(8, 16))
-def format_ca_type(
+def format_cu_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CU-type instruction."""

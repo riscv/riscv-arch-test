@@ -1,5 +1,5 @@
 ##################################
-# ca_type.py
+# cu_type.py
 #
 # harris@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
@@ -15,7 +15,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 def format_ca_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format CA-type instruction."""
+    """Format CU-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     setup = [
         load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data),

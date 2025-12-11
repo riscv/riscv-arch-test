@@ -34,6 +34,7 @@ import re
 import sys
 import urllib.request
 from collections.abc import Iterable
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote, urlparse
@@ -261,6 +262,17 @@ def normalize_coverpoint(cp: Any) -> str:
 def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str | None = None) -> None:
     """Generate AsciiDoc table from rows."""
     lines = []
+    # Add auto-generation header comment with absolute paths
+    argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
+    command_line = ' '.join(argv_abs)
+    gen_date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+    lines.extend([
+        '// WARNING: This file was automatically generated.',
+        '// Do not modify by hand.',
+        '// Generation command: ' + command_line,
+        '// Generation date: ' + gen_date,
+        ''
+    ])
     if base:
         lines.extend([f'[[t-{base}-normative_rules]]', f'.{base} Normative Rules'])
 

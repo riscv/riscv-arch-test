@@ -112,6 +112,8 @@ These additional exception tests are run on configurations with compressed instr
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067[Google Sheet Testplan]
 
+include::norm/ExceptionsZc_norm_rules.adoc[]
+
 ==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
 
 [[t-ExceptionsZicboS-coverpoints]]

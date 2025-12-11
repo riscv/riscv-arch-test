@@ -1,0 +1,22 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+# *** needs flushing out 12/5/25 david_harris@hmc.edu; needs pulling out privileged parts, also see Zca.yaml
+# parts of Zcmt should go here
+
+normative_rule_definitions:
+  - name: Zcmp_bus_fault
+    coverpoint:
+      ["TODO"]
+      # Stores may also return imprecise faults from the bus. It is platform defined whether the core implementation waits for the bus responses before continuing to the final stage of the sequence, or handles errors responses after completing the PUSH instruction.
+  - name: Zcmp_pop_sp_commit
+    coverpoint:
+      ["TODO"]
+      # The optional li a0, 0, stack pointer adjustment and optional ret must only be committed only when it is certain that the entire POP/POPRET instruction will commit.
+  - name: Zcmp_push_sp_commit
+    coverpoint:
+      ["TODO"]
+      # The stack pointer adjustment must only be committed only when it is certain that the entire PUSH instruction will commit.
+  - name: Zcmp_trap
+    coverpoint:
+      ["TODO"]
+      # Correct execution requires that sp refers to idempotent memory (also see ), because the core must be able to handle traps detected during the sequence. The entire PUSH/POP sequence is re-executed after returning from the trap handler, and multiple traps are possible during the sequence. | If a trap occurs during the sequence then xEPC is updated with the PC of the instruction, xTVAL (if not read-only-zero) updated with the bad address if it was an access fault and xCAUSE updated with the type of trap.

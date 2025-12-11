@@ -46,7 +46,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
     """Generate tests for branch immediate edge values."""
     # TODO: Update coverpoint error message
     test_lines: list[str] = ["\n# Testcase cp_imm_edges_branch"]
-    params = generate_random_params(test_data, instr_type)
+    params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None
     test_lines.extend(
         [

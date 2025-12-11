@@ -22,9 +22,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
     # TODO: implement support for compressed instructions
     if instr_type in ["CJ", "CB", "CJR"]:
-        return []
+        return ["# TODO"]  # TODO
 
-    return []  # TODO
+    return ["# TODO"]  # TODO
 
     params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None

@@ -25,8 +25,8 @@ c.or,CA,x,x,x,p,p,,x,x,,x,c,,,,,
 c.sd,CS,,x,x,p,p,,,x,,,,,,,,8
 c.sdsp,CSS,,x,x,,x,,,x,,,,,,,,8sp
 c.slli,CIS,x,x,x,nx0,,,x,,c,,,,,n0,,
-c.srai,CBP,x,x,x,p,,,x,,c,,,,,n0,,
-c.srli,CBP,x,x,x,p,,,x,,c,,,,,n0,,
+c.srai,CBS,x,x,x,p,,,x,,c,,,,,n0,,
+c.srli,CBS,x,x,x,p,,,x,,c,,,,,n0,,
 c.sub,CA,x,x,x,p,p,,x,x,,x,c,,,,,
 c.subw,CA,,x,x,p,p,,x,x,,x,c,,,,,
 c.sw,CS,x,x,x,p,p,,,x,,,,,,,,x

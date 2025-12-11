@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-rvi20
-description: RVI20 with all optional extensions
+name: sail-rvi20_32
+description: RVI20-32 with all optional extensions
 implemented_extensions:
   - { name: I, version: "2.1" }
   - { name: A, version: "2.1.0" }
@@ -37,7 +37,7 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # Sm params
-  MXLEN: 64
+  MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true

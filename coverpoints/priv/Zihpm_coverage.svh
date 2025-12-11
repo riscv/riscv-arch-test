@@ -13,7 +13,7 @@
 `define COVER_ZIHPM
 covergroup Zihpm_cg with function sample (ins_t, ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     cp_hpm_count: coverpoint {ins.current.insn[31:20], ins.current.csr[12'hB03][31:0] } {
         bins mhpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
@@ -142,7 +142,7 @@ covergroup Zihpm_cg with function sample (ins_t, ins);
 
     cp_hmp_write: cross cp_hpm_count, priv_mode_m;
 
-    `ifdef XLEN32  
+    `ifdef XLEN32
         cp_hpmh_write: cross cp_hpmh_counth, priv_mode_m;
     `endif
 

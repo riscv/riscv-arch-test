@@ -13,6 +13,7 @@
 `define COVER_SVINVALH
 covergroup SvinvalH_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     cp_instr : coverpoint ins.current.insn {
         wildcard bins sfence_inval_ir = {32'b0001100_00001_00000_000_00000_1110011};
         wildcard bins sfence_w_inval  = {32'b0001100_00000_00000_000_00000_1110011};
@@ -39,7 +40,7 @@ covergroup SvinvalH_cg with function sample(ins_t ins);
  endgroup
 
 // ---------------------
-function void svinvalH_sample(int hart, int issue, ins_t ins);
+function void svinvalh_sample(int hart, int issue, ins_t ins);
 
     SvinvalH_cg.sample(ins);
 endfunction

@@ -11,9 +11,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICNTRH
-covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
+covergroup ZicntrH_counters_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in hypervisor mode
 
     mcounteren_ones: coverpoint ins.current.csr[12'h306]{
@@ -458,7 +458,6 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     `else
         csrr_time: coverpoint ins.current.insn {
             wildcard bins csrr_timeh = {32'b011000010101_00000_010_?????_1110011}; // 0x615
-            wildcard bins csrr_timeh = {32'b011000000101_00000_010_?????_1110011}; // 0x605
     }
     `endif
 
@@ -466,7 +465,7 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
     // new hypervisor priv modes
 
     priv_mode_hs: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins HS_mode = {3'b001}
+        bins HS_mode = {3'b001};
     }
 
     priv_mode_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
@@ -514,7 +513,7 @@ covergroup ZicntrH_scounters_cg with function sample(ins_t ins);
 
     // U mode coverpoints
     cp_scounteren_access_u: cross csrr, counters_scounteren, mcounteren_ones, hcounteren_zeroes, priv_mode_u;
-    cp_delta_u: cross csrr_time, cp_htimedelta, prive_mode_u;
+    cp_delta_u: cross csrr_time, cp_htimedelta, priv_mode_u;
 
     // VU mode coverpoints
     cp_hcounteren_access_vu: cross csrr, counters_hcounteren, mcounteren_ones, scounteren_ones, priv_mode_vu;
@@ -525,5 +524,5 @@ endgroup
 
 
 function void zicntrh_sample(int hart, int issue, ins_t ins);
-    ZicntrH_scounters_cg.sample(ins);
+    ZicntrH_counters_cg.sample(ins);
 endfunction

@@ -10,4 +10,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicntrH_mcounters_cg = new();         ZicntrH_mcounters_cg.set_inst_name("obj_hcounters");
+    ZicntrH_counters_cg = new();         ZicntrH_counters_cg.set_inst_name("obj_hcounters");

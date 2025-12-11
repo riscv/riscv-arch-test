@@ -13,7 +13,7 @@
 `define COVER_ENDIANH
 covergroup EndianH_endian_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests in hypervisor mode"
 
     // building blocks for the main coverpoints
@@ -90,7 +90,7 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     `else
         mstatus_mpv: coverpoint ins.current.csr[310][7] { // mpv is mstatush[7] in RV32
         }
-
+    `endif
 
     `ifdef XLEN64
         mstatus_mbe: coverpoint ins.current.csr[12'h300][37] { // mbe is mstatus[37] in RV64

@@ -50,6 +50,6 @@ def format_l_type(
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
-        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, REGWIDTH # increment data_ptr",
+        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
     ]
     return (setup, test, check)

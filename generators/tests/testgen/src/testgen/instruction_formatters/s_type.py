@@ -18,10 +18,12 @@ def format_s_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format S-type instruction."""
-    assert params.rs1 is not None
-    assert params.rs2 is not None and params.rs2val is not None
-    assert params.rd is not None
-    assert params.immval is not None
+    assert params.rs1 is not None, "rs1 must be provided for S-type instructions"
+    assert params.rs2 is not None and params.rs2val is not None, (
+        "rs2 and rs2val must be provided for S-type instructions"
+    )
+    assert params.rd is not None, "rd must be provided for S-type instructions"
+    assert params.immval is not None, "immval must be provided for S-type instructions"
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -64,13 +66,13 @@ def format_s_type(
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
     check.extend(
         [
-            f"addi x{sig_reg}, x{sig_reg}, REGWIDTH # increment signature pointer",
+            f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
             "#ifdef SELFCHECK",
-            f"LREG x{params.rd}, -REGWIDTH(x{sig_reg}) # load stored value for checking",
+            f"LREG x{params.rd}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
             write_sigupd(params.rd, test_data),
             "#else",
             f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
-            f"addi x{sig_reg}, x{sig_reg}, REGWIDTH # adjust base address for offset",
+            f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
             "# nops to ensure length matches SELFCHECK",
             "nop",
             "nop",

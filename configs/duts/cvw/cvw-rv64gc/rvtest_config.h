@@ -9,3 +9,4 @@
 #define ZBA_SUPPORTED
 #define ZBS_SUPPORTED
 #define A_SUPPORTED
+#define ZIHPM_SUPPORTED

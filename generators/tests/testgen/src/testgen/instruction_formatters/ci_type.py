@@ -25,9 +25,6 @@ def format_ci_type(
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = 2
         setup.append(test_data.int_regs.consume_registers([params.rs1]))
-    # elif instr_name == "c.lui":
-    # For c.lui, immediate is shifted left by 12 bits
-    # params.immval = params.immval << 12
     setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
     test = [
         f"{instr_name} x{params.rs1}, {params.immval} # perform operation",

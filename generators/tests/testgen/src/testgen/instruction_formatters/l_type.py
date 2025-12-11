@@ -11,7 +11,9 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import to_hex, write_sigupd
 
 
-@add_instruction_formatter("L", required_params={"rd", "rs1", "temp_val", "immval"}, imm_bits=12, imm_signed=True)
+@add_instruction_formatter(
+    "L", required_params={"rd", "rs1", "temp_val", "immval", "temp_reg"}, imm_bits=12, imm_signed=True
+)
 def format_l_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
@@ -48,6 +50,6 @@ def format_l_type(
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
-        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, REGWIDTH # increment data_ptr",
+        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
     ]
     return (setup, test, check)

@@ -44,7 +44,7 @@ normative_rule_definitions:
   - name: c-ld_op
     coverpoint: ["Zca_c_ld_cg/{cp_rs1p, cp_rdp, cp_imm_mul_8}"]
   - name: c-ldsp_op
-    coverpoint: ["Zca_c_ldsp_cg/{cp_rs1_nx0, cp_imm_mul_8sp}"]
+    coverpoint: ["Zca_c_ldsp_cg/{cp_rd_nx0, cp_imm_mul_8sp}"]
   - name: c-li_op
     coverpoint: ["Zca_c_li_cg/{cp_rs1_nx0, cp_rs1_imm_edges_6bit}"]
   - name: c-lui_op
@@ -52,11 +52,11 @@ normative_rule_definitions:
   - name: c-lw_op
     coverpoint: ["Zca_c_lw_cg/{cp_rs1p, cp_rdp, cp_imm_mul}"]
   - name: c-lwsp_op
-    coverpoint: ["Zca_c_lwsp_cg/{cp_rs1_nx0, cp_imm_mul_4sp}"]
+    coverpoint: ["Zca_c_lwsp_cg/{cp_rd_nx0, cp_imm_mul_4sp}"]
   - name: c-mv_jr
     coverpoint: ["Zca_c_jr_cg/{cp_rs1_nx0, cp_offset_c_jr}"]
   - name: c-mv_op
-    coverpoint: ["Zca_c_mv_cg/{cp_rd_nx0, cp_rs_nx0}"]
+    coverpoint: ["Zca_c_mv_cg/{cp_rd_nx0, cp_rs2_nx0}"]
   - name: c-nop_op
     coverpoint: ["Zca_c_nop_cg/{cp_asm_count}"]
   - name: c-or_op

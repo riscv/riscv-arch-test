@@ -22,7 +22,7 @@ def format_cl_type(
     assert params.temp_val is not None
     assert params.rd is not None and params.immval is not None
 
-    # Determine alignment requirement and max value: c.ldsp needs 8-byte, c.lwsp needs 4-byte
+    # Determine alignment requirement and max value: c.ld needs 8-byte, c.lw needs 4-byte
     if instr_name == "c.ld":
         alignment = 8
         max_val = 248

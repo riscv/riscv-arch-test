@@ -29,7 +29,7 @@ def format_cs_type(
     assert params.temp_reg is not None, "temp_reg must be provided for CS-type instructions"
     assert params.immval is not None, "immval must be provided for CS-type instructions"
 
-    # Determine alignment requirement and max value: c.ldsp needs 8-byte, c.lwsp needs 4-byte
+    # Determine alignment requirement and max value: c.sd needs 8-byte, c.sw needs 4-byte
     if instr_name == "c.sd":
         alignment = 8
         max_val = 248

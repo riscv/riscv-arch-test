@@ -25,7 +25,7 @@ def format_fr_type(
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),
     ]
     test = [
-        f"{instr_name} x{params.fd}, x{params.fs1}, x{params.fs2} # perform operation",
+        f"{instr_name} f{params.fd}, f{params.fs1}, f{params.fs2} # perform operation",
     ]
     check = [write_sigupd(params.fd, test_data, "float")]
     return (setup, test, check)

@@ -15,8 +15,8 @@ from testgen.utils.common import load_int_reg, write_sigupd
     "CILS",
     required_params={"rd", "immval", "temp_reg", "temp_val"},
     reg_range=range(1, 31),  # rd cannot be x0
-    imm_bits=6,
-    imm_signed=True,
+    imm_bits=9,  # c.ldsp: [0, 504] in multiples of 8, c.lwsp: [0, 252] in multiples of 4
+    imm_signed=False,
 )
 def format_cils_type(
     instr_name: str, test_data: TestData, params: InstructionParams
@@ -24,6 +24,22 @@ def format_cils_type(
     """Format CILS-type stack-pointer-based loads instruction."""
     assert params.temp_reg is not None and params.temp_val is not None
     assert params.rd is not None and params.immval is not None
+
+    # Determine alignment requirement and max value: c.ldsp needs 8-byte, c.lwsp needs 4-byte
+    if instr_name == "c.ldsp":
+        alignment = 8
+        max_val = 504
+    elif instr_name == "c.lwsp":
+        alignment = 4
+        max_val = 252
+    else:
+        raise ValueError(f"Unknown CILS instruction: {instr_name}")
+
+    # Mask off lower bits to ensure alignment
+    params.immval = params.immval & ~(alignment - 1)
+    # Wrap into valid range
+    params.immval = params.immval % (max_val + alignment)
+
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CILS instructions
     # Ensure sp is allocated

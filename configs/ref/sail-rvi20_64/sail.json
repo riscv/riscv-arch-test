@@ -1,5 +1,5 @@
 {
-  "$schema": "/home/jcarlin/riscv-projects/sail-riscv/build/sail_riscv_config_schema.json",
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     "E": false,
@@ -10,14 +10,14 @@
       "value": "0x0"
     },
     "xtval_nonzero": {
-      "illegal_instruction": true,
-      "breakpoint": true,
-      "load_address_misaligned": true,
-      "load_access_fault": true,
-      "samo_address_misaligned": true,
-      "samo_access_fault": true,
-      "fetch_address_misaligned": true,
-      "fetch_access_fault": true
+      "illegal_instruction": false,
+      "breakpoint": false,
+      "load_address_misaligned": false,
+      "load_access_fault": false,
+      "samo_address_misaligned": false,
+      "samo_access_fault": false,
+      "fetch_address_misaligned": false,
+      "fetch_access_fault": false
     }
   },
   "memory": {

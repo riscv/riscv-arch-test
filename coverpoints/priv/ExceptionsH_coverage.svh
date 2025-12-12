@@ -93,7 +93,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    hlv_hsv_instr: coverpoint ins.current.insn {
-       wildcard bins hlv_w = {32'b011010000000_?????100?????_1110011};
+       wildcard bins hlv_w = {32'b0110100_00000_?????100?????_1110011};
        wildcard bins hsv_w = {32'b0110101_??????????10000000_1110011};
    }
 
@@ -104,7 +104,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    instret: coverpoint ins.current.insn[31:20] {
-       wildcard bins instret_read = {12'hc02};
+        bins instret_read = {12'hc02};
    }
 
 
@@ -118,9 +118,9 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   address_legality: coverpoint ins.current.imm + ins.current.rs1_val {
-       bins legal = {[0:`ACCESS_FAULT_ADDRESS-1]};
-       bins illegal = {`ACCESS_FAULT_ADDRESS};
+   address_legality: coverpoint ins.current.imm + ins.current.rs1_val == `ACCESS_FAULT_ADDRESS {
+       bins legal = {0};
+       bins illegal = {1};
    }
 
 
@@ -148,56 +148,48 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // PRIVILEGE MODE COVERPOINTS
    // ============================================================================
-   mode_virt_cp: coverpoint mode_virt {
-       bins zero = {0};
-       bins one  = {1};
-   }
-
 
    // All 5 privilege modes (M/HS/VS/VU/U)
-   modes: coverpoint {ins.prev.mode, mode_virt} {
-       bins M_mode  = {2'b11, 1'b0};
-       bins HS_mode = {2'b01, 1'b0};
-       bins VS_mode = {2'b01, 1'b1};
-       bins U_mode  = {2'b00, 1'b0};
-       bins VU_mode = {2'b00, 1'b1};
+   modes: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins M_mode  = {3'b011};
+       bins HS_mode = {3'b001};
+       bins VS_mode = {3'b101};
+       bins U_mode  = {3'b000};
+       bins VU_mode = {3'b100};
    }
 
 
    // Previous modes for VU delegation to VS
-   priv_mode_vu: coverpoint {ins.prev.mode, mode_virt} {
-       bins VU_mode = {2'b00, 1'b1};
+   priv_mode_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins VU_mode = {3'b101};
    }
 
 
    // Previous modes for delegation to HS (U, VS, VU)
-   priv_mode_to_hs: coverpoint {ins.prev.mode, mode_virt} {
-       bins U_mode  = {2'b00, 1'b0};
-       bins VS_mode = {2'b01, 1'b1};
-       bins VU_mode = {2'b00, 1'b1};
+   priv_mode_to_hs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins U_mode  = {3'b000};
+       bins VS_mode = {3'b101};
+       bins VU_mode = {3'b100};
    }
 
-
    // Previous modes for delegation to M (all 5 modes)
-   priv_mode_to_m: coverpoint {ins.prev.mode, mode_virt} {
-       bins M_mode  = {2'b11, 1'b?};
-       bins HS_mode = {2'b01, 1'b0};
-       bins U_mode  = {2'b00, 1'b0};
-       bins VS_mode = {2'b01, 1'b1};
-       bins VU_mode = {2'b00, 1'b1};
+   priv_mode_to_m: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins M_mode  = {3'b?11};
+       bins HS_mode = {3'b001};
+       bins U_mode  = {3'b000};
+       bins VS_mode = {3'b101};
+       bins VU_mode = {3'b100};
    }
 
 
    // Previous modes for VS (VU and VS)
-   prove_mode_to_vs: coverpoint {ins.prev.mode, mode_virt} {
-       bins VU_mode = {2'b00, 1'b1};
-       bins VS_mode = {2'b01, 1'b1};
+   priv_mode_to_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins VU_mode = {3'b100};
    }
 
-
    // VS-mode only (for virtual instruction exceptions)
-   priv_mode_vs: coverpoint {ins.prev.mode, mode_virt} {
-       bins VS_mode = {2'b01, 1'b1};
+   priv_mode_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins VS_mode = {3'b101};
    }
 
 
@@ -216,8 +208,10 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // Hypervisor Exception Delegation Register (hedeleg)
    hedeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
        bins zeros = {32'h00000000};
-       wildcard bins ones = {32'b1111_0000_1011_1111_1111_111?};
-       bins walk_1_bit0 = {32'h00000001}; // Instruction address misaligned
+       wildcard bins ones = {32'b0000_11?0_1?11_0001_1111_111?};
+       `ifdef ZICCLSM_SUPPORTED
+            bins walk_1_bit0 = {32'h00000001}; // Instruction address misaligned
+       `endif
        bins walk_1_bit1 = {32'h00000002}; // Instruction access fault
        bins walk_1_bit2 = {32'h00000004}; // Illegal instruction
        bins walk_1_bit3 = {32'h00000008}; // Breakpoint
@@ -663,7 +657,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ECALL delegation crosses
    cp_ecall_to_vs: cross
        ecall,
-       prove_mode_to_vs,
+       priv_mode_to_vs,
        medeleg_ecall_u,
        hedeleg_ecall_u,
        trap_to_vs;
@@ -696,7 +690,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // Trap vector crosses
    cp_vstvec: cross
        ecall,
-       prove_mode_to_vs,
+       priv_mode_to_vs,
        medeleg_ecall_enabled,
        hedeleg_ecall_enabled,
        vstvec_different_from_stvec;
@@ -795,4 +789,3 @@ endgroup
 function void exceptionsh_sample(int hart, int issue, ins_t ins);
    ExceptionsH_exceptions_cg.sample(ins);
 endfunction
-

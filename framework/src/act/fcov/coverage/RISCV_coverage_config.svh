@@ -325,4 +325,3 @@
 `ifdef ZICNTRH_COVERAGE
   `include "ZicntrH_coverage.svh"
 `endif
-

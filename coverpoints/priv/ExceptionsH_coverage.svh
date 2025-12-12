@@ -129,7 +129,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   addr_misalignment: coverpoint (ins.current.rs1_val + ins.current.imm)[1:0] {
+   addr_misalignment: coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] {
        bins aligned_00 = {2'b00};
        bins misaligned_01 = {2'b01};
    }
@@ -316,13 +316,13 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
 
 
-   trap_to_vs: coverpoint {ins.current.mode, mode_virt} {
-       bins trapped_to_vs = {2'b01, 1'b1};
+   trap_to_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins trapped_to_vs = {3'b101};
    }
 
 
-   trap_to_hs: coverpoint {ins.current.mode, mode_virt} {
-       bins trapped_to_hs = {2'b01, 1'b0};
+   trap_to_hs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+       bins trapped_to_hs = {3'b001};
    }
 
 
@@ -337,8 +337,8 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    vstvec_different_from_stvec: coverpoint
-       (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstvec") !=
-       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "stvec")) {
+       {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstvec", "mode") !=
+       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "stvec", "mode")} {
        bins different_handlers = {1};
    }
 
@@ -372,7 +372,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   hlv_instructions: coyperverpoint ins.current.insn {
+   hlv_instructions: coverpoint ins.current.insn {
        wildcard bins hlv_b  = {32'b011000000000?????100?????1110011};
        wildcard bins hlv_bu = {32'b011000000001?????100?????1110011};
        wildcard bins hlv_h  = {32'b011001000000?????100?????1110011};
@@ -570,7 +570,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
 
 
-   address_lsbs: coverpoint (ins.current.rs1_val + ins.current.imm)[2:0] {
+   address_lsbs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
    }
 
 
@@ -579,37 +579,37 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
 
 
-   instr_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd12) {
+   instr_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd12} {
        // Auto fill 0/1
    }
 
 
-   load_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd13) {
+   load_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd13} {
        // Auto fill 0/1
    }
 
 
-   store_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd15) {
+   store_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd15} {
        // Auto fill 0/1
    }
 
 
-   instr_guest_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd20) {
+   instr_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd20} {
        // Auto fill 0/1
    }
 
 
-   load_guest_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd21) {
+   load_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd21} {
        // Auto fill 0/1
    }
 
 
-   store_guest_page_fault: coverpoint (ins.current.csr[12'h342][31:0] == 32'd23) {
+   store_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd23} {
        // Auto fill 0/1
    }
 
 
-   virtual_instruction: coverpoint (ins.current.csr[12'h342][31:0] == 32'd22) {
+   virtual_instruction: coverpoint {ins.current.csr[12'h342][31:0] == 32'd22} {
        // Auto fill 0/1
    }
 
@@ -676,15 +676,13 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    cp_ecall_to_m: cross
        ecall,
        priv_mode_to_m,
-       medeleg_ecall_bits_disabled,
-       mstatus_gva;
+       medeleg_ecall_bits_disabled;
 
 
    cp_ebreak_to_m: cross
        ebreak,
        priv_mode_to_m,
-       medeleg_ebreak_bits_disabled,
-       mstatus_gva;
+       medeleg_ebreak_bits_disabled;
 
 
    // Trap vector crosses
@@ -742,7 +740,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // Privilege mode crosses
    cp_loadstore_priv: cross
        hlv_hlvx_hsv_instr,
-       priv_mode_all,
+       modes,
        hstatus_hu;
 
 

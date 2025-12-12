@@ -12,73 +12,54 @@ Common utilities for riscv-arch-test test generation.
 from typing import Literal
 
 from testgen.data.test_data import TestData
-from testgen.utils.immediates import modify_imm
+
+
+def to_hex(value: int, bits: int) -> str:
+    """
+    Convert an integer to a hex string for assembly output.
+
+    Args:
+        value: The integer value (should already be in correct range)
+        bits: Number of bits (used to handle negative values)
+    """
+    # For negative values, convert to unsigned representation
+    if value < 0:
+        value = value + (2**bits)
+    return f"0x{value:0{bits // 4}x}"
 
 
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
-    xlen = test_data.xlen
-    formatstr = test_data.xlen_format_str
-    return f"LI(x{reg}, {formatstr.format(modify_imm(val, xlen, hex_format=True))}) # initialize {name}"
+    test_data.add_test_data_value(val)
+    return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.link_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
-def load_float_reg(name: str, reg: int, val: float, precision: Literal[16, 32, 64, 128], test_data: TestData) -> str:
+def load_float_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load a floating point register with a specific value."""
-    if precision == 16:
-        loadop = "flh"
-    elif precision == 32:
-        loadop = "flw"
-    elif precision == 64:
-        loadop = "fld"
-    else:  # precision == 128
-        loadop = "flq"
-    storeop = "sw" if min(test_data.xlen, test_data.flen) == 32 else "sd"
-    formatstr = test_data.flen_format_str
-    fp_data_base_reg = 2  # Assumes that x2 is loaded with the base address to avoid repeated `la` instructions
-    temp_reg = test_data.int_regs.get_register()
-    test_lines = [f"LA(x{fp_data_base_reg}, scratch)"]
-    if precision > test_data.xlen:
-        test_lines.extend(
-            [
-                f"LI(x{temp_reg}, 0x{formatstr.format(val)[10:18]}) # load x{temp_reg} with 32 MSBs {formatstr.format(val)}\n"
-                f"{storeop} x{temp_reg}, 0(x{fp_data_base_reg}) # store x{temp_reg} (0x{formatstr.format(val)[10:18]}) in memory\n"
-                f"LI(x{temp_reg}, 0x{formatstr.format(val)[2:10]}) # load x{temp_reg} with 32 LSBs of {formatstr.format(val)}\n"
-                f"{storeop} x{temp_reg}, 4(x{fp_data_base_reg}) # store x{temp_reg} (0x{formatstr.format(val)[2:10]}) in memory 4 bytes after x{fp_data_base_reg}\n"
-                f"{loadop} f{reg}, 0(x{fp_data_base_reg}) # load {formatstr.format(val)} from memory into f{reg}"
-            ]
-        )
-    else:
-        test_lines.extend(
-            [
-                f"LI(x{temp_reg}, {formatstr.format(val)}) # load x{temp_reg} with value {formatstr.format(val)}\n"
-                f"{storeop} x{temp_reg}, 0(x{fp_data_base_reg}) # store {formatstr.format(val)} in memory\n"
-                f"{loadop} f{reg}, 0(x{fp_data_base_reg}) # load {formatstr.format(val)} from memory into f{reg}"
-            ]
-        )
-    test_data.int_regs.return_registers([temp_reg])
-    return "\n".join(test_lines)
+    test_data.add_test_data_value(val)
+    return f"RVTEST_TESTDATA_LOAD_FLOAT(x{test_data.int_regs.link_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
 
 
-def write_sigupd(rd: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:
+def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:
     """
     Generate assembly for SIGUPD and increment sigupd_count.
     """
     sig_reg = test_data.int_regs.sig_reg
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
+    fp_temp_reg = test_data.float_regs.temp_reg
     if sig_type == "int":
         test_data.sigupd_count += 1
-        return f"RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{rd})"
+        return (
+            f"# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            + f'RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, "test_{test_data.test_count}")'
+        )
     elif sig_type == "float":
-        raise NotImplementedError("Floating point signature updates are not yet implemented.")
-        # test_data.sigupd_count_float += 2
-        # temp_reg = test_data.int_regs.get_register()
-        # sigupd_str = f"csrr x{temp_reg}, fcsr\n"  # Get fcsr into a temp register
-        # sigupd_str += f"RVTEST_SIGUPD_F(x{sig_reg}, f{rd}, x{temp_reg})"
-        # test_data.int_regs.return_registers([temp_reg])
-        # return sigupd_str
-    else:
-        raise ValueError("Invalid sig_type specified.")
+        test_data.sigupd_count += 2
+        return (
+            f"# Check if f{check_reg} contains the expected result. Also checks fflags. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            + f'RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, "test_{test_data.test_count}")'
+        )
 
 
 def get_sig_space(test_data: TestData) -> int:
@@ -108,3 +89,41 @@ def myhash(s: str) -> int:
     for c in s:
         h = (h * 31 + ord(c)) & 0xFFFFFFFF
     return h
+
+
+def generate_test_data_section(test_data: TestData) -> str:
+    """
+    Generate the .data section containing all test values.
+
+    Args:
+        test_data: TestData object containing the values to generate
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = []
+
+    # Use .word for 32-bit, .dword for 64-bit
+    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"
+
+    for value in test_data.test_data_values:
+        hex_value = to_hex(value, test_data.xlen)
+        lines.append(f"    {directive} {hex_value}")
+
+    return "\n".join(lines)
+
+
+def generate_test_data_string_section(test_data: TestData) -> str:
+    """
+    Generate the .data section containing all test strings.
+
+    Args:
+        test_data: TestData object containing the strings to generate
+
+    Returns:
+        Assembly code for the .data section
+    """
+    lines: list[str] = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
+    lines.extend(test_data.test_data_strings)
+
+    return "\n".join(lines)

@@ -42,6 +42,7 @@ class riscvTraceData
   logic                      halt ;   // Halted  instruction
   logic                      intr ;   // (RVFI Legacy) Flag first instruc
   logic [1:0]                mode ;   // Privilege mode of operation
+  logic                 mode_virt ;   // Hypercisor virtualization
   logic [1:0]                ixl  ;   // XLEN mode 32/64 bit
 
   logic [(XLEN-1):0]         pc_rdata;   // PC of insn

@@ -14,9 +14,11 @@ from random import seed
 
 from testgen.data.test_data import TestData
 from testgen.utils.common import myhash
+from testgen.utils.exceptions import MissingCoverpointGeneratorError
 
 # Type alias for coverpoint generator functions
 CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
+
 
 # Registry storage: list of (pattern, generator) tuples sorted by pattern length (longest first)
 _COVERPOINT_GENERATORS: list[tuple[str, CoverpointGenerator]] = []
@@ -76,7 +78,6 @@ SKIP_COVERPOINTS = frozenset(
         "cp_gpr_hazard_rw",
         "cp_gpr_hazard_w",
         "cp_gpr_hazard_r",
-        "cp_imm_edges_6bit_n0",  # Used only for cross products
         "cp_rd_sign",  # Already covered by rd_edges
         "cmp_rd_rs1_eqval",  # Already covered by cr_rs1_rs2_edges
         "cmp_rd_rs2_eqval",  # Already covered by cr_rs1_rs2_edges
@@ -89,7 +90,8 @@ def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:
     for pattern, generator in _COVERPOINT_GENERATORS:
         if coverpoint.startswith(pattern):
             return generator
-    raise ValueError(f"No coverpoint generator found for coverpoint: {coverpoint}")
+    available_patterns = [pattern for pattern, _ in _COVERPOINT_GENERATORS]
+    raise MissingCoverpointGeneratorError(coverpoint, available_patterns)
 
 
 def generate_tests_for_coverpoint(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> str:

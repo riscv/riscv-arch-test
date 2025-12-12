@@ -13,12 +13,9 @@
 `define COVER_INTERRUPTSU
 covergroup InterruptsU_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    mstatus_sie: coverpoint ins.current.csr[12'h300][1]  {
-        // autofill 0/1
-    }
     mstatus_mie: coverpoint ins.current.csr[12'h300][3]  {
         // autofill 0/1
     }

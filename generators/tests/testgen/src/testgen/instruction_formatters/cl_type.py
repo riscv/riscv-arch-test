@@ -1,31 +1,54 @@
 ##################################
 # cl_type.py
 #
-# harris@hmc.edu Oct 2025
+# jcarlin@hmc.edu Nov 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.data.instruction_params import InstructionParams
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.immediates import modify_imm
+from testgen.utils.common import write_sigupd
 
 
-@add_instruction_formatter("CL")
+@add_instruction_formatter(
+    "CL", required_params={"rd", "rs1", "immval", "temp_val"}, reg_range=range(8, 16), imm_bits=8, imm_signed=False
+)
 def format_cl_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CL-type instruction."""
-    assert params.rs1 is not None and params.rs1val is not None
-    assert params.rd is not None
-    assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 6)
+    assert params.rs1 is not None
+    assert params.temp_val is not None
+    assert params.rd is not None and params.immval is not None
+
+    # Determine alignment requirement and max value: c.ld needs 8-byte, c.lw needs 4-byte
+    if instr_name == "c.ld":
+        alignment = 8
+        max_val = 248
+    elif instr_name == "c.lw":
+        alignment = 4
+        max_val = 124
+    else:
+        raise ValueError(f"Unknown CL instruction: {instr_name}")
+
+    # Mask off lower bits to ensure alignment
+    params.immval = params.immval & ~(alignment - 1)
+    # Wrap into valid range
+    params.immval = params.immval % (max_val + alignment)
+
+    # Add value to load data region
+    test_data.add_test_data_value(params.temp_val)
+
     setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+        f"mv x{params.rs1}, x{test_data.int_regs.link_reg} # move data_ptr to rs1",
+        f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for load",
     ]
     test = [
-        f"{instr_name} x{params.rd}, {scaled_imm}(x{params.rs1}) # perform operation",
+        f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = [
+        write_sigupd(params.rd, test_data, "int"),
+        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
+    ]
     return (setup, test, check)

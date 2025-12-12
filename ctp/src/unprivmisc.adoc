@@ -43,6 +43,9 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 //include::{testplansdir}/Zcmp.adoc[]
 ,===
 
+include::norm/Zcmp_norm_rules.adoc[]
+
+
 ==== Zcmt Compressed Jump Tables
 
 [[t-Zcmt-coverpoints]]
@@ -50,6 +53,9 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 ,===
 //include::{testplansdir}/Zcmt.adoc[]
 ,===
+
+include::norm/Zcmt_norm_rules.adoc[]
+
 
 ==== Zilsd Load/Store Double
 

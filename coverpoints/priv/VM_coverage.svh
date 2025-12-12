@@ -12,7 +12,7 @@
 `define SVNAPOT_SUPPORTED
 covergroup VM_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     `ifdef XLEN64
         mode_supported: coverpoint ins.current.csr[12'h180][63:60] { //sat.2
@@ -218,7 +218,7 @@ endgroup
 
 covergroup VM_mstatus_mprv_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     tvm_mstatus: coverpoint ins.current.csr[12'h300][20] {
         bins set = {1};
@@ -383,7 +383,7 @@ endgroup
 
 covergroup VM_vm_permissions_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include  "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     //pte permission for leaf PTEs
     PTE_i_inv: coverpoint ins.current.pte_i[7:0] { //pte.2
@@ -458,20 +458,6 @@ covergroup VM_vm_permissions_cg with function sample(ins_t ins);
     PTE_XnoRW_d: coverpoint ins.current.pte_d[7:0] { //pte.11 & 12
         wildcard bins leaflvl_u = {8'b11?11001};
         wildcard bins leaflvl_s = {8'b11?01001};
-    }
-
-    PTE_Abit_unset_i: coverpoint ins.current.pte_i[7:0] { //pte.14
-        wildcard bins leaflvl_u = {8'b?0?11111};
-        wildcard bins leaflvl_s = {8'b?0?01111};
-    }
-    PTE_Abit_unset_d: coverpoint ins.current.pte_d[7:0] { //pte.14
-        wildcard bins leaflvl_u = {8'b?0?11111};
-        wildcard bins leaflvl_s = {8'b?0?01111};
-    }
-
-    PTE_Dbit_unset_d: coverpoint ins.current.pte_d[7:0] { //pte.15
-        wildcard bins leaflvl_u = {8'b01?1?111};
-        wildcard bins leaflvl_s = {8'b01?0?111};
     }
 
     PTE_RWX_i: coverpoint ins.current.pte_i[7:0] { //pte.16
@@ -802,34 +788,6 @@ covergroup VM_vm_permissions_cg with function sample(ins_t ins);
     xpage_mxrset_read_u: cross PTE_XnoRW_d, PageType_d, mxr_sstatus, read_acc, priv_mode_u { //pte.12
         ignore_bins ig1 = binsof(mxr_sstatus.notset);
         ignore_bins ig2 = binsof(PTE_XnoRW_d.leaflvl_s);
-    }
-
-    Abit_unset_exec_s: cross PTE_Abit_unset_i, PageType_i, ins_page_fault, exec_acc, priv_mode_s { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_i.leaflvl_u);
-    }
-    Abit_unset_exec_u: cross PTE_Abit_unset_i, PageType_i, ins_page_fault, exec_acc, priv_mode_u { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_i.leaflvl_s);
-    }
-
-    Abit_unset_read_s: cross PTE_Abit_unset_d, PageType_d, load_page_fault, read_acc, priv_mode_s { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_u);
-    }
-    Abit_unset_read_u: cross PTE_Abit_unset_d, PageType_d, load_page_fault, read_acc, priv_mode_u { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_s);
-    }
-
-    Abit_unset_write_s: cross PTE_Abit_unset_d, PageType_d, store_page_fault, write_acc, priv_mode_s { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_u);
-    }
-    Abit_unset_write_u: cross PTE_Abit_unset_d, PageType_d, store_page_fault, write_acc, priv_mode_u { //pte.14
-        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_s);
-    }
-
-    Dbit_unset_write_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, write_acc, priv_mode_s { //pte.15
-        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
-    }
-    Dbit_unset_write_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, write_acc, priv_mode_u { //pte.15
-        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
     }
 
     PTE_DAU_nleaf_read_s: cross PTE_DAU_d, PageType_d, load_page_fault, priv_mode_s {

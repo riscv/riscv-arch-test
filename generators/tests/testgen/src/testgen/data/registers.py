@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 def select_registers(num_regs: int, reg_list: list[int]) -> list[int]:
     """Select a specified number of unique registers from a list of available registers."""
     if num_regs > len(reg_list):
-        raise ValueError("Not enough registers available to select from.")
+        raise ValueError(
+            f"Not enough registers available to select from. Requested {num_regs}, but only {len(reg_list)} available."
+        )
 
     selected_regs = random.sample(reg_list, num_regs)
     return selected_regs
@@ -38,34 +40,36 @@ class RegisterFile:
     def destroy(self) -> None:
         """Clean up resources used by RegisterFile."""
         if len(self.reg_list) != self._reg_count:
-            raise RuntimeError("Cannot destroy RegisterFile: some registers are still in use.")
+            raise RuntimeError(
+                f"Cannot destroy RegisterFile: some registers are still in use. The current state of the register file is: {self.reg_list}"
+            )
 
     @property
     def reg_count(self) -> int:
         return self._reg_count
 
     def get_registers(
-        self, num_regs: int, *, exclude_reg: list[int] | None = None, reg_range: list[int] | None = None
+        self, num_regs: int, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
     ) -> list[int]:
         """Get a specified number of unique registers from the register file."""
         # Handle exclusions and range limitations)
-        if exclude_reg is None:
-            exclude_reg = []
+        if exclude_regs is None:
+            exclude_regs = []
         if reg_range is not None:
-            exclude_reg += [reg for reg in self.reg_list if reg not in reg_range]
-        available_regs = [reg for reg in self.reg_list if reg not in exclude_reg]
+            exclude_regs += [reg for reg in self.reg_list if reg not in reg_range]
+        available_regs = [reg for reg in self.reg_list if reg not in exclude_regs]
         # Select random registers and remove them from the available list
         selected_regs = select_registers(num_regs, available_regs)
         for reg in selected_regs:
             self.reg_list.remove(reg)
         logger.debug(
-            f"Getting {num_regs} registers from available {available_regs}, excluding {exclude_reg}. Selected: {selected_regs}"
+            f"Getting {num_regs} registers from available {available_regs}, excluding {exclude_regs}. Selected: {selected_regs}"
         )
         return selected_regs
 
-    def get_register(self, *, exclude_reg: list[int] | None = None, reg_range: list[int] | None = None) -> int:
+    def get_register(self, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None) -> int:
         """Get a single register from the register file."""
-        return self.get_registers(1, exclude_reg=exclude_reg, reg_range=reg_range)[0]
+        return self.get_registers(1, exclude_regs=exclude_regs, reg_range=reg_range)[0]
 
     def return_registers(self, regs: list[int]) -> None:
         """Mark registers as available again."""
@@ -208,7 +212,7 @@ class IntegerRegisterFile(RegisterFile):
 
         # Reallocate special registers to new locations
         if sig_conflict:
-            self._sig_reg = self.get_register(exclude_reg=[0])
+            self._sig_reg = self.get_register(exclude_regs=[0])
             asm_code += f"\nmv x{self._sig_reg}, x{old_sig_reg} # switch signature pointer register to avoid conflict with test\n"
 
         if link_conflict or temp_conflict:
@@ -229,6 +233,41 @@ class IntegerRegisterFile(RegisterFile):
 class FloatRegisterFile(RegisterFile):
     """Class to represent a floating point register file."""
 
+    default_temp_reg = 4
+    temp_regs = (4, 7, 12)  # Limit legal temp registers to simplify failure handler
+
     def __init__(self) -> None:
         # There are always 32 floating point registers
         super().__init__(32)
+        self._temp_reg = self.default_temp_reg
+        super().consume_registers([self._temp_reg])
+
+    def destroy(self) -> None:
+        self.return_register(self._temp_reg)
+        super().destroy()
+
+    @property
+    def temp_reg(self) -> int:
+        return self._temp_reg
+
+    def consume_registers(self, regs: list[int]) -> None:
+        """Mark registers as used/unavailable, handling special register conflicts.
+
+        If any of the requested registers conflict with special registers (temp_reg),
+        this method will automatically relocate the special registers and return the
+        necessary assembly code to perform the move.
+        """
+
+        # Check for conflicts with special registers
+        temp_conflict = self._temp_reg in regs
+
+        # Return special registers to pool if they conflict
+        if temp_conflict:
+            self.return_register(self._temp_reg)
+        # Consume requested registers
+        super().consume_registers(regs)
+
+        # Reallocate special registers to new locations
+        if temp_conflict:
+            # Restrict link register to specific set
+            self._temp_reg = self.get_register(reg_range=[reg for reg in self.temp_regs])

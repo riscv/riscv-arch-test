@@ -15,28 +15,31 @@ from random import randint, seed
 
 def printwalk(regs):
     for reg in regs:
-        if reg == "satp":  # satp requires a special case to avoid accidentally turning on vmem
+        if reg == "satp": # satp requires a special case to avoid accidentally turning on vmem
             continue
+        if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
+                continue
         print("\n// Testing walking zeros and ones for CSR " + reg)
         print("\tcsrr s0, " + reg + "\t# save CSR")
-        print("\tRVTEST_SIGWRITE(x3, s0)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, s0)\t# save CSR to Signature")
         print("\tli t1, -1           # all 1s")
         print("\tli t0, 1            # 1 in lsb")
         print("1:  csrrc t6, " + reg + ", t1    # clear all bits")
-        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tcsrrs t6, " + reg + ", t0    # set walking 1")
-        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tslli t0, t0, 1      # walk the 1")
         print("\tbnez t0, 1b         # repeat until all bits are walked")
         print("\tli t0, 1            # 1 in lsb")
         print("1:  csrrs t6, " + reg + ", t1    # set all bits")
-        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tcsrrc t6, " + reg + ", t0    # clear walking 1")
-        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
         print("\tslli t0, t0, 1      # walk the 1")
         print("\tbnez t0, 1b         # repeat until all bits are walked")
         print("\tcsrrw t6, " + reg + ", s0    # restore CSR")
-        print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
+        #print("\tRVTEST_SIGWRITE(x3, t6)\t# save CSR to Signature")
 
 
 def csrwalk(pathname, regs, hregs):
@@ -88,12 +91,18 @@ def readandswitchmode(regs, mode):
         for reg in regs:
             if reg == "satp":  # Skip satp to avoid enabling virtual memory
                 continue
+            if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
+                continue
             print(f"\tcsrr t2, {reg} # read from {reg} in {mode}-mode")
         print("\tli a0, 3")
         print("\tecall             # switch back to M-mode")
     else:
         for reg in regs:
             if reg == "satp":  # Skip satp to avoid enabling virtual memory
+                continue
+            if "#ifdef" in reg or "#endif" in reg:
+                print(reg)
                 continue
             print(f"\tcsrr t2, {reg} # read from {reg} in M-mode")
 
@@ -185,7 +194,7 @@ def cp_vsetvl_i_rd_nx0_rs1_x0(pathname):
                 print("\t// SEW = " + sew + ", LMUL = " + lmul)
                 print("\tvsetvli  x8, x0, e" + sew + ", m" + lmul + ", tu, mu")
                 print("\tcsrr     x1, vl")
-                print("\tRVTEST_SIGUPD(x3, x1)")
+                #print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
 
         for i in range(32):
@@ -194,7 +203,7 @@ def cp_vsetvl_i_rd_nx0_rs1_x0(pathname):
                 print(f"\t// vtype[7:0] = 0_0_{format(i >> 3, '03b')}_{format(i & 0b111, '03b')}")
                 print("\tli       t2, " + str(ih))
                 print("\tcsrr     x1, vl")
-                print("\tRVTEST_SIGUPD(x3, x1)")
+                #print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
     outfile.close()
 
@@ -210,7 +219,7 @@ def cp_vsetivli_avl_edges(pathname):
                 print("\t// SEW = " + sew + " and LMUL = 1")
                 print("\tvsetivli x8, " + str(i) + ", e" + sew + ", m1, tu, mu")
                 print("\tcsrr     x1, vl")
-                print("\tRVTEST_SIGUPD(x3, x1)")
+                #print("\tRVTEST_SIGUPD(x3, x1)")
                 print()
     outfile.close()
 
@@ -265,6 +274,7 @@ mcntrs = [
     "mcycle",
     "mcountinhibit",
     "minstret",
+    "#ifdef ZIHPM_SUPPORTED",
     "mhpmcounter3",
     "mhpmcounter4",
     "mhpmcounter5",
@@ -323,10 +333,12 @@ mcntrs = [
     "mhpmevent29",
     "mhpmevent30",
     "mhpmevent31",
+    "#endif",
 ]
 mcntrsh = [
     "mcycleh",
     "minstreth",
+    "#ifdef ZIHPM_SUPPORTED",
     "mhpmcounter3h",
     "mhpmcounter4h",
     "mhpmcounter5h",
@@ -385,11 +397,13 @@ mcntrsh = [
     "mhpmevent29h",
     "mhpmevent30h",
     "mhpmevent31h",
+    "#endif",
 ]
 cntrs = [
     "cycle",
     "time",
     "instret",
+    "#ifdef ZIHPM_SUPPORTED",
     "hpmcounter3",
     "hpmcounter4",
     "hpmcounter5",
@@ -419,11 +433,13 @@ cntrs = [
     "hpmcounter29",
     "hpmcounter30",
     "hpmcounter31",
+    "#endif",
 ]
 cntrsh = [
     "cycleh",
     "timeh",
     "instreth",
+    "#ifdef ZIHPM_SUPPORTED",
     "hpmcounter3h",
     "hpmcounter4h",
     "hpmcounter5h",
@@ -453,6 +469,7 @@ cntrsh = [
     "hpmcounter29h",
     "hpmcounter30h",
     "hpmcounter31h",
+    "#endif",
 ]
 
 uCsrSkip = list(range(0x800, 0x900)) + list(range(0xCC0, 0xD00))

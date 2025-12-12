@@ -9,9 +9,9 @@
 """cp_bs coverpoint generator."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.instruction_params import generate_random_params
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_bs")
@@ -24,6 +24,7 @@ def make_cp_bs(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
     test_lines: list[str] = []
     for bs in bs_vals:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=bs)
         desc = f"{coverpoint}: bs={bs}"

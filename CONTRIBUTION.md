@@ -9,6 +9,7 @@ Your inputs are welcome and greatly appreciated! We want to make contributing to
 - Becoming a maintainer
 
 ## We develop with Github
+
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
 
 ## We use a simple git flow where all code changes happen through Pull Requests
@@ -35,7 +36,7 @@ Pull requests are the best way to propose changes to the codebase. We actively w
 ## Uploading Test Stats
 
 If your PR is adding new tests or modifying existing tests, then you are expected to
-run the coverage on the new tests (via [RISCOF's coverage mode]((https://riscof.readthedocs.io/en/stable/commands.html#coverage)))
+run the coverage on the new tests (via [RISCOF's coverage mode](<(https://riscof.readthedocs.io/en/stable/commands.html#coverage)>))
 and upload the coverage and data propagation reports to [this Google Drive folder](https://drive.google.com/drive/folders/153nIRznXwzu7N1rWl9CesqwAXLqwHoEx?usp=share_link).
 In this folder create a new folder with the PR number as the name. The stat files must be zipped and
 the naming convention must follow the scheme you [see here](https://drive.google.com/drive/folders/1KBRy6OgxnOPTDgyfJDj0gcMi5VdMLtVo?usp=share_link).
@@ -54,9 +55,11 @@ Note: You can have either a patch or minor or major update.
 Note: In case of a conflict, the maintainers will decide the final version to be assigned.
 
 ## Any contributions you make will be under the permissive open-source License
+
 In short, when you submit code changes, your submissions are understood to be under a permissive open source license like BSD-3, Apache-2.0 and CC, etc that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's [issues](https://github.com/riscv/riscv-arch-test/issues)
+
 We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/riscv/riscv-arch-test/issues/new); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
@@ -66,12 +69,12 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 - A quick summary and/or background
 - Steps to reproduce
   - Be specific!
-  - Give sample code if you can. 
+  - Give sample code if you can.
 - What you expected would happen
 - What actually happens
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
 ## License
+
 By contributing, you agree that your contributions will be licensed under its permissive open source
 licenses.
-

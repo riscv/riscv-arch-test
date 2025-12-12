@@ -33,7 +33,7 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[str, list[str]]]
     """
     testplans: dict[str, dict[str, list[str]]] = {}
     arch_sources: dict[str, str] = {}
-    coverplan_dirs = [(testplans_dir, "unpriv"), (testplans_dir / "priv", "priv")]
+    coverplan_dirs = [(testplans_dir, "unpriv")]
     for coverplan_dir, source in coverplan_dirs:
         if not coverplan_dir.exists():
             continue  # Skip missing directories
@@ -209,7 +209,7 @@ def write_covergroup_sample_functions(
     arch: str,
     hasRV32: bool,
     hasRV64: bool,
-):
+) -> None:
     for instr in k:
         cps = tp[instr]
         match32 = ("RV32" in cps) ^ (not hasRV32)
@@ -252,15 +252,52 @@ def get_effew(arch: str) -> str:
     match = re.search(r"(\d+)$", arch)
     if match:
         effew = match.group(1)
+    elif (arch in ["Zvfhmin", "Zvfbfmin", "Zvfbfwma"]):
+        effew = "16"
     else:
         raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
     return effew
 
 
+def write_coverage_headers(
+    test_plans: dict[str, dict[str, list[str]]],
+    arch_sources: dict[str, str],
+    covergroup_dir: Path,
+    covergroup_templates: dict[str, str],
+) -> None:
+    coverage_dir = covergroup_dir / "coverage"
+    coverage_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect all keys
+    keys = set(test_plans.keys())
+    priv_path = covergroup_dir / "priv"
+    if priv_path.exists():
+        keys.update(f.stem.split("_")[0] for f in priv_path.iterdir() if f.name.endswith("_coverage.svh"))
+    sorted_keys = sorted(list(keys))
+
+    # Write RISCV_coverage_config.svh
+    with (coverage_dir / "RISCV_coverage_config.svh").open("w") as f:
+        f.write(customize_template(covergroup_templates, "config_header", "NA", "NA"))
+        for arch in sorted_keys:
+            f.write(f"`ifdef {arch.upper()}_COVERAGE\n")
+            f.write(f'  `include "{arch}_coverage.svh"\n')
+            f.write("`endif\n")
+
+    # Write RISCV_coverage_base_init.svh
+    with (coverage_dir / "RISCV_coverage_base_init.svh").open("w") as f:
+        f.write(customize_template(covergroup_templates, "base_init_header", "NA", "NA"))
+        for arch in sorted_keys:
+            f.write(customize_template(covergroup_templates, "coverageinit", arch, ""))
+
+    # Write RISCV_coverage_base_sample.svh
+    with (coverage_dir / "RISCV_coverage_base_sample.svh").open("w") as f:
+        f.write(customize_template(covergroup_templates, "base_sample_header", "NA", "NA"))
+        for arch in sorted_keys:
+            f.write(customize_template(covergroup_templates, "coveragesample", arch, ""))
+
+
 # writeCovergroups iterates over the testplans and covergroup templates to generate the covergroups for
 # all instructions in each testplan
-
-
 def write_covergroups(
     test_plans: dict[str, dict[str, list[str]]],
     covergroup_templates: dict[str, str],
@@ -271,7 +308,7 @@ def write_covergroups(
     coverageHeaderDir = covergroup_dir / "coverage"
     coverageHeaderDir.mkdir(parents=True, exist_ok=True)
 
-    with open(coverageHeaderDir / "RISCV_instruction_sample.svh", "w") as fsample:
+    with (coverageHeaderDir / "RISCV_instruction_sample.svh").open("w") as fsample:
         fsample.write(customize_template(covergroup_templates, "instruction_sample_header", "NA", "NA"))
         for arch, tp in test_plans.items():
             covergroupSubDir = arch_sources.get(arch, "unpriv")
@@ -348,22 +385,7 @@ def write_covergroups(
 
         fsample.write(customize_template(covergroup_templates, "instruction_sample_end", "NA", "NA"))
 
-    # Create include files listing all the coverage groups to use in RISCV_coverage_base
-    keys = list(test_plans.keys())
-    keys.sort()
-    # Add priv covergroups to list for initialization and sampling
-    for priv_dir in ["priv", "rv32_priv", "rv64_priv"]:
-        priv_path = covergroup_dir / priv_dir
-        if priv_path.exists():
-            keys.extend(f.stem.split("_")[0] for f in priv_path.iterdir() if f.name.endswith("_coverage.svh"))
-    file = coverageHeaderDir / "RISCV_coverage_base_init.svh"
-    with file.open("w") as f:
-        for arch in keys:
-            f.write(customize_template(covergroup_templates, "coverageinit", arch, ""))
-    file = coverageHeaderDir / "RISCV_coverage_base_sample.svh"
-    with file.open("w") as f:
-        for arch in keys:
-            f.write(customize_template(covergroup_templates, "coveragesample", arch, ""))
+    write_coverage_headers(test_plans, arch_sources, covergroup_dir, covergroup_templates)
 
 
 ##################################

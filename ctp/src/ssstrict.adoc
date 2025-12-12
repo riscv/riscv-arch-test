@@ -19,13 +19,13 @@ RISC-V does not have a ratified equivalent of Ssstrict for machine mode, but thi
 ,===
 https://docs.google.com/spreadsheets/d/1qJsCYdDPaSxNE1R56jsAUyoAiu4OhMlwwAvGysgx790/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 
+include::norm/SsstrictM_norm_rules.adoc[]
+
 ==== SsstrictS
 
 Attempt to issue all flavors of 32-bit instructions in the standard and reserved spaces and all 16-bit compressed instructions.  Also attempt to access all CSRs in the standard and reserved spaces.  Expect illegal instruction trap for unimplemented instructions and CSRs, matching reference model.
 
 According to the RVA23 profile spec, the illegal instruction should be cause a trap to the supervisor trap handler.  However, delegation is the business of the firmware, not the hardware.  These tests only check that a trap occurs and matches the reference model.
-
-*** for all mention of reserved in Zca, list normative rule here and give coverpoint
 
 [[t-SsstrictS-coverpoints]]
 .SsstrictS Coverpoints
@@ -33,6 +33,9 @@ According to the RVA23 profile spec, the illegal instruction should be cause a t
 //include::{testplansdir}/SsstrictS.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1qJsCYdDPaSxNE1R56jsAUyoAiu4OhMlwwAvGysgx790/edit?gid=593261374#gid=593261374[Google Sheet Testplan]
+
+include::norm/SsstrictS_norm_rules.adoc[]
+
 
 ==== SsstrictV
 
@@ -44,4 +47,6 @@ Test that all behaviors called out as "reserved" in the vector specification cau
 //include::{testplansdir}/SsstrictV.adoc[]
 ,===
 
-*** need link
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=743730639#gid=743730639[Google Sheet Testplan]
+
+include::norm/SsstrictV_norm_rules.adoc[]

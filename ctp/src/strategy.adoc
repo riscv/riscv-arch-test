@@ -7,7 +7,7 @@ simulator configuration files are automatically generated from the UDB so there 
 configuration file to maintain.  The UDB describes the supported extensions, and also has parameters
 defining optional behaviors of those extensions.  If a behavior is UNSPECIFIED in the specification,
 it is not tested because there are no wrong answers.  A common purpose of parameters is to define the
-behavior of WARL fields in CSRs.
+behavior of *WARL* fields in CSRs.
 
 === Configuration
 
@@ -38,6 +38,7 @@ It uses UDB to produce supplementary configuration files including:
 The UDB parameters for each extension are defined in:
 
 https://github.com/riscv-software-src/riscv-unified-db/tree/main/spec/std/isa/ext
+https://riscv-software-src.github.io/riscv-unified-db/index.html
 
 *** The CSC Tests and Models working group developed the following list of configuration parameters.
 Need to check if they match the parameters in UDB extensions.
@@ -74,11 +75,19 @@ categories: standard, reserved, and custom. ... Reserved encodings are currently
 |https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc#rva23s64-profile[rva23-profile]|Ssstrict No non-conforming extensions are present. Attempts to execute unimplemented opcodes or access unimplemented CSRs in the standard or reserved encoding spaces raises an illegal instruction exception that results in a contained trap to the supervisor-mode trap handler.
 |===
 
+TODO: These rules are not yet named and tagged in the spec.  Suggest adding them as normative rules.
+
 === CSR Bitfields
 
-CSR fields can be Write Preserves, Read Ignores (WPRI), Write Legal, Read Legal (WLRL), or Write Any, Read Legal (WARL). Examples of WPRI fields include undefined fields of `xstatus`, `xenvcfg`, `mseccfg`, and `xstateen*` that could have unintended side effects if they are subsequently defined and unwittingly set to nonzero values. Examples of WLRL fields include `xcause.ExceptionCode` and `hstatus.VGEIN`.  Other CSR fields are generally WARL.
+CSR fields can be Write Preserves, Read Ignores (*WPRI*), Write Legal, Read Legal (*WLRL*), or Write Any, Read Legal (*WARL*). Examples of WPRI fields include undefined fields of `xstatus`, `xenvcfg`, `mseccfg`, and `xstateen*` that could have unintended side effects if they are subsequently defined and unwittingly set to nonzero values. Examples of *WLRL* fields include `xcause.ExceptionCode` and `hstatus.VGEIN`.  Other CSR fields are generally *WARL*.
 
-WPRI fields are not tested. WLRL fields are tested with all legal values but no illegal values.   WARL fields are tested by trying all possible values of the field.  CSR tests (<<Zicsr>>) generally involve setting all bits to 1, setting all to 0, and writing walking 1s.   Therefore, they inherently exercise all possible values of 1 and 2-bit WARL fields.  Longer fields can be tested exhaustively if the number of possibilities is small (such as `satp.MODE`), or just with walking 1s if the number of possibilities is too large (such as `misa.EXTENSIONS`).
+*WPRI* fields are not tested. *WLRL* fields are tested with all legal values but no illegal values.   *WARL* fields are tested by trying all possible values of the field.  CSR tests (<<Zicsr>>) for *WARL* fields generally involve setting all bits to 1, setting all to 0, and writing walking 1s.   Therefore, they inherently exercise all possible values of 1 and 2-bit *WARL* fields.  Longer fields can be tested exhaustively if the number of possibilities is small (such as `satp.MODE`), or just with walking 1s if the number of possibilities is too large (such as `misa.EXTENSIONS`).
+
+TODO: reconcile this with CRD that illegal values are not supported for WARL fields.
+Parameters are needed to specify the illegal values for a DUT.  The reference model
+could read these parameters, and then the tests could exercise all values and match
+the reference model.  Should there be discretion about what to do?
+riscv-software-src.github.io/riscv-unified-db/pdfs/RVI20-32-CRD.pdf
 
 <<t-bitfield-normative-rules>> summarizes the normative rules regarding CSR bitfields.
 
@@ -111,73 +120,30 @@ illegal value, but the legal value returned should deterministically depend on t
 and the architectural state of the hart.
 |===
 
+TODO: These rules are not yet named and tagged in the spec.  Suggest adding them as normative rules.
+
 *** should there be a parameter about WLRL fields throwing illegal instruction when an illegal value is written?
 
 === Normative Rules
 
 The testplan for each extension contains a list of normative rules applicable to that extension.
-Normative rules are generally direct quotations from a ratified RISC-V specification describing a single certifiable feature.  They are associated
-with an https://docs.asciidoctor.org/asciidoc/latest/attributes/id/[ID anchor] in the ASCIIDoc source of the spec.
-Normative rules only apply to statements that could be measured by a test.  In particular, introductory overview and
-non-normative explanatory text is not quoted as a normative rule.  For brevity, there are no normative rules
-associated with instruction opcodes, CSR numbers, or similar encodings; these are tested when the instruction is
-executed or CSR is accessed.
+Normative rules are generally direct quotations from a ratified RISC-V specification describing a single certifiable feature.  Normative rules specify the behaviors an implementation must meet in order to be compliant with the standard. In particular, introductory overview and
+non-normative explanatory text is not quoted as a normative rule.
 
-[NOTE]
-====
-Occasionally, the
-rule is implicit in the specification, such as the artwork of a figure or the logical interaction of
-multiple quotations from a spec.  Such rules are fabricated in this test plan, and supported by
-references to figures or by a combination of quotations and some logical reasoning. *** link to an example where this is needed, if needed
-====
-
-=== Normative Rule IDs
-
-Normative rule IDs follow the format defined in https://github.com/riscv-software-src/riscv-unified-db/blob/884-add-normative-rules-for-i-extension/tools/ruby-gems/udb/lib/udb/doc_link.rb[the UDB documentation]. <<t-normative-rules-ids>> provides examples
-
-[[t-normative-rules-ids]]
-.Normative Rule ID Examples
-[cols="1, 1, 2" options=header]
-|===
-|Scenario|Example|Rule
-|Instruction|`norm:inst:add:operation`|ADD performs the addition of _rs1_ and _rs2_.
-|Several Instructions|`norm:insts:slt_sltu:operation`|SLT and SLTU perform signed and unsigned compares respectively, writing 1 to _rd_ if
-_rs1_ < _rs2_, 0 otherwise.
-|CSR|`norm:csr:hstatus:reg`|The hstatus register is an HSXLEN-bit read/write register formatted as shown in when HSXLEN=32 and when HSXLEN=64. The hstatus register provides facilities analogous to the mstatus register for tracking and controlling the exception behavior of a VS-mode guest.
-|Several CSRs|`norm:csrs:sie_hip_hie:mutex`|For each writable bit in sie, the corresponding bit shall be read-only zero in both hip and hie. Hence, the nonzero bits in sie and hie are always mutually exclusive, and likewise for sip and hip.
-|CSR bitfield|`norm:csrfld:hstatus:vsxl:op`|The VSXL field controls the effective XLEN for VS-mode (known as VSXLEN), which may differ from the XLEN for HS-mode (HSXLEN). When HSXLEN=32, the VSXL field does not exist, and VSXLEN=32. When HSXLEN=64, VSXL is a WARL field that is encoded the same as the MXL field of misa, shown in . In particular, an implementation may make VSXL be a read-only field whose value always ensures that VSXLEN=HSXLEN.
-|Other behaviors not in the schema|`norm:ext:H:vscsrs-vs-perm`|When V=1, an attempt to read or write a VS CSR directly by its own separate CSR address causes a virtual-instruction exception.
-|===
-
-The following code snippets show how to tag the https://github.com/riscv/riscv-isa-manual/blob/main/src/rv32.adoc[spec].
-
-Normative rule IDs can be applied to an entire paragraph with a `[[norm:...]]` ID.
-
-```
-[[norm:instgrp:load_store:endian_byte_operation]]
-In a system for which endianness is byte-address invariant, the
-following property holds: if a byte is stored to memory at some address
-in some endianness, then a byte-sized load from that address in any
-endianness returns the stored value.
-```
-
-Alternatively, they can be applied to a portion of a paragraph:
-[literal]
-#[#norm:...]#tagged text#
-
-```
-[#norm:inst:add:operation]#ADD performs the addition of _rs1_ and
-_rs2_.#[#norm:inst:sub:operation]#SUB performs the subtraction of _rs2_ from _rs1_.#[#norm:insts:add_sub:overflow]#Overflows are ignored and the low XLEN bits of results are written to the destination _rd_.#
-```
-
-*** need to choose operation vs. op
-*** level of detail: regularly subtag sentences or subsentence in a paragraph
+See https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual/blob/main/tagging_normative_rules.adoc[tagging_normative_rules] for more information about normative rules and IDs and how to tag them in the specification.
 
 === Coverpoints
 
-Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ``ifdef XLEN32` or `XLEN64` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ``ifdef`` to exclude tests based on the parameter value.
+Coverpoints are written with one file that covers both RV32 and RV64, to reduce the duplication and risk of becoming out of sync.  When a coverage file contains coverpoints that apply only to one XLEN or the other (e.g. 32 or 64-bit edge values), they are separated by ```ifdef XLEN32`` or ``XLEN64`` directives. Similarly, when a coverpoint applies only to a certain parameter value (PMP NA4 regions are not supported for granularity coarser than 4 bytes), they uses ```ifdef`` to exclude tests based on the parameter value.
+
+Not all normative rules have coverpoints and tests.  A normative rule that a behavior is UNSPECIFIED is not tested because there is no wrong answer.  For example, writing satp.MODE = Bare with nonzero values in other fields has unspecified behavior and is untested.  The CTP may declare that other normative rules are too difficult to test relative to their value (low return on investment) and choose not to test them.  For example, if the Zcf extension is supported, misa.C depends on whether misa.F is supported.  misa.F is *WARL* and may be read-only one, so it is not always possible to test the misa.C dependence on misa.F = 0 and, for simplicity, this dependence might never be tested.
+
+To the extent that there are any normative rules associated with instruction opcodes or CSR numbers,
+if these rules can be tested by coverpoints that execute the instruction or access the CSR, then no other coverpoints are needed.  For example, a normative rule that an add instruction has op = 0110011, funct3 = 000, and funct7 = 0000000 is tested by the ordinary coverpoints that exercise the add instruction.
 
 === Tests
+
+TODO: this section is no longer accurate. Determine whether a summary of the test approach belongs in the CTP and move to a new section.
 
 Privileged tests are mostly written by hand and share a single .S file that can be compiled for either RV32 or RV64, again with `ifdef` directives to separate the two.  Unprivileged tests are generated from a template using a Python script, and are divided into RV32 and RV64 directories because the random values differ with XLEN.
 

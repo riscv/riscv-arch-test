@@ -10,7 +10,7 @@
         .pushsection .tohost,"aw",@progbits;                \
         .align 8; .global tohost; tohost: .dword 0;         \
         .align 8; .global fromhost; fromhost: .dword 0;     \
-        .popsection;
+        .popsection
 
 #define RVMODEL_HALT_PASS  \
   li x1, 1                ;\
@@ -57,13 +57,5 @@
 #define RVMODEL_CLEAR_MTIMER_INT
 
 #define RVMODEL_CLEAR_MEXT_INT
-
-htif_putc:
-    la x31, tohost
-    sw a0, 0(x31)
-    // device=1 (terminal), cmd=1 (output)
-    li a0, 0x01010000
-    sw a0, 4(x31)
-    ret
 
 #endif // _COMPLIANCE_MODEL_H

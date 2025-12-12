@@ -25,6 +25,8 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
         edges_imm = IMMEDIATE_EDGES.imm_20bit
     elif coverpoint.endswith("_6bit"):
         edges_imm = IMMEDIATE_EDGES.imm_6bit
+    elif coverpoint.endswith("_6bit_n0"):
+        edges_imm = IMMEDIATE_EDGES.imm_6bit[1:]  # exclude imm=0
     else:
         raise ValueError(f"Unknown cp_imm_edges coverpoint variant: {coverpoint} for {instr_name}")
 
@@ -33,7 +35,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
     for edge_val in edges_imm:
         test_data.add_testcase_string(coverpoint)
         test_lines.append("")
-        params = generate_random_params(test_data, instr_type, immval=edge_val)
+        params = generate_random_params(test_data, instr_type, immval=edge_val, exclude_regs=[0])
         desc = f"{coverpoint} (imm = {edge_val})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
         test_data.int_regs.return_registers(params.used_int_regs)
@@ -46,7 +48,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
     """Generate tests for branch immediate edge values."""
     # TODO: Update coverpoint error message
     test_lines: list[str] = ["\n# Testcase cp_imm_edges_branch"]
-    params = generate_random_params(test_data, instr_type)
+    params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None
     test_lines.extend(
         [

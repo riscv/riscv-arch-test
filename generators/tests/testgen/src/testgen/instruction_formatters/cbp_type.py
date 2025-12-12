@@ -16,7 +16,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
     required_params={"rs1", "rs1val", "immval"},
     reg_range=range(8, 16),
     imm_bits="xlen_log2",
-    imm_signed=False,
+    imm_signed=True,
     imm_nonzero=True,
 )
 def format_cbp_type(

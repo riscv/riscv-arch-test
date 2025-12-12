@@ -3,8 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Directories and files
-CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
-REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
+# CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
+# REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
+CONFIG_FILES ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
+REF_CONFIG_FILES ?= configs/ref/sail-rvi20_32/test_config.yaml configs/ref/sail-rvi20_64/test_config.yaml
+# REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
 
@@ -45,7 +48,7 @@ elfs: generate-makefiles-dut Makefile
 .PHONY: generate-makefiles-dut
 generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILE) --workdir $(WORKDIR) --test-dir $(TESTDIR)
+	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR)
 
 .PHONY: clean
 clean: clean-tests clean-ref
@@ -59,10 +62,16 @@ $(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGR
 	@touch $@
 
 .PHONY: testgen
-testgen:  $(STAMP_DIR)/testgen.stamp
+testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests --extensions M
+	$(UV_RUN) testgen testplans -o tests --extensions I,M,Zca,Zifencei # I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei
 	@touch $@
+
+.PHONY: vector-testgen
+vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
+	touch $@
 
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
@@ -92,8 +101,8 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
 	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
-.PHONY: coverage
 
+.PHONY: coverage
 coverage: generate-makefiles-ref Makefile
 	$(MAKE) -C $(WORKDIR_REF) coverage
 
@@ -114,3 +123,7 @@ lint-fix:
 .PHONY: format
 format:
 	$(UV_RUN) ruff format
+
+###### Vector coverage targets ######
+.PHONY: vector-tests
+vector-tests: covergroupgen vector-testgen

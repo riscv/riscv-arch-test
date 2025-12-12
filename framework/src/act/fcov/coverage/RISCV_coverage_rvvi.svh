@@ -91,7 +91,7 @@ function void save_rvvi_data(bit trap, int hart, int issue, string disass);
   rvviData.halt = this.rvvi.halt[hart][issue];
   rvviData.intr = this.rvvi.intr[hart][issue];
   rvviData.mode = this.rvvi.mode[hart][issue];
-  rvviData.mode_virt = this.rvvi.mode_virt[hart][issue]; // hypervisor bit
+  rvviData.mode_virt = this.rvvi.mode_virt[hart][issue]; 
   rvviData.ixl = this.rvvi.ixl[hart][issue];
   rvviData.pc_rdata = this.rvvi.pc_rdata[hart][issue];
   rvviData.pc_wdata = this.rvvi.pc_wdata[hart][issue];

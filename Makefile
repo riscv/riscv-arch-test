@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Directories and files
-CONFIG_FILE ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
+# CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
+# REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
+CONFIG_FILES ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
 REF_CONFIG_FILES ?= configs/ref/sail-rvi20_32/test_config.yaml configs/ref/sail-rvi20_64/test_config.yaml
 # REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
@@ -46,7 +48,7 @@ elfs: generate-makefiles-dut Makefile
 .PHONY: generate-makefiles-dut
 generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILE) --workdir $(WORKDIR) --test-dir $(TESTDIR)
+	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR)
 
 .PHONY: clean
 clean: clean-tests clean-ref

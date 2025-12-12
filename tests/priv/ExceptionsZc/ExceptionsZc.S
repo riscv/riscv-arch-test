@@ -189,8 +189,8 @@ misaligned_loop:
     #endif
 
     #if __riscv_xlen == 64
+        c.ldsp  a3, 0(sp)       // Compressed load doubleword using stack-pointer offset
         #ifdef ZCD_SUPPORTED
-            c.ldsp  a3, 0(sp)       // Compressed load doubleword using stack-pointer offset
             c.fld   f9, 0(a2)       // Compressed floating-point load doubleword
         #endif
     #elif __riscv_xlen == 32
@@ -222,15 +222,15 @@ misaligned_loop:
 
     //Test shared compressed floating instruction
     #ifdef ZCF_SUPPORTED
-        c.fsd   f8, 0(a2)    # compressed load floating-point doubleword
         c.fsw   f8, 0(a2)    # compressed load floating-point word
+    #endif
+    #ifdef ZCD_SUPPORTED
+        c.fsd   f8, 0(a2)    # compressed load floating-point doubleword
     #endif
 
     #platform dependent load instructions
     #if __riscv_xlen == 64
-        #ifdef ZCD_SUPPORTED
-            c.sd    a3, 0(a2)     # compressed load doubleword (RV64 only)
-        #endif
+        c.sd    a3, 0(a2)     # compressed load doubleword (RV64 only)
     #endif
 
 
@@ -241,14 +241,15 @@ misaligned_loop:
     #endif
 
     #ifdef ZCF_SUPPORTED
-        c.fsdsp f8, 0(sp)
         c.fswsp f8, 0(sp)
     #endif
 
+    #ifdef ZCD_SUPPORTED
+        c.fsdsp f8, 0(sp)
+    #endif
+
     #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.sdsp  a3, 0(sp)
-            #endif
+        c.sdsp  a3, 0(sp)
     #endif
 
 /////////////////////////////////

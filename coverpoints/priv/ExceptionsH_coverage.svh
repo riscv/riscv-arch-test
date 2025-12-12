@@ -6,18 +6,8 @@
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// SPDX-License-Identifier: Apache-2.0
 //
-// Licensed under the Solderpad Hardware License v 2.1 (the “License”); you may not use this file
-// except in compliance with the License, or, at your option, the Apache License version 2.0. You
-// may obtain a copy of the License at
-//
-// https://solderpad.org/licenses/SHL-2.1/
-//
-// Unless required by applicable law or agreed to in writing, any work distributed under the
-// License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-// either express or implied. See the License for the specific language governing permissions
-// and limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSH
@@ -106,7 +96,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // FAULT CONDITION COVERPOINTS
    // ============================================================================
 
-
    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
        bins illegal = {`ACCESS_FAULT_ADDRESS};
    }
@@ -166,16 +155,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
        bins VU_mode = {3'b100};
    }
 
-   // Previous modes for delegation to M (all 5 modes)
-   priv_mode_to_m: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins M_mode  = {3'b?11};
-       bins HS_mode = {3'b001};
-       bins U_mode  = {3'b000};
-       bins VS_mode = {3'b101};
-       bins VU_mode = {3'b100};
-   }
-
-
    // Previous modes for VS (VU and VS)
    priv_mode_to_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
        bins VU_mode = {3'b100};
@@ -190,7 +169,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // DELEGATION REGISTER COVERPOINTS
    // ============================================================================
-
 
    // Machine Exception Delegation Register (medeleg)
    medeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") {
@@ -256,8 +234,8 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    // All ECALL bits disabled (no delegation to M-mode)
-   medeleg_ecall_bits_disabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") & 32'h00000F00) {
-       bins all_ecall_bits_zero = {32'h00000000};
+   medeleg_ecall_bits_disabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg")[11:8]) {
+       bins all_ecall_bits_zero = {4'b0000};
    }
 
 
@@ -283,7 +261,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // HSTATUS CSR COVERPOINTS (HS-mode traps)
    // ============================================================================
 
-
    // Sample after trap to verify SPVP was set to previous virtualization mode bit
    hstatus_spvp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hstatus", "spvp") {
        bins spvp_0 = {0};
@@ -308,7 +285,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // TRAP VERIFICATION COVERPOINTS
    // ============================================================================
-
 
    trap_to_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
        bins trapped_to_vs = {3'b101};
@@ -341,7 +317,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // COUNTER DELEGATION COVERPOINTS
    // ============================================================================
 
-
    h_counteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
        bins disabled = {0};
    }
@@ -355,7 +330,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // HYPERVISOR INSTRUCTION COVERPOINTS
    // ============================================================================
-
 
    hypervisor_instr: coverpoint ins.current.insn {
        wildcard bins hlv_w = {32'b011010000000?????100?????1110011};
@@ -406,7 +380,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    wfi: coverpoint ins.current.insn {
-       wildcard bins wfi = {32'b00010000010100000000000001110011};
+        bins wfi = {32'b00010000010100000000000001110011};
    }
 
 
@@ -429,7 +403,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // CSR ACCESS COVERPOINTS
    // ============================================================================
-
 
    vstval_htval: coverpoint ins.current.insn[31:20] {
        bins vstval = {12'h243};
@@ -466,7 +439,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // HSTATUS BIT COVERPOINTS (Extended)
    // ============================================================================
 
-
    hstatus_vtw_enabled: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")) {
        bins one = {1};
    }
@@ -502,7 +474,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // MSTATUS BIT COVERPOINTS (Extended)
    // ============================================================================
 
-
    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
        bins tvm_disabled = {0};
        bins tvm_enabled = {1};
@@ -517,7 +488,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // COUNTER ENABLE COVERPOINTS (Extended)
    // ============================================================================
-
 
    s_counteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "counteren")[2]) {
        bins enabled = {1};
@@ -563,7 +533,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ADDRESS ALIGNMENT COVERPOINTS
    // ============================================================================
 
-
    address_lsbs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
    }
 
@@ -571,7 +540,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // EXCEPTION CODE COVERPOINTS
    // ============================================================================
-
 
    instr_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd12} {
        // Auto fill 0/1
@@ -612,7 +580,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // PRIVILEGE MODE VS DELEGATION SETTINGS
    // ============================================================================
 
-
    vs_mode: coverpoint {ins.prev.mode, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "v")} {
        bins VS_mode = {2'b01, 1'b1};
    }
@@ -632,7 +599,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
    // CROSS COVERAGE
    // ============================================================================
-
 
    // Exception delegation crosses
    cp_hedeleg_instr_misaligned_branch: cross branch, pc_bit_1, imm_bit_1, modes, medeleg_delegation, hedeleg_delegation;
@@ -669,13 +635,13 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    cp_ecall_to_m: cross
        ecall,
-       priv_mode_to_m,
+       modes,
        medeleg_ecall_bits_disabled;
 
 
    cp_ebreak_to_m: cross
        ebreak,
-       priv_mode_to_m,
+       modes,
        medeleg_ebreak_bits_disabled;
 
 
@@ -693,7 +659,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
        hlv_hsv_instr,
        address_legality,
        addr_misalignment,
-       priv_mode_to_m,
+       modes,
        hstatus_hu;
 
 
@@ -707,7 +673,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    cp_virtual_instr_vs_sret: cross sret, hstatus_vtsr_enabled, priv_mode_vs;
    cp_virtual_instr_vs_s_vma_instr: cross sfence_sinval_vma, hstatus_vtvm_enabled, priv_mode_vs;
    cp_virtual_instr_vs_satp: cross csrr, satp, hstatus_vtvm_enabled, priv_mode_vs;
-   `ifdef RV32
+   `ifdef XLEN32
        cp_virtual_instr_vs_rv32_instreth_mcounter: cross csrr, instret, rv32_mcounter_enabled_ir, rv32_hcounter, priv_mode_vs;
        cp_virtual_instr_vs_rv32_hedelegh: cross csrr, rv32_hedelegh, priv_mode_vs;
    `endif
@@ -724,7 +690,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    cp_virtual_instr_vu_wfi: cross wfi, hstatus_vtw_enabled, mstatus_tw, priv_mode_vu;
    cp_virtual_instr_vu_sret: cross sret, priv_mode_vu;
    cp_virtual_instr_vu_sfence_vma: cross sfence_vma, priv_mode_vu;
-   `ifdef RV32
+   `ifdef XLEN32
        cp_virtual_instr_vs_rv32_instreth_1: cross csrr, instret, rv32_hcounter_disabled_ir, rv32_scounter_enabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
        cp_virtual_instr_vs_rv32_instreth_2: cross csrr, instret, rv32_hcounter_enabled_ir, rv32_scounter_disabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
        cp_virtual_instr_vu_rv32_hedelegh: cross csrr, rv32_hedelegh, priv_mode_vu;
@@ -740,7 +706,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    cp_hfence_priv: cross
        hfence_instructions,
-       priv_mode_to_m,
+       modes,
        mstatus_tvm,
        hstatus_vtvm;
 

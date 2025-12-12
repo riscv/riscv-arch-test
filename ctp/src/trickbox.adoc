@@ -7,7 +7,7 @@ Each DUT requires a trick box to perform the following non-ISA functions:
 * Deliver each supported type of interrupt to the core (Machine/Supervisor External/Timer/Software + guest external interrupts)
 * Send a character to a terminal to log a success message or test failure information
 * Terminate a test with a pass or fail indication
-* If a debug module is supported, send abstract commands to the DM and receive responses
+* Halt and resume the debugger
 
 === Trick Box Macros
 
@@ -24,7 +24,7 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_IO_INIT|Initialization steps needed prior to writing to the console
-|RVMODEL_IO_WRITE_STR(_R, _STR)|Write a null-terminated ASCII string to the console, where _R is a temporary register that may be trashed by the macro and _STR is a register containing the address of the first byte of the string
+|RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string
 |RVMODEL_SET_MEXT_INT| Sets the Machine External Interrupt (mip.MEIP = 1, if supported)
 |RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt (mip.MEIP = 0)
 |RVMODEL_SET_MTIMER_INT|Sets the Machine Timer Interrupt (mip.MTIP = 1, if supported)
@@ -39,9 +39,13 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_SET_STIMER_INT_SOON|Cause the Supervisor Timer Interrupt to rise soon, but not immediately.
 |RVMODEL_SET_SSW_INT|Sets the Supervisor Software Interrupt (mip.SSIP = 1, if supported)
 |RVMODEL_CLR_SSW_INT|Clears the Supervisor Software Interrupt (mip.SSIP = 0)
-|RVMODEL_WRITE_GEIP(_R)|Write the value in _R to the Guext External Interrupt Pending (hgeip) register, if supported.  This is used to test guest external interrupts. Only the bottom GEILEN bits are written.
+|RVMODEL_WRITE_GEIP(_R)|Write the value in _R to the Guest External Interrupt Pending (hgeip) register, if supported.  This is used to test guest external interrupts. Only the bottom GEILEN bits are written.
 |ACCESS_FAULT_ADDRESS|An address that causes an access fault when read or written. This is used to test exceptions.
 |===
+
+Some method is needed to test Sdext during Phase 2. Debug macros are not yet flushed out. There might be  RVMODEL_DEBUG_HALT and RVMODEL_DEBUG_RESUME to halt the core (entering Debug mode per Debug Spec 4.7) and resume (per Debug Spec 4.8).  It is not yet clear whether this can be done effectively under software control. Also not clear how to test behavior straight out of reset. Sdtrig can be tested from software without trick-box macros.
+
+When support is added post-Phase 2 for the Debug Module (DM) and Debug Transport Module (DTM), there may be requirements to send abstract commands directly to the DM or over JTAG to the DM.  Not obvious yet if this can be done sensibly under software control.
 
 *** give a parameter defining delay for RVMODEL_SET_MTIMER_INT_SOON
 
@@ -54,7 +58,7 @@ The macros are defined in model_test.h. sail_test.h shows sample implementations
 
 === Reference Trick Box for Spike and SAIL
 
-https://github.com/riscv-non-isa/riscv-arch-test/blob/cvw/configs/ref/sail-rv64gc/model_test.h shows a trick box implementation that works for Spike and SAIL.
+https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/configs/ref/sail-rv64gc/model_test.h shows a trick box implementation that works for Spike and SAIL.
 
 *** HTIF (write_tohost followed by j to selfloop) for termination and UART, memory-mapped PLIC and CLINT
 *** not implemented yet on Sail
@@ -67,10 +71,11 @@ Drawback that testbench must parse the ELF labels to find the address of write_t
 
 === Custom Trick Box Hints
 
-For a simple design, the easiest way to support tests may be to emulate the capabilities of the Spike UART.
+For a core without peripherals, the easiest way to support tests may be to emulate the capabilities of Spike from within the testbench.
 *** example
 
-A commercial design will have its own peripherals including interrupt controller and UART, and will need to implement the trick box macros to use those peripherals.
+A more complex system may have its own peripherals including interrupt controller and UART, in which case it implement the trick box macros to use those peripherals.
+
 Typical trick box macros may do the following:
 
 ==

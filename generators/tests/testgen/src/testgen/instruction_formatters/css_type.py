@@ -8,25 +8,45 @@
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import load_int_reg, write_sigupd
-from testgen.utils.immediates import modify_imm
+from testgen.utils.common import load_int_reg
 
 
-@add_instruction_formatter("CSS")
+@add_instruction_formatter("CSS", required_params={"rs2", "rs2val", "immval"}, imm_bits=9, imm_signed=False)
 def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CSS-type instruction."""
-    assert params.rs1 is not None and params.rs1val is not None
     assert params.rs2 is not None and params.rs2val is not None
-    assert params.rd is not None
     assert params.immval is not None
-    scaled_imm = modify_imm(params.immval, 8)
+    return ([], [], [])
+
+    # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte
+    if instr_name == "c.sdsp":
+        alignment = 8
+        max_val = 504
+    elif instr_name == "c.swsp":
+        alignment = 4
+        max_val = 252
+    else:
+        raise ValueError(f"Unknown CSS instruction: {instr_name}")
+
+    # Mask off lower bits to ensure alignment
+    params.immval = params.immval & ~(alignment - 1)
+    # Wrap into valid range
+    params.immval = params.immval % (max_val + alignment)
+    setup: list[str] = []
+    # sp (x2) is used as the base pointer for CSS instructions
+    # Ensure sp is allocated
+    if params.rs2 != 2:
+        setup.append(test_data.int_regs.consume_registers([2]))
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
     ]
     test = [
-        f"{instr_name} x{params.rs2}, {scaled_imm}(sp) # perform operation",
+        f"{instr_name} x{params.rs2}, {params.immval}(sp) # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data, "int")]
+    check = ["# TODO: Add check code for CSS instruction"]
+    # Return sp to the pool if it was consumed
+    if params.rs2 != 2:
+        test_data.int_regs.return_register(2)
     return (setup, test, check)

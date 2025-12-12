@@ -12,7 +12,7 @@
 module testbench;
 
   // Load configuration
-  `include "riscv-arch-test_coverage.svh"
+  `include "rvtest_config.svh"
 
   // Set up variable lengths
   `ifdef XLEN32
@@ -57,6 +57,7 @@ module testbench;
   logic              debug_mode;
   logic [(XLEN-1):0] pc_rdata;
   logic [1:0]        mode;
+  logic              mode_virt; // hypervisor bit
   // Interrupts
   logic m_ext_intr, s_ext_intr, m_timer_intr, m_soft_intr;
   // Virtual Memory

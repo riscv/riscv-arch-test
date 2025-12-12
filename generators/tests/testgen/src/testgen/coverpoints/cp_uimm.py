@@ -21,12 +21,13 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
     elif coverpoint.endswith("_5"):
         uimm_vals = range(0, 32)
     elif coverpoint.endswith("_n0"):
-        uimm_vals = range(1, 64)
+        uimm_vals = range(1, test_data.xlen)
     else:
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
 
     test_lines: list[str] = []
     for uimm in uimm_vals:
+        test_data.add_testcase_string(coverpoint)
         test_lines.append("")
         params = generate_random_params(test_data, instr_type, immval=uimm)
         desc = f"{coverpoint}: imm={uimm}"

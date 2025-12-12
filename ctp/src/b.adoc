@@ -1,8 +1,6 @@
 
 === Zb* Bit Manipulation Extensions
 
-***B=Zba+Zbb+Zbs
-
 ==== Zba Bit-Manipulation for Addressing
 
 [[t-Zba-coverpoints]]

@@ -27,3 +27,4 @@ coverpoints/coverage
 tests/priv/headers
 tests/rv32
 tests/rv64
+ctp/src/norm

@@ -5,8 +5,11 @@ RVTEST_CODE_END
 // Create scratch data sections and label for test data
 RVTEST_DATA_BEGIN
 
-// Insert test data here
-// @TEST_DATA@ // TODO: Load test data from here instead of using LI
+    // Test data
+@TEST_DATA@
+
+    // Testcase strings
+@TESTCASE_STRINGS@
 
 // End of test data section and model specific data
 RVTEST_DATA_END

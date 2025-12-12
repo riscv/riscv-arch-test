@@ -254,6 +254,9 @@
 `ifdef EXCEPTIONSHV_COVERAGE
   `include "ExceptionsHV_coverage.svh"
 `endif
+`ifdef EXCEPTIONSVF_COVERAGE
+  `include "ExceptionsVF_coverage.svh"
+`endif
 `ifdef EXCEPTIONSZC_COVERAGE
   `include "ExceptionsZc_coverage.svh"
 `endif
@@ -310,4 +313,15 @@
 `endif
 `ifdef EXCEPTIONSZICBOS_COVERAGE
   `include "ExceptionsZicboS_coverage.svh"
+`endif
+
+// Hypervisor Extension
+`ifdef ENDIANH_COVERAGE
+  `include "EndianH_coverage.svh"
+`endif
+`ifdef SVINVALH_COVERAGE
+  `include "SvinvalH_coverage.svh"
+`endif
+`ifdef ZICNTRH_COVERAGE
+  `include "ZicntrH_coverage.svh"
 `endif

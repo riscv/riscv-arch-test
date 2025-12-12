@@ -64,6 +64,12 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) testgen testplans -o tests --extensions M
 	@touch $@
 
+.PHONY: vector-testgen
+vector-testgen:  $(STAMP_DIR)/vector-testgen-unpriv.stamp
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
+	touch $@
+
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
@@ -92,8 +98,8 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
 	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
-.PHONY: coverage
 
+.PHONY: coverage
 coverage: generate-makefiles-ref Makefile
 	$(MAKE) -C $(WORKDIR_REF) coverage
 
@@ -114,3 +120,7 @@ lint-fix:
 .PHONY: format
 format:
 	$(UV_RUN) ruff format
+
+###### Vector coverage targets ######
+.PHONY: vector-tests
+vector-tests: covergroupgen vector-testgen

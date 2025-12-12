@@ -14,7 +14,6 @@
 covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    option.per_instance = 0;
 
-
    // Include standard RISCV coverpoints
    `include "general/RISCV_coverage_standard_coverpoints.svh"
 

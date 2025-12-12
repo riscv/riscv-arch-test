@@ -20,12 +20,6 @@
 // and limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// Individual cross coverage for each exception type with delegation registers
-
-// Building block coverpoints (similar to ExceptionsM pattern)
-
-
 `define COVER_EXCEPTIONSH
 covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    option.per_instance = 0;
@@ -33,11 +27,11 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    // Include standard RISCV coverpoints
    `include "general/RISCV_coverage_standard_coverpoints.svh"
-  
+
    // ============================================================================
    // INSTRUCTION COVERPOINTS
    // ============================================================================
-  
+
    branch: coverpoint ins.current.insn {
        wildcard bins branch = {32'b???????_?????_?????_???_?????_1100011};
    }

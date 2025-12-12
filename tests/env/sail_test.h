@@ -12,6 +12,15 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection
 
+##### STARTUP #####
+
+# Perform boot operations. Can be empty.
+#define RVMODEL_BOOT
+
+##### TERMINATION #####
+
+# Terminate test with a pass indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
   li x1, 1                ;\
   la t0, tohost           ;\
@@ -20,6 +29,8 @@
     sw x0, 4(t0)          ;\
     j write_tohost_pass   ;\
 
+# Terminate test with a fail indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 3                ;\
   la t0, tohost           ;\
@@ -28,9 +39,12 @@
     sw x0, 4(t0)          ;\
     j write_tohost_fail   ;\
 
-#define RVMODEL_BOOT
+##### IO #####
 
-#define RVMODEL_IO_INIT
+# Initialization steps needed prior to writing to the console
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
+#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -50,12 +64,40 @@
   j 1b                       ;/* Loop */             \
 3:
 
+##### Machine Interrupts #####
+
+#define RVMODEL_SET_MEXT_INT
+
+#define RVMODEL_CLR_MEXT_INT
+
+#define RVMODEL_SET_MTIMER_INT
+
+#define RVMODEL_CLR_MTIMER_INT
+
+#define RVMODEL_SET_MTIMER_INT_SOON
+
 #define RVMODEL_SET_MSW_INT
 
-#define RVMODEL_CLEAR_MSW_INT
+#define RVMODEL_CLR_MSW_INT
 
-#define RVMODEL_CLEAR_MTIMER_INT
+##### Supervisor Interrupts #####
 
-#define RVMODEL_CLEAR_MEXT_INT
+#define RVMODEL_SET_SEXT_INT
+
+#define RVMODEL_CLR_SEXT_INT
+
+#define RVMODEL_SET_STIMER_INT
+
+#define RVMODEL_CLR_STIMER_INT
+
+#define RVMODEL_SET_STIMER_INT_SOON
+
+#define RVMODEL_SET_SSW_INT
+
+#define RVMODEL_CLR_SSW_INT
+
+##### Hypervisor Interrupts #####
+
+#define RVMODEL_WRITE_GEIP
 
 #endif // _COMPLIANCE_MODEL_H

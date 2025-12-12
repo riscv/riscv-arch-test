@@ -102,6 +102,32 @@ def generate_random_params(
     if "temp_val" in required_params and params.temp_val is None:
         params.temp_val = random_int(bits=test_data.xlen)
 
+    # Fill in missing floating-point register parameters (only if required)
+    if "fd" in required_params and params.fd is None:
+        params.fd = test_data.float_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+
+    if "fdval" in required_params and params.fdval is None:
+        params.fdval = random_int(bits=test_data.flen)
+
+    if "fs1" in required_params and params.fs1 is None:
+        params.fs1 = test_data.float_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+
+    if "fs1val" in required_params and params.fs1val is None:
+        params.fs1val = random_int(bits=test_data.flen)
+
+    if "fs2" in required_params and params.fs2 is None:
+        params.fs2 = test_data.float_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+
+    if "fs2val" in required_params and params.fs2val is None:
+        params.fs2val = random_int(bits=test_data.flen)
+
+    if "fs3" in required_params and params.fs3 is None:
+        params.fs3 = test_data.float_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+
+    if "fs3val" in required_params and params.fs3val is None:
+        params.fs3val = random_int(bits=test_data.flen)
+
+    # Fill in missing immediate parameters (only if required)
     if "immval" in required_params and params.immval is None:
         # Get immediate metadata from formatter config
         imm_bits = instr_type_config.imm_bits

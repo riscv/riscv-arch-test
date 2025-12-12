@@ -9,8 +9,8 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr, Zca]
-# MARCH: rv${XLEN}ic_zicsr_zca_zcb_zcd  
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zca, Sm]
+# MARCH: rv${XLEN}ic_zicsr_zca_zcb_zcd
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -23,8 +23,6 @@
     li t0,0x4000
     csrs mstatus, t0
 
-//Some DUT may not support all loads/stores this file tests for
-//In that case, the test will trap and throw an Illegal Instruction exception
 
 /////////////////////////////////
 //cp_load_address_misaligned
@@ -54,30 +52,26 @@ misaligned_loop:
     // Test compressed integer load instructions:
     c.lw    a3, 0(a2)     # compressed load word
 
-    #ifdef ZCB_SUPPORTED 
+    #ifdef ZCB_SUPPORTED
         c.lh    a3, 0(a2)     # compressed load halfword
         c.lhu   a3, 0(a2)     # compressed load halfword unsigned
         c.lbu   a3, 0(a2)     # compressed load byte unsigned
-    #endif 
+    #endif
 
     #ifdef ZCD_SUPPORTED // only if D is supported
             //Test shared compressed load floating instruction
             c.fld   f9, 0(a2)    # compressed load floating-point doubleword
-    #endif    
+    #endif
 
-    //Test hardware specific compressed load instructions
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.ld    a3, 0(a2)     # compressed load doubleword (RV64 only)
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
+    #ifdef ZCF_SUPPORTED
                 c.flw   f9, 0(a2)    # compressed load floating-point word
             #endif
-        #endif
+
+    //Test hardware specific compressed load instructions
+    #if __riscv_xlen == 64
+        c.ld    a3, 0(a2)     # compressed load doubleword (RV64 only)
     #endif
-    
+
 
     #------------------------
     # Now test the _sp forms.
@@ -85,21 +79,16 @@ misaligned_loop:
     #ifdef ZCD_SUPPORTED
         c.fldsp f9, 0(sp) # Compressed load floating-point doubleword from sp
     #endif
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.lwsp  a3, 0(sp)
-    #endif 
+    #endif
+    #ifdef ZCF_SUPPORTED
+        # Compressed load floating-point word from sp:
+        c.flwsp f9, 0(sp)
+    #endif
 
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.ldsp  a3, 0(sp)
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                # Compressed load floating-point word from sp:
-                c.flwsp f9, 0(sp)
-            #endif
-        #endif
+    #if __riscv_xlen == 64
+            c.ldsp  a3, 0(sp)
     #endif
 
 /////////////////////////////////
@@ -115,36 +104,30 @@ misaligned_loop:
     li a3,  0xDEADBEEF
 
     // Test compressed integer store instructions:
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.sw    a3, 0(a2)     # compressed store word
     #endif
-    #ifdef ZCB_SUPPORTED 
+    #ifdef ZCB_SUPPORTED
         c.sh    a3, 0(a2)     # compressed store halfword
         c.sb    a3, 0(a2)
-    #endif 
+    #endif
 
     #ifdef ZCF_SUPPORTED
         //Test shared compressed store floating instruction
         c.fsd   f8, 0(a2)    # compressed store floating-point doubleword
     #endif
-
+    #ifdef ZCF_SUPPORTED
+        c.fsw   f8, 0(a2)    # compressed store floating-point word
+    #endif
     #platform dependent store instructions
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.sd    a3, 0(a2)     # compressed store doubleword (RV64 only)
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                c.fsw   f8, 0(a2)    # compressed store floating-point word
-            #endif
-        #endif
+    #if __riscv_xlen == 64
+            c.sd    a3, 0(a2)     # compressed store doubleword (RV64 only)
     #endif
 
 
     #------------------------
     // Now test the _sp forms.
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.swsp  a3, 0(sp)
     #endif
 
@@ -154,9 +137,7 @@ misaligned_loop:
 
     #ifdef __riscv_xlen
         #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.sdsp  a3, 0(sp)
-            #endif
+            c.sdsp  a3, 0(sp)
         #elif __riscv_xlen == 32
             #ifdef ZCF_SUPPORTED
                 c.fswsp f8, 0(sp)
@@ -177,13 +158,14 @@ misaligned_loop:
     li      a2, ACCESS_FAULT_ADDRESS
     la      sp, ACCESS_FAULT_ADDRESS
 
-    #ifdef ZCB_SUPPORTED 
+    #ifdef ZCB_SUPPORTED
         //Compressed load instructions for rv32 and rv64
         c.lbu a3, 0(a2)
         c.lh  a3, 0(a2)
         c.lhu a3, 0(a2)
+        c.lbu a3, 0(a2) //load byte
     #endif
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.lw  a3, 0(a2)
     #endif
 
@@ -193,41 +175,32 @@ misaligned_loop:
     #endif
 
     #platform dependent load instructions
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.ld a3, 0(a2)   // Load doubleword
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCB_SUPPORTED 
-                c.lbu a3, 0(a2) //load byte
-            #endif
-        #endif
+    #if __riscv_xlen == 64
+        c.ld a3, 0(a2)   // Load doubleword (compressed)
     #endif
 
-
     //Stack pointer variants:
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.lwsp  a3, 0(sp)       // Compressed load word using stack-pointer offset
-    #endif 
+    #endif
 
     #ifdef ZCD_SUPPORTED
         c.fldsp f9, 0(sp)       // Compressed floating-point load doubleword from sp
-    #endif 
+    #endif
 
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.ldsp  a3, 0(sp)       // Compressed load doubleword using stack-pointer offset
-                c.fld   f9, 0(a2)       // Compressed floating-point load doubleword
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                c.flw   f9, 0(a2)       // Compressed floating-point load word
-                c.flwsp f9, 0(sp)       // Compressed floating-point load word from sp
-            #endif
+    #if __riscv_xlen == 64
+        #ifdef ZCD_SUPPORTED
+            c.ldsp  a3, 0(sp)       // Compressed load doubleword using stack-pointer offset
+            c.fld   f9, 0(a2)       // Compressed floating-point load doubleword
+        #endif
+    #elif __riscv_xlen == 32
+        #ifdef ZCF_SUPPORTED
+            c.flw   f9, 0(a2)       // Compressed floating-point load word
+            c.flwsp f9, 0(sp)       // Compressed floating-point load word from sp
         #endif
     #endif
+
+
 
 /////////////////////////////////
 //cp_store_access_fault
@@ -238,11 +211,11 @@ misaligned_loop:
     la      sp, ACCESS_FAULT_ADDRESS
 
     // Test compressed integer load instructions:
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.sw    a3, 0(a2)     # compressed store word
-    #endif 
+    #endif
 
-    #ifdef ZCB_SUPPORTED 
+    #ifdef ZCB_SUPPORTED
         c.sh    a3, 0(a2)     # compressed store halfword
         c.sb    a3, 0(a2)
     #endif
@@ -250,48 +223,38 @@ misaligned_loop:
     //Test shared compressed floating instruction
     #ifdef ZCF_SUPPORTED
         c.fsd   f8, 0(a2)    # compressed load floating-point doubleword
+        c.fsw   f8, 0(a2)    # compressed load floating-point word
     #endif
 
     #platform dependent load instructions
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            #ifdef ZCD_SUPPORTED
-                c.sd    a3, 0(a2)     # compressed load doubleword (RV64 only)
-            #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                c.fsw   f8, 0(a2)    # compressed load floating-point word
-            #endif
+    #if __riscv_xlen == 64
+        #ifdef ZCD_SUPPORTED
+            c.sd    a3, 0(a2)     # compressed load doubleword (RV64 only)
         #endif
     #endif
 
 
     #------------------------
     # Now test the _sp forms.
-    #ifdef ZCA_SUPPORTED 
+    #ifdef ZCA_SUPPORTED
         c.swsp  a3, 0(sp)
-    #endif  
+    #endif
 
     #ifdef ZCF_SUPPORTED
         c.fsdsp f8, 0(sp)
+        c.fswsp f8, 0(sp)
     #endif
 
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
+    #if __riscv_xlen == 64
             #ifdef ZCD_SUPPORTED
                 c.sdsp  a3, 0(sp)
             #endif
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                c.fswsp f8, 0(sp)
-            #endif
-        #endif
     #endif
 
 /////////////////////////////////
 //cp_ebreak
 ////////////////////////////////
-#ifdef ZCA_SUPPORTED 
+#ifdef ZCA_SUPPORTED
     c.ebreak
 #endif
 

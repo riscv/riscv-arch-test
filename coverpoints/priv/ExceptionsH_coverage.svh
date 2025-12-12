@@ -674,7 +674,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    cp_virtual_instr_vs_s_vma_instr: cross sfence_sinval_vma, hstatus_vtvm_enabled, priv_mode_vs;
    cp_virtual_instr_vs_satp: cross csrr, satp, hstatus_vtvm_enabled, priv_mode_vs;
    `ifdef XLEN32
-       cp_virtual_instr_vs_rv32_instreth_mcounter: cross csrr, instret, rv32_mcounter_enabled_ir, rv32_hcounter, priv_mode_vs;
+       cp_virtual_instr_vs_rv32_instreth_mcounter: cross csrr, instret, rv32_mcounter_enabled_ir, rv32_hcounter_disabled_ir, priv_mode_vs;
        cp_virtual_instr_vs_rv32_hedelegh: cross csrr, rv32_hedelegh, priv_mode_vs;
    `endif
 

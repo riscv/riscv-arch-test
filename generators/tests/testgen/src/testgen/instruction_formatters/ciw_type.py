@@ -12,28 +12,33 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 
 @add_instruction_formatter(
-    "CIW", required_params={"rs1", "rs1val", "rd", "immval"}, imm_bits=10, imm_signed=False, imm_nonzero=True
+    "CIW",
+    required_params={"rs1val", "rd", "immval"},
+    reg_range=range(8, 16),
+    imm_bits=10,
+    imm_signed=False,
+    imm_nonzero=True,
 )
 def format_ciw_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CIW-type instruction."""
-    assert params.rs1 is not None and params.rs1val is not None
+    assert params.rs1val is not None
     assert params.rd is not None
     assert params.immval is not None
+    # CIW immediates must be multiples of 4 (bottom 2 bits are zero)
+    params.immval = params.immval & ~0b11
+    if instr_name != "c.addi4spn":
+        raise ValueError(f"Unexpected CIW-type instruction: {instr_name}. CIW is currently only used for c.addi4spn.")
     setup: list[str] = []
-    if instr_name == "c.addi4spn":
+    if params.rd != 2:
         # For c.addi4spn, rs1 must be x2 (sp)
-        test_data.int_regs.return_register(params.rs1)
-        params.rs1 = 2
-        setup.append(
-            test_data.int_regs.consume_registers([params.rs1]) if params.rd != 2 else ""
-        )  # ensure sp is reserved
-    setup = [
-        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
-    ]
+        setup.append(test_data.int_regs.consume_registers([2]))  # ensure sp is reserved
+    setup.append(load_int_reg("sp", 2, params.rs1val, test_data))
     test = [
-        f"{instr_name} x{params.rd}, x{params.rs1}, {params.immval} # perform operation",
+        f"{instr_name} x{params.rd}, sp, {params.immval} # perform operation",
     ]
     check = [write_sigupd(params.rd, test_data, "int")]
+    if params.rd != 2:
+        test_data.int_regs.return_register(2)  # release sp
     return (setup, test, check)

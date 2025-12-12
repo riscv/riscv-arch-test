@@ -233,6 +233,41 @@ class IntegerRegisterFile(RegisterFile):
 class FloatRegisterFile(RegisterFile):
     """Class to represent a floating point register file."""
 
+    default_temp_reg = 4
+    temp_regs = (4, 7, 12)  # Limit legal temp registers to simplify failure handler
+
     def __init__(self) -> None:
         # There are always 32 floating point registers
         super().__init__(32)
+        self._temp_reg = self.default_temp_reg
+        super().consume_registers([self._temp_reg])
+
+    def destroy(self) -> None:
+        self.return_register(self._temp_reg)
+        super().destroy()
+
+    @property
+    def temp_reg(self) -> int:
+        return self._temp_reg
+
+    def consume_registers(self, regs: list[int]) -> None:
+        """Mark registers as used/unavailable, handling special register conflicts.
+
+        If any of the requested registers conflict with special registers (temp_reg),
+        this method will automatically relocate the special registers and return the
+        necessary assembly code to perform the move.
+        """
+
+        # Check for conflicts with special registers
+        temp_conflict = self._temp_reg in regs
+
+        # Return special registers to pool if they conflict
+        if temp_conflict:
+            self.return_register(self._temp_reg)
+        # Consume requested registers
+        super().consume_registers(regs)
+
+        # Reallocate special registers to new locations
+        if temp_conflict:
+            # Restrict link register to specific set
+            self._temp_reg = self.get_register(reg_range=[reg for reg in self.temp_regs])

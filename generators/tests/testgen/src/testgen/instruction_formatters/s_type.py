@@ -12,26 +12,28 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 
 @add_instruction_formatter(
-    "S", required_params={"rd", "rs1", "rs1val", "rs2", "rs2val", "immval"}, imm_bits=12, imm_signed=True
+    "S", required_params={"temp_reg", "rs1", "rs1val", "rs2", "rs2val", "immval"}, imm_bits=12, imm_signed=True
 )
 def format_s_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format S-type instruction."""
-    assert params.rs1 is not None
-    assert params.rs2 is not None and params.rs2val is not None
-    assert params.rd is not None
-    assert params.immval is not None
+    assert params.rs1 is not None, "rs1 must be provided for S-type instructions"
+    assert params.rs2 is not None and params.rs2val is not None, (
+        "rs2 and rs2val must be provided for S-type instructions"
+    )
+    assert params.temp_reg is not None, "temp_reg must be provided for S-type instructions"
+    assert params.immval is not None, "immval must be provided for S-type instructions"
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    # Ensure rd is not x0
-    if params.rd == 0:
-        test_data.int_regs.return_register(params.rd)
-        params.rd = test_data.int_regs.get_register(exclude_regs=[0])
+    # Ensure temp_reg is not x0
+    if params.temp_reg == 0:
+        test_data.int_regs.return_register(params.temp_reg)
+        params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     # Move sig_reg to rs1
     setup = [
@@ -64,13 +66,13 @@ def format_s_type(
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
     check.extend(
         [
-            f"addi x{sig_reg}, x{sig_reg}, REGWIDTH # increment signature pointer",
+            f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
             "#ifdef SELFCHECK",
-            f"LREG x{params.rd}, -REGWIDTH(x{sig_reg}) # load stored value for checking",
-            write_sigupd(params.rd, test_data),
+            f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
+            write_sigupd(params.temp_reg, test_data),
             "#else",
             f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
-            f"addi x{sig_reg}, x{sig_reg}, REGWIDTH # adjust base address for offset",
+            f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
             "# nops to ensure length matches SELFCHECK",
             "nop",
             "nop",

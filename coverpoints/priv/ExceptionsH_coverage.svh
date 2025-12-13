@@ -123,7 +123,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    imm_bit_1: coverpoint ins.current.imm[1] {
-       bins one = {'1};
+       bins one = {1};
    }
 
 

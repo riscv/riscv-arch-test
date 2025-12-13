@@ -56,7 +56,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.rs2 is not None and params.rs2val is not None, (
                 "rs2 and rs2val must be provided for S-type instructions"
             )
-            assert params.rd is not None, "rd must be provided for S-type instructions"
+            assert params.temp_reg is not None, "temp_reg must be provided for S-type instructions"
             assert params.immval is not None, "immval must be provided for S-type instructions"
 
             test_data.sigupd_count += 3  # extra space in signature region is needed
@@ -68,13 +68,13 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
                     "#ifdef SELFCHECK",
-                    f"LREG x{params.rd}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
-                    write_sigupd(params.rd, test_data),
+                    f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
+                    write_sigupd(params.temp_reg, test_data),
                     # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
-                    f"LREG x{params.rd}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking"
+                    f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking"
                     if test_data.xlen == 32
                     else "",
-                    write_sigupd(params.rd, test_data) if test_data.xlen == 32 else "",
+                    write_sigupd(params.temp_reg, test_data) if test_data.xlen == 32 else "",
                     "#else",
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # repeat store so it is available for checking",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # adjust base address for offset",

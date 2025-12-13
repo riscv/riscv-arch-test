@@ -76,8 +76,8 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    hlv_hsv_instr: coverpoint ins.current.insn {
-       wildcard bins hlv_w = {32'b0110100_00000_?????100?????_1110011};
-       wildcard bins hsv_w = {32'b0110101_??????????10000000_1110011};
+       wildcard bins hlv_w = {32'b0110100_00000_?????_100_?????_1110011};
+       wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
    }
 
 
@@ -143,7 +143,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    // Previous modes for VU delegation to VS
    priv_mode_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins VU_mode = {3'b101};
+       bins VU_mode = {3'b100};
    }
 
 
@@ -333,7 +333,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    hypervisor_instr: coverpoint ins.current.insn {
        wildcard bins hlv_w = {32'b011010000000?????100?????1110011};
        wildcard bins hlvx_wu = {32'b011010000011?????100?????1110011};
-       wildcard bins hsv_w = {32'b0110101??????????100000001110011};
+       wildcard bins hsv_w = {32'b0110101_??????????_100_00000_1110011};
        wildcard bins hfence_vvma = {32'b0010001??????????000000001110011};
        wildcard bins hfence_gvma = {32'b0110001??????????000000001110011};
    }
@@ -367,7 +367,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    hlv_hlvx_hsv_instr: coverpoint ins.current.insn {
        wildcard bins hlv_w = {32'b011010000000?????100?????1110011};
        wildcard bins hlvx_w = {32'b011010000011?????100?????1110011};
-       wildcard bins hsv_w = {32'b0110101??????????100000001110011};
+       wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
    }
 
 
@@ -690,8 +690,8 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    cp_virtual_instr_vu_sret: cross sret, priv_mode_vu;
    cp_virtual_instr_vu_sfence_vma: cross sfence_vma, priv_mode_vu;
    `ifdef XLEN32
-       cp_virtual_instr_vs_rv32_instreth_1: cross csrr, instret, rv32_hcounter_disabled_ir, rv32_scounter_enabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
-       cp_virtual_instr_vs_rv32_instreth_2: cross csrr, instret, rv32_hcounter_enabled_ir, rv32_scounter_disabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
+       cp_virtual_instr_vu_rv32_instreth_1: cross csrr, instret, rv32_hcounter_disabled_ir, rv32_scounter_enabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
+       cp_virtual_instr_vu_rv32_instreth_2: cross csrr, instret, rv32_hcounter_enabled_ir, rv32_scounter_disabled_ir, rv32_mcounter_enabled_ir, priv_mode_vu;
        cp_virtual_instr_vu_rv32_hedelegh: cross csrr, rv32_hedelegh, priv_mode_vu;
    `endif
 

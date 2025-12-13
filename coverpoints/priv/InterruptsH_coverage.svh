@@ -12,19 +12,13 @@
 
 `define COVER_INTERRUPTSH
 
-// Provide a fallback slice for VGEIN so the file compiles even if the platform
-// has not defined one. Override with a platform definition when available.
-`ifndef HSTATUS_VGEIN_SLICE
-`define HSTATUS_VGEIN_SLICE 5:0
-`endif
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Machine mode coverpoints
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 covergroup InterruptsH_M_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks
     mstatus_mie_one: coverpoint ins.current.csr[12'h300][3] {
@@ -101,13 +95,11 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mideleg:      cross priv_mode_m, mideleg_vsi_ro;
-`ifdef GILEN_GT_0
-    cp_mideleg_gei:  cross priv_mode_m, mideleg_sgei_ro;
-`endif
     cp_mie:          cross priv_mode_m, csrr_mie, hie_vsi_ones, mie_vsi_ones;
     cp_mip:          cross priv_mode_m, csrr_mip, hvip_vsi_ones, mip_vsi_ones;
     cp_nohint_m:     cross priv_mode_m, mstatus_mie_one, hideleg_vsi_zero, mie_vsi_ones, mip_vsi_ones;
 `ifdef GILEN_GT_0
+    cp_mideleg_gei:  cross priv_mode_m, mideleg_sgei_ro;
     cp_mie_gilen:    cross priv_mode_m, csrr_mie, hie_vsi_ones, hie_sgeie_one, mie_sgeie_one;
     cp_mip_gilen:    cross priv_mode_m, csrr_mip, hgeip_nonzero, mip_sgeip_one;
 `else
@@ -121,9 +113,13 @@ endgroup
 
 covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks
+    priv_mode_hs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+        type_option.weight = 0;
+        bins HS_mode = {3'b001};
+    }
     sstatus_sie: coverpoint ins.current.csr[12'h100][1] {
         bins zero = {0};
         bins one  = {1};
@@ -308,32 +304,32 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
         bins zero = {'0};
     }
     hstatus_vgein_nonzero: coverpoint ins.current.csr[12'h600][`HSTATUS_VGEIN_SLICE] {
-        bins nonzero = default;
+        bins nonzero = {[6'd1:6'd63]};
     }
 
     // main coverpoints
-    cp_trigger_vsei:      cross priv_mode_s, sstatus_sie, hideleg_vseie, hie_vseie, hvip_vseip;
-    cp_trigger_vsti:      cross priv_mode_s, sstatus_sie, hideleg_vstie, hie_vstie, hvip_vstip;
-    cp_trigger_vssi:      cross priv_mode_s, sstatus_sie, hideleg_vssie, hie_vssie, hvip_vssip;
-    cp_hip_write:         cross priv_mode_s, hip_vssip, hvip_vssip;
-    cp_priority_en_vsi:   cross priv_mode_s, sstatus_sie_one, hideleg_vsi_zero, hie_vsi, hvip_vsi;
-    cp_priority_deleg_vsi: cross priv_mode_s, sstatus_sie_one, hie_vsi_ones, hideleg_vsi, hvip_vsi;
-    cp_priority_s:        cross priv_mode_s, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_vsi_ones, sie_ones, sip_priority;
-    cp_hie:               cross priv_mode_s, csrr_hie, csrr_vsie, mie_vsi_ones, hideleg_vsi;
-    cp_hip:               cross priv_mode_s, csrr_hip, csrr_vsip, mip_vsi_ones, hideleg_vsi;
-    cp_hideleg:           cross priv_mode_s, hideleg_vsi_ones;
-    cp_vsie:              cross priv_mode_s, csrr_vsie, hideleg_vsi, hie_vsi;
-    cp_vsip:              cross priv_mode_s, csrr_vsip, hideleg_vsi, hip_vsi;
-    cp_vsie_from_hie:     cross priv_mode_s, csrr_hie, hideleg_vsi, vsie_vsi_ones;
+    cp_trigger_vsei:      cross priv_mode_hs, sstatus_sie, hideleg_vseie, hie_vseie, hvip_vseip;
+    cp_trigger_vsti:      cross priv_mode_hs, sstatus_sie, hideleg_vstie, hie_vstie, hvip_vstip;
+    cp_trigger_vssi:      cross priv_mode_hs, sstatus_sie, hideleg_vssie, hie_vssie, hvip_vssip;
+    cp_hip_write:         cross priv_mode_hs, hip_vssip, hvip_vssip;
+    cp_priority_en_vsi:   cross priv_mode_hs, sstatus_sie_one, hideleg_vsi_zero, hie_vsi, hvip_vsi;
+    cp_priority_deleg_vsi: cross priv_mode_hs, sstatus_sie_one, hie_vsi_ones, hideleg_vsi, hvip_vsi;
+    cp_priority_s:        cross priv_mode_hs, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_vsi_ones, sie_ones, sip_priority;
+    cp_hie:               cross priv_mode_hs, csrr_hie, csrr_vsie, mie_vsi_ones, hideleg_vsi;
+    cp_hip:               cross priv_mode_hs, csrr_hip, csrr_vsip, mip_vsi_ones, hideleg_vsi;
+    cp_hideleg:           cross priv_mode_hs, hideleg_vsi_ones;
+    cp_vsie:              cross priv_mode_hs, csrr_vsie, hideleg_vsi, hie_vsi;
+    cp_vsip:              cross priv_mode_hs, csrr_vsip, hideleg_vsi, hip_vsi;
+    cp_vsie_from_hie:     cross priv_mode_hs, csrr_hie, hideleg_vsi, vsie_vsi_ones;
 
 `ifdef GILEN_GT_0
-    cp_hie_gilen:         cross priv_mode_s, csrr_hie, mie_vsi_ones, hie_sgeie_one;
-    cp_priority_sgei:     cross priv_mode_s, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_sgeie_one, hgeip_nonzero, hgeie_nonzero;
-    cp_priority_sgei_s:   cross priv_mode_s, sstatus_sie_one, hideleg_vsi_zero, hvip_vsi_ones, hie_sgeie_one, sie_ones, sip_priority, hgeip_nonzero, hgeie_nonzero;
-    cp_trigger_sgei:      cross priv_mode_s, sstatus_sie, hgeip_nonzero, hgeie_nonzero, hie_sgeie_one;
-    cp_hgeie:             cross priv_mode_s, sstatus_sie_zero, hgeip_nonzero, hgeie_nonzero;
-    cp_trigger_vsei_hgeip: cross priv_mode_s, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_nonzero, hgeie_nonzero, hstatus_vgein_nonzero;
-    cp_hgeip0:            cross priv_mode_s, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_all, hgeie_all, hstatus_vgein_zero;
+    cp_hie_gilen:         cross priv_mode_hs, csrr_hie, mie_vsi_ones, hie_sgeie_one;
+    cp_priority_sgei:     cross priv_mode_hs, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_sgeie_one, hgeip_nonzero, hgeie_nonzero;
+    cp_priority_sgei_s:   cross priv_mode_hs, sstatus_sie_one, hideleg_vsi_zero, hvip_vsi_ones, hie_sgeie_one, sie_ones, sip_priority, hgeip_nonzero, hgeie_nonzero;
+    cp_trigger_sgei:      cross priv_mode_hs, sstatus_sie, hgeip_nonzero, hgeie_nonzero, hie_sgeie_one;
+    cp_hgeie:             cross priv_mode_hs, sstatus_sie_zero, hgeip_nonzero, hgeie_nonzero;
+    cp_trigger_vsei_hgeip: cross priv_mode_hs, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_nonzero, hgeie_nonzero, hstatus_vgein_nonzero;
+    cp_hgeip0:            cross priv_mode_hs, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_all, hgeie_all, hstatus_vgein_zero;
 `endif
 endgroup
 
@@ -343,11 +339,11 @@ endgroup
 
 covergroup InterruptsH_VS_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    priv_mode_vs: coverpoint ins.prev.mode {
+    priv_mode_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
         type_option.weight = 0;
-        bins VS_mode = {2'b01};
+        bins VS_mode = {3'b101};
     }
     vsstatus_sie: coverpoint ins.current.csr[12'h200][1] {
         bins zero = {0};
@@ -432,11 +428,11 @@ endgroup
 
 covergroup InterruptsH_VU_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    priv_mode_vu: coverpoint ins.prev.mode {
+    priv_mode_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
         type_option.weight = 0;
-        bins VU_mode = {2'b00};
+        bins VU_mode = {3'b100};
     }
     mstatus_mie_zero: coverpoint ins.current.csr[12'h300][3] {
         bins zero = {0};
@@ -505,8 +501,12 @@ endgroup
 
 covergroup InterruptsH_U_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    `include "coverage/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
+    priv_mode_u_novirt: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
+        type_option.weight = 0;
+        bins U_mode = {3'b000};
+    }
     hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
                                   ins.current.csr[12'h603][6],
                                   ins.current.csr[12'h603][2]} {
@@ -524,7 +524,7 @@ covergroup InterruptsH_U_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_vsint_disabled_u: cross priv_mode_u, hideleg_vsi_ones, hip_vsi_ones, hie_vsi_ones;
+    cp_vsint_disabled_u: cross priv_mode_u_novirt, hideleg_vsi_ones, hip_vsi_ones, hie_vsi_ones;
 endgroup
 
 function void interruptsh_sample(int hart, int issue, ins_t ins);

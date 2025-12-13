@@ -32,6 +32,11 @@
 `define SAMPLE_PREV 1
 `define NUM_RVVI_DATA 5
 
+// Default slice for hstatus.VGEIN unless a platform overrides it
+`ifndef HSTATUS_VGEIN_SLICE
+`define HSTATUS_VGEIN_SLICE 5:0
+`endif
+
 // -----------------------------------------------------------------------------
 // Physical Memory Protection (PMP) Specific Macros
 // -----------------------------------------------------------------------------

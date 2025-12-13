@@ -663,15 +663,23 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    // HTINST/XTINST crosses - transformed instruction encoding
+   // Execute if Zca not supported?
    cp_xtinst_instr_misaligned_1: cross jal, pc_bit_1, imm_bit_1, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
    cp_xtinst_instr_misaligned_2: cross jalr, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
+
    cp_xtinst_instr_access: cross jalr, illegal_address, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
    cp_xtinst_illegalinstr: cross illegalops, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
    cp_xtinst_breakpoint: cross ebreak, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
    cp_xtinst_virtinstr: cross csrr, vstval, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
+
+   // Execute if Zicclsm not supported?
    cp_xtinst_load_misaligned: cross loadops, adr_LSBs, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
+
    cp_xtinst_load_access: cross loadops, illegal_address, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
+
+   // Execute if Zicclsm not supported?
    cp_xtinst_store_misaligned: cross storeops, adr_LSBs, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
+
    cp_xtinst_store_access: cross storeops, illegal_address, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
    cp_xtinst_ecall: cross ecall, priv_mode_vs, medeleg_all_bits_except_ecall, hedeleg_disabled;
 

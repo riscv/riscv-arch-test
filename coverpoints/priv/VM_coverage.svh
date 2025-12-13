@@ -158,7 +158,7 @@ covergroup VM_satp_cg with function sample(ins_t ins);
     access_u: cross priv_mode_u, Mcause, tvm_mstatus { //sat.1
         ignore_bins ig1 = binsof(Mcause.no_exception);
     }
-    access_m_s: cross priv_mode_ms, ins, Mcause, tvm_mstatus { //sat.1
+    access_m_s: cross priv_mode_m_s, ins, Mcause, tvm_mstatus { //sat.1
         ignore_bins ig1 = binsof(Mcause.illegal_ins);
     }
 endgroup

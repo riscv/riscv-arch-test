@@ -103,14 +103,6 @@ covergroup EndianH_endian_cg with function sample(ins_t ins);
     vsstatus_ube: coverpoint ins.current.csr[12'h200][6] { // ube is vsstatus[6]
     }
 
-    // VS and VU modes
-    priv_mode_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins VS_mode = {3'b101};
-    }
-
-    priv_mode_vu: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins VU_mode = {3'b100};
-    }
 
 
     // main coverpoints

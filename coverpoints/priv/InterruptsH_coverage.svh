@@ -21,10 +21,10 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks
-    mstatus_mie_one: coverpoint ins.current.csr[12'h300][3] {
+    mstatus_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie") {
         bins one = {1};
     }
-    mstatus_mie_zero: coverpoint ins.current.csr[12'h300][3] {
+    mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie") {
         bins zero = {0};
     }
     csrr_mie: coverpoint ins.current.insn {
@@ -33,63 +33,63 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
     csrr_mip: coverpoint ins.current.insn {
         wildcard bins csrr = {32'b001101000100_00000_010_?????_1110011}; // csrrs rd, x0, mip
     }
-    hideleg_vsi_zero: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins zero = {3'b000};
     }
-    hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins ones = {3'b111};
     }
-    hie_vsi_zero: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins zero = {3'b000};
     }
-    hie_vsi_ones: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins ones = {3'b111};
     }
-    hie_sgeie_one: coverpoint ins.current.csr[12'h604][12] {
+    hie_sgeie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "sgeie") {
         bins one = {1};
     }
-    hvip_vsi_ones: coverpoint {ins.current.csr[12'h645][10],
-                               ins.current.csr[12'h645][6],
-                               ins.current.csr[12'h645][2]} {
+    hvip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip"))} {
         bins ones = {3'b111};
     }
-    mie_vsi_ones: coverpoint {ins.current.csr[12'h304][10],
-                              ins.current.csr[12'h304][6],
-                              ins.current.csr[12'h304][2]} {
+    mie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vgeie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vssie"))} {
         bins ones = {3'b111};
     }
-    mie_sgeie_zero: coverpoint ins.current.csr[12'h304][12] {
+    mie_sgeie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "sgeie") {
         bins zero = {0};
     }
-    mie_sgeie_one: coverpoint ins.current.csr[12'h304][12] {
+    mie_sgeie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "sgeie") {
         bins one = {1};
     }
-    mip_vsi_ones: coverpoint {ins.current.csr[12'h344][10],
-                              ins.current.csr[12'h344][6],
-                              ins.current.csr[12'h344][2]} {
+    mip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vgeip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vssip"))} {
         bins ones = {3'b111};
     }
-    mip_sgeip_one: coverpoint ins.current.csr[12'h344][12] {
+    mip_sgeip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "sgeip") {
         bins one = {1};
     }
-    hgeip_nonzero: coverpoint ins.current.csr[12'he12][15:0] {
+    hgeip_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins nonzero = default;
         bins zero    = {16'h0000};
     }
-    mideleg_vsi_ro: coverpoint {ins.current.csr[12'h303][10],
-                                ins.current.csr[12'h303][6],
-                                ins.current.csr[12'h303][2]} {
+    mideleg_vsi_ro: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "vgeip")),
+                                1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "vstip")),
+                                1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "vssip"))} {
         bins ro_one = {3'b111};
     }
-    mideleg_sgei_ro: coverpoint ins.current.csr[12'h303][12] {
+    mideleg_sgei_ro: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "sgeip") {
         bins one = {1};
     }
 
@@ -116,159 +116,155 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks
-    priv_mode_hs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-        type_option.weight = 0;
-        bins HS_mode = {3'b001};
-    }
-    sstatus_sie: coverpoint ins.current.csr[12'h100][1] {
+    sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie") {
         bins zero = {0};
         bins one  = {1};
     }
-    sstatus_sie_zero: coverpoint ins.current.csr[12'h100][1] {
+    sstatus_sie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie") {
         bins zero = {0};
     }
-    sstatus_sie_one: coverpoint ins.current.csr[12'h100][1] {
+    sstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie") {
         bins one = {1};
     }
-    hideleg_vsi: coverpoint {ins.current.csr[12'h603][10],
-                              ins.current.csr[12'h603][6],
-                              ins.current.csr[12'h603][2]} {
+    hideleg_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hideleg_vsi_zero: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins zero = {3'b000};
     }
-    hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins ones = {3'b111};
     }
-    hideleg_vseie: coverpoint ins.current.csr[12'h603][10] {
+    hideleg_vseie: coverpoint 1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")) {
         bins zero = {0};
         bins one  = {1};
     }
-    hideleg_vstie: coverpoint ins.current.csr[12'h603][6] {
+    hideleg_vstie: coverpoint 1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")) {
         bins zero = {0};
         bins one  = {1};
     }
-    hideleg_vssie: coverpoint ins.current.csr[12'h603][2] {
+    hideleg_vssie: coverpoint 1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip")) {
         bins zero = {0};
         bins one  = {1};
     }
-    hie_vsi: coverpoint {ins.current.csr[12'h604][10],
-                         ins.current.csr[12'h604][6],
-                         ins.current.csr[12'h604][2]} {
+    hie_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         // autofill all 2^3 combinations
     }
-    hie_vsi_zero: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins zero = {3'b000};
     }
-    hie_vsi_ones: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins ones = {3'b111};
     }
-    hie_vseie: coverpoint ins.current.csr[12'h604][10] {
+    hie_vseie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie") {
         bins zero = {0};
         bins one  = {1};
     }
-    hie_vstie: coverpoint ins.current.csr[12'h604][6] {
+    hie_vstie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie") {
         bins zero = {0};
         bins one  = {1};
     }
-    hie_vssie: coverpoint ins.current.csr[12'h604][2] {
+    hie_vssie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie") {
         bins zero = {0};
         bins one  = {1};
     }
-    hie_sgeie_one: coverpoint ins.current.csr[12'h604][12] {
+    hie_sgeie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "sgeie") {
         bins one = {1};
     }
-    hvip_vsi: coverpoint {ins.current.csr[12'h645][10],
-                          ins.current.csr[12'h645][6],
-                          ins.current.csr[12'h645][2]} {
+    hvip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hvip_vsi_zero: coverpoint {ins.current.csr[12'h645][10],
-                               ins.current.csr[12'h645][6],
-                               ins.current.csr[12'h645][2]} {
+    hvip_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip"))} {
         bins zero = {3'b000};
     }
-    hvip_vsi_ones: coverpoint {ins.current.csr[12'h645][10],
-                               ins.current.csr[12'h645][6],
-                               ins.current.csr[12'h645][2]} {
+    hvip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip"))} {
         bins ones = {3'b111};
     }
-    hvip_vseip: coverpoint ins.current.csr[12'h645][10] {
+    hvip_vseip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip") {
         bins zero = {0};
         bins one  = {1};
     }
-    hvip_vstip: coverpoint ins.current.csr[12'h645][6] {
+    hvip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip") {
         bins zero = {0};
         bins one  = {1};
     }
-    hvip_vssip: coverpoint ins.current.csr[12'h645][2] {
+    hvip_vssip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip") {
         bins zero = {0};
         bins one  = {1};
     }
-    hip_vsi: coverpoint {ins.current.csr[12'h644][10],
-                         ins.current.csr[12'h644][6],
-                         ins.current.csr[12'h644][2]} {
+    hip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hip_vsi_ones: coverpoint {ins.current.csr[12'h644][10],
-                              ins.current.csr[12'h644][6],
-                              ins.current.csr[12'h644][2]} {
+    hip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         bins ones = {3'b111};
     }
-    hip_vseip: coverpoint ins.current.csr[12'h644][10] {
+    hip_vseip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip") {
         bins zero = {0};
         bins one  = {1};
     }
-    hip_vstip: coverpoint ins.current.csr[12'h644][6] {
+    hip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip") {
         bins zero = {0};
         bins one  = {1};
     }
-    hip_vssip: coverpoint ins.current.csr[12'h644][2] {
+    hip_vssip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip") {
         bins zero = {0};
         bins one  = {1};
     }
-    mie_vsi_ones: coverpoint {ins.current.csr[12'h304][10],
-                              ins.current.csr[12'h304][6],
-                              ins.current.csr[12'h304][2]} {
+    mie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vgeie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "vssie"))} {
         bins ones = {3'b111};
     }
-    mip_vsi_ones: coverpoint {ins.current.csr[12'h344][10],
-                              ins.current.csr[12'h344][6],
-                              ins.current.csr[12'h344][2]} {
+    mip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vgeip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "vssip"))} {
         bins ones = {3'b111};
     }
-    vsie_vsi: coverpoint {ins.current.csr[12'h204][10],
-                          ins.current.csr[12'h204][6],
-                          ins.current.csr[12'h204][2]} {
+    vsie_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "seie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "stie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "ssie"))} {
         // autofill all 2^3 combinations
     }
-    vsie_vsi_ones: coverpoint {ins.current.csr[12'h204][10],
-                               ins.current.csr[12'h204][6],
-                               ins.current.csr[12'h204][2]} {
+    vsie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "seie")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "stie")),
+                               1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsie", "ssie"))} {
         bins ones = {3'b111};
     }
-    vsip_vsi: coverpoint {ins.current.csr[12'h244][10],
-                          ins.current.csr[12'h244][6],
-                          ins.current.csr[12'h244][2]} {
+    vsip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsip", "seip")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsip", "stip")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsip", "ssip"))} {
         // autofill all 2^3 combinations
     }
-    sie_ones: coverpoint {ins.current.csr[12'h104][9],
-                          ins.current.csr[12'h104][5],
-                          ins.current.csr[12'h104][1]} {
+    sie_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sie", "seie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sie", "stie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sie", "ssie"))} {
         bins ones = {3'b111};
     }
-    sip_priority: coverpoint {ins.current.csr[12'h144][9],
-                              ins.current.csr[12'h144][5],
-                              ins.current.csr[12'h144][1]} {
+    sip_priority: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sip", "seip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sip", "stip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sip", "ssip"))} {
         bins none = {3'b000};
         bins ssip = {3'b001};
         bins stip = {3'b010};
@@ -286,24 +282,24 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     csrr_vsip: coverpoint ins.current.insn {
         wildcard bins csrr = {32'b001001000100_00000_010_?????_1110011};
     }
-    hgeie_nonzero: coverpoint ins.current.csr[12'h607][15:0] {
+    hgeie_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "enable")[15:0] {
         bins nonzero = default;
         bins zero    = {16'h0000};
     }
-    hgeie_all: coverpoint ins.current.csr[12'h607][15:0] {
+    hgeie_all: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "enable")[15:0] {
         bins all_set = {16'hffff};
     }
-    hgeip_nonzero: coverpoint ins.current.csr[12'he12][15:0] {
+    hgeip_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins nonzero = default;
         bins zero    = {16'h0000};
     }
-    hgeip_all: coverpoint ins.current.csr[12'he12][15:0] {
+    hgeip_all: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins all_set = {16'hffff};
     }
-    hstatus_vgein_zero: coverpoint ins.current.csr[12'h600][`HSTATUS_VGEIN_SLICE] {
+    hstatus_vgein_zero: coverpoint ins.prev.csr[12'h600][`HSTATUS_VGEIN_SLICE] {
         bins zero = {'0};
     }
-    hstatus_vgein_nonzero: coverpoint ins.current.csr[12'h600][`HSTATUS_VGEIN_SLICE] {
+    hstatus_vgein_nonzero: coverpoint ins.prev.csr[12'h600][`HSTATUS_VGEIN_SLICE] {
         bins nonzero = {[6'd1:6'd63]};
     }
 
@@ -341,59 +337,61 @@ covergroup InterruptsH_VS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    priv_mode_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-        type_option.weight = 0;
-        bins VS_mode = {3'b101};
-    }
-    vsstatus_sie: coverpoint ins.current.csr[12'h200][1] {
+    // building blocks
+    vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sie") {
         bins zero = {0};
         bins one  = {1};
     }
-    vsstatus_sie_one: coverpoint ins.current.csr[12'h200][1] {
+    vsstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "sie") {
         bins one = {1};
     }
-    mstatus_mie_zero: coverpoint ins.current.csr[12'h300][3] {
+    mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie") {
         bins zero = {0};
     }
-    hideleg_vsi: coverpoint {ins.current.csr[12'h603][10],
-                              ins.current.csr[12'h603][6],
-                              ins.current.csr[12'h603][2]} {
+    hideleg_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins ones = {3'b111};
     }
-    hie_vsi: coverpoint {ins.current.csr[12'h604][10],
-                         ins.current.csr[12'h604][6],
-                         ins.current.csr[12'h604][2]} {
+    hie_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         // autofill all 2^3 combinations
     }
-    hie_vsi_ones: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins ones = {3'b111};
     }
-    hip_vsi: coverpoint {ins.current.csr[12'h644][10],
-                         ins.current.csr[12'h644][6],
-                         ins.current.csr[12'h644][2]} {
+    hip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hip_vsi_ones: coverpoint {ins.current.csr[12'h644][10],
-                              ins.current.csr[12'h644][6],
-                              ins.current.csr[12'h644][2]} {
+    hip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         bins ones = {3'b111};
     }
-    mie_ones: coverpoint ins.current.csr[12'h304][15:0] {
-        wildcard bins ones = {16'b????1?1?1?1?1?1?};
+    mie_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "meie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "seie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "stie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "msee")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie"))} {
+        bins ones = {6'b111111};
     }
-    mip_walking: coverpoint {ins.current.csr[12'h344][11],
-                             ins.current.csr[12'h344][9],
-                             ins.current.csr[12'h344][7],
-                             ins.current.csr[12'h344][5],
-                             ins.current.csr[12'h344][3],
-                             ins.current.csr[12'h344][1]} {
+    mip_walking: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "meip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "seip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mtip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "stip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "msip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip"))} {
         bins meip = {6'b100000};
         bins seip = {6'b010000};
         bins mtip = {6'b001000};
@@ -401,14 +399,14 @@ covergroup InterruptsH_VS_cg with function sample(ins_t ins);
         bins msip = {6'b000010};
         bins ssip = {6'b000001};
     }
-    mideleg_ones_zeros: coverpoint ins.current.csr[12'h303][15:0] {
+    mideleg_ones_zeros: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, 12'h303, "mideleg_raw", "")[15:0] {
         bins ones  = {16'b0000001000100010};
         bins zeros = {16'b0000000000000000};
     }
-    mtinst_zero: coverpoint ins.current.csr[12'h34a][31:0] {
+    mtinst_zero: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, 12'h34a, "mtinst", "")[31:0] {
         bins zero = {32'h00000000};
     }
-    htinst_zero: coverpoint ins.current.csr[12'h64a][31:0] {
+    htinst_zero: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, 12'h64a, "htinst", "")[31:0] {
         bins zero = {32'h00000000};
     }
 
@@ -430,52 +428,54 @@ covergroup InterruptsH_VU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    priv_mode_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-        type_option.weight = 0;
-        bins VU_mode = {3'b100};
-    }
-    mstatus_mie_zero: coverpoint ins.current.csr[12'h300][3] {
+    // building blocks
+    mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie") {
         bins zero = {0};
     }
-    hideleg_vsi: coverpoint {ins.current.csr[12'h603][10],
-                              ins.current.csr[12'h603][6],
-                              ins.current.csr[12'h603][2]} {
+    hideleg_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins ones = {3'b111};
     }
-    hie_vsi: coverpoint {ins.current.csr[12'h604][10],
-                         ins.current.csr[12'h604][6],
-                         ins.current.csr[12'h604][2]} {
+    hie_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         // autofill all 2^3 combinations
     }
-    hie_vsi_ones: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins ones = {3'b111};
     }
-    hip_vsi: coverpoint {ins.current.csr[12'h644][10],
-                         ins.current.csr[12'h644][6],
-                         ins.current.csr[12'h644][2]} {
+    hip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                         1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         // autofill all 2^3 combinations
     }
-    hip_vsi_ones: coverpoint {ins.current.csr[12'h644][10],
-                              ins.current.csr[12'h644][6],
-                              ins.current.csr[12'h644][2]} {
+    hip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         bins ones = {3'b111};
     }
-    mie_ones: coverpoint ins.current.csr[12'h304][15:0] {
-        wildcard bins ones = {16'b????1?1?1?1?1?1?};
+    mie_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "meie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "seie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "stie")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "msee")),
+                          1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "ssie"))} {
+        bins ones = {6'b111111};
     }
-    mip_walking: coverpoint {ins.current.csr[12'h344][11],
-                             ins.current.csr[12'h344][9],
-                             ins.current.csr[12'h344][7],
-                             ins.current.csr[12'h344][5],
-                             ins.current.csr[12'h344][3],
-                             ins.current.csr[12'h344][1]} {
+    mip_walking: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "meip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "seip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mtip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "stip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "msip")),
+                             1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "ssip"))} {
         bins meip = {6'b100000};
         bins seip = {6'b010000};
         bins mtip = {6'b001000};
@@ -483,7 +483,7 @@ covergroup InterruptsH_VU_cg with function sample(ins_t ins);
         bins msip = {6'b000010};
         bins ssip = {6'b000001};
     }
-    mideleg_ones_zeros: coverpoint ins.current.csr[12'h303][15:0] {
+    mideleg_ones_zeros: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, 12'h303, "mideleg_raw", "")[15:0] {
         bins ones  = {16'b0000001000100010};
         bins zeros = {16'b0000000000000000};
     }
@@ -507,19 +507,19 @@ covergroup InterruptsH_U_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins U_mode = {3'b000};
     }
-    hideleg_vsi_ones: coverpoint {ins.current.csr[12'h603][10],
-                                  ins.current.csr[12'h603][6],
-                                  ins.current.csr[12'h603][2]} {
+    hideleg_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
+                                  1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vssip"))} {
         bins ones = {3'b111};
     }
-    hie_vsi_ones: coverpoint {ins.current.csr[12'h604][10],
-                              ins.current.csr[12'h604][6],
-                              ins.current.csr[12'h604][2]} {
+    hie_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vseie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vssie"))} {
         bins ones = {3'b111};
     }
-    hip_vsi_ones: coverpoint {ins.current.csr[12'h644][10],
-                              ins.current.csr[12'h644][6],
-                              ins.current.csr[12'h644][2]} {
+    hip_vsi_ones: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vstip")),
+                              1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vssip"))} {
         bins ones = {3'b111};
     }
 

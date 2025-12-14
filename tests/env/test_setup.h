@@ -19,7 +19,7 @@
 
   // Include model specific boot code
   RVMODEL_BOOT
-  RVMODEL_IO_INIT
+  RVMODEL_IO_INIT(T1, T2, T3)
 
   // Disable assembler/linker optimizations
   .option push

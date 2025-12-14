@@ -7,6 +7,15 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
 
+##### STARTUP #####
+
+# Perform boot operations. Can be empty.
+#define RVMODEL_BOOT
+
+##### TERMINATION #####
+
+# Terminate test with a pass indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
   li x1, 1                ;\
   la t0, tohost           ;\
@@ -16,6 +25,8 @@
   self_loop_pass:         ;\
     j self_loop_pass      ;\
 
+# Terminate test with a fail indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 3                ;\
   la t0, tohost           ;\
@@ -25,21 +36,24 @@
   self_loop_fail:         ;\
     j self_loop_fail      ;\
 
-#define RVMODEL_BOOT
+##### IO #####
 
+# Example UART implementation.
 # Expects a PC16550-compatible UART.
 # Change these addresses to match your memory map
 .EQU UART_BASE_ADDR, 0x10000000
 .EQU UART_THR, (UART_BASE_ADDR + 0)
-.EQU UART_RBR, (UART_BASE_ADDR + 0)
 .EQU UART_LCR, (UART_BASE_ADDR + 3)
 .EQU UART_LSR, (UART_BASE_ADDR + 5)
 
-#define RVMODEL_IO_INIT    \
+# Initialization steps needed prior to writing to the console
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
+#define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
   uart_init:                ;\
-    li T1, UART_LCR         ; /* Load address of UART LCR */    \
-    li T2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
-    sb T2, 0(T1)            ; \
+    li _R1, UART_LCR         ; /* Load address of UART LCR */    \
+    li _R2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
+    sb _R2, 0(_R1)           ; \
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -62,12 +76,40 @@
   j 1b                       ;/* Loop */             \
 3:
 
+##### Machine Interrupts #####
+
+#define RVMODEL_SET_MEXT_INT
+
+#define RVMODEL_CLR_MEXT_INT
+
+#define RVMODEL_SET_MTIMER_INT
+
+#define RVMODEL_CLR_MTIMER_INT
+
+#define RVMODEL_SET_MTIMER_INT_SOON
+
 #define RVMODEL_SET_MSW_INT
 
-#define RVMODEL_CLEAR_MSW_INT
+#define RVMODEL_CLR_MSW_INT
 
-#define RVMODEL_CLEAR_MTIMER_INT
+##### Supervisor Interrupts #####
 
-#define RVMODEL_CLEAR_MEXT_INT
+#define RVMODEL_SET_SEXT_INT
+
+#define RVMODEL_CLR_SEXT_INT
+
+#define RVMODEL_SET_STIMER_INT
+
+#define RVMODEL_CLR_STIMER_INT
+
+#define RVMODEL_SET_STIMER_INT_SOON
+
+#define RVMODEL_SET_SSW_INT
+
+#define RVMODEL_CLR_SSW_INT
+
+##### Hypervisor Interrupts #####
+
+#define RVMODEL_WRITE_GEIP
 
 #endif // _COMPLIANCE_MODEL_H

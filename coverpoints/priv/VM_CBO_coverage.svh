@@ -270,13 +270,13 @@ covergroup VM_CBO_exceptions_cg with function sample(ins_t ins);
 
     // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
     // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
-    nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_su {
+    nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
         `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
         `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
         `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
     }
 
-    PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_su {
+    PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
         `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
         `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
         `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif

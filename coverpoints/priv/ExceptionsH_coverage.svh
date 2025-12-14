@@ -36,31 +36,8 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   loadops: coverpoint ins.current.insn {
-       wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
-       wildcard bins lh  = {32'b????????????_?????_001_?????_0000011};
-       wildcard bins lhu = {32'b????????????_?????_101_?????_0000011};
-       wildcard bins lb  = {32'b????????????_?????_000_?????_0000011};
-       wildcard bins lbu = {32'b????????????_?????_100_?????_0000011};
-       `ifdef XLEN64
-           wildcard bins ld  = {32'b????????????_?????_011_?????_0000011};
-           wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
-       `endif
-   }
-
-
    loadop: coverpoint ins.current.insn {
        wildcard bins lw  = {32'b????????????_?????_010_?????_0000011};
-   }
-
-
-   storeops: coverpoint ins.current.insn {
-       wildcard bins sb = {32'b????????????_?????_000_?????_0100011};
-       wildcard bins sh = {32'b????????????_?????_001_?????_0100011};
-       wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
-       `ifdef XLEN64
-           wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
-       `endif
    }
 
 
@@ -115,7 +92,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~32'h3) == (`ACCESS_FAULT_ADDRESS & ~32'h3) {
+   address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
         bins legal = {0};
         bins illegal = {1};
     }
@@ -147,46 +124,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    }
 
 
-   // ============================================================================
-   // PRIVILEGE MODE COVERPOINTS
-   // ============================================================================
-
-   // All 5 privilege modes (M/HS/VS/VU/U)
-   priv_modes_m_hs_vs_u_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins M_mode  = {3'b011};
-       bins HS_mode = {3'b001};
-       bins VS_mode = {3'b101};
-       bins U_mode  = {3'b000};
-       bins VU_mode = {3'b100};
-   }
-
-
-   // VU priv modes
-   priv_mode_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins VU_mode = {3'b100};
-   }
-
-
-   // VS-mode only (for virtual instruction exceptions)
-   priv_mode_vs: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins VS_mode = {3'b101};
-   }
-
-
-   // VS/VU priv modes
-   priv_mode_vs_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins VS_mode = {3'b101};
-       bins VU_mode = {3'b100};
-   }
-
-
-   // VS/U/VU priv modes
-   priv_mode_vs_u_vu: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
-       bins VS_mode = {3'b101};
-       bins U_mode  = {3'b000};
-       bins VU_mode = {3'b100};
-   }
-
 
    // ============================================================================
    // DELEGATION REGISTER COVERPOINTS
@@ -195,14 +132,14 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // Machine Exception Delegation Register (medeleg)
    medeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") {
        bins zeros = {32'h00000000};
-       wildcard bins ones = {32'b????_????_1111_??10_1111_0111_1111_111?};
+       wildcard bins ones = {32'b????_????_1111_??00_1011_0111_1111_111?};
    }
 
 
    // Hypervisor Exception Delegation Register (hedeleg)
    hedeleg_delegation: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg") {
        bins zeros = {32'h00000000};
-       wildcard bins ones = {32'b0000_11?0_1?11_0001_1111_111?};
+       wildcard bins ones = {32'b????_????_0000_1100_1011_0001_1111_111?};
        `ifdef ZICCLSM_SUPPORTED
             bins walk_1_bit0 = {32'h00000001}; // Instruction address misaligned
        `endif
@@ -243,7 +180,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // All medeleg bits 0 or 1 (except M/HS-mode ECALL bits 11, 9)
    medeleg_except_ecall: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg") {
        bins all_zero = {32'h00000000};
-       wildcard bins all_one_except_m_hs_ecall = {32'b????_????_1111_??10_1111_0101_1111_111?};
+       wildcard bins all_one_except_m_hs_ecall = {32'b????_????_1111_??00_1011_0101_1111_111?};
    }
 
 
@@ -300,20 +237,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    // ============================================================================
-   // COUNTER DELEGATION COVERPOINTS
-   // ============================================================================
-
-   hcounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
-       bins disabled = {0};
-   }
-
-
-   mcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "counteren")[2]) {
-       bins enabled = {1};
-   }
-
-
-   // ============================================================================
    // HYPERVISOR INSTRUCTION COVERPOINTS
    // ============================================================================
 
@@ -356,7 +279,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
        wildcard bins hsv_h  = {32'b0110011??????????100000001110011};
        wildcard bins hsv_w  = {32'b0110101??????????100000001110011};
        `ifdef XLEN64
-           wildcard bins hsv_d = {2'b0110111??????????100000001110011};
+           wildcard bins hsv_d = {32'b0110111??????????100000001110011};
        `endif
    }
 
@@ -467,7 +390,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
        bins tvm_disabled = {0};
-       bins tvm_enabled = {0};
+       bins tvm_enabled = {1};
    }
 
 
@@ -491,6 +414,15 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    hcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
+       bins enabled = {1};
+   }
+
+   hcounteren_disabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "counteren")[2]) {
+       bins disabled = {0};
+   }
+
+
+   mcounteren_enabled_ir: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "counteren")[2]) {
        bins enabled = {1};
    }
 
@@ -520,14 +452,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
             bins zero = {0};
         }
    `endif
-
-
-   // ============================================================================
-   // ADDRESS ALIGNMENT COVERPOINTS
-   // ============================================================================
-
-   address_lsbs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
-   }
 
 
    // ============================================================================
@@ -574,16 +498,16 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // ============================================================================
 
    // cp_hedeleg crosses
-   cp_hedeleg_instr_access_fault: cross jalr, illegal_address, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_load_access_fault: cross loadop, illegal_address, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_store_access_fault: cross storeop, illegal_address, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_instr_misaligned_branch: cross branch, pc_bit_1, imm_bit_1, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_instr_misaligned_jal: cross jal, pc_bit_1, imm_bit_1, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_instr_misaligned_jalr: cross jalr, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_load_misaligned: cross loadop, adr_LSBs, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_store_misaligned: cross storeop, adr_LSBs, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_illegal_instruction: cross illegalops, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
-   cp_hedeleg_breakpoint: cross ebreak, priv_modes_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_instr_access_fault: cross jalr, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_load_access_fault: cross loadop, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_store_access_fault: cross storeop, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_instr_misaligned_branch: cross branch, pc_bit_1, imm_bit_1, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_instr_misaligned_jal: cross jal, pc_bit_1, imm_bit_1, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_instr_misaligned_jalr: cross jalr, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_load_misaligned: cross loadop, adr_LSBs, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_store_misaligned: cross storeop, adr_LSBs, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_illegal_instruction: cross illegalops, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+   cp_hedeleg_breakpoint: cross ebreak, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
 
 
    // ECALL delegation crosses
@@ -604,13 +528,13 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    cp_ecall_to_m: cross
        ecall,
-       priv_modes_m_hs_vs_u_vu,
+       priv_mode_m_hs_vs_u_vu,
        medeleg_ecall_disabled;
 
 
    cp_ebreak_to_m: cross
        ebreak,
-       priv_modes_m_hs_vs_u_vu,
+       priv_mode_m_hs_vs_u_vu,
        medeleg_ebreak_disabled;
 
 
@@ -629,7 +553,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
        hlv_hsv_instr,
        address_legality,
        addr_alignment,
-       priv_modes_m_hs_vs_u_vu,
+       priv_mode_m_hs_vs_u_vu,
        hstatus_hu;
 
 
@@ -670,19 +594,19 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
    // Privilege mode crosses
    cp_loadstore_priv: cross
        hlv_hlvx_hsv_instr,
-       priv_modes_m_hs_vs_u_vu,
+       priv_mode_m_hs_vs_u_vu,
        hstatus_hu;
 
 
    cp_hfence_priv: cross
        sfencevma_hfencevvma_hfencegvma_instr,
-       priv_modes_m_hs_vs_u_vu,
+       priv_mode_m_hs_vs_u_vu,
        mstatus_tvm,
        hstatus_vtvm;
 
 
    // HLV address misalignment crosses
-   cp_hlv_address_misaligned: cross hlv_instructions, address_lsbs, priv_mode_m;
+   cp_hlv_address_misaligned: cross hlv_instructions, adr_LSBs, priv_mode_m;
 
 
    // HLV access fault crosses
@@ -690,7 +614,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
 
    // HSV address misalignment crosses
-   cp_hsv_address_misaligned: cross hsvb_hsvh_hsvw_instructions, address_lsbs, priv_mode_m;
+   cp_hsv_address_misaligned: cross hsvb_hsvh_hsvw_instructions, adr_LSBs, priv_mode_m;
 
 
    // HSV access fault crosses
@@ -699,7 +623,7 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
 
    // HTINST/XTINST crosses - transformed instruction encoding
    // Execute if Zca not supported?
-   cp_xtinst_instr_misaligned_1: cross jal, pc_bit_1, imm_bit_1, priv_mode_vs, medeleg_except_ecall, hedeleg_disabled;
+   cp_xtinst_instr_misaligned: cross jal, pc_bit_1, imm_bit_1, priv_mode_vs, medeleg_except_ecall, hedeleg_disabled;
 
    cp_xtinst_instr_access: cross jalr, illegal_address, priv_mode_vs, medeleg_except_ecall, hedeleg_disabled;
    cp_xtinst_illegalinstr: cross illegalops, priv_mode_vs, medeleg_except_ecall, hedeleg_disabled;

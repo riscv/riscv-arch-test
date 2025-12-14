@@ -426,46 +426,6 @@ covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
        bins enabled = {1};
    }
 
-
-   // ============================================================================
-   // EXCEPTION CODE COVERPOINTS
-   // ============================================================================
-
-   instr_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd12} {
-       // Auto fill 0/1
-   }
-
-
-   load_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd13} {
-       // Auto fill 0/1
-   }
-
-
-   store_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd15} {
-       // Auto fill 0/1
-   }
-
-
-   instr_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd20} {
-       // Auto fill 0/1
-   }
-
-
-   load_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd21} {
-       // Auto fill 0/1
-   }
-
-
-   store_guest_page_fault: coverpoint {ins.current.csr[12'h342][31:0] == 32'd23} {
-       // Auto fill 0/1
-   }
-
-
-   virtual_instruction: coverpoint {ins.current.csr[12'h342][31:0] == 32'd22} {
-       // Auto fill 0/1
-   }
-
-
    // ============================================================================
    // CROSS COVERAGE
    // ============================================================================

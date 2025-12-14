@@ -143,7 +143,7 @@ module testbench;
     end
 
     // Reset all signals at the beginning of each iteration
-    {valid, insn, trap, debug_mode, pc_rdata, mode,
+    {valid, insn, trap, debug_mode, pc_rdata, mode, mode_virt,
     m_ext_intr, s_ext_intr, m_timer_intr, m_soft_intr,
     virt_adr_i, virt_adr_d, phys_adr_i, phys_adr_d,
     pte_i, pte_d, ppn_i, ppn_d, page_type_i, page_type_d,
@@ -169,6 +169,7 @@ module testbench;
           "DEBUG_MODE":     num = $sscanf(val, "%b", debug_mode);
           "PC":             num = $sscanf(val, "%h", pc_rdata);
           "MODE":           num = $sscanf(val, "%d", mode);
+          "MODE_VIRT":      num = $sscanf(val, "%d", mode_virt);
           // Interrupts
           "M_EXT_INTR":     num = $sscanf(val, "%b", m_ext_intr);
           "S_EXT_INTR":     num = $sscanf(val, "%b", s_ext_intr);
@@ -237,6 +238,7 @@ module testbench;
   assign rvvi.debug_mode[0][0] = debug_mode;
   assign rvvi.pc_rdata[0][0] = pc_rdata;
   assign rvvi.mode[0][0] = mode;
+  assign rvvi.mode_virt[0][0] = mode_virt;
 
   // Interrupts
   assign rvvi.m_ext_intr[0][0] = m_ext_intr;

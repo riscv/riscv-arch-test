@@ -463,20 +463,6 @@ covergroup ZicntrH_counters_cg with function sample(ins_t ins);
     `endif
 
 
-    // new hypervisor priv modes
-
-    priv_mode_hs: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins HS_mode = {3'b001};
-    }
-
-    priv_mode_vs: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins VS_mode = {3'b101};
-    }
-
-    priv_mode_vu: coverpoint {ins.current.mode_virt, ins.current.mode} {
-        bins VU_mode = {3'b100};
-    }
-
     `ifdef XLEN64
     cp_htimedelta: coverpoint {ins.current.csr[12'h605][63:0]} {
         bins htimedelta_zero  = {64'h0};

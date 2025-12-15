@@ -67,7 +67,7 @@
         ignore_bins c_lwsp[]  = {[14'b010_00000000000:14'b010_11111111111]}; // c.lwsp throws exceptions for bad addresses.
         bins c10b[]           = {[14'b011_00000000000:14'b011_11111111111]};
         bins illegal_c_jr     = {14'b10000000000000}; // jr illegal for rs1 = 0
-        ignore_bins c_jr      = {[14'b1000_0000000001:14'b1000_1111111111]};   // c.jr causes test program to go to random place.  This ignore excludes some instructions with insn[7:2] != 00000 that ought to be covered.  Including these would be cumbersome and illegalinstrtests.py generates test to hit them anyway, so the coverpoint is written this way for simplicty.
+        ignore_bins c_jr      = {[14'b1000_0000000001:14'b1000_1111111111]};   // c.jr causes test program to go to random place.  This ignore excludes some instructions with insn[7:2] != 00000 that ought to be covered.  Including these would be cumbersome and illegalinstrtests.py generates test to hit them anyway, so the coverpoint is written this way for simplicity.
         bins illegal_c_jalr   = {14'b1001_0000000000}; // jalr illegal for rs1 = 0
         ignore_bins c_jalr    = {[14'b1001_0000000001:14'b1001_1111111111]};   // c.jalr.  See c.jr comments above
         ignore_bins c_fsdsp[] = {[14'b101_00000000000:14'b101_11111111111]}; // c.fsdsp throws exceptions for bad addresses.

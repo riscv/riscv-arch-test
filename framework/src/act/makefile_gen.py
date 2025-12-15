@@ -311,7 +311,7 @@ def gen_coverage_targets(
                 f"\t\t{fcov_path.absolute()}\\\n"
                 f"\t\t{coverpoint_dir}\\\n"
                 f"\t\t{dut_header_dir}\\\n"
-                f'\t\t{{{coverage_group.stem.upper()}_COVERAGE}}" > {ucdb_file}.log 2>&1\n'
+                f'\t\t{{{coverage_group.stem.upper()}_COVERAGE}}" > {ucdb_file}.log\n'
             )
 
         # Generate coverage report

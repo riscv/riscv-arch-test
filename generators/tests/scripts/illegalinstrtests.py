@@ -188,6 +188,7 @@ print("\t.hword 0b0100100000000010 # test one c.lwsp")
 print("\t.hword 0b1100000000000010 # test one c.swsp")
 print("\t.hword 0b0010000000000010 # test one c.fldsp")
 print("\t.hword 0b1010000000000010 # test one c.fsdsp")
+print("\t.hword 0b1001000000000010 # test jalr with rs1 = 0")
 
 print("\t.hword 0b1000000000000010 # almost a c.jr but rs1 = 0 so should be illegal")
 print(

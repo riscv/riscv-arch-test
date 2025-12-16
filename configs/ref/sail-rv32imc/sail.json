@@ -2,13 +2,23 @@
   "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
+    "E": false,
     "writable_misa": false,
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
       "value": "0xFFFF_FFFF"
     },
-    "mtval_has_illegal_instruction_bits": true
+    "xtval_nonzero": {
+      "illegal_instruction": true,
+      "breakpoint": true,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "fetch_address_misaligned": true,
+      "fetch_access_fault": true
+    }
   },
   "memory": {
     "pmp": {
@@ -26,7 +36,82 @@
     },
     "translation": {
       "dirty_update": false
-    }
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "cacheable": true,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_fault": "NoFault",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "attributes": {
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_fault": "AlignmentFault",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "attributes": {
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_fault": "NoFault",
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": true
+        },
+        "include_in_device_tree": true
+      }
+    ]
   },
   "platform": {
     "vendorid": 1538,
@@ -35,14 +120,6 @@
     "hartid": 0,
     "reset_vector": 4096,
     "cache_block_size_exp": 6,
-    "ram": {
-      "base": 2147483648,
-      "size": 2147483648
-    },
-    "rom": {
-      "base": 4096,
-      "size": 4096
-    },
     "clint": {
       "base": 33554432,
       "size": 786432
@@ -65,8 +142,8 @@
       "supported": false
     },
     "V": {
-      "supported": false,
-      "vlen_exp": 9,
+      "support_level": "Disabled",
+      "vlen_exp": 7,
       "elen_exp": 6,
       "vl_use_ceil": false
     },
@@ -82,7 +159,13 @@
     "Zicbom": {
       "supported": false
     },
+    "Zicbop": {
+      "supported": false
+    },
     "Zicboz": {
+      "supported": false
+    },
+    "Zicfilp": {
       "supported": false
     },
     "Zicond": {
@@ -95,6 +178,12 @@
       "supported": true
     },
     "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
       "supported": false
     },
     "Zihpm": {
@@ -128,6 +217,9 @@
       }
     },
     "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
       "supported": false
     },
     "Zfh": {
@@ -206,6 +298,18 @@
     "Zhinxmin": {
       "supported": false
     },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": false
+    },
+    "Zvfhmin": {
+      "supported": false
+    },
     "Zvbb": {
       "supported": false
     },
@@ -246,6 +350,9 @@
       "supported": true
     },
     "Svinval": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
       "supported": false
     },
     "Svbare": {

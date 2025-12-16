@@ -32,24 +32,26 @@ def format_l_type(
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    setup = [f"mv x{params.rs1}, x{test_data.int_regs.link_reg} # move data_ptr to rs1"]
+    setup: list[str] = []
 
     # Handle special case where offset is -2048 (can't represent +2048 in 12 bits)
     if params.immval == -2048:
         setup.extend(
             [
-                f"addi x{params.rs1}, x{params.rs1}, 2047 # increment by 2047",
+                f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, 2047 # copy data_ptr to rs1 and increment by 2047",
                 f"addi x{params.rs1}, x{params.rs1}, 1    # increment by 1 more for total +2048 offset",
             ]
         )
     else:
-        setup.append(f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset")
+        setup.append(
+            f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # copy data_ptr to rs1 and adjust for offset"
+        )
 
     test = [
         f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load ({to_hex(params.temp_val, test_data.xlen)})",
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
-        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
+        f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, SIG_STRIDE # increment data_ptr",
     ]
     return (setup, test, check)

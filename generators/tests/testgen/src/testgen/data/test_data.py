@@ -32,6 +32,8 @@ class TestData:
 
         Args:
             test_config: Immutable test configuration
+            extension: RISC-V extension this test is exercising
+            instr_name: Instruction name this test is exercising
         """
         self._config = test_config
         self._extension = extension

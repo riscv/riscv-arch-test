@@ -51,7 +51,7 @@ def format_cils_type(
 
     setup.extend(
         [
-            f"mv sp, x{test_data.int_regs.link_reg} # move data_ptr to sp",
+            f"mv sp, x{test_data.int_regs.data_reg} # move data_ptr to sp",
             f"addi sp, sp, {-params.immval} # adjust base address for load",
         ]
     )
@@ -60,7 +60,7 @@ def format_cils_type(
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
-        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
+        f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, SIG_STRIDE # increment data_ptr",
     ]
     # Return sp if it was allocated specially for this testcase
     if params.rd != 2:

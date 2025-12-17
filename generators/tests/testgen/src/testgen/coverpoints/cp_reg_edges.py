@@ -10,7 +10,7 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
 from testgen.utils.edges import get_general_edges, get_orcb_edges
 from testgen.utils.param_generator import generate_random_params
 
@@ -32,7 +32,7 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val)
         desc = f"{coverpoint} (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -52,7 +52,7 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=edge_val)
         desc = f"{coverpoint} (Test source rs2 value = {test_data.xlen_format_str.format(edge_val)})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -74,7 +74,7 @@ def make_cr_rs1_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             desc = f"{coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})"
             test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-            test_data.int_regs.return_registers(params.used_int_regs)
+            return_test_regs(test_data, params)
 
     return test_lines
 
@@ -113,6 +113,6 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
                     "4: # done with test",
                 ]
             )
-            test_data.int_regs.return_registers(params.used_int_regs)
+            return_test_regs(test_data, params)
 
     return test_lines

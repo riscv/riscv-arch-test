@@ -10,6 +10,7 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.common import return_test_regs
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -35,7 +36,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg)
         desc = f"{coverpoint} (Test rd = rs1 = x{reg})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -62,7 +63,7 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         params = generate_random_params(test_data, instr_type, rd=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs2 = x{reg})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -89,7 +90,7 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         params = generate_random_params(test_data, instr_type, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rs1 = rs2 = x{reg})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -114,6 +115,6 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
         params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs1 = rs2 = x{reg})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines

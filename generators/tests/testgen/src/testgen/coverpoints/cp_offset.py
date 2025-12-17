@@ -9,7 +9,7 @@
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
-from testgen.utils.common import write_sigupd
+from testgen.utils.common import return_test_regs, write_sigupd
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -84,7 +84,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         test_data.int_regs.return_register(temp_reg)
 
     test_data.int_regs.return_register(check_reg)
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
 
     if coverpoint == "cp_offset_jalr":
         test_lines.extend(make_offset_lsbs(instr_name, instr_type, coverpoint, test_data))
@@ -119,7 +119,7 @@ def make_offset_j(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         write_sigupd(check_reg, test_data),
     ]
     test_data.int_regs.return_register(check_reg)
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
     return test_lines
 
 
@@ -189,6 +189,6 @@ def make_offset_lsbs(instr_name: str, instr_type: str, coverpoint: str, test_dat
             ]
         )
 
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
 
     return test_lines

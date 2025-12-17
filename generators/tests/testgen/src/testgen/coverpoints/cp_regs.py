@@ -10,6 +10,7 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.common import return_test_regs
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -35,7 +36,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         params = generate_random_params(test_data, instr_type, rd=rd)
         desc = f"{coverpoint} (Test destination rd = x{rd})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -65,7 +66,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         params = generate_random_params(test_data, instr_type, rs1=rs1)
         desc = f"{coverpoint} (Test source rs1 = x{rs1})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -92,6 +93,6 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         params = generate_random_params(test_data, instr_type, rs2=rs2)
         desc = f"{coverpoint} (Test source rs2 = x{rs2})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines

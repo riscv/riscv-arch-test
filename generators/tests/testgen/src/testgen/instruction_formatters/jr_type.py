@@ -8,7 +8,7 @@
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import write_sigupd
+from testgen.utils.common import return_test_regs, write_sigupd
 
 
 @add_instruction_formatter("JR", required_params={"rd", "rs1", "rs2", "immval"}, imm_bits=12, imm_signed=True)
@@ -54,5 +54,5 @@ def format_jr_type(
         write_sigupd(params.rs2, test_data, "int"),
     ]
     test_data.int_regs.return_register(temp_reg)
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
     return (setup, test, check)

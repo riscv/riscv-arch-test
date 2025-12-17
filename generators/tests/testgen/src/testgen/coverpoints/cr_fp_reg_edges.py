@@ -22,7 +22,7 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     if coverpoint == "cr_fs1_fs2_edges":
         edges1 = FLOAT_EDGES.single
         edges2 = FLOAT_EDGES.single
-    elif coverpoint == "cr_fs1_fs2_edges_frm":
+    elif coverpoint == "cr_fs1_fs2_edges_frm" or coverpoint == "cr_fs1_fs2_edges_frm4":
         edges1 = FLOAT_EDGES.single
         edges2 = FLOAT_EDGES.single
         cross_frm = True
@@ -51,6 +51,52 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
             #         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
             #         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
             #         desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}, fcsr.frm = {frm_mode})"
+            #         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+            #         return_test_regs(test_data, params)
+
+    return test_lines
+
+
+@add_coverpoint_generator("cr_fs1_fs3_edges")
+def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+    """Generate tests for cross-product of fs1 and fs3 edge values."""
+    cross_frm = False
+    if coverpoint == "cr_fs1_fs3_edges":
+        edges1 = FLOAT_EDGES.single
+        edges2 = FLOAT_EDGES.single
+    elif coverpoint == "cr_fs1_fs3_edges_frm" or coverpoint == "cr_fs1_fs3_edges_frm4":
+        edges1 = FLOAT_EDGES.single
+        edges2 = FLOAT_EDGES.single
+        cross_frm = True
+    else:
+        raise ValueError(f"Unknown cr_fs1_fs3_edges coverpoint variant: {coverpoint} for {instr_name}")
+
+    return [
+        "# TODO: Including this coverpoint makes the test too long for the linker. Need to split the test into multiple files."
+    ]
+
+    frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
+
+    test_lines: list[str] = []
+    for edge_val1 in edges1:
+        for edge_val2 in edges2:
+            # Explicit rounding modes (if needed)
+            for frm_mode in frm_modes:
+                test_data.add_testcase_string(coverpoint)
+                test_lines.append("")
+                params = generate_random_params(
+                    test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs3val=edge_val2, frm=frm_mode
+                )
+                desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
+                test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+                return_test_regs(test_data, params)
+            # Dynamic rounding modes
+            # if cross_frm:
+            #     for frm_mode in (4, 3, 2, 1, 0):  # csr frm modes 0-4, end at 0 so the rest of the test continues in rne
+            #         test_data.add_testcase_string(coverpoint)
+            #         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
+            #         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
+            #         desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}, fcsr.frm = {frm_mode})"
             #         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
             #         return_test_regs(test_data, params)
 

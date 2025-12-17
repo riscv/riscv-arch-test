@@ -17,7 +17,7 @@ from testgen.utils.param_generator import generate_random_params
 @add_coverpoint_generator("cp_frm")
 def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for frm values."""
-    if coverpoint not in ["cp_frm_3"]:
+    if coverpoint not in ["cp_frm_2", "cp_frm_3", "cp_frm_4"]:  # TODO: Why are these variants needed?
         raise ValueError(f"Unknown cp_frm coverpoint variant: {coverpoint} for {instr_name}")
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup")

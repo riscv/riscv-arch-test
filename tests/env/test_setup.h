@@ -50,7 +50,7 @@
       RVTEST_SIGUPD_NOPS
     #endif
     // Initialize test data pointer
-    LA(x4, rvtest_data_begin)
+    LA(x6, rvtest_data_begin)
 
     #ifdef RVTEST_VECTOR
       RVTEST_V_ENABLE(x5, x6)

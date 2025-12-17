@@ -87,7 +87,7 @@
 #ifdef SELFCHECK
   #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
     FLREG _F_TEMP_REG, 0(_SIG_PTR)                         ;\
-    beq _F_TEMP_REG, _FR, 1f                                ;\
+    beq _F_TEMP_REG, _FR, 1f                               ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     1:                                                     ;\
     csrr _LINK_REG, fcsr                                   ;\

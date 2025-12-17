@@ -31,13 +31,13 @@ def to_hex(value: int, bits: int) -> str:
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
     test_data.add_test_data_value(val)
-    return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.link_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
+    return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.data_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
 def load_float_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load a floating point register with a specific value."""
     test_data.add_test_data_value(val)
-    return f"RVTEST_TESTDATA_LOAD_FLOAT(x{test_data.int_regs.link_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
+    return f"RVTEST_TESTDATA_LOAD_FLOAT(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
 
 
 def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:

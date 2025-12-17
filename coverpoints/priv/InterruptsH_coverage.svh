@@ -27,11 +27,14 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
     mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie") {
         bins zero = {0};
     }
-    csrr_mie: coverpoint ins.current.insn {
-        wildcard bins csrr = {32'b001100000100_00000_010_?????_1110011}; // csrrs rd, x0, mie
+    csrr_any: coverpoint ins.current.insn {
+        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
     }
-    csrr_mip: coverpoint ins.current.insn {
-        wildcard bins csrr = {32'b001101000100_00000_010_?????_1110011}; // csrrs rd, x0, mip
+    csr_read_addr: coverpoint ins.current.insn[31:20] {
+        bins mie = {12'h304};
+        bins mip = {12'h344};
+        bins hie = {12'h604};
+        bins hip = {12'h644};
     }
     hideleg_vsi_zero: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vgeip")),
                                   1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")),
@@ -82,7 +85,6 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
     }
     hgeip_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins nonzero = default;
-        bins zero    = {16'h0000};
     }
     mideleg_vsi_ro: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "vgeip")),
                                 1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "vstip")),
@@ -95,15 +97,14 @@ covergroup InterruptsH_M_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_mideleg:      cross priv_mode_m, mideleg_vsi_ro;
-    cp_mie:          cross priv_mode_m, csrr_mie, hie_vsi_ones, mie_vsi_ones;
-    cp_mip:          cross priv_mode_m, csrr_mip, hvip_vsi_ones, mip_vsi_ones;
+    cp_mie:          cross priv_mode_m, csrr_any, csr_read_addr, hie_vsi_ones, mie_vsi_ones;
+    cp_mip:          cross priv_mode_m, csrr_any, csr_read_addr, hvip_vsi_ones, mip_vsi_ones;
     cp_nohint_m:     cross priv_mode_m, mstatus_mie_one, hideleg_vsi_zero, mie_vsi_ones, mip_vsi_ones;
 `ifdef GILEN_GT_0
-    cp_mideleg_gei:  cross priv_mode_m, mideleg_sgei_ro;
-    cp_mie_gilen:    cross priv_mode_m, csrr_mie, hie_vsi_ones, hie_sgeie_one, mie_sgeie_one;
-    cp_mip_gilen:    cross priv_mode_m, csrr_mip, hgeip_nonzero, mip_sgeip_one;
+    cp_mie_gilen:    cross priv_mode_m, csrr_any, csr_read_addr, hie_vsi_ones, hie_sgeie_one, mie_sgeie_one;
+    cp_mip_gilen:    cross priv_mode_m, csrr_any, csr_read_addr, hgeip_nonzero, mip_sgeip_one;
 `else
-    cp_mie_gilen:    cross priv_mode_m, csrr_mie, hie_vsi_zero, hie_sgeie_one, mie_sgeie_zero;
+    cp_mie_gilen:    cross priv_mode_m, csrr_any, csr_read_addr, hie_vsi_zero, hie_sgeie_one, mie_sgeie_zero;
 `endif
 endgroup
 
@@ -198,16 +199,13 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
                                1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip"))} {
         bins ones = {3'b111};
     }
-    hvip_vseip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip") {
-        bins zero = {0};
+    hvip_vseip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vseip") {
         bins one  = {1};
     }
-    hvip_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip") {
-        bins zero = {0};
+    hvip_vstip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vstip") {
         bins one  = {1};
     }
-    hvip_vssip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip") {
-        bins zero = {0};
+    hvip_vssip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "vssip") {
         bins one  = {1};
     }
     hip_vsi: coverpoint {1'(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hip", "vseip")),
@@ -284,14 +282,27 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     }
     hgeie_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "enable")[15:0] {
         bins nonzero = default;
-        bins zero    = {16'h0000};
     }
     hgeie_all: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "enable")[15:0] {
         bins all_set = {16'hffff};
     }
+    hgeie_onehot: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "enable")[15:0] {
+        bins single_bit[] = {16'h0001,16'h0002,16'h0004,16'h0008,
+                             16'h0010,16'h0020,16'h0040,16'h0080,
+                             16'h0100,16'h0200,16'h0400,16'h0800,
+                             16'h1000,16'h2000,16'h4000,16'h8000};
+    }
+    hgeip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
+        bins zero = {16'h0000};
+    }
     hgeip_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins nonzero = default;
-        bins zero    = {16'h0000};
+    }
+    hgeip_onehot: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
+        bins single_bit[] = {16'h0001,16'h0002,16'h0004,16'h0008,
+                             16'h0010,16'h0020,16'h0040,16'h0080,
+                             16'h0100,16'h0200,16'h0400,16'h0800,
+                             16'h1000,16'h2000,16'h4000,16'h8000};
     }
     hgeip_all: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "pending")[15:0] {
         bins all_set = {16'hffff};
@@ -304,10 +315,10 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_trigger_vsei:      cross priv_mode_hs, sstatus_sie, hideleg_vseie, hie_vseie, hvip_vseip;
-    cp_trigger_vsti:      cross priv_mode_hs, sstatus_sie, hideleg_vstie, hie_vstie, hvip_vstip;
-    cp_trigger_vssi:      cross priv_mode_hs, sstatus_sie, hideleg_vssie, hie_vssie, hvip_vssip;
-    cp_hip_write:         cross priv_mode_hs, hip_vssip, hvip_vssip;
+    cp_trigger_vsei:      cross priv_mode_hs, sstatus_sie, hideleg_vseie, hie_vseie, hvip_vseip_one;
+    cp_trigger_vsti:      cross priv_mode_hs, sstatus_sie, hideleg_vstie, hie_vstie, hvip_vstip_one;
+    cp_trigger_vssi:      cross priv_mode_hs, sstatus_sie, hideleg_vssie, hie_vssie, hvip_vssip_one;
+    cp_hip_write:         cross priv_mode_hs, hip_vssip, hvip_vssip_one;
     cp_priority_en_vsi:   cross priv_mode_hs, sstatus_sie_one, hideleg_vsi_zero, hie_vsi, hvip_vsi;
     cp_priority_deleg_vsi: cross priv_mode_hs, sstatus_sie_one, hie_vsi_ones, hideleg_vsi, hvip_vsi;
     cp_priority_s:        cross priv_mode_hs, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_vsi_ones, sie_ones, sip_priority;
@@ -319,11 +330,11 @@ covergroup InterruptsH_HS_cg with function sample(ins_t ins);
     cp_vsie_from_hie:     cross priv_mode_hs, csrr_hie, hideleg_vsi, vsie_vsi_ones;
 
 `ifdef GILEN_GT_0
-    cp_hie_gilen:         cross priv_mode_hs, csrr_hie, mie_vsi_ones, hie_sgeie_one;
+    cp_hie_gilen:         cross priv_mode_hs, csrr_any, csr_read_addr, mie_vsi_ones, mie_sgeie_one, hie_sgeie_one;
     cp_priority_sgei:     cross priv_mode_hs, sstatus_sie_one, hvip_vsi_ones, hideleg_vsi_zero, hie_sgeie_one, hgeip_nonzero, hgeie_nonzero;
     cp_priority_sgei_s:   cross priv_mode_hs, sstatus_sie_one, hideleg_vsi_zero, hvip_vsi_ones, hie_sgeie_one, sie_ones, sip_priority, hgeip_nonzero, hgeie_nonzero;
     cp_trigger_sgei:      cross priv_mode_hs, sstatus_sie, hgeip_nonzero, hgeie_nonzero, hie_sgeie_one;
-    cp_hgeie:             cross priv_mode_hs, sstatus_sie_zero, hgeip_nonzero, hgeie_nonzero;
+    cp_hgeie:             cross priv_mode_hs, sstatus_sie_zero, hgeip_zero, hgeip_onehot, hgeip_all, hgeie_onehot;
     cp_trigger_vsei_hgeip: cross priv_mode_hs, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_nonzero, hgeie_nonzero, hstatus_vgein_nonzero;
     cp_hgeip0:            cross priv_mode_hs, sstatus_sie_zero, hvip_vsi_zero, hideleg_vsi_zero, hie_vsi_zero, hgeip_all, hgeie_all, hstatus_vgein_zero;
 `endif

@@ -51,7 +51,7 @@ class InstructionParams:
     immval: int | None = None
 
     # Flags
-    frm: bool = False  # Floating-point rounding mode tests
+    frm: str | None = None  # Floating-point rounding mode tests
     aqrl: str = ""  # Acquire/Release for atomic operations
 
     @property

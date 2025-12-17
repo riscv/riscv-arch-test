@@ -57,14 +57,17 @@
     #define FLREG flw
     #define FSREG fsw
     #define FREGWIDTH 4
+    #define FEQREG feq.s
 #elif FLEN==64
     #define FLREG fld
     #define FSREG fsd
     #define FREGWIDTH 8
+    #define FEQREG feq.d
 #elif FLEN==128
     #define FLREG flq
     #define FSREG fsq
     #define FREGWIDTH 16
+    #define FEQREG feq.q
 #endif
 
 #if ZFINX==1

@@ -104,7 +104,7 @@ def generate_test_data_section(test_data: TestData) -> str:
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"
+    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"  # TODO: handle Q extension
 
     for value in test_data.test_data_values:
         hex_value = to_hex(value, test_data.xlen)

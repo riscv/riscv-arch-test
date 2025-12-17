@@ -23,6 +23,7 @@ def format_fr_type(
     setup = [
         load_float_reg("fs1", params.fs1, params.fs1val, test_data),
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),
+        "fsflagsi 0b00000 # clear all fflags",
     ]
     test = [
         f"{instr_name} f{params.fd}, f{params.fs1}, f{params.fs2} # perform operation",

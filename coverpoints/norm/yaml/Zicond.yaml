@@ -3,7 +3,9 @@
 normative_rule_definitions:
   - name: czero-eqz_op
     # If rs2 contains the value zero, this instruction writes the value zero to rd.  Otherwise, this instruction copies the contents of rs1 to rd.
-    coverpoint: ["Zicond_czero_eqz_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint:
+      ["Zicond_czero_eqz_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: czero-nez_op
     # If rs2 contains a nonzero value, this instruction writes the value zero to rd.  Otherwise, this instruction copies the contents of rs1 to rd.
-    coverpoint: ["Zicond_czero_nez_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
+    coverpoint:
+      ["Zicond_czero_nez_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]

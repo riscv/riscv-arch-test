@@ -3,7 +3,7 @@
 normative_rule_definitions:
   # I rules
   - name: slliw_imm5_rsv
-  coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
+    coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
 
   # Zca rules
   - name: c-addi16sp_rsv
@@ -46,5 +46,3 @@ normative_rule_definitions:
   #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
   #- name: bexti_rsv
   #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
-
-

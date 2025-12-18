@@ -18,7 +18,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fadd_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+    coverpoint:
+      [
+        "F_fadd_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}",
+      ]
   - name: fclass-s_op
     # fThe FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.
     coverpoint: ["F_fclass_s_cg/{cp_rd, cp_fs1, cp_fs1_edges, cp_fclass}"]
@@ -47,7 +50,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_l_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_l_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]
   - name: fcvt-lu-s_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
     # and FCVT.S.LU variants convert to or from unsigned integer values. For
@@ -72,7 +78,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_lu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_lu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]
   - name: fcvt-s-l_op
     # FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed
     # integer, respectively, in integer register rs1 into a floating-point
@@ -95,7 +104,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_s_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_s_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}",
+      ]
   - name: fcvt-s-lu_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
     # and FCVT.S.LU variants convert to or from unsigned integer values. For
@@ -118,7 +130,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_s_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_s_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}",
+      ]
   - name: fcvt-s-w_op
     # FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed
     # integer, respectively, in integer register rs1 into a floating-point
@@ -140,7 +155,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_s_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_s_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}",
+      ]
   - name: fcvt-s-wu_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
     # and FCVT.S.LU variants convert to or from unsigned integer values. For
@@ -162,7 +180,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_s_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_s_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}",
+      ]
   - name: fcvt-w-s_op
     # FCVT.W.S or
     # FCVT.L.S converts a floating-point number in floating-point register
@@ -187,7 +208,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_w_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_w_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]
   - name: fcvt-wu-s_op
     # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
     # and FCVT.S.LU variants convert to or from unsigned integer values. For
@@ -211,7 +235,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fcvt_wu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fcvt_wu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]
   - name: fdiv-s_op
     # FDIV.S performs the single-precision floating-point division of rs1 by rs2
     # In each case, the result is written to rd.
@@ -227,16 +254,22 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fdiv_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+    coverpoint:
+      [
+        "F_fdiv_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm}",
+      ]
   - name: feq-s_op
     # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
-    coverpoint: ["F_feq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      ["F_feq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
   - name: fle-s_op
     # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
-    coverpoint: ["F_fle_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      ["F_fle_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
   - name: flt-s_op
     # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
-    coverpoint: ["F_flt_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      ["F_flt_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
   - name: flw_op
     # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
     coverpoint: ["F_flw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}"]
@@ -256,13 +289,18 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+    coverpoint:
+      [
+        "F_fmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+      ]
   - name: fmax-s_op
     # Floating-point minimum-number and maximum-number instructions FMIN.S and FMAX.S write, respectively, the smaller or larger of rs1 and rs2 to rd
-    coverpoint: ["F_fmax_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      ["F_fmax_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
   - name: fmin-s_op
     # Floating-point minimum-number and maximum-number instructions FMIN.S and FMAX.S write, respectively, the smaller or larger of rs1 and rs2 to rd
-    coverpoint: ["F_fmin_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      ["F_fmin_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
   - name: fmsub-s_op
     # FMSUB.S multiplies the values in rs1 and rs2, subtracts the value in rs3, and writes the final result to rd. FMSUB.S computes (rs1×rs2)−rs3.
     # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
@@ -279,7 +317,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+    coverpoint:
+      [
+        "F_fmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+      ]
   - name: fmul-s_op
     # FADD.S and FMUL.S
     # perform single-precision floating-point addition and multiplication
@@ -297,7 +338,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fmul_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+    coverpoint:
+      [
+        "F_fmul_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm}",
+      ]
   - name: fmv-w-x_op
     # FMV.W.X moves the single-precision value encoded in IEEE 754-2008 standard encoding from the lower 32 bits of integer register rs1 to the floating-point register rd. The bits are not modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved.
     coverpoint: ["F_fmv_w_x_cg/{cp_rs1, cp_rs1_edges, cp_fd}"]
@@ -320,7 +364,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fnmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+    coverpoint:
+      [
+        "F_fnmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+      ]
   - name: fnmsub-s_op
     # FNMSUB.S multiplies the values in rs1 and rs2, negates the product, adds the value in rs3, and writes the final result to rd. FNMSUB.S computes −(rs1×rs2)+rs3.
     # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
@@ -337,7 +384,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fnmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+    coverpoint:
+      [
+        "F_fnmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+      ]
   - name: fsgnj-s_op
     # Floating-point to floating-point sign-injection instructions, FSGNJ.S,
     # FSGNJN.S, and FSGNJX.S, produce a result that takes all bits except the
@@ -383,7 +433,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fsqrt_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "F_fsqrt_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]
   - name: fsub-s_op
     # FSUB.S performs the
     # single-precision floating-point subtraction of rs2 from rs1
@@ -400,7 +453,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["F_fsub_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+    coverpoint:
+      [
+        "F_fsub_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}",
+      ]
   - name: fsw_op
     # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
     coverpoint: ["F_fsw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}"]

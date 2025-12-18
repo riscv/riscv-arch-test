@@ -3,26 +3,44 @@
 normative_rule_definitions:
   - name: fleq-s_op
     # The FLEQ.S and FLTQ.S instructions are defined like the FLE.S and FLT.S instructions, except that quiet NaN inputs do not cause the invalid operation exception flag to be set.
-    coverpoint: ["ZfaF_fleq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      [
+        "ZfaF_fleq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}",
+      ]
   - name: fli-s_op
     # The FLI.S instruction loads one of 32 single-precision floating-point constants, encoded in the rs1 field, into floating-point register rd. The correspondence of rs1 field values and single-precision floating-point values is shown in . FLI.S is encoded like FMV.W.X, but with rs2=1.
     coverpoint: ["ZfaF_fli_s_cg/{cp_rs1_fli, cp_fd}"]
   - name: fltq-s_op
     # The FLEQ.S and FLTQ.S instructions are defined like the FLE.S and FLT.S instructions, except that quiet NaN inputs do not cause the invalid operation exception flag to be set.
-    coverpoint: ["ZfaF_fltq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      [
+        "ZfaF_fltq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}",
+      ]
   - name: fmaxm-s_op
     # The FMINM.S and FMAXM.S instructions are defined like the FMIN.S and FMAX.S instructions, except that if either input is NaN, the result is the canonical NaN.
-    coverpoint: ["ZfaF_fmaxm_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      [
+        "ZfaF_fmaxm_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}",
+      ]
   - name: fminm-s_op
     # The FMINM.S and FMAXM.S instructions are defined like the FMIN.S and FMAX.S instructions, except that if either input is NaN, the result is the canonical NaN.
-    coverpoint: ["ZfaF_fminm_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+    coverpoint:
+      [
+        "ZfaF_fminm_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}",
+      ]
   - name: fround-s_op
     # The FROUND.S instruction rounds the single-precision floating-point
     # number in floating-point register rs1 to an integer, according to the
     # rounding mode specified in the instruction's rm field. It then writes
     # that integer, represented as a single-precision floating-point number,
     # to floating-point register rd
-    coverpoint: ["ZfaF_fround_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_v, cp_csr_frm}"]
+    coverpoint:
+      [
+        "ZfaF_fround_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_v, cp_csr_frm}",
+      ]
   - name: froundnx-s_op
     # The FROUNDNX.S instruction is defined similarly, but it also sets the inexact exception flag if the input differs from the rounded result and is not NaN. FROUNDNX.S is encoded like FCVT.S.D, but with rs2=5.
-    coverpoint: ["ZfaF_froundnx_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+    coverpoint:
+      [
+        "ZfaF_froundnx_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+      ]

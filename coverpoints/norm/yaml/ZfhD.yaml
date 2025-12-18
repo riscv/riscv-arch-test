@@ -8,7 +8,10 @@ normative_rule_definitions:
     # floating-point number, or vice-versa, respectively
     # FCVT.S.D rounds according to the RM field; FCVT.D.S will
     # never round
-    coverpoint: ["ZfhD_fcvt_d_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fcvt_d_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_D_H}",
+      ]
   - name: fcvt-h-d_op
     # If
     # the D extension is present, FCVT.D.H or FCVT.H.D converts a
@@ -16,7 +19,10 @@ normative_rule_definitions:
     # floating-point number, or vice-versa, respectively
     # FCVT.S.D rounds according to the RM field; FCVT.D.S will
     # never round
-    coverpoint: ["ZfhD_fcvt_h_d_cg/{cp_fs1, cp_fd, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fcvt_h_d_cg/{cp_fs1, cp_fd, cp_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H}",
+      ]
   - name: fadd-h_op
     # FADD.S and FMUL.S
     # perform single-precision floating-point addition and multiplication
@@ -34,7 +40,8 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: fclass-h_op
     # fThe FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.
     # The half-precision floating-point classify instruction, FCLASS.H, is defined analogously to its single-precision counterpart, but operates on half-precision operands.
@@ -246,7 +253,8 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fdiv_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fdiv_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: feq-h_op
     # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
     # The half-precision floating-point compare instructions are defined analogously to their single-precision counterparts, but operate on half-precision operands.
@@ -278,7 +286,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fmadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fmadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}",
+      ]
   - name: fmsub-h_op
     # FMSUB.S multiplies the values in rs1 and rs2, subtracts the value in rs3, and writes the final result to rd. FMSUB.S computes (rs1×rs2)−rs3.
     # The half-precision floating-point computational instructions are defined analogously to their single-precision counterparts, but operate on half-precision operands and produce half-precision results.
@@ -295,7 +306,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fmsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fmsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}",
+      ]
   - name: fmul-h_op
     # FADD.S and FMUL.S
     # perform single-precision floating-point addition and multiplication
@@ -313,7 +327,8 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fmul_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fmul_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: fmv-h-x_op
     # FMV.D.X moves the double-precision value encoded in IEEE 754-2008
     # standard encoding from the integer register rs1 to the floating-point
@@ -346,7 +361,10 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fnmadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fnmadd_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}",
+      ]
   - name: fnmsub-h_op
     # FNMSUB.S multiplies the values in rs1 and rs2, negates the product, adds the value in rs3, and writes the final result to rd. FNMSUB.S computes −(rs1×rs2)+rs3.
     # The half-precision floating-point computational instructions are defined analogously to their single-precision counterparts, but operate on half-precision operands and produce half-precision results.
@@ -363,19 +381,25 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fnmsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}"]
+    coverpoint:
+      [
+        "ZfhD_fnmsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H, cp_fs3_badNB_D_H}",
+      ]
   - name: fsgnj-h_op
     # Floating-point to floating-point sign-injection instructions, FSGNJ.H, FSGNJN.H, and FSGNJX.H are defined analogously to the single-precision sign-injection instruction.
     # Floating-point to floating-point sign-injection instructions, FSGNJ.D, FSGNJN.D, and FSGNJX.D are defined analogously to the single-precision sign-injection instruction.
-    coverpoint: ["ZfhD_fsgnj_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fsgnj_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: fsgnjn-h_op
     # Floating-point to floating-point sign-injection instructions, FSGNJ.H, FSGNJN.H, and FSGNJX.H are defined analogously to the single-precision sign-injection instruction.
     # Floating-point to floating-point sign-injection instructions, FSGNJ.D, FSGNJN.D, and FSGNJX.D are defined analogously to the single-precision sign-injection instruction.
-    coverpoint: ["ZfhD_fsgnjn_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fsgnjn_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: fsgnjx-h_op
     # Floating-point to floating-point sign-injection instructions, FSGNJ.H, FSGNJN.H, and FSGNJX.H are defined analogously to the single-precision sign-injection instruction.
     # Floating-point to floating-point sign-injection instructions, FSGNJ.D, FSGNJN.D, and FSGNJX.D are defined analogously to the single-precision sign-injection instruction.
-    coverpoint: ["ZfhD_fsgnjx_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fsgnjx_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
   - name: fsh_op
     # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.
     coverpoint: ["ZfhD_fsh_cg/{cp_fs2_badNB_D_H}"]
@@ -411,4 +435,5 @@ normative_rule_definitions:
     # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
     # instruction's rm field selects the dynamic rounding mode held in
     # frm
-    coverpoint: ["ZfhD_fsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+    coverpoint:
+      ["ZfhD_fsub_h_cg/{cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]

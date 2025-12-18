@@ -29,6 +29,7 @@ implemented_extensions:
   - { name: Za64rs, version: "1.0.0" }
   - { name: Zfa, version: "1.0.0" }
   - { name: Zfh, version: "1.0.0" }
+  - { name: Zfhmin, version: "1.0.0" }
   - { name: Zcb, version: "1.0.0" }
   - { name: Zbc, version: "1.0.0" }
   - { name: Zkn, version: "1.0.0" }

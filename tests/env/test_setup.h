@@ -50,7 +50,7 @@
       RVTEST_SIGUPD_NOPS
     #endif
     // Initialize test data pointer
-    LA(x4, rvtest_data_begin)
+    LA(x6, rvtest_data_begin)
 
     #ifdef RVTEST_VECTOR
       RVTEST_V_ENABLE(x5, x6)
@@ -209,7 +209,7 @@
         #include SIGNATURE_FILE
       #else
         // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*(XLEN/32),4,0xdeadbeef
+        .fill SIGUPD_COUNT*SIG_STRIDE,4,0xdeadbeef
       #endif
 
     // Signature region for trap handlers

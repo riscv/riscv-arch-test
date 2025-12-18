@@ -41,14 +41,13 @@ def format_cl_type(
     test_data.add_test_data_value(params.temp_val)
 
     setup = [
-        f"mv x{params.rs1}, x{test_data.int_regs.link_reg} # move data_ptr to rs1",
-        f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for load",
+        f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",
     ]
     test = [
         f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform operation",
     ]
     check = [
         write_sigupd(params.rd, test_data, "int"),
-        f"addi x{test_data.int_regs.link_reg}, x{test_data.int_regs.link_reg}, SIG_STRIDE # increment data_ptr",
+        f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, SIG_STRIDE # increment data_ptr",
     ]
     return (setup, test, check)

@@ -26,13 +26,19 @@ Misaligned loads/stores can be handled in hardware if Zicclsm is implemented.  T
 .Zicclsm Coverpoints
 include::{testplansdir}/Zicclsm.adoc[]
 
+include::norm/Zicclsm_norm_rules.adoc[]
+
 [[t-ZicclsmF-coverpoints]]
 .ZicclsmF Coverpoints
 include::{testplansdir}/ZicclsmF.adoc[]
 
+include::norm/ZicclsmF_norm_rules.adoc[]
+
 [[t-ZicclsmZca-coverpoints]]
 .ZicclsmZca Coverpoints
 include::{testplansdir}/ZicclsmZca.adoc[]
+
+include::norm/ZicclsmZca_norm_rules.adoc[]
 
 *** add others when ready
 
@@ -42,11 +48,15 @@ include::{testplansdir}/ZicclsmZca.adoc[]
 .Zicond Instruction Coverpoints
 include::{testplansdir}/Zicond.adoc[]
 
+include::norm/Zicond_norm_rules.adoc[]
+
 ==== Zihintpause Pause Hint
 
 [[t-Zihintpause-coverpoints]]
 .Zihintpause Instruction Coverpoints
 include::{testplansdir}/Zihintpause.adoc[]
+
+include::norm/Zihintpause_norm_rules.adoc[]
 
 ==== Zihintntl Non-temporal Locality Hint
 

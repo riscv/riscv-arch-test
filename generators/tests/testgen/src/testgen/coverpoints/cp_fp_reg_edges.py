@@ -18,14 +18,14 @@ from testgen.utils.param_generator import generate_random_params
 @add_coverpoint_generator("cp_fs1_edges")
 def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for fs1 edge values."""
-    cross_frm = False
-    if coverpoint == "cp_fs1_edges":
-        edges = FLOAT_EDGES.single
-    elif coverpoint == "cp_fs1_edges_frm":
-        edges = FLOAT_EDGES.single
-        cross_frm = True
+    if coverpoint.endswith("_D"):
+        edges = FLOAT_EDGES.double
+    elif coverpoint.endswith("_H"):
+        edges = FLOAT_EDGES.half
     else:
-        raise ValueError(f"Unknown cp_fs1_edges coverpoint variant: {coverpoint} for {instr_name}")
+        edges = FLOAT_EDGES.single
+
+    cross_frm = "_frm" in coverpoint
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
@@ -45,10 +45,12 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 @add_coverpoint_generator("cp_fs2_edges")
 def make_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for fs2 edge values."""
-    if coverpoint == "cp_fs2_edges":
-        edges = FLOAT_EDGES.single
+    if coverpoint.endswith("_D"):
+        edges = FLOAT_EDGES.double
+    elif coverpoint.endswith("_H"):
+        edges = FLOAT_EDGES.half
     else:
-        raise ValueError(f"Unknown cp_fs2_edges coverpoint variant: {coverpoint} for {instr_name}")
+        edges = FLOAT_EDGES.single
 
     test_lines: list[str] = []
     for edge_val in edges:
@@ -65,10 +67,12 @@ def make_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 @add_coverpoint_generator("cp_fs3_edges")
 def make_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for fs3 edge values."""
-    if coverpoint == "cp_fs3_edges":
-        edges = FLOAT_EDGES.single
+    if coverpoint.endswith("_D"):
+        edges = FLOAT_EDGES.double
+    elif coverpoint.endswith("_H"):
+        edges = FLOAT_EDGES.half
     else:
-        raise ValueError(f"Unknown cp_fs3_edges coverpoint variant: {coverpoint} for {instr_name}")
+        edges = FLOAT_EDGES.single
 
     test_lines: list[str] = []
     for edge_val in edges:

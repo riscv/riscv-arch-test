@@ -18,16 +18,17 @@ from testgen.utils.param_generator import generate_random_params
 @add_coverpoint_generator("cr_fs1_fs2_edges")
 def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for cross-product of fs1 and fs2 edge values."""
-    cross_frm = False
-    if coverpoint == "cr_fs1_fs2_edges":
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
-    elif coverpoint == "cr_fs1_fs2_edges_frm" or coverpoint == "cr_fs1_fs2_edges_frm4":
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
-        cross_frm = True
+    if coverpoint.endswith("_D"):
+        edges1 = FLOAT_EDGES.double
+        edges2 = FLOAT_EDGES.double
+    elif coverpoint.endswith("_H"):
+        edges1 = FLOAT_EDGES.half
+        edges2 = FLOAT_EDGES.half
     else:
-        raise ValueError(f"Unknown cr_fs1_fs2_edges coverpoint variant: {coverpoint} for {instr_name}")
+        edges1 = FLOAT_EDGES.single
+        edges2 = FLOAT_EDGES.single
+
+    cross_frm = "_frm" in coverpoint
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
@@ -60,16 +61,17 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 @add_coverpoint_generator("cr_fs1_fs3_edges")
 def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for cross-product of fs1 and fs3 edge values."""
-    cross_frm = False
-    if coverpoint == "cr_fs1_fs3_edges":
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
-    elif coverpoint == "cr_fs1_fs3_edges_frm" or coverpoint == "cr_fs1_fs3_edges_frm4":
-        edges1 = FLOAT_EDGES.single
-        edges2 = FLOAT_EDGES.single
-        cross_frm = True
+    if coverpoint.endswith("_D"):
+        edges1 = FLOAT_EDGES.double
+        edges2 = FLOAT_EDGES.double
+    elif coverpoint.endswith("_H"):
+        edges1 = FLOAT_EDGES.half
+        edges2 = FLOAT_EDGES.half
     else:
-        raise ValueError(f"Unknown cr_fs1_fs3_edges coverpoint variant: {coverpoint} for {instr_name}")
+        edges1 = FLOAT_EDGES.single
+        edges2 = FLOAT_EDGES.single
+
+    cross_frm = "_frm" in coverpoint
 
     return [
         "# TODO: Including this coverpoint makes the test too long for the linker. Need to split the test into multiple files."

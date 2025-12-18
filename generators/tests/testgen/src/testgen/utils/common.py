@@ -35,10 +35,19 @@ def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     return f"RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.data_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
-def load_float_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
+def load_float_reg(
+    name: str,
+    reg: int,
+    val: int,
+    test_data: TestData,
+    fp_load_type: Literal["single", "double", "half", "quad"] | None = None,
+) -> str:
     """Generate assembly to load a floating point register with a specific value."""
+    if fp_load_type is None:
+        fp_load_type = test_data.fp_load_size
+
     test_data.add_test_data_value(val)
-    return f"RVTEST_TESTDATA_LOAD_FLOAT(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
+    return f"RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
 
 
 def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:
@@ -57,7 +66,10 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
             + f'RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, "test_{test_data.test_count}")'
         )
     elif sig_type == "float":
-        test_data.sigupd_count += 2
+        if test_data.flen > test_data.xlen:
+            test_data.sigupd_count += 3  # TODO: Why doesn't this work with 3?
+        else:
+            test_data.sigupd_count += 2
         return (
             f"# Check if f{check_reg} contains the expected result. Also checks fflags. "
             + f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
@@ -108,10 +120,11 @@ def generate_test_data_section(test_data: TestData) -> str:
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"  # TODO: handle Q extension
+    data_size = max(test_data.xlen, test_data.flen)
+    directive = ".word" if data_size == 32 else ".dword"  # TODO: handle Q extension
 
     for value in test_data.test_data_values:
-        hex_value = to_hex(value, test_data.xlen)
+        hex_value = to_hex(value, data_size)
         lines.append(f"    {directive} {hex_value}")
 
     return "\n".join(lines)

@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from typing import Literal
+
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
 from testgen.data.test_config import TestConfig
 
@@ -65,6 +67,22 @@ class TestData:
     def instr_name(self) -> str:
         """Get the instruction name this test is exercising."""
         return self._instr_name
+
+    @property
+    def fp_load_size(self) -> Literal["single", "double", "half", "quad"]:
+        """Get the floating point load size based on the instruction."""
+        if self.instr_name.endswith(".q") or self.instr_name in ["flq", "fsq"]:
+            return "quad"
+        elif self.instr_name.endswith(".d") or self.instr_name in ["fld", "fsd"]:
+            return "double"
+        elif self.instr_name.endswith((".s", ".w")) or self.instr_name in ["flw", "fsw"]:
+            return "single"
+        elif self.instr_name.endswith(".h") or self.instr_name in ["flh", "fsh"]:
+            return "half"
+        else:
+            raise ValueError(
+                f"Unknown floating point load size for instruction {self.instr_name}. Modify {__file__} as needed."
+            )
 
     # Register file accessors
     @property

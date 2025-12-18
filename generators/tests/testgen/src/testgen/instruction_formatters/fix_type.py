@@ -19,7 +19,7 @@ def format_fix_type(
     assert params.fs1 is not None and params.fs1val is not None
     assert params.rd is not None
     setup = [
-        load_float_reg("fs1", params.fs1, params.fs1val, test_data),
+        load_float_reg("fs1", params.fs1, params.fs1val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",
     ]
     test = [

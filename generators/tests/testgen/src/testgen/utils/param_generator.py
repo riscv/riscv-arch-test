@@ -97,7 +97,7 @@ def generate_random_params(
         params.rs2val = random_int(bits=test_data.xlen)
 
     if "temp_reg" in required_params and params.temp_reg is None:
-        params.temp_reg = test_data.int_regs.get_register(exclude_regs=[*exclude_regs, 2], reg_range=reg_range)
+        params.temp_reg = test_data.int_regs.get_register(exclude_regs=[*exclude_regs, 0, 2], reg_range=reg_range)
 
     if "temp_val" in required_params and params.temp_val is None:
         params.temp_val = random_int(bits=test_data.xlen)
@@ -126,6 +126,9 @@ def generate_random_params(
 
     if "fs3val" in required_params and params.fs3val is None:
         params.fs3val = random_int(bits=test_data.flen)
+
+    if "temp_fval" in required_params and params.temp_fval is None:
+        params.temp_fval = random_int(bits=test_data.flen)
 
     # Fill in missing immediate parameters (only if required)
     if "immval" in required_params and params.immval is None:

@@ -9,7 +9,7 @@
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -90,6 +90,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         else:
             raise ValueError(f"Unknown instruction type: {instr_type} for cp_align.")
 
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines

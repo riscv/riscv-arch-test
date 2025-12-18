@@ -46,12 +46,13 @@ class InstructionParams:
     fs2val: int | None = None
     fs3val: int | None = None
     fdval: int | None = None
+    temp_fval: int | None = None
 
     # Immediate value
     immval: int | None = None
 
     # Flags
-    frm: bool = False  # Floating-point rounding mode tests
+    frm: str | None = None  # Floating-point rounding mode tests
     aqrl: str = ""  # Acquire/Release for atomic operations
 
     @property

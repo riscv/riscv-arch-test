@@ -11,6 +11,7 @@ Common utilities for riscv-arch-test test generation.
 
 from typing import Literal
 
+from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 
 
@@ -51,13 +52,16 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
     if sig_type == "int":
         test_data.sigupd_count += 1
         return (
-            f"# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            f"# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
+            + f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
             + f'RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, "test_{test_data.test_count}")'
         )
     elif sig_type == "float":
         test_data.sigupd_count += 2
         return (
-            f"# Check if f{check_reg} contains the expected result. Also checks fflags. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            f"# Check if f{check_reg} contains the expected result. Also checks fflags. "
+            + f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
+            + f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
             + f'RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, "test_{test_data.test_count}")'
         )
 
@@ -104,7 +108,7 @@ def generate_test_data_section(test_data: TestData) -> str:
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"
+    directive = ".word" if max(test_data.xlen, test_data.flen) == 32 else ".dword"  # TODO: handle Q extension
 
     for value in test_data.test_data_values:
         hex_value = to_hex(value, test_data.xlen)
@@ -127,3 +131,15 @@ def generate_test_data_string_section(test_data: TestData) -> str:
     lines.extend(test_data.test_data_strings)
 
     return "\n".join(lines)
+
+
+def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
+    """
+    Return all registers used in a test case back to the pool.
+
+    Args:
+        test_data: TestData object managing the registers
+        params: InstructionParams object containing used registers
+    """
+    test_data.int_regs.return_registers(params.used_int_regs)
+    test_data.float_regs.return_registers(params.used_float_regs)

@@ -32,41 +32,79 @@
 #define REGWIDTH (XLEN>>3)      // in units of #bytes
 #define ALIGNSZ ((XLEN>>5)+2)   // log2(XLEN): 2,3,4 for XLEN 32,64,128
 
-#if XLEN>FLEN
-  #define SIGALIGN REGWIDTH
-#else
-  #define SIGALIGN FREGWIDTH
-#endif
-
 #if   XLEN==32
     #define SREG sw
     #define LREG lw
-    #define XLEN_WIDTH 5
 #elif XLEN==64
     #define SREG sd
     #define LREG ld
-    #define XLEN_WIDTH 6
 #else
     #define SREG sq
     #define LREG lq
-    #define XLEN_WIDTH 7
 #endif
 
 # FLEN specific macros
+#define FREGWIDTH (FLEN>>3)      // in units of #bytes
+
 #if FLEN==32
     #define FLREG flw
     #define FSREG fsw
-    #define FREGWIDTH 4
 #elif FLEN==64
     #define FLREG fld
     #define FSREG fsd
-    #define FREGWIDTH 8
 #elif FLEN==128
     #define FLREG flq
     #define FSREG fsq
-    #define FREGWIDTH 16
 #endif
 
+// Default VDSEW to 0 for non-vector tests
+#ifndef VDSEW
+  #define VDSEW 0
+#endif
+#define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
+
+// Max data size alignment for signature and data region
+// Max of XLEN, FLEN, and SEW
+#if XLEN>FLEN
+  #define _SIG_STRIDE_1 REGWIDTH
+#else
+  #define _SIG_STRIDE_1 FREGWIDTH
+#endif
+
+#if (VDSEWWIDTH > _SIG_STRIDE_1)
+  #define SIG_STRIDE VDSEWWIDTH
+#else
+  #define SIG_STRIDE _SIG_STRIDE_1
+#endif
+
+// Define XLEN-sized pointer directive
+#if XLEN == 64
+  #define RVTEST_WORD_PTR .dword
+#else
+  #define RVTEST_WORD_PTR .word
+#endif
+
+
+// RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
+// test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
+// This macro is used to load integer test values from the .data section.
+//  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
+//  _DEST_REG - Destination register to load the value into
+#define RVTEST_TESTDATA_LOAD_INT(_DATA_PTR, _DEST_REG)  \
+  LREG _DEST_REG, 0(_DATA_PTR)                          ;\
+  addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
+
+// RVTEST_TESTDATA_LOAD_FLOAT(data_ptr, dest_reg) loads a floating-point value from the
+// test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
+// This macro is used to load floating point test values from the .data section.
+//  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
+//  _DEST_REG - Floating point destination register to load the value into
+#define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
+  FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
+  addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
+
+
+/* TODO: Add support for Zfinx
 #if ZFINX==1
     #define FLREG ld
     #define FSREG sd
@@ -88,6 +126,7 @@
         #define FREGWIDTH 4
         #define FLEN 32
 #endif
+*/
 
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent

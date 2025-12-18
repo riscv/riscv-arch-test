@@ -5,11 +5,12 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Compare floating register coverpoint generators (cmp_fd_rs1, cmp_fd_rs2, cmp_fs1_fs2, cmp_fd_fs1_fs2)."""
+"""Compare floating register coverpoint generators (cmp_fd_fs1, cmp_fd_fs2, cmp_fs1_fs2, cmp_fd_fs1_fs2)."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
+from testgen.utils.common import return_test_regs
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -32,9 +33,13 @@ def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg)
         desc = f"{coverpoint} (Test fd = fs1 = f{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
-        test_data.float_regs.return_registers(params.used_float_regs)
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -58,9 +63,43 @@ def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs2 = f{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
-        test_data.float_regs.return_registers(params.used_float_regs)
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
+
+    return test_lines
+
+
+@add_coverpoint_generator("cmp_fd_fs3")
+def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+    """Generate tests where fd = fs3."""
+    # Determine which fd registers to test based on coverpoint variant
+    if coverpoint == "cmp_fd_fs3":
+        regs = range(test_data.float_regs.reg_count)
+    elif coverpoint.endswith("_c"):
+        regs = range(8, 16)  # x8-x15 for compressed instructions
+    else:
+        raise ValueError(f"Unknown cmp_fd_fs3 coverpoint variant: {coverpoint} for {instr_name}")
+
+    test_lines: list[str] = []
+
+    # Generate tests
+    for reg in regs:
+        test_data.add_testcase_string(coverpoint)
+        test_data.float_regs.consume_registers([reg])
+        params = generate_random_params(test_data, instr_type, fd=reg, fs3=reg)
+        desc = f"{coverpoint} (Test fd = fs3 = f{reg})"
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -84,9 +123,13 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fs1 = fs2 = f{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
-        test_data.float_regs.return_registers(params.used_float_regs)
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -110,8 +153,12 @@ def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_
         test_lines.append(test_data.int_regs.consume_registers([reg]))
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs1 = fs2 = f{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
-        test_data.float_regs.return_registers(params.used_float_regs)
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
 
     return test_lines

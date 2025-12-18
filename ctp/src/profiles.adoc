@@ -5,7 +5,7 @@
 This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicclsm_Zicntr_Zihpm with machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs.
+** RV{32/64}IMAFDC_Zifencei_Zicclsm_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Zicclsm implies support for misaligned loads and stores.
 * MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2

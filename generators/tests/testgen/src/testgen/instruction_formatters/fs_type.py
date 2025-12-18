@@ -1,29 +1,29 @@
 ##################################
-# s_type.py
+# fs_type.py
 #
-# jcarlin@hmc.edu Oct 2025
+# jcarlin@hmc.edu Dec 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_float_reg, write_sigupd
 
 
 @add_instruction_formatter(
-    "S", required_params={"temp_reg", "rs1", "rs1val", "rs2", "rs2val", "immval"}, imm_bits=12, imm_signed=True
+    "FS", required_params={"temp_reg", "rs1", "rs1val", "fs2", "fs2val", "immval"}, imm_bits=12, imm_signed=True
 )
-def format_s_type(
+def format_fs_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format S-type instruction."""
-    assert params.rs1 is not None, "rs1 must be provided for S-type instructions"
-    assert params.rs2 is not None and params.rs2val is not None, (
-        "rs2 and rs2val must be provided for S-type instructions"
+    """Format FS-type instruction."""
+    assert params.rs1 is not None, "rs1 must be provided for FS-type instructions"
+    assert params.fs2 is not None and params.fs2val is not None, (
+        "fs2 and fs2val must be provided for FS-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must be provided for S-type instructions"
-    assert params.immval is not None, "immval must be provided for S-type instructions"
+    assert params.temp_reg is not None, "temp_reg must be provided for FS-type instructions"
+    assert params.immval is not None, "immval must be provided for FS-type instructions"
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -32,7 +32,7 @@ def format_s_type(
 
     # load test value
     setup = [
-        load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+        load_float_reg("fs2", params.fs2, params.fs2val, test_data),
     ]
 
     # Move sig_reg to rs1
@@ -55,7 +55,7 @@ def format_s_type(
     else:
         setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
 
-    test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
+    test = [f"{instr_name} f{params.fs2}, {params.immval}(x{sig_reg}) # perform store"]
     check = [
         f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
@@ -63,7 +63,7 @@ def format_s_type(
         f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),
         "#else",
-        f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
+        f"{instr_name} f{params.fs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
         "# nops to ensure length matches SELFCHECK",
         "nop",

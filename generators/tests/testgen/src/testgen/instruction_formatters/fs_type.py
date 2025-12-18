@@ -32,7 +32,7 @@ def format_fs_type(
 
     # load test value
     setup = [
-        load_float_reg("fs2", params.fs2, params.fs2val, test_data),
+        load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
     ]
 
     # Move sig_reg to rs1

@@ -209,7 +209,7 @@
         #include SIGNATURE_FILE
       #else
         // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*(XLEN/32),4,0xdeadbeef
+        .fill SIGUPD_COUNT*SIG_STRIDE,4,0xdeadbeef
       #endif
 
     // Signature region for trap handlers

@@ -10,6 +10,7 @@ Instruction parameter dataclass.
 """
 
 from dataclasses import dataclass
+from typing import Literal
 
 
 @dataclass
@@ -53,7 +54,10 @@ class InstructionParams:
 
     # Flags
     frm: str | None = None  # Floating-point rounding mode tests
-    aqrl: str = ""  # Acquire/Release for atomic operations
+    aqrl: str | None = None  # Acquire/Release for atomic operations
+
+    # Internal params to pass to formatters
+    fp_load_type: Literal["single", "double", "half", "quad"] | None = None  # Type for FP loads/stores
 
     @property
     def used_int_regs(self) -> list[int]:

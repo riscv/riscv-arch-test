@@ -22,9 +22,9 @@ def format_fr4_type(
     assert params.fd is not None
     frm = f", {params.frm}" if params.frm is not None else ""
     setup = [
-        load_float_reg("fs1", params.fs1, params.fs1val, test_data),
-        load_float_reg("fs2", params.fs2, params.fs2val, test_data),
-        load_float_reg("fs3", params.fs3, params.fs3val, test_data),
+        load_float_reg("fs1", params.fs1, params.fs1val, test_data, params.fp_load_type),
+        load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
+        load_float_reg("fs3", params.fs3, params.fs3val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",
     ]
     test = [

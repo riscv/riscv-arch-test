@@ -56,11 +56,10 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[
         if reader.fieldnames is None:
             return data
 
-        try:
-            asm_count_idx = reader.fieldnames.index('cp_asm_count')
-        except ValueError:
-            # If cp_asm_count not found, use all columns after a certain point
-            asm_count_idx = 0
+        # Build the list of data columns to evaluate for coverpoints.
+        # Always exclude metadata/header columns even if cp_asm_count is missing.
+        meta_cols = {"Instruction", "Type", "RV32", "RV64", "cp_asm_count"}
+        data_columns = [c for c in reader.fieldnames if c not in meta_cols]
 
         for row in reader:
             if 'Instruction' not in row or not row['Instruction']:
@@ -75,7 +74,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[
             candidates = []
             has_cr_edges = False
 
-            for col_name in reader.fieldnames[asm_count_idx + 1:]:
+            for col_name in data_columns:
                 # Skip columns that start with 'cmp'
                 if col_name.startswith('cmp'):
                     continue
@@ -96,7 +95,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[
 
             # Second pass: filter based on whether cr*edges exists
             coverpoints = []
-            for col_name in reader.fieldnames[asm_count_idx + 1:]:
+            for col_name in data_columns:
                 # Skip columns that start with 'cmp'
                 if col_name.startswith('cmp'):
                     continue

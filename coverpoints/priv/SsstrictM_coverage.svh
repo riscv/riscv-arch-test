@@ -117,6 +117,7 @@ covergroup SsstrictM_instr_cg with function sample(ins_t ins);
     cp_fmvh:              cross priv_mode_m, fmvh;
     cp_fmvp:              cross priv_mode_m, fmvp;
     cp_cvtmodwd:          cross priv_mode_m, cvtmodwd;
+    cp_cvtmodwdfrm:       cross priv_mode_m, cvtmodwdfrm;
     cp_branch:            cross priv_mode_m, branch;
     cp_jalr:              cross priv_mode_m, jalr;
     cp_privileged_funct3: cross priv_mode_m, privileged_funct3;

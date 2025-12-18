@@ -118,7 +118,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         test_lines = [insert_setup_template("testgen_header.S", xlen, extension, test_file_relative)]
 
         # Enable floating point if needed
-        if "F" in extension or "D" in extension or "Q" in extension or "Zf" in extension:
+        if any(ext in extension for ext in ["F", "D", "Q", "Zf", "Zcf", "Zcd"]):
             test_lines.append("# set mstatus.FS to 01 to enable fp\nLI(t0,0x4000)\ncsrs mstatus, t0\n")
 
         # Generate tests for this instruction

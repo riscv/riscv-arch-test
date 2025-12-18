@@ -1,0 +1,9 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: vfwcvtbf16-f-f-v_op
+    # Widening convert from BF16 to FP32. The conversion is exact.
+    coverpoint: ["Zvfbfmin_vfwcvtbf16_f_f_v_cg/{cp_vd_emul2, cp_vs2, cp_vs2_edges_f, cp_masking_edges, cr_vl_lmul_lmul4max, cr_vtype_agnostic_lmul4max, cp_vl_0, cp_csr_fflags_v}"]
+  - name: vfncvtbf16-f-f-w_op
+    # Narrowing convert from FP32 to BF16. Round according to the frm register.
+    coverpoint: ["Zvfbfmin_vfncvtbf16_f_f_w_cg/{cp_vd, cp_vs2_emul2, cp_vs2_edges_f_emul2, cp_masking_edges, cr_vl_lmul_lmul4max, cr_vtype_agnostic_lmul4max, cp_vl_0, cp_csr_fflags_voun, cp_csr_frm_v}"]

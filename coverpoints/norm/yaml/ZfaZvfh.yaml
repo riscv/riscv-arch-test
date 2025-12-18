@@ -1,0 +1,6 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: fli-h_op
+    # If the Zfh or Zvfh extension is implemented, FLI.H performs the analogous operation, but loads a half-precision floating-point value into register rd. Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for half-precision. Furthermore, since 216 is not representable in half-precision floating-point, entry 29 in the table instead loads positive infinity—i.e., it is redundant with entry 30. FLI.H is encoded like FLI.S, but with fmt=H.
+    coverpoint: ["ZfaZvfh_fli_h_cg/{cp_rs1_fli, cp_fd, cp_NaNBox_S_H}"]

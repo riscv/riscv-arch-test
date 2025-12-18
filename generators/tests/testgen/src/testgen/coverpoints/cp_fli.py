@@ -1,0 +1,39 @@
+##################################
+# cp_fli.py
+#
+# jcarlin@hmc.edu Dec 2025
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
+"""FLI coverpoint handler (cp_rs1_fli)."""
+
+from testgen.coverpoints.coverpoints import add_coverpoint_generator
+from testgen.data.test_data import TestData
+from testgen.instruction_formatters import format_single_test
+from testgen.utils.common import return_test_regs
+from testgen.utils.param_generator import generate_random_params
+
+
+@add_coverpoint_generator("cp_rs1_fli")
+def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+    """Generate tests for source floating-point register 1 coverpoints."""
+    # Determine which fs1 registers to test based on coverpoint variant
+    if coverpoint != "cp_rs1_fli":
+        raise ValueError(f"Unknown cp_rs1_fli coverpoint variant: {coverpoint} for {instr_name}")
+
+    test_lines: list[str] = []
+
+    # Generate tests
+    for val in range(32):
+        test_data.add_testcase_string(coverpoint)
+        params = generate_random_params(test_data, instr_type, rs1=val)
+        desc = f"{coverpoint} (val 'rs1' = {val})"
+        test_lines.extend(
+            [
+                "",
+                format_single_test(instr_name, instr_type, test_data, params, desc),
+            ]
+        )
+        return_test_regs(test_data, params)
+
+    return test_lines

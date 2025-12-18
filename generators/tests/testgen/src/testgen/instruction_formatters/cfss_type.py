@@ -1,7 +1,7 @@
 ##################################
-# css_type.py
+# cfss_type.py
 #
-# harris@hmc.edu Oct 2025
+# harris@hmc.edu Dec 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -11,18 +11,20 @@ from testgen.instruction_formatters.instruction_formatters import add_instructio
 from testgen.utils.common import load_int_reg, write_sigupd
 
 
-@add_instruction_formatter("CSS", required_params={"rs2", "rs2val", "immval", "temp_reg"}, imm_bits=9, imm_signed=False)
+@add_instruction_formatter(
+    "CFSS", required_params={"rs2", "rs2val", "immval", "temp_reg"}, imm_bits=9, imm_signed=False
+)
 def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format CSS-type stack-pointer-based store instruction."""
+    """Format CFSS-type stack-pointer-based store instruction."""
     assert params.rs2 is not None and params.rs2val is not None, (
-        "rs2 and rs2val must be provided for CSS-type instructions"
+        "rs2 and rs2val must be provided for CFSS-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must be provided for CSS-type instructions"
-    assert params.immval is not None, "immval must be provided for CSS-type instructions"
+    assert params.temp_reg is not None, "temp_reg must be provided for CFSS-type instructions"
+    assert params.immval is not None, "immval must be provided for CFSS-type instructions"
 
-    return (["#TODO: CSS tests are still a work in progress"], [], [])
+    return (["#TODO: CFSS tests are still a work in progress"], [], [])
     # TODO: Fix CSS trapping bug and re-enable these tests
 
     # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte

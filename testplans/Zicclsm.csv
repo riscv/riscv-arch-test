@@ -1,0 +1,9 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_misalign
+ld,L,,x,x,x
+lh,L,x,x,x,x
+lhu,L,x,x,x,x
+lw,L,x,x,x,x
+lwu,L,,x,x,x
+sd,S,,x,x,x
+sh,S,x,x,x,x
+sw,S,x,x,x,x

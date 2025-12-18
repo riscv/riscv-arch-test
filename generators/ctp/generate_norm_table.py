@@ -57,7 +57,14 @@ def load_json(path: Path | str, cache_path: Path | str | None = None) -> Any:
                 return json.loads(text)
         except Exception as e:
             raise RuntimeError(f'Failed to download JSON from {path}: {e}') from e
-    return json.loads(Path(path).read_text(encoding='utf-8'))
+    # Load from local file
+    text = Path(path).read_text(encoding='utf-8')
+    # Save to cache if cache_path is provided
+    if cache_path:
+        cache = Path(cache_path)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(text, encoding='utf-8')
+    return json.loads(text)
 
 
 def load_yaml(path: Path | str) -> Any:
@@ -373,6 +380,11 @@ def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
     return coverpoint
 
 
+def truncate_rule_text(text: str) -> str:
+    """Return rule text without truncation."""
+    return text
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description='Generate ASCIIDoc table from normative rules JSON and coverpoints YAML')
     # Default: download the canonical norm-rules.json from the ISA manual snapshot
@@ -418,7 +430,7 @@ def main() -> None:
             sys.exit(2)
 
     # Compute a cache path under the repository's coverpoints/norm directory.
-    repo_root = script_dir.parent.parent.parent.parent
+    repo_root = script_dir.parent.parent
     cache_path = repo_root / 'coverpoints' / 'norm' / 'norm-rules.json'
 
     # Load JSON. Default behavior: if args.json is a URL it will be downloaded
@@ -433,6 +445,7 @@ def main() -> None:
             sys.exit(2)
     else:
         jdata = load_json(json_path, cache_path=cache_path)
+    print(f'Loaded normative rules JSON from: {json_path} to {cache_path}')
     rules_list = find_normative_rules(jdata)
 
     # Build a mapping of JSON rule name -> text for fast lookup
@@ -597,7 +610,7 @@ def main() -> None:
                     cover_map[n] = chosen_cp
                     yaml_names.add(n)
                     if idx == 0:
-                        text = json_text_map.get(n, '')
+                        text = truncate_rule_text(json_text_map.get(n, ''))
                         # append tag links (if any) to the rule text
                         tlinks = json_links_map.get(n, [])
                         if tlinks:
@@ -692,7 +705,7 @@ def main() -> None:
             yaml_names.add(n)
             # Only include the rule text for the first name in the group
             if idx == 0:
-                text = json_text_map.get(n, '')
+                text = truncate_rule_text(json_text_map.get(n, ''))
                 tlinks = json_links_map.get(n, [])
                 if tlinks:
                     text = (text + '  ' + ' '.join(tlinks)).strip()

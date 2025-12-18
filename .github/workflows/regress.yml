@@ -36,4 +36,4 @@ jobs:
         run: make tests --jobs $(nproc)
 
       # - name: Compile and run tests on Sail
-      #   run: CONFIG_FILE="configs/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+      #   run: CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)

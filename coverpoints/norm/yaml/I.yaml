@@ -2,17 +2,17 @@
 
 normative_rule_definitions:
   - name: rv32i_xreg_sz
-    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]
+    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: rv32i_other_xregs
-    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]
+    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: pcreg_op
-    coverpoint: ["I_auipc_cg/cp_rs1_imm_edges"]
+    coverpoint: ["I_auipc_cg/cr_rs1_imm_edges"]
   - name: slti_op
     coverpoint: ["I_slti_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: sltiu_op
     coverpoint: ["I_sltiu_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: x0eq0
-    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cp_rs1_rs2_edges}"]
+    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: imm_always_sex
     coverpoint: [
         "I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset",

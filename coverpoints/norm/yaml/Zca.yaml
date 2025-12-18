@@ -11,6 +11,8 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_and_cg/{cp_rs1p, cp_rs2p}"]
   - name: c-add_op
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0, cr_rs1_rs2_edges}"]
+  - name: c-add_hint
+    coverpoint: ["TODO"]
   - name: c-add_val
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0}"]
   - name: c-addi16sp_op
@@ -20,15 +22,15 @@ normative_rule_definitions:
   - name: c-addi_nop
     coverpoint: ["Zca_c_nop_cg/{cp_asm_count}"]
   - name: c-addi_op
-    coverpoint: ["Zca_c_addi_cg/{cp_rs1_nx0, cp_rs1_imm_edges_6bit_n0}"]
+    coverpoint: ["Zca_c_addi_cg/{cp_rs1_nx0, cr_rs1_imm_edges_6bit_n0}"]
   - name: c-addiw_op
-    coverpoint: ["Zca_c_addiw_cg/{cp_rs1_nx0, cp_rs1_imm_edges_6bit}"]
+    coverpoint: ["Zca_c_addiw_cg/{cp_rs1_nx0, cr_rs1_imm_edges_6bit}"]
   - name: c-addw_op
     coverpoint: ["Zca_c_addw_cg/{cp_rs1p, cp_rs2p, cr_rs1_rs2_edges}"]
   - name: c-and_op
     coverpoint: ["Zca_c_and_cg/{cp_rs1p, cp_rs2p, cr_rs1_rs2_edges}"]
   - name: c-andi_op
-    coverpoint: ["Zca_c_andi_cg/{cp_rs1p, cp_rs1_imm_edges_6bit}"]
+    coverpoint: ["Zca_c_andi_cg/{cp_rs1p, cr_rs1_imm_edges_6bit}"]
   - name: c-beqz_op
     coverpoint: ["Zca_c_beqz_cg/{cp_rs1p, cp_rs1_edges, cp_offset}"]
   - name: c-bnez_op
@@ -46,9 +48,9 @@ normative_rule_definitions:
   - name: c-ldsp_op
     coverpoint: ["Zca_c_ldsp_cg/{cp_rd_nx0, cp_imm_mul_8sp}"]
   - name: c-li_op
-    coverpoint: ["Zca_c_li_cg/{cp_rs1_nx0, cp_rs1_imm_edges_6bit}"]
+    coverpoint: ["Zca_c_li_cg/{cp_rs1_nx0, cr_rs1_imm_edges_6bit}"]
   - name: c-lui_op
-    coverpoint: ["Zca_c_lui_cg/{cp_rs1_nx2, cp_rs1_imm_edges_6bit_n0}"]
+    coverpoint: ["Zca_c_lui_cg/{cp_rs1_nx2, cr_rs1_imm_edges_6bit_n0}"]
   - name: c-lw_op
     coverpoint: ["Zca_c_lw_cg/{cp_rs1p, cp_rdp, cp_imm_mul}"]
   - name: c-lwsp_op
@@ -66,13 +68,13 @@ normative_rule_definitions:
   - name: c-sdsp_op
     coverpoint: ["Zca_c_sdsp_cg/{cp_rs2, cp_rs2_edges, cp_imm_mul_8sp}"]
   - name: c-slli_op
-    coverpoint: ["Zca_c_slli_cg/{cp_rs1_nx0, cp_rs1_imm_edges_c}"]
+    coverpoint: ["Zca_c_slli_cg/{cp_rs1_nx0, cr_rs1_imm_edges_c}"]
   - name: c-slli_shamt5
     coverpoint: ["Zca_c_slli_cg/{cp_slli_uimm_n0}"]
   - name: c-srai_op
-    coverpoint: ["Zca_c_srai_cg/{cp_rs1_p, cp_rs1_imm_edges_c}"]
+    coverpoint: ["Zca_c_srai_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
   - name: c-srli_op
-    coverpoint: ["Zca_c_srli_cg/{cp_rs1_p, cp_rs1_imm_edges_c}"]
+    coverpoint: ["Zca_c_srli_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
   - name: c-srli_shamt5
     coverpoint: ["Zca_c_srli_cg/{cp_slli_uimm_n0}"]
   - name: c-sub_op

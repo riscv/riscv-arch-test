@@ -83,7 +83,7 @@ gen("cp_Itype", "EEEEEEEEEEEERRRRRE01RRRRR0010011")
 gen("cp_llAItype", "RRRRRRRRRRRRRRRRREEERRRRR0010011")
 gen("cp_aes64ks1i", "0011000EEEEERRRRR001RRRRR0010011")
 gen("cp_IWtype", "RRRRRRRRRRRRRRRRREEERRRRR0011011")
-gen("cp_IWshift", "EEEEEEERRRRRRRRRRE01RRRRR0011011")
+gen("cp_IWshift", "EEEEEEERRRRRRRRRRE01RRRRR0011011") # catches illegal shift types and imm[5] = 1 for word shifts
 gen("cp_store", "RRRRRRRRRRRR00000EEERRRRR0100011")  # use rs1 = 0 for stores to avoid overwriting program
 gen("cp_fstore", "RRRRRRRRRRRR00000EEERRRRR0100111")  # use rs1 = 0 for stores to avoid overwriting program
 gen("cp_atomic_funct3", "RRRRRRRRRRRR00000EEERRRRR0101111")  # use rs1 = 0 for atomics to avoid overwriting program
@@ -106,6 +106,7 @@ gen("cp_fli", "11110EEEEEEERRRRR000RRRRR1010011")
 gen("cp_fmvh", "11100EEEEEEERRRRR000RRRRR1010011")
 gen("cp_fmvp", "10110EERRRRRRRRRR000RRRRR1010011")
 gen("cp_fcvtmodwd", "11000EEEEEEERRRRR001RRRRR1010011")
+gen("cp_fcvtmodwdfrm", "110000101000RRRRREEERRRRR1010011")
 gen("cp_branch2", "RRRRRRRRRRRRRRRRR010RRRRR1100011")
 gen("cp_branch3", "RRRRRRRRRRRRRRRRR011RRRRR1100011")
 gen("cp_jalr0", "RRRRRRRRRRRRRRRRREE1RRRRR1100111")

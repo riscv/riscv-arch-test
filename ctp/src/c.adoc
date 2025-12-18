@@ -1,38 +1,9 @@
 
 === C Compressed Extension
 
-The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions. <<t-C-normative-rules>> lists the normative rules in the RV{32/64}C specification applicable to all instructions, and the unprivileged coverpoints that exercise them.
+The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions.
 
-[[t-C-normative-rules]]
-.C Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|27.1|The C extension allows
-16-bit instructions to be freely intermixed with 32-bit instructions, with the latter now able to start on
-any 16-bit boundary, i.e., IALIGN=16.|***
-|27.1|The compressed instruction encodings are mostly common across RV32C and
-RV64C, but as shown in <<rvc-instr-table0, Table 34>>, a few opcodes are used for
-different purposes depending on base ISA.|Run relevant test suites. ***drop
-|27.1|If the C extension is implemented, the appropriate compressed
-floating-point load and store instructions must be provided whenever the relevant standard floating-
-point extension (F and/or D) is also implemented.|Run relevant test suites. ***drop
-|27.2|CR, CI, and CSS can use any of the 32 RVI registers, but CIW,
-CL, CS, CA, and CB are limited to just 8 of them.|cp_rs1p, cp_rs2p, cp_rdp
-|27.2|Compressed register-based floating-point loads and stores also use the
-CL and CS formats respectively, with the eight registers mapping to `f8` to `f15`.|cp_fdp, cp_fs2p
-|27.2|For many RVC instructions, zero-valued immediates are disallowed and
-`x0` is not a valid 5-bit register specifier.|cp_rs1_imm_edges,cp_imm_mul, _nx0 coverpoints
-|27.4|As with base RVI instructions, the offsets of all RVC
-control transfer instructions are in multiples of 2 bytes.|***
-|27.7|A portion of the RVC encoding space is reserved for microarchitectural
-HINTs. ...these instructions do not
-modify any architectural state, except for advancing the `pc` and any
-applicable performance counters. HINTs are executed as no-ops on
-implementations that ignore them.|Hints are not tested
-|===
-
-<<t-C-priv-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior.
+<<t-C-priv-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior. ***update
 
 ==== Zca Compressed Extension
 

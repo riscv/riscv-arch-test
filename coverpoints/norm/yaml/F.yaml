@@ -1,0 +1,406 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: fadd-s_op
+    # FADD.S and FMUL.S
+    # perform single-precision floating-point addition and multiplication
+    # respectively, between rs1 and rs2
+    # In each case, the result is written to rd.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fadd_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+  - name: fclass-s_op
+    # fThe FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.
+    coverpoint: ["F_fclass_s_cg/{cp_rd, cp_fs1, cp_fs1_edges, cp_fclass}"]
+  - name: fcvt-l-s_op
+    # FCVT.W.S or
+    # FCVT.L.S converts a floating-point number in floating-point register
+    # rs1 to a signed 32-bit or 64-bit integer, respectively, in integer
+    # register rd
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # FCVT.L[U].S and FCVT.S.L[U] are RV64-only instructions
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # &lt;&lt;int_conv&gt;&gt; gives the range of valid inputs
+    # for FCVT.int.S and the behavior for invalid inputs
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_l_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+  - name: fcvt-lu-s_op
+    # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
+    # and FCVT.S.LU variants convert to or from unsigned integer values. For
+    # XLEN&gt;32, FCVT.W[U].S sign-extends the 32-bit result to the destination register width
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # FCVT.L[U].S and FCVT.S.L[U] are RV64-only instructions
+    # &lt;&lt;int_conv&gt;&gt; gives the range of valid inputs
+    # for FCVT.int.S and the behavior for invalid inputs
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_lu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+  - name: fcvt-s-l_op
+    # FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed
+    # integer, respectively, in integer register rs1 into a floating-point
+    # number in floating-point register rd
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # FCVT.L[U].S and FCVT.S.L[U] are RV64-only instructions
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_s_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+  - name: fcvt-s-lu_op
+    # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
+    # and FCVT.S.LU variants convert to or from unsigned integer values. For
+    # XLEN&gt;32, FCVT.W[U].S sign-extends the 32-bit result to the destination register width
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # FCVT.L[U].S and FCVT.S.L[U] are RV64-only instructions
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_s_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+  - name: fcvt-s-w_op
+    # FCVT.S.W or FCVT.S.L converts a 32-bit or 64-bit signed
+    # integer, respectively, in integer register rs1 into a floating-point
+    # number in floating-point register rd
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_s_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+  - name: fcvt-s-wu_op
+    # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
+    # and FCVT.S.LU variants convert to or from unsigned integer values. For
+    # XLEN&gt;32, FCVT.W[U].S sign-extends the 32-bit result to the destination register width
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_s_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_n, cp_csr_frm}"]
+  - name: fcvt-w-s_op
+    # FCVT.W.S or
+    # FCVT.L.S converts a floating-point number in floating-point register
+    # rs1 to a signed 32-bit or 64-bit integer, respectively, in integer
+    # register rd
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # &lt;&lt;int_conv&gt;&gt; gives the range of valid inputs
+    # for FCVT.int.S and the behavior for invalid inputs
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_w_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+  - name: fcvt-wu-s_op
+    # FCVT.WU.S, FCVT.LU.S, FCVT.S.WU,
+    # and FCVT.S.LU variants convert to or from unsigned integer values. For
+    # XLEN&gt;32, FCVT.W[U].S sign-extends the 32-bit result to the destination register width
+    # All floating-point to integer and integer to floating-point conversion instructions round according to the rm field. A floating-point register can be initialized to floating-point positive zero using FCVT.S.W rd, x0, which will never set any exception flags.
+    # &lt;&lt;int_conv&gt;&gt; gives the range of valid inputs
+    # for FCVT.int.S and the behavior for invalid inputs
+    # All floating-point conversion instructions set the Inexact exception flag if the rounded result differs from the operand value and the Invalid exception flag is not set.
+    # If the rounded result is not representable in the
+    # destination format, it is clipped to the nearest value and the invalid
+    # flag is set
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fcvt_wu_s_cg/{cp_rd, cp_fs1, cp_fs1_edges_frm, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+  - name: fdiv-s_op
+    # FDIV.S performs the single-precision floating-point division of rs1 by rs2
+    # In each case, the result is written to rd.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fdiv_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+  - name: feq-s_op
+    # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
+    coverpoint: ["F_feq_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+  - name: fle-s_op
+    # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
+    coverpoint: ["F_fle_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+  - name: flt-s_op
+    # Floating-point compare instructions (FEQ.S, FLT.S, FLE.S) perform the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0 otherwise.
+    coverpoint: ["F_flt_s_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+  - name: flw_op
+    # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
+    coverpoint: ["F_flw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd}"]
+  - name: fmadd-s_op
+    # FMADD.S multiplies the values in rs1 and rs2, adds the value in rs3, and writes the final result to rd. FMADD.S computes (rs1×rs2)+rs3.
+    # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # The fused multiply-add instructions must set the invalid operation exception flag when the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+  - name: fmax-s_op
+    # Floating-point minimum-number and maximum-number instructions FMIN.S and FMAX.S write, respectively, the smaller or larger of rs1 and rs2 to rd
+    coverpoint: ["F_fmax_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+  - name: fmin-s_op
+    # Floating-point minimum-number and maximum-number instructions FMIN.S and FMAX.S write, respectively, the smaller or larger of rs1 and rs2 to rd
+    coverpoint: ["F_fmin_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges}"]
+  - name: fmsub-s_op
+    # FMSUB.S multiplies the values in rs1 and rs2, subtracts the value in rs3, and writes the final result to rd. FMSUB.S computes (rs1×rs2)−rs3.
+    # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # The fused multiply-add instructions must set the invalid operation exception flag when the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+  - name: fmul-s_op
+    # FADD.S and FMUL.S
+    # perform single-precision floating-point addition and multiplication
+    # respectively, between rs1 and rs2
+    # In each case, the result is written to rd.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fmul_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+  - name: fmv-w-x_op
+    # FMV.W.X moves the single-precision value encoded in IEEE 754-2008 standard encoding from the lower 32 bits of integer register rs1 to the floating-point register rd. The bits are not modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved.
+    coverpoint: ["F_fmv_w_x_cg/{cp_rs1, cp_rs1_edges, cp_fd}"]
+  - name: fmv-x-w_op
+    # FMV.X.W moves the single-precision value in floating-point register rs1 represented in IEEE 754-2008 encoding to the lower 32 bits of integer register rd. The bits are not modified in the transfer, and in particular, the payloads of non-canonical NaNs are preserved. For RV64, the higher 32 bits of the destination register are filled with copies of the floating-point number's sign bit
+    coverpoint: ["F_fmv_x_w_cg/{cp_rd, cp_fs1, cp_fs1_edges}"]
+  - name: fnmadd-s_op
+    # FNMADD.S multiplies the values in rs1 and rs2, negates the product, subtracts the value in rs3, and writes the final result to rd. FNMADD.S computes −(rs1×rs2)−rs3.
+    # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # The fused multiply-add instructions must set the invalid operation exception flag when the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fnmadd_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+  - name: fnmsub-s_op
+    # FNMSUB.S multiplies the values in rs1 and rs2, negates the product, adds the value in rs3, and writes the final result to rd. FNMSUB.S computes −(rs1×rs2)+rs3.
+    # Floating-point fused multiply-add instructions require a new standard instruction format. R4-type instructions specify three source registers (rs1, rs2, and rs3) and a destination register (rd). This format is only used by the floating-point fused multiply-add instructions.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # The fused multiply-add instructions must set the invalid operation exception flag when the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fnmsub_s_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}"]
+  - name: fsgnj-s_op
+    # Floating-point to floating-point sign-injection instructions, FSGNJ.S,
+    # FSGNJN.S, and FSGNJX.S, produce a result that takes all bits except the
+    # sign bit from rs1. For FSGNJ, the result's sign bit is rs2's sign
+    # bit; for FSGNJN, the result's sign bit is the opposite of rs2's sign
+    # bit; and for FSGNJX, the sign bit is the XOR of the sign bits of rs1
+    # and rs2. Sign-injection instructions do not set floating-point
+    # exception flags, nor do they canonicalize NaNs
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    coverpoint: ["F_fsgnj_s_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges}"]
+  - name: fsgnjn-s_op
+    # Floating-point to floating-point sign-injection instructions, FSGNJ.S,
+    # FSGNJN.S, and FSGNJX.S, produce a result that takes all bits except the
+    # sign bit from rs1. For FSGNJ, the result's sign bit is rs2's sign
+    # bit; for FSGNJN, the result's sign bit is the opposite of rs2's sign
+    # bit; and for FSGNJX, the sign bit is the XOR of the sign bits of rs1
+    # and rs2. Sign-injection instructions do not set floating-point
+    # exception flags, nor do they canonicalize NaNs
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    coverpoint: ["F_fsgnjn_s_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges}"]
+  - name: fsgnjx-s_op
+    # Floating-point to floating-point sign-injection instructions, FSGNJ.S,
+    # FSGNJN.S, and FSGNJX.S, produce a result that takes all bits except the
+    # sign bit from rs1. For FSGNJ, the result's sign bit is rs2's sign
+    # bit; for FSGNJN, the result's sign bit is the opposite of rs2's sign
+    # bit; and for FSGNJX, the sign bit is the XOR of the sign bits of rs1
+    # and rs2. Sign-injection instructions do not set floating-point
+    # exception flags, nor do they canonicalize NaNs
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    coverpoint: ["F_fsgnjx_s_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges}"]
+  - name: fsqrt-s_op
+    # FSQRT.S computes the square root of rs1
+    # In each case, the result is written to rd.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fsqrt_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}"]
+  - name: fsub-s_op
+    # FSUB.S performs the
+    # single-precision floating-point subtraction of rs2 from rs1
+    # In each case, the result is written to rd.
+    # The 2-bit floating-point format field fmt is encoded as shown in . It is set to S (00) for all instructions in the F extension.
+    # Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
+    # In the parlance of the IEEE standard, tininess is detected after rounding.
+    # Rounding Mode|Mnemonic|Meaning
+    # ===
+    # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In Rounding Mode register, reserved.
+    # ===
+    # Floating-point operations use either a static rounding mode encoded in
+    # the instruction, or a dynamic rounding mode held in frm. Rounding
+    # modes are encoded as shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the
+    # instruction's rm field selects the dynamic rounding mode held in
+    # frm
+    coverpoint: ["F_fsub_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}"]
+  - name: fsw_op
+    # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
+    coverpoint: ["F_fsw_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}"]

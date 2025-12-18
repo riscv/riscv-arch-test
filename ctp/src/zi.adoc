@@ -15,6 +15,26 @@ include::{testplansdir}/Zicsr.adoc[]
 .Zifencei Instruction Coverpoints
 include::{testplansdir}/Zifencei.adoc[]
 
+include::norm/Zifencei_norm_rules.adoc[]
+
+
+==== Zicclsm Misaligned Loads/Stores
+
+Misaligned loads/stores can be handled in hardware if Zicclsm is implemented.  These tests exercise loads/stores in the program memory, which is expected to be cachable and coherent to support Zicclsm.  No special PMA circumstances are tested.  If other extensions with loads and stores are supported, more misaligned tests are run (e.g. ZicclsmF for floating point loads/stores, ZicclsmZca for compressed loads/stores).
+
+[[t-Zicclsm-coverpoints]]
+.Zicclsm Coverpoints
+include::{testplansdir}/Zicclsm.adoc[]
+
+[[t-ZicclsmF-coverpoints]]
+.ZicclsmF Coverpoints
+include::{testplansdir}/ZicclsmF.adoc[]
+
+[[t-ZicclsmZca-coverpoints]]
+.ZicclsmZca Coverpoints
+include::{testplansdir}/ZicclsmZca.adoc[]
+
+*** add others when ready
 
 ==== Zicond Conditional Instructions
 

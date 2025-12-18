@@ -1,0 +1,10 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+# *** needs flushing out 12/5/25 david_harris@hmc.edu; needs pulling out privileged parts, also see Zca.yaml
+# parts of Zcmt should go here
+
+normative_rule_definitions:
+  - name: fence_i_op
+    coverpoint: ["Zifencei_fence_i_cg/{cp_custom_fencei}"]
+  - name: fence_i_rsv
+    coverpoint: ["*** see SsstrictS"]

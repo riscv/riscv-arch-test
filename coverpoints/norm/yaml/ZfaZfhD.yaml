@@ -1,0 +1,18 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: fleq-h_op
+    # If the Zfh extension is implemented, FLEQ.H and FLTQ.H instructions are analogously defined to operate on half-precision numbers.
+    coverpoint: ["ZfaZfhD_fleq_h_cg/{Type_FC, RV32, RV64, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+  - name: fli-h_op
+    # If the Zfh or Zvfh extension is implemented, FLI.H performs the analogous operation, but loads a half-precision floating-point value into register rd. Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for half-precision. Furthermore, since 216 is not representable in half-precision floating-point, entry 29 in the table instead loads positive infinity—i.e., it is redundant with entry 30. FLI.H is encoded like FLI.S, but with fmt=H.
+    coverpoint: ["ZfaZfhD_fli_h_cg/{Type_FLI, RV32, RV64, cp_NaNBox_D_H}"]
+  - name: fltq-h_op
+    # If the Zfh extension is implemented, FLEQ.H and FLTQ.H instructions are analogously defined to operate on half-precision numbers.
+    coverpoint: ["ZfaZfhD_fltq_h_cg/{Type_FC, RV32, RV64, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+  - name: fmaxm-h_op
+    # If the Zfh extension is implemented, FMINM.H and FMAXM.H instructions are analogously defined to operate on half-precision numbers.
+    coverpoint: ["ZfaZfhD_fmaxm_h_cg/{Type_FR, RV32, RV64, cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]
+  - name: fminm-h_op
+    # If the Zfh extension is implemented, FMINM.H and FMAXM.H instructions are analogously defined to operate on half-precision numbers.
+    coverpoint: ["ZfaZfhD_fminm_h_cg/{Type_FR, RV32, RV64, cp_NaNBox_D_H, cp_fs1_badNB_D_H, cp_fs2_badNB_D_H}"]

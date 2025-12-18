@@ -5,7 +5,7 @@
 This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs.
+** RV{32/64}IMAFDC_Zifencei_Zicclsm_Zicntr_Zihpm with machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs.
 * MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
@@ -15,6 +15,12 @@ This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification obje
 * RVA23 Profile (https://riscv-software-src.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
 
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
+
+This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
+* All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate.
+* Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported indepenent of the Zicntr or F instructions, so there
+is no way to control mtvec and write an interrupt handler.  Therefore ecall is not exercises.
+* The RV2I 20 profile states "Misaligned loads and stores may be supported."  In terms of the language used in later profiles, this is interpreted as "Zicclsm is optional"
 
 === Profile Coverage Matrix
 
@@ -68,6 +74,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>|||x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
+|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|||x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
 |ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
@@ -95,7 +102,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVM|Virt Mem Exceptions|<<t-ExceptionsVM-coverpoints>>|||x|x|x
 |ExceptionsVMZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsVMZalrsc-coverpoints>>|||x|x|x
 |ExceptionsVMZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsVMZaamo-coverpoints>>|||x|x|x
-|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|||x|x|x
 |InterruptsM|Machine Interrupts|<<t-InterruptsM-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x

@@ -19,7 +19,7 @@ Where a CRD is available, it lists the mandatory and optional extensions and IN/
 This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
 * All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate.
 * Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported indepenent of the Zicntr or F instructions, so there
-is no way to control mtvec and write an interrupt handler.  Therefore ecall is not exercises.
+is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
 * The RV2I 20 profile states "Misaligned loads and stores may be supported."  In terms of the language used in later profiles, this is interpreted as "Zicclsm is optional"
 
 === Profile Coverage Matrix

@@ -86,5 +86,5 @@ def canonicalize_extension(extension: str, xlen: int) -> tuple[list[str], str]:
             ext_str += "_"
         ext_str += ext
     march = f"rv{xlen}{ext_str}"
-    march = march.replace("zaamo", "a").replace("zalrsc", "a")  # gcc 14 does not accept Zaamo/Zalrsc
+    march = march.replace("Zaamo", "A").replace("Zalrsc", "A")  # gcc 14 does not accept Zaamo/Zalrsc
     return ext_components, march

@@ -11,7 +11,7 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
 from testgen.utils.edges import IMMEDIATE_EDGES
 from testgen.utils.param_generator import generate_random_params
 
@@ -38,7 +38,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
         params = generate_random_params(test_data, instr_type, immval=edge_val, exclude_regs=[0])
         desc = f"{coverpoint} (imm = {edge_val})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-        test_data.int_regs.return_registers(params.used_int_regs)
+        return_test_regs(test_data, params)
 
     return test_lines
 
@@ -91,7 +91,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             write_sigupd(params.rs1, test_data),  # success code
         ]
     )
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
     return test_lines
 
 
@@ -234,5 +234,5 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         ]
     )
 
-    test_data.int_regs.return_registers(params.used_int_regs)
+    return_test_regs(test_data, params)
     return test_lines

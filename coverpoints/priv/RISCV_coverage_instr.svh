@@ -147,7 +147,11 @@
     }
     // JALRs: op = 1100111
     jalr : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1100111) {
+<<<<<<< HEAD
         // test all 8 funct3 codes; only 000 should be legal
+=======
+        // test all 7 illegal funct3 codes; only 000 should be legal
+>>>>>>> 55fbe06a7ee56d7b595ef3fe7fa02241af024ba8
         ignore_bins okfunct0 = {3'b000};
     }
     // privileged: op = 1110011

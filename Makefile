@@ -10,6 +10,7 @@ CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-
 REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
+EXTENSIONS  ?=  I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei # Extensions to generate tests for. Leave blank to generate for all tests.
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64
@@ -22,7 +23,7 @@ PRIVDIR32      := $(PRIVDIR)/rv32
 TEMPLATEDIR := templates
 TESTGEN_SRC_DIR := generators/testgen/src/testgen
 COVERGROUPGEN_SRC_DIR := generators/coverage/templates
-TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/*)
+TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/* $(TESTGEN_SRC_DIR)/**/**/*)
 COVERGROUPGEN_DEPS := $(wildcard $(COVERGROUPGEN_SRC_DIR)/* $(COVERGROUPGEN_SRC_DIR)/**)
 TESTPLANS_DIR := testplans
 TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
@@ -64,7 +65,7 @@ $(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGR
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests --extensions I,M,Zca,Zifencei # I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei
+	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen

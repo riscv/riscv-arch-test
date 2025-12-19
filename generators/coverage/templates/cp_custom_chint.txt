@@ -12,12 +12,12 @@
     }
 
     // c.li with rd = 0 are hints
-    cp_chint_li: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.currrent.insn[15:13] == 3'b010 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
+    cp_chint_li: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b010 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
         bins imm[] = {0:63}; // imm
     }
 
     // c.lui with rd = 0, imm != 0 are hints
-    cp_chint_lui: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.currrent.insn[15:13] == 3'b011 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
+    cp_chint_lui: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b011 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
         bins imm[] = {1:63}; // imm
     }
 

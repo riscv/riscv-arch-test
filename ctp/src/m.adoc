@@ -12,7 +12,7 @@ include::norm/M_norm_rules.adoc[]
 
 ==== Zmmul
 
-The Zmmul extension is a subset of the M extension that includes only the multiply instructions.  The coverpoints are listed in <<t-Zmmul-coverpoints>>.
+The Zmmul extension is a subset of the M extension that includes only the multiply instructions.  The coverpoints are listed in <<t-Zmmul-coverpoints>>. If a configuration supports both M and Zmmul, these multiply instructions are tested twice, but the runtime is negligible so multiplication is left in M to avoid confusion.
 
 [[t-Zmmul-coverpoints]]
 .Zmmul Instruction Coverpoints

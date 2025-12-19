@@ -68,11 +68,9 @@ include::norm/Zihintpause_norm_rules.adoc[]
 
 ==== ZihintntlZca Compressed Non-temporal Locality Hint
 
-[[t-ZihintntlZca-coverpoints]]
-.ZihintntlZca Instruction Coverpoints
-,===
-//include::{testplansdir}/ZihintntlZca.adoc[]
-,===
+Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all` are a subset of the `c.add` hints. They are tested by the Zca_c_hint_cg/cp_chint_add coverpoint, so require no additional coverpoints.
+
+include::norm/ZihintntlZca_norm_rules.adoc[]
 
 ==== Zicbom Cache Block Flush/Invalidate
 

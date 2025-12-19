@@ -8,6 +8,8 @@ The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations suppor
 ==== Zca Compressed Extension
 
 <<t-Zca-coverpoints>> summarizes the coverpoints for the Zca extension.
+These include standard compressed hints in the cp_custom_chint_* family (also called cp_chint_*).  Note that some of the hints are also compresssed
+Zihintntl hints.  Custom compressed hints are not certified because they are custom.
 
 [[t-Zca-coverpoints]]
 .Zca Instruction Coverpoints

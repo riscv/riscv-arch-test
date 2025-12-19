@@ -1,7 +1,9 @@
     // Custom coverpoints for fence
 
     cp_custom_fence : coverpoint ins.current.insn  {
-        bins fence =  {32'h0ff0000f}; // iowr, iowr
-        bins fence_rw_rw = {32'h0330000f};
-        bins fence_tso_rw_rw = {32'h8330000f}; // fence.tso
+        bins fence            = {32'h0ff0000f}; // iowr, iowr
+        bins fence_rw_rw      = {32'h0330000f}; // rw, rw
+        bins fence_tso_rw_rw  = {32'h8330000f}; // fence.tso
+        bins fence_nonzerors1 = {32'h0331000f}; // nonzero rs should behave normally
+        bins fence_nonzerord  = {32'h0330008f}; // nonzero rd should behave normally
     }

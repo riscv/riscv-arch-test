@@ -233,7 +233,6 @@ include::{testplansdir}/Zvfbfmin.adoc[]
 
 include::norm/Zvfbfmin_norm_rules.adoc[]
 
-
 ==== Zvfbfwma BF16 MAC
 
 [[t-Zvfbfwma-coverpoints]]

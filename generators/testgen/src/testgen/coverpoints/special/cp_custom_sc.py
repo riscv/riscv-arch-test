@@ -1,5 +1,5 @@
 ##################################
-# cp_sc.py
+# cp_custom_sc.py
 #
 # jcarlin@hmc.edu Dec 2025
 # SPDX-License-Identifier: Apache-2.0
@@ -18,7 +18,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     """Generate tests for store-conditional coverpoints."""
     if instr_type != "SC":
         raise ValueError(
-            f"cp_sc coverpoint generator only supports SC-type instructions, got {instr_type} for {instr_name}."
+            f"cp_custom_sc coverpoint generator only supports SC-type instructions, got {instr_type} for {instr_name}."
         )
 
     lr_insn = "lr.w" if instr_name.endswith(".w") else "lr.d"

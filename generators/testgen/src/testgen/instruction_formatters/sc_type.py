@@ -12,7 +12,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 
 @add_instruction_formatter(
-    "SC", required_params={"temp_reg", "rd", "rs1", "rs2", "rs2val"}, imm_bits=12, imm_signed=True
+    "SC", required_params={"rd", "rs1", "rs2", "rs2val", "temp_reg", "temp_val"}, imm_bits=12, imm_signed=True
 )
 def format_sc_type(
     instr_name: str, test_data: TestData, params: InstructionParams

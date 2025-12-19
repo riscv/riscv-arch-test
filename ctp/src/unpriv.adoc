@@ -76,7 +76,6 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
-|cp_sc|2|Store conditional instruction has a success and failure case.
 |===
 
 Notes:

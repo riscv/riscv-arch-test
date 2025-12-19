@@ -1,0 +1,9 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_misalign
+c.lw,CL,x,x,x,x
+c.lwsp,CILS,x,x,x,x
+c.ld,CL,,x,x,x
+c.ldsp,CILS,,x,x,x
+c.sw,CS,x,x,x,x
+c.swsp,CSS,x,x,x,x
+c.sd,CS,,x,x,x
+c.sdsp,CSS,,x,x,x

@@ -158,14 +158,3 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 //include::{testplansdir}/ExceptionsVMZaamo.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1747092954#gid=1747092954[Google Sheet Testplan]
-
-==== Zicclsm Misaligned Loads/Stores
-
-Misaligned loads/stores handled in hardware.
-
-[[t-Zicclsm-coverpoints]]
-.Zicclsm Coverpoints
-,===
-//include::{testplansdir}/Zicclsm.adoc[]
-,===
-*** need to create this

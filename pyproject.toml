@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.uv.workspace]
-members = ["framework", "generators/tests/testgen", "generators/ctp"]
+members = ["framework", "generators/testgen", "generators/ctp"]
 
 [dependency-groups]
-dev = ["pyright>=1.1.407", "ruff>=0.14.3"]
+dev = ["pyright>=1.1.407", "ruff==0.14.10"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
@@ -17,7 +17,7 @@ extend-exclude = [
   "_archive",
   "ctp",
   "generators/coverage",
-  "generators/tests/scripts", # Old scripts that still need to be updated
+  "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
 [tool.ruff.lint]
@@ -60,12 +60,14 @@ exclude = ["external", "_archive"]
 [tool.pyright]
 exclude = [
   "**/__pycache__",
+  "**/node_modules",
+  "**/.*",
   ".venv",
   "external",
   "_archive",
   "ctp",
   "generators/ctp",
   "generators/coverage",
-  "generators/tests/scripts", # Old scripts that still need to be updated
+  "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"

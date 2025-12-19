@@ -11,6 +11,8 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_and_cg/{cp_rs1p, cp_rs2p}"]
   - name: c-add_op
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0, cr_rs1_rs2_edges}"]
+  - name: c-add_hint
+    coverpoint: ["TODO"]
   - name: c-add_val
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0}"]
   - name: c-addi16sp_op

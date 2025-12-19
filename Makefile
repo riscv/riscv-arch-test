@@ -5,9 +5,9 @@
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
 # REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
-CONFIG_FILES ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
-REF_CONFIG_FILES ?= configs/ref/sail-rvi20_32/test_config.yaml configs/ref/sail-rvi20_64/test_config.yaml
-# REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
+CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
+#REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
+REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
 
@@ -20,7 +20,7 @@ PRIVDIR64      := $(PRIVDIR)/rv64
 PRIVDIR32      := $(PRIVDIR)/rv32
 
 TEMPLATEDIR := templates
-TESTGEN_SRC_DIR := generators/tests/testgen/src/testgen
+TESTGEN_SRC_DIR := generators/testgen/src/testgen
 COVERGROUPGEN_SRC_DIR := generators/coverage/templates
 TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/*)
 COVERGROUPGEN_DEPS := $(wildcard $(COVERGROUPGEN_SRC_DIR)/* $(COVERGROUPGEN_SRC_DIR)/**)
@@ -69,19 +69,19 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
 
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
-$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
 	touch $@
 
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
-$(STAMP_DIR)/csrtests.stamp: generators/tests/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/csrtests.py
+$(STAMP_DIR)/csrtests.stamp: generators/testgen/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/csrtests.py
 	@touch $@
 
-$(STAMP_DIR)/illegalinstrtests.stamp: generators/tests/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/illegalinstrtests.py
+$(STAMP_DIR)/illegalinstrtests.stamp: generators/testgen/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
 	@touch $@
 
 .PHONY: tests

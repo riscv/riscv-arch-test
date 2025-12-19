@@ -15,7 +15,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
-    """Format CILS-type stack-pointer-based store instruction."""
+    """Format CSS-type stack-pointer-based store instruction."""
     assert params.rs2 is not None and params.rs2val is not None, (
         "rs2 and rs2val must be provided for CSS-type instructions"
     )

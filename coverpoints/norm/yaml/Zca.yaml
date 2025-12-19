@@ -11,8 +11,6 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_and_cg/{cp_rs1p, cp_rs2p}"]
   - name: c-add_op
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0, cr_rs1_rs2_edges}"]
-  - name: c-add_hint
-    coverpoint: ["TODO"]
   - name: c-add_val
     coverpoint: ["Zca_c_add_cg/{cp_rs1_nx0, cp_rs2_nx0}"]
   - name: c-addi16sp_op
@@ -90,16 +88,22 @@ normative_rule_definitions:
 
   # compressed Zca_hints
   - name: Zca_hints
-    coverpoint: [NOT IMPLEMENTED"]
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_add}"] # representative
+  - name: c-add_hint
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_add}"]
   - name: c-addi_hint
-    coverpoint: ["Zca_c_addi_cg/{TODO}"]
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_addi}"]
   - name: c-li_hint
-    coverpoint: ["Zca_c_li_cg/{TODO}"]
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_li}"]
+  - name: c-lui_hint
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_lui}"]
   - name: c-mv_hint
-    coverpoint: ["Zca_c_mv_cg/{TODO}"]
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_mv}"]
   - name: c-nop_hint
-    coverpoint: ["Zca_c_nop_cg/{TODO}"]
+    coverpoint: ["Zca_c_hint_cg/{cp_chint_nop}"]
   - name: c-slli_hint
-    coverpoint: ["Zca_c_slli_cg/{TODO}"]
+    coverpoint: ["N/A custom hints not certified"]
   - name: c-srli_hint
-    coverpoint: ["Zca_c_srli_cg/{TODO}"]
+    coverpoint: ["N/A custom hints not certified"]
+  - name: c-sra_hint
+    coverpoint: ["N/A custom hints not certified"]

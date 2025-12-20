@@ -15,6 +15,32 @@ include::{testplansdir}/Zicsr.adoc[]
 .Zifencei Instruction Coverpoints
 include::{testplansdir}/Zifencei.adoc[]
 
+include::norm/Zifencei_norm_rules.adoc[]
+
+
+==== Zicclsm Misaligned Loads/Stores
+
+Misaligned loads/stores can be handled in hardware if Zicclsm is implemented.  These tests exercise loads/stores in the program memory, which is expected to be cachable and coherent to support Zicclsm.  No special PMA circumstances are tested.  If other extensions with loads and stores are supported, more misaligned tests are run (e.g. ZicclsmF for floating point loads/stores, ZicclsmZca for compressed loads/stores).
+
+[[t-Zicclsm-coverpoints]]
+.Zicclsm Coverpoints
+include::{testplansdir}/Zicclsm.adoc[]
+
+include::norm/Zicclsm_norm_rules.adoc[]
+
+[[t-ZicclsmF-coverpoints]]
+.ZicclsmF Coverpoints
+include::{testplansdir}/ZicclsmF.adoc[]
+
+include::norm/ZicclsmF_norm_rules.adoc[]
+
+[[t-ZicclsmZca-coverpoints]]
+.ZicclsmZca Coverpoints
+include::{testplansdir}/ZicclsmZca.adoc[]
+
+include::norm/ZicclsmZca_norm_rules.adoc[]
+
+*** add others when ready
 
 ==== Zicond Conditional Instructions
 
@@ -22,11 +48,15 @@ include::{testplansdir}/Zifencei.adoc[]
 .Zicond Instruction Coverpoints
 include::{testplansdir}/Zicond.adoc[]
 
+include::norm/Zicond_norm_rules.adoc[]
+
 ==== Zihintpause Pause Hint
 
 [[t-Zihintpause-coverpoints]]
 .Zihintpause Instruction Coverpoints
 include::{testplansdir}/Zihintpause.adoc[]
+
+include::norm/Zihintpause_norm_rules.adoc[]
 
 ==== Zihintntl Non-temporal Locality Hint
 
@@ -38,11 +68,9 @@ include::{testplansdir}/Zihintpause.adoc[]
 
 ==== ZihintntlZca Compressed Non-temporal Locality Hint
 
-[[t-ZihintntlZca-coverpoints]]
-.ZihintntlZca Instruction Coverpoints
-,===
-//include::{testplansdir}/ZihintntlZca.adoc[]
-,===
+Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all` are a subset of the `c.add` hints. They are tested by the Zca_c_hint_cg/cp_chint_add coverpoint, so require no additional coverpoints.
+
+include::norm/ZihintntlZca_norm_rules.adoc[]
 
 ==== Zicbom Cache Block Flush/Invalidate
 

@@ -32,6 +32,5 @@ covergroup Svinval_cg with function sample(ins_t ins);
 // ---------------------
 function void svinval_sample(int hart, int issue, ins_t ins);
 
-    //$display("Svinval coverage: ins_str %s ins,prev.mode %b tvm %b", ins.ins_str, ins.prev.mode, ins.prev.csr[12'h300][20]);
     Svinval_cg.sample(ins);
 endfunction

@@ -125,7 +125,7 @@
         SREG x6, 288(x5)    # save the string pointer
 
     failedtest_report:
-        # RVMODEL_IO_INIT
+        # RVMODEL_IO_INIT(x6, x7, x8)
       print_failstr:
         LA(x9, failstr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)

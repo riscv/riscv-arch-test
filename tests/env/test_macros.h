@@ -1,13 +1,3 @@
-// RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
-// test data section into dest_reg and increments the data_ptr pointer by REGWIDTH.
-// This macro is used to load integer test values from the .data section.
-//  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
-//  _DEST_REG - Destination register to load the value into
-#define RVTEST_TESTDATA_LOAD_INT(_DATA_PTR, _DEST_REG)  \
-  LREG _DEST_REG, 0(_DATA_PTR)                          ;\
-  addi _DATA_PTR, _DATA_PTR, REGWIDTH
-
-
 /* This function set up the Page table entry for Sv32 Translation scheme
     Arguments:
     _PAR: Register containing Physical Address

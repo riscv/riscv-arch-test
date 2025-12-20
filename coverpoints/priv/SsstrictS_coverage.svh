@@ -81,14 +81,13 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_csrr:         cross csrr,    csr,         priv_mode_s, nonzerord;
-    cp_csrw_edges: cross csrrw,   csr, priv_mode_s, rs1_edges {
+    cp_csrr:       cross csrr,  csr,   priv_mode_s, nonzerord;
+    cp_csrw_edges: cross csrrw, csr,   priv_mode_s, rs1_edges {
     }
-
-    cp_csrcs:        cross csrop,   csr, priv_mode_s, rs1_ones {
+    cp_csrcs:      cross csrop, csr,   priv_mode_s, rs1_ones {
     }
-    cp_shadow_m:     cross csrrw,   mcsrs,       priv_mode_m, rs1_edges;  // write 1s/0s to mstatus, mie, mip in m mode
-    cp_shadow_s:     cross csrrw,   scsrs,       priv_mode_s, rs1_edges;  // write 1s/0s to sstatus, sie, sip in s mode
+    cp_shadow_m:   cross csrrw, mcsrs, priv_mode_m, rs1_edges;  // write 1s/0s to mstatus, mie, mip in m mode
+    cp_shadow_s:   cross csrrw, scsrs, priv_mode_s, rs1_edges;  // write 1s/0s to sstatus, sie, sip in s mode
 endgroup
 
 covergroup SsstrictS_instr_cg with function sample(ins_t ins);
@@ -130,6 +129,7 @@ covergroup SsstrictS_instr_cg with function sample(ins_t ins);
     cp_fmvh:              cross priv_mode_s, fmvh;
     cp_fmvp:              cross priv_mode_s, fmvp;
     cp_cvtmodwd:          cross priv_mode_s, cvtmodwd;
+    cp_cvtmodwdfrm:       cross priv_mode_s, cvtmodwdfrm;
     cp_branch:            cross priv_mode_s, branch;
     cp_jalr:              cross priv_mode_s, jalr;
     cp_privileged_funct3: cross priv_mode_s, privileged_funct3;

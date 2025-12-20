@@ -35,9 +35,9 @@ covergroup ExceptionsZicboU_exceptions_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_mu;
-    cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_mu;
-    cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_mu;
+    cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_m_u;
+    cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_m_u;
+    cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_m_u;
 
 endgroup
 

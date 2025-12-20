@@ -1,0 +1,51 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: fcvt-h-s_op
+    # FCVT.S.H or
+    # FCVT.H.S converts a half-precision floating-point number to a
+    # single-precision floating-point number, or vice-versa, respectively
+    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
+    # never round
+    coverpoint:
+      [
+        "Zfhmin_fcvt_h_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H}",
+      ]
+  - name: fcvt-s-h_op
+    # FCVT.S.H or
+    # FCVT.H.S converts a half-precision floating-point number to a
+    # single-precision floating-point number, or vice-versa, respectively
+    # FCVT.S.D rounds according to the RM field; FCVT.D.S will
+    # never round
+    coverpoint:
+      [
+        "Zfhmin_fcvt_s_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_S_H}",
+      ]
+  - name: flh_op
+    # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.
+    coverpoint:
+      ["Zfhmin_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}"]
+  - name: fmv-h-x_op
+    # FMV.D.X moves the double-precision value encoded in IEEE 754-2008
+    # standard encoding from the integer register rs1 to the floating-point
+    # register rd
+    # FMV.H.X moves the half-precision value encoded in IEEE 754-2008 standard encoding from the lower 16 bits of integer register rs1 to the floating-point register rd, NaN-boxing the result.
+    coverpoint:
+      ["Zfhmin_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+  - name: fmv-x-h_op
+    # FMV.X.D moves
+    # the double-precision value in floating-point register rs1 to a
+    # representation in IEEE 754-2008 standard encoding in integer register
+    # rd
+    # FMV.X.H moves the half-precision
+    # value in floating-point register rs1 to a representation in IEEE
+    # 754-2008 standard encoding in integer register rd, filling the upper
+    # XLEN-16 bits with copies of the floating-point number's sign bit
+    coverpoint:
+      ["Zfhmin_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
+  - name: fsh_op
+    # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.
+    coverpoint:
+      [
+        "Zfhmin_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+      ]

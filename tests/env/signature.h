@@ -3,30 +3,12 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
-// SEW signature update stride
-#ifdef RVTEST_VECTOR
-  #if (VDSEW > XLEN)                // max(VDSEW, XLEN)
-    #define SIG_STRIDE (VDSEW / 8)
-  #else
-    #define SIG_STRIDE (XLEN / 8)
-  #endif
-#else
-  #define SIG_STRIDE REGWIDTH
-#endif
-
-// Define XLEN-sized pointer directive
-#if __riscv_xlen == 64
-  #define RVTEST_WORD_PTR .dword
-#else
-  #define RVTEST_WORD_PTR .word
-#endif
-
 // RVTEST_SIGUPD(sigptr, linkreg, tempreg, sigreg, strptr)
 // compares the value in sigreg with the value in memory at 0(sigptr).
 // If they are different, it jumps to a failure handler whose label is formed
-// from linkreg and tempreg. On success, it increments sigptr by REGWIDTH.
+// from linkreg and tempreg. On success, it increments sigptr by SIG_STRIDE.
 // In non-SELFCHECK mode, it simply stores sigreg to memory at 0(sigptr)
-// and increments sigptr by REGWIDTH. strptr is included as a .word/.dword
+// and increments sigptr by SIG_STRIDE. strptr is included as a .word/.dword
 // directive so a pointer to the string can be retrieved from the failure handler.
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
@@ -38,7 +20,7 @@
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    RVTEST_WORD_PTR _STR_PTR                                ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #else
@@ -46,7 +28,7 @@
     SREG _R, 0(_SIG_PTR)                                   ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    RVTEST_WORD_PTR _STR_PTR                                ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #endif
@@ -69,40 +51,117 @@
     nop
 #endif
 
-// RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, sigreg) compares the value in sigreg
-// with the value in memory at 0(sigptr) and the value in FCSR with the value in
-// memory at REGWIDTH(sigptr). If either are different, it jumps to a failure handler
-// whose label is formed from linkreg and tempreg. On success, it increments sigptr
-// by 2*REGWIDTH. In non-SELFCHECK mode, it simply stores sigreg to memory at 0(sigptr),
-// fcsr to memory at REGWIDTH(sigptr), and increments sigptr by 2*REGWIDTH.
+
+// RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, strptr)
+// compares the value in sigreg with the value in memory at 0(sigptr) and the
+// value in FCSR with the value in memory at SIG_STRIDE(sigptr). If either are
+// different, it jumps to a failure handler whose label is formed from linkreg
+// and tempreg. On success, it increments sigptr by 2*SIG_STRIDE. In non-SELFCHECK
+// mode, it simply stores sigreg to memory at 0(sigptr), FCSR at SIG_STRIDE(sigptr),
+// and increments sigptr by 2*SIG_STRIDE. strptr is included as a .word/.dword
+// directive so a pointer to the string can be retrieved from the failure handler.
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
-//  _R - Register containing value to store/compare
-#ifdef SELFCHECK
-  #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _R)  \
-    FLREG _TEMP_REG,0(_SIG_PTR)                           ;\
-    beq _TEMP_REG, _R, 1f                                  ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    1:                                                     ;\
-    csrr _R, fcsr                                          ;\
-    LREG _TEMP_REG,FREGWIDTH(_SIG_PTR)                    ;\
-    beq _TEMP_REG, _R, 2f                                  ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
-    2:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, REGWIDTH+FREGWIDTH
+//  _F_TEMP_REG - Temporary register to use for loading fp signature
+//  _FR - Floating point register containing value to store/compare
+//  _STR_PTR - label to string describing the test
+// Floating point values are stored to memory and then loaded back into integer registers
+// for comparison, to avoid issues with NaN that arise from using feq. There is no way to
+// directly transfer a floating point value to an integer register without Zfa when FLEN > XLEN.
+#if FLEN == 128 && XLEN == 32
+  #error "Q on RV32 is not supported yet."
+#endif
+#if FLEN > XLEN
+  #ifdef SELFCHECK
+    #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
+      LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
+      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
+      beq _TEMP_REG, _LINK_REG, 1f                           ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      1:                                                     ;\
+      LA(_LINK_REG, scratch)                                 ;\
+      LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
+      LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
+      beq _TEMP_REG, _LINK_REG, 2f                           ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      2:                                                     ;\
+      csrr _LINK_REG, fcsr                                   ;\
+      LREG _TEMP_REG, 2*SIG_STRIDE(_SIG_PTR)                 ;\
+      beq _TEMP_REG, _LINK_REG, 3f                           ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      3:                                                     ;\
+      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE
+  #else
+    #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
+      LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
+      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      SREG _LINK_REG, 0(_SIG_PTR)                            ;\
+      beq x0, x0, 1f                                         ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      1:                                                     ;\
+      LA(_LINK_REG, scratch)                                 ;\
+      LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
+      SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
+      beq x0, x0, 2f                                         ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      2:                                                     ;\
+      csrr _LINK_REG, fcsr                                   ;\
+      SREG _LINK_REG, 2*SIG_STRIDE(_SIG_PTR)                 ;\
+      beq x0, x0, 3f                                         ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      3:                                                     ;\
+      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE
+  #endif
 #else
-  #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _R)  \
-    FSREG _R,0(_SIG_PTR)                                  ;\
-    csrr _R, fcsr                                          ;\
-    SREG _TEMP_REG,FREGWIDTH(_SIG_PTR)                    ;\
-    nop                                                    ;\
-    nop                                                    ;\
-    addi _SIG_PTR, _SIG_PTR, REGWIDTH+FREGWIDTH
+  #ifdef SELFCHECK
+    #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
+      LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
+      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
+      beq _TEMP_REG, _LINK_REG, 1f                           ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      1:                                                     ;\
+      csrr _LINK_REG, fcsr                                   ;\
+      LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
+      beq _TEMP_REG, _LINK_REG, 3f                           ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      3:                                                     ;\
+      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE
+  #else
+    #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
+      LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
+      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      SREG _LINK_REG, 0(_SIG_PTR)                            ;\
+      beq x0, x0, 1f                                         ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      1:                                                     ;\
+      csrr _LINK_REG, fcsr                                   ;\
+      SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
+      beq x0, x0, 3f                                         ;\
+      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      RVTEST_WORD_PTR _STR_PTR                               ;\
+      3:                                                     ;\
+      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE
+  #endif
 #endif
 
 // Canary value to indicate bounds of signature region
-#if SIGALIGN==8
+#if SIG_STRIDE==8
   #define CANARY_VALUE \
       0x6F5CA309E7D4B281
   #define CANARY \

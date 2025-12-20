@@ -82,9 +82,6 @@ def make_custom_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_d
     # c.mv x0, rs2 (where rs2 != 0)
     for rs2 in range(1, 32):
         test_data.add_testcase_string("cp_chint_mv")
-        # funct3=100 (4). bit12=0.
-        # rd=0.
-        encoding = (4 << 13) | (rs2 << 2) | 0x2
 
         test_lines.extend(
             [

@@ -13,8 +13,6 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.data.test_data import TestData
-
 
 def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path, extra_defines: str) -> str:
     """Insert a header/footer template file into the test file."""

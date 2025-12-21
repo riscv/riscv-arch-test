@@ -67,7 +67,6 @@ misaligned_loop:
     #endif
 
     #ifdef ZCD_SUPPORTED
-        //Test shared compressed load floating instruction
         c.fld   f9, 0(a2)    # compressed load floating-point doubleword
     #endif
 
@@ -119,7 +118,6 @@ misaligned_loop:
     #endif
 
     #ifdef ZCD_SUPPORTED
-        //Test shared compressed store floating instruction
         c.fsd   f8, 0(a2)    # compressed store floating-point doubleword
     #endif
 
@@ -170,13 +168,10 @@ misaligned_loop:
 
     #ifdef ZCF_SUPPORTED
         c.flw   f9, 0(a2)       // Compressed floating-point load word
-        c.flwsp f9, 0(sp)       // Compressed floating-point load word from sp
     #endif
 
     #ifdef ZCD_SUPPORTED
-        //Test shared compressed floating instruction
         c.fld   f9, 0(a2)    # compressed load floating-point doubleword
-        c.fldsp f9, 0(sp)       // Compressed floating-point load doubleword from sp
     #endif
 
     #------------------------
@@ -194,7 +189,6 @@ misaligned_loop:
     #endif
 
     #ifdef ZCD_SUPPORTED
-        //Test shared compressed floating instruction
         c.fldsp f9, 0(sp)       // Compressed floating-point load doubleword from sp
     #endif
 
@@ -220,7 +214,6 @@ misaligned_loop:
         c.sb    a3, 0(a2)
     #endif
 
-    //Test shared compressed floating instruction
     #ifdef ZCF_SUPPORTED
         c.fsw   f8, 0(a2)    # compressed load floating-point word
     #endif

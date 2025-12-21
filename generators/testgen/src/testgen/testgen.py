@@ -156,10 +156,7 @@ def generate_tests_for_instruction(
         temp_test_data = current_test_data.copy()
 
         # Generate code for this coverpoint using the temporary state
-        if coverpoint == "cp_asm_count":
-            cp_code = f"# Testcase cp_asm_count\n{instr_name}\n"
-        else:
-            cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, temp_test_data)
+        cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, temp_test_data)
 
         # Check if we should split
         # Split if adding this coverpoint would exceed the limit AND we have content already
@@ -179,10 +176,9 @@ def generate_tests_for_instruction(
             current_body_lines = []
 
             # Regenerate code for this coverpoint using the NEW state
-            if coverpoint == "cp_asm_count":
-                cp_code = f"# Testcase cp_asm_count\n{instr_name}\n"
-            else:
-                cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, current_test_data)
+            # TODO: This is not the most efficient and could be optimized to avoid regenerating,
+            # but is not currently a bottleneck and this is simpler for now.
+            cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, current_test_data)
         else:
             # If we didn't split, commit the temporary state to the current state
             current_test_data = temp_test_data

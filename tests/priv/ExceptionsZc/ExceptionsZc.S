@@ -64,8 +64,8 @@ misaligned_loop:
     #endif
 
     #ifdef ZCF_SUPPORTED
-                c.flw   f9, 0(a2)    # compressed load floating-point word
-            #endif
+        c.flw   f9, 0(a2)    # compressed load floating-point word
+    #endif
 
     //Test hardware specific compressed load instructions
     #if __riscv_xlen == 64
@@ -79,16 +79,16 @@ misaligned_loop:
     #ifdef ZCD_SUPPORTED
         c.fldsp f9, 0(sp) # Compressed load floating-point doubleword from sp
     #endif
-    #ifdef ZCA_SUPPORTED
-        c.lwsp  a3, 0(sp)
-    #endif
+
+    c.lwsp  a3, 0(sp)
+
     #ifdef ZCF_SUPPORTED
         # Compressed load floating-point word from sp:
         c.flwsp f9, 0(sp)
     #endif
 
     #if __riscv_xlen == 64
-            c.ldsp  a3, 0(sp)
+        c.ldsp  a3, 0(sp)
     #endif
 
 /////////////////////////////////
@@ -104,9 +104,8 @@ misaligned_loop:
     li a3,  0xDEADBEEF
 
     // Test compressed integer store instructions:
-    #ifdef ZCA_SUPPORTED
-        c.sw    a3, 0(a2)     # compressed store word
-    #endif
+    c.sw    a3, 0(a2)     # compressed store word
+
     #ifdef ZCB_SUPPORTED
         c.sh    a3, 0(a2)     # compressed store halfword
         c.sb    a3, 0(a2)
@@ -121,28 +120,24 @@ misaligned_loop:
     #endif
     #platform dependent store instructions
     #if __riscv_xlen == 64
-            c.sd    a3, 0(a2)     # compressed store doubleword (RV64 only)
+        c.sd    a3, 0(a2)     # compressed store doubleword (RV64 only)
     #endif
 
 
     #------------------------
     // Now test the _sp forms.
-    #ifdef ZCA_SUPPORTED
-        c.swsp  a3, 0(sp)
-    #endif
+    c.swsp  a3, 0(sp)
 
     #ifdef ZCD_SUPPORTED
         c.fsdsp f8, 0(sp)
     #endif
 
-    #ifdef __riscv_xlen
-        #if __riscv_xlen == 64
-            c.sdsp  a3, 0(sp)
-        #elif __riscv_xlen == 32
-            #ifdef ZCF_SUPPORTED
-                c.fswsp f8, 0(sp)
-            #endif
-        #endif
+    #ifdef ZCF_SUPPORTED
+        c.fswsp f8, 0(sp)
+    #endif
+
+    #if __riscv_xlen == 64
+        c.sdsp  a3, 0(sp)
     #endif
 
     //update loop
@@ -165,9 +160,8 @@ misaligned_loop:
         c.lhu a3, 0(a2)
         c.lbu a3, 0(a2) //load byte
     #endif
-    #ifdef ZCA_SUPPORTED
-        c.lw  a3, 0(a2)
-    #endif
+
+    c.lw  a3, 0(a2)
 
     #ifdef ZCD_SUPPORTED
         //Test shared compressed floating instruction
@@ -180,23 +174,21 @@ misaligned_loop:
     #endif
 
     //Stack pointer variants:
-    #ifdef ZCA_SUPPORTED
-        c.lwsp  a3, 0(sp)       // Compressed load word using stack-pointer offset
-    #endif
+    c.lwsp  a3, 0(sp)       // Compressed load word using stack-pointer offset
 
     #ifdef ZCD_SUPPORTED
         c.fldsp f9, 0(sp)       // Compressed floating-point load doubleword from sp
+    #endif
+
+    #ifdef ZCF_SUPPORTED
+        c.flw   f9, 0(a2)       // Compressed floating-point load word
+        c.flwsp f9, 0(sp)       // Compressed floating-point load word from sp
     #endif
 
     #if __riscv_xlen == 64
         c.ldsp  a3, 0(sp)       // Compressed load doubleword using stack-pointer offset
         #ifdef ZCD_SUPPORTED
             c.fld   f9, 0(a2)       // Compressed floating-point load doubleword
-        #endif
-    #elif __riscv_xlen == 32
-        #ifdef ZCF_SUPPORTED
-            c.flw   f9, 0(a2)       // Compressed floating-point load word
-            c.flwsp f9, 0(sp)       // Compressed floating-point load word from sp
         #endif
     #endif
 
@@ -211,9 +203,7 @@ misaligned_loop:
     la      sp, ACCESS_FAULT_ADDRESS
 
     // Test compressed integer load instructions:
-    #ifdef ZCA_SUPPORTED
-        c.sw    a3, 0(a2)     # compressed store word
-    #endif
+    c.sw    a3, 0(a2)     # compressed store word
 
     #ifdef ZCB_SUPPORTED
         c.sh    a3, 0(a2)     # compressed store halfword
@@ -236,9 +226,7 @@ misaligned_loop:
 
     #------------------------
     # Now test the _sp forms.
-    #ifdef ZCA_SUPPORTED
-        c.swsp  a3, 0(sp)
-    #endif
+    c.swsp  a3, 0(sp)
 
     #ifdef ZCF_SUPPORTED
         c.fswsp f8, 0(sp)
@@ -255,9 +243,8 @@ misaligned_loop:
 /////////////////////////////////
 //cp_ebreak
 ////////////////////////////////
-#ifdef ZCA_SUPPORTED
     c.ebreak
-#endif
+
 
 finished:
     j done

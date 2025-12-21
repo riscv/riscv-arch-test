@@ -37,3 +37,26 @@ jobs:
 
       # - name: Compile and run tests on Sail
       #   run: CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+
+  vector-testgen:
+    name: Vector Testgen
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Generate vector tests
+        run: make vector-tests --jobs $(nproc)
+
+  # This is here so that the "Status checks that are required" Github
+  # option doesn't need to list all of the matrix jobs (it doesn't seem
+  # to work if you just specify the job ID of the matrix itself).
+  ci_pass:
+    runs-on: ubuntu-latest
+    needs: [regress, vector-testgen]
+    steps:
+      - name: Dummy
+        run: echo 'Jobs need at least one step.'

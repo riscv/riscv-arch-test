@@ -9,6 +9,8 @@
 Register management for riscv-arch-test test generation.
 """
 
+from __future__ import annotations
+
 import logging
 import random
 
@@ -43,6 +45,12 @@ class RegisterFile:
             raise RuntimeError(
                 f"Cannot destroy RegisterFile: some registers are still in use. The current state of the register file is: {self.reg_list}"
             )
+
+    def copy(self) -> RegisterFile:
+        """Create a deep copy of the RegisterFile object."""
+        new_reg_file = RegisterFile(self._reg_count)
+        new_reg_file.reg_list = self.reg_list.copy()
+        return new_reg_file
 
     @property
     def reg_count(self) -> int:
@@ -120,6 +128,16 @@ class IntegerRegisterFile(RegisterFile):
     def destroy(self) -> None:
         self.return_registers([self._sig_reg, self._data_reg, self._link_reg, self._temp_reg])
         super().destroy()
+
+    def copy(self) -> IntegerRegisterFile:
+        """Create a deep copy of the IntegerRegisterFile object."""
+        new_reg_file = IntegerRegisterFile(self._reg_count == 16)
+        new_reg_file.reg_list = self.reg_list.copy()
+        new_reg_file._sig_reg = self._sig_reg
+        new_reg_file._data_reg = self._data_reg
+        new_reg_file._link_reg = self._link_reg
+        new_reg_file._temp_reg = self._temp_reg
+        return new_reg_file
 
     # Access to special registers
     @property
@@ -287,6 +305,13 @@ class FloatRegisterFile(RegisterFile):
     def destroy(self) -> None:
         self.return_register(self._temp_reg)
         super().destroy()
+
+    def copy(self) -> FloatRegisterFile:
+        """Create a deep copy of the FloatRegisterFile object."""
+        new_reg_file = FloatRegisterFile()
+        new_reg_file.reg_list = self.reg_list.copy()
+        new_reg_file._temp_reg = self._temp_reg
+        return new_reg_file
 
     @property
     def temp_reg(self) -> int:

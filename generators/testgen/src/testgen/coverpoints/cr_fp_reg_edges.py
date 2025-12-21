@@ -73,10 +73,6 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     cross_frm = "_frm" in coverpoint
 
-    return [
-        "# TODO: Including this coverpoint makes the test too long for the linker. Need to split the test into multiple files."
-    ]
-
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
     test_lines: list[str] = []

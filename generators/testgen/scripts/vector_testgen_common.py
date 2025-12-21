@@ -1168,7 +1168,7 @@ def myhash(s):
 
 def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
     writeLine(f"\n# {name}")
-    with open(f"{ARCH_VERIF}/generators/tests/testgen/src/testgen/templates/{name}") as h:
+    with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
     if (test == "ExceptionsV"):
@@ -1197,13 +1197,12 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@EXTENSION_LIST@", f"{['I'] + ext_parts_no_I}")
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))
-        .replace("@SEW@", str(sew))
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace('''#include "riscv_arch_test.h"''', f'''#define RVTEST_VECTOR\n#define RVTEST_SEW {str(sew)}\n#define VDSEW {str(vdsew)}\n#include "riscv_arch_test.h"''')
+        .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
     )
     writeLine(template)
 

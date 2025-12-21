@@ -11,7 +11,7 @@
 #else
   #include "sail_test.h"
 #endif
-#include "model_test_check.h"
+#include "check_defines.h"
 #include "signature.h"
 #include "failure_code.h"
 #include "test_macros.h"

@@ -211,18 +211,23 @@ def write_test_file(
     arch_dir = f"rv{test_config.xlen}{'e' if test_config.e_register_file else ''}"
     test_file_relative = Path(arch_dir) / extension / filename
 
-    # Construct file content
-    final_lines: list[str] = []
-    final_lines.append(insert_setup_template("testgen_header.S", test_config.xlen, extension, test_file_relative))
-
+    extra_defines = ""
     # Enable floating point if needed
     if any(ext in extension for ext in ["F", "D", "Q", "Zf", "Zcf", "Zcd"]):
-        final_lines.append("# set mstatus.FS to 01 to enable fp\nLI(t0,0x4000)\ncsrs mstatus, t0\n")
+        extra_defines += "#define RVTEST_FP"
+
+    # Construct file content
+    final_lines: list[str] = []
+    final_lines.append(
+        insert_setup_template("testgen_header.S", test_config.xlen, extension, test_file_relative, extra_defines)
+    )
 
     final_lines.extend(body_lines)
 
     # Test footer
-    final_lines.append(insert_setup_template("testgen_footer.S", test_config.xlen, extension, test_file_relative))
+    final_lines.append(
+        insert_setup_template("testgen_footer.S", test_config.xlen, extension, test_file_relative, extra_defines)
+    )
 
     # Generate final test string with signature size and test data section
     sig_words = get_sig_space(test_data)

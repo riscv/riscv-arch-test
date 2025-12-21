@@ -51,12 +51,41 @@ jobs:
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
 
+  ctp-build:
+    name: Build CTP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+
+      - run: git submodule update --init ctp/docs-resources
+
+      - name: Pull Container
+        run: docker pull riscvintl/riscv-docs-base-container-image:latest
+
+      - name: Build
+        run: cd ctp && make -j2
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctp.pdf
+          path: ctp/build/ctp.pdf
+
+      - name: Upload HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctp.html
+          path: ctp/build/ctp.html
+
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [regress, vector-testgen]
+    needs: [regress, vector-testgen, ctp-build]
     steps:
       - name: Dummy
         run: echo 'Jobs need at least one step.'

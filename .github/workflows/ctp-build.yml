@@ -2,20 +2,7 @@ name: Build & Publish CTP
 
 on:
   workflow_dispatch:
-    inputs:
-      create_release:
-        description: Create a new CTP release if set to true
-        required: false
-        default: "false"
   push:
-    branches:
-      - act4
-    paths:
-      - "ctp/**"
-      - "generators/ctp/**"
-      - "testplans/**"
-      - ".github/workflows/ctp-build.yml"
-  pull_request:
     branches:
       - act4
     paths:
@@ -64,7 +51,6 @@ jobs:
           path: github-pages
 
   release:
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/act4') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -101,7 +87,6 @@ jobs:
             ctp.html
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/act4'
     needs: build
     runs-on: ubuntu-latest
     permissions:

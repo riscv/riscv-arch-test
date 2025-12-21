@@ -112,7 +112,7 @@ misaligned_loop:
         c.sb    a3, 0(a2)
     #endif
 
-    #ifdef ZCF_SUPPORTED
+    #ifdef ZCD_SUPPORTED
         //Test shared compressed store floating instruction
         c.fsd   f8, 0(a2)    # compressed store floating-point doubleword
     #endif

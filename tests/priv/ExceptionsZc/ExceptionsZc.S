@@ -158,9 +158,6 @@ misaligned_loop:
     #platform dependent load instructions
     #if __riscv_xlen == 64
         c.ld a3, 0(a2)   // Load doubleword (compressed)
-        #ifdef ZCD_SUPPORTED
-            c.fld   f9, 0(a2)       // Compressed floating-point load doubleword
-        #endif
     #endif
 
     #ifdef ZCB_SUPPORTED

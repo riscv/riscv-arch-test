@@ -16,7 +16,7 @@ from pathlib import Path
 from testgen.data.test_data import TestData
 
 
-def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path) -> str:
+def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path, extra_defines: str) -> str:
     """Insert a header/footer template file into the test file."""
     ext_components, march = canonicalize_extension(extension, xlen)
     with importlib.resources.open_text("testgen.templates", template_name) as template_file:
@@ -28,6 +28,7 @@ def insert_setup_template(template_name: str, xlen: int, extension: str, test_fi
         .replace("@EXTENSION_LIST@", f"{ext_components}")
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))
+        .replace("@EXTRA_DEFINES@", extra_defines)
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
     )
     return template

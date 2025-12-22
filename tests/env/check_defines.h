@@ -3,6 +3,18 @@
 # Jordan Carlin jcarlin@hmc.edu December 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+########## test.S CHECKS ##########
+
+#ifndef TEST_FILE
+  #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
+#endif
+
+#ifndef SIGUPD_COUNT
+  #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
+#endif
+
+########## model_test.h CHECKS ##########
+
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in model_test.h."
 #endif

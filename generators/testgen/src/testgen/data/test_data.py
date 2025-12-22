@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from __future__ import annotations
+
 from typing import Literal
 
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
@@ -28,17 +30,15 @@ class TestData:
         test_data_values: List of values to be stored in test_data section
     """
 
-    def __init__(self, test_config: TestConfig, extension: str, instr_name: str) -> None:
+    def __init__(self, test_config: TestConfig, instr_name: str) -> None:
         """
         Initialize test data with configuration and empty state.
 
         Args:
             test_config: Immutable test configuration
-            extension: RISC-V extension this test is exercising
             instr_name: Instruction name this test is exercising
         """
         self._config = test_config
-        self._extension = extension
         self._instr_name = instr_name
         self._int_regs = IntegerRegisterFile(test_config.e_register_file)
         self._float_regs = FloatRegisterFile()
@@ -58,11 +58,6 @@ class TestData:
         return self._config
 
     # Extension and instruction name accessors
-    @property
-    def extension(self) -> str:
-        """Get the RISC-V extension this test is exercising."""
-        return self._extension
-
     @property
     def instr_name(self) -> str:
         """Get the instruction name this test is exercising."""
@@ -111,6 +106,11 @@ class TestData:
         self._sigupd_count_float = value
 
     # Read-only properties delegated to config
+    @property
+    def extension(self) -> str:
+        """Get the RISC-V extension this test is exercising."""
+        return self._config.extension
+
     @property
     def xlen(self) -> int:
         return self._config.xlen
@@ -175,6 +175,25 @@ class TestData:
         self._test_data_strings.append(
             f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {self.extension}_{self.instr_name}_cg/{cp}\\""'
         )
+
+    def copy(self) -> TestData:
+        """Create a deep copy of the TestData object."""
+        new_data = TestData(self.config, self.instr_name)
+
+        # Copy register state
+        new_data._int_regs = self._int_regs.copy()
+        new_data._float_regs = self._float_regs.copy()
+
+        # Copy signature counts
+        new_data._sigupd_count = self._sigupd_count
+        new_data._sigupd_count_float = self._sigupd_count_float
+        new_data._test_count = self._test_count
+
+        # Copy data values
+        new_data._test_data_values = self._test_data_values.copy()
+        new_data._test_data_strings = self._test_data_strings.copy()
+
+        return new_data
 
     def destroy(self) -> None:
         """Clean up resources used by TestData."""

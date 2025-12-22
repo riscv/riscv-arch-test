@@ -121,6 +121,24 @@
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE
 
 
+// RVTEST_FP_ENABLE enables the floating-point unit
+// - Sets mstatus.fs to INITIAL
+// - Clears fcsr
+#define RVTEST_FP_ENABLE(HELPER_GPR)                 \
+  LI(HELPER_GPR, (MSTATUS_FS & (MSTATUS_FS >> 1)))  ;\
+  csrs mstatus, HELPER_GPR                          ;\
+  csrwi fcsr, 0
+
+// RVTEST_V_ENABLE enables the vector unit
+// Perform the following steps:
+// - Set mstatus.vs to INITIAL
+// - Read out vlenb and store in VLENB_CACHE
+#define RVTEST_V_ENABLE(VLENB_CACHE, HELPER_GPR)       \
+    LI(HELPER_GPR, (MSTATUS_VS & (MSTATUS_VS >> 1)))  ;\
+    csrs mstatus, HELPER_GPR                          ;\
+    csrr VLENB_CACHE, vlenb
+
+
 /* TODO: Add support for Zfinx
 #if ZFINX==1
     #define FLREG ld

@@ -160,6 +160,22 @@
   #endif
 #endif
 
+
+
+// RVTEST_SIGUPD_V(_SIG_PTR, _TMP, AVL, SEW, VREG)
+//  _SIG_PTR  - Base register for signature region
+//  _TEMP_REG - Temporary int register to use for loading signature
+//   AVL       - Application vector length (immediate constant)
+//   SEW       - Element width in bits (8, 16, 32, or 64)
+//   VREG      - Vector register containing data
+// TODO: implement SELFCHECK version
+#define RVTEST_SIGUPD_V(_SIG_PTR, _TEMP_REG, SEW, OFFSET, VREG)      \
+  vse ## SEW ##.v VREG, (_SIG_BASE)                           ;\
+  nop                                                         ;\
+  nop                                                         ;\
+  addi _SIG_PTR, _SIG_PTR, OFFSET
+
+
 // Canary value to indicate bounds of signature region
 #if SIG_STRIDE==8
   #define CANARY_VALUE \

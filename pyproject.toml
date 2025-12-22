@@ -20,7 +20,7 @@ extend-exclude = [
 ]
 
 [tool.ruff.lint]
-select = [
+extend-select = [
   "F",   # various basic rules (pyflakes)
   "E",   # errors (pycodestyle)
   "W",   # warnings (pycodestyle)
@@ -41,7 +41,9 @@ ignore = [
   "E111",
   "E114",
   "E117",
+  "D203",
   "D206",
+  "D213",
   "D300",
   "Q000",
   "Q001",
@@ -50,6 +52,10 @@ ignore = [
   "COM812",
   "COM819",
   "E501",
+  "T201",   # allow print statements
+  "TD002",  # allow TODO comments without authors
+  "TD003",  # allow TODO comments without issue links
+  "FIX",    # allow TODO comments
 ]
 
 [tool.ty.src]

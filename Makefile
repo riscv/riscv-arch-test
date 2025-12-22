@@ -21,10 +21,10 @@ PRIVDIR64      := $(PRIVDIR)/rv64
 PRIVDIR32      := $(PRIVDIR)/rv32
 
 TEMPLATEDIR := templates
-TESTGEN_SRC_DIR := generators/testgen/src/testgen
-COVERGROUPGEN_SRC_DIR := generators/coverage/templates
-TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/* $(TESTGEN_SRC_DIR)/**/**/*)
-COVERGROUPGEN_DEPS := $(wildcard $(COVERGROUPGEN_SRC_DIR)/* $(COVERGROUPGEN_SRC_DIR)/**)
+TESTGEN_SRC_DIR := generators/testgen
+COVERGROUPGEN_SRC_DIR := generators/coverage
+TESTGEN_DEPS := $(shell find $(TESTGEN_SRC_DIR) -type f)
+COVERGROUPGEN_DEPS := $(shell find $(COVERGROUPGEN_SRC_DIR) -type f)
 TESTPLANS_DIR := testplans
 TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
 
@@ -58,13 +58,13 @@ clean: clean-tests clean-ref
 ###### Test generation targets ######
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
-$(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
+$(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/coverage/covergroupgen.py
 	@touch $@
 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
-$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
+$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS))
 	@touch $@
 

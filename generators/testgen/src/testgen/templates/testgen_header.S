@@ -15,6 +15,7 @@
 
 #define TEST_FILE "@TEST_FILE_NAME@"
 #define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
+@EXTRA_DEFINES@
 #include "riscv_arch_test.h"
 
 // Set up test environment and declare main entry point

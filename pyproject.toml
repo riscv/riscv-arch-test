@@ -14,7 +14,6 @@ dev = ["pyright>=1.1.407", "ruff==0.14.10"]
 line-length = 120
 extend-exclude = [
   "external",
-  "_archive",
   "ctp",
   "generators/coverage",
   "generators/testgen/scripts", # Old scripts that still need to be updated
@@ -54,7 +53,12 @@ ignore = [
 ]
 
 [tool.ty.src]
-exclude = ["external", "_archive"]
+exclude = [
+  "external",
+  "generators/ctp",
+  "generators/coverage",
+  "generators/testgen/scripts", # Old scripts that still need to be updated
+]
 
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
@@ -64,7 +68,6 @@ exclude = [
   "**/.*",
   ".venv",
   "external",
-  "_archive",
   "ctp",
   "generators/ctp",
   "generators/coverage",

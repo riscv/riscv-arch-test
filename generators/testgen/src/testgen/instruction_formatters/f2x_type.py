@@ -18,7 +18,13 @@ def format_f2x_type(
     """Format F2X-type instruction."""
     assert params.fs1 is not None and params.fs1val is not None
     assert params.rd is not None
+
+    # fcvtmod.w.d requires rounding mode to be rtz
+    if instr_name == "fcvtmod.w.d":
+        params.frm = "rtz"
+
     frm = f", {params.frm}" if params.frm is not None else ""
+
     setup = [
         load_float_reg("fs1", params.fs1, params.fs1val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",

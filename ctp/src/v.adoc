@@ -213,6 +213,8 @@ Zvfhmin only exercises the widening and narrowing conversions: `vfwcvt.f.f.v` an
 .Zvfhmin Instruction Coverpoints
 include::{testplansdir}/Zvfhmin.adoc[]
 
+include::norm/Zvfhmin_norm_rules.adoc[]
+
 ==== ZfaZvfh Half-Precision Load Immediate
 
 When Zfa and Zvfh are both implemented, RISC-V provides a `fli.h` instruction (<<t-ZfaZvfh-coverpoints>>) even if full Zfh is not supported.
@@ -221,17 +223,24 @@ When Zfa and Zvfh are both implemented, RISC-V provides a `fli.h` instruction (<
 .ZfaZvfh Instruction Coverpoints
 include::{testplansdir}/ZfaZvfh.adoc[]
 
+include::norm/ZfaZvfh_norm_rules.adoc[]
+
 ==== Zvfbfmin BF16 Conversions
 
 [[t-Zvfbfmin-coverpoints]]
 .Zvfbfmin Instruction Coverpoints
 include::{testplansdir}/Zvfbfmin.adoc[]
 
+include::norm/Zvfbfmin_norm_rules.adoc[]
+
 ==== Zvfbfwma BF16 MAC
 
 [[t-Zvfbfwma-coverpoints]]
 .Zvfbfwma Instruction Coverpoints
-//include::{testplansdir}/Zvfbfwma.adoc[]
+include::{testplansdir}/Zvfbfwma.adoc[]
+
+include::norm/Zvfbfwma_norm_rules.adoc[]
+
 
 === Zvb* Vector Bit Manipulation Extension
 

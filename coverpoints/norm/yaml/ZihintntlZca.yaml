@@ -1,0 +1,11 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: C-NTL-P1_op
+    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+  - name: C-NTL-ALL_op
+    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+  - name: C-NTL-PALL_op
+    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]
+  - name: C-NTL-S1_op
+    coverpoint: ["Zca_c_hint_cg/cp_chint_add"]

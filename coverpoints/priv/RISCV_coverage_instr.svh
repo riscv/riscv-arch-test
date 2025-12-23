@@ -63,7 +63,9 @@
     // RV64IW shifts with op = 001101, funct3 = 1 or 5
     IWshift : coverpoint {ins.current.insn[14], ins.current.insn[31:25]} iff (ins.current.insn[6:0] == 7'b0011011 & ins.current.insn[13:12] == 2'b01) {
         // exercise all 2 * 128 bins of funct7 for funct3 = 1/5
+        // catches illegal shift types and uimm[5] = 1 for word shifts
     }
+
     // Stores op = 0100011
     store : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b0100011) {
         // Check all 8 types of stores, some illegal in rv32/always
@@ -139,6 +141,10 @@
     cvtmodwd : coverpoint ins.current.insn[26:20] iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b11000 & ins.current.insn[14:12] == 3'b001) {
         // Exhaustive test of 2^2 formats * 2^5 encodings; only rs2 = 00001 is possibly legal
     }
+    cvtmodwdfrm : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:20] == 12'b1100001_01000) {
+        // Exhaustive test of 8 rounding modes; only frm = 001 is possibly legal
+    }
+
     // Branches: op = 1100011
     branch : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1100011) {
         // Branch types 2 & 3 are illegal

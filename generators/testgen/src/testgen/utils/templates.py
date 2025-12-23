@@ -13,10 +13,8 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.data.test_data import TestData
 
-
-def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path) -> str:
+def insert_setup_template(template_name: str, xlen: int, extension: str, test_file: Path, extra_defines: str) -> str:
     """Insert a header/footer template file into the test file."""
     ext_components, march = canonicalize_extension(extension, xlen)
     with importlib.resources.open_text("testgen.templates", template_name) as template_file:
@@ -28,47 +26,10 @@ def insert_setup_template(template_name: str, xlen: int, extension: str, test_fi
         .replace("@EXTENSION_LIST@", f"{ext_components}")
         .replace("@MARCH@", march.lower())
         .replace("@XLEN@", str(xlen))
+        .replace("@EXTRA_DEFINES@", extra_defines)
         .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
     )
     return template
-
-
-def insert_test_template(template_name: str, xlen: int, test_data: TestData) -> tuple[str, int]:
-    """Insert a custom test template into the test file, handling signature pointer updates."""
-    with importlib.resources.open_text("testgen.templates", template_name) as template_file:
-        template = template_file.read()
-    # Extract test data
-    test_lines = test_data.int_regs.reset_special_registers()
-    sig_reg = test_data.int_regs.sig_reg
-    link_reg = test_data.int_regs.link_reg
-    temp_reg = test_data.int_regs.temp_reg
-    # Initialize return variables
-    sigupd_count_increment = 0
-    # Count SIGUPD macros
-    sigupd_count_custom = template.count("RVTEST_SIGUPD(")
-    # Count SIG_POINTER_INCREMENT(...) macros
-    sig_pointer_incr_matches = list(re.finditer(r"SIG_POINTER_INCREMENT\((\d+)\)", template))
-    # Move sig pointer to x3 for use in custom template
-    # Handle RVTEST_SIGUPD macros
-    template = (
-        template.replace("SIGPOINTER", f"x{sig_reg}")
-        .replace("LINKREG", f"x{link_reg}")
-        .replace("TEMPREG", f"x{temp_reg}")
-    )
-    sigupd_count_increment += sigupd_count_custom
-    # Handle SIG_POINTER_INCREMENT(n) macros
-    if sig_pointer_incr_matches:
-        for match in sig_pointer_incr_matches:
-            incr_val = int(match.group(1))
-            addi_instr = f"addi x{sig_reg}, x{sig_reg}, {incr_val}  # increment pointer {incr_val} bytes"
-            template = template.replace(match.group(0), addi_instr, 1)
-            sigupd_count_increment += incr_val // (4 * (xlen // 32))
-    # Handle wrong or unused macro
-    elif "SIG_POINTER_INCREMENT" in template and not sig_pointer_incr_matches:
-        raise ValueError(f"Invalid or missing SIG_POINTER_INCREMENT(n) in '{template_name}'.")
-    # Return test text and sigupd count increment
-    test_lines += template
-    return template, sigupd_count_increment
 
 
 def canonicalize_extension(extension: str, xlen: int) -> tuple[list[str], str]:

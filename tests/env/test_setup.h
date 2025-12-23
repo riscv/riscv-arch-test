@@ -52,6 +52,10 @@
     // Initialize test data pointer
     LA(x6, rvtest_data_begin)
 
+    #ifdef RVTEST_FP
+      RVTEST_FP_ENABLE(x5)
+    #endif
+
     #ifdef RVTEST_VECTOR
       RVTEST_V_ENABLE(x5, x6)
     #endif

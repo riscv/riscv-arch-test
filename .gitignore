@@ -28,3 +28,6 @@ tests/priv/headers
 tests/rv32
 tests/rv64
 ctp/src/norm
+coverpoints/norm/norm-rules.json
+coverpoints/norm/yaml/new
+ctp/mismatch_report.txt

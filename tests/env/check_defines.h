@@ -10,7 +10,7 @@
 #endif
 
 #ifndef SIGUPD_COUNT
-  #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
+  #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
 ########## model_test.h CHECKS ##########

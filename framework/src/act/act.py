@@ -34,6 +34,7 @@ def run_act(
         Path, typer.Option("--coverpoint-dir", "-c", exists=True, file_okay=False, help="Path to coverpoint directory")
     ] = Path("coverpoints"),
     workdir: Annotated[Path | None, typer.Option("--workdir", "-w", help="Path to working directory")] = None,
+    *,
     coverage: Annotated[
         bool, typer.Option("--coverage/--no-coverage", help="Enable or disable coverage generation")
     ] = False,

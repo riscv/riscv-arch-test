@@ -49,3 +49,4 @@ sw,S,x,x,x,nx0,x,,,x,,,,,,,,,x,word,,
 xor,R,x,x,x,x,x,x,x,x,,x,x,x,x,x,,,,,,
 xori,I,x,x,x,x,,x,x,,x,,,x,,,,,x,,,
 fence,F,x,x,x,,,,,,,,,,,,,,,,,fence
+nop,I,x,x,x,,,,,,,,,,,,,,,,,

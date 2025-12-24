@@ -37,12 +37,11 @@ normative_rule_definitions:
     coverpoint: ["SsstrictS_instr_cg/cp_cvtmodwdfrm"]
 
   # Zbs rules
-  # *** add these after Zb* normative rules are tagged
-  #- name: bseti_rsv
-  #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
-  #- name: bclri_rsv
-  #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
-  #- name: binvi_rsv
-  #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
-  #- name: bexti_rsv
-  #  coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+  - name: bseti_rv32i_shamt_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+  - name: bclri_rv32i_shamt_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+  - name: binvi_rv32i_shamt_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+  - name: bexti_rv32i_shamt_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_Itype"]

@@ -10,7 +10,7 @@ CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-
 REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
-EXTENSIONS  ?=  M,ZicsrM # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?=  I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei # Extensions to generate tests for. Leave blank to generate for all tests.
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64

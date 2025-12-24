@@ -98,6 +98,10 @@
 */
 // don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
 
+#define DEFAULT_SIG_REG x2
+#define DEFAULT_DATA_REG x3
+#define DEFAULT_TEMP_REG x4
+#define DEFAULT_LINK_REG x5
 #define T1      x6
 #define T2      x7
 #define T3      x8

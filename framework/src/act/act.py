@@ -34,6 +34,12 @@ def run_act(
         Path, typer.Option("--coverpoint-dir", "-c", exists=True, file_okay=False, help="Path to coverpoint directory")
     ] = Path("coverpoints"),
     workdir: Annotated[Path | None, typer.Option("--workdir", "-w", help="Path to working directory")] = None,
+    extensions: Annotated[
+        str,
+        typer.Option(
+            "--extensions", "-e", help="Comma-separated list of extensions to generate tests for (default: all)"
+        ),
+    ] = "all",
     *,
     coverage: Annotated[
         bool, typer.Option("--coverage/--no-coverage", help="Enable or disable coverage generation")
@@ -42,7 +48,7 @@ def run_act(
     if workdir is None:
         workdir = Path.cwd() / "work"
     # Generate test list
-    full_test_dict = generate_test_dict(test_dir)
+    full_test_dict = generate_test_dict(test_dir, extensions)
     rv32_common_tests = get_common_tests(full_test_dict, 32)
     rv64_common_tests = get_common_tests(full_test_dict, 64)
 

@@ -49,7 +49,7 @@ elfs: generate-makefiles-dut Makefile
 .PHONY: generate-makefiles-dut
 generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR)
+	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR) $(if $(EXTENSIONS),--extensions $(EXTENSIONS))
 
 .PHONY: clean
 clean: clean-tests clean-ref
@@ -101,7 +101,7 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 .PHONY: generate-makefiles-ref
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
+	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage $(if $(EXTENSIONS),--extensions $(EXTENSIONS))
 
 .PHONY: coverage
 coverage: generate-makefiles-ref Makefile

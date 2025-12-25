@@ -17,7 +17,7 @@
 // Therefore, Zihintpause is not needed in the REQUIRED_EXTENSIONS.
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, U, Zicsr]
+# REQUIRED_EXTENSIONS: [I, U, Zicsr, Sm]
 # MARCH: rv${XLEN}i_zicsr_zihintpause
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

@@ -10,11 +10,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr]
+# REQUIRED_EXTENSIONS: [I, Zicsr, Sm]
 # MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
+
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
+#include "rvtest_config.h"
 #include "WALLY-init-lib.h"
 
 main:

@@ -12,7 +12,7 @@
 // Use csrrw/csrrs/csrrc t6, csr, rs1    when modifying a CSR to also check the old value.
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, S, Zicsr]
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
 # MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

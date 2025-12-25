@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, F]
+# REQUIRED_EXTENSIONS: [I, F, Sm]
 # MARCH: rv${XLEN}ifdzfa
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

@@ -3,13 +3,6 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
-// Privileged tests prefer to use default register allocation for signature/self-check
-
-#define DEFAULT_SIG_PTR    x2
-#define DEFAULT_DATA_PTR   x3
-#define DEFAULT_TEMP_REG   x4
-#define DEFAULT_LINK_REG   x5
-
 // RVTEST_SIGUPD(sigptr, linkreg, tempreg, sigreg, strptr)
 // compares the value in sigreg with the value in memory at 0(sigptr).
 // If they are different, it jumps to a failure handler whose label is formed
@@ -195,3 +188,24 @@
   #define CANARY \
       .word CANARY_VALUE
 #endif
+
+// CSR Macros
+
+// Read _CSR into _R and record/check the signature
+#define RVTEST_SIGUPD_CSR_RD(_CSR, _R, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR) \
+    csrr _R, _CSR                                      ;\
+    RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)
+
+// Abbreviated form with default registers
+#define RVTEST_SIGUPD_CSR_READ(_CSR, _R, _STR_PTR) \
+    RVTEST_SIGUPD_CSR_RD(_CSR, _R, DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG, _STR_PTR)
+
+
+// Write _R1 into _CSR, then read back into _R2 and record/check the signature
+#define RVTEST_SIGUPD_CSR_WR(_CSR, _R1, _R2, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR) \
+    csrw _CSR, _R1                                      ;\
+    RVTEST_SIGUPD_CSR_RD(_CSR, _R2, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR)
+
+// Abbreviated form with default registers, overwrites _R with value read back
+#define RVTEST_SIGUPD_CSR_WRITE(_CSR, _R, _STR_PTR) \
+    RVTEST_SIGUPD_CSR_WR(_CSR, _R, _R, DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG, _STR_PTR)

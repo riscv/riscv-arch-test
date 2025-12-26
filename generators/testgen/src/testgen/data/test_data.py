@@ -68,9 +68,9 @@ class TestData:
         """Get the floating point load size based on the instruction."""
         if self.instr_name.endswith("q"):
             return "quad"
-        elif self.instr_name.endswith("d"):
+        elif self.instr_name.endswith("d") or self.instr_name in ("c.fsdsp", "c.fldsp"):
             return "double"
-        elif self.instr_name.endswith(("s", "w")):
+        elif self.instr_name.endswith(("s", "w")) or self.instr_name in ("c.fswsp", "c.flwsp"):
             return "single"
         elif self.instr_name.endswith("h"):
             return "half"

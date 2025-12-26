@@ -2,36 +2,36 @@
 # cfss_type.py
 #
 # harris@hmc.edu Dec 2025
+# jcarlin@hmc.edu Dec 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.utils.common import load_float_reg, write_sigupd
 
 
 @add_instruction_formatter(
-    "CFSS", required_params={"rs2", "rs2val", "immval", "temp_reg"}, imm_bits=9, imm_signed=False
+    "CFSS", required_params={"fs2", "fs2val", "immval", "temp_reg", "temp_freg"}, imm_bits=9, imm_signed=False
 )
-def format_css_type(
+def format_cfss_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CFSS-type stack-pointer-based store instruction."""
-    assert params.rs2 is not None and params.rs2val is not None, (
-        "rs2 and rs2val must be provided for CFSS-type instructions"
+    assert params.fs2 is not None and params.fs2val is not None, (
+        "fs2 and fs2val must be provided for CFSS-type instructions"
     )
-    assert params.temp_reg is not None, "temp_reg must be provided for CFSS-type instructions"
     assert params.immval is not None, "immval must be provided for CFSS-type instructions"
-
-    return (["#TODO: CFSS tests are still a work in progress"], [], [])
-    # TODO: Fix CSS trapping bug and re-enable these tests
+    assert params.temp_reg is not None and params.temp_freg is not None, (
+        "temp_reg and temp_freg must be provided for CFSS-type instructions"
+    )
 
     # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte
-    if instr_name == "c.sdsp":
+    if instr_name == "c.fsdsp":
         alignment = 8
         max_val = 504
-    elif instr_name == "c.swsp":
+    elif instr_name == "c.fswsp":
         alignment = 4
         max_val = 252
     else:
@@ -42,38 +42,22 @@ def format_css_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
-    setup: list[str] = []
-    # sp (x2) is used as the base pointer for CSS instructions
-    # Ensure sp is allocated
-    if params.rs2 != 2:
-        setup.append(test_data.int_regs.consume_registers([2]))
-
-    setup.extend(
-        [
-            load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-            test_data.int_regs.move_sig_reg(2),  # Move sig_reg to sp
-        ]
-    )
-
-    sig_reg = test_data.int_regs.sig_reg
-
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
-    test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
-    check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        "#ifdef SELFCHECK",
-        f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
-        write_sigupd(params.temp_reg, test_data),
-        "#else",
-        f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
-        "# nops to ensure length matches SELFCHECK",
-        "nop",
-        "nop",
-        "nop",
-        "#endif",
+    setup = [
+        test_data.int_regs.consume_registers([2]),  # sp (x2) is used as the base pointer for CSS instructions
+        load_float_reg("fs2", params.fs2, params.fs2val, test_data),
+        "LA(sp, scratch) # set sp to scratch space",
+        f"addi sp, sp, {-params.immval}  # adjust for offset",
     ]
-    test_data.sigupd_count += 1
+
+    test = [f"{instr_name} f{params.fs2}, {params.immval}(sp) # perform store"]
+
+    check = [
+        f"addi sp, sp, {params.immval} # remove offset from sp",
+        f"FLREG f{params.temp_freg}, 0(sp) # load stored value for checking",
+        write_sigupd(params.temp_freg, test_data, sig_type="float"),
+    ]
+
+    # Return sp since it was allocated specially for this testcase
+    test_data.int_regs.return_register(2)
+
     return (setup, test, check)

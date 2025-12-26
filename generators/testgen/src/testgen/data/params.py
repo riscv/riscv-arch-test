@@ -41,6 +41,7 @@ class InstructionParams:
     fs2: int | None = None
     fs3: int | None = None
     fd: int | None = None
+    temp_freg: int | None = None  # Temporary float register for use in test setup/teardown
 
     # Float register values
     fs1val: int | None = None
@@ -72,7 +73,7 @@ class InstructionParams:
     def used_float_regs(self) -> list[int]:
         """Return list of all float registers used in this test."""
         regs: list[int] = []
-        for reg in [self.fs1, self.fs2, self.fs3, self.fd]:
+        for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg]:
             if reg is not None:
                 regs.append(reg)
         return regs

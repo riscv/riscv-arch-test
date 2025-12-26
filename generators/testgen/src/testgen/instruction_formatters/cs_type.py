@@ -44,10 +44,12 @@ def format_cs_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
-    # Move sig_reg to rs1
+    # load test value
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
     ]
+
+    # Move sig_reg to rs1
     if params.rs1 != test_data.int_regs.sig_reg:
         setup.append(
             test_data.int_regs.move_sig_reg(params.rs1),

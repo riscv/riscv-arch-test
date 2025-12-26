@@ -127,6 +127,9 @@ def generate_random_params(
     if "fs3val" in required_params and params.fs3val is None:
         params.fs3val = random_int(bits=test_data.flen)
 
+    if "temp_freg" in required_params and params.temp_freg is None:
+        params.temp_freg = test_data.float_regs.get_register(reg_range=reg_range)
+
     if "temp_fval" in required_params and params.temp_fval is None:
         params.temp_fval = random_int(bits=test_data.flen)
 

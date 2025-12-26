@@ -2,6 +2,7 @@
 # css_type.py
 #
 # harris@hmc.edu Oct 2025
+# jcarlin@hmc.edu Dec 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -21,9 +22,6 @@ def format_css_type(
     )
     assert params.temp_reg is not None, "temp_reg must be provided for CSS-type instructions"
     assert params.immval is not None, "immval must be provided for CSS-type instructions"
-
-    return (["#TODO: CSS tests are still a work in progress"], [], [])
-    # TODO: Fix CSS trapping bug and re-enable these tests
 
     # Determine alignment requirement and max value: c.sdsp needs 8-byte, c.swsp needs 4-byte
     if instr_name == "c.sdsp":
@@ -49,29 +47,31 @@ def format_css_type(
     setup.extend(
         [
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-            test_data.int_regs.move_sig_reg(2),  # Move sig_reg to sp
+            f"addi sp, x{test_data.int_regs.sig_reg}, {-params.immval}  # copy sig_reg to sp and adjust for offset",
         ]
     )
 
-    sig_reg = test_data.int_regs.sig_reg
+    test = [f"{instr_name} x{params.rs2}, {params.immval}(sp) # perform store"]
 
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
-    test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
         "#ifdef SELFCHECK",
-        f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
+        f"LREG x{params.temp_reg}, 0(x{test_data.int_regs.sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),
         "#else",
-        f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
+        f"addi sp, sp, {params.immval} # remove offset from sp",
+        "addi sp, sp, SIG_STRIDE # increment signature pointer in sp",
+        f"{instr_name} x{params.rs2}, 0(sp) # repeat store so it is available for checking",
+        f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, SIG_STRIDE # increment signature pointer",
         "# nops to ensure length matches SELFCHECK",
-        "nop",
         "nop",
         "nop",
         "#endif",
     ]
-    test_data.sigupd_count += 1
+
+    test_data.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
+
+    if params.rs2 != 2:
+        # Return sp if it was allocated specially for this testcase
+        test_data.int_regs.return_register(2)
+
     return (setup, test, check)

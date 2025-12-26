@@ -67,7 +67,7 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
         )
     elif sig_type == "float":
         if test_data.flen > test_data.xlen:
-            test_data.sigupd_count += 3  # TODO: Why doesn't this work with 3?
+            test_data.sigupd_count += 3
         else:
             test_data.sigupd_count += 2
         return (

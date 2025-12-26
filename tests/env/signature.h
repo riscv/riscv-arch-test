@@ -3,6 +3,13 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
+// Privileged tests prefer to use default register allocation for signature/self-check
+
+#define DEFAULT_SIG_PTR    x2
+#define DEFAULT_DATA_PTR   x3
+#define DEFAULT_TEMP_REG   x4
+#define DEFAULT_LINK_REG   x5
+
 // RVTEST_SIGUPD(sigptr, linkreg, tempreg, sigreg, strptr)
 // compares the value in sigreg with the value in memory at 0(sigptr).
 // If they are different, it jumps to a failure handler whose label is formed

@@ -1,4 +1,28 @@
-/* This function set up the Page table entry for Sv32 Translation scheme
+// CSR Macros
+
+// Read _CSR into _R and record/check the signature
+#define CSR_READ(_CSR, _R, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR) \
+    csrr _R, _CSR                                      ;\
+    RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)
+
+// Write _R1 into _CSR, then read back into _R2 and record/check the signature
+// Trashes the value in _R
+#define CSR_WRITE(_CSR, _R1, _R2, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR) \
+    csrw _CSR, _R1                                      ;\
+    CSR_READ(_CSR, _R2, _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR)
+
+// Utility Macros
+
+// Place 1 in msb
+#define SET_MSB(_R) \
+    li _R, 0x80000000   # 1 in bit 31                       ;\
+    #if __riscv_xlen == 64                                  ;\
+        slli _R, _R, 32     # shift _R to have 1 in bit 63  ;\
+    #endif
+
+// Page Table Macros
+
+/* Set up the Page table entry for Sv32 Translation scheme
     Arguments:
     _PAR: Register containing Physical Address
     _PR: Register containing Permissions for Leaf PTE.

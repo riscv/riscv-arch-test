@@ -67,8 +67,12 @@ def generate_all_tests(
         for ext in extensions.split(","):
             ext = ext.strip()
             if ext not in extensions_from_testplans:
-                raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}")
-            extension_list.append(ext)
+                print(
+                    f"Warning: Extension {ext} not found in testplans at {testplan_dir}. This is normal for priv tests."
+                )
+                # raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}")
+            else:
+                extension_list.append(ext)
 
     # Build list of test generation tasks (extension configs to process)
     tasks: list[tuple[int, bool, str, Path, Path]] = []

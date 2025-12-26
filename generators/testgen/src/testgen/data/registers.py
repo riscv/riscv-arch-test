@@ -108,11 +108,11 @@ class IntegerRegisterFile(RegisterFile):
     Automatically handles special registers like signature pointer and link register.
     """
 
-    default_sig_reg = 3
-    default_data_reg = 6
-    default_link_reg = 4
-    link_regs = (4, 7, 12)  # Limit legal link/temp registers to simplify failure handler
-    link_temp_regs = (4, 5, 7, 8, 12, 13)  # Valid link/temp register pairs
+    default_sig_reg = 2
+    default_data_reg = 3
+    default_temp_reg = 4
+    temp_regs = (4, 7, 12)  # Limit legal temp/link registers to simplify failure handler
+    link_temp_regs = (4, 5, 7, 8, 12, 13)  # Valid temp/link register pairs
 
     def __init__(self, e_register_file: bool = False) -> None:
         # Use default RegisterFile functions but set register count based on E
@@ -121,8 +121,8 @@ class IntegerRegisterFile(RegisterFile):
         # Default special registers
         self._sig_reg = self.default_sig_reg
         self._data_reg = self.default_data_reg
-        self._link_reg = self.default_link_reg
-        self._temp_reg = self._link_reg + 1  # temp register is always the next register after the link register
+        self._temp_reg = self.default_temp_reg
+        self._link_reg = self._temp_reg + 1  # link register is always the next register after the temp register
         super().consume_registers([self._sig_reg, self._data_reg, self._link_reg, self._temp_reg])
 
     def destroy(self) -> None:
@@ -135,8 +135,8 @@ class IntegerRegisterFile(RegisterFile):
         new_reg_file.reg_list = self.reg_list.copy()
         new_reg_file._sig_reg = self._sig_reg
         new_reg_file._data_reg = self._data_reg
-        new_reg_file._link_reg = self._link_reg
         new_reg_file._temp_reg = self._temp_reg
+        new_reg_file._link_reg = self._link_reg
         return new_reg_file
 
     # Access to special registers
@@ -149,12 +149,12 @@ class IntegerRegisterFile(RegisterFile):
         return self._data_reg
 
     @property
-    def link_reg(self) -> int:
-        return self._link_reg
-
-    @property
     def temp_reg(self) -> int:
         return self._temp_reg
+
+    @property
+    def link_reg(self) -> int:
+        return self._link_reg
 
     def move_sig_reg(self, new_reg: int) -> str:
         """Move the signature register to a specified register.
@@ -210,18 +210,18 @@ class IntegerRegisterFile(RegisterFile):
         if self._data_reg != self.default_data_reg:
             asm_code += self.move_data_reg(self.default_data_reg) + "\n"
         # Reset link and temp registers
-        if self._link_reg != self.default_link_reg:
-            old_link_reg = self._link_reg
+        if self._temp_reg != self.default_temp_reg:
             old_temp_reg = self._temp_reg
-            self.return_register(self._link_reg)
+            old_link_reg = self._link_reg
             self.return_register(self._temp_reg)
-            self._link_reg = self.default_link_reg
-            self._temp_reg = self.default_link_reg + 1
+            self.return_register(self._link_reg)
+            self._temp_reg = self.default_temp_reg
+            self._link_reg = self.default_temp_reg + 1
             # Use super to avoid recursive checking for special reg conflicts
             super().consume_registers([self._link_reg, self._temp_reg])
             asm_code += (
-                f"mv x{self._link_reg}, x{old_link_reg} # reset link register to default\n"
                 f"mv x{self._temp_reg}, x{old_temp_reg} # reset temp register to default\n"
+                f"mv x{self._link_reg}, x{old_link_reg} # reset link register to default\n"
             )
         if asm_code != "":
             asm_code = "# Reset special registers to default locations\n" + asm_code
@@ -239,8 +239,8 @@ class IntegerRegisterFile(RegisterFile):
         # Check for conflicts with special registers
         sig_conflict = self._sig_reg in regs
         data_conflict = self._data_reg in regs
-        link_conflict = self._link_reg in regs
         temp_conflict = self._temp_reg in regs
+        link_conflict = self._link_reg in regs
         old_sig_reg = -1
         old_data_reg = -1
         old_link_reg = -1
@@ -255,11 +255,11 @@ class IntegerRegisterFile(RegisterFile):
             old_data_reg = self._data_reg
             self.return_register(self._data_reg)
 
-        if link_conflict or temp_conflict:
-            old_link_reg = self._link_reg
+        if temp_conflict or link_conflict:
             old_temp_reg = self._temp_reg
-            self.return_register(self._link_reg)
+            old_link_reg = self._link_reg
             self.return_register(self._temp_reg)
+            self.return_register(self._link_reg)
 
         # Consume requested registers
         super().consume_registers(regs)
@@ -275,16 +275,16 @@ class IntegerRegisterFile(RegisterFile):
                 f"\nmv x{self._data_reg}, x{old_data_reg} # switch data pointer register to avoid conflict with test\n"
             )
 
-        if link_conflict or temp_conflict:
+        if temp_conflict or link_conflict:
             # Restrict link register to specific set
-            available_link_regs = [reg for reg in self.link_regs if reg + 1 in self.reg_list]
-            self._link_reg = self.get_register(reg_range=available_link_regs)
-            self._temp_reg = self._link_reg + 1  # temp register is always the next register after the link register
+            available_temp_regs = [reg for reg in self.temp_regs if reg + 1 in self.reg_list]
+            self._temp_reg = self.get_register(reg_range=available_temp_regs)
+            self._link_reg = self._temp_reg + 1  # temp register is always the next register after the link register
             # Use super to avoid recursive checking for special reg conflicts
-            super().consume_registers([self._temp_reg])
+            super().consume_registers([self._link_reg])
             asm_code += (
+                f"\nmv x{self._temp_reg}, x{old_temp_reg} # switch temp register to avoid conflict with test\n"
                 f"\nmv x{self._link_reg}, x{old_link_reg} # switch link pointer register to avoid conflict with test\n"
-                f"\nmv x{self._temp_reg}, x{old_temp_reg} # switch temp pointer register to avoid conflict with test\n"
             )
 
         return asm_code

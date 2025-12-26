@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, S, Zicsr, Svinval]
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Svinval, Sm]
 # MARCH: rv${XLEN}i_zicsr_svinval
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

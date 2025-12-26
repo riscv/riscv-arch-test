@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr, Zicntr]
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zicntr, Sm]
 # MARCH: rv${XLEN}i_zicsr_zicntr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

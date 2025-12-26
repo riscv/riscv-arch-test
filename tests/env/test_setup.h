@@ -39,25 +39,27 @@
   rvtest_code_begin:
 
     // Initialize signature pointer
-    LA(x3, signature_base)
+    LA(DEFAULT_SIG_REG, signature_base)
 
     // Initial signature check to confirm self-checking is working
     LI(T1, CANARY_VALUE)
     #ifdef SELFCHECK
-      RVTEST_SIGUPD(x3, x4, x5, T1, "canary_mismatch") # sig_begin_canary
+      // Can't use DEFAULT_*_REG macros here because of macro expansion order
+      // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
+      RVTEST_SIGUPD(x2, x5, x4, T1, "canary_mismatch") # sig_begin_canary
     #else
       // nops to match selfchecking test length
       RVTEST_SIGUPD_NOPS
     #endif
     // Initialize test data pointer
-    LA(x6, rvtest_data_begin)
+    LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
     #ifdef RVTEST_FP
-      RVTEST_FP_ENABLE(x5)
+      RVTEST_FP_ENABLE(T1)
     #endif
 
     #ifdef RVTEST_VECTOR
-      RVTEST_V_ENABLE(x5, x6)
+      RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
     #endif
   .option pop
 .endm

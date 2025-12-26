@@ -9,11 +9,15 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Zicsr, Zalrsc]
+# REQUIRED_EXTENSIONS: [I, Zicsr, Zalrsc, Sm]
 # MARCH: rv${XLEN}ia_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
+
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
+#include "rvtest_config.h"
 #include "WALLY-init-lib.h"
 
 main:
@@ -39,7 +43,7 @@ loop:
 
 
 //////////////////////////////////////////////////////////////////
-//cp_load_address_access_fault AND cp_store_address_access_fault
+//cp_load_access_fault AND cp_store_access_fault
 //////////////////////////////////////////////////////////////////
     // Call the atomic_instr function
     // No misalignment a2 = 0, instruction access fault (a1 = 1)

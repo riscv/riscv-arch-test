@@ -50,7 +50,7 @@ covergroup ZicsrM_mcause_cg with function sample(ins_t ins);
         bins b_23_store_guest_page_fault = {23};
         //bins b_31_24_custom = {[31:24]};
         //bins b_47_32_reserved = {[47:32]};
-        //bins b_62_48_custom = {[62:48]};
+        //bins b_63_48_custom = {[63:48]};
     }
     mcause_interrupt_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
         // exclude reserved and custom fields

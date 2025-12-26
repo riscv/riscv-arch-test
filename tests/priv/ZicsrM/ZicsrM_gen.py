@@ -9,9 +9,8 @@
 ##################################
 
 import sys
+from pathlib import Path
 from textwrap import dedent
-
-import Path
 
 
 def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_march: str) -> str:
@@ -41,7 +40,7 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
         # CONFIG_DEPENDENT: true
         ##### END_TEST_CONFIG #####
 
-        #define TEST_FILE "{fname}"
+        #define TEST_FILE "{testname}"
         #define SIGUPD_COUNT {sigupd_count}  // figure out count
         #include "riscv_arch_test.h"
         .option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
@@ -96,7 +95,7 @@ def makePrivBody() -> None:
             // with interrupt = 0: walking 1s in fields except reserved and custom
         """)
 
-    causes = (i for i in range(0, 25) if i not in {14, 17})  # skip reserved and custom causes
+    causes = (i for i in range(0, 24) if i not in {14, 17})  # skip reserved and custom causes
     coverpoint = "ZicsrM_mcause_cg_cp_mcause_write_exception"
     for i in causes:
         body_lines += f"\n{coverpoint}_{i}:\n"
@@ -121,50 +120,13 @@ def makePrivBody() -> None:
 
     body_lines += "csrw mcause, s0    # restore CSR"
 
-    # interrupt_causes = (i in)
 
-    # _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR
-    #         li t1, 64           # upper bound
-    #         mv t0, x0           # initialize loop counter
-    #     1:  csrrw t6, mcause, t0     # write CSR
-    #         beq t0, t1, cp_mcause_walking1s_noint
-    #         addi t0, t0, 1      # increment test value
-    #         j   1b
-    #     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
-    #     cp_mcause_walking1s_noint:
-    #         slli t0, t0, 1      # walk 1s
-    #         csrrw t6, mcause, t0     # write CSR
-    #         bnez t0, cp_mcause_walking1s_noint  # until all 1s are gone
-    #     // with interrupt = 1: 0-15, walking 1s in bits 4-(XLEN-2)
-    #     // Now set interrupt = 1 as msb of register
-    #         jal setmsb          # put a 1 in the msb of a0
-    #         li t1, 16           # upper bound
-    #         mv t0, x0           # initialize loop counter
-    #     1: or t2, t0, a0       # set interrupt = 1 with msb
-    #         csrrw t6, mcause, t2    # write CSR
-    #         beq t0, t1, cp_mcause_walking1s_int
-    #         addi t0, t0, 1      # increment test value
-    #         j   1b
-    #     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
-    #     cp_mcause_walking1s_int:
-    #         slli t0, t0, 1      # walk 1s
-    #         or t0, t0, a0       # set 1 in msb for interrupts
-    #         csrrw t6, mcause, t0     # write CSR
-    #         bne t0, a0, cp_mcause_walking1s_int  # until all 1s are gone and only interrupt bit remains
-    #         csrrw t6, mcause, s0      # restore CSR
-
-    return body_lines, testcase_lines
-
+# Global variables
+sigupd_count = 0  # keep track of size of signature
+body_lines = ""  # body of test
+testcase_lines = ""  # testcase strings for reporting mismatches
 
 # Main Function
-
-global sigupd_count  # keep track of size of signature
-global body_lines  # body of test
-global testcase_lines  # testcase strings for reporting mismatches
-
-sigupd_count = 0
-body_lines = ""
-testcase_lines = ""
 
 basename = "ZicsrM"
 fname = f"{basename}-01.S"

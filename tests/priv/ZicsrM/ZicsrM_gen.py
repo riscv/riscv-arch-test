@@ -8,10 +8,11 @@
 # Privileged test generator
 ##################################
 
-import os
 import sys
-from random import randint, seed
 from textwrap import dedent
+
+import Path
+
 
 def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_march: str) -> str:
     """Generate the header for privileged tests."""
@@ -74,15 +75,16 @@ def makePrivFooter(basename: str, testcase_lines: str) -> str:
         """)
     return footer_lines
 
-def addCSRWriteTest(csr_name: str, reg: str, coverpoint: str, bin: str):
+
+def addCSRWriteTest(csr_name: str, reg: str, coverpoint: str, cp_bin: str) -> None:
     """Add a CSR write test.  Update global variables, including the signature update count, body lines, and testcase lines."""
     global sigupd_count, body_lines, testcase_lines
     sigupd_count += 1
     body_lines += f"\tCSR_WRITE({csr_name}, {reg}, {reg}, DEFAULT_SIG_PTR, DEFAULT_LINK_REG, DEFAULT_TEMP_REG, test_{sigupd_count})\n"
-    testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {coverpoint}_{bin}\\""\n'
+    testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {coverpoint}_{cp_bin}\\""\n'
 
 
-def makePrivBody():
+def makePrivBody() -> None:
     global body_lines
     """Generate the body for privileged tests.  Also updates the signature count and testcase messages"""
 
@@ -114,51 +116,50 @@ def makePrivBody():
     for i in causes:
         body_lines += f"\n{coverpoint}_{i}:\n"
         body_lines += f"\tli t0, {i}           # interrupt cause {i}\n"
-        body_lines += f"\tor t0, t0, a0        # set interrupt bit\n"
+        body_lines += "\tor t0, t0, a0        # set interrupt bit\n"
         addCSRWriteTest("mcause", "t0", coverpoint, i)
 
-    body_lines += f"csrw mcause, s0    # restore CSR"
+    body_lines += "csrw mcause, s0    # restore CSR"
 
-        #interrupt_causes = (i in)
+    # interrupt_causes = (i in)
 
-# _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR
-#         li t1, 64           # upper bound
-#         mv t0, x0           # initialize loop counter
-#     1:  csrrw t6, mcause, t0     # write CSR
-#         beq t0, t1, cp_mcause_walking1s_noint
-#         addi t0, t0, 1      # increment test value
-#         j   1b
-#     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
-#     cp_mcause_walking1s_noint:
-#         slli t0, t0, 1      # walk 1s
-#         csrrw t6, mcause, t0     # write CSR
-#         bnez t0, cp_mcause_walking1s_noint  # until all 1s are gone
-#     // with interrupt = 1: 0-15, walking 1s in bits 4-(XLEN-2)
-#     // Now set interrupt = 1 as msb of register
-#         jal setmsb          # put a 1 in the msb of a0
-#         li t1, 16           # upper bound
-#         mv t0, x0           # initialize loop counter
-#     1: or t2, t0, a0       # set interrupt = 1 with msb
-#         csrrw t6, mcause, t2    # write CSR
-#         beq t0, t1, cp_mcause_walking1s_int
-#         addi t0, t0, 1      # increment test value
-#         j   1b
-#     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
-#     cp_mcause_walking1s_int:
-#         slli t0, t0, 1      # walk 1s
-#         or t0, t0, a0       # set 1 in msb for interrupts
-#         csrrw t6, mcause, t0     # write CSR
-#         bne t0, a0, cp_mcause_walking1s_int  # until all 1s are gone and only interrupt bit remains
-#         csrrw t6, mcause, s0      # restore CSR
-
+    # _SIG_PTR, _LINK_REG, _TEMP_REG, _STR_PTR
+    #         li t1, 64           # upper bound
+    #         mv t0, x0           # initialize loop counter
+    #     1:  csrrw t6, mcause, t0     # write CSR
+    #         beq t0, t1, cp_mcause_walking1s_noint
+    #         addi t0, t0, 1      # increment test value
+    #         j   1b
+    #     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
+    #     cp_mcause_walking1s_noint:
+    #         slli t0, t0, 1      # walk 1s
+    #         csrrw t6, mcause, t0     # write CSR
+    #         bnez t0, cp_mcause_walking1s_noint  # until all 1s are gone
+    #     // with interrupt = 1: 0-15, walking 1s in bits 4-(XLEN-2)
+    #     // Now set interrupt = 1 as msb of register
+    #         jal setmsb          # put a 1 in the msb of a0
+    #         li t1, 16           # upper bound
+    #         mv t0, x0           # initialize loop counter
+    #     1: or t2, t0, a0       # set interrupt = 1 with msb
+    #         csrrw t6, mcause, t2    # write CSR
+    #         beq t0, t1, cp_mcause_walking1s_int
+    #         addi t0, t0, 1      # increment test value
+    #         j   1b
+    #     // with interrupt = 0: write mcause with walking 1s in bits 6-(XLEN-2)"
+    #     cp_mcause_walking1s_int:
+    #         slli t0, t0, 1      # walk 1s
+    #         or t0, t0, a0       # set 1 in msb for interrupts
+    #         csrrw t6, mcause, t0     # write CSR
+    #         bne t0, a0, cp_mcause_walking1s_int  # until all 1s are gone and only interrupt bit remains
+    #         csrrw t6, mcause, s0      # restore CSR
 
     return body_lines, testcase_lines
 
 
 # Main Function
 
-global sigupd_count # keep track of size of signature
-global body_lines # body of test
+global sigupd_count  # keep track of size of signature
+global body_lines  # body of test
 global testcase_lines  # testcase strings for reporting mismatches
 
 sigupd_count = 0
@@ -168,10 +169,10 @@ testcase_lines = ""
 basename = "ZicsrM"
 fname = f"{basename}-01.S"
 pathname = f"./{fname}"
-with open(pathname, "w") as outfile:
+with Path.open(pathname, "w") as outfile:
     sys.stdout = outfile
 
-    makePrivBody() # populate body_lines and testcase_lines
+    makePrivBody()  # populate body_lines and testcase_lines
     header_lines = makePrivHeader(fname, sigupd_count, "", "")
     footer_lines = makePrivFooter(basename, testcase_lines)
 

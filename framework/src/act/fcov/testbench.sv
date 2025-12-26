@@ -121,16 +121,19 @@ module testbench;
     if(traceFileHandler === 'x) begin
       fileNum = 0;
       traceFile = traceFiles[fileNum];
+      $display("Opening trace file: %s", traceFile);
       traceFileHandler = $fopen(traceFile, "r");
       if (traceFileHandler == 0) begin
         $display("Error: Could not open trace file");
         $finish;
       end
     end else if($feof(traceFileHandler)) begin
+      $display("Completed trace file: %s", traceFile);
       $fclose(traceFileHandler);
       if(fileNum < traceFiles.size - 1) begin
         fileNum++;
         traceFile = traceFiles[fileNum];
+        $display("Opening trace file: %s", traceFile);
         traceFileHandler = $fopen(traceFile, "r");
         if (traceFileHandler == 0) begin
           $display("Error: Could not open trace file");

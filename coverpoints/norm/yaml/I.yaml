@@ -17,6 +17,8 @@ normative_rule_definitions:
     coverpoint: [
         "I_addi_cg/cr_rs1_imm_edges, I_lw_cg/cp_imm_edges, I_sw_cg/cp_imm_edges, I_lui_cg/cp_imm_edges_20bit, I_beq_cg/cp_imm_edges_branch, I_jal_cg/cp_offset",
       ] # *** need to add this coverpoint in Zicsr rule table
+  - name: nop_op
+    coverpoint: ["I_nop_cg/{cp_asm_count}"]
   - name: addi_op
     coverpoint: ["I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: addi_overflow
@@ -131,3 +133,9 @@ normative_rule_definitions:
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]
   - name: fence_cons_ok
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]
+  - name: hints_op
+    # hints designated for standard use
+    coverpoint:
+      [
+        "I_add_cg/cp_rd, I_lui_cg/cp_rd, I_auipc_cg/cp_rd, I_addi_cg/cp_rd, I_andi_cg/cp_rd, I_ori_op/cp_rd, I_xori_op/cp_rd, I_sub_cg/cp_rd, I_and_cg/cp_rd, I_or_cg/cp_rd, I_xor_cg/cp_rd, I_sll_cg/cp_rd, I_srl_cg/cp_rd, I_sra_cg/cp_rd, I_fence_cg/cp_custom_fence",
+      ]

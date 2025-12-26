@@ -92,15 +92,26 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.rs1 is not None and params.rs1val is not None
             assert params.rs2 is not None and params.rs2val is not None
             assert params.rd is not None and params.temp_reg is not None
+
+            # Need to use the appropriate store instruction to avoid misaligned access
+            if instr_name.endswith(".w"):
+                store_instr = "sw"
+                load_instr = "lw"
+            elif instr_name.endswith(".d"):
+                store_instr = "sd"
+                load_instr = "ld"
+            else:
+                raise ValueError(f"Unknown amo ending for {instr_name} in cp_align.")
+
             test_lines = [
                 load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # load base address into rs1",
                 f"addi x{params.rs1}, x{params.rs1}, {alignment} # adjust for alignment",
-                f"SREG x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
+                f"{store_instr} x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
                 write_sigupd(params.rd, test_data, "int"),
-                f"LREG x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
+                f"{load_instr} x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
                 write_sigupd(params.rs1, test_data, "int"),
             ]
         else:

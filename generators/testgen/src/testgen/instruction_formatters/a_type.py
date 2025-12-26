@@ -41,18 +41,3 @@ def format_a_type(
         write_sigupd(params.rs1, test_data, "int"),
     ]
     return (setup, test, check)
-
-
-# # Testcase cp_rs1 (Test source rs1 = x2)
-# LI(x22, 0x4913f6a5847f83ca) # load random value
-# LA(x2, scratch) # base address
-# sd x22, 0(x2) # store in memory
-# LI(x22, 0x1e2f5a55feb3638d) # load another value into integer register
-# amoadd.w x5, x22, (x2) # perform operation
-# RVTEST_SIGUPD(x3, x5)
-# ld x2, 0(x2) # Load the updated value from memory
-# RVTEST_SIGUPD(x3, x2)
-
-# These AMO instructions atomically load a data value from the address in rs1,
-# place the value into register rd, apply a binary operator to the loaded value
-# and the original value in rs2, then store the result back to the original address in rs1.

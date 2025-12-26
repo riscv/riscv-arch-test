@@ -22,6 +22,15 @@ MAKEFILE_HEADER = """
 """
 
 
+def get_internal_sail_config(xlen: int) -> Path:
+    """Get the path to the internal Sail config file for the given XLEN.
+
+    This config is used for generating signatures for common tests and has
+    all extensions enabled.
+    """
+    return Path(str(importlib.resources.files("act"))) / "data" / f"sail-rv{xlen}.json"
+
+
 def gen_compile_targets(
     test_name: Path,
     test_metadata: TestMetadata,
@@ -29,7 +38,19 @@ def gen_compile_targets(
     xlen: int,
     mabi: str,
     config: Config,
+    sail_config_path: Path,
 ) -> str:
+    """Generate Makefile targets for compiling a test.
+
+    Args:
+        test_name: Name of the test.
+        test_metadata: Metadata for the test.
+        base_dir: Base directory for the build.
+        xlen: XLEN (32 or 64).
+        mabi: ABI string for the compiler.
+        config: Configuration object.
+        sail_config_path: Path to a Sail config file for signature generation.
+    """
     # Define paths
     build_dir = base_dir / "build"
     elf_dir = base_dir / "elfs"
@@ -66,7 +87,7 @@ def gen_compile_targets(
         f"{sig_file}: {sig_elf}\n"
         f"\t{config.ref_model_exe} --trace-all \\\n"
         f"\t\t--trace-output {sig_trace_file} \\\n"
-        f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
+        f"\t\t--config {sail_config_path} \\\n"
         f"\t\t{ref_model_sig_flags} \\\n"
         f"\t\t{sig_elf} \\\n"
         f"\t\t> {sig_log_file} 2>&1\n"
@@ -146,11 +167,18 @@ def generate_common_makefile(
     xlen: int,
     mabi: str,
 ) -> None:
-    """Generate a Makefile to compile the common tests."""
+    """Generate a Makefile to compile the common tests.
+
+    Common tests use an internal Sail config with all extensions enabled for
+    signature generation, rather than the user's config file.
+    """
     # Define paths
     common_wkdir = wkdir / "common"
     common_elf_dir = common_wkdir / "elfs"
     common_build_dir = common_wkdir / "build"
+
+    # Get the internal Sail config for common tests
+    internal_sail_config = get_internal_sail_config(xlen)
 
     # Makefile targets
     directory_set: set[str] = set()
@@ -168,7 +196,9 @@ def generate_common_makefile(
         final_elf = common_elf_dir / elf_name
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
-        makefile_lines.append(gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, mabi, config))
+        makefile_lines.append(
+            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, mabi, config, internal_sail_config)
+        )
 
     # Write out Makefile
     makefile_path = common_wkdir / f"Makefile-rv{xlen}.mk"
@@ -215,6 +245,7 @@ def generate_config_makefile(
         final_elf = config_elf_dir / elf_name
         trace_name = test_name.with_suffix(".rvvi")
         trace_path = config_coverage_dir / trace_name
+        sail_config_path = config.dut_include_dir / "sail.json"
 
         # Add test to target lists
         test_targets.append(final_elf)
@@ -234,7 +265,9 @@ def generate_config_makefile(
                 else "# skipping objdump\n",
             )
         else:
-            makefile_lines.append(gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, mabi, config))
+            makefile_lines.append(
+                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, mabi, config, sail_config_path)
+            )
 
         # Generate coverage trace targets
         if coverage_enabled:
@@ -292,7 +325,7 @@ def gen_coverage_targets(
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
         tracelist_file.write_text(
             f"# Tests for coverage group: {coverage_group}\n"
-            + "# Generated automatically by riscv-arch-test act framework\n"
+            "# Generated automatically by riscv-arch-test act framework\n"
             + "\n".join([str(trace) for trace in sorted(traces)])
         )
 

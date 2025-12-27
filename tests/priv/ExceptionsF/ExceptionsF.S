@@ -8,6 +8,17 @@
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, Zicsr, Sm]
+# MARCH: rv${XLEN}ifd_zicsr_zfa
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
+//Zfa  D, F,    _zfa
+
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
+#include "rvtest_config.h"
 #include "WALLY-init-lib.h"
 
 main:
@@ -106,50 +117,52 @@ fp_instructions:
     sw     t1, 12(t5)
 
     // Initialize floating point registers used
-    li t0, 1
-    fcvt.s.w f0, t0
+    #ifdef F_SUPPORTED
+        li t0, 1
+        fcvt.s.w f0, t0
 
-    li t0, 2
-    fcvt.s.w f1, t0
+        li t0, 2
+        fcvt.s.w f1, t0
 
-    li t0, 3
-    fcvt.s.w f2, t0
+        li t0, 3
+        fcvt.s.w f2, t0
 
-    li t0, 4
-    fcvt.s.w f3, t0
+        li t0, 4
+        fcvt.s.w f3, t0
 
-    li t0, 5
-    fcvt.s.w f4, t0
+        li t0, 5
+        fcvt.s.w f4, t0
 
-    li t0, 6
-    fcvt.s.w f5, t0
+        li t0, 6
+        fcvt.s.w f5, t0
 
-    li t0, 7
-    fcvt.s.w f6, t0
+        li t0, 7
+        fcvt.s.w f6, t0
 
-    li t0, 8
-    fcvt.s.w f7, t0
+        li t0, 8
+        fcvt.s.w f7, t0
 
-    li t0, 9
-    fcvt.s.w f8, t0
+        li t0, 9
+        fcvt.s.w f8, t0
 
-    li t0, 10
-    fcvt.s.w f9, t0
+        li t0, 10
+        fcvt.s.w f9, t0
 
-    li t0, 11
-    fcvt.s.w f10, t0
+        li t0, 11
+        fcvt.s.w f10, t0
 
-    li t0, 12
-    fcvt.s.w f11, t0
+        li t0, 12
+        fcvt.s.w f11, t0
 
-    li t0, 13
-    fcvt.s.w f12, t0
+        li t0, 13
+        fcvt.s.w f12, t0
 
-    li t0, 14
-    fcvt.s.w f13, t0
+        li t0, 14
+        fcvt.s.w f13, t0
 
-    li t0, 15
-    fcvt.s.w f14, t0
+        li t0, 15
+        fcvt.s.w f14, t0
+    #endif
 
     // Create mstatus.FS set mask dependent on a0
     slli s2, a0, 13  // shift a0 to mstatus.FS bits
@@ -160,108 +173,114 @@ fp_instructions:
 
     // --- Floating-Point Memory Operations ---
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fsw    f0, 0(a4)
+    #ifdef F_SUPPORTED
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fsw    f0, 0(a4)
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    flw    f1, 0(a4)
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        flw    f1, 0(a4)
 
-    // --- Floating-Point Arithmetic Operations ---
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fadd.s f2, f0, f1
+        // --- Floating-Point Arithmetic Operations ---
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fadd.s f2, f0, f1
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fsub.s f3, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fsub.s f3, f0, f1
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fmul.s f4, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fmul.s f4, f0, f1
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fdiv.s f5, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fdiv.s f5, f0, f1
 
-    // --- Floating‑Point Conversions ---
+        // --- Floating‑Point Conversions ---
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fcvt.w.s t2, f0
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fcvt.w.s t2, f0
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fcvt.s.w f6, t2
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fcvt.s.w f6, t2
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fcvt.s.d f7, f0
+        #ifdef D_SUPPORTED
+                // Set mstatus.FS
+                csrc mstatus, s1
+                csrs mstatus, s2
+            fcvt.s.d f7, f0
+        #endif
 
-    // --- Floating Point Arithmetic ---
+        // --- Floating Point Arithmetic ---
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fmadd.s f8, f0, f1, f2
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fmadd.s f8, f0, f1, f2
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fsqrt.s f9, f0
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fsqrt.s f9, f0
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fsgnj.s f10, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fsgnj.s f10, f0, f1
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    feq.s  t3, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        feq.s  t3, f0, f1
 
-    // --- Move Bit Representations ---
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fmv.x.w t4, f0
+        // --- Move Bit Representations ---
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fmv.x.w t4, f0
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fmv.w.x f11, t4
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fmv.w.x f11, t4
 
-    // --- Floating‑Point Classification and Minimum ---
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fclass.s t5, f0
+        // --- Floating‑Point Classification and Minimum ---
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fclass.s t5, f0
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fmin.s f12, f0, f1
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fmin.s f12, f0, f1
+    #endif
 
-    // --- Zfa Extension Instructions ---
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fround.s f14, f0
+    #ifdef ZFA_SUPPORTED
+        // --- Zfa Extension Instructions ---
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fround.s f14, f0
 
-        // Set mstatus.FS
-        csrc mstatus, s1
-        csrs mstatus, s2
-    fli.s  f2, 2.5
+            // Set mstatus.FS
+            csrc mstatus, s1
+            csrs mstatus, s2
+        fli.s  f2, 2.5
+    #endif
 
     // --- CSR Operations on Floating‑Point Status Registers ---
 
@@ -339,15 +358,18 @@ fp_instructions:
             csrs mstatus, s2
         fmv.x.w t1, f0
 
-            // Set mstatus.FS
-            csrc mstatus, s1
-            csrs mstatus, s2
-        fmvh.x.d t2, f0
+        #ifdef D_SUPPORTED
+                // Set mstatus.FS
+                csrc mstatus, s1
+                csrs mstatus, s2
+            fmvh.x.d t2, f0
 
-            // Set mstatus.FS
-            csrc mstatus, s1
-            csrs mstatus, s2
-        fmvp.d.x f1, t1, t2
+
+                // Set mstatus.FS
+                csrc mstatus, s1
+                csrs mstatus, s2
+            fmvp.d.x f1, t1, t2
+        #endif
     #endif
     #endif
 

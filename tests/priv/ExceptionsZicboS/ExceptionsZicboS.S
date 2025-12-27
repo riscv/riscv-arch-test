@@ -14,8 +14,7 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-//ExceptionsZicbo currently requires both Zicbom and Zicboz
-//r
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
 
 #include "rvtest_config.h"
 #include "WALLY-init-lib.h"

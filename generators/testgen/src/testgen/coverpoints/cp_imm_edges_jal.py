@@ -17,14 +17,15 @@ from testgen.utils.param_generator import generate_random_params
 @add_coverpoint_generator("cp_imm_edges_jal", "cp_imm_edges_c_jal")
 def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for JAL immediate edge values."""
+    print(f"Generating cp_imm_edges_jal for {instr_name}")
     test_lines: list[str] = []
     if instr_name == "c.jal":
         # test_data.int_regs.consume_registers([1])
         # params = generate_random_params(test_data, instr_type, rd=1)  # c.jal always uses x1
         return []  # TODO: implement c.jal immediate edge tests
     elif instr_name == "c.j":
-        # params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
-        return []  # TODO: implement c.j immediate edge tests
+        print("Generating cp_imm_edges_jal for c.j is not supported yet.")
+        params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
     else:
         params = generate_random_params(test_data, instr_type)
     assert params.rs1 is not None and params.rs2 is not None and params.rd is not None

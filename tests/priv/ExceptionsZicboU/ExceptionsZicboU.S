@@ -10,11 +10,10 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, U, Zicsr, Sm]
-# MARCH: rv${XLEN}ic_zicsr_zicbom_zicboz
+# MARCH: rv${XLEN}i_zicsr_zicbom_zicboz
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-//
 .option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
 
 #include "rvtest_config.h"

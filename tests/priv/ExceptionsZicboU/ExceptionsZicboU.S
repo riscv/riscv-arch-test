@@ -8,6 +8,16 @@
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, U, Zicsr, Sm]
+# MARCH: rv${XLEN}ic_zicsr_zicbom_zicboz
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
+//
+.option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
+
+#include "rvtest_config.h"
 #include "WALLY-init-lib.h"
 
 main:
@@ -70,7 +80,9 @@ cbieLoop:
     ecall
 
     // execute cbo instruction in a temp data block
-    cbo.inval    0(t4)
+    #ifdef ZICBOM_SUPPORTED
+        cbo.inval    0(t4)
+    #endif
 
     // loop update
     addi    s0, s0, 1
@@ -105,9 +117,10 @@ cbcfeLoop:
     ecall
 
     // execute cbo instruction in a temp data block
-    cbo.clean    0(t4)
-    cbo.flush    0(t4)
-
+    #ifdef ZICBOM_SUPPORTED
+        cbo.clean    0(t4)
+        cbo.flush    0(t4)
+    #endif
 
     // loop update
     addi    s0, s0, 1          # i++
@@ -142,7 +155,9 @@ cbzeLoop:
     ecall
 
     // execute cbo instruction in a temp data block
-    cbo.zero    0(t4)
+    #ifdef ZICBOZ_SUPPORTED
+        cbo.zero    0(t4)
+    #endif
 
     // loop update
     addi    s0, s0, 1          // i++

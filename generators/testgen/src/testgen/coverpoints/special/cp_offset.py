@@ -107,18 +107,18 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
 
 def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> list[str]:
-    params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     test_lines: list[str] = []
     if instr_type == "JR":
-        assert (
-            params.rs1 is not None
-            and params.rd is not None
-            and params.temp_reg is not None
-            and params.temp_val is not None
-        )
         # Loop over all 4 (rs1[0], imm[0]) combinations
         for rs1_lsb in (0, 1):
             for imm_lsb in (0, 1):
+                params = generate_random_params(test_data, instr_type, exclude_regs=[0])
+                assert (
+                    params.rs1 is not None
+                    and params.rd is not None
+                    and params.temp_reg is not None
+                    and params.temp_val is not None
+                )
                 label = f"jalrlsb_{rs1_lsb}{imm_lsb}"
                 test_data.add_testcase_string("cp_offset_lsbs")
                 imm_val = -1 if (rs1_lsb == 1 and imm_lsb == 1) else imm_lsb
@@ -129,7 +129,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                         load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                         f"LA(x{params.rs1}, {label}) # load address of label",
                         f"addi x{params.rs1}, x{params.rs1}, {rs1_lsb} # set rs1 LSB to {rs1_lsb}",
-                        f"{instr_name} x{params.rd}, x{params.rs1}, {imm_val} # jump imm LSB to {imm_lsb}",
+                        f"{instr_name} x{params.rd}, x{params.rs1}, {imm_val} # jump with imm LSB = {imm_lsb}",
                         f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
                         f"{label}: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                         "# check jump taken",
@@ -140,50 +140,43 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                         write_sigupd(params.rd, test_data),
                     ]
                 )
-    else:  # c.jalr / c.jr
-        ...
-        # assert params.rs1 is not None
-        # test_lines.extend(
-        #     [
-        #         f"LA(x3, {instr_name}lsb00) # load address of label",
-        #         f"c.li x{params.rs1}, 1" + " # branch is taken",
-        #         f"{instr_name} x3 # jump to address with bottom two lsbs = 00",
-        #         f"c.li x{params.rs1}, 0" + " # branch is not taken & used as something to jump over",
-        #         ".align 2",
-        #         f"{instr_name}lsb00: ",
-        #         write_sigupd(params.rs1, test_data),
-        #         write_sigupd(1, test_data) if instr_name == "c.jalr" else "",  # check return value in c.jalr
-        #         f"LA(x3, {instr_name}lsb01) # load address of label",
-        #         "addi x3, x3, 1 # add 1 to address",
-        #         f"c.li x{params.rs1}, 1" + " # branch is taken",
-        #         f"{instr_name} x3 # jump to address with bottom two lsbs = 01",
-        #         f"c.li x{params.rs1}, 0" + " # branch is not taken & used as something to jump over",
-        #         ".align 2",
-        #         f"{instr_name}lsb01: ",
-        #         write_sigupd(params.rs1, test_data),
-        #         write_sigupd(1, test_data) if instr_name == "c.jalr" else "",  # check return value in c.jalr
-        #         f"LA(x3, {instr_name}lsb10) # load address of label",
-        #         "addi x3, x3, 2 # add 2 to address",
-        #         f"c.li x{params.rs1}, 1" + " # branch is taken",
-        #         f"{instr_name} x3 # jump to address with bottom two lsbs = 10",
-        #         f"c.li x{params.rs1}, 0" + " # branch is not taken & used as something to jump over",
-        #         ".align 2",
-        #         f"{instr_name}lsb10: nop",
-        #         write_sigupd(params.rs1, test_data),
-        #         write_sigupd(1, test_data) if instr_name == "c.jalr" else "",  # check return value in c.jalr
-        #         "nop",  # c.jalr does not support 2 byte jumps, so this is a noop
-        #         f"LA(x3, {instr_name}lsb11) # load address of label",
-        #         "addi x3, x3, 3 # add 3 to address",
-        #         f"c.li x{params.rs1}, 1" + " # branch is taken",
-        #         f"{instr_name} x3 # jump to address with bottom two lsbs = 11",
-        #         f"c.li x{params.rs1}, 0" + " # branch is not taken & used as something to jump over",
-        #         ".align 2",
-        #         f"{instr_name}lsb11: nop",
-        #         write_sigupd(params.rs1, test_data),
-        #         write_sigupd(1, test_data) if instr_name == "c.jalr" else "",  # check return value in c.jalr
-        #     ]
-        # )
-
-    return_test_regs(test_data, params)
+                return_test_regs(test_data, params)
+    elif instr_type in ["CJR", "CJALR"]:
+        # Loop over all 4 (rs1[1:0]) combinations
+        for rs1_lsbs in range(4):
+            params = generate_random_params(
+                test_data, instr_type, exclude_regs=[0], rd=1 if instr_name == "c.jalr" else 0
+            )
+            assert (
+                params.rs1 is not None
+                and params.rd is not None
+                and params.temp_reg is not None
+                and params.temp_val is not None
+            )
+            label = f"jalrlsb_{rs1_lsbs}"
+            test_data.add_testcase_string("cp_offset_lsbs")
+            test_lines.extend(
+                [
+                    "",
+                    f"# Testcase cp_offset_lsbs (rs1 LSB={rs1_lsbs})",
+                    load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
+                    f"LA(x{params.rs1}, {label}) # load address of label",
+                    f"addi x{params.rs1}, x{params.rs1}, {rs1_lsbs} # set rs1 LSB to {rs1_lsbs}",
+                    f"{instr_name} x{params.rs1} # jump",
+                    f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
+                    ".align 2",
+                    f"{label}: {'c.nop' if rs1_lsbs >= 2 else ''}",
+                    f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
+                    "# check jump taken",
+                    write_sigupd(params.temp_reg, test_data),
+                    f"# check return address from {instr_name}",
+                    f"auipc x{params.temp_reg}, 0 # get current PC",
+                    f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
+                    write_sigupd(params.rd, test_data),
+                ]
+            )
+            return_test_regs(test_data, params)
+    else:
+        raise ValueError(f"cp_offset_lsbs coverpoint not supported for instruction type {instr_type}.")
 
     return test_lines

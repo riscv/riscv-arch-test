@@ -1,11 +1,11 @@
 ##################################
-# cp_reg_edges.py
+# cr_reg_edges_offset.py
 #
 # jcarlin@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Register edge value coverpoint generators (cp_rs1_edges, cp_rs2_edges)."""
+"""Cross-product register edge value for branches coverpoint generator (cr_rs1_rs2_edges_offset)."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
@@ -27,12 +27,13 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
+            assert params.rs1val is not None and params.rs2val is not None
             test_data.add_testcase_string(coverpoint)
             test_lines.extend(
                 [
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
-                    load_int_reg("rs1", params.rs1, edge_val1, test_data),
-                    load_int_reg("rs2", params.rs2, edge_val2, test_data),
+                    load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+                    load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     "0: # destination for backwards branch that is never taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 3f # forward branch, if taken",
                     "1: # goes here if not taken",

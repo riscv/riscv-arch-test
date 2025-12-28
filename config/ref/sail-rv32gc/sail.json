@@ -29,7 +29,7 @@
       "napot_supported": true
     },
     "misaligned": {
-      "supported": false,
+      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0

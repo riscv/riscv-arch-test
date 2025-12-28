@@ -10,7 +10,7 @@ from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
 
 
-@add_instruction_formatter("CJ", required_params={"temp_reg", "immval"}, imm_bits=11)
+@add_instruction_formatter("CJ", required_params={"temp_reg", "temp_val", "immval"}, imm_bits=11)
 def format_cj_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

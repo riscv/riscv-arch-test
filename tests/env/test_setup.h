@@ -14,6 +14,7 @@
 .macro RVTEST_BEGIN
   // Set text section for code begin
   .section .text.init
+  .option norvc          // Do not automatically replace uncompressed instructions with compressed instructions
   .global rvtest_entry_point
   rvtest_entry_point:
 

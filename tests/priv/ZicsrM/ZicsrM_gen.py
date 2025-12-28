@@ -46,7 +46,6 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
 
         // Set up test environment and declare main entry point
         RVTEST_BEGIN
-        .option norvc          # Do not automatically replace uncompressed instructions with compressed instructions
 
         """)
     return header_lines
@@ -54,7 +53,7 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
 
 def makePrivFooter(basename: str, testcase_lines: str) -> str:
     """Generate the footer for privileged tests."""
-    footer_lines = dedent(f"""
+    footer_lines = dedent("""
         /////////////////////////////////
         // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
         /////////////////////////////////
@@ -69,7 +68,7 @@ def makePrivFooter(basename: str, testcase_lines: str) -> str:
 
         """)
     footer_lines += f"{testcase_lines}"
-    footer_lines += dedent(f"""
+    footer_lines += dedent("""
         RVTEST_DATA_END
 
         /////////////////////////////////
@@ -79,6 +78,7 @@ def makePrivFooter(basename: str, testcase_lines: str) -> str:
         RVTEST_SIG_SETUP
         """)
     return footer_lines
+
 
 def addCSRWriteTest(csr_name: str, reg: str, cpbin: str) -> None:
     """Add a CSR write test.  Update global variables, including the signature update count, body lines, and testcase lines."""
@@ -129,11 +129,36 @@ def makePrivBody() -> None:
 
     body_lines += "\n\tcsrw mcause, s0    # restore CSR"
 
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_misa_mxl_write
+        //   write 0, 1, 2, 3 to misa.MXL.
+        //   This field is read-only, so nothing should happen
+        /////////////////////////////////
+
+            SET_MSB(a0) # put a 1 in the msb of a0 (XLEN-1)
+            srli a1, a0, 1          # put a 1 in the second msb of a1 (XLEN-2)
+            or a2, a1, a0           # put a 1 in both msbs of a2 (XLEN-1:XLEN-2)
+            not a3, a2              # put 1s in all but the 2 msbs of a3
+            csrr s0, misa           # read MISA
+            and t0, s0, a3          # clear 2 msbs
+            or t1, t0, a1           # set XLEN-2
+            or t2, t0, a0           # set XLEN-1
+            or t3, t0, a2           # set both msbs
+            csrrc t6, misa, t0      # misa.MXL = 0
+            csrrc t6, misa, t1      # misa.MXL = 1
+            csrrc t6, misa, t2      # misa.MXL = 2
+            csrrc t6, misa, t3      # misa.MXL = 3
+            csrrw t6, misa, s0      # restore MISA
+        """)
+
 
 # Global variables
 sigupd_count = 0  # keep track of size of signature
 body_lines = ""  # body of test
-testcase_lines = "# testcase strings for reporting mismatches\ncanary_mismatch: .string \"Testcase signature canary mismatch!\"\n"
+testcase_lines = (
+    '# testcase strings for reporting mismatches\ncanary_mismatch: .string "Testcase signature canary mismatch!"\n'
+)
 
 # Main Function
 

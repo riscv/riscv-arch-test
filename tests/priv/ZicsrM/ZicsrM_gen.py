@@ -125,11 +125,12 @@ def makePrivBody() -> None:
     for i in causes:
         body_lines += f"\n{covergroup}_{coverpoint}_{i}:\n"
         body_lines += f"\tLI(t0, {i})           # interrupt cause {i}\n"
-        body_lines += "\tor t0, t0, a0        # set interrupt bit\n"
+        body_lines += "\tor t0, t0, a0          # set interrupt bit\n"
         addCSRWriteTest("mcause", "t0", f"{coverpoint}/{coverpoint}/b_{i}")
 
     body_lines += "\n\tcsrw mcause, s0    # restore CSR"
 
+    # *** this code is totally broken. csrrc isn't right.  There is no coverpoint for this anymore.
     body_lines += dedent("""
         /////////////////////////////////
         // cp_misa_mxl_write
@@ -153,15 +154,52 @@ def makePrivBody() -> None:
             csrrw t6, misa, s0      # restore MISA
         """)
 
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_mstatus_sd_write
+        //   Write all combinations of mstatus.SD = {0/1}, FS/XS/VS = {00, 01, 10, 11}
+        //   mstatus.SD is read-only, so nothing should happen
+        /////////////////////////////////
 
+            SET_MSB(a0) # put a 1 in the msb of a0 (XLEN-1)
+            csrr s0, mstatus        # read and save mstatus
+            # set up a1 with mstatus except SD, FS, XS, VS cleared
+            not t0, a0              # t0 has all but msb set
+            and a1, s0, t0          # clear SD bit
+            LI(t0, 0x1E600)         # t0 has all FS, XS, VS bits set (bits [14:13], [16:15], [10:9], respectively)
+            not t0, t0              # t0 has all but FS, XS, VS bits set
+            and a1, a1, t0          # clear FS, XS, VS bits
+    """)
+
+    covergroup = "ZicsrM_mstatus_cg"
+    coverpoint = "cp_mstatus_sd_write"
+    for sd in (0, 1):
+        for fs in (0, 1, 2, 3):
+            for xs in (0, 1, 2, 3):
+                for vs in (0, 1, 2, 3):
+                    binnameus = f"{covergroup}_{coverpoint}_sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
+                    binnameslash = f"{coverpoint}/{coverpoint}/sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
+                    body_lines += f"\n{binnameus}:\n"
+                    fields = fs << 13 | xs << 15 | vs << 9
+                    body_lines += f"\tLI(t0, 0x{fields:08x})  # fs/xs/vs\n"
+                    if (sd == 1):
+                        body_lines += "\tor t0, t0, a0      # set SD bit\n"
+                    body_lines += "\tor t0, t0, a1          # value to write to mstatus with SD/FS/XS/VS bits set/clear\n"
+                    addCSRWriteTest("mstatus", "t0", binnameslash)
+
+
+##################################
 # Global variables
+##################################
 sigupd_count = 0  # keep track of size of signature
 body_lines = ""  # body of test
 testcase_lines = (
     '# testcase strings for reporting mismatches\ncanary_mismatch: .string "Testcase signature canary mismatch!"\n'
 )
 
+##################################
 # Main Function
+##################################
 
 basename = "ZicsrM"
 fname = f"{basename}-01.S"

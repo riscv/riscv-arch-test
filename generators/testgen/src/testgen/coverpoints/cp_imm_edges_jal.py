@@ -1,158 +1,151 @@
 ##################################
-# cp_imm_edges.py
+# cp_imm_edges_jal.py
 #
 # jcarlin@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 
-"""cp_imm_edges coverpoint generators."""
+"""cp_imm_edges_jal coverpoint generators."""
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
+from testgen.utils.common import return_test_regs
 from testgen.utils.param_generator import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges_jal", "cp_imm_edges_c_jal")
 def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
-    """Generate tests for JAL immediate edge values."""
-    print(f"Generating cp_imm_edges_jal for {instr_name}")
+    """Generate tests for JAL immediate edge values.
+
+    Coverage bins are based on immediate value ranges (powers of 2):
+    - b_4: offset 2-3 (impossible for 4-byte jal)
+    - b_8: offset 4-7
+    - b_16: offset 8-15
+    - ... up to b_4096: offset 2048-4095
+    - b_m4: offset -4 to -3
+    - b_m8: offset -8 to -5
+    - ... up to b_m4096: offset -4096 to -2049
+    """
     test_lines: list[str] = []
+
     if instr_name == "c.jal":
-        # test_data.int_regs.consume_registers([1])
-        # params = generate_random_params(test_data, instr_type, rd=1)  # c.jal always uses x1
-        return []  # TODO: implement c.jal immediate edge tests
+        # TODO: implement c.jal - needs CJAL instruction formatter first
+        return []
     elif instr_name == "c.j":
-        print("Generating cp_imm_edges_jal for c.j is not supported yet.")
-        params = generate_random_params(test_data, instr_type, rd=0)  # c.j always uses x0
-    else:
         params = generate_random_params(test_data, instr_type)
-    assert params.rs1 is not None and params.rs2 is not None and params.rd is not None
+        params.rd = 0  # c.j always uses x0
+        instr_size = 2
+    else:  # jal
+        params = generate_random_params(test_data, instr_type)
+        instr_size = 4
 
-    # Adjust min/max range based on instruction type
-    if instr_name == "jal":
-        minrng = 3
-        maxrng = 14  # testing all 20 bits of immediate is too much code
-    else:
-        test_lines.append(".align 2 # Start at an address multiple of 4. Required for covering 2 byte jump.")
-        minrng = 2
-        maxrng = 13
+    assert params.temp_reg is not None and params.rd is not None
 
-    # Test smallest offset as a special case
-    test_lines.extend(
-        [
-            "",
-            f"# Testcase cp_imm_edges_jal (imm = {minrng - 1})",
-            f".align {maxrng} # Start all tests on a multiple of the largest offset",
-            f"{instr_name} {f'x{params.rs1},' if instr_name == 'jal' else ''} 1f # jump to aligned address to stress immediate",
-            "1: # alignment too small to test with sigupd",
-            f"{instr_name} {f'x{params.rs1},' if instr_name == 'jal' else ''} f{minrng}_{instr_name} # jump to aligned address to stress immediate",
-        ]
-    )
+    # Label prefix to avoid conflicts with other coverpoints
+    lbl = f"{coverpoint}_"
 
-    # Test all other offsets
-    for val in range(minrng, maxrng):
+    # Coverage bins map to alignment levels:
+    # b_8 (4-7): align 2 (4 bytes) - but jal is 4 bytes, so offset = 4
+    # b_16 (8-15): align 3 (8 bytes)
+    # b_32 (16-31): align 4 (16 bytes)
+    # ... up to b_4096: align 11 (2048 bytes)
+    #
+    # For jal (4 bytes): start at align N, jal takes 4 bytes, .align N-1 gives offset 2^(N-1)
+    # Example: .align 4 puts us at 16-byte boundary
+    #          jal (4 bytes) -> now at offset 4
+    #          .align 3 pads to 8-byte boundary -> adds 4 bytes
+    #          target at offset 8, hits b_16
+
+    # Alignment levels to test (maps to bin boundaries)
+    # align_level N means target at 2^(N-1) bytes from jal
+    # jal: can't hit b_4 (need 2-3 byte offset, but jal is 4 bytes)
+    # c.j: can hit b_4 with offset 2
+    align_levels = list(range(2, 13)) if instr_size == 4 else list(range(1, 13))
+
+    # Forward jumps: .align N positions jal, then .align N positions target 2^N bytes later
+    # Example for b_16 (N=4):
+    #   .align 4  -> at 16-byte boundary (offset 0)
+    #   jal       -> 4 bytes, now at offset 4
+    #   .align 4  -> pads 12 bytes to next 16-byte boundary
+    #   target:   -> at offset 16 from jal, hits b_16
+    for align in align_levels:
+        bin_name = f"b_{1 << align}"  # 2^align
+        test_data.add_testcase_string(coverpoint)
+
         test_lines.extend(
             [
                 "",
-                f"# Testcase cp_imm_edges_jal (imm = {val})",
-                f".align {val - 1}",
-                f"b{val - 1}_{instr_name}:",
+                f"# Forward jump for {bin_name}",
+                f".align {align}",
             ]
         )
-        if instr_name == "jal":
-            if val >= 6:
-                # Can only fit signature logic if jump is greater than 32 bytes (val + 1 = 6)
-                test_lines.extend(
-                    [
-                        load_int_reg("rs1", params.rs1, val, test_data),
-                        write_sigupd(params.rd, test_data),
-                        write_sigupd(params.rs1, test_data),
-                    ]
-                )
-            test_lines.append(
-                f"{instr_name} x{params.rd}, f{val + 1}_{instr_name} # jump to aligned address to stress immediate"
-            )
-        else:  # c.jal, c.j
-            if val >= 6:
-                # Can only fit signature logic if jump is greater than 32 bytes (val + 1 = 6)
-                test_lines.extend(
-                    [
-                        write_sigupd(params.rd, test_data),  # checking if return address is correct for c.jal
-                        f"c.li x{params.rs1}, {val}",
-                        write_sigupd(params.rs1, test_data),
-                    ]
-                )
-            test_lines.append(f"{instr_name} f{val + 1}_{instr_name} # jump to aligned address to stress immediate")
 
-        if val >= 6:
-            test_lines.extend(
-                [
-                    f"LI(x{params.rs1}, {val})" if instr_name == "jal" else f"c.li x{params.rs1}, {val}",
-                    write_sigupd(params.rd, test_data),
-                    write_sigupd(params.rs1, test_data),
-                ]
-            )
+        if instr_name == "jal":
+            test_lines.append(f"jal x{params.rd}, {lbl}fwd_{bin_name}")
+        else:
+            test_lines.append(f"{instr_name} {lbl}fwd_{bin_name}")
 
         test_lines.extend(
             [
-                f".align {val - 1}",
-                f"f{val}_{instr_name}:",
+                f".align {align}",
+                f"{lbl}fwd_{bin_name}:",
             ]
         )
 
-        if val >= 6:
-            test_lines.extend(
-                [
-                    f"LI(x{params.rs1}, {val})" if instr_name == "jal" else f"c.li x{params.rs1}, {val}",
-                    write_sigupd(params.rd, test_data),
-                    write_sigupd(params.rs1, test_data),
-                ]
-            )
+    # Backward jumps: place target and source at consecutive alignment boundaries
+    # Example for b_m16 (N=4):
+    #   .align 5  -> at 32-byte boundary
+    #   jal skip  -> skip over target (4 bytes)
+    #   .align 4  -> target at 16-byte boundary (next one after the jal)
+    #   target:
+    #   jal after -> escape (4 bytes)
+    #   skip:     -> at offset 8 from .align 5
+    #   .align 5  -> pad to next 32-byte boundary
+    #   jal target -> at 32-byte boundary, target at 16-byte, offset = 16-32 = -16
+    #   after:
 
+    for align in align_levels:
+        bin_name = f"b_m{1 << align}"  # negative 2^align
+        test_data.add_testcase_string(coverpoint)
+
+        test_lines.extend(
+            [
+                "",
+                f"# Backward jump for {bin_name}",
+                f".align {align + 1}",
+            ]
+        )
+
+        # Jump over the target
         if instr_name == "jal":
-            test_lines.append(
-                f"{instr_name} x{params.rd}, b{val - 1}_{instr_name} # jump to aligned address to stress immediate"
-            )
-            if val >= 6:
-                # Can only fit signature logic if jump is greater than 32 bytes (val + 1 = 6)
-                test_lines.extend(
-                    [
-                        load_int_reg("rs1", params.rs1, val, test_data),
-                        write_sigupd(params.rd, test_data),
-                        write_sigupd(params.rs1, test_data),
-                    ]
-                )
-        else:  # c.jal, c.j
-            if val == 12:  # temporary fix for bug in binutils
-                if instr_name == "c.j":
-                    test_lines.append(
-                        ".half 0xB001 # backward c.j by -2048 to b12; GCC is not generating this compressed branch properly per https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1647"
-                    )
-                elif instr_name == "c.jal":
-                    test_lines.append(
-                        ".half 0x3001 # backward jal by -2048 to b12; GCC is not generating this compressed branch properly per https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1647"
-                    )
-            else:
-                test_lines.append(f"{instr_name} b{val - 1}_{instr_name} # jump to aligned address to stress immediate")
-            if val >= 6:
-                # Can only fit signature logic if jump is greater than 32 bytes (val + 1 = 6)
-                test_lines.extend(
-                    [
-                        f"c.li x{params.rs1}, {val}",
-                        write_sigupd(params.rd, test_data),  # checking if return address is correct for c.jal
-                        write_sigupd(params.rs1, test_data),
-                    ]
-                )
+            test_lines.append(f"jal x{params.rd}, {lbl}skip_{bin_name}")
+        else:
+            test_lines.append(f"{instr_name} {lbl}skip_{bin_name}")
 
-    # End of test
-    test_lines.extend(
-        [
-            f".align {maxrng - 1}",
-            f"f{maxrng}_{instr_name}:",
-        ]
-    )
+        # Align target to 2^align boundary
+        test_lines.append(f".align {align}")
+
+        # Target label (when backward jump lands here, escape forward)
+        test_lines.append(f"{lbl}bwd_{bin_name}:")
+        if instr_name == "jal":
+            test_lines.append(f"jal x{params.rd}, {lbl}after_{bin_name}")
+        else:
+            test_lines.append(f"{instr_name} {lbl}after_{bin_name}")
+
+        # Skip point
+        test_lines.append(f"{lbl}skip_{bin_name}:")
+
+        # Align source to 2^(align+1) boundary for backward jump
+        test_lines.append(f".align {align + 1}")
+
+        # Backward jump
+        if instr_name == "jal":
+            test_lines.append(f"jal x{params.rd}, {lbl}bwd_{bin_name}")
+        else:
+            test_lines.append(f"{instr_name} {lbl}bwd_{bin_name}")
+
+        test_lines.append(f"{lbl}after_{bin_name}:")
 
     return_test_regs(test_data, params)
     return test_lines

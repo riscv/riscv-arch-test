@@ -15,13 +15,6 @@ def format_cj_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CJ-type instruction."""
-    # TODO: Implement CJ-type instruction formatting
-    setup: list[str] = []
-    if instr_name == "c.jal":
-        # Ensure ra (x1) is allocated
-        setup.append(test_data.int_regs.consume_registers([1]))
-    test = []
-    check = []
-    if instr_name == "c.jal":
-        test_data.int_regs.return_register(1)
-    return (setup, test, check)
+    raise NotImplementedError(
+        "CJ-type instruction formatter is not implemented. All coverpoints for CJ-type instructions are special coverpoints and do not use the instruction formatter."
+    )

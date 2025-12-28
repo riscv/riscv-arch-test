@@ -11,7 +11,7 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 
 @add_instruction_formatter("CJR", required_params={"rs1", "temp_reg", "temp_val"}, reg_range=range(1, 32))
-def format_cjalr_type(
+def format_cjr_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format CJR-type instruction."""

@@ -11,7 +11,7 @@
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters import format_single_test
-from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
+from testgen.utils.common import return_test_regs
 from testgen.utils.edges import IMMEDIATE_EDGES
 from testgen.utils.param_generator import generate_random_params
 

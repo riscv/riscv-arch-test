@@ -10,7 +10,7 @@
 
 from testgen.coverpoints.coverpoints import add_coverpoint_generator
 from testgen.data.test_data import TestData
-from testgen.utils.common import return_test_regs
+from testgen.utils.common import return_test_regs, write_sigupd
 from testgen.utils.param_generator import generate_random_params
 
 
@@ -30,15 +30,25 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     test_lines: list[str] = []
 
     if instr_name == "c.jal":
-        # TODO: implement c.jal - needs CJAL instruction formatter first
-        return []
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0, 1])
+        params.rd = 1  # c.jal always uses x1 (ra)
+        instr_size = 2
+        # c.jal has 11-bit signed offset: max forward 1024, max backward 2048
+        max_fwd_align = 10  # 2^10 = 1024
+        max_bwd_align = 11  # 2^11 = 2048
     elif instr_name == "c.j":
-        params = generate_random_params(test_data, instr_type)
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         params.rd = 0  # c.j always uses x0
         instr_size = 2
+        # c.j has 11-bit signed offset: max forward 1024, max backward 2048
+        max_fwd_align = 10  # 2^10 = 1024
+        max_bwd_align = 11  # 2^11 = 2048
     else:  # jal
-        params = generate_random_params(test_data, instr_type)
+        params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         instr_size = 4
+        # jal has 20-bit signed offset, but we only test up to 4096
+        max_fwd_align = 12  # 2^12 = 4096
+        max_bwd_align = 12  # 2^12 = 4096
 
     assert params.temp_reg is not None and params.rd is not None
 
@@ -58,10 +68,12 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     #          target at offset 8, hits b_16
 
     # Alignment levels to test (maps to bin boundaries)
-    # align_level N means target at 2^(N-1) bytes from jal
+    # align_level N means target at 2^N bytes from jal
     # jal: can't hit b_4 (need 2-3 byte offset, but jal is 4 bytes)
-    # c.j: can hit b_4 with offset 2
-    align_levels = list(range(2, 13)) if instr_size == 4 else list(range(1, 13))
+    # c.j/c.jal: can hit b_2 with offset 2
+    min_align = 1 if instr_size == 2 else 2
+    fwd_align_levels = list(range(min_align, max_fwd_align + 1))
+    bwd_align_levels = list(range(min_align, max_bwd_align + 1))
 
     # Forward jumps: .align N positions jal, then .align N positions target 2^N bytes later
     # Example for b_16 (N=4):
@@ -69,22 +81,40 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     #   jal       -> 4 bytes, now at offset 4
     #   .align 4  -> pads 12 bytes to next 16-byte boundary
     #   target:   -> at offset 16 from jal, hits b_16
-    for align in align_levels:
+
+    # Determine minimum alignment for self-checking:
+    # - jal: offset 4 (align=2) is too tight for li + jal + j, so skip check for align <= 2
+    # - c.j/c.jal: offset 2 (align=1) is too tight even for c.li, so skip check for align <= 1
+    #              offset 4 (align=2) needs c.li instead of li to fit
+    # Use c.li for compressed instructions to allow checking at smaller offsets
+    li_instr = "c.li" if instr_size == 2 else "li"
+
+    for align in fwd_align_levels:
         bin_name = f"b_{1 << align}"  # 2^align
         test_data.add_testcase_string(coverpoint)
+
+        # For very small offsets, skip checking - just do the jump
+        skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
         test_lines.extend(
             [
                 "",
                 f"# Forward jump for {bin_name}",
-                f".align {align}",
             ]
         )
+
+        if not skip_check:
+            test_lines.append(f"{li_instr} x{params.temp_reg}, 1 # success code")
+
+        test_lines.append(f".align {align}")
 
         if instr_name == "jal":
             test_lines.append(f"jal x{params.rd}, {lbl}fwd_{bin_name}")
         else:
             test_lines.append(f"{instr_name} {lbl}fwd_{bin_name}")
+
+        if not skip_check:
+            test_lines.append(f"{li_instr} x{params.temp_reg}, -1 # failure code")
 
         test_lines.extend(
             [
@@ -93,29 +123,42 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
             ]
         )
 
+        if not skip_check:
+            test_lines.append(write_sigupd(params.temp_reg, test_data))
+
     # Backward jumps: place target and source at consecutive alignment boundaries
     # Example for b_m16 (N=4):
+    #   li success
     #   .align 5  -> at 32-byte boundary
     #   jal skip  -> skip over target (4 bytes)
     #   .align 4  -> target at 16-byte boundary (next one after the jal)
     #   target:
-    #   jal after -> escape (4 bytes)
+    #   jal done  -> escape (4 bytes)
     #   skip:     -> at offset 8 from .align 5
     #   .align 5  -> pad to next 32-byte boundary
     #   jal target -> at 32-byte boundary, target at 16-byte, offset = 16-32 = -16
-    #   after:
+    #   li failure
+    #   done:
+    #   sigupd
 
-    for align in align_levels:
+    for align in bwd_align_levels:
         bin_name = f"b_m{1 << align}"  # negative 2^align
         test_data.add_testcase_string(coverpoint)
+
+        # For very small offsets, skip checking - just do the jump
+        skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
         test_lines.extend(
             [
                 "",
                 f"# Backward jump for {bin_name}",
-                f".align {align + 1}",
             ]
         )
+
+        if not skip_check:
+            test_lines.append(f"{li_instr} x{params.temp_reg}, 1 # success code")
+
+        test_lines.append(f".align {align + 1}")
 
         # Jump over the target
         if instr_name == "jal":
@@ -126,12 +169,12 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # Align target to 2^align boundary
         test_lines.append(f".align {align}")
 
-        # Target label (when backward jump lands here, escape forward)
+        # Target label (when backward jump lands here, escape forward to done)
         test_lines.append(f"{lbl}bwd_{bin_name}:")
         if instr_name == "jal":
-            test_lines.append(f"jal x{params.rd}, {lbl}after_{bin_name}")
+            test_lines.append(f"jal x{params.rd}, {lbl}done_{bin_name}")
         else:
-            test_lines.append(f"{instr_name} {lbl}after_{bin_name}")
+            test_lines.append(f"{instr_name} {lbl}done_{bin_name}")
 
         # Skip point
         test_lines.append(f"{lbl}skip_{bin_name}:")
@@ -142,10 +185,32 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # Backward jump
         if instr_name == "jal":
             test_lines.append(f"jal x{params.rd}, {lbl}bwd_{bin_name}")
+        elif align == 10:
+            # Workaround for GCC expanding c.j/c.jal to full jal for -1024 offset
+            if instr_name == "c.j":
+                test_lines.append(".half 0xB101 # backward c.j by -1024; GCC expands to jal")
+            else:  # c.jal
+                test_lines.append(".half 0x3101 # backward c.jal by -1024; GCC expands to jal")
+        elif align == 11:
+            # Workaround for GCC bug with -2048 offset
+            # https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1647
+            if instr_name == "c.j":
+                test_lines.append(
+                    ".half 0xB001 # backward c.j by -2048; GCC doesn't generate compressed branch properly"
+                )
+            else:  # c.jal
+                test_lines.append(
+                    ".half 0x3001 # backward c.jal by -2048; GCC doesn't generate compressed branch properly"
+                )
         else:
             test_lines.append(f"{instr_name} {lbl}bwd_{bin_name}")
 
-        test_lines.append(f"{lbl}after_{bin_name}:")
+        # Fall-through failure case and done label
+        if not skip_check:
+            test_lines.append(f"{li_instr} x{params.temp_reg}, -1 # failure code")
+        test_lines.append(f"{lbl}done_{bin_name}:")
+        if not skip_check:
+            test_lines.append(write_sigupd(params.temp_reg, test_data))
 
     return_test_regs(test_data, params)
     return test_lines

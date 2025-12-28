@@ -24,7 +24,7 @@ def format_j_type(
         f"{instr_name} x{params.rd}, 1f # perform jump",
     ]
     check = [
-        f"LI(x{params.temp_reg}, 0) # should not execute (jump not taken)",
+        f"LI(x{params.temp_reg}, -1) # should not execute (jump not taken)",
         "1:",
         write_sigupd(params.rd, test_data, "int"),
         write_sigupd(params.temp_reg, test_data, "int"),

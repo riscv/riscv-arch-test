@@ -38,7 +38,7 @@
         bins c00_c[]      = {[14'b10010000000000:14'b10011111111111]};
         ignore_bins c_fsd = {[14'b10100000000000:14'b10111111111111]}; // c.fsd throw exceptions for bad addresses
         ignore_bins c_sw  = {[14'b11000000000000:14'b11011111111111]}; // c.sw throw exceptions for bad addresses
-        bins c00_d        = {[14'b11100000000000:14'b11111111111111]};
+        bins c00_d[]      = {[14'b11100000000000:14'b11111111111111]};
     }
     compressed01 : coverpoint ins.current.insn[15:2] iff (ins.current.insn[1:0] == 2'b01) {
         // exhaustive test of 2^14 compressed instructions with op = 01 with following exceptions that would be hard to test
@@ -70,7 +70,7 @@
         ignore_bins c_jr      = {[14'b1000_0000000001:14'b1000_1111111111]};   // c.jr causes test program to go to random place.  This ignore excludes some instructions with insn[7:2] != 00000 that ought to be covered.  Including these would be cumbersome and illegalinstrtests.py generates test to hit them anyway, so the coverpoint is written this way for simplicity.
         bins illegal_c_jalr   = {14'b1001_0000000000}; // jalr illegal for rs1 = 0
         ignore_bins c_jalr    = {[14'b1001_0000000001:14'b1001_1111111111]};   // c.jalr.  See c.jr comments above
-        ignore_bins c_fsdsp[] = {[14'b101_00000000000:14'b101_11111111111]}; // c.fsdsp throws exceptions for bad addresses.
-        ignore_bins c_swsp[]  = {[14'b110_00000000000:14'b110_11111111111]}; // c.swsp throws exceptions for bad addresses.
+        ignore_bins c_fsdsp   = {[14'b101_00000000000:14'b101_11111111111]}; // c.fsdsp throws exceptions for bad addresses.
+        ignore_bins c_swsp    = {[14'b110_00000000000:14'b110_11111111111]}; // c.swsp throws exceptions for bad addresses.
         bins c10c[]           = {[14'b111_00000000000:14'b111_11111111111]};
     }

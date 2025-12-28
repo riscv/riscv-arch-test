@@ -46,6 +46,7 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
 
         // Set up test environment and declare main entry point
         RVTEST_BEGIN
+        .option norvc          // Do not automatically replace uncompressed instructions with compressed instructions
 
         """)
     return header_lines

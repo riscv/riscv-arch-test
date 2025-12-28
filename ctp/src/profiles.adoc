@@ -63,18 +63,20 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
 |Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
 |Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
-|Zbc|Carryless Multiplication|<<t-Zbc-coverpoints>>|||||o
+|Zbc|Carryless Multiplication|<<t-Zbc-coverpoints>>|||o|o|o
 |Zbs|Single-Bit|<<t-Zbs-coverpoints>>|||x|x|x
-|Zbkb|Bit Manip for Crypto|<<t-Zbkb-coverpoints>>||||o|
-|Zbkc|Carryless Multiply for Crypto|<<t-Zbkc-coverpoints>>||||o|
-|Zbkx|Permutations|<<t-Zbkx-coverpoints>>||||o|
-|Zknd|AES Decryption|<<t-Zknd-coverpoints>>||||o|
-|Zkne|AES Encryption|<<t-Zkne-coverpoints>>||||o|
-|Zknh|SHA2 Hashing|<<t-Zknh-coverpoints>>||||o|
-|Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>|||x|x|x
+|Zbkb|Bit Manip for Crypto|<<t-Zbkb-coverpoints>>|||o||
+|Zbkc|Carryless Multiply for Crypto|<<t-Zbkc-coverpoints>>|||o||
+|Zbkx|Permutations|<<t-Zbkx-coverpoints>>|||o||
+|Zknd|AES Decryption|<<t-Zknd-coverpoints>>|||o||
+|Zkne|AES Encryption|<<t-Zkne-coverpoints>>|||o||
+|Zknh|SHA2 Hashing|<<t-Zknh-coverpoints>>|||o||
+|Zksed|SM4 Cipher|<<t-Zksed-coverpoints>>|||o||
+|Zksh|SM3 Hashing|<<t-Zksh-coverpoints>>|||o||
+|Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
-|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|||x|x|x
+|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
 |ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
@@ -115,16 +117,18 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |EndianU|User Endian|<<t-EndianU-coverpoints>>|||||
 |EndianZaamo|AMO Endian|<<t-EndianZaamo-coverpoints>>|||||
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
+|EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
+|EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
 |PMPM|Machine PMP|<<t-PMPM-coverpoints>>||x|x|x|x
 |PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
 |PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
 |PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
-|PMPZca|Compressed PMP|<<t-PMPZca-coverpoints>>|||x|x|x
+|PMPZca|Compressed PMP|<<t-PMPZca-coverpoints>>||x|x|x|x
 |PMPZicbo|PMP + CBOM/CBOZ|<<t-PMPZicbo-coverpoints>>|||x|x|x
 |PMPZaamo|AMO PMP|<<t-PMPZaamo-coverpoints>>|||x|x|x
 |PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
-|Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||||
+|Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |VMPMP|VM + PMP|<<t-VMPMP-coverpoints>>|||x|x|x
 |VMZicbo|VM + CBOM/CBOZ|<<t-VMZicbo-coverpoints>>|||x|x|x
@@ -158,7 +162,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvfhmin|Vector half conversions|<<t-Zvfhmin-coverpoints>>||||o|o
 |Zvfbfmin|Vector BF16 Convert|<<t-Zvfbfmin-coverpoints>>||||o|o
 |Zvfbfwma|Vector BF16 MAC|<<t-Zvfbfwma-coverpoints>>||||o|o
-|Zvfhmin|Vector half conversions|<<t-Zvfhmin-coverpoints>>||||o|o
 |ZfaZvfh|fli for Vector Half|<<t-ZfaZvfh-coverpoints>>||||o|o
 |Zvbb8|Vector Bit Manip 8-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb16|Vector Bit Manip 16-bit|<<t-Zvbb-coverpoints>>||||o|x
@@ -173,6 +176,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvkned32|Vector Crypt|<<t-Zvkned-coverpoints>>||||o|o
 |Zvknha32|Vector Hash 32-bit|<<t-Zvknh-coverpoints>>|||||
 |Zvknhb64|Vector Hash 64-bit|<<t-Zvknh-coverpoints>>||||o|o
+|Zvksed32|Vector ShangMi Crypt|<<t-Zvksed-coverpoints>>||||o|o
+|Zvksh32|Vector ShangMi Hash|<<t-Zvksh-coverpoints>>||||o|o
+
 8+^|Vector Privileged
 |ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
@@ -187,7 +193,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
 |ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
-|EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||o|o|x
+|EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |VMH|Hypervisor Virtual Memory|<<t-VMH-coverpoints>>|||o|o|x
@@ -202,21 +208,14 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 |SstcH|Hypervisor Supervisor Timer|<<t-SstcH-coverpoints>>|||o|o|x
 |SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x
-|SscrindH|Hypervisor Indirect CSR|<<t-SscrindH-coverpoints>>|||o|o|x
-|SscfgH|Hypervisor Counter Delegation|<<t-SscfgH-coverpoints>>|||o|o|x
-|SmctrH|Hypervisor Control Transfer Records|<<t-SmctrH-coverpoints>>|||o|o|x
-|SvinvalH|Hypervisor TLB Inval|<<t-SvinvalH-coverpoints>>|||o|o|o
+|SvinvalH|Hypervisor TLB Inval|<<t-SvinvalH-coverpoints>>|||o|o|x
 |SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
 |ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o
 |ZicfissH|Hypervisor Shadow Stack|<<t-ZicfissH-coverpoints>>|||o|o|o
-|SsdbltrpH|Double Trap|<<t-SsdbltrpH-coverpoints>>|||o|o|o
-|SsnpmH|Pointer Masking|<<t-SsnpmH-coverpoints>>|||o|o|o
-|SmnpmH|Pointer Masking|<<t-SmnpmH-coverpoints>>|||o|o|o
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
-|Smnpm|Pointer Masking|<<t-Smnpm-coverpoints>>|||||
-|Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
+|SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
@@ -226,17 +225,23 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x
 |Zawrs|Wait on Reservation Set|<<t-Zawrs-coverpoints>>||||x|x
 |Sdtrig|Debug Triggers|<<t-Sdtrig-coverpoints>>||||o|o
-8+^|Other Recent Extensions
+8+^|Non-Profile Extensions
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||
 |Zdinx|Double in Int Regs|<<t-Zdinx-coverpoints>>|||||
 |Zhinx|Half in Int Regs|<<t-Zhinx-coverpoints>>|||||
 |Zhinxmin|Half Cvt in Int Regs|<<t-Zhinxmin-coverpoints>>|||||
+|Q|Quad-Precision Float|<<t-Q-coverpoints>>|||||
+|ZfhQ|Half-Quad Converts|<<t-ZfhQ-coverpoints>>|||||
+|ZfhminQ|Half-Quad Converts|<<t-ZfhQ-coverpoints>>|||||
+|ZfaQ|Additional Quad|<<t-ZfaQ-coverpoints>>|||||
+|ZfaZfhQ|Additional Half-Quad Converts|<<t-ZfaZfhQ-coverpoints>>|||||
 |Zcmp|Compressed Push/Pop|<<t-Zcmp-coverpoints>>|||||
 |Zcmt|Compressed Table Jumps|<<t-Zcmt-coverpoints>>|||||
 |Zilsd|Load/Store Double|<<t-Zilsd-coverpoints>>|||||
 |Zclsd|Compressed Load/Store Double|<<t-Zclsd-coverpoints>>|||||
 |Smcsrind|Machine Indirect CSRs|<<t-Smcsrind-coverpoints>>|||||
 |Sscsrind|Supervisor Indirect CSRs|<<t-Sscsrind-coverpoints>>|||||
+|SscrindH|Hypervisor Indirect CSR|<<t-SscrindH-coverpoints>>|||o|o|x
 |Smepmp|Enhanced PMP|<<t-Smepmp-coverpoints>>|||||
 |Smrnmi|Machine Resumable Interrupts|<<t-Smrnmi-coverpoints>>|||||
 |Ssrnmi|Supervisor Resumable Interrupts|<<t-Ssrnmi-coverpoints>>|||||
@@ -245,9 +250,15 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Smcntrpmf|Cycle and Instret Mode Filtering|<<t-Smcntrpmf-coverpoints>>|||||
 |Smcdeleg|Counter Delegation|<<t-Smcdeleg-coverpoints>>|||||
 |Ssccfg|Counter Delegation|<<t-Ssccfg-coverpoints>>|||||
+|SscfgH|Hypervisor Counter Delegation|<<t-SscfgH-coverpoints>>|||||
 |Smdbltrp|Machine Double Trap|<<t-Smdbltrp-coverpoints>>|||||
 |Ssdbltrp|Supervisor Double Trap|<<t-Ssdbltrp-coverpoints>>|||||
+|SsdbltrpH|Hypervisor Double Trap|<<t-SsdbltrpH-coverpoints>>|||||
+|Smnpm|Pointer Masking|<<t-Smnpm-coverpoints>>|||||
+|Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
+|SmnpmH|Hypervisor Pointer Masking|<<t-SmnpmH-coverpoints>>|||||
 |Smctr|Control Transfer Records|<<t-Smctr-coverpoints>>|||||
+|SmctrH|Hypervisor Control Transfer Records|<<t-SmctrH-coverpoints>>|||||
 |Ssqosid|Quality-of-Service ID|<<t-Ssqosid-coverpoints>>|||||
 8+^|Embedded
 |E|Embedded 16 Regs|<<t-E-coverpoints>>|||||
@@ -269,15 +280,14 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ssaia|Supervisor Advanced Interrupts|<<t-Ssaia-coverpoints>>|||||
 |IMSIC|Incoming MSI Controller|<<t-imsic-coverpoints>>|||||
 |APLIC|Advanced Platform-Level Interrupt Controller|<<t-aplic-coverpoints>>|||||
-|IOMMU|AIA I/O Memory Management Unit|<<t-iommu-coverpoints>>|||||
 8+^|I/O Memory Management Unit
 |IOMMU|I/O Memory Management Unit|<<t-iommu-coverpoints>>|||||
 
 |===
 
-=== Architecturally Untestable Extensions
+=== Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is not readily visible at the architectural level of observed program behavior, such as constant-time instructions and PMAs.  These are outside the scope of certification.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -294,6 +304,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
+|Zkr|Entropy Generation||||o|o
 |===
 
 === Certification Requirements

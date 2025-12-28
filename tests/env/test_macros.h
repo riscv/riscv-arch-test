@@ -1,4 +1,6 @@
-/* This function set up the Page table entry for Sv32 Translation scheme
+// Page Table Macros
+
+/* Set up the Page table entry for Sv32 Translation scheme
     Arguments:
     _PAR: Register containing Physical Address
     _PR: Register containing Permissions for Leaf PTE.

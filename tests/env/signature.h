@@ -188,3 +188,24 @@
   #define CANARY \
       .word CANARY_VALUE
 #endif
+
+// CSR Macros
+
+// Read _CSR into _R and record/check the signature
+#define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _STR_PTR) \
+    csrr _R, _CSR                                      ;\
+    RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)
+
+// Abbreviated form with default registers
+#define RVTEST_SIGUPD_CSR_READ(_CSR, _R, _STR_PTR) \
+    RVTEST_SIGUPD_CSR_RD(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG, _CSR, _R, _STR_PTR)
+
+
+// Write _R1 into _CSR, then read back into _R2 and record/check the signature
+#define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _STR_PTR) \
+    csrw _CSR, _R1                                      ;\
+    RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _STR_PTR)
+
+// Abbreviated form with default registers, overwrites _R with value read back
+#define RVTEST_SIGUPD_CSR_WRITE(_CSR, _R, _STR_PTR) \
+    RVTEST_SIGUPD_CSR_WR(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG, _CSR, _R, _R, _STR_PTR)

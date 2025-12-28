@@ -20,3 +20,16 @@ include::{testplansdir}/Zknd.adoc[]
 [[t-Zknh-coverpoints]]
 .Zknh Instruction Coverpoints
 include::{testplansdir}/Zknh.adoc[]
+
+==== Zksed ShangMi SM4 Block Cipher
+
+[[t-Zksed-coverpoints]]
+.Zksed Instruction Coverpoints
+//include::{testplansdir}/Zksed.adoc[]
+
+
+==== Zksh ShangMi SM3 Hashing
+
+[[t-Zksh-coverpoints]]
+.Zksh Instruction Coverpoints
+//include::{testplansdir}/Zksh.adoc[]

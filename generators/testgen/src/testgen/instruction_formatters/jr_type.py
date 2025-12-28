@@ -46,7 +46,7 @@ def format_jr_type(
         f"{instr_name} x{params.rd}, x{params.rs1}, {params.immval} # perform jump with offset",
     ]
     check = [
-        f"addi x{params.temp_reg} x{params.temp_reg}, -4 # should not execute",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, -4 # should not execute",
         f"1: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute",
         write_sigupd(params.temp_reg, test_data, "int"),
         f"auipc x{params.temp_reg}, 0 # get current PC",

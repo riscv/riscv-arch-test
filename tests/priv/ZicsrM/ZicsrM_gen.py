@@ -80,6 +80,12 @@ def makePrivFooter(basename: str, testcase_lines: str) -> str:
         """)
     return footer_lines
 
+def addCSRReadTest(csr_name: str, reg: str, cpbin: str) -> None:
+    """Add a CSR read test.  Update global variables, including the signature update count, body lines, and testcase lines."""
+    global sigupd_count, body_lines, testcase_lines
+    sigupd_count += 1
+    body_lines += f"\tRVTEST_SIGUPD_CSR_READ({csr_name}, {reg}, test_{sigupd_count})\n"
+    testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
 
 def addCSRWriteTest(csr_name: str, reg: str, cpbin: str) -> None:
     """Add a CSR write test.  Update global variables, including the signature update count, body lines, and testcase lines."""
@@ -88,6 +94,14 @@ def addCSRWriteTest(csr_name: str, reg: str, cpbin: str) -> None:
     body_lines += f"\tRVTEST_SIGUPD_CSR_WRITE({csr_name}, {reg}, test_{sigupd_count})\n"
     testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
 
+def addSignature(reg: str, cpbin: str) -> None:
+    """Add a signature read.  Update global variables, including the signature update count, body lines, and testcase lines."""
+    global sigupd_count, body_lines, testcase_lines
+    sigupd_count += 1
+    # unsure why next line isn't working; produces "undefined reference to `failedtest_DEFAULT_LINK_REG_DEFAULT_TEMP_RE"
+#    body_lines += f"\tRVTEST_SIGUPD(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG,{reg}, test_{sigupd_count})\n"
+    body_lines += f"\tRVTEST_SIGUPD(x2, x5, x4, {reg}, test_{sigupd_count})\n"
+    testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
 
 def makePrivBody() -> None:
     global body_lines
@@ -107,9 +121,10 @@ def makePrivBody() -> None:
     causes = (i for i in range(0, 24) if i not in {14, 17})  # skip reserved causes
     coverpoint = "cp_mcause_write_exception"
     for i in causes:
-        body_lines += f"\n{covergroup}_{coverpoint}_{i}:\n"
+        binname = f"b_{i}"
+        body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
         body_lines += f"\tLI(t0, {i})           # exception cause {i}\n"
-        addCSRWriteTest("mcause", "t0", f"{coverpoint}/{coverpoint}/b_{i}")
+        addCSRWriteTest("mcause", "t0", f"{coverpoint}/{coverpoint}/{binname}")
 
     body_lines += dedent("""
         /////////////////////////////////
@@ -123,10 +138,11 @@ def makePrivBody() -> None:
 
     coverpoint = "cp_mcause_write_interrupt"
     for i in causes:
-        body_lines += f"\n{covergroup}_{coverpoint}_{i}:\n"
+        binname = f"b_{i}"
+        body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
         body_lines += f"\tLI(t0, {i})           # interrupt cause {i}\n"
         body_lines += "\tor t0, t0, a0          # set interrupt bit\n"
-        addCSRWriteTest("mcause", "t0", f"{coverpoint}/{coverpoint}/b_{i}")
+        addCSRWriteTest("mcause", "t0", f"{coverpoint}/{coverpoint}/{binname}")
 
     body_lines += "\n\tcsrw mcause, s0    # restore CSR"
 
@@ -154,6 +170,9 @@ def makePrivBody() -> None:
             csrrw t6, misa, s0      # restore MISA
         """)
 
+    covergroup = "ZicsrM_mstatus_cg"
+    coverpoint = "cp_mstatus_sd_write"
+
     body_lines += dedent("""
         /////////////////////////////////
         // cp_mstatus_sd_write
@@ -171,21 +190,56 @@ def makePrivBody() -> None:
             and a1, a1, t0          # clear FS, XS, VS bits
     """)
 
-    covergroup = "ZicsrM_mstatus_cg"
-    coverpoint = "cp_mstatus_sd_write"
     for sd in (0, 1):
         for fs in (0, 1, 2, 3):
             for xs in (0, 1, 2, 3):
                 for vs in (0, 1, 2, 3):
-                    binnameus = f"{covergroup}_{coverpoint}_sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
-                    binnameslash = f"{coverpoint}/{coverpoint}/sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
-                    body_lines += f"\n{binnameus}:\n"
+                    binname = f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
+                    body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
                     fields = fs << 13 | xs << 15 | vs << 9
-                    body_lines += f"\tLI(t0, 0x{fields:08x})  # fs/xs/vs\n"
+                    body_lines += f"\tLI(t0, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}\n"
                     if (sd == 1):
                         body_lines += "\tor t0, t0, a0      # set SD bit\n"
                     body_lines += "\tor t0, t0, a1          # value to write to mstatus with SD/FS/XS/VS bits set/clear\n"
-                    addCSRWriteTest("mstatus", "t0", binnameslash)
+                    addCSRWriteTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}")
+
+    body_lines += "\n\tcsrw mstatus, s0    # restore CSR"
+
+    covergroup = "ZicsrM_mprivinst_cg"
+    coverpoint = "cp_mret"
+
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_mret
+        //   Exectue mret while sweeping cross-product of mpp, mprv, mpie, mie
+        /////////////////////////////////
+
+            csrr s0, mstatus        # read and save mstatus
+            # set up a1 with mstatus except MPP, MPRV, MPIE, MIE cleared
+            LI(t0,0x21888)          # t0 has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)
+            not t0, t0              # t0 has all but MPP, MPRV, MPIE, MIE bits set
+            and a1, a1, t0          # clear MPP, MPRV, MPIE, MIE bits
+    """
+)
+    for mpp in (0, 1, 3):
+        for mprv in (0, 1):
+            for mpie in (0, 1):
+                for mie in (0, 1):
+                    binname = f"mpp_{mpp:02b}_mprv_{mprv}_mpie_{mpie}_mie_{mie}"
+                    body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
+                    fields = (mpp << 11) | (mprv << 17) | (mpie << 7) | (mie << 3)
+                    body_lines += f"\tLI(t0, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}\n"
+                    body_lines += "\tor t0, t0, a1          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
+                    body_lines += "\tLA(t1, 1f)\n           # return address after mret\n"
+                    body_lines += "\tcsrw mepc, t1          # set mepc to return address\n"
+                    body_lines += "\tcsrw mstatus, t0       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
+                    body_lines += "\tmret                   # return from trap\n"
+                    body_lines += "\tLI(t0, -1)             # should not be executed\n"
+                    body_lines += "1:                       # mret should go here\n"
+                    addSignature("t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_wval")
+                    body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
+                    addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
+    body_lines += "\n\tcsrw mstatus, s0    # restore CSR"
 
 
 ##################################

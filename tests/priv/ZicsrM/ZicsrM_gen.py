@@ -40,13 +40,25 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
         # CONFIG_DEPENDENT: true
         ##### END_TEST_CONFIG #####
 
+        // Define the name of this test file for reporting and the size of the signature region
         #define TEST_FILE "{testname}"
         #define SIGUPD_COUNT {sigupd_count}
+
+        // Enable M-mode trap handler
+        #define rvtest_mtrap_routine
+
+        // Include framework macros
         #include "riscv_arch_test.h"
 
         // Set up test environment and declare main entry point
         RVTEST_BEGIN
         .option norvc          // Do not automatically replace uncompressed instructions with compressed instructions
+
+        #set up PMP so user and supervisor mode can access full address space
+        csrw pmpcfg0, 0xF   # configure PMP0 to TOR RWX
+        li t0, -1
+        csrw pmpaddr0, t0   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+
 
         """)
     return header_lines
@@ -211,7 +223,7 @@ def makePrivBody() -> None:
     body_lines += dedent("""
         /////////////////////////////////
         // cp_mret
-        //   Exectue mret while sweeping cross-product of mpp, mprv, mpie, mie
+        //   Execute mret while sweeping cross-product of mpp, mprv, mpie, mie
         /////////////////////////////////
 
             csrr s0, mstatus        # read and save mstatus
@@ -221,7 +233,7 @@ def makePrivBody() -> None:
             and a1, a1, t0          # clear MPP, MPRV, MPIE, MIE bits
     """
 )
-    for mpp in (0, 1, 3):
+    for mpp in (3,):  # only M-mode; this will expand in other tests
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -230,14 +242,14 @@ def makePrivBody() -> None:
                     fields = (mpp << 11) | (mprv << 17) | (mpie << 7) | (mie << 3)
                     body_lines += f"\tLI(t0, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}\n"
                     body_lines += "\tor t0, t0, a1          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
-                    body_lines += "\tLA(t1, 1f)\n           # return address after mret\n"
+                    body_lines += "\tLA(t1, 1f)             # return address after mret\n"
                     body_lines += "\tcsrw mepc, t1          # set mepc to return address\n"
                     body_lines += "\tcsrw mstatus, t0       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
                     body_lines += "\tmret                   # return from trap\n"
                     body_lines += "\tLI(t0, -1)             # should not be executed\n"
-                    body_lines += "1:                       # mret should go here\n"
+                    body_lines += "1:                       # mret should return to here\n"
                     addSignature("t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_wval")
-                    body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
+                    #body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
                     addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
     body_lines += "\n\tcsrw mstatus, s0    # restore CSR"
 

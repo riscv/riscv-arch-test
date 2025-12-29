@@ -8,11 +8,13 @@ This section serves as a quick guide to set up the ACT environment and ensure yo
 
 ### Prerequisites
 
+The ACTs require several tools to generate and run correctly. Ensure all of the following tools are installed before proceeding.
+
 #### 1. Python/uv
 
 The test generator and framework are written in Python. The recommended way of installing and running Python is using the uv project manager, which will handle Python versions, virtual environments, and dependencies transparently.
 
-Install uv:
+To install uv:
 
 ```bash
 $ curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -22,103 +24,56 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 #### 2. RISC-V Compiler
 
-The ACT framework is compatible with GCC or LLVM. This guide uses GCC, but if you prefer LLVM you just need to set the path the compiler appropriately when [creating your config file](#configfile).
+The ACT framework is compatible with GCC or LLVM. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#configfile).
 
-> **Note**: The git clone and installation will take significant time. Please be patient. If you face issues with any of the following steps, please refer to [riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) for further help in installation.
+> **Note**: The toolchain installation will take significant time. Please be patient.
 
-### Ubuntu
+To install `riscv64-unknown-elf-gcc`:
 
 ```bash
-$ sudo apt-get install autoconf automake autotools-dev curl python3 libmpc-dev \
-      libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool \
-      patchutils bc zlib1g-dev libexpat-dev
+# On Ubuntu/Debian:
+$ sudo apt-get install autoconf automake autotools-dev curl python3 python3-pip \
+  python3-tomli libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison \
+  flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build \
+  git cmake libglib2.0-dev libslirp-dev libncurses-dev
+# On Fedora/CentOS/RHEL:
+$ sudo dnf install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel \
+  gawk  bison flex texinfo patchutils gcc gcc-c++ zlib-devel expat-devel \
+  libslirp-devel ncurses-devel
+# On all distros:
 $ git clone https://github.com/riscv/riscv-gnu-toolchain
 $ cd riscv-gnu-toolchain
-$ ./configure --prefix=/path/to/install --with-arch=rv32gc --with-abi=ilp32d # for 32-bit toolchain
+$ ./configure --prefix=</path/to/install> --with-multilib-generator="rv32e-ilp32e--;rv32i-ilp32--;rv32im-ilp32--;rv32iac-ilp32--;rv32imac-ilp32--;rv32imafc-ilp32f--;rv32imafdc-ilp32d--;rv64i-lp64--;rv64ic-lp64--;rv64iac-lp64--;rv64imac-lp64--;rv64imafdc-lp64d--;rv64im-lp64--;"
 $ [sudo] make # sudo is required depending on the path chosen in the previous setup
 ```
 
 Make sure to add the path `/path/to/install` to your `$PATH` in the `.bashrc/cshrc`.
 
-# Installing RISC-V Reference Models: Spike and SAIL
+For more information or if you have issues installing, refer to the [riscv-gnu-toolchain README](https://github.com/riscv-collab/riscv-gnu-toolchain).
 
-This section will guide you through the installation of two important RISC-V reference models: Spike and SAIL. These models are often used as reference models in the RISCOF framework.
+#### 3. RISC-V Sail Golden Reference Model
 
-### 1. Spike (riscv-isa-sim)
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.9 of the model.
 
-Spike is the official RISC-V ISA simulator, also known as the RISC-V ISA simulator (riscv-isa-sim). It is commonly used as a reference model in RISCOF for compliance testing.
-
-### Installation Steps for Spike
+To install the sail model:
 
 ```bash
-$ sudo apt-get install device-tree-compiler
-$ git clone https://github.com/riscv-software-src/riscv-isa-sim.git
-$ cd riscv-isa-sim
-$ mkdir build
-$ cd build
-$ ../configure --prefix=/path/to/install
-$ make
-$ [sudo] make install
+$ curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=</path/to/install> --strip-components=1
 ```
 
-Note: Use sudo if the installation path requires administrative privileges.
+For more details on the Sail model and alternate installation methods, see the [sail-riscv README](https://github.com/riscv/sail-riscv).
 
-### 2. SAIL (SAIL C-emulator)
+#### 4. Container Runtime
 
-First install the [Sail Compiler](https://github.com/rems-project/sail/). It is recommended to use the pre-compiled [binary release](https://github.com/rems-project/sail/releases). This can be performed as follows:
+The ACTs use [`riscv-unified-db`](https://github.com/riscv-software-src/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatable with the Podman container runtime. Work is ongoing to remove this dependency.
+
+To install Podman:
 
 ```bash
-$ sudo apt-get install libgmp-dev pkg-config zlib1g-dev curl
-$ curl --location https://github.com/rems-project/sail/releases/latest/download/sail.tar.gz | [sudo] tar xvz --directory=/path/to/install --strip-components=1
-```
-
-Note: Make sure to add the path `/path/to/install` to your `$PATH`.
-
-Then build the RISC-V Sail Model:
-
-```bash
-$ git clone https://github.com/riscv/sail-riscv.git
-$ cd sail-riscv
-$ ./build_simulators.sh
-```
-
-This will create a C simulator in `build/c_emulator/sail_riscv_sim`. You will need to add this path to your `$PATH` or create an alias to execute it from the command line.
-
-## Necessary Env Files
-
-To run tests via RISCOF, you will need to provide the following items:
-
-- **config.ini**: This file is a basic configuration file following the INI syntax. This file will capture information like the name of the DUT/reference plugins, path to the plugins, path to the riscv-config based YAMLs, etc. This file is located at `riscof-plugins/rv32/config.ini` for RV32 and at `riscof-plugins/rv64/config.ini` for `RV64`
-
-- **riscv-test-suite/**: The directory contains the architectural test suites.
-
-- **riscv-config/**: The repository containing the configuration files for various RISC-V implementations. You can clone the required repository using the following commands:
-
-```
-$ git clone https://github.com/riscv/riscv-config.git
-```
-
-## Running the Tests
-
-Once everything is set up, you can run the tests using the following command:
-
-```
-$ riscof run --config config.ini --suite riscv-test-suite/ --env riscv-test-suite/env
-```
-
-If you only want to use spike as the reference model to test, you can use the following command to using the sample environment:
-
-```
-$ cd riscof-plugins/rv32 #If you want to run the rv64 test, change this to rv64
-$ riscof run --config config.ini --suite ../../riscv-test-suite/ --env ../../riscv-test-suite/env
-```
-
-## Running the coverage command
-
-You can run the coverage using the following command:
-
-```
-$ riscof coverage --config=config.ini --cgf-file covergroups/dataset.cgf --cgf-file covergroups/m/rv32im.cgf --suite /riscv-test-suite/rv32i_m/M --env /riscv-test-suite/env
+# On Ubuntu/Debian
+$ sudo apt-get install podman
+# On Fedora/CentOS/RHEL
+$ sudo dnf install podman
 ```
 
 ## Licensing

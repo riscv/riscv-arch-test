@@ -110,7 +110,7 @@ coverage: generate-makefiles-ref Makefile
 .PHONY: clean-ref
 clean-ref:
 	@if [ -d $(WORKDIR_REF) ]; then \
-		find $(WORKDIR_REF) -type f ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR_REF) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
 		find $(WORKDIR_REF) -type d -empty -delete; \
 	fi
 

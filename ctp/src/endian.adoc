@@ -45,3 +45,21 @@ https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn7
 //include::{testplansdir}/EndianZalrsc.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1511292549#gid=1511292549[Google Sheet Testplan]
+
+==== EndianF Endianness for Floats
+
+[[t-EndianF-coverpoints]]
+.EndianF Coverpoints
+,===
+//include::{testplansdir}/EndianF.adoc[]
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1999049510#gid=1999049510[Google Sheet Testplan]
+
+==== EndianZca Endianness for Compressed Instructions
+
+[[t-EndianZca-coverpoints]]
+.EndianZca Coverpoints
+,===
+//include::{testplansdir}/EndianZca.adoc[]
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=547928668#gid=547928668[Google Sheet Testplan]

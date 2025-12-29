@@ -34,11 +34,3 @@ This section describes AIA extension test plans.
 ,===
 //include::{testplansdir}/aplic.adoc[]
 ,===
-
-==== IOMMU I/O Memory Management Unit
-
-[[t-iommu-coverpoints]]
-.IOMMU Coverpoints
-,===
-//include::{testplansdir}/iommu.adoc[]
-,===

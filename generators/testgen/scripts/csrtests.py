@@ -5,7 +5,7 @@
 # David_Harris@hmc.edu 13 October 2024
 # SPDX-License-Identifier: Apache-2.0
 #
-# Emit tests of all 4096 CSRs for Zicsr functional coverage tests
+# Emit tests of all supported CSRs for Zicsr functional coverage tests
 ##################################
 
 import os

@@ -35,6 +35,46 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 //include::{testplansdir}/Zhinxmin.adoc[]
 ,===
 
+==== Q Quad-Precision Floating-Point
+
+[[t-Q-coverpoints]]
+.Q Coverpoints
+,===
+//include::{testplansdir}/Q.adoc[]
+,===
+
+==== ZfhQ Half-Quad Instructions
+
+[[t-ZfhQ-coverpoints]]
+.ZfhQ Coverpoints
+,===
+//include::{testplansdir}/ZfhQ.adoc[]
+,===
+
+==== ZfhminQ Half-Quad Conversion Instructions
+
+Note that ZfhminQ is the same as ZfhQ
+
+[[t-ZfhminQ-coverpoints]]
+.ZfhminQ Coverpoints
+,===
+//include::{testplansdir}/ZfhminQ.adoc[]
+,===
+
+==== ZfaQ Additional Quad-Precision Floating-Point Instructions
+[[t-ZfaQ-coverpoints]]
+.ZfaQ Coverpoints
+,===
+//include::{testplansdir}/ZfaQ.adoc[]
+,===
+
+==== ZfaZfhQ Additional Half-Quad Conversion Instructions
+[[t-ZfaZfhQ-coverpoints]]
+.ZfaZfhQ Coverpoints
+,===
+//include::{testplansdir}/ZfaZfhQ.adoc[]
+,===
+
 ==== Zcmp Compressed Push/Pop
 
 [[t-Zcmp-coverpoints]]

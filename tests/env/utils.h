@@ -304,3 +304,12 @@
         LI(     dst, imm)               ;\
         addi    dst, src, dst           ;\
 .endif
+
+// Utility Macros
+
+// Place 1 in msb
+#define SET_MSB(_R) \
+    li _R, 0x80000000       /* 1 in bit 31   */                  ;\
+    #if __riscv_xlen == 64                                       ;\
+        slli _R, _R, 32     /* shift _R to have 1 in bit 63  */  ;\
+    #endif

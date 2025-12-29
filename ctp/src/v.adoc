@@ -288,3 +288,16 @@ There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions 
 [[t-Zvknh-coverpoints]]
 .Zvknh Instruction Coverpoints
 // include::{testplansdir}/Zvknh.adoc[]
+
+==== Zvksed Vector ShangMi SM4 Block Cipher
+
+[[t-Zvksed-coverpoints]]
+.Zvksed Instruction Coverpoints
+// include::{testplansdir}/Zvksed.adoc[]
+
+
+==== Zvksh{a/b} Vector ShangMi SM3 Hashing
+
+[[t-Zvksh-coverpoints]]
+.Zvksh Instruction Coverpoints
+// include::{testplansdir}/Zvksh.adoc[]

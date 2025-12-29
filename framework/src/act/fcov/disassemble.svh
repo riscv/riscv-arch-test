@@ -536,6 +536,12 @@ function string disassemble (logic [31:0] instrRaw);
     SHA512SUM0: $sformat(decoded, "sha512sum0 %s, %s", rd, rs1);
     SHA512SUM1: $sformat(decoded, "sha512sum1 %s, %s", rd, rs1);
   `endif
+    // Zksed Extension
+    SM4ED:  $sformat(decoded, "sm4ed %s, %s, %s, %0d", rd, rs1, rs2, bs);
+    SM4KS:  $sformat(decoded, "sm4ks %s, %s, %s, %0d", rd, rs1, rs2, bs);
+    // Zksh Extension
+    SM3P0: $sformat(decoded, "sm3p0 %s, %s", rd, rs1);
+    SM3P1: $sformat(decoded, "sm3p1 %s, %s", rd, rs1);
     // Zca Extension
     C_ADDI4SPN: begin
         if (immCIWType != '0) begin

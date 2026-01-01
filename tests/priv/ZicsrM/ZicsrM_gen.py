@@ -230,7 +230,7 @@ def makePrivBody() -> None:
             # set up a1 with mstatus except MPP, MPRV, MPIE, MIE cleared
             LI(t0,0x21888)          # t0 has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)
             not t0, t0              # t0 has all but MPP, MPRV, MPIE, MIE bits set
-            and a1, a1, t0          # clear MPP, MPRV, MPIE, MIE bits
+            and a1, s0, t0          # clear MPP, MPRV, MPIE, MIE bits
     """
 )
     for mpp in (3,):  # only M-mode; this will expand in other tests
@@ -245,7 +245,7 @@ def makePrivBody() -> None:
                     body_lines += "\tLA(t1, 1f)             # return address after mret\n"
                     body_lines += "\tcsrw mepc, t1          # set mepc to return address\n"
                     body_lines += "\tcsrw mstatus, t0       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
-                    body_lines += "\tmret                   # return from trap\n"
+                    body_lines += "\tmret                   # test mret instruction\n"
                     body_lines += "\tLI(t0, -1)             # should not be executed\n"
                     body_lines += "1:                       # mret should return to here\n"
                     addSignature("t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_wval")
@@ -253,6 +253,43 @@ def makePrivBody() -> None:
                     addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
     body_lines += "\n\tcsrw mstatus, s0    # restore CSR"
 
+    coverpoint = "cp_sret"
+
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_sret
+        //   Execute sret while sweeping cross-product of mprv, spp, spie, sie, tsr
+        //   If S-mode is not implemented, sret should raise an illegal instruction exception
+        //   Otherwise, go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  MPRV <- 0. SPP <- 0 (U-mode).  TSR has no effect.
+        /////////////////////////////////
+
+            csrr s0, mstatus        # read and save mstatus
+            # set up a1 with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared
+            LI(t0,0x420122)          # t0 has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)
+            not t0, t0              # t0 has all but MPRV, SPP, SPIE, SIE, TSR bits set
+            and a1, s0, t0          # clear MPRV, SPP, SPIE, SIE, TSR bits
+    """
+)
+    for spp in (0, 1):
+        for mprv in (0, 1):
+            for spie in (0, 1):
+                for sie in (0, 1):
+                    for tsr in (0, 1):
+                        binname = f"spp_{spp}_mprv_{mprv}_spie_{spie}_sie_{sie}_tsr_{tsr}"
+                        body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
+                        fields = (mprv << 17) | (spp << 8) | (spie << 5) | (sie << 1) | (tsr << 22)
+                        body_lines += f"\tLI(t0, 0x{fields:08x})  # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}\n"
+                        body_lines += "\tor t0, t0, a1          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear\n"
+                        body_lines += "\tLA(t1, 1f)             # return address after sret\n"
+                        body_lines += "\tcsrw sepc, t1          # set sepc to return address.  Note that sepc might not exist if S-mode is not implemented, and this test will break if writing it hangs\n"
+                        body_lines += "\tcsrw mstatus, t0       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear\n"
+                        body_lines += "\tsret                   # test sret instruction\n"
+                        body_lines += "\tLI(t0, -1)             # should not be executed\n"
+                        body_lines += "1:                       # sret should return to here\n"
+                        addSignature("t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_wval")
+                        body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
+                        addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
+    body_lines += "\n\tcsrw mstatus, s0    # restore CSR"
 
 ##################################
 # Global variables

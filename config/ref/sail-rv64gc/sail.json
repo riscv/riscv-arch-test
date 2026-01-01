@@ -284,10 +284,10 @@
       "useed_read_only_zero": false
     },
     "Zksed": {
-      "supported": false
+      "supported": true
     },
     "Zksh": {
-      "supported": false
+      "supported": true
     },
     "Zkt": {
       "supported": true

@@ -109,7 +109,10 @@ coverage: generate-makefiles-ref Makefile
 
 .PHONY: clean-ref
 clean-ref:
-	rm -rf $(WORKDIR_REF)
+	@if [ -d $(WORKDIR_REF) ]; then \
+		find $(WORKDIR_REF) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR_REF) -type d -empty -delete; \
+	fi
 
 # Dev targets
 .PHONY: lint

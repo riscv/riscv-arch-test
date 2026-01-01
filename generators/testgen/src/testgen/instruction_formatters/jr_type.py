@@ -8,16 +8,18 @@
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
 from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
-from testgen.utils.common import return_test_regs, write_sigupd
+from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
 
 
-@add_instruction_formatter("JR", required_params={"rd", "rs1", "rs2", "immval"}, imm_bits=12, imm_signed=True)
+@add_instruction_formatter(
+    "JR", required_params={"rd", "rs1", "rs2", "immval", "temp_reg", "temp_val"}, imm_bits=12, imm_signed=True
+)
 def format_jr_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     """Format JR-type instruction."""
-    assert params.rs1 is not None and params.rs2 is not None and params.rd is not None
-    assert params.immval is not None
+    assert params.rs1 is not None and params.temp_reg is not None and params.rd is not None
+    assert params.immval is not None and params.temp_val is not None
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -26,7 +28,7 @@ def format_jr_type(
 
     setup = [
         f"LA(x{params.rs1}, 1f) # load jump target address",
-        f"LI(x{params.rs2}, 1) # initialize indicator to 1 (jump taken)",
+        load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
     ]
 
     # Handle special case where offset is -2048 (can't represent +2048 in 12 bits)
@@ -38,21 +40,18 @@ def format_jr_type(
             ]
         )
     else:
-        neg_immval = -params.immval
-        setup.append(f"addi x{params.rs1}, x{params.rs1}, {neg_immval} # adjust base address for offset")
+        setup.append(f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset")
 
     test = [
         f"{instr_name} x{params.rd}, x{params.rs1}, {params.immval} # perform jump with offset",
     ]
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     check = [
-        f"LI(x{params.rs2}, 0) # should not execute (jump not taken)",
-        "1:",
-        f"auipc x{temp_reg}, 0 # get current PC",
-        f"sub x{params.rd}, x{params.rd}, x{temp_reg} # subtract current PC to make position-independent",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, -4 # should not execute",
+        f"1: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute",
+        write_sigupd(params.temp_reg, test_data, "int"),
+        f"auipc x{params.temp_reg}, 0 # get current PC",
+        f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract current PC to make position-independent",
         write_sigupd(params.rd, test_data, "int"),
-        write_sigupd(params.rs2, test_data, "int"),
     ]
-    test_data.int_regs.return_register(temp_reg)
     return_test_regs(test_data, params)
     return (setup, test, check)

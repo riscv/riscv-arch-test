@@ -28,7 +28,7 @@ def format_b_type(
         f"{instr_name} x{params.rs1}, x{params.rs2}, 1f # perform operation",
     ]
     check = [
-        f"LI(x{params.temp_reg}, 0) # branch not taken, set temp_reg to 0",
+        f"LI(x{params.temp_reg}, -1) # branch not taken, set temp_reg to 0",
         "1:",
         write_sigupd(params.temp_reg, test_data),
     ]

@@ -13,7 +13,7 @@ blt,B,x,x,x,x,x,,x,x,,offset,x,,,,x,,branch,,,
 bltu,B,x,x,x,x,x,,x,x,,offset,x,,,,x,,branch,,,
 bne,B,x,x,x,x,x,,x,x,,offset,x,,,,x,,branch,,,
 fence,F,x,x,x,,,,,,,,,,,,,,,,,fence
-jal,J,x,x,x,,,x,,,,,,,,,x,,,,,
+jal,J,x,x,x,,,x,,,,,,,,,x,,jal,,,
 jalr,JR,x,x,x,nx0,,x,,,,,,nx0,,,jalr,,x,,,
 lb,L,x,x,x,nx0,,x,,,,,,nx0,,,,,x,byte,byte,
 lbu,L,x,x,x,nx0,,x,,,,,,nx0,,,,,x,byte,byte,

@@ -199,7 +199,7 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
         `endif
         `ifdef XLEN32
             bins mstatush = {12'h310};
-            // bins medelegh = {12'h312}; # in Sm1p13 only
+            // bins medelegh = {12'h312}; // in Sm1p13 only
             bins menvcfgh = {12'h31A};
             `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
                 bins mseccfgh = {12'h757};

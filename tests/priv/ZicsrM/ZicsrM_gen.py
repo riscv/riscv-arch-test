@@ -172,7 +172,7 @@ def addWalkTest(csr: str, covergroup: str, coverpoint: str) -> None:
     body_lines += "\n#if __riscv_xlen == 64\n"
     for i in range(32, 64):
         body_lines += f"\n{covergroup}_{coverpoint}_{csr}_clr_bit_{i}:\n"
-        body_lines += f"\t\tCSRW({csr}, zero)    # clear all bits\n"
+        body_lines += f"\t\tCSRW({csr}, t1)    # set all bits\n"
         body_lines += f"\t\tCSRC({csr}, a0)      # clear walking 1 in column {i}\n"
         addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_clr_bit_{i}")
         body_lines += "\t\tslli a0, a0, 1      # walk the 1\n"
@@ -258,7 +258,7 @@ def makePrivBody() -> None:
                     )
                     addCSRWriteTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}")
 
-    body_lines += "\n\tCSRW(mstatus, s0)    # restore CS\n"
+    body_lines += "\n\tCSRW(mstatus, s0)    # restore CSR\n"
 
     covergroup = "ZicsrM_mprivinst_cg"
     coverpoint = "cp_mprvinst"
@@ -384,7 +384,7 @@ def makePrivBody() -> None:
 
     body_lines += dedent("""
         /////////////////////////////////
-        // cp_mcsr_accesss
+        // cp_mcsr_access
         //   Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs
         /////////////////////////////////
         """)

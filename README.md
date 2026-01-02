@@ -76,6 +76,41 @@ $ sudo apt-get install podman
 $ sudo dnf install podman
 ```
 
+### Configuration
+
+Several configuration files are needed to tell the ACT framework how to find your tools, what extensions and parameters are supported by your implementation, and how to perform implementation-specific functions. See [config/duts/cvw/cvw-rv64gc](config/duts/cvw/cvw-rv64gc) for a complete example configuration directory.
+
+#### ACT Framework Configuration File
+
+The ACT Framework configuration YAML file contains all of the top-level configuration options. It species the compiler and reference model along with the paths to your UDB config file, linker script, and header directory. See [test_config.yaml](config/duts/cvw/cvw-rv64gc/test_config.yaml) for an example.
+
+#### UDB Config File
+
+A [UDB](https://github.com/riscv-software-src/riscv-unified-db) configuration file is used to specify all of the implementation details for your DUT. This includes al of the supported extensions and the value of all relevant parameters. See [cvw-rv64gc.yaml](config/duts/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv-software-src/riscv-unified-db) for more details.
+
+#### `model_test.h` Trickbox Macro Implementation
+
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv-non-isa.github.io/riscv-arch-test/#_trick_box_macros). Complete examples are available for an example DUT ([config/duts/cvw/cvw-rv64gc/model_test.h](config/duts/cvw/cvw-rv64gc/model_test.h)) and for the RISC-V Sail reference model ([config/ref/sail-rv64gc/model_test.h](config/ref/sail-rv64gc/model_test.h)).
+
+#### Linker Script
+
+A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
+
+- The `ENTRY` point must be `rvtest_entry_point`.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else. It should not be directly called by the `ENTRY` point.
+- There must be a `.text` section.
+- There must be a `.data` section.
+- There must be a `.bss` section.
+
+For an example linker script that should work for most basic implementations (except for modifying the base address), see [config/duts/cvw/cvw-rv64gc/link.ld](config/duts/cvw/cvw-rv64gc/link.ld).
+
+#### Other Config Files
+
+The framework currently relies on three other config files. All three of these files will eventually be generated from the UDB config file, but that is still a work in progress, so they need to be handwritten for now. See [config/duts/cvw/cvw-rv64gc](config/duts/cvw/cvw-rv64gc) for examples of these files.
+
+- `sail.json` Sail model configuration
+- `rvtest_config.svh` and `rvtest_config.h` SystemVerilog and C header files that define the supported extensions and parameter values.
+
 ## Licensing
 
 In general:

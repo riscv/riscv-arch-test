@@ -379,10 +379,6 @@ def makePrivBody() -> None:
     ]
     csrs32 = ["mstatush", "menvcfgh"]  # medelegh only in Sm1p13
     csrsro = ["mvendorid", "mimpid", "marchid", "mhartid", "mconfigptr"]
-    csrsro = [
-        "mvendorid",
-        "mimpid",
-    ]  # temporary for debug.  If I have three or more registers from this list above, the tests abort in the middle of handling read-only registers
 
     coverpoint = "cp_mcsr_access"
 

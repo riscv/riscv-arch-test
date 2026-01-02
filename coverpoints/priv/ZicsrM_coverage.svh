@@ -221,9 +221,6 @@ endgroup
 function void zicsrm_sample(int hart, int issue, ins_t ins);
     //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
     //    $display("ZicsrM_sample: PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
-    if (ins.ins_str == "csrrc")
-        //$display("ZicsrM_sample: PC = %h (%s) rs1_val = %h %b %b", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val, ins.current.insn[14:12], ins.current.insn[6:0]);
-        $display("ZicsrM_sample: PC = %h (%s) %b %b", ins.current.pc_rdata,ins.current.disass, {ins.current.rs1_val, ins.current.insn[14:12]}, ins.current.insn[6:0]);
     ZicsrM_mcause_cg.sample(ins);
     ZicsrM_mstatus_cg.sample(ins);
     ZicsrM_mprivinst_cg.sample(ins);

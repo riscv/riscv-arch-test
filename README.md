@@ -117,7 +117,7 @@ Once all [dependencies](#prerequisites) are installed and the [configuration fil
 
 > [!NOTE]
 >
-> Due to current limitations with the ACT framework, the directory with the config files for your DUT must be in the `riscv-arch-test` directory (the `config/duts` subdirectory is reccommended). These command also **must** be run from the `riscv-arch-test` directory.
+> Due to current limitations with the ACT framework, the directory with the config files for your DUT must be in the `riscv-arch-test` directory (the `config/duts` subdirectory is recommended). These command also **must** be run from the `riscv-arch-test` directory.
 
 ```bash
 CONFIG_FILES=config/duts/<your_config_here>/test_config.yaml make --jobs $(nproc)
@@ -127,7 +127,7 @@ This will create all of the ELFs that apply to your DUT (based on the provided U
 
 ### Running Certification Tests
 
-All ELFs produced in the `work/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is reccomended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
+All ELFs produced in the `work/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
 
 Each test will print either `RVCP-SUMMARY: Test File "<test_name.S>": PASSED` or `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`. For any test that fails, additional debug information will be printed out including the failing PC, instruction, register that mismatched, expected value, and actual value.
 

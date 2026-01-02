@@ -190,10 +190,39 @@
 #endif
 
 // CSR Macros
+// each access is followed by a nop in case the access causes a trap
+
+#define CSRRW(_R2, _CSR, _R1) \
+    csrrw _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRRS(_R2, _CSR, _R1) \
+    csrrs _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRRC(_R2, _CSR, _R1) \
+    csrrc _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRR(_R2, _CSR) \
+    csrr _R2, _CSR      ;\
+    nop      # in case csr op traps
+
+#define CSRW(_CSR, _R1) \
+    csrw _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRS(_CSR, _R1) \
+    csrs _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRC(_CSR, _R1) \
+    csrc _CSR, _R1      ;\
+    nop      # in case csr op traps
 
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _STR_PTR) \
-    csrr _R, _CSR                                      ;\
+    CSRR(_R, _CSR)                                       ;\
     RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)
 
 // Abbreviated form with default registers
@@ -203,7 +232,7 @@
 
 // Write _R1 into _CSR, then read back into _R2 and record/check the signature
 #define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _STR_PTR) \
-    csrw _CSR, _R1                                      ;\
+    CSRW(_CSR, _R1)                                      ;\
     RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _STR_PTR)
 
 // Abbreviated form with default registers, overwrites _R with value read back

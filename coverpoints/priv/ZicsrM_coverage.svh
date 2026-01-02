@@ -134,6 +134,53 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`XLEN-1] };
     }
 
+    mcsrname_all : coverpoint ins.current.insn[31:20] { // extended set for access tests, including read-only CSRs
+        bins mstatus  = {12'h300};
+        bins misa     = {12'h301};
+        bins medeleg  = {12'h302};
+        bins mideleg  = {12'h303};
+        bins mie      = {12'h304};
+        bins mtvec    = {12'h305};
+        bins mscratch = {12'h340};
+        bins mepc     = {12'h341};
+        bins mcause   = {12'h342};
+        bins mtval    = {12'h343};
+        bins mip      = {12'h344};
+        bins menvcfg  = {12'h30A};
+        bins mvendorid= {12'hF11};
+        bins marchid  = {12'hF12};
+        bins mimpid   = {12'hF13};
+        bins mhartid  = {12'hF14};
+        bins mconfigptr= {12'hF15};
+        `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+            bins mseccfg  = {12'h747};
+        `endif
+        `ifdef XLEN32
+            bins mstatush = {12'h310};
+            // bins medelegh = {12'h312}; # in Sm1p13 only
+            bins menvcfgh = {12'h31A};
+            `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+                bins mseccfgh = {12'h757};
+            `endif
+        `endif
+    }
+
+    csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
+        `ifdef XLEN64
+            bins csrrc    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
+            bins csrrw0   = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
+            bins csrrw1   = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
+            bins csrrs    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
+            bins csrr     = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
+        `else
+            bins csrrc    = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
+            bins csrrw0   = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
+            bins csrrw1   = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
+            bins csrrs    = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
+            bins csrr     = {35'b00000000_00000000_00000000_00000000_010}; // csrr
+        `endif
+    }
+
     mcsrname : coverpoint ins.current.insn[31:20] {
         bins mstatus  = {12'h300};
         bins misa     = {12'h301};
@@ -147,12 +194,16 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
         bins mtval    = {12'h343};
         bins mip      = {12'h344};
         bins menvcfg  = {12'h30A};
-        bins mseccfg  = {12'h747};
+        `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+            bins mseccfg  = {12'h747};
+        `endif
         `ifdef XLEN32
             bins mstatush = {12'h310};
-            bins medelegh = {12'h312};
+            // bins medelegh = {12'h312}; # in Sm1p13 only
             bins menvcfgh = {12'h31A};
-            bins mseccfgh = {12'h757};
+            `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+                bins mseccfgh = {12'h757};
+            `endif
         `endif
     }
     csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
@@ -160,6 +211,7 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
         bins csrrc = {3'b011};
     }
 
+    cp_mcsr_access: cross priv_mode_m, mcsrname_all, csraccesses;
     cp_mcsrwalk : cross priv_mode_m, mcsrname, csrop, walking_ones;
     cp_mprivinst: cross privinstrs, priv_mode_m;
     cp_mret: cross mret, priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
@@ -167,6 +219,11 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
 endgroup
 
 function void zicsrm_sample(int hart, int issue, ins_t ins);
+    //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
+    //    $display("ZicsrM_sample: PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
+    if (ins.ins_str == "csrrc")
+        //$display("ZicsrM_sample: PC = %h (%s) rs1_val = %h %b %b", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val, ins.current.insn[14:12], ins.current.insn[6:0]);
+        $display("ZicsrM_sample: PC = %h (%s) %b %b", ins.current.pc_rdata,ins.current.disass, {ins.current.rs1_val, ins.current.insn[14:12]}, ins.current.insn[6:0]);
     ZicsrM_mcause_cg.sample(ins);
     ZicsrM_mstatus_cg.sample(ins);
     ZicsrM_mprivinst_cg.sample(ins);

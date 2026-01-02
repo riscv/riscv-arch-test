@@ -40,6 +40,9 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
         # CONFIG_DEPENDENT: true
         ##### END_TEST_CONFIG #####
 
+        # dh 1/1/26 *** will need MSECCFG_SUPPORTED or some equivalent defined in UDB and used here.
+        # See https://github.com/riscv-software-src/riscv-unified-db/issues/1293
+
         // Define the name of this test file for reporting and the size of the signature region
         #define TEST_FILE "{testname}"
         #define SIGUPD_COUNT {sigupd_count}
@@ -92,12 +95,14 @@ def makePrivFooter(basename: str, testcase_lines: str) -> str:
         """)
     return footer_lines
 
+
 def addCSRReadTest(csr_name: str, reg: str, cpbin: str) -> None:
     """Add a CSR read test.  Update global variables, including the signature update count, body lines, and testcase lines."""
     global sigupd_count, body_lines, testcase_lines
     sigupd_count += 1
     body_lines += f"\tRVTEST_SIGUPD_CSR_READ({csr_name}, {reg}, test_{sigupd_count}) # Read {csr_name} into {reg} and check against expected\n"
     testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
+
 
 def addCSRWriteTest(csr_name: str, reg: str, cpbin: str) -> None:
     """Add a CSR write test.  Update global variables, including the signature update count, body lines, and testcase lines."""
@@ -106,14 +111,16 @@ def addCSRWriteTest(csr_name: str, reg: str, cpbin: str) -> None:
     body_lines += f"\tRVTEST_SIGUPD_CSR_WRITE({csr_name}, {reg}, test_{sigupd_count}) # Write {reg} to {csr_name}, then read back to {reg} and check against expected\n"
     testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
 
+
 def addSignature(reg: str, cpbin: str) -> None:
     """Add a signature read.  Update global variables, including the signature update count, body lines, and testcase lines."""
     global sigupd_count, body_lines, testcase_lines
     sigupd_count += 1
     # unsure why next line isn't working; produces "undefined reference to `failedtest_DEFAULT_LINK_REG_DEFAULT_TEMP_RE"
-#    body_lines += f"\tRVTEST_SIGUPD(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG,{reg}, test_{sigupd_count})\n"
+    #    body_lines += f"\tRVTEST_SIGUPD(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG,{reg}, test_{sigupd_count})\n"
     body_lines += f"\tRVTEST_SIGUPD(x2, x5, x4, {reg}, test_{sigupd_count}) # Check {reg} against expected value\n"
     testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
+
 
 def addAccessTest(csr: str, covergroup: str, coverpoint: str) -> None:
     """Add a CSR access test for the given CSR."""
@@ -121,7 +128,7 @@ def addAccessTest(csr: str, covergroup: str, coverpoint: str) -> None:
 
     body_lines += f"\n{covergroup}_{coverpoint}_{csr}:\n"
     body_lines += f"\tCSRR(s0, {csr})    # Save CSR\n"
-    body_lines += f"\tli t1, -1           # t1 = all 1s\n"
+    body_lines += "\tli t1, -1           # t1 = all 1s\n"
     body_lines += f"\tCSRW({csr}, t1)    # Write all 1s to CSR\n"
     addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_writeall1s")
     body_lines += f"\tCSRW({csr}, zero)   # Write all 0s to CSR\n"
@@ -132,44 +139,46 @@ def addAccessTest(csr: str, covergroup: str, coverpoint: str) -> None:
     addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_clearall")
     body_lines += f"\tCSRW({csr}, s0)       # Restore CSR\n"
 
+
 def addWalkTest(csr: str, covergroup: str, coverpoint: str) -> None:
     """Add a CSR walking ones test for the given CSR."""
     global body_lines
 
     body_lines += f"\n{covergroup}_{coverpoint}_{csr}:\n"
     body_lines += f"\tCSRR(s0, {csr})      # Save CSR\n"
-    body_lines += f"\tli t1, -1             # t1 = all 1s\n"
-    body_lines += f"\tli a0, 1            # 1 in lsb\n"
+    body_lines += "\tli t1, -1             # t1 = all 1s\n"
+    body_lines += "\tli a0, 1            # 1 in lsb\n"
     for i in range(0, 32):
         body_lines += f"\n{covergroup}_{coverpoint}_{csr}_set_bit_{i}:\n"
         body_lines += f"\tCSRW({csr}, zero)    # clear all bits\n"
         body_lines += f"\tCSRS({csr}, a0)      # set walking 1 in column {i}\n"
         addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_set_bit_{i}")
-        body_lines += f"\tslli a0, a0, 1      # walk the 1\n"
+        body_lines += "\tslli a0, a0, 1      # walk the 1\n"
     body_lines += "\n#if __riscv_xlen == 64\n"
     for i in range(32, 64):
         body_lines += f"\n{covergroup}_{coverpoint}_{csr}_set_bit_{i}:\n"
         body_lines += f"\t\tCSRW({csr}, zero)    # clear all bits\n"
         body_lines += f"\t\tCSRS({csr}, a0)      # set walking 1 in column {i}\n"
         addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_set_bit_{i}")
-        body_lines += f"\t\tslli a0, a0, 1      # walk the 1\n"
+        body_lines += "\t\tslli a0, a0, 1      # walk the 1\n"
     body_lines += "#endif\n"
-    body_lines += f"\tli a0, 1            # 1 in lsb\n"
+    body_lines += "\tli a0, 1            # 1 in lsb\n"
     for i in range(0, 32):
         body_lines += f"\n{covergroup}_{coverpoint}_{csr}_clr_bit_{i}:\n"
         body_lines += f"\tCSRW({csr}, t1)      # set all bits\n"
         body_lines += f"\tCSRC({csr}, a0)      # clear walking 1 in column {i}\n"
         addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_clr_bit_{i}")
-        body_lines += f"\tslli a0, a0, 1      # walk the 1\n"
+        body_lines += "\tslli a0, a0, 1      # walk the 1\n"
     body_lines += "\n#if __riscv_xlen == 64\n"
     for i in range(32, 64):
         body_lines += f"\n{covergroup}_{coverpoint}_{csr}_clr_bit_{i}:\n"
         body_lines += f"\t\tCSRW({csr}, zero)    # clear all bits\n"
         body_lines += f"\t\tCSRC({csr}, a0)      # clear walking 1 in column {i}\n"
         addCSRReadTest(csr, "t0", f"{coverpoint}/{coverpoint}/{csr}_clr_bit_{i}")
-        body_lines += f"\t\tslli a0, a0, 1      # walk the 1\n"
+        body_lines += "\t\tslli a0, a0, 1      # walk the 1\n"
     body_lines += "#endif\n"
     body_lines += f"\tCSRW({csr}, s0)            # restore CSR\n"
+
 
 def makePrivBody() -> None:
     global body_lines
@@ -242,9 +251,11 @@ def makePrivBody() -> None:
                     body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
                     fields = fs << 13 | xs << 15 | vs << 9
                     body_lines += f"\tLI(t0, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}\n"
-                    if (sd == 1):
+                    if sd == 1:
                         body_lines += "\tor t0, t0, a0      # set SD bit\n"
-                    body_lines += "\tor t0, t0, a1          # value to write to mstatus with SD/FS/XS/VS bits set/clear\n"
+                    body_lines += (
+                        "\tor t0, t0, a1          # value to write to mstatus with SD/FS/XS/VS bits set/clear\n"
+                    )
                     addCSRWriteTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}")
 
     body_lines += "\n\tCSRW(mstatus, s0)    # restore CS\n"
@@ -273,7 +284,6 @@ def makePrivBody() -> None:
     body_lines += "\tli t0, -1              # should not be executed\n"
     addSignature("t0", f"{coverpoint}/{coverpoint}/ebreak")
 
-
     coverpoint = "cp_mret"
 
     body_lines += dedent("""
@@ -296,8 +306,12 @@ def makePrivBody() -> None:
                     binname = f"mpp_{mpp:02b}_mprv_{mprv}_mpie_{mpie}_mie_{mie}"
                     body_lines += f"\n{covergroup}_{coverpoint}_{binname}:\n"
                     fields = (mpp << 11) | (mprv << 17) | (mpie << 7) | (mie << 3)
-                    body_lines += f"\tLI(t0, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}\n"
-                    body_lines += "\tor t0, t0, a1          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
+                    body_lines += (
+                        f"\tLI(t0, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}\n"
+                    )
+                    body_lines += (
+                        "\tor t0, t0, a1          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
+                    )
                     body_lines += "\tLA(t1, 1f)             # return address after mret\n"
                     body_lines += "\tCSRW(mepc, t1)          # set mepc to return address\n"
                     body_lines += "\tCSRW(mstatus, t0)       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear\n"
@@ -305,7 +319,7 @@ def makePrivBody() -> None:
                     body_lines += "\tli t0, -1              # should not be executed\n"
                     body_lines += "1:                         # mret should return to here\n"
                     addSignature("t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_wval")
-                    #body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
+                    # body_lines += "\tRVTEST_GOTO_MMODE      # make sure we return to machine mode\n"
                     addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
     body_lines += "\n\tCSRW(mstatus, s0)    # restore CSR\n"
 
@@ -338,7 +352,9 @@ def makePrivBody() -> None:
                         body_lines += "\tor t0, t0, a1          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear\n"
                         body_lines += "\tLA(t1, 1f)             # return address after sret\n"
                         body_lines += "\tCSRW(sepc, t1)          # set sepc to return address.  Note that sepc might not exist if S-mode is not implemented, and this test will break if writing it hangs\n"
-                        body_lines += "\tCSRW(mstatus, t0)       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear\n"
+                        body_lines += (
+                            "\tCSRW(mstatus, t0)       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear\n"
+                        )
                         body_lines += "\tsret                   # test sret instruction\n"
                         body_lines += "\tli t0, -1              # should not be executed\n"
                         body_lines += "1:                         # sret should return to here\n"
@@ -347,12 +363,26 @@ def makePrivBody() -> None:
                         addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
     body_lines += "\n\tCSRW(mstatus, s0)    # restore CSR\n"
 
-    csrs = ["mstatus", "misa", "medeleg", "mideleg", "mie", "mtvec", "mscratch", "mepc", "mcause", "mtval", "mip", "menvcfg"]
-    csrsopt = ["mseccfg"]
-    csrs32 = ["mstatush", "menvcfgh"] # medelegh only in Sm1p13
-    csrs32opt = ["mseccfgh"]
+    csrs = [
+        "mstatus",
+        "misa",
+        "medeleg",
+        "mideleg",
+        "mie",
+        "mtvec",
+        "mscratch",
+        "mepc",
+        "mcause",
+        "mtval",
+        "mip",
+        "menvcfg",
+    ]
+    csrs32 = ["mstatush", "menvcfgh"]  # medelegh only in Sm1p13
     csrsro = ["mvendorid", "mimpid", "marchid", "mhartid", "mconfigptr"]
-    csrsro = ["mvendorid", "mimpid"] # temporary for debug.  If I have three or more registers from this list above, the tests abort in the middle of handling read-only registers
+    csrsro = [
+        "mvendorid",
+        "mimpid",
+    ]  # temporary for debug.  If I have three or more registers from this list above, the tests abort in the middle of handling read-only registers
 
     coverpoint = "cp_mcsr_access"
 
@@ -363,19 +393,21 @@ def makePrivBody() -> None:
         /////////////////////////////////
         """)
 
-    body_lines += "\n// Read-Only CSRs\n"
-    for csr in (csrsro):
+    for csr in csrs:
         addAccessTest(csr, covergroup, coverpoint)
-
-    for csr in (csrs):
-        addAccessTest(csr, covergroup, coverpoint)
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"
+    addAccessTest("mseccfg", covergroup, coverpoint)
+    body_lines += "#endif\n"
     body_lines += "\n// Read-Only CSRs\n"
-    #for csr in (csrsro):
-        #addAccessTest(csr, covergroup, coverpoint)
+    for csr in csrsro:
+        addAccessTest(csr, covergroup, coverpoint)
     body_lines += "\n// RV32-only h CSRs\n"
     body_lines += "#if __riscv_xlen == 32\n"
-    for csr in (csrs32):
+    for csr in csrs32:
         addAccessTest(csr, covergroup, coverpoint)
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"
+    addAccessTest("mseccfgh", covergroup, coverpoint)
+    body_lines += "#endif\n"
     body_lines += "#endif\n"
 
     coverpoint = "cp_mcsrwalk"
@@ -387,11 +419,11 @@ def makePrivBody() -> None:
         /////////////////////////////////
         """)
 
-    for csr in (csrs):
+    for csr in csrs:
         addWalkTest(csr, covergroup, coverpoint)
     body_lines += "// RV32-only h CSRs\n"
     body_lines += "#if __riscv_xlen == 32\n"
-    for csr in (csrs32):
+    for csr in csrs32:
         addWalkTest(csr, covergroup, coverpoint)
     body_lines += "#endif\n"
 

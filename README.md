@@ -2,6 +2,14 @@
 
 The RISC-V Architectural Certification Tests (ACTs) are a set of assembly language tests designed to certify that a design faithfully implements the RISC-V specification. These are not verification tests and additional verification should be run on all processors. For additional details on the certification process, see [LINK COMING SOON]().
 
+The Architectural Certification Tests are used with the ACT4 Framework, a Makefile and Python based tool that replaces the deprecated riscof tool. The ACT4 Framework generates and compiles self-checking tests in Executable Linkable Format (ELF) for a device under test (DUT) and optionally collects coverage showing that the tests hit the coverpoints that check the normative rules. The user is then responsible for running all of the ELF files on the DUT with the user's own testbench. Each test reports success or failure, and if possible prints error messages to a console.
+
+The ACT4 Framework requires a UDB configuration file specifying the extensions and parameters supported by the DUT; a Trick Box macro file defining DUT-specific operations such as printing to a console, terminating a test with a success/failure code, and generating interrupts; and a linker script describing the DUT memory map.
+
+RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
+
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv-non-isa.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. An ACT Developer's Guide for adding more tests and coverpoints is in [LINK COMING SOON].
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)
@@ -10,8 +18,7 @@ The RISC-V Architectural Certification Tests (ACTs) are a set of assembly langua
   - [Configuration](#configuration)
   - [Generating Self-Checking ELFs](#generating-self-checking-elfs)
   - [Running Certification Tests](#running-certification-tests)
-- [Verification and Development](#verification-and-development)
-- [Troubleshooting](#troubleshooting)
+  - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Licensing](#licensing)
 
@@ -144,7 +151,7 @@ Your configuration directory should contain the following files:
 4. `link.ld` - Linker script
 5. `sail.json`, `rvtest_config.svh`, `rvtest_config.h` - Additional configs (will be auto-generated in the future)
 
-See [config/duts/cvw/cvw-rv64gc](config/duts/cvw/cvw-rv64gc) for a complete example configuration directory.
+See [config/duts/cvw/cvw-rv64gc](./config/duts/cvw/cvw-rv64gc) for a complete example configuration directory.
 
 #### ACT Framework Configuration File
 
@@ -158,16 +165,16 @@ It should contain the following fields:
 - `ref_model_exe`: RISC-V Sail model executable (`sail_riscv_sim`); absolute path or executable name on PATH
 - `ref_model_type`: Currently only `sail` is supported.
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
-- `udb_config`: Path to linker script; interpreted relative to framework config file
+- `linker_script`: Path to linker script; interpreted relative to framework config file
 - `dut_include_dir`: Directory containing `model_test.h`; interpreted relative to framework config file (use `.` for same directory as config file)
 
-See [test_config.yaml](config/duts/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
+See [test_config.yaml](./config/duts/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
 
 #### UDB Config File
 
 A [UDB](https://github.com/riscv-software-src/riscv-unified-db) configuration file is used to specify all of the implementation details for your DUT. This includes all of the supported extensions and the value of all relevant parameters.
 
-See [cvw-rv64gc.yaml](config/duts/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv-software-src/riscv-unified-db) for more details.
+See [cvw-rv64gc.yaml](./config/duts/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv-software-src/riscv-unified-db) for more details.
 
 #### `model_test.h` Trickbox Macro Implementation
 
@@ -181,14 +188,14 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 **Printing Macros**: Can be left blank if no console is available
 
 - `RVMODEL_IO_INIT(_R1, _R2, _R3)`
-- `RVMODEL_IO_WRITE_STR(\_R1, _R2, _R3, _STR_PTR)`
+- `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT`
 
-**Interrupt Macros**: Can be left blank if interrupts are not supported
+**Interrupt Macros**: Can be left blank if interrupts are not supported. `RVMODEL_WRITE_GEIP` should be blank if hypervisor is not supported.
 
 - `RVMODEL_SET_MEXT_INT`
 - `RVMODEL_CLR_MEXT_INT`
@@ -206,7 +213,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_CLR_SSW_INT`
 - `RVMODEL_WRITE_GEIP(_R)`
 
-Complete examples are available for an example DUT ([config/duts/cvw/cvw-rv64gc/model_test.h](config/duts/cvw/cvw-rv64gc/model_test.h)) and for the RISC-V Sail reference model ([config/ref/sail-rv64gc/model_test.h](config/ref/sail-rv64gc/model_test.h)).
+Complete examples are available for an example DUT ([config/duts/cvw/cvw-rv64gc/model_test.h](./config/duts/cvw/cvw-rv64gc/model_test.h)) and for the RISC-V Sail reference model ([config/ref/sail-rv64gc/model_test.h](./config/ref/sail-rv64gc/model_test.h)).
 
 #### Linker Script
 
@@ -218,11 +225,15 @@ A linker script is needed to place the code and data regions in the appropriate 
 - There must be a `.data` section.
 - There must be a `.bss` section.
 
-For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/duts/cvw/cvw-rv64gc/link.ld](config/duts/cvw/cvw-rv64gc/link.ld).
+For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/duts/cvw/cvw-rv64gc/link.ld](./config/duts/cvw/cvw-rv64gc/link.ld).
+
+> [!NOTE]
+>
+> If you modify the base address, you also need to modify the Sail model memory map under the `memory.regions` key in `sail.json`.
 
 #### Other Config Files <!-- TODO: Remove this section when these files are autogenerated -->
 
-The framework currently relies on three other config files. All three of these files will eventually be generated from the UDB config file, but that is still a work in progress, so they need to be handwritten for now. See [config/duts/cvw/cvw-rv64gc](config/duts/cvw/cvw-rv64gc) for examples of these files.
+The framework currently relies on three other config files. All three of these files will eventually be generated from the UDB config file, but that is still a work in progress, so they need to be handwritten for now. See [config/duts/cvw/cvw-rv64gc](./config/duts/cvw/cvw-rv64gc) for examples of these files.
 
 - `sail.json` Sail model configuration
 - `rvtest_config.svh` and `rvtest_config.h` SystemVerilog and C header files that define the supported extensions and parameter values.
@@ -247,6 +258,8 @@ CONFIG_FILES=config/duts/<your_config_here>/test_config.yaml make --jobs $(nproc
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `work/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
+Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `work/<config_name>/build` or `work/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+
 ### Running Certification Tests
 
 All ELFs produced in the `work/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
@@ -256,6 +269,8 @@ Each test will print one of the following to the console:
 - **PASSED**: `RVCP-SUMMARY: Test File "<test_name.S>": PASSED`
 - **FAILED**: `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`
 
+### Troubleshooting
+
 For any test that fails, additional debug information will be printed including:
 
 - The failing PC (program counter)
@@ -264,12 +279,22 @@ For any test that fails, additional debug information will be printed including:
 - Expected value
 - Actual value
 
+Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv-non-isa/riscv-arch-test/issues/new).
+
 A common source of errors is configuration mismatches, so ensure that:
 
 - Your UDB config file accurately reflects your DUT's capabilities
 - The Sail config file matches your UDB configuration and DUT
 - Your `model_test.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
+
+## Contributing
+
+Contributors are always welcome. There are several ways to contribute:
+
+- [Open issues](https://github.com/riscv-non-isa/riscv-arch-test/issues/new) with bug reports or feature requests.
+- [Submit PRs](https://github.com/riscv-non-isa/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing
 

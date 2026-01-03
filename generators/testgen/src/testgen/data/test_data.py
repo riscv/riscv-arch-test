@@ -178,7 +178,7 @@ class TestData:
         self._test_data_strings.append(
             f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {self.extension}_{self.instr_name}_cg/{cp}\\""'
         )
-        return f"\n{self.extension}_{self.instr_name}_cg_{self.test_count}:"
+        return f"\n{self.extension}_{self.instr_name}_cg_{cp}_test_{self.test_count}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

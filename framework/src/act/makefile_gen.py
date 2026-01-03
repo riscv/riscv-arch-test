@@ -36,7 +36,6 @@ def gen_compile_targets(
     test_metadata: TestMetadata,
     base_dir: Path,
     xlen: int,
-    mabi: str,
     config: Config,
     sail_config_path: Path,
 ) -> str:
@@ -47,7 +46,6 @@ def gen_compile_targets(
         test_metadata: Metadata for the test.
         base_dir: Base directory for the build.
         xlen: XLEN (32 or 64).
-        mabi: ABI string for the compiler.
         config: Configuration object.
         sail_config_path: Path to a Sail config file for signature generation.
     """
@@ -66,6 +64,7 @@ def gen_compile_targets(
     flen = test_metadata.flen
     test_path = test_metadata.test_path
     ref_model_sig_flags = config.ref_model_type.signature_flags.format(sig_file=sig_file, granularity=int(xlen / 8))
+    mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_test else ''}"
 
     # Generate Makefile targets
     return (
@@ -165,7 +164,6 @@ def generate_common_makefile(
     tests_dir: Path,
     wkdir: Path,
     xlen: int,
-    mabi: str,
 ) -> None:
     """Generate a Makefile to compile the common tests.
 
@@ -197,7 +195,7 @@ def generate_common_makefile(
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
         makefile_lines.append(
-            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, mabi, config, internal_sail_config)
+            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, internal_sail_config)
         )
 
     # Write out Makefile
@@ -214,7 +212,6 @@ def generate_config_makefile(
     wkdir: Path,
     config_name: str,
     xlen: int,
-    mabi: str,
     coverage_enabled: bool,
 ) -> None:
     """Generate a Makefile to compile the config-specific tests."""
@@ -266,7 +263,7 @@ def generate_config_makefile(
             )
         else:
             makefile_lines.append(
-                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, mabi, config, sail_config_path)
+                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, config, sail_config_path)
             )
 
         # Generate coverage trace targets
@@ -407,7 +404,6 @@ def generate_makefiles(
         selected_tests = config_data["selected_tests"]
 
         # Extract config parameters
-        mabi = f"{'i' if xlen == 32 else ''}lp{xlen}"
         common_tests = rv32_common_tests if xlen == 32 else rv64_common_tests
 
         # Update top-level Makefile
@@ -439,13 +435,12 @@ def generate_makefiles(
             workdir,
             config_name,
             xlen,
-            mabi,
             coverage_enabled,
         )
 
         # Generate architecture-specific common Makefiles using first config of each XLEN
         if (xlen == 32 and not rv32_common_generated) or (xlen == 64 and not rv64_common_generated):
-            generate_common_makefile(config, common_tests, tests_dir, workdir, xlen, mabi)
+            generate_common_makefile(config, common_tests, tests_dir, workdir, xlen)
             top_makefile_lines.extend(
                 [
                     f"common-rv{xlen}-compile:",

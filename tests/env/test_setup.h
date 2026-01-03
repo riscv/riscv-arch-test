@@ -34,6 +34,14 @@
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
     RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
 
+    #ifdef rvtest_mtrap_routine
+      # set up PMP so user and supervisor mode can access full address space
+      # gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+      CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
+      li t0, -1
+      CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+    #endif
+
   // Start of test
   .global rvtest_code_begin
   rvtest_code_begin:

@@ -167,17 +167,17 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
 
     csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
         `ifdef XLEN64
-            bins csrrc    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
-            bins csrrw0   = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
-            bins csrrw1   = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
-            bins csrrs    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
-            bins csrr     = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
+            bins csrrc_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
+            bins csrrw0    = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
+            bins csrrw1    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
+            bins csrrs_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
+            bins csrr      = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
         `else
-            bins csrrc    = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
-            bins csrrw0   = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
-            bins csrrw1   = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
-            bins csrrs    = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
-            bins csrr     = {35'b00000000_00000000_00000000_00000000_010}; // csrr
+            bins csrrc_all = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
+            bins csrrw0    = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
+            bins csrrw1    = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
+            bins csrrs_all = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
+            bins csrr      = {35'b00000000_00000000_00000000_00000000_010}; // csrr
         `endif
     }
 
@@ -194,14 +194,14 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
         bins mtval    = {12'h343};
         bins mip      = {12'h344};
         bins menvcfg  = {12'h30A};
-        `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+        `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
             bins mseccfg  = {12'h747};
         `endif
         `ifdef XLEN32
             bins mstatush = {12'h310};
-            // bins medelegh = {12'h312}; // in Sm1p13 only
+            // bins medelegh = {12'h312}; // move this to Sm1p13 coverpoints
             bins menvcfgh = {12'h31A};
-            `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
+            `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
                 bins mseccfgh = {12'h757};
             `endif
         `endif

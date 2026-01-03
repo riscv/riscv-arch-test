@@ -56,13 +56,6 @@ def makePrivHeader(testname: str, sigupd_count: int, extra_reqext: str, extra_ma
         // Set up test environment and declare main entry point
         RVTEST_BEGIN
         .option norvc          // Do not automatically replace uncompressed instructions with compressed instructions
-
-        #set up PMP so user and supervisor mode can access full address space
-        csrw pmpcfg0, 0xF   # configure PMP0 to TOR RWX
-        li t0, -1
-        csrw pmpaddr0, t0   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-
-
         """)
     return header_lines
 
@@ -116,8 +109,8 @@ def addSignature(reg: str, cpbin: str) -> None:
     """Add a signature read.  Update global variables, including the signature update count, body lines, and testcase lines."""
     global sigupd_count, body_lines, testcase_lines
     sigupd_count += 1
-    # unsure why next line isn't working; produces "undefined reference to `failedtest_DEFAULT_LINK_REG_DEFAULT_TEMP_RE"
-    #    body_lines += f"\tRVTEST_SIGUPD(DEFAULT_SIG_REG, DEFAULT_LINK_REG, DEFAULT_TEMP_REG,{reg}, test_{sigupd_count})\n"
+    body_lines += "\t// Can't use DEFAULT_*_REG macros here because of macro expansion order\n"
+    body_lines += "\t// DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5\n"
     body_lines += f"\tRVTEST_SIGUPD(x2, x5, x4, {reg}, test_{sigupd_count}) # Check {reg} against expected value\n"
     testcase_lines += f'test_{sigupd_count}: .string "\\"test: {sigupd_count}; cp: {cpbin}\\""\n'
 
@@ -275,13 +268,13 @@ def makePrivBody() -> None:
     body_lines += f"\n{covergroup}_{coverpoint}_ecall:\n"
     body_lines += "\tli t0, 1               # success code\n"
     body_lines += "\tecall                  # test ecall instruction\n"
-    body_lines += "\tli t0, -1              # should not be executed\n"
+    body_lines += "\tli t0, -1              # trap handler skips following instruction so this should not be executed\n"
     addSignature("t0", f"{coverpoint}/{coverpoint}/ecall")
 
     body_lines += f"\n{covergroup}_{coverpoint}_ebreak:\n"
     body_lines += "\tli t0, 1               # success code\n"
     body_lines += "\tebreak                 # test ebreak instruction\n"
-    body_lines += "\tli t0, -1              # should not be executed\n"
+    body_lines += "\tli t0, -1              # trap handler skips following instruction so this should not be executed\n"
     addSignature("t0", f"{coverpoint}/{coverpoint}/ebreak")
 
     coverpoint = "cp_mret"
@@ -391,7 +384,7 @@ def makePrivBody() -> None:
 
     for csr in csrs:
         addAccessTest(csr, covergroup, coverpoint)
-    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n" # update when this gets a UDB name or depends on other extensions (Zkr, Zmepmp, Smmpmp, Zicflip)
     addAccessTest("mseccfg", covergroup, coverpoint)
     body_lines += "#endif\n"
     body_lines += "\n// Read-Only CSRs\n"
@@ -401,7 +394,7 @@ def makePrivBody() -> None:
     body_lines += "#if __riscv_xlen == 32\n"
     for csr in csrs32:
         addAccessTest(csr, covergroup, coverpoint)
-    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n" # update as above
     addAccessTest("mseccfgh", covergroup, coverpoint)
     body_lines += "#endif\n"
     body_lines += "#endif\n"

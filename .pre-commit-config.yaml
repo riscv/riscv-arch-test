@@ -74,6 +74,13 @@ repos:
     hooks:
       - id: codespell
 
+  # Check links in markdown files
+  - repo: https://github.com/tcort/markdown-link-check
+    rev: v3.14.2
+    hooks:
+      - id: markdown-link-check
+        args: [-q]
+
   # clang-format for assembly files
   # - repo: https://github.com/pre-commit/mirrors-clang-format
   #   rev: "v19.1.7"

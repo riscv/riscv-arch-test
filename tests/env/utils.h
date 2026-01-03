@@ -305,6 +305,40 @@
         addi    dst, src, dst           ;\
 .endif
 
+// CSR Macros
+// each access is followed by a nop in case the access causes a trap
+// because the trap return skips the next instruction
+
+#define CSRRW(_R2, _CSR, _R1) \
+    csrrw _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRRS(_R2, _CSR, _R1) \
+    csrrs _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRRC(_R2, _CSR, _R1) \
+    csrrc _R2, _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRR(_R2, _CSR) \
+    csrr _R2, _CSR      ;\
+    nop      # in case csr op traps
+
+#define CSRW(_CSR, _R1) \
+    csrw _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRS(_CSR, _R1) \
+    csrs _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+#define CSRC(_CSR, _R1) \
+    csrc _CSR, _R1      ;\
+    nop      # in case csr op traps
+
+
+
 // Utility Macros
 
 // Place 1 in msb

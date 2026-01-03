@@ -26,7 +26,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     # cp_custom_aqrl
     for suffix in ["", ".rl", ".aqrl"]:
-        test_data.add_testcase_string("cp_custom_aqrl")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         assert (
             params.rs1 is not None
@@ -37,6 +36,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
+                test_data.add_testcase("cp_custom_aqrl"),
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
@@ -55,7 +55,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d", "lr.w"]
 
     for lr_insn in lr_insns:
-        test_data.add_testcase_string("cp_custom_sc_lrsc")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         assert (
             params.rs1 is not None
@@ -66,6 +65,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
+                test_data.add_testcase("cp_custom_sc_lrsc"),
                 "# Testcase: cp_custom_sc_lrsc",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
@@ -81,7 +81,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         return_test_regs(test_data, params)
 
     # cp_custom_sc_after_sc
-    test_data.add_testcase_string("cp_custom_sc_after_sc")
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert (
         params.rs1 is not None
@@ -93,6 +92,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     )
     test_lines.extend(
         [
+            test_data.add_testcase("cp_custom_sc_after_sc"),
             "# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
             load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -123,7 +123,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         stores.append(("sd", 0))
 
     for store_insn, offset in stores:
-        test_data.add_testcase_string("cp_custom_sc_after_store")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         assert (
             params.rs1 is not None
@@ -135,6 +134,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
+                test_data.add_testcase("cp_custom_sc_after_store"),
                 f"# Testcase: cp_custom_sc_after_store ({store_insn})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -176,7 +176,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
 
     for load_insn, offset in loads:
-        test_data.add_testcase_string("cp_custom_sc_after_load")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         assert (
             params.rs1 is not None
@@ -188,6 +187,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
+                test_data.add_testcase("cp_custom_sc_after_load"),
                 f"# Testcase: cp_custom_sc_after_load ({load_insn})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -209,7 +209,6 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     for lr_insn in lr_insns:
         for addr_diff in range(8, 128, 8):
-            test_data.add_testcase_string("cp_custom_sc_addresses")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0])
             assert (
                 params.rs1 is not None
@@ -220,6 +219,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             )
             test_lines.extend(
                 [
+                    test_data.add_testcase("cp_custom_sc_addresses"),
                     f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     f"LA(x{params.temp_reg}, scratch) # rs1 = base address",

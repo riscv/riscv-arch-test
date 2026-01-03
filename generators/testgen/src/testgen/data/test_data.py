@@ -164,17 +164,21 @@ class TestData:
         """Get the list of test data strings to be stored in .data section."""
         return self._test_data_strings
 
-    def add_testcase_string(self, cp: str) -> None:
+    def add_testcase(self, cp: str) -> str:
         """
-        Add a test data string to be stored in .data section.
+        Add a test data string and return the testcase label line.
 
         Args:
-            value: The string value to store
+            cp: The coverpoint name
+
+        Returns:
+            Label line string in format '{extension}_{instr_name}_cg_{test_count}:'
         """
         self.increment_test_count()
         self._test_data_strings.append(
             f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {self.extension}_{self.instr_name}_cg/{cp}\\""'
         )
+        return f"\n{self.extension}_{self.instr_name}_cg_{self.test_count}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

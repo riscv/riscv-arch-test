@@ -28,9 +28,9 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
             assert params.rs1val is not None and params.rs2val is not None
-            test_data.add_testcase_string(coverpoint)
             test_lines.extend(
                 [
+                    test_data.add_testcase(coverpoint),
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),

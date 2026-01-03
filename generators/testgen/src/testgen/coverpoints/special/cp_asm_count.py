@@ -15,9 +15,8 @@ def make_asm_count(instr_name: str, instr_type: str, coverpoint: str, test_data:
     Generate a simple testcase that just executes the instruction once.
     Used for counting instruction execution in simulation.
     """
-    test_data.add_testcase_string(coverpoint)
     test_lines = [
-        "",
+        test_data.add_testcase(coverpoint),
         "# Testcase cp_asm_count",
         f"{instr_name}",
     ]

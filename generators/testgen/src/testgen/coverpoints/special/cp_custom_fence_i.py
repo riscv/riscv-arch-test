@@ -36,7 +36,6 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
         # Get free registers
         reg1, reg2, reg3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
-        test_data.add_testcase_string("cp_custom_fencei")
         label = f"selfmodify_{test_data.test_count}"
 
         # Calculate encoded instruction: addi reg1, reg1, add_val
@@ -44,6 +43,7 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
 
         test_lines.extend(
             [
+                test_data.add_testcase("cp_custom_fencei"),
                 f"# Testcase: {desc}",
                 f"LI(x{reg1}, 3)",
                 f"LA(x{reg3}, {label})",

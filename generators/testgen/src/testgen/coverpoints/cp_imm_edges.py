@@ -33,8 +33,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
     test_lines: list[str] = []
 
     for edge_val in edges_imm:
-        test_data.add_testcase_string(coverpoint)
-        test_lines.append("")
+        test_lines.append(test_data.add_testcase(coverpoint))
         params = generate_random_params(test_data, instr_type, immval=edge_val, exclude_regs=[0])
         desc = f"{coverpoint} (imm = {edge_val})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

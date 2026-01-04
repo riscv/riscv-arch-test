@@ -345,8 +345,8 @@
 // Place 1 in msb
 #if XLEN == 64
 #define SET_MSB(_R) \
-    li _R, 0x8000000000000000    // 1 in bit 63
+    LI(_R, 0x8000000000000000)    // 1 in bit 63
 #else  /* XLEN == 32 */
 #define SET_MSB(_R) \
-    li _R, 0x80000000    // 1 in bit 31
+    LI(_R, 0x80000000)    // 1 in bit 31
 #endif

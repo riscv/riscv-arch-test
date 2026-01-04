@@ -1353,7 +1353,7 @@ spcl_\__MODE__\()dispatch:
 
         .align 3                        //make sure this is a dblwd boundary
 clrint_\__MODE__\()tbl:                 //this code should only touch T2..T6
-#ifdef rvtest_vtrap_routine  //  M/S/V/U
+#if defined(rvtest_vtrap_routine)  //  M/S/V/U
         .dword  0                       // int cause  0 is reserved, error
         .dword  \__MODE__\()clr_Ssw_int         // int cause  1  Smode SW int
         .dword  \__MODE__\()clr_Vsw_int         // int cause  2  Vmode SW int
@@ -1369,7 +1369,7 @@ clrint_\__MODE__\()tbl:                 //this code should only touch T2..T6
         .dword  \__MODE__\()clr_Vext_int                // int cause  A  Vmode Ext int
         .dword  \__MODE__\()clr_Mext_int                // int cause  B  Mmode Ext int
 //****************************************************************
-#elifdef rvtest_dtrap_routine  // M/S/U only
+#elif defined(rvtest_dtrap_routine)  // M/S/U only
         .dword  0                       // int cause  0 is reserved, error
         .dword  \__MODE__\()clr_Ssw_int         // int cause  1  Smode SW int
         .dword  1                       // int cause  2  no Vmode

@@ -20,7 +20,7 @@ include::norm/Zifencei_norm_rules.adoc[]
 
 ==== Misalign: Misaligned Loads/Stores
 
-Misaligned loads/stores to optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
+Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
 
 The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  TODO: Add Vector misaligned.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
 

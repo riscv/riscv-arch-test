@@ -40,7 +40,7 @@ class TestMetadata(BaseModel):
         return "128" if "Q" in self.required_extensions else "64" if "D" in self.required_extensions else "32"
 
     @property
-    def e_test(self) -> bool:
+    def e_ext(self) -> bool:
         """Check if E extension is present."""
         return self.march.startswith(("rv32e", "rv64e", "rv${XLEN}e"))
 

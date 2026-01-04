@@ -35,10 +35,10 @@ def select_tests(
     return selected_tests
 
 
-def get_common_tests(test_dict: dict[str, TestMetadata], xlen: int) -> dict[str, TestMetadata]:
+def get_common_tests(test_dict: dict[str, TestMetadata], xlen: int, e_ext: bool) -> dict[str, TestMetadata]:
     "Get tests that do not depend on configuration and match the given XLEN."
     common_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
-        if not test_metadata.config_dependent and test_metadata.mxlen == xlen:
+        if not test_metadata.config_dependent and test_metadata.mxlen == xlen and test_metadata.e_ext == e_ext:
             common_tests[test_name] = test_metadata
     return common_tests

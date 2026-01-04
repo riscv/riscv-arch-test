@@ -17,6 +17,23 @@ from typing import Any
 from ruamel.yaml import YAML
 
 
+def update_udb_submodule() -> None:
+    """Ensure the riscv-unified-db submodule is initialized and up to date."""
+    udb_path = Path("./external/riscv-unified-db/bin/udb")
+
+    if not udb_path.exists():
+        print("riscv-unified-db not found; initializing submodule external/riscv-unified-db...")
+    else:
+        print("Updating riscv-unified-db submodule...")
+
+    try:
+        subprocess.run(["git", "submodule", "update", "--init", "--", "external/riscv-unified-db"], check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            "Failed to initialize/update riscv-unified-db submodule. Please run 'git submodule update --init' manually and try again."
+        ) from e
+
+
 def validate_udb_config(udb_config_file: Path) -> None:
     validate_udb_config_cmd = [
         "./external/riscv-unified-db/bin/udb",
@@ -60,9 +77,10 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
 
 
 def generate_udb_files(udb_config_file: Path, output_dir: Path) -> None:
+    update_udb_submodule()
+
     # TODO: Figure out a more robust way to handle UDB validation
     # Currently only works if using docker as container runtime and requires copying UDB config into riscv-unified-db directory
-
     copied_udb_config = Path(f"./external/riscv-unified-db/cfgs/{udb_config_file.name}")
     if not copied_udb_config.exists() or not filecmp.cmp(udb_config_file, copied_udb_config):
         shutil.copy(udb_config_file, copied_udb_config)

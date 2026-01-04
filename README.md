@@ -30,7 +30,21 @@ This section provides detailed step-by-step instructions to set up the ACT envir
 
 The ACTs require several tools to generate and run correctly. Ensure all of the following tools are installed before proceeding.
 
-#### 1. Python/uv
+#### 1. System Dependencies
+
+The ACT4 framework relies on `make` to orchestrate compilation. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
+
+To install system dependencies:
+
+```bash
+# On Ubuntu/Debian
+sudo apt-get install make git
+
+# On Fedora/CentOS/RHEL
+sudo dnf install make git
+```
+
+#### 2. Python/uv
 
 The test generator and framework are written in Python. The recommended way of installing and running Python is using the uv project manager, which will handle Python versions, virtual environments, and dependencies transparently.
 
@@ -48,7 +62,7 @@ uv --version
 
 For more details on uv and alternate installation methods, see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
-#### 2. RISC-V Compiler
+#### 3. RISC-V Compiler
 
 The ACT framework is compatible with GCC or LLVM. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file).
 
@@ -89,7 +103,7 @@ riscv64-unknown-elf-gcc --version
 
 For more information or if you have issues installing the RISC-V toolchain, refer to the [riscv-gnu-toolchain README](https://github.com/riscv-collab/riscv-gnu-toolchain).
 
-#### 3. RISC-V Sail Golden Reference Model
+#### 4. RISC-V Sail Golden Reference Model
 
 The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.9 of the model.
 
@@ -109,7 +123,7 @@ sail_riscv_sim --version
 
 For more details on the Sail model and alternate installation methods, see the [sail-riscv README](https://github.com/riscv/sail-riscv).
 
-#### 4. Container Runtime
+#### 5. Container Runtime
 
 The ACTs use [`riscv-unified-db`](https://github.com/riscv-software-src/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
 

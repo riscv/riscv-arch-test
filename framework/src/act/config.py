@@ -8,6 +8,7 @@
 ##################################
 
 import shutil
+import subprocess
 from enum import Enum
 from pathlib import Path
 
@@ -87,6 +88,30 @@ class Config(BaseModel):
         return "\n".join(lines)
 
 
+def check_ref_model_version(config: Config) -> None:
+    """Check that the reference model version is compatible."""
+    if config.ref_model_type == RefModelType.SAIL:
+        required_version = "0.9"
+        try:
+            result = subprocess.run(
+                [str(config.ref_model_exe), "--version"],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=5,
+            )
+            version = result.stdout.strip()
+            if version != required_version:
+                raise ValueError(
+                    f"Sail reference model version mismatch. ACT4 requires version {required_version}, but {version} was found. "
+                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv-non-isa/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
+                )
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Failed to check Sail version: {e}") from e
+        except subprocess.TimeoutExpired as e:
+            raise RuntimeError(f"Timeout while checking Sail version: {e}") from e
+
+
 def load_config(config_file: Path) -> Config:
     """Load riscv-arch-test framework configuration from a YAML file."""
     if not config_file.exists():
@@ -99,4 +124,6 @@ def load_config(config_file: Path) -> Config:
     if yaml_data is None:
         raise ValueError(f"Configuration file is empty: {config_file}")
 
-    return Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
+    config = Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
+    check_ref_model_version(config)
+    return config

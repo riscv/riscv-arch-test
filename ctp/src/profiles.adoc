@@ -5,7 +5,7 @@
 This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicclsm_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Zicclsm implies support for misaligned loads and stores.
+** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
 * MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
@@ -20,7 +20,7 @@ This test plan makes some further assumptions, which should be checked against t
 * All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate.
 * Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported indepenent of the Zicntr or F instructions, so there
 is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
-* The RV2I 20 profile states "Misaligned loads and stores may be supported."  In terms of the language used in later profiles, this is interpreted as "Zicclsm is optional"
+* Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.  TODO: Add multi-master test plan.
 
 === Profile Coverage Matrix
 
@@ -53,6 +53,10 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
+|Misalign|Misaligned Load/Store|<<t-Misalign-coverpoints>>|o|o|o|o|o
+|MisalignZca|Misaligned Compressed|<<t-MisalignZca-coverpoints>>|o|o|o|o|o
+|MisalignF|Misaligned Float|<<t-MisalignF-coverpoints>>|o||o|o|o
+|MisalignD|Misaligned Double|<<t-MisalignD-coverpoints>>|o||o|o|o
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |ZfhD|Half-Double Converts|<<t-ZfhD-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
@@ -178,7 +182,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvknhb64|Vector Hash 64-bit|<<t-Zvknh-coverpoints>>||||o|o
 |Zvksed32|Vector ShangMi Crypt|<<t-Zvksed-coverpoints>>||||o|o
 |Zvksh32|Vector ShangMi Hash|<<t-Zvksh-coverpoints>>||||o|o
-
 8+^|Vector Privileged
 |ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
@@ -235,6 +238,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZfhminQ|Half-Quad Converts|<<t-ZfhQ-coverpoints>>|||||
 |ZfaQ|Additional Quad|<<t-ZfaQ-coverpoints>>|||||
 |ZfaZfhQ|Additional Half-Quad Converts|<<t-ZfaZfhQ-coverpoints>>|||||
+|MisalignQ|Misaligned Quad|<<t-MisalignQ-coverpoints>>|||||
 |Zcmp|Compressed Push/Pop|<<t-Zcmp-coverpoints>>|||||
 |Zcmt|Compressed Table Jumps|<<t-Zcmt-coverpoints>>|||||
 |Zilsd|Load/Store Double|<<t-Zilsd-coverpoints>>|||||
@@ -306,6 +310,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
 |Zkr|Entropy Generation||||o|o
 |===
+
+*** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)
+*** which of the Zicc extensions are tested by regular instructions?
 
 === Certification Requirements
 

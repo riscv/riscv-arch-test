@@ -14,9 +14,9 @@ from testgen.utils.common import load_int_reg, write_sigupd
 
 @add_coverpoint_generator("cp_misalign")
 def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
-    """Generate tests for alignment coverpoints."""
+    """Generate tests for misalignment coverpoints."""
     if coverpoint == "cp_misalign":
-        alignments = [0, 1, 2, 3, 4, 5, 6, 7]
+        alignments = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # 8 is not strictly required by coverpoint, but shows wrapping works
     else:
         raise ValueError(f"Unknown cp_misalign coverpoint variant: {coverpoint} for {instr_name}")
 
@@ -133,19 +133,22 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             if test_data.xlen == 32:
                 test_lines.extend(
                     [
-                        f"# Check all 16 bytes as signatureLREG x{r2}, 0(x{r1})",
+                        "# Check all 16 bytes as signature",
+                        f"LREG x{r2}, 0(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 4(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 8(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 12(x{r1})",
+                        write_sigupd(r2, test_data, "int"),
                     ]
                 )
             else:  # RV64
                 test_lines.extend(
                     [
-                        f"# Check all 16 bytes as signatureLREG x{r2}, 0(x{r1})",
+                        "# Check all 16 bytes as signature",
+                        f"LREG x{r2}, 0(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 8(x{r1})",
                         write_sigupd(r2, test_data, "int"),

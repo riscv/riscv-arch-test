@@ -343,8 +343,10 @@
 // Utility Macros
 
 // Place 1 in msb
+#if XLEN == 64
 #define SET_MSB(_R) \
-    li _R, 0x80000000       /* 1 in bit 31   */                  ;\
-    #if __riscv_xlen == 64                                       ;\
-        slli _R, _R, 32     /* shift _R to have 1 in bit 63  */  ;\
-    #endif
+    LI(_R, 0x8000000000000000)    // 1 in bit 63
+#else  /* XLEN == 32 */
+#define SET_MSB(_R) \
+    LI(_R, 0x80000000)    // 1 in bit 31
+#endif

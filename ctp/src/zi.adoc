@@ -18,29 +18,68 @@ include::{testplansdir}/Zifencei.adoc[]
 include::norm/Zifencei_norm_rules.adoc[]
 
 
+==== Misalign: Misaligned Loads/Stores
+
+Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
+
+The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  TODO: Add Vector misaligned.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
+
+
+[[t-Misalign-coverpoints]]
+.Misaligned Coverpoints
+include::{testplansdir}/Misalign.adoc[]
+
+include::norm/Misalign_norm_rules.adoc[]
+
+[[t-MisalignF-coverpoints]]
+.MisalignedF Coverpoints
+include::{testplansdir}/MisalignF.adoc[]
+
+include::norm/MisalignF_norm_rules.adoc[]
+
+[[t-MisalignD-coverpoints]]
+.MisalignedD Coverpoints
+include::{testplansdir}/MisalignD.adoc[]
+include::norm/MisalignD_norm_rules.adoc[]
+
+[[t-MisalignQ-coverpoints]]
+.MisalignedQ Coverpoints
+//include::{testplansdir}/MisalignQ.adoc[]
+
+include::norm/MisalignQ_norm_rules.adoc[]
+
+[[t-MisalignZca-coverpoints]]
+.MisalignedZca Coverpoints
+include::{testplansdir}/MisalignZca.adoc[]
+
+include::norm/MisalignZca_norm_rules.adoc[]
+
+[[t-Misaligned-modified-coverpoints]]
+.Misaligned Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cp_misalign|8|All 8 combinations of the three least significant bits of the address.
+|===
+
+
 ==== Zicclsm Misaligned Loads/Stores
 
-Misaligned loads/stores can be handled in hardware if Zicclsm is implemented.  These tests exercise loads/stores in the program memory, which is expected to be cachable and coherent to support Zicclsm.  No special PMA circumstances are tested.  If other extensions with loads and stores are supported, more misaligned tests are run (e.g. ZicclsmF for floating point loads/stores, ZicclsmZca for compressed loads/stores).
+The Zicclsm extension, defined in the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22] and
+https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] profiles, provides the following normative rule.  The extension applies to privilege modes below M-mode (because the profiles apply to supervisor-mode execution environment), and requires that misaligned scalar and vector loads and stores to main memory either are handled in hardware or raise a misaligned exception that is handled by the execution environment.  This is tested by Exceptions coverpoints that either return the expected value or throw a misaligned trap. Misaligned atomics are not part of Zicclsm, but are checked in {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
 
-[[t-Zicclsm-coverpoints]]
-.Zicclsm Coverpoints
-include::{testplansdir}/Zicclsm.adoc[]
+[[t-Zicclsm-normative_rules]]
+.Zicclsm Normative Rules
+[cols="1,4,3", options="header"]
+|===
+|Normative Rule |Rule Text |Coverpoints
 
-include::norm/Zicclsm_norm_rules.adoc[]
+|zicclsm_op |Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported. |{ExceptionsS, ExceptionsU, ExceptionsZc, ExceptionsF, ExceptionsVls}/{cp_load_address_misaligned, cp_store_address_misaligned}
+|===
 
-[[t-ZicclsmF-coverpoints]]
-.ZicclsmF Coverpoints
-include::{testplansdir}/ZicclsmF.adoc[]
+*** ExceptionsVls coverpoints need to be written.
+*** update normative rule when tagged in profile and hyperlink is available
 
-include::norm/ZicclsmF_norm_rules.adoc[]
-
-[[t-ZicclsmZca-coverpoints]]
-.ZicclsmZca Coverpoints
-include::{testplansdir}/ZicclsmZca.adoc[]
-
-include::norm/ZicclsmZca_norm_rules.adoc[]
-
-*** add others when ready
 
 ==== Zicond Conditional Instructions
 

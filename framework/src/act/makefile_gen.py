@@ -284,10 +284,11 @@ def generate_config_makefile(
                 f"{final_elf}: {common_elf} | {final_elf.parent}\n"
                 f"\tln -sf {common_elf} \\\n"
                 f"\t\t{final_elf}\n"
-                f"\tln -sf {common_elf}.objdump \\\n"
-                f"\t\t{final_elf}.objdump\n"
-                if config.objdump_exe is not None
-                else "# skipping objdump\n",
+                f"{
+                    f'\tln -sf {common_elf}.objdump \\\n\t\t{final_elf}.objdump\n'
+                    if debug and config.objdump_exe is not None
+                    else '\t# skipping objdump generation\n'
+                }"
             )
         else:
             makefile_lines.append(

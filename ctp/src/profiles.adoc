@@ -229,6 +229,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zawrs|Wait on Reservation Set|<<t-Zawrs-coverpoints>>||||x|x
 |Sdtrig|Debug Triggers|<<t-Sdtrig-coverpoints>>||||o|o
 8+^|Non-Profile Extensions
+|E|Embedded 16 Regs|<<t-E-normative_rules>>|||||
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||
 |Zdinx|Double in Int Regs|<<t-Zdinx-coverpoints>>|||||
 |Zhinx|Half in Int Regs|<<t-Zhinx-coverpoints>>|||||
@@ -264,17 +265,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Smctr|Control Transfer Records|<<t-Smctr-coverpoints>>|||||
 |SmctrH|Hypervisor Control Transfer Records|<<t-SmctrH-coverpoints>>|||||
 |Ssqosid|Quality-of-Service ID|<<t-Ssqosid-coverpoints>>|||||
-8+^|Embedded
-|E|Embedded 16 Regs|<<t-E-coverpoints>>|||||
-|EM|Multiply/Divide|<<t-EM-coverpoints>>|||||
-|EZmmul|Multiply|<<t-EZmmul-coverpoints>>|||||
-|EZca|Compressed|<<t-EZca-coverpoints>>|||||
-|EZcb|Additional Compressed|<<t-EZcb-coverpoints>>|||||
-|EZcmp|Compressed Push/Pop|<<t-EZcmp-coverpoints>>|||||
-|EZcmt|Compressed Table Jump|<<t-EZcmt-coverpoints>>|||||
-|EZba|Address Generation|<<t-EZba-coverpoints>>|||||
-|EZbb|Bit Manipulation|<<t-EZbb-coverpoints>>|||||
-|EZbs|Single-Bit|<<t-EZbs-coverpoints>>|||||
 8+^|Debug
 |DM|Debug Module|<<t-DM-coverpoints>>|||||
 |DTM|Debug Transport Module|<<t-DTM-coverpoints>>|||||

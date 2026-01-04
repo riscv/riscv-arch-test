@@ -45,3 +45,7 @@ normative_rule_definitions:
     coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
   - name: bexti_rv32i_shamt_rsv
     coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+
+  # E rules
+  - name: diff-rv32e-rv32i
+    coverpoint: ["{SsstrictS_cg,SsstricM_cg}/{cp_upperreg}"]

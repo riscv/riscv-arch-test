@@ -4,7 +4,7 @@ normative_rule_definitions:
   - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
     coverpoint: ["{MisalignQ_flq_cg,MisalignQ_fsq_cg}/{cp_misalign}"]
   - name: fp_misaligned
-    coverpoint: ["{MisalignF_flw_cg,MisalignF_fsw_cg}/{cp_misalign}"]
+    coverpoint: ["{MisalignF_flq_cg,MisalignF_fsq_cg}/{cp_misalign}"]
   - name: flq_op
     # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
     coverpoint: ["MisalignQ_flq_cg/{cp_misalign}"]

@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../external/riscv-unified-db/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: sail-rv32e
+description: An rv32e configuration of the Sail RISC-V model
+implemented_extensions:
+  # - { name: E, version: "2.1" }
+  - { name: M, version: "2.0" }
+  - { name: Zmmul, version: "1.0" }
+  - { name: Zca, version: "1.0" }
+  - { name: Zcb, version: "1.0" }
+  - { name: Zba, version: "1.0" }
+  - { name: Zbb, version: "1.0" }
+  - { name: Zbs, version: "1.0" }
+
+params:
+  MXLEN: 32
+  # M params
+  MUTABLE_MISA_M: false
+  # C params
+  MUTABLE_MISA_C: false

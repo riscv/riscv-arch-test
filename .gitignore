@@ -25,8 +25,10 @@ work-ref/
 coverpoints/unpriv
 coverpoints/coverage
 tests/priv/headers
-tests/rv32
-tests/rv64
+tests/rv32i
+tests/rv32e
+tests/rv64i
+tests/rv64e
 ctp/src/norm
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new

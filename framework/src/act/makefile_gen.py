@@ -117,6 +117,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
     elf_dir = base_dir / "elfs"
     elf = elf_dir / test_name.with_suffix(".elf")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
+    sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
 
     # Generate Makefile targets
@@ -127,7 +128,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
         f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
         f"\t\t{elf} \\\n"
         f"\t\t--trace-output {sail_trace} \\\n"
-        f"\t\t> {sail_trace}.log 2>&1\n"
+        f"\t\t> {sail_log} 2>&1\n"
         f"\n"
         "# Generate RVVI trace\n"
         f"{rvvi_trace}: {sail_trace}\n"

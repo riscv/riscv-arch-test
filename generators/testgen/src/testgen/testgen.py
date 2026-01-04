@@ -28,6 +28,9 @@ from testgen.utils.testplans import get_extensions, read_testplan
 # Max testcases per file before splitting. Individual coverpoints won't be split, so if one coverpoint exceeds this, the file will exceed this limit.
 TESTCASES_PER_FILE = 1000
 
+# Tests to generate RV32/64E variants for
+E_EXTENSION_TESTS = {"M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
+
 # CLI interface setup
 testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
@@ -77,8 +80,10 @@ def generate_all_tests(
     # Build list of test generation tasks (extension configs to process)
     tasks: list[tuple[int, bool, str, Path, Path]] = []
     for xlen in [32, 64]:
-        for E_ext in [False]:  # TODO: Enable E tests
+        for E_ext in [False, True]:
             for extension in sorted(extension_list):
+                if E_ext and extension not in E_EXTENSION_TESTS:
+                    continue
                 tasks.append((xlen, E_ext, extension, testplan_dir, output_test_dir))
 
     # Execute tasks in parallel
@@ -101,7 +106,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
     xlen, E_ext, extension, testplan_dir, output_test_dir = task
 
     # Set extension-specific variables
-    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else ''}/{extension}"
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{extension}"
     output_dir.mkdir(parents=True, exist_ok=True)
     flen = (
         128
@@ -110,7 +115,7 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
         if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
         else 32
     )
-    test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, e_register_file=E_ext)
+    test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, E_ext=E_ext)
     print(f"Generating tests for {output_dir}")
     # Iterate through each instruction in extension
     instructions = read_testplan(testplan_dir / f"{extension}.csv")
@@ -212,7 +217,7 @@ def write_test_file(
     filename = f"{extension}-{instr_name}-{file_idx:02d}.S"
 
     test_file = output_dir / filename
-    arch_dir = f"rv{test_config.xlen}{'e' if test_config.e_register_file else ''}"
+    arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}"
     test_file_relative = Path(arch_dir) / extension / filename
 
     extra_defines = ""
@@ -222,16 +227,12 @@ def write_test_file(
 
     # Construct file content
     final_lines: list[str] = []
-    final_lines.append(
-        insert_setup_template("testgen_header.S", test_config.xlen, extension, test_file_relative, extra_defines)
-    )
+    final_lines.append(insert_setup_template("testgen_header.S", test_config, test_file_relative, extra_defines))
 
     final_lines.extend(body_lines)
 
     # Test footer
-    final_lines.append(
-        insert_setup_template("testgen_footer.S", test_config.xlen, extension, test_file_relative, extra_defines)
-    )
+    final_lines.append(insert_setup_template("testgen_footer.S", test_config, test_file_relative, extra_defines))
 
     # Generate final test string with signature size and test data section
     sig_words = get_sig_space(test_data)

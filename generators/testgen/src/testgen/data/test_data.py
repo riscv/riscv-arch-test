@@ -40,7 +40,7 @@ class TestData:
         """
         self._config = test_config
         self._instr_name = instr_name
-        self._int_regs = IntegerRegisterFile(test_config.e_register_file)
+        self._int_regs = IntegerRegisterFile(test_config.E_ext)
         self._float_regs = FloatRegisterFile()
         self._sigupd_count = 10  # Start with a margin of 10 spaces in signature
         self._sigupd_count_float = 0

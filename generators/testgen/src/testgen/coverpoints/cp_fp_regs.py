@@ -29,13 +29,12 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     # Generate tests
     for fd in fd_regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([fd])
         params = generate_random_params(test_data, instr_type, fd=fd)
         desc = f"{coverpoint} (Test destination fd = f{fd})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -59,13 +58,12 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for fs1 in fs1_regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([fs1])
         params = generate_random_params(test_data, instr_type, fs1=fs1)
         desc = f"{coverpoint} (Test source fs1 = f{fs1})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -89,13 +87,12 @@ def make_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for fs2 in fs2_regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([fs2])
         params = generate_random_params(test_data, instr_type, fs2=fs2)
         desc = f"{coverpoint} (Test source fs2 = f{fs2})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -119,13 +116,12 @@ def make_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for fs3 in fs3_regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([fs3])
         params = generate_random_params(test_data, instr_type, fs3=fs3)
         desc = f"{coverpoint} (Test source fs2 = f{fs3})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )

@@ -28,7 +28,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     test_lines: list[str] = []
 
     for alignment in alignments:
-        test_data.add_testcase_string(coverpoint)
+        test_lines.append(test_data.add_testcase(coverpoint))
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)
             assert params.rs1 is not None, "rs1 must be provided for L-type instruction"

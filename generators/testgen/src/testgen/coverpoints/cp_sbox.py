@@ -24,14 +24,13 @@ def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     test_lines: list[str] = []
     for sbox in sbox_vals:
-        test_data.add_testcase_string(coverpoint)
+        test_lines.append(test_data.add_testcase(coverpoint))
         # repeat sbox value in each byte
         if test_data.xlen == 32:
             s = sbox | sbox << 8 | sbox << 16 | sbox << 24
         else:  # test_data.xlen == 64
             s = sbox | sbox << 8 | sbox << 16 | sbox << 24 | sbox << 32 | sbox << 40 | sbox << 48 | sbox << 56
 
-        test_lines.append("")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=s, rs2val=s)
         desc = f"{coverpoint} = {sbox}"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

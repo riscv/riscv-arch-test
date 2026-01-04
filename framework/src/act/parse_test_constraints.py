@@ -39,6 +39,11 @@ class TestMetadata(BaseModel):
         """Get floating-point register length: '64' if D extension present, else '32'."""
         return "128" if "Q" in self.required_extensions else "64" if "D" in self.required_extensions else "32"
 
+    @property
+    def e_test(self) -> bool:
+        """Check if E extension is present."""
+        return self.march.startswith(("rv32e", "rv64e", "rv${XLEN}e"))
+
 
 def extract_yaml_config(file: Path) -> TestMetadata:
     """Extract YAML configuration from a test file between START_TEST_CONFIG and END_TEST_CONFIG markers."""

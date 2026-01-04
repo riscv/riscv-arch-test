@@ -37,8 +37,7 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
             for frm_mode in frm_modes:
-                test_data.add_testcase_string(coverpoint)
-                test_lines.append("")
+                test_lines.append(test_data.add_testcase(coverpoint))
                 params = generate_random_params(
                     test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs2val=edge_val2, frm=frm_mode
                 )
@@ -80,8 +79,7 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
             for frm_mode in frm_modes:
-                test_data.add_testcase_string(coverpoint)
-                test_lines.append("")
+                test_lines.append(test_data.add_testcase(coverpoint))
                 params = generate_random_params(
                     test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs3val=edge_val2, frm=frm_mode
                 )

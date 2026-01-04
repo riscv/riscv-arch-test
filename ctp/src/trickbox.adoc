@@ -20,6 +20,7 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 [%AUTOWIDTH]
 |===
 |Macro|Description
+|RVMODEL_DATA_SECTION|Model-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.
 |RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller
 |RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.

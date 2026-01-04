@@ -384,7 +384,7 @@ def makePrivBody() -> None:
 
     for csr in csrs:
         addAccessTest(csr, covergroup, coverpoint)
-    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n" # update when this gets a UDB name or depends on other extensions (Zkr, Zmepmp, Smmpmp, Zicflip)
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"  # update when this gets a UDB name or depends on other extensions (Zkr, Zmepmp, Smmpmp, Zicflip)
     addAccessTest("mseccfg", covergroup, coverpoint)
     body_lines += "#endif\n"
     body_lines += "\n// Read-Only CSRs\n"
@@ -394,7 +394,7 @@ def makePrivBody() -> None:
     body_lines += "#if __riscv_xlen == 32\n"
     for csr in csrs32:
         addAccessTest(csr, covergroup, coverpoint)
-    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n" # update as above
+    body_lines += "\n#ifdef MSECCFG_SUPPORTED\n"  # update as above
     addAccessTest("mseccfgh", covergroup, coverpoint)
     body_lines += "#endif\n"
     body_lines += "#endif\n"

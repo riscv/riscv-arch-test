@@ -29,13 +29,12 @@ def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     # Generate tests
     for reg in regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg)
         desc = f"{coverpoint} (Test fd = fs1 = f{reg})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -59,13 +58,12 @@ def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     # Generate tests
     for reg in regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs2 = f{reg})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -89,13 +87,12 @@ def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     # Generate tests
     for reg in regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs3=reg)
         desc = f"{coverpoint} (Test fd = fs3 = f{reg})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -119,13 +116,12 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     # Generate tests
     for reg in regs:
-        test_data.add_testcase_string(coverpoint)
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fs1 = fs2 = f{reg})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -149,13 +145,12 @@ def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_
 
     # Generate tests
     for reg in regs:
-        test_data.add_testcase_string(coverpoint)
         test_lines.append(test_data.int_regs.consume_registers([reg]))
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs1 = fs2 = f{reg})"
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )

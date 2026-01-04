@@ -18,26 +18,26 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
         raise ValueError(f"cp_custom_fence generator only supports fence instruction, got {instr_name}")
 
     # Regular fences
-    test_data.add_testcase_string("cp_custom_fence")
     test_lines = [
+        test_data.add_testcase("cp_custom_fence"),
         "# Testcase cp_custom_fence (regular fences)",
         "fence",
         "fence rw, rw",
     ]
 
     # fence.tso
-    test_data.add_testcase_string("cp_custom_fence")
     test_lines.extend(
         [
+            test_data.add_testcase("cp_custom_fence"),
             "# Testcase cp_custom_fence (fence.tso)",
             "fence.tso",
         ]
     )
 
     # Reserved fence encodings
-    test_data.add_testcase_string("cp_custom_fence")
     test_lines.extend(
         [
+            test_data.add_testcase("cp_custom_fence"),
             "# Testcase cp_custom_fence (reserved fence encodings)",
             ".word 0x0331000f    # fence with nonzero rs1 behaves normally",
             ".word 0x0330008f    # fence with nonzero rd  behaves normally",

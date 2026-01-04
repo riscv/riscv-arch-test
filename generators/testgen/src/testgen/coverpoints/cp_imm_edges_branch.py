@@ -17,8 +17,7 @@ from testgen.utils.param_generator import generate_random_params
 @add_coverpoint_generator("cp_imm_edges_branch")
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for branch immediate edge values."""
-    test_data.add_testcase_string(coverpoint)
-    test_lines: list[str] = ["\n# Testcase cp_imm_edges_branch"]
+    test_lines: list[str] = [test_data.add_testcase(coverpoint), "# Testcase cp_imm_edges_branch"]
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
     test_lines.extend(

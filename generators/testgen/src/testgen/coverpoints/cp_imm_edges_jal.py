@@ -50,14 +50,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
     for align in range(min_align, max_fwd_align + 1):
         bin_name = f"b_{1 << align}"
-        test_data.add_testcase_string(coverpoint)
 
         # For small offsets the inline self-check doesn't fit.
         skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 f"# {coverpoint}: forward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
@@ -80,14 +79,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
     for align in range(min_align, max_bwd_align + 1):
         bin_name = f"b_m{1 << align}"
-        test_data.add_testcase_string(coverpoint)
 
         # For small offsets the inline self-check doesn't fit.
         skip_check = (instr_size == 2 and align <= 1) or (instr_size == 4 and align <= 2)
 
         test_lines.extend(
             [
-                "",
+                test_data.add_testcase(coverpoint),
                 f"# {coverpoint}: backward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check

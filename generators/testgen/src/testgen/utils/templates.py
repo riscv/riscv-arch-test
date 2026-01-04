@@ -41,6 +41,8 @@ def canonicalize_extension(extension: str, xlen: int) -> tuple[list[str], str]:
         ext_components.append("F")  # Add F if Zcf or D is present
     if "Zcd" in ext_components and "D" not in ext_components:
         ext_components.append("D")  # Add D if Zcd is present
+    if "Misalign" in ext_components:
+        ext_components.remove("Misalign")
     ext_str = ""
     for ext in ext_components:
         if len(ext_str) > 0:

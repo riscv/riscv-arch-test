@@ -256,13 +256,21 @@
     end_failure_scratch:
 
     successstr:
+        // Sequence of .ascii and .asciz is used to create a multi-part string with a singe null terminator
+        // clang does not allow implicit string concatenation with .string directives
         #ifdef SELFCHECK
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": PASSED\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": PASSED\n"
         #else
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": SIGRUN\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": SIGRUN\n"
         #endif
     failstr:
-        .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .ascii "\nRVCP-SUMMARY: Test File \""
+        .ascii TEST_FILE
+        .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

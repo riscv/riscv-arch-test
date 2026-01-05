@@ -238,19 +238,19 @@
     .data
     .align 4
     begin_failure_scratch:
-        .fill 32,8,0xfeedf00dbaaaaaad
+        .fill 64, 4, 0xfeedf00dbaaaaaad
     failing_instruction:
         .fill 1, 4, 0xfeedf00d
     failing_reg:
         .fill 1, 4, 0xbaaaaaad
     failing_addr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failing_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     ascii_buffer:
         .fill 20, 1, 0          # Buffer for hex string conversion (max "0x" + 16 hex digits + "\n" + null)
     end_failure_scratch:
@@ -261,7 +261,7 @@
         #ifdef SELFCHECK
             .ascii "\nRVCP-SUMMARY: Test File \""
             .ascii TEST_FILE
-            .asciz "\": PASSED\n"
+            .asciz "\": PASSED\n\n"
         #else
             .ascii "\nRVCP-SUMMARY: Test File \""
             .ascii TEST_FILE

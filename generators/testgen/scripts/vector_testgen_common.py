@@ -1196,7 +1196,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         template.replace("@TEST_PATH@", f"{test}")
         .replace("@EXTENSION_LIST@", f"{['I'] + ext_parts_no_I}")
         .replace("@MARCH@", march.lower())
-        .replace("@XLEN@", str(xlen))
+        .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value

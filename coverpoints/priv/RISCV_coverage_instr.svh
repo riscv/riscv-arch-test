@@ -210,12 +210,13 @@
         bins rs1_1_15 = {[1:15]};
     }
 
-    rs2_0_15 : coverpoint ins.current.insn[24:20] {
-        bins rs2_0_15 = {[0:15]};
+    rs2_1_15 : coverpoint ins.current.insn[24:20] {
+        bins rs2_1_15 = {[0:15]};
     }
 
     imm_0s_1s : coverpoint ins.current.insn[31:20] {
-        bins imm0[] = {12'b000000000000, 12'b111111111111};
+        bins imm0 = {12'b000000000000};
+        bins imm1 = {12'b111111111111};
     }
 
     upper_reg_instrs : coverpoint ins.current.insn {
@@ -233,9 +234,9 @@
         wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
     }
 
-    upperreg_rs1 : cross upper_reg_instrs, rs1_16_31, rd_1_15, rs2_0_15;
+    upperreg_rs1 : cross upper_reg_instrs, rs1_16_31, rd_1_15, rs2_1_15;
     upperreg_rs2 : cross upper_reg_instrs, rs2_16_31, rs1_1_15, rd_1_15;
-    upperreg_rd : cross upper_reg_instrs, rd_16_31, rs1_1_15, rs2_0_15;
+    upperreg_rd : cross upper_reg_instrs, rd_16_31, rs1_1_15, rs2_1_15;
     upperreg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_16_31, rs1_1_15;
     upperreg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_16_31, rd_1_15;
     upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_16_31, rd_1_15;

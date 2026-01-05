@@ -30,6 +30,7 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h17F]};
+        ignore_bins satp = {12'h180}; // satp accesses may cause complex side effects
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         bins mach_std0[] = {[12'h300:12'h3FF]};
@@ -39,8 +40,8 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
         bins hyper_std1[] = {[12'h600:12'h6BF]};
         ignore_bins hyper_custom1 = {[12'h6C0:12'h6FF]};
         bins mach_std1[] = {[12'h700:12'h7AF]};
-        bins mach_debug[] = {[12'h7A0:12'h7AF]}; // toggling debug registers could do weird stuff
-        bins debug_only[] = {[12'h7B0:12'h7BF]}; // access to debug mode registers raises illegal instruction even in machine mode
+        bins mach_debug[] = {[12'h7A0:12'h7AF]};
+        bins debug_only[] = {[12'h7B0:12'h7BF]};
         bins mach_custom1[] = {[12'h7C0:12'h7FF]};
         ignore_bins user_custom2 = {[12'h800:12'h8FF]};
         bins super_std2[] = {[12'h900:12'h9BF]};
@@ -137,6 +138,11 @@ covergroup SsstrictS_instr_cg with function sample(ins_t ins);
     cp_privileged_rd:     cross priv_mode_s, privileged_rd;
     cp_privileged_rs2:    cross priv_mode_s, privileged_rs2;
     cp_reserved:          cross priv_mode_s, reserved;
+    cp_upperreg_rs1:      cross priv_mode_s, upperreg_rs1;
+    cp_upperreg_rs2:      cross priv_mode_s, upperreg_rs2;
+    cp_upperreg_rd:       cross priv_mode_s, upperreg_rd;
+    cp_upprereg_imm_rd:   cross priv_mode_s, upprereg_imm_rd;
+    cp_upprereg_imm_rs1:  cross priv_mode_s, upprereg_imm_rs1;
 endgroup
 
 covergroup SsstrictS_comp_instr_cg with function sample(ins_t ins);

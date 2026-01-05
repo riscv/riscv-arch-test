@@ -187,3 +187,62 @@
         wildcard bins reserved_rm5_fnmsub = {32'b???????_?????_?????_101_?????_1001111}; // fma with reserved rm
         wildcard bins reserved_rm6_fnmsub = {32'b???????_?????_?????_110_?????_1001111}; // fma with reserved rm
     }
+
+    // Coverpoints for E extension using reserved upper registers x15-x31
+
+    rd_15_31 : coverpoint ins.current.insn[11:7] {
+        bins rd_15_31[] = {[15:31]};
+    }
+
+    rs1_15_31 : coverpoint ins.current.insn[19:15] {
+        bins rs1_15_31[] = {[15:31]};
+    }
+
+    rs2_15_31 : coverpoint ins.current.insn[24:20] {
+        bins rs2_15_31[] = {[15:31]};
+    }
+
+    rd_1_15 : coverpoint ins.current.insn[11:7] {
+        bins rd_1_15 = {[1:15]};
+    }
+
+    rs1_1_15 : coverpoint ins.current.insn[19:15] {
+        bins rs1_1_15 = {[1:15]};
+    }
+
+    rs2_0_15 : coverpoint ins.current.insn[24:20] {
+        bins rs2_0_15 = {[0:15]};
+    }
+
+    imm_0s_1s : coverpoint ins.current.insn[31:20] {
+        bins imm0[] = {12'b000000000000, 12'b111111111111};
+    }
+
+    upper_reg_instrs : coverpoint ins.current.insn {
+        wildcard bins add = {32'b0000000_?????_?????_000_?????_0110011};
+        wildcard bins mul = {32'b0000001_?????_?????_000_?????_0110011};
+        wildcard bins fadd_s = {32'b0000000_?????_?????_000_?????_1010011};
+    }
+
+    upper_reg_addi : coverpoint ins.current.insn {
+        wildcard bins addi = {32'b????????????_?????_000_?????_0010011};
+    }
+
+    upper_reg_fmv : coverpoint ins.current.insn {
+        wildcard bins fmv_x_w = {32'b1110000_00000_?????_000_?????_1010011};
+        wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
+    }
+
+    upperreg_rs1 : cross upper_reg_instrs, rs1_15_31, rd_1_15, rs2_0_15;
+    upperreg_rs2 : cross upper_reg_instrs, rs2_15_31, rs1_1_15, rd_1_15;
+    upperreg_rd : cross upper_reg_instrs, rd_15_31, rs1_1_15, rs2_0_15;
+    upprereg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_15_31, rs1_1_15;
+    upprereg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_15_31, rd_1_15;
+    upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_15_31, rd_1_15;
+    upperreg_fmv_rd : cross upper_reg_fmv, rd_15_31, rs1_1_15;
+
+
+    // *** TODO add all misa_ext_disable tests to all versions of Ssstrict
+
+    // `ifdef MUTABLE_MISA_A
+    // `end

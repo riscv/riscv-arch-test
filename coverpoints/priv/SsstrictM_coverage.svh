@@ -125,6 +125,13 @@ covergroup SsstrictM_instr_cg with function sample(ins_t ins);
     cp_privileged_rd:     cross priv_mode_m, privileged_rd;
     cp_privileged_rs2:    cross priv_mode_m, privileged_rs2;
     cp_reserved:          cross priv_mode_m, reserved;
+    cp_upperreg_rs1:      cross priv_mode_m, upperreg_rs1;
+    cp_upperreg_rs2:      cross priv_mode_m, upperreg_rs2;
+    cp_upperreg_rd:       cross priv_mode_m, upperreg_rd;
+    cp_upperreg_imm_rd:   cross priv_mode_m, upperreg_imm_rd;
+    cp_upperreg_imm_rs1:  cross priv_mode_m, upperreg_imm_rs1;
+    cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
+    cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
 
 endgroup
 

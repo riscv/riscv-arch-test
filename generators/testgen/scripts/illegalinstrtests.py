@@ -60,7 +60,7 @@ def gen(comment, template, length=32, exclusion=None):
 # setup
 seed(0)  # make tests reproducible
 ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ExceptionInstr-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictInstr-Tests.h"
 outfile = open(pathname, "w")
 sys.stdout = outfile
 # gen("Illegal op2",  "RRRRRRRRRRRRRRRRRRRRRRRRR0001011") # custom-0
@@ -135,9 +135,28 @@ gen("cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11")  # various reserved_r
 gen("cp_reserved_fence_fm_tso", "EEEE00000000RRRRR000RRRRR0001111")  # reserved fm and ts0 for fence instruction
 gen("cp_reserved_fence_rs1", "00001111111100001000RRRRE0001111")  # reserved rs1 for fence instruction
 gen("cp_reserved_fence_rd", "000011111111RRRRE000000010001111")  # reserved rd for fence instruction
+
+# Sweep upper registers to check for illegal instruction exceptions when E is active
+gen("cp_upperreg_rs1_add", "0000000000011EEEE000000010110011")  # rs1 in upper regs for add
+gen("cp_upperreg_rs2_add", "00000001EEEE00001000000100110011")  # rs2 in upper regs for add
+gen("cp_upperreg_rd_add",  "000000000001000010001EEEE0110011")  # rd in upper regs for add
+gen("cp_upperreg_rs1_mul", "0000001000011EEEE000000010110011")  # rs1 in upper regs for mul
+gen("cp_upperreg_rs2_mul", "00000011EEEE00001000000100110011")  # rs2 in upper regs for mul
+gen("cp_upperreg_rd_mul",  "000000100001000010001EEEE0110011")  # rd in upper regs for mul
+gen("cp_upperreg_rs1_fadd-s", "0000000000011EEEE000000011010011")  # rs1 in upper regs for fadd
+gen("cp_upperreg_rs2_fadd-s", "00000001EEEE00001000000101010011")  # rs2 in upper regs for fadd
+gen("cp_upperreg_rd_fadd-s",  "000000000001000010001EEEE1010011")  # rd in upper regs for fadd
+gen("cp_upperreg_imm_rs1_addi0", "0000000000001EEEE000000010010011")  # rs1 in upper regs for addi with imm=0
+gen("cp_upperreg_imm_rs1_addi1", "1111111111111EEEE000000010010011")  # rs1 in upper regs for addi with imm=-1
+gen("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011")  # rd in upper regs for addi with imm=0
+gen("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011")  # rd in upper regs for addi with imm=-1
+gen("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011")  # rs1 in upper regs for fmv.x.w
+gen("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011")  # rd in upper regs for fmv.x.w
+gen("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011")  # rs1 in upper regs for fmv.w.x
+gen("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011")  # rd in upper regs for fmv.w.x
 outfile.close()
 
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ExceptionInstrCompressed-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictInstrCompressed-Tests.h"
 outfile = open(pathname, "w")
 sys.stdout = outfile
 gen(

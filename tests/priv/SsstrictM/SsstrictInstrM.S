@@ -40,8 +40,8 @@ main:
     // cp_illegal_compressed_instruction    Test all legal/illegal compressed instructions
     /////////////////////////////////
 
-    #include "ExceptionInstrCompressed-Tests.h"
-    #include "ExceptionInstr-Tests.h"
+    #include "SsstrictInstrCompressed-Tests.h"
+    #include "SsstrictInstr-Tests.h"
 
 
 finish:

@@ -43,8 +43,8 @@ main:
 li a0, 1
 ecall
 
-# include "ExceptionInstr-Tests.h"
-# include "ExceptionInstrCompressed-Tests.h"
+# include "SsstrictInstr-Tests.h"
+# include "SsstrictInstrCompressed-Tests.h"
 
 finish:
     j done

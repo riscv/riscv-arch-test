@@ -125,7 +125,7 @@ def generate_test_data_section(test_data: TestData) -> str:
 
     for value in test_data.test_data_values:
         hex_value = to_hex(value, data_size)
-        lines.append(f"    {directive} {hex_value}")
+        lines.append(f"{directive} {hex_value}")
 
     return "\n".join(lines)
 

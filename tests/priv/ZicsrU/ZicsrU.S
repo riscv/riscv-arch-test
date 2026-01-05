@@ -79,7 +79,7 @@ cp_sret:
 // fflags, frm, fcsr
 ///////////////////////////////////
 
-#include "ZicsrU-CSR-Tests.h"
+#include "ZicsrUF-Walk.h"
 
 finished:
     // return to machine mode

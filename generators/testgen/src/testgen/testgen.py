@@ -240,7 +240,7 @@ def write_test_file(
     final_lines.append(insert_setup_template("testgen_footer.S", test_config, test_file_relative, extra_defines))
 
     # Generate final test string with signature size and test data section
-    sig_words = get_sig_space(test_data)
+    sig_words = test_data.sigupd_count
     test_data_section = generate_test_data_section(test_data)
     test_data_string_section = generate_test_data_string_section(test_data)
     test_string = (

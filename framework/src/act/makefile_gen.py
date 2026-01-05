@@ -197,7 +197,7 @@ def generate_common_makefile(
     test_targets: list[Path] = []
     makefile_lines = [
         MAKEFILE_HEADER,
-        f"CFLAGS += -O0 -g -mcmodel=medany -nostartfiles -I{tests_dir}/env -I{tests_dir}/priv/headers",
+        f"CFLAGS += -O0 -g -mcmodel=medany -nostdlib -I{tests_dir}/env -I{tests_dir}/priv/headers",
         f"XLEN := {xlen}",
     ]
 
@@ -258,7 +258,7 @@ def generate_config_makefile(
     coverage_targets: dict[Path, list[Path]] = {}
     makefile_lines = [
         MAKEFILE_HEADER,
-        f"CFLAGS += -O0 -g -mcmodel=medany -nostartfiles -I{tests_dir}/env -I{tests_dir}/priv/headers",
+        f"CFLAGS += -O0 -g -mcmodel=medany -nostdlib -I{tests_dir}/env -I{tests_dir}/priv/headers",
         f"XLEN := {xlen}",
     ]
 

@@ -3,7 +3,7 @@
 //
 // Written: Adapted from Roman De Santos rdesantos@hmc.edu 8 April 2025
 //
-// Purpose: Functional coverage test for Ssstrict Illegal instructions in S mode
+// Purpose: Functional coverage test for Ssstrict Illegal instructions in U mode
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////

@@ -29,7 +29,7 @@ from testgen.utils.testplans import get_extensions, read_testplan
 TESTCASES_PER_FILE = 1000
 
 # Tests to generate RV32/64E variants for
-E_EXTENSION_TESTS = {"M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
+E_EXTENSION_TESTS = {"I", "M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
 
 # CLI interface setup
 testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -105,7 +105,12 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
     # Unpack task parameters
     xlen, E_ext, extension, testplan_dir, output_test_dir = task
 
-    # Set extension-specific variables
+    # Read testplan for this extension
+    instructions = read_testplan(testplan_dir / f"{extension}.csv")
+    if extension == "I" and E_ext:
+        extension = "E"
+
+    # Create test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{extension}"
     output_dir.mkdir(parents=True, exist_ok=True)
     flen = (
@@ -117,8 +122,8 @@ def generate_tests_for_extension(task: tuple[int, bool, str, Path, Path]) -> Non
     )
     test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, E_ext=E_ext)
     print(f"Generating tests for {output_dir}")
+
     # Iterate through each instruction in extension
-    instructions = read_testplan(testplan_dir / f"{extension}.csv")
     for instr_name, instr_data in sorted(instructions.items()):
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):

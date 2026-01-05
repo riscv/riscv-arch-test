@@ -20,7 +20,7 @@ from rich.progress import track
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.test_config import TestConfig
 from testgen.data.test_data import TestData
-from testgen.utils.common import generate_test_data_section, generate_test_data_string_section, get_sig_space
+from testgen.utils.common import generate_test_data_section, generate_test_data_string_section
 from testgen.utils.templates import insert_setup_template
 from testgen.utils.testplans import get_extensions, read_testplan
 

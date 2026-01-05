@@ -238,31 +238,39 @@
     .data
     .align 4
     begin_failure_scratch:
-        .fill 32,8,0xfeedf00dbaaaaaad
+        .fill 64, 4, 0xfeedf00dbaaaaaad
     failing_instruction:
         .fill 1, 4, 0xfeedf00d
     failing_reg:
         .fill 1, 4, 0xbaaaaaad
     failing_addr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failing_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     ascii_buffer:
         .fill 20, 1, 0          # Buffer for hex string conversion (max "0x" + 16 hex digits + "\n" + null)
     end_failure_scratch:
 
     successstr:
+        // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
+        // clang does not allow implicit string concatenation with .string directives
         #ifdef SELFCHECK
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": PASSED\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": PASSED\n\n"
         #else
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": SIGRUN\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": SIGRUN\n"
         #endif
     failstr:
-        .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .ascii "\nRVCP-SUMMARY: Test File \""
+        .ascii TEST_FILE
+        .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

@@ -170,7 +170,7 @@
 //   VREG      - Vector register containing data
 // TODO: implement SELFCHECK version
 #define RVTEST_SIGUPD_V(_SIG_PTR, _TEMP_REG, SEW, OFFSET, VREG)      \
-  vse ## SEW ##.v VREG, (_SIG_BASE)                           ;\
+  vse ## SEW ##.v VREG, (_SIG_PTR)                           ;\
   nop                                                         ;\
   nop                                                         ;\
   addi _SIG_PTR, _SIG_PTR, OFFSET

@@ -178,19 +178,23 @@
 /**** fixed length LI macro ****/
 #if (XLEN<64)
   #define LI(reg, imm)                                                            ;\
-  .set immx,    (imm & MASK)    /* trim to XLEN (noeffect on RV64)      */      ;\
-  .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
-  .set cry,     (BIT(imm, IMMSGN))                                              ;\
-  .set imm12,   (SEXT_IMM(immx))                                                ;\
-  .if     ((absimm>>IMMSGN)==0) /* fits 12b signed imm (properly sgnext)? */    ;\
-        li   reg, imm12         /* yes, <= 12bit, will be simple li       */    ;\
-  .else                                                                         ;\
-        lui  reg, (((immx>>IMMSZ)+cry) & LIMMMSK) /* <= 32b, use lui/addi */    ;\
-    .if   ((imm&IMMMSK)!=0)     /* but skip this if lower bits are zero   */    ;\
-        addi reg, reg, imm12                                                    ;\
-    .endif                                                                      ;\
-  .endif
-  #else
+    .option push                                                                  ;\
+    .option norelax                                                               ;\
+    .option norvc                                                                 ;\
+    .set immx,    (imm & MASK)    /* trim to XLEN (noeffect on RV64)        */    ;\
+    .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
+    .set cry,     (BIT(imm, IMMSGN))                                              ;\
+    .set imm12,   (SEXT_IMM(immx))                                                ;\
+    .if     ((absimm>>IMMSGN)==0) /* fits 12b signed imm (properly sgnext)? */    ;\
+      li   reg, imm12             /* yes, <= 12bit, will be simple li       */    ;\
+    .else                                                                         ;\
+      lui  reg, (((immx>>IMMSZ)+cry) & LIMMMSK)     /* <= 32b, use lui/addi */    ;\
+      .if   ((imm&IMMMSK)!=0)     /* but skip this if lower bits are zero   */    ;\
+        addi reg, reg, imm12                                                      ;\
+      .endif                                                                      ;\
+    .endif                                                                        ;\
+    .option pop
+#else
   #define LI(reg, imm)                                                            ;\
     .option push                                                                  ;\
     .option norelax                                                               ;\
@@ -207,20 +211,20 @@
     .set absimm,  ((immx^(-BIT(immx,XLEN-1)))&MASK) /* cvt to posnum to simplify code */  ;\
     .set cry,     (BIT(immx, IMMSGN))                                             ;\
     .set imm12,   (SEXT_IMM(immx))                                                ;\
-  /***************** used in code that generates bitmasks                  */      ;\
+  /***************** used in code that generates bitmasks                 */      ;\
     .set even,    (1-BIT(imm, 0)) /* imm has at least 1 trailing zero     */      ;\
     .set cryh,    (BIT(immx, IMMSGN+32))                                          ;\
   /******** loop finding rising/falling edge fm LSB-MSB given even operand ****/  ;\
     .rept XLEN                                                                    ;\
-      .if     (fnd1<0)            /* looking for first edge?              */      ;\
+      .if   (fnd1<0)              /* looking for first edge?              */      ;\
         .if (BIT(imme,pos)==1)    /* look for falling edge[pos]           */      ;\
           .set  edge1,pos         /* fnd falling edge, don’t chk for more */      ;\
           .set  fnd1,0                                                            ;\
         .endif                                                                    ;\
       .elseif (fnd2<0)            /* looking for second edge?             */      ;\
         .if (BIT(imme,pos)==0)    /* yes, found rising edge[pos]?         */      ;\
-          .set  edge2, pos       /* fnd rising  edge, don’t chk for more */      ;\
-          .set  fnd2,0                                                           ;\
+          .set  edge2, pos        /* fnd rising  edge, don’t chk for more */      ;\
+          .set  fnd2,0                                                            ;\
         .endif                                                                    ;\
       .endif                                                                      ;\
       .set    pos,  pos+1         /* keep looking (even if already found) */      ;\
@@ -232,79 +236,72 @@
     .set absimmsh, immxsh         /* pos, no inversion needed, just shift */      ;\
   /*******does it fit into std li or lui+li sequence****************************/ ;\
     .if     ((absimm>>IMMSGN)==0) /* fits 12b signed imm (properly sgnext)? */    ;\
-          li   reg, imm12         /* yes, <= 12bit, will be simple li       */    ;\
+      li   reg, imm12             /* yes, <= 12bit, will be simple li       */    ;\
     .elseif ((absimm+ (cry << IMMSZ) >> WDSGN)==0)/*fits 32b sgnimm?(w/ sgnext)?*/;\
-          lui  reg, (((immx>>IMMSZ)+cry) & LIMMMSK) /* <= 32b, use lui/addi */    ;\
+      lui  reg, (((immx>>IMMSZ)+cry) & LIMMMSK)     /* <= 32b, use lui/addi */    ;\
       .if   ((imm&IMMMSK)!=0)     /* but skip this if lower bits are zero   */    ;\
-          addi reg, reg, imm12                                                    ;\
+        addi reg, reg, imm12                                                      ;\
       .endif                                                                      ;\
-  /*********** look for  0->1->0 masks, or inverse sgl/multbit *************/    ;\
+  /*********** look for  0->1->0 masks, or inverse sgl/multbit *************/     ;\
     .elseif ( even && (fnd2<0))           /* only rising  edge, so 111000   */    ;\
-          li      reg, -1                                                         ;\
-          slli    reg, reg, edge1         /* make 111s --> 000s mask        */    ;\
+      li      reg, -1                                                             ;\
+      slli    reg, reg, edge1             /* make 111s --> 000s mask        */    ;\
     .elseif (!even && (fnd2<0))           /* only falling edge, so 000111   */    ;\
-          li      reg, -1                                                         ;\
-          srli    reg, reg, XLEN-edge1    /* make 000s --> 111s mask        */    ;\
+      li      reg, -1                                                             ;\
+      srli    reg, reg, XLEN-edge1        /* make 000s --> 111s mask        */    ;\
     .elseif (imme == (1<<edge1))          /* check for single bit case      */    ;\
-          li      reg, 1                                                          ;\
-          slli    reg, reg, edge1         /* make 0001000 sgl bit mask      */    ;\
+      li      reg, 1                                                              ;\
+      slli    reg, reg, edge1             /* make 0001000 sgl bit mask      */    ;\
       .if   (!even)                                                               ;\
-          xori    reg, reg, -1            /* orig odd, cvt to 1110111 mask  */    ;\
+        xori    reg, reg, -1              /* orig odd, cvt to 1110111 mask  */    ;\
       .endif                                                                      ;\
     .elseif (imme == ((1<<edge2) - (1<<edge1))) /* chk for multibit case    */    ;\
-          li      reg, -1                                                         ;\
-          srli    reg, reg, XLEN-(edge2-edge1) /* make multibit 1s mask     */    ;\
-          slli    reg, reg, edge1         /* and put it into position       */    ;\
+      li      reg, -1                                                             ;\
+      srli    reg, reg, XLEN-(edge2-edge1)     /* make multibit 1s mask     */    ;\
+      slli    reg, reg, edge1             /* and put it into position       */    ;\
       .if   (!even)                                                               ;\
-          xori    reg, reg, -1            /* orig odd, cvt to 1110111 mask  */    ;\
+        xori    reg, reg, -1              /* orig odd, cvt to 1110111 mask  */    ;\
       .endif                                                                      ;\
     /************** look for 12b or 32b imms with trailing zeroes ***********/    ;\
     .elseif ((immx==imme)&&((absimmsh>>IMMSGN)==0))/* fits 12b after shift? */    ;\
-          li      reg, imm12sh            /* <= 12bit, will be simple li    */    ;\
-          slli    reg, reg, edge1         /* add trailing zeros             */    ;\
-    .elseif ((immx==imme)&&(((absimmsh>>WDSGN)+crysh)==0)) /* fits 32 <<shift? */  ;\
-          lui     reg, ((immxsh>>IMMSZ)+crysh)&LIMMMSK /* <=32b, use lui/addi */  ;\
+      li      reg, imm12sh                /* <= 12bit, will be simple li    */    ;\
+      slli    reg, reg, edge1             /* add trailing zeros             */    ;\
+    .elseif ((immx==imme)&&(((absimmsh>>WDSGN)+crysh)==0)) /* fits 32 <<shift? */ ;\
+      lui     reg, ((immxsh>>IMMSZ)+crysh)&LIMMMSK     /* <=32b, use lui/addi */  ;\
       .if   ((imm12sh&IMMMSK)!=0)         /* but skip this if low bits ==0  */    ;\
-          addi    reg, reg, imm12sh                                               ;\
+        addi    reg, reg, imm12sh                                                 ;\
       .endif                                                                      ;\
-          slli    reg, reg, edge1         /* add trailing zeros             */    ;\
+      slli    reg, reg, edge1             /* add trailing zeros             */    ;\
     .else                                 /* give up, use fixed 8op sequence*/    ;\
     /******* TBD add sp case of zero short imms, rmv add/merge shifts  ******/    ;\
-          lui     reg, ((immx>>(XLEN-LIMMSZ))+cryh)&LIMMMSK /* 1st 20b (63:44) */ ;\
-          addi    reg, reg, SEXT_IMM(immx>>32)            /* nxt 12b (43:32) */   ;\
-          slli    reg, reg, 11    /* following are <12b, don't need SEXT     */   ;\
-          addi    reg, reg, (immx>>21) & (IMMMSK>>1)      /* nxt 11b (31:21) */   ;\
-          slli    reg, reg, 11                            /* mk room for 11b */   ;\
-          addi    reg, reg, (immx>>10) & (IMMMSK>>1)      /* nxt 11b (20:10) */   ;\
-          slli    reg, reg, 10                            /* mk room for 10b */   ;\
+      lui     reg, ((immx>>(XLEN-LIMMSZ))+cryh)&LIMMMSK     /* 1st 20b (63:44) */ ;\
+      addi    reg, reg, SEXT_IMM(immx>>32)                /* nxt 12b (43:32) */   ;\
+      slli    reg, reg, 11        /* following are <12b, don't need SEXT     */   ;\
+      addi    reg, reg, (immx>>21) & (IMMMSK>>1)          /* nxt 11b (31:21) */   ;\
+      slli    reg, reg, 11                                /* mk room for 11b */   ;\
+      addi    reg, reg, (immx>>10) & (IMMMSK>>1)          /* nxt 11b (20:10) */   ;\
+      slli    reg, reg, 10                                /* mk room for 10b */   ;\
       .if   ((imm&(IMMMSK>>2))!=0) /* but skip this if lower bits are zero   */   ;\
-          addi    reg, reg, (immx)     & (IMMMSK>>2)      /* lst 10b (09:00) */   ;\
+        addi    reg, reg, (immx)     & (IMMMSK>>2)        /* lst 10b (09:00) */   ;\
       .endif                                                                      ;\
       .if (XLEN==32)                                                              ;\
-          .warning "Should never get here for RV32"                               ;\
+        .warning "Should never get here for RV32"                                 ;\
       .endif                                                                      ;\
-  .endif                                                                         ;\
+    .endif                                                                        ;\
   .option pop
 #endif
 
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
-#define LA(reg,val)     ;\
-    .ifnc(reg, X0)       ;\
-        .option push    ;\
-        .option rvc     ;\
-        .align UNROLLSZ ;\
-        .option norvc   ;\
-        la reg,val      ;\
-        .align UNROLLSZ ;\
-        .option pop     ;\
-    .endif
-#define ADDI(dst, src, imm) /* helper*/ ;\
-.if ((imm<=2048) & (imm>=-2048))        ;\
-        addi    dst, src, imm           ;\
-.else                                   ;\
-        LI(     dst, imm)               ;\
-        addi    dst, src, dst           ;\
-.endif
+#define LA(reg,val) ;\
+  .ifnc(reg, X0)    ;\
+    .option push    ;\
+    .option rvc     ;\
+    .align UNROLLSZ ;\
+    .option norvc   ;\
+    la reg,val      ;\
+    .align UNROLLSZ ;\
+    .option pop     ;\
+  .endif
 
 // CSR Macros
 // each access is followed by a nop in case the access causes a trap

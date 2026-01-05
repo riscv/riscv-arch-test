@@ -1103,7 +1103,7 @@ if __name__ == '__main__':
       coverdefdir = f"{ARCH_VERIF}/fcov/unpriv"
       coverfiles = [extension]
       #coverpoints = getcovergroups(coverdefdir, coverfiles, xlen)
-      pathname = f"{ARCH_VERIF}/tests/rv{xlen}/{extension}"
+      pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
 
       print("Generating tests for " + pathname)
 

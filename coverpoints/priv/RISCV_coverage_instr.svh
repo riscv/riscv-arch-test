@@ -188,18 +188,18 @@
         wildcard bins reserved_rm6_fnmsub = {32'b???????_?????_?????_110_?????_1001111}; // fma with reserved rm
     }
 
-    // Coverpoints for E extension using reserved upper registers x15-x31
+    // Coverpoints for E extension using reserved upper registers x16-x31
 
-    rd_15_31 : coverpoint ins.current.insn[11:7] {
-        bins rd_15_31[] = {[15:31]};
+    rd_16_31 : coverpoint ins.current.insn[11:7] {
+        bins rd_16_31[] = {[16:31]};
     }
 
-    rs1_15_31 : coverpoint ins.current.insn[19:15] {
-        bins rs1_15_31[] = {[15:31]};
+    rs1_16_31 : coverpoint ins.current.insn[19:15] {
+        bins rs1_16_31[] = {[16:31]};
     }
 
-    rs2_15_31 : coverpoint ins.current.insn[24:20] {
-        bins rs2_15_31[] = {[15:31]};
+    rs2_16_31 : coverpoint ins.current.insn[24:20] {
+        bins rs2_16_31[] = {[16:31]};
     }
 
     rd_1_15 : coverpoint ins.current.insn[11:7] {
@@ -233,13 +233,13 @@
         wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
     }
 
-    upperreg_rs1 : cross upper_reg_instrs, rs1_15_31, rd_1_15, rs2_0_15;
-    upperreg_rs2 : cross upper_reg_instrs, rs2_15_31, rs1_1_15, rd_1_15;
-    upperreg_rd : cross upper_reg_instrs, rd_15_31, rs1_1_15, rs2_0_15;
-    upprereg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_15_31, rs1_1_15;
-    upprereg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_15_31, rd_1_15;
-    upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_15_31, rd_1_15;
-    upperreg_fmv_rd : cross upper_reg_fmv, rd_15_31, rs1_1_15;
+    upperreg_rs1 : cross upper_reg_instrs, rs1_16_31, rd_1_15, rs2_0_15;
+    upperreg_rs2 : cross upper_reg_instrs, rs2_16_31, rs1_1_15, rd_1_15;
+    upperreg_rd : cross upper_reg_instrs, rd_16_31, rs1_1_15, rs2_0_15;
+    upperreg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_16_31, rs1_1_15;
+    upperreg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_16_31, rd_1_15;
+    upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_16_31, rd_1_15;
+    upperreg_fmv_rd : cross upper_reg_fmv, rd_16_31, rs1_1_15;
 
 
     // *** TODO add all misa_ext_disable tests to all versions of Ssstrict

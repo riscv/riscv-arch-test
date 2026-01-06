@@ -1,0 +1,38 @@
+    // Custom coverpoint for Zihpm
+
+    hpms : coverpoint ins.current.insn[31:20] {
+        bins hpmcounter3  = {12'hC03};
+        bins hpmcounter4  = {12'hC04};
+        bins hpmcounter5  = {12'hC05};
+        bins hpmcounter6  = {12'hC06};
+        bins hpmcounter7  = {12'hC07};
+        bins hpmcounter8  = {12'hC08};
+        bins hpmcounter9  = {12'hC09};
+        bins hpmcounter10 = {12'hC0A};
+        bins hpmcounter11 = {12'hC0B};
+        bins hpmcounter12 = {12'hC0C};
+        bins hpmcounter13 = {12'hC0D};
+        bins hpmcounter14 = {12'hC0E};
+        bins hpmcounter15 = {12'hC0F};
+        bins hpmcounter16 = {12'hC10};
+        bins hpmcounter17 = {12'hC11};
+        bins hpmcounter18 = {12'hC12};
+        bins hpmcounter19 = {12'hC13};
+        bins hpmcounter20 = {12'hC14};
+        bins hpmcounter21 = {12'hC15};
+        bins hpmcounter22 = {12'hC16};
+        bins hpmcounter23 = {12'hC17};
+        bins hpmcounter24 = {12'hC18};
+        bins hpmcounter25 = {12'hC19};
+        bins hpmcounter26 = {12'hC1A};
+        bins hpmcounter27 = {12'hC1B};
+        bins hpmcounter28 = {12'hC1C};
+        bins hpmcounter29 = {12'hC1D};
+        bins hpmcounter30 = {12'hC1E};
+        bins hpmcounter31 = {12'hC1F};
+    }
+    csrr : coverpoint (ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[19:15] == 5'b00000) {
+        bins hit = {1}; // csrr = csrrs rd, csr, x0
+    }
+
+    cp_cntr_hpm: cross hpms, csrr;

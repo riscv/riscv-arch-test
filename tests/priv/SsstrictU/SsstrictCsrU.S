@@ -1,9 +1,9 @@
 ///////////////////////////////////////////
-// SsstrictCsrS.S
+// SsstrictCsrU.S
 //
 // Written: Roman De Santos rdesantos@hmc.edu 11 March 2025
 //
-// Purpose: Functional coverage test for Ssstrict supervisor Csrs in U mode
+// Purpose: Functional coverage test for Ssstrict Csrs in U mode
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////

@@ -39,7 +39,7 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     return test_lines
 
 
-def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> list[str]:
+def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
     """Generate counter test snippet."""
     lines: list[str] = []
     lines.append(test_data.add_testcase("cp_cntr"))

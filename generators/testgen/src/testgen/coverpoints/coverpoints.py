@@ -25,7 +25,7 @@ from testgen.utils.exceptions import MissingCoverpointGeneratorError
 # and returns a list of strings (test lines)
 CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
 
-# Registry storage: list of (pattern, generator) tuples sorted by pattern length (longest first)
+# Registry: list of (pattern, generator) tuples sorted by pattern length (longest first)
 _COVERPOINT_GENERATORS: list[tuple[str, CoverpointGenerator]] = []
 
 
@@ -35,11 +35,6 @@ def add_coverpoint_generator(*patterns: str) -> Callable[[CoverpointGenerator], 
 
     Args:
         patterns: One or more coverpoint prefixes this generator can process
-
-    Example:
-        @add_coverpoint_generator("cp_rd")
-        def make_rd(instr_name, instr_type, coverpoint, test_data):
-            ...
     """
 
     def decorator(func: CoverpointGenerator) -> CoverpointGenerator:

@@ -127,7 +127,7 @@ include::norm/Zihpm_norm_rules.adoc[]
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.  Skip hmpcounter[i] and hpmcounterh[i] if parameter HPM_COUNTEREN[i] = False.
+|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
 |===
 
 

@@ -44,7 +44,7 @@ main:
 // cp_csrs                  Set all 4096 CSRs in M mode
 /////////////////////////////////
 
-# include "ZicsrM-CSR-Tests.h"
+# include "SsstrictM-CSR-Tests.h"
 
 finish:
     j done

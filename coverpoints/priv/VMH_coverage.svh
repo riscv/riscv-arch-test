@@ -1,0 +1,223 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups
+//
+// Written By: Muhammad Abdullah abdullah.gohar@10xengineers.ai January 07, 2026
+//
+// Copyright (C) 2025 Harvey Mudd College, 10x Engineers, UET Lahore
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+`define COVER_VMH
+covergroup VMH_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//	                                vsatp_mode_field, hgatp_mode_field, and satp_mode_field
+//---------------------------------------------------------------------------------------------------------------------------------
+
+    `ifdef XLEN64
+    	mode_field_values: coverpoint ins.current.rs1_val[63:60] {
+	        bins values_to_write[] = {[0:15]};
+	    }
+
+        vsatp_mode: coverpoint ins.current.csr[12'h280][63:60] {
+            bins bare = {0};
+            bins sv39 = {8};
+        }
+
+        write_to_vsatp: coverpoint ins.current.insn {
+		    wildcard bins csrrw_to_vsatp = {32'b001010000000_?????_001_?????_1110011};
+        }
+
+        hgatp_mode: coverpoint ins.current.csr[12'h680][63:60] {
+            bins bare = {0};
+            bins sv39x4 = {8};
+        }
+
+        write_to_hgatp: coverpoint ins.current.insn {
+		    wildcard bins csrrw_to_hgatp = {32'b011010000000_?????_001_?????_1110011};
+        }
+
+        satp_mode: coverpoint ins.current.csr[12'h180][63:60] {
+            bins bare = {0};
+            bins sv39 = {8};
+        }
+
+        write_to_satp: coverpoint ins.current.insn {
+		    wildcard bins csrrw_to_vsatp = {32'b000110000000_?????_001_?????_1110011};
+        }
+
+        vsatp_mode_field: cross priv_mode_hs, vsatp_mode, write_to_vsatp, mode_field_values;
+        satp_mode_field: cross priv_mode_vs, satp_mode, write_to_satp, mode_field_values;
+        hgatp_mode_field: cross priv_mode_hs, hgatp_mode, write_to_hgatp, mode_field_values;
+    `endif
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//	                                         vsatp_ppn_field & vsatp_asidlen_detect
+//---------------------------------------------------------------------------------------------------------------------------------
+
+    `ifdef XLEN64
+        vsatp_mode: coverpoint ins.current.csr[12'h280][63:60] { 
+            bins sv39 = {4'b1000};
+        }
+    `else
+        vsatp_mode: coverpoint ins.current.csr[12'h280][31] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    ppn_field_values: coverpoint ins.current.rs1_val {
+        bins all_zeros = {0};
+        `ifdef XLEN32
+            bins all_ones        = {22'b1111111111111111111111};
+            bins walking_ones_0  = {22'b0000000000000000000001};
+            bins walking_ones_1  = {22'b0000000000000000000010};
+            bins walking_ones_2  = {22'b0000000000000000000100};
+            bins walking_ones_3  = {22'b0000000000000000001000};
+            bins walking_ones_4  = {22'b0000000000000000010000};
+            bins walking_ones_5  = {22'b0000000000000000100000};
+            bins walking_ones_6  = {22'b0000000000000001000000};
+            bins walking_ones_7  = {22'b0000000000000010000000};
+            bins walking_ones_8  = {22'b0000000000000100000000};
+            bins walking_ones_9  = {22'b0000000000001000000000};
+            bins walking_ones_10 = {22'b0000000000010000000000};
+            bins walking_ones_11 = {22'b0000000000100000000000};
+            bins walking_ones_12 = {22'b0000000001000000000000};
+            bins walking_ones_13 = {22'b0000000010000000000000};
+            bins walking_ones_14 = {22'b0000000100000000000000};
+            bins walking_ones_15 = {22'b0000001000000000000000};
+            bins walking_ones_16 = {22'b0000010000000000000000};
+            bins walking_ones_17 = {22'b0000100000000000000000};
+            bins walking_ones_18 = {22'b0001000000000000000000};
+            bins walking_ones_19 = {22'b0010000000000000000000};
+            bins walking_ones_20 = {22'b0100000000000000000000};
+            bins walking_ones_21 = {22'b1000000000000000000000};
+        `else
+            bins all_ones        = {44'b11111111111111111111111111111111111111111111};
+            bins walking_ones_0  = {44'b00000000000000000000000000000000000000000001};
+            bins walking_ones_1  = {44'b00000000000000000000000000000000000000000010};
+            bins walking_ones_2  = {44'b00000000000000000000000000000000000000000100};
+            bins walking_ones_3  = {44'b00000000000000000000000000000000000000001000};
+            bins walking_ones_4  = {44'b00000000000000000000000000000000000000010000};
+            bins walking_ones_5  = {44'b00000000000000000000000000000000000000100000};
+            bins walking_ones_6  = {44'b00000000000000000000000000000000000001000000};
+            bins walking_ones_7  = {44'b00000000000000000000000000000000000010000000};
+            bins walking_ones_8  = {44'b00000000000000000000000000000000000100000000};
+            bins walking_ones_9  = {44'b00000000000000000000000000000000001000000000};
+            bins walking_ones_10 = {44'b00000000000000000000000000000000010000000000};
+            bins walking_ones_11 = {44'b00000000000000000000000000000000100000000000};
+            bins walking_ones_12 = {44'b00000000000000000000000000000001000000000000};
+            bins walking_ones_13 = {44'b00000000000000000000000000000010000000000000};
+            bins walking_ones_14 = {44'b00000000000000000000000000000100000000000000};
+            bins walking_ones_15 = {44'b00000000000000000000000000001000000000000000};
+            bins walking_ones_16 = {44'b00000000000000000000000000010000000000000000};
+            bins walking_ones_17 = {44'b00000000000000000000000000100000000000000000};
+            bins walking_ones_18 = {44'b00000000000000000000000001000000000000000000};
+            bins walking_ones_19 = {44'b00000000000000000000000010000000000000000000};
+            bins walking_ones_20 = {44'b00000000000000000000000100000000000000000000};
+            bins walking_ones_21 = {44'b00000000000000000000001000000000000000000000}; 
+            bins walking_ones_22 = {44'b00000000000000000000010000000000000000000000};
+            bins walking_ones_23 = {44'b00000000000000000000100000000000000000000000};
+            bins walking_ones_24 = {44'b00000000000000000001000000000000000000000000};
+            bins walking_ones_25 = {44'b00000000000000000010000000000000000000000000};
+            bins walking_ones_26 = {44'b00000000000000000100000000000000000000000000};
+            bins walking_ones_27 = {44'b00000000000000001000000000000000000000000000};
+            bins walking_ones_28 = {44'b00000000000000010000000000000000000000000000};
+            bins walking_ones_29 = {44'b00000000000000100000000000000000000000000000};
+            bins walking_ones_30 = {44'b00000000000001000000000000000000000000000000};
+            bins walking_ones_31 = {44'b00000000000010000000000000000000000000000000};
+            bins walking_ones_32 = {44'b00000000000100000000000000000000000000000000};
+            bins walking_ones_33 = {44'b00000000001000000000000000000000000000000000};
+            bins walking_ones_34 = {44'b00000000010000000000000000000000000000000000};
+            bins walking_ones_35 = {44'b00000000100000000000000000000000000000000000};
+            bins walking_ones_36 = {44'b00000001000000000000000000000000000000000000};
+            bins walking_ones_37 = {44'b00000010000000000000000000000000000000000000};
+            bins walking_ones_38 = {44'b00000100000000000000000000000000000000000000};
+            bins walking_ones_39 = {44'b00001000000000000000000000000000000000000000};
+            bins walking_ones_40 = {44'b00010000000000000000000000000000000000000000};
+            bins walking_ones_41 = {44'b00100000000000000000000000000000000000000000};
+            bins walking_ones_42 = {44'b01000000000000000000000000000000000000000000};
+            bins walking_ones_43 = {44'b10000000000000000000000000000000000000000000};     
+        `endif 
+    }
+
+    asid_field_value: coverpoint ins.current.rs1_val {
+        `ifdef XLEN32
+            wildcard bins all_ones = {32'b?_111111111_??????????????????????};
+        `else
+            wildcard bins all_ones = {64'b????_1111111111111111_????????????????????????????????????????????};  
+        `endif 
+    }
+
+    vsatp_ppn_field: cross priv_mode_hs, vsatp_mode, write_to_vsatp, ppn_field_values;
+    vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, write_to_vsatp, asid_field_value;
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//	                                         vsatp_mprv_effects
+//---------------------------------------------------------------------------------------------------------------------------------
+
+    read_acc: coverpoint ins.current.read_access {
+        bins set = {1};
+    }
+    write_acc: coverpoint ins.current.write_access {
+        bins set = {1};
+    }
+
+    mprv_mstatus: coverpoint ins.current.csr[12'h300][17] {
+        bins mprv_set = {1};
+    }
+
+    `ifdef XLEN64
+        hgatp_bare: coverpoint ins.current.csr[12'h680][63:60] {
+            bins hgatp_bare = {0};
+        }
+
+        satp_bare: coverpoint ins.current.csr[12'h180][63:60] {
+            bins satp_bare = {0};
+        }
+
+        mpv_mstatus: coverpoint ins.current.csr[12'h300][39] {
+            bins mpv_set = {1};
+        }
+    `else
+        hgatp_bare: coverpoint ins.current.csr[12'h680][31] {
+            bins hgatp_bare = {0};
+        }
+
+        satp_bare: coverpoint ins.current.csr[12'h180][31] {
+            bins satp_bare = {0};
+        }
+
+        mpv_mstatus: coverpoint ins.current.csr[12'h310][7] {
+            bins mpv_set = {1};
+        }
+    `endif
+
+    mpp_mstatus_u: coverpoint ins.prev.csr[12'h300][12:11] {
+        bins s_mode = {2'b00};
+    }
+    mpp_mstatus_s: coverpoint ins.prev.csr[12'h300][12:11] {
+        bins m_mode = {2'b01};
+    }
+
+    g_pte_xwr100_s_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins pte_s = {8'b11?01001};
+    }
+    g_pte_xwr100_u_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins pte_u = {8'b11?11001};
+    }
+
+    vsatp_mprv_effects_s_read:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_access;
+    vsatp_mprv_effects_s_write: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, write_access;
+    vsatp_mprv_effects_u_read:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_access;
+    vsatp_mprv_effects_u_write: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, write_access;
+
+endgroup
+
+function void vmh_sample(int hart, int issue, ins_t ins);
+    VMH_cg.sample(ins);
+endfunction

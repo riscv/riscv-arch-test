@@ -35,14 +35,6 @@
     or _TR0, _TR0, _TR1  ;\
     csrw satp, _TR0   ;\
 
-
-#define ALL_MEM_PMP                                               ;\
-      li t2, -1                                                 ;\
-      csrw pmpaddr0, t2                                         ;\
-      li t2, 0x0F                                            ;\
-      csrw pmpcfg0, t2                                          ;\
-      sfence.vma                                                ;
-
 //****NOTE: label `rvtest_Sroot_pg_tbl` must be declared after RVTEST_DATA_END
 //          in the test aligned at 4kiB (use .align 12)
 #define PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)      ;\

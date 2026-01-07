@@ -24,12 +24,14 @@ class TestConfig:
         flen: Floating-point register width (32, 64, or 128 bits)
         extension: RISC-V extension being tested
         E_ext: Whether to use RV32E/RV64E (16 registers instead of 32)
+        config_dependent: Whether this test is config dependent
     """
 
     xlen: int
     flen: int
     extension: str
     E_ext: bool = False
+    config_dependent: bool = False
 
     @property
     def xlen_format_str(self) -> str:

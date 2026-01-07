@@ -29,13 +29,13 @@ class TestData:
         test_data_values: List of values to be stored in test_data section
     """
 
-    def __init__(self, test_config: TestConfig, instr_name: str) -> None:
+    def __init__(self, test_config: TestConfig, instr_name: str | None = None) -> None:
         """
         Initialize test data with configuration and empty state.
 
         Args:
             test_config: Immutable test configuration
-            instr_name: Instruction name this test is exercising
+            instr_name: Instruction name this test is exercising. Optional for priv/extension-level tests.
         """
         self._config = test_config
         self._instr_name = instr_name
@@ -59,6 +59,8 @@ class TestData:
     @property
     def instr_name(self) -> str:
         """Get the instruction name this test is exercising."""
+        if self._instr_name is None:
+            raise ValueError("Instruction name is not set in TestData.")
         return self._instr_name
 
     @property

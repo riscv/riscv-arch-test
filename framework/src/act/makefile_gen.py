@@ -11,6 +11,8 @@ import importlib.resources
 from pathlib import Path
 from typing import TypedDict
 
+import pyjson5
+
 from act.config import Config
 from act.parse_test_constraints import TestMetadata
 
@@ -22,13 +24,32 @@ MAKEFILE_HEADER = """
 """
 
 
-def get_internal_sail_config(xlen: int, e_ext: bool) -> Path:
+def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:
     """Get the path to the internal Sail config file for the given XLEN.
 
     This config is used for generating signatures for common tests and has
     all extensions enabled.
     """
-    return Path(str(importlib.resources.files("act"))) / "data" / f"sail-rv{xlen}{'e' if e_ext else 'i'}.json"
+
+    # Extract memory map from user's Sail config
+    user_sail_config_data = pyjson5.decode(user_sail_config.read_text())
+    memory_map = user_sail_config_data["memory"]["regions"]
+
+    # Load internal Sail config template
+    internal_sail_config_file = (
+        Path(str(importlib.resources.files("act"))) / "data" / f"sail-rv{xlen}{'e' if e_ext else 'i'}.json"
+    )
+    internal_sail_config = pyjson5.decode(internal_sail_config_file.read_text())
+
+    # Replace memory map
+    internal_sail_config["memory"]["regions"] = memory_map
+
+    # Write out modified Sail config to temporary file
+    common_sail_config_path = common_wkdir / f"sail-rv{xlen}{'e' if e_ext else 'i'}-common.json"
+    common_sail_config_path.parent.mkdir(parents=True, exist_ok=True)
+    common_sail_config_path.write_text(pyjson5.encode(internal_sail_config))
+
+    return common_sail_config_path
 
 
 def gen_compile_targets(
@@ -189,8 +210,8 @@ def generate_common_makefile(
     common_elf_dir = common_wkdir / "elfs"
     common_build_dir = common_wkdir / "build"
 
-    # Get the internal Sail config for common tests
-    internal_sail_config = get_internal_sail_config(xlen, e_ext)
+    # Generate maximal Sail config with all extensions enabled and memory map from user's config
+    common_sail_config = generate_sail_config(xlen, e_ext, config.dut_include_dir / "sail.json", common_wkdir)
 
     # Makefile targets
     directory_set: set[str] = set()
@@ -209,7 +230,7 @@ def generate_common_makefile(
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
         makefile_lines.append(
-            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, internal_sail_config, debug)
+            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, common_sail_config, debug)
         )
 
     # Write out Makefile

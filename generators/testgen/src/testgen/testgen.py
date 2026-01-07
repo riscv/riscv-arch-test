@@ -20,8 +20,7 @@ from rich.progress import track
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.test_config import TestConfig
 from testgen.data.test_data import TestData
-from testgen.utils.common import generate_test_data_section, generate_test_string_section
-from testgen.utils.templates import insert_setup_template
+from testgen.utils.test_writer import write_test_file
 from testgen.utils.testplans import get_extensions, read_testplan
 
 # Global constants
@@ -177,11 +176,10 @@ def generate_tests_for_instruction(
         if current_test_data.test_count > 0 and (temp_test_data.test_count > TESTCASES_PER_FILE):
             # Write current file
             write_test_file(
-                instr_name,
                 current_test_data,
                 current_body_lines,
-                file_idx,
                 output_dir,
+                file_idx,
             )
 
             # Start new file
@@ -201,62 +199,11 @@ def generate_tests_for_instruction(
 
     # Write the last file
     write_test_file(
-        instr_name,
         current_test_data,
         current_body_lines,
-        file_idx,
         output_dir,
+        file_idx,
     )
-
-
-def write_test_file(
-    instr_name: str,
-    test_data: TestData,
-    body_lines: list[str],
-    file_idx: int,
-    output_dir: Path,
-) -> None:
-    """Write a single test file."""
-    test_config = test_data.config
-    extension = test_config.extension
-    filename = f"{extension}-{instr_name}-{file_idx:02d}.S"
-
-    test_file = output_dir / filename
-    arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}"
-    test_file_relative = Path(arch_dir) / extension / filename
-
-    extra_defines = ""
-    # Enable floating point if needed
-    if any(ext in extension for ext in ["F", "D", "Q", "Zf", "Zcf", "Zcd"]):
-        extra_defines += "#define RVTEST_FP"
-
-    # Construct file content
-    final_lines: list[str] = []
-    final_lines.append(insert_setup_template("testgen_header.S", test_config, test_file_relative, extra_defines))
-
-    final_lines.extend(body_lines)
-
-    # Test footer
-    final_lines.append(insert_setup_template("testgen_footer.S", test_config, test_file_relative, extra_defines))
-
-    # Generate final test string with signature size and test data section
-    sig_words = test_data.sigupd_count
-    test_data_section = generate_test_data_section(test_data)
-    test_data_string_section = generate_test_string_section(test_data)
-    test_string = (
-        "\n".join(final_lines)
-        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_words))
-        .replace("@TEST_DATA@", test_data_section)
-        .replace("@TESTCASE_STRINGS@", test_data_string_section)
-    )
-
-    # Clean up test data
-    test_data.destroy()
-
-    # Write test file if different from existing file
-    if not test_file.exists() or test_file.read_text() != test_string:
-        test_file.write_text(test_string)
-        # print(f"Updated {test_file}")
 
 
 def main() -> None:

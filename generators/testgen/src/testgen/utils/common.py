@@ -78,7 +78,7 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
         )
 
 
-def myhash(s: str) -> int:
+def reproducible_hash(s: str) -> int:
     """Return a simple hash of a string for use as a random seed.
 
     Python randomizes hashes by default, but we need a repeatable hash for repeatable test cases.

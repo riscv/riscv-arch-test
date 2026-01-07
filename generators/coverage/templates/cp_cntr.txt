@@ -1,12 +1,5 @@
-    // Custom coverpoint Zicntr
-
-    cntrs : coverpoint ins.current.insn[31:20] {
-        bins csr_cycle   = {12'hC00};
-        bins csr_time    = {12'hC01};
-        bins csr_instret = {12'hC02};
+    cp_cntr : coverpoint ins.current.insn[31:20] iff (ins.get_gpr_reg(ins.current.rs1) == x0) {
+            bins csr_cycle   = {12'hC00};
+            bins csr_time    = {12'hC01};
+            bins csr_instret = {12'hC02};
     }
-    csrr : coverpoint (ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[19:15] == 5'b00000) {
-        bins hit = {1}; // csrr = csrrs rd, csr, x0
-    }
-
-    cp_cntr: cross cntrs, csrr;

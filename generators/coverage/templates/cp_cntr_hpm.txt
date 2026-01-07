@@ -1,6 +1,6 @@
     // Custom coverpoint for Zihpm
 
-    hpms : coverpoint ins.current.insn[31:20] {
+    cp_cntr_hpm : coverpoint ins.current.insn[31:20] iff (ins.get_gpr_reg(ins.current.rs1) == x0) {
         bins hpmcounter3  = {12'hC03};
         bins hpmcounter4  = {12'hC04};
         bins hpmcounter5  = {12'hC05};
@@ -31,8 +31,3 @@
         bins hpmcounter30 = {12'hC1E};
         bins hpmcounter31 = {12'hC1F};
     }
-    csrr : coverpoint (ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[14:12] == 3'b010 & ins.current.insn[19:15] == 5'b00000) {
-        bins hit = {1}; // csrr = csrrs rd, csr, x0
-    }
-
-    cp_cntr_hpm: cross hpms, csrr;

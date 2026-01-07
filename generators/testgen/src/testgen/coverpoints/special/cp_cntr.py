@@ -18,7 +18,7 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     test_lines: list[str] = []
 
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
-    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=range(8, 16))
+    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     if coverpoint == "cp_cntr":
         test_lines.extend(
@@ -41,25 +41,22 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
 
 def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
     """Generate counter test snippet."""
-    lines: list[str] = []
-    lines.append(test_data.add_testcase("cp_cntr"))
-    mindiff = 1 if cntr == "instret" or cntr == "cycle" else 0  # instret and cycle increment quickly; others may not
-    lines.extend(
-        [
-            f"# Testcase: cp_cntr ({cntr})",
-            "#  Read two consecutive times to check if counter increments",
-            f"csrr x{r1}, {cntr}",
-            "nop",
-            "nop",
-            "nop",
-            "nop",
-            "nop",
-            "nop",
-            f"csrr x{r2}, {cntr}",
-            f"sub x{r1}, x{r2}, x{r1} # compute difference",
-            f"sltiu x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}",
-            write_sigupd(r1, test_data, "int"),  # record difference as signature
-            "",
-        ]
-    )
+    mindiff = 1 if cntr in ["instret", "cycle"] else 0  # instret and cycle increment quickly; others may not
+    lines = [
+        test_data.add_testcase("cp_cntr"),
+        f"# Testcase: cp_cntr ({cntr})",
+        "#  Read two consecutive times to check if counter increments",
+        f"csrr x{r1}, {cntr}",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        "nop",
+        f"csrr x{r2}, {cntr}",
+        f"sub x{r1}, x{r2}, x{r1} # compute difference",
+        f"sltiu x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}",
+        write_sigupd(r1, test_data, "int"),  # record difference as signature
+        "",
+    ]
     return "\n".join(lines)

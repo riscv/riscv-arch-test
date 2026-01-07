@@ -112,7 +112,7 @@ def generate_test_data_section(test_data: TestData) -> str:
     return "\n".join(lines)
 
 
-def generate_test_data_string_section(test_data: TestData) -> str:
+def generate_test_string_section(test_data: TestData) -> str:
     """
     Generate the .data section containing all test strings.
 

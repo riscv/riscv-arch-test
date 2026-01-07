@@ -5,7 +5,7 @@
 
 [project]
 name = "testgen"
-version = "0.3.0"
+version = "0.4.0"
 description = "RISC-V Architecture Compatibility Test Generator"
 # readme = "README.md"
 authors = [

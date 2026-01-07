@@ -51,6 +51,10 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
 def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
     """Generate counter test snippet."""
     mindiff = 1 if cntr in ["instret", "cycle"] else 0  # instret and cycle increment quickly; others may not
+    if cntr != "instret" and not cntr.endswith("h"):
+        slt = f"slti x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}"
+    else:
+        slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
     lines = [
         test_data.add_testcase("cp_cntr"),
         f"# Testcase: cp_cntr ({cntr})",
@@ -64,7 +68,7 @@ def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
         "nop",
         f"csrr x{r2}, {cntr}",
         f"sub x{r1}, x{r2}, x{r1} # compute difference",
-        f"slti x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}",
+        f"{slt}",
         write_sigupd(r1, test_data, "int"),  # record difference as signature
         "",
     ]

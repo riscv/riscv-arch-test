@@ -2,6 +2,8 @@
 
 === Zi*  Additional Unpriv Extensions
 
+This section includes a variety of unprivileged extensions.
+
 ==== Zicsr Control/Status Register Instructions
 
 [[t-Zicsr-coverpoints]]
@@ -88,6 +90,45 @@ https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] 
 include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
+
+==== Zicntr Counters
+
+Zicntr provides unprivileged read access to the cycle, time, and instret counters. It can exist without full Sm machine mode or Zicsr CSR read/write support.
+
+[[t-Zicntr-coverpoints]]
+.Zicntr Instruction Coverpoints
+include::{testplansdir}/Zicntr.adoc[]
+
+include::norm/Zicntr_norm_rules.adoc[]
+
+[[t-Zicntr-modified-coverpoints]]
+.Zicntr Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_cntr|3|Read each of the counters (cycle, time, instret) twice and check that the difference is at least:
+1 for cycle and instret, 0 for time (time may not increment between reads).
+For RV32, also check cycleh, timeh, instreth with the same definitions.
+|===
+
+==== Zihpm Hardware Performance Monitors
+
+Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.  Like Zicntr, it can exist without full Sm machine mode or Zicsr CSR read/write support.
+
+[[t-Zihpm-coverpoints]]
+.Zihpm Instruction Coverpoints
+include::{testplansdir}/Zihpm.adoc[]
+
+include::norm/Zihpm_norm_rules.adoc[]
+
+[[t-Zihpm-modified-coverpoints]]
+.Zihpm Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
+|===
+
 
 ==== Zihintpause Pause Hint
 

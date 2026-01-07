@@ -12,7 +12,7 @@
 
 # Terminate test with a pass indication.
 #define RVMODEL_HALT_PASS  \
-  li x1, 1                ;\
+  li x1, 123456789                ;\
   la t0, 0x20000000       ;\
   write_tohost_pass:      ;\
     sw x1, 0(t0)          ;\
@@ -22,7 +22,7 @@
 
 # Terminate test with a fail indication.
 #define RVMODEL_HALT_FAIL \
-  li x1, 2                ;\
+  li x1, 1                ;\
   la t0, 0x20000000       ;\
   write_tohost_fail:      ;\
     sw x1, 0(t0)          ;\

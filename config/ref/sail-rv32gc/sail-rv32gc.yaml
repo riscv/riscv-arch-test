@@ -44,9 +44,7 @@ implemented_extensions:
   - { name: Sstc, version: "1.0.0" }
   - { name: Sstvala, version: "1.0.0" }
   - { name: Sstvecd, version: "1.0.0" }
-  - { name: Ssu64xl, version: "1.0.0" }
-  - { name: Sv39, version: "1.13.0" }
-  - { name: Sv48, version: "1.13.0" }
+  - { name: Sv32, version: "1.13.0" }
   - { name: Svade, version: "1.0.0" }
   - { name: Svadu, version: "1.0.0" }
   - { name: Svbare, version: "1.0.0" }

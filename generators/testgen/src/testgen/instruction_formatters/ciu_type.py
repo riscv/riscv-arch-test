@@ -7,13 +7,18 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_int_reg, to_hex, write_sigupd
 
-
-@add_instruction_formatter(
-    "CIU", required_params={"rs1", "rs1val", "immval"}, imm_bits=6, imm_signed=True, imm_nonzero=True
+ciu_config = InstructionTypeConfig(
+    required_params={"rs1", "rs1val", "immval"},
+    imm_bits=6,
+    imm_signed=True,
+    imm_nonzero=True,
 )
+
+
+@add_instruction_formatter("CIU", ciu_config)
 def format_ci_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

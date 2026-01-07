@@ -29,10 +29,10 @@ def insert_setup_template(template_name: str, test_config: TestConfig, test_file
         template.replace("@TEST_PATH@", f"{test_file}")
         .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
-        .replace("@MARCH@", march.lower())
+        .replace("@MARCH@", march)
         .replace("@PARAMS@", format_params(params))
         .replace("@EXTRA_DEFINES@", extra_defines)
-        .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
+        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
     )
     return template
 
@@ -42,7 +42,9 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
     ext_components = re.findall(r"[A-Z][a-z]*", extension)
 
     # Extract parameters
-    params: list[str] = [f"MXLEN: {xlen}"]
+    params: list[str] = []
+    if xlen > 0:
+        params.append(f"MXLEN: {xlen}")
     param_lookup = {
         "Misalign": "MISALIGNED_LDST: true",
     }
@@ -71,14 +73,17 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
         if len(ext_str) > 0:
             ext_str += "_"
         ext_str += ext
-    march = f"rv{xlen}{ext_str}"
-    march = march.replace("Zaamo", "A").replace("Zalrsc", "A")  # gcc 14 does not accept Zaamo/Zalrsc
+    ext_str = ext_str.lower()
+    march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
+    march = march.replace("zaamo", "a").replace("zalrsc", "a")  # gcc 14 does not accept Zaamo/Zalrsc
 
     return ext_components, march, params
 
 
 def format_params(params: list[str]) -> str:
     """Format parameters for insertion into template."""
+    if not params:
+        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
     for param in params:
         param_lines.append(f"#   {param}")

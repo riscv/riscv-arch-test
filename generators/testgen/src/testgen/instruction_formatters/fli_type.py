@@ -7,8 +7,10 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import write_sigupd
+
+fli_config = InstructionTypeConfig(required_params={"fd", "rs1"})
 
 fli_vals = (
     -1.0,
@@ -46,7 +48,7 @@ fli_vals = (
 )
 
 
-@add_instruction_formatter("FLI", required_params={"fd", "rs1"})
+@add_instruction_formatter("FLI", fli_config)
 def format_fli_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

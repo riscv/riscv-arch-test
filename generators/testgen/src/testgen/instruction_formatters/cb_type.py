@@ -7,11 +7,13 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
 
+cb_config = InstructionTypeConfig(required_params={"rs1", "rs1val", "temp_reg", "temp_val"}, reg_range=range(8, 16))
 
-@add_instruction_formatter("CB", required_params={"rs1", "rs1val", "temp_reg", "temp_val"}, reg_range=range(8, 16))
+
+@add_instruction_formatter("CB", cb_config)
 def format_cb_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

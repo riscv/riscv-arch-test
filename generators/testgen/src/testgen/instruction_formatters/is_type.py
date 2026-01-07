@@ -7,13 +7,15 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
 
-
-@add_instruction_formatter(
-    "IS", required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits="xlen_log2", imm_signed=False
+is_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "rs1val", "immval"}, imm_bits="xlen_log2", imm_signed=False
 )
+
+
+@add_instruction_formatter("IS", is_config)
 def format_is_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

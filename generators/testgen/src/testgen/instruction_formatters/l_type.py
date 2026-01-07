@@ -7,13 +7,17 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import to_hex, write_sigupd
 
-
-@add_instruction_formatter(
-    "L", required_params={"rd", "rs1", "temp_val", "immval", "temp_reg"}, imm_bits=12, imm_signed=True
+l_config = InstructionTypeConfig(
+    required_params={"rd", "rs1", "temp_val", "immval", "temp_reg"},
+    imm_bits=12,
+    imm_signed=True,
 )
+
+
+@add_instruction_formatter("L", l_config)
 def format_l_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

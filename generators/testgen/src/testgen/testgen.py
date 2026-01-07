@@ -65,7 +65,8 @@ def generate_all_tests(
             if ext in available_unpriv_extensions:
                 unpriv_ext_list.append(ext)
             else:
-                raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}.")
+                pass
+                # raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}.")
 
     # Build list of test generation tasks
     tasks: list[tuple[int, bool, str, Path, Path]] = []

@@ -1,5 +1,3 @@
-    // Custom coverpoint for Zihpm
-
     cp_cntr_hpm : coverpoint ins.current.insn[31:20] iff (ins.get_gpr_reg(ins.current.rs1) == x0) {
         bins hpmcounter3  = {12'hC03};
         bins hpmcounter4  = {12'hC04};

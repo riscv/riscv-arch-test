@@ -45,7 +45,7 @@ def generate_unpriv_extension_tests(task: tuple[int, bool, str, Path, Path]) -> 
         if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
         else 32
     )
-    config_dependent = False
+    config_dependent = extension in ["Zicntr"]
     test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, E_ext=E_ext, config_dependent=config_dependent)
 
     # Iterate through each instruction in the extension; generate separate test files for each

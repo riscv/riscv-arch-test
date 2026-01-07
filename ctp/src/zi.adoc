@@ -130,6 +130,10 @@ include::norm/Zihpm_norm_rules.adoc[]
 |cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
 |===
 
+Note that this coverpoint assumes that reading hpmcounter* never traps.
+See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issue #2558] for discussion.
+There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
+sometimes trap.
 
 ==== Zihintpause Pause Hint
 

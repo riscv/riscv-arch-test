@@ -32,7 +32,7 @@ def insert_setup_template(template_name: str, test_config: TestConfig, test_file
         .replace("@MARCH@", march)
         .replace("@PARAMS@", format_params(params))
         .replace("@EXTRA_DEFINES@", extra_defines)
-        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent))
+        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
     )
     return template
 
@@ -83,7 +83,7 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
 def format_params(params: list[str]) -> str:
     """Format parameters for insertion into template."""
     if not params:
-        return "# # no param constraints"
+        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
     for param in params:
         param_lines.append(f"#   {param}")

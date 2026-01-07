@@ -66,14 +66,14 @@ def add_instruction_formatter(
 
 
 def get_instr_type_config(instr_type: str) -> InstructionTypeConfig:
-    """Get the complete configuration for an instruction type."""
+    """Get the configuration for an instruction type."""
     if instr_type not in _INSTRUCTION_CONFIGS:
         raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
     return _INSTRUCTION_CONFIGS[instr_type][1]  # Return only the InstructionTypeConfig
 
 
 def get_instr_type_formatter(instr_type: str) -> InstructionFormatter:
-    """Get the complete configuration for an instruction type."""
+    """Get the instruction formatter function for an instruction type."""
     if instr_type not in _INSTRUCTION_CONFIGS:
         raise MissingInstructionFormatterError(instr_type, list(_INSTRUCTION_CONFIGS.keys()))
     return _INSTRUCTION_CONFIGS[instr_type][0]  # Return only the InstructionFormatter

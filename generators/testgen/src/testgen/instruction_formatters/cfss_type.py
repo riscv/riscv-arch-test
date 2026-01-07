@@ -8,13 +8,17 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_float_reg, write_sigupd
 
-
-@add_instruction_formatter(
-    "CFSS", required_params={"fs2", "fs2val", "immval", "temp_reg", "temp_freg"}, imm_bits=9, imm_signed=False
+cfss_config = InstructionTypeConfig(
+    required_params={"fs2", "fs2val", "immval", "temp_reg", "temp_freg"},
+    imm_bits=9,
+    imm_signed=False,
 )
+
+
+@add_instruction_formatter("CFSS", cfss_config)
 def format_cfss_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

@@ -7,10 +7,12 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
+
+cjal_config = InstructionTypeConfig(required_params={"temp_reg", "temp_val", "immval"}, imm_bits=11)
 
 
-@add_instruction_formatter("CJAL", required_params={"temp_reg", "temp_val", "immval"}, imm_bits=11)
+@add_instruction_formatter("CJAL", cjal_config)
 def format_cjal_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

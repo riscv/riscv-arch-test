@@ -7,13 +7,15 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_float_reg, write_sigupd
 
-
-@add_instruction_formatter(
-    "FS", required_params={"temp_reg", "rs1", "rs1val", "fs2", "fs2val", "immval"}, imm_bits=12, imm_signed=True
+fs_config = InstructionTypeConfig(
+    required_params={"temp_reg", "rs1", "rs1val", "fs2", "fs2val", "immval"}, imm_bits=12, imm_signed=True
 )
+
+
+@add_instruction_formatter("FS", fs_config)
 def format_fs_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

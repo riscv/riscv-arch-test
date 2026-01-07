@@ -17,8 +17,13 @@ from testgen.utils.common import reproducible_hash
 from testgen.utils.exceptions import MissingCoverpointGeneratorError
 
 # Type alias for coverpoint generator functions
+# The generator function takes:
+# - instr_name: str
+# - instr_type: str
+# - coverpoint: str
+# - test_data: TestData
+# and returns a list of strings (test lines)
 CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
-
 
 # Registry storage: list of (pattern, generator) tuples sorted by pattern length (longest first)
 _COVERPOINT_GENERATORS: list[tuple[str, CoverpointGenerator]] = []

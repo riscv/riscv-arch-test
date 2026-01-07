@@ -93,7 +93,7 @@ include::norm/Zicond_norm_rules.adoc[]
 
 ==== Zicntr Counters
 
-Zicntr provides unprivileged read access to the cycle, time, and instret counters. It can exist without full Sm machine mode or Zicsr CSR read/write support.
+Zicntr provides unprivileged read access to the cycle, time, and instret counters.
 
 [[t-Zicntr-coverpoints]]
 .Zicntr Instruction Coverpoints
@@ -106,14 +106,15 @@ include::norm/Zicntr_norm_rules.adoc[]
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr|3|Read each of the counters (cycle, time, instret) twice and check that the difference is at least:
-1 for cycle and instret, 0 for time (time may not increment between reads).
+|cp_cntr|3|Read each of the counters (cycle, time, instret) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for instret, or at least 1 for cycle, 0 for time (time may not increment between reads).
 For RV32, also check cycleh, timeh, instreth with the same definitions.
+Skip time and timeh if parameter TIME_CSR_IMPLEMENTED = False.
+
 |===
 
 ==== Zihpm Hardware Performance Monitors
 
-Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.  Like Zicntr, it can exist without full Sm machine mode or Zicsr CSR read/write support.
+Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.
 
 [[t-Zihpm-coverpoints]]
 .Zihpm Instruction Coverpoints
@@ -126,7 +127,7 @@ include::norm/Zihpm_norm_rules.adoc[]
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
+|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.  Skip hmpcounter[i] and hpmcounterh[i] if parameter HPM_COUNTEREN[i] = False.
 |===
 
 

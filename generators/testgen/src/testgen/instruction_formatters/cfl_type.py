@@ -7,13 +7,18 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import write_sigupd
 
-
-@add_instruction_formatter(
-    "CFL", required_params={"fd", "rs1", "immval", "temp_val"}, reg_range=range(8, 16), imm_bits=8, imm_signed=False
+cfl_config = InstructionTypeConfig(
+    required_params={"fd", "rs1", "immval", "temp_val"},
+    reg_range=range(8, 16),
+    imm_bits=8,
+    imm_signed=False,
 )
+
+
+@add_instruction_formatter("CFL", cfl_config)
 def format_cfl_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

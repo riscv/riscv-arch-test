@@ -31,30 +31,29 @@ TESTCASES_PER_FILE = 1000
 E_EXTENSION_TESTS = {"I", "M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
 
 # CLI interface setup
-testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
+testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]}, add_completion=False)
 
 
+# Main command to generate all tests, run from the CLI
 @testgen_app.command()
 def generate_all_tests(
     testplan_dir: Annotated[
         Path, typer.Argument(exists=True, file_okay=False, help="Directory containing testplan CSV files")
     ],
     output_test_dir: Annotated[
-        Path, typer.Option("--output_test_dir", "-o", help="Directory to output generated tests")
+        Path, typer.Option("--output_test_dir", "-o", file_okay=False, help="Directory to output generated tests")
     ] = Path("tests"),
     extensions: Annotated[
-        str,
-        typer.Option(
-            "--extensions", "-e", help="Comma-separated list of extensions to generate tests for (default: all)"
-        ),
+        str, typer.Option("--extensions", "-e", help="Comma-separated list of extensions to generate tests for")
     ] = "all",
     jobs: Annotated[
-        int | None,
-        typer.Option("--jobs", "-j", help="Number of parallel jobs (default: number of CPU cores)"),
+        int | None, typer.Option("--jobs", "-j", show_default="number of CPU cores", help="Number of parallel jobs")
     ] = None,
 ) -> None:
     """
-    Generate riscv-arch-test tests from testplan CSV files.
+    Generate riscv-arch-test tests.
+
+    For unprivileged tests, uses the CSV testplan files in `testplan_dir`.
     """
     # Set number of parallel jobs to CPU count if not specified
     if jobs is None:

@@ -8,9 +8,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_VM
+`define COVER_SV
 `define SVNAPOT_SUPPORTED
-covergroup VM_satp_cg with function sample(ins_t ins);
+covergroup Sv_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -163,7 +163,7 @@ covergroup VM_satp_cg with function sample(ins_t ins);
     }
 endgroup
 
-covergroup VM_PA_VA_cg with function sample(ins_t ins);
+covergroup Sv_PA_VA_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     `ifdef XLEN64
@@ -209,14 +209,14 @@ covergroup VM_PA_VA_cg with function sample(ins_t ins);
 
 endgroup
 
-covergroup VM_sfence_cg with function sample(ins_t ins); //sf.1
+covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
     option.per_instance = 0;
     ins: coverpoint ins.current.insn {
         wildcard bins sfence = {32'b0001001_?????_?????_000_00000_1110011};
     }
 endgroup
 
-covergroup VM_mstatus_mprv_cg with function sample(ins_t ins);
+covergroup Sv_mstatus_mprv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -381,7 +381,7 @@ covergroup VM_mstatus_mprv_cg with function sample(ins_t ins);
 
 endgroup
 
-covergroup VM_vm_permissions_cg with function sample(ins_t ins);
+covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -895,7 +895,7 @@ covergroup VM_vm_permissions_cg with function sample(ins_t ins);
     `endif
 endgroup
 
-covergroup VM_res_global_pte_cg with function sample(ins_t ins);
+covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //pte.1
     RSW: coverpoint ins.current.pte_i[9:8] {
@@ -1000,7 +1000,7 @@ covergroup VM_res_global_pte_cg with function sample(ins_t ins);
     }
 endgroup
 
-covergroup VM_add_feature_cg with function sample(ins_t ins);
+covergroup Sv_add_feature_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     `ifdef XLEN64
@@ -1123,12 +1123,12 @@ covergroup VM_add_feature_cg with function sample(ins_t ins);
 endgroup
 
 
-function void vm_sample(int hart, int issue, ins_t ins);
-    VM_PA_VA_cg.sample(ins);
-    VM_satp_cg.sample(ins);
-    VM_sfence_cg.sample(ins);
-    VM_mstatus_mprv_cg.sample(ins);
-    VM_vm_permissions_cg.sample(ins);
-    VM_res_global_pte_cg.sample(ins);
-    VM_add_feature_cg.sample(ins);
+function void sv_sample(int hart, int issue, ins_t ins);
+    Sv_PA_VA_cg.sample(ins);
+    Sv_satp_cg.sample(ins);
+    Sv_sfence_cg.sample(ins);
+    Sv_mstatus_mprv_cg.sample(ins);
+    Sv_vm_permissions_cg.sample(ins);
+    Sv_res_global_pte_cg.sample(ins);
+    Sv_add_feature_cg.sample(ins);
 endfunction

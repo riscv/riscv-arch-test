@@ -83,8 +83,8 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
             ext_components.insert(0, "I")
     if "Zcd" in ext_components and "D" not in ext_components:
         ext_components.append("D")  # Add D if Zcd is present
-    if ("Zcf" in ext_components or "D" in ext_components) and "F" not in ext_components:
-        ext_components.append("F")  # Add F if Zcf or D is present
+    if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa"]) and "F" not in ext_components:
+        ext_components.append("F")  # Add F if any floating point extension is present
 
     # Construct march string
     ext_str = ""

@@ -23,6 +23,8 @@ MAKEFILE_HEADER = """
 .PHONY: compile
 """
 
+OBJDUMP_FLAGS = "-Sd -M no-aliases,numeric"
+
 
 def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:
     """Get the path to the internal Sail config file for the given XLEN.
@@ -101,7 +103,7 @@ def gen_compile_targets(
         f"\n"
         # Objdump (only if debug and objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Sd -M no-aliases,numeric \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
             if debug and config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
@@ -127,7 +129,7 @@ def gen_compile_targets(
         f"\t\t{test_path}\n"
         # Objdump (objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Sd -M no-aliases,numeric \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
             if config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"

@@ -10,9 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICSRV
+`define COVER_SMV
 
-covergroup ZicsrV_cg with function sample(ins_t ins);
+covergroup SmV_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -402,6 +402,6 @@ covergroup ZicsrV_cg with function sample(ins_t ins);
 
 endgroup
 
-function void zicsrv_sample(int hart, int issue, ins_t ins);
-    ZicsrV_cg.sample(ins);
+function void smv_sample(int hart, int issue, ins_t ins);
+    SmV_cg.sample(ins);
 endfunction

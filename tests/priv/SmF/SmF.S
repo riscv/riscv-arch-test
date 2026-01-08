@@ -1,9 +1,9 @@
 ///////////////////////////////////////////
-// ZicsrF.S
+// SmF.S
 //
 // Written: Roman De Santos rdesantos@hmc.edu 26 March 2025
 //
-// Purpose: Functional coverage test for ZicsrF in M mode
+// Purpose: Functional coverage test for SmF in M mode
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////

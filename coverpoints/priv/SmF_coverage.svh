@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICSRF
-covergroup ZicsrF_fcsr_cg with function sample(ins_t ins);
+`define COVER_SMF
+covergroup SmF_fcsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -150,6 +150,6 @@ covergroup ZicsrF_fcsr_cg with function sample(ins_t ins);
     cp_mstatus_FS_transition: cross instrs,                           mstatus_FS;
 endgroup
 
-function void zicsrf_sample(int hart, int issue, ins_t ins);
-    ZicsrF_fcsr_cg.sample(ins);
+function void smf_sample(int hart, int issue, ins_t ins);
+    SmF_fcsr_cg.sample(ins);
 endfunction

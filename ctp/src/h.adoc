@@ -52,6 +52,16 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552831967#gid=552831967[Google Sheet Testplan]
 
+==== HV Hypervisor Vector CSRs
+
+[[t-HV-coverpoints]]
+.HV Coverpoints
+,===
+//include::{testplansdir}/V.adoc[]
+,===
+***[Google Sheet Testplan]
+
+
 ==== EndianH Hypervisor Endianness
 
 [[t-EndianH-coverpoints]]

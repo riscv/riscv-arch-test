@@ -6,4 +6,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicsrVF_cg = new();    ZicsrVF_cg.set_inst_name("obj_ZicsrVF");
+    SmVF_cg = new();    SmVF_cg.set_inst_name("obj_SmVF");

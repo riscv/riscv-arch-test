@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicsrF_fcsr_cg = new();         ZicsrF_fcsr_cg.set_inst_name("obj_ZicsrF_fcsr");
+    HV_cg = new();    HV_cg.set_inst_name("obj_HV");

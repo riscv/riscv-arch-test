@@ -10,9 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICSRVF
+`define COVER_SMVF
 
-covergroup ZicsrVF_cg with function sample(ins_t ins);
+covergroup SmVF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
@@ -66,6 +66,6 @@ covergroup ZicsrVF_cg with function sample(ins_t ins);
 
 endgroup
 
-function void zicsrvf_sample(int hart, int issue, ins_t ins);
-    ZicsrVF_cg.sample(ins);
+function void smvf_sample(int hart, int issue, ins_t ins);
+    SmVF_cg.sample(ins);
 endfunction

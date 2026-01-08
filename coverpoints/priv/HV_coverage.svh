@@ -11,9 +11,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-`define COVER_ZICSRHV
+`define COVER_HV
 
-covergroup ZicsrHV_cg with function sample(ins_t ins);
+covergroup HV_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
@@ -45,6 +45,6 @@ covergroup ZicsrHV_cg with function sample(ins_t ins);
 
 endgroup
 
-function void zicsrhv_sample(int hart, int issue, ins_t ins);
-    ZicsrHV_cg.sample(ins);
+function void hv_sample(int hart, int issue, ins_t ins);
+    HV_cg.sample(ins);
 endfunction

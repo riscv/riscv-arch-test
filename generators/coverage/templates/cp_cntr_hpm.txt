@@ -28,4 +28,35 @@
         bins hpmcounter29 = {12'hC1D};
         bins hpmcounter30 = {12'hC1E};
         bins hpmcounter31 = {12'hC1F};
+        `ifdef XLEN32
+            bins hpmcounter3h  = {12'hC83};
+            bins hpmcounter4h  = {12'hC84};
+            bins hpmcounter5h  = {12'hC85};
+            bins hpmcounter6h  = {12'hC86};
+            bins hpmcounter7h  = {12'hC87};
+            bins hpmcounter8h  = {12'hC88};
+            bins hpmcounter9h  = {12'hC89};
+            bins hpmcounter10h = {12'hC8A};
+            bins hpmcounter11h = {12'hC8B};
+            bins hpmcounter12h = {12'hC8C};
+            bins hpmcounter13h = {12'hC8D};
+            bins hpmcounter14h = {12'hC8E};
+            bins hpmcounter15h = {12'hC8F};
+            bins hpmcounter16h = {12'hC90};
+            bins hpmcounter17h = {12'hC91};
+            bins hpmcounter18h = {12'hC92};
+            bins hpmcounter19h = {12'hC93};
+            bins hpmcounter20h = {12'hC94};
+            bins hpmcounter21h = {12'hC95};
+            bins hpmcounter22h = {12'hC96};
+            bins hpmcounter23h = {12'hC97};
+            bins hpmcounter24h = {12'hC98};
+            bins hpmcounter25h = {12'hC99};
+            bins hpmcounter26h = {12'hC9A};
+            bins hpmcounter27h = {12'hC9B};
+            bins hpmcounter28h = {12'hC9C};
+            bins hpmcounter29h = {12'hC9D};
+            bins hpmcounter30h = {12'hC9E};
+            bins hpmcounter31h = {12'hC9F};
+        `endif
     }

@@ -21,58 +21,45 @@
 // Total Expected Faults: 4
 // ----------------------------------------------------------------------------------------------------------------------
 
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, Sv32]
+# MARCH: rv32i_zicsr
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
 //TODO: instead of using two different tests, use a single test for hart/software update.
 
-#include "model_test.h"
+// Define the name of this test file for reporting and the size of the signature region
+#define TEST_FILE "mstatus_tvm_test.S"
+#define SIGUPD_COUNT 50
 
-#include "arch_test.h"
+// Enable trap handler
+#define rvtest_mtrap_routine
+#define rvtest_strap_routine
 
-RVTEST_ISA("RV32I_Zicsr")
+// Include framework macros
+#include "riscv_arch_test.h"
 
-# Test code region
-.section .text.init
-.globl rvtest_entry_point
-rvtest_entry_point:
-RVMODEL_BOOT
-RVTEST_CODE_BEGIN
+// Set up test environment and declare main entry point
+RVTEST_BEGIN
 
-#ifdef TEST_CASE_1
-    RVTEST_CASE(1,"//check ISA:=regex(.*32.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def TEST_CASE_1=True; mac SV32_MACROS", mstatus_tvm)
-
-RVTEST_SIGBASE( x13,signature_x13_1)
-
-main:
-#ifdef rvtest_mtrap_routine                               // Verification of existence of rvtest_mtrap_routine
-  LI a4, 0xceed
-  RVTEST_SIGUPD(x13,a4)
-#endif
-#ifdef rvtest_strap_routine                               // Verification of existence of rvtest_strap_routine
-  LI a4, 0xbeed
-  RVTEST_SIGUPD(x13,a4)
-#endif
-
-  ALL_MEM_PMP                                                          // set the PMP permissions for the whole memory
-  csrw satp, zero                                                    // write satp with all zeros (bare mode)
+  CSRW(satp, zero)                                           // write satp with all zeros (bare mode)
 
   #set the mstatus with the TVM bit
-  LI (t4, MSTATUS_TVM)
-  csrw mstatus, t4
-  csrr t3, mstatus
-  RVTEST_SIGUPD(x13,t3)
+check_tvm:
+  LI(a0, MSTATUS_TVM)
+  RVTEST_SIGUPD_CSR_WRITE(mstatus, a0, "test_1")
 
 // ------------------------------------------------------------------------------------------------------------
 //                     satp access in M Mode using csrrw, csrrc, csrrs
 // ------------------------------------------------------------------------------------------------------------
-  li t0, 1                                //initial value for t0 = 1
-  #successful access
-  csrw satp, t0                                                    // write satp with some value
-  csrr t3, satp
-  RVTEST_SIGUPD(x13,t3)
+check_satp_write:
+  li a0, 1                                //initial value for a0 = 1
+  RVTEST_SIGUPD_CSR_WRITE(satp, a0, "test_2")
+
 
   #successful access
-  sfence.vma
-  nop
-  nop
+  SFENCE_VMA
 
 // ------------------------------------------------------------------------------------------------------------
 //                     satp access in S Mode using csrrw, csrrc, csrrs
@@ -80,58 +67,37 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  li t0, 1                                //initial value for t0 = 1
-  csrw satp, t0                                                    // write satp with some value
-  nop
+  li a0, 1                                //initial value for a0 = 1
+  CSRW(satp, a0)                          // write satp with some value
 
-  li t0, 1
-    csrrc t1, satp, t0
-    nop
+  li a0, 1
+  CSRC(satp, a0)
 
-    li t0, 1
-    csrrs t1, satp, t0
-    nop
+  li a0, 1
+  CSRC(satp, a0)
 
-  sfence.vma
-  nop
-  nop
+  SFENCE_VMA
 
   RVTEST_GOTO_MMODE                                                // Switching back to M mode
 
-#endif
 //---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
-RVMODEL_HALT
+
 RVTEST_DATA_BEGIN
-.align 22
+
+canary_mismatch: .string "Testcase signature canary mismatch!"
+test_1: .string "\"test: 1; cp: check mstatus.tvm\""
+test_2: .string "\"test: 2; cp: check satp\""
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 
-#ifdef rvtest_strap_routine
 .align 12                       //complete the 4KB permission memory range
 rvtest_slvl1_pg_tbl:
     RVTEST_PTE_IDENT_MAP(0,1,PTE_V | PTE_A | PTE_D | PTE_G)
-#endif
 
+// End of test data section and model specific data
 RVTEST_DATA_END
-.align 12
-RVMODEL_DATA_BEGIN
-rvtest_sig_begin:
-sig_begin_canary:
-CANARY;
 
-// test signatures initialization
-signature_x13_1:
-    .fill 64*(XLEN/32),4,0xcafebeef
-
-// trap signatures initialization
-#ifdef rvtest_mtrap_routine
-mtrap_sigptr:
-    .fill 64*(XLEN/32),4,0xdeadbeef
-#endif
-
-sig_end_canary:
-CANARY;
-rvtest_sig_end:
-RVMODEL_DATA_END
+// Signature region for self-checking
+RVTEST_SIG_SETUP

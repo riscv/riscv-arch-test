@@ -23,7 +23,7 @@ MAKEFILE_HEADER = """
 .PHONY: compile
 """
 
-OBJDUMP_FLAGS = "-Sd -M no-aliases,numeric"
+OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
 
 
 def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:

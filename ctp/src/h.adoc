@@ -57,7 +57,7 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 [[t-HV-coverpoints]]
 .HV Coverpoints
 ,===
-//include::{testplansdir}/V.adoc[]
+//include::{testplansdir}/HV.adoc[]
 ,===
 ***[Google Sheet Testplan]
 

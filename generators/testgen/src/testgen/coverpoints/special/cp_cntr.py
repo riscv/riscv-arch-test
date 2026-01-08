@@ -24,13 +24,26 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
         test_lines.extend(
             [
                 gen_cntr_test("cycle", r1, r2, test_data),
+                "#if TIME_CSR_IMPLEMENTED\n",
                 gen_cntr_test("time", r1, r2, test_data),
+                "#endif\n",
                 gen_cntr_test("instret", r1, r2, test_data),
+                "#if __riscv_xlen == 32\n",
+                gen_cntr_test("cycleh", r1, r2, test_data),
+                "#if TIME_CSR_IMPLEMENTED\n",
+                gen_cntr_test("timeh", r1, r2, test_data),
+                "#endif\n",
+                gen_cntr_test("instreth", r1, r2, test_data),
+                "#endif\n",
             ]
         )
     elif coverpoint == "cp_cntr_hpm":
         for hpm in range(3, 32):  # hpmcounter3 through hpmcounter31
             test_lines.append(gen_cntr_test(f"hpmcounter{hpm}", r1, r2, test_data))
+        test_lines.append("#if __riscv_xlen == 32\n")
+        for hpm in range(3, 32):  # hpmcounter3h through hpmcounter31h
+            test_lines.append(gen_cntr_test(f"hpmcounter{hpm}h", r1, r2, test_data))
+        test_lines.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")
 
@@ -42,6 +55,10 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
 def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
     """Generate counter test snippet."""
     mindiff = 1 if cntr in ["instret", "cycle"] else 0  # instret and cycle increment quickly; others may not
+    if cntr != "instret" and not cntr.endswith("h"):
+        slt = f"slti x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}"
+    else:
+        slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
     lines = [
         test_data.add_testcase("cp_cntr"),
         f"# Testcase: cp_cntr ({cntr})",
@@ -55,7 +72,7 @@ def gen_cntr_test(cntr: str, r1: int, r2: int, test_data: TestData) -> str:
         "nop",
         f"csrr x{r2}, {cntr}",
         f"sub x{r1}, x{r2}, x{r1} # compute difference",
-        f"sltiu x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}",
+        f"{slt}",
         write_sigupd(r1, test_data, "int"),  # record difference as signature
         "",
     ]

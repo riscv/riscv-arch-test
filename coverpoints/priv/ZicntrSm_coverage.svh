@@ -10,8 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICNTRM
-covergroup ZicntrM_mcounters_cg with function sample(ins_t ins);
+`define COVER_ZICNTRSM
+covergroup ZicntrSm_mcounters_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // Counter access in machine mode
@@ -382,6 +382,6 @@ covergroup ZicntrM_mcounters_cg with function sample(ins_t ins);
 
 endgroup
 
-function void zicntrm_sample(int hart, int issue, ins_t ins);
-    ZicntrM_mcounters_cg.sample(ins);
+function void zicntrsm_sample(int hart, int issue, ins_t ins);
+    ZicntrSm_mcounters_cg.sample(ins);
 endfunction

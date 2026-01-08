@@ -1,6 +1,6 @@
 
 ///////////////////////////////////////////
-// ExceptionsM.S
+// ExceptionsSm.S
 //
 // Written: Roman De Santos rdesantos@hmc.edu 6 February 2025
 //

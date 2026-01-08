@@ -1,5 +1,5 @@
 ///////////////////////////////////////////
-// ZicntrM.S
+// ZicntrSm.S
 //
 // Written: David_Harris@hmc.edu 27 February 2024
 //

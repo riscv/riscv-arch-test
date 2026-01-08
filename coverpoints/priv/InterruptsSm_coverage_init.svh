@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-PMPM_cg = new();
-PMPM_cg.set_inst_name("obj_PMPM");
+    InterruptsSm_cg = new();         InterruptsSm_cg.set_inst_name("obj_interruptssm");

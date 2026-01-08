@@ -5,14 +5,16 @@ These tests exercise the mtime, mcycle, and minstret counters and related regist
 
 *** edit coverpoints to pull out hpm
 
-==== ZicntrM Machine-Mode Counters
+==== ZicntrSm Machine-Mode Counters
 
-[[t-ZicntrM-coverpoints]]
-.ZicntrM Coverpoints
+[[t-ZicntrSm-coverpoints]]
+.ZicntrSm Coverpoints
 ,===
-//include::{testplansdir}/ZicntrM.adoc[]
+//include::{testplansdir}/ZicntrSm.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=0#gid=0[Google Sheet Testplan]
+
+*** move this to Sm because these counters are mandatory
 
 ==== ZicntrS Supervisor-Mode Counters
 

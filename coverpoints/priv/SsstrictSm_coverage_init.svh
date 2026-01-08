@@ -8,4 +8,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    InterruptsM_cg = new();         InterruptsM_cg.set_inst_name("obj_interruptsm");
+    SsstrictSm_mcsr_cg = new();         SsstrictSm_mcsr_cg.set_inst_name("obj_SsstrictSm_mcsr");
+    SsstrictSm_instr_cg = new();        SsstrictSm_instr_cg.set_inst_name("obj_SsstrictSm_instr");
+    SsstrictSm_comp_instr_cg = new();   SsstrictSm_comp_instr_cg.set_inst_name("obj_SsstrictSm_comp_instr");

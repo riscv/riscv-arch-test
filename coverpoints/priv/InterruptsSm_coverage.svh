@@ -10,9 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_INTERRUPTSM
+`define COVER_INTERRUPTSSM
 
-covergroup InterruptsM_cg with function sample(ins_t ins);
+covergroup InterruptsSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -102,6 +102,6 @@ covergroup InterruptsM_cg with function sample(ins_t ins);
     cp_wfi:              cross priv_mode_m, wfi, mstatus_mie, mstatus_tw, mie_mtie_one, mie_mtip_one;
 endgroup
 
-function void interruptsm_sample(int hart, int issue, ins_t ins);
-    InterruptsM_cg.sample(ins);
+function void interruptssm_sample(int hart, int issue, ins_t ins);
+    InterruptsSm_cg.sample(ins);
 endfunction

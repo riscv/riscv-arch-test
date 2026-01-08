@@ -8,4 +8,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicntrM_mcounters_cg = new();         ZicntrM_mcounters_cg.set_inst_name("obj_mcounters");
+    Sm_mcause_cg = new();      Sm_mcause_cg.set_inst_name("obj_Sm_mcause");
+    Sm_mstatus_cg = new();     Sm_mstatus_cg.set_inst_name("obj_Sm_mstatus");
+    Sm_mprivinst_cg = new();   Sm_mprivinst_cg.set_inst_name("obj_Sm_mprivinst");

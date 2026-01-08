@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ##################################
-# ZicsrM_gen.py
+# Sm_gen.py
 #
 # David_Harris@hmc.edu 26 December 2025
 # SPDX-License-Identifier: Apache-2.0
@@ -177,7 +177,7 @@ def makePrivBody() -> None:
     global body_lines
     """Populates the global body for privileged tests.  Also updates the global signature count and testcase messages"""
 
-    covergroup = "ZicsrM_mcause_cg"
+    covergroup = "Sm_mcause_cg"
 
     body_lines = dedent("""
             CSRR(s0, mcause)     # save CSR before testing it
@@ -216,7 +216,7 @@ def makePrivBody() -> None:
 
     body_lines += "\n\tCSRW(mcause, s0)       # restore CSR\n"
 
-    covergroup = "ZicsrM_mstatus_cg"
+    covergroup = "Sm_mstatus_cg"
     coverpoint = "cp_mstatus_sd_write"
 
     body_lines += dedent("""
@@ -253,7 +253,7 @@ def makePrivBody() -> None:
 
     body_lines += "\n\tCSRW(mstatus, s0)    # restore CSR\n"
 
-    covergroup = "ZicsrM_mprivinst_cg"
+    covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mprvinst"
 
     body_lines += dedent("""
@@ -430,7 +430,7 @@ testcase_lines = (
 # Main Function
 ##################################
 
-basename = "ZicsrM"
+basename = "Sm"
 fname = f"{basename}-01.S"
 pathname = Path(fname)
 with Path.open(pathname, "w") as outfile:

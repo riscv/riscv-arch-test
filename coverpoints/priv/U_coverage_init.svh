@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-   EndianM_endian_cg = new();         EndianM_endian_cg.set_inst_name("obj_EndianM_endian");
+    U_uprivinst_cg = new();    U_uprivinst_cg.set_inst_name("obj_U_uprivinst");

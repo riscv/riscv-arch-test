@@ -1,5 +1,5 @@
 ///////////////////////////////////////////
-// SsstrictInstrM.S
+// SsstrictInstrSm.S
 //
 // Written: Roman De Santos rdesantos@hmc.edu 11 March 2025
 //

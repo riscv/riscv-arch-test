@@ -1,5 +1,5 @@
 ///////////////////////////////////////////
-// SsstrictCsrM.S
+// SsstrictCsrSm.S
 //
 // Written: Roman De Santos rdesantos@hmc.edu 11 March 2025
 //
@@ -26,7 +26,7 @@ main:
     la t0, trap_handler_fastuncompressedillegalinstr
     csrw mtvec, t0
 
-    # For M-mode (SsstrictM) only, lock PMP region 0 so that all the PMP CSRs can be accessed without corrupting region 0
+    # For M-mode (SsstrictSm) only, lock PMP region 0 so that all the PMP CSRs can be accessed without corrupting region 0
     li t0, 0x8F
     csrw pmpcfg0, t0   # configure PMP0 to TOR RWX locked
 
@@ -44,7 +44,7 @@ main:
 // cp_csrs                  Set all 4096 CSRs in M mode
 /////////////////////////////////
 
-# include "SsstrictM-CSR-Tests.h"
+# include "SsstrictSm-CSR-Tests.h"
 
 finish:
     j done

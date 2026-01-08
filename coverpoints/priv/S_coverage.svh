@@ -9,9 +9,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-`define COVER_ZICSRS
+`define COVER_S
 
-covergroup ZicsrS_scause_cg with function sample(ins_t ins);
+covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -80,7 +80,7 @@ covergroup ZicsrS_scause_cg with function sample(ins_t ins);
 endgroup
 
 
-covergroup ZicsrS_sstatus_cg with function sample(ins_t ins);
+covergroup S_sstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -100,7 +100,7 @@ covergroup ZicsrS_sstatus_cg with function sample(ins_t ins);
 
 endgroup
 
-covergroup ZicsrS_sprivinst_cg with function sample(ins_t ins);
+covergroup S_sprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -171,8 +171,8 @@ covergroup ZicsrS_sprivinst_cg with function sample(ins_t ins);
     cp_sret_m:    cross sret,       priv_mode_m, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
 endgroup
 
-function void zicsrs_sample(int hart, int issue, ins_t ins);
-    ZicsrS_scause_cg.sample(ins);
-    ZicsrS_sstatus_cg.sample(ins);
-    ZicsrS_sprivinst_cg.sample(ins);
+function void s_sample(int hart, int issue, ins_t ins);
+    S_scause_cg.sample(ins);
+    S_sstatus_cg.sample(ins);
+    S_sprivinst_cg.sample(ins);
 endfunction

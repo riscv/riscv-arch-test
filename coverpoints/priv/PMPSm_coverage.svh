@@ -11,7 +11,7 @@
 `define COVER_RV32PMP
 `define COVER_RV64PMP
 
-covergroup PMPM_cg with function sample(
+covergroup PMPSM_cg with function sample(
                     ins_t ins,
                     logic [7:0] pmpcfg [63:0],        // Per region config registers
                     logic [XLEN-1:0] pmpaddr [62:0],  // 63 unpacked pmpaddress registers
@@ -1293,7 +1293,7 @@ covergroup PMPM_cg with function sample(
 
 endgroup
 
-function void pmpm_sample(int hart, int issue, ins_t ins);
+function void pmpsm_sample(int hart, int issue, ins_t ins);
 
   logic [7:0] pmpcfg [63:0];
   logic [XLEN-1:0] pmpaddr [62:0];
@@ -1932,5 +1932,5 @@ function void pmpm_sample(int hart, int issue, ins_t ins);
           ins.current.csr[12'h3A0][7]
           };
   `endif
-  PMPM_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  PMPSM_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
 endfunction

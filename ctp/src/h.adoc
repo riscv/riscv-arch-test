@@ -16,12 +16,12 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2001628267#gid=2001628267[Google Sheet Testplan]
 
-==== ZicsrH Hypervisor CSRs
+==== H Hypervisor CSRs
 
-[[t-ZicsrH-coverpoints]]
-.ZicsrH Coverpoints
+[[t-H-coverpoints]]
+.H Coverpoints
 ,===
-//include::{testplansdir}/ZicsrH.adoc[]
+//include::{testplansdir}/H.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262865576#gid=262865576[Google Sheet Testplan]
 

@@ -1,9 +1,9 @@
 ///////////////////////////////////////////
-// ZicsrU.S
+// U.S
 //
 // Written: vkrishna@hmc.edu 17 February 2024
 //
-// Purpose: Functional coverage tests for CSRs in user mode
+// Purpose: Functional coverage tests for CSRs and priv instructions in user mode
 //
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 ///////////////////////////////////////////
@@ -50,12 +50,6 @@ cp_uprivinst:
 
     // ebreak
     ebreak       # take a trap, and the trap handler returns
-
-    // fences.  These aren't really privileged instructions, but don't have a better place to test
-    fence
-    fence rw, rw
-    fence.tso
-    pause
 
 /////////////////////////////////
 // cp_mret

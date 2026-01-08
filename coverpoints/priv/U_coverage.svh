@@ -10,11 +10,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICSRU
-covergroup ZicsrU_uprivinst_cg with function sample(ins_t ins);
+`define COVER_U
+covergroup U_uprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    // "ZicsrU uprivinst"
+    // "U uprivinst"
 
     // building blocks for the main coverpoints
     privinstrs: coverpoint ins.current.insn  {
@@ -34,6 +34,6 @@ covergroup ZicsrU_uprivinst_cg with function sample(ins_t ins);
     cp_sret:       cross sret, priv_mode_u; // should trap
 endgroup
 
-function void zicsru_sample(int hart, int issue, ins_t ins);
-    ZicsrU_uprivinst_cg.sample(ins);
+function void u_sample(int hart, int issue, ins_t ins);
+    U_uprivinst_cg.sample(ins);
 endfunction

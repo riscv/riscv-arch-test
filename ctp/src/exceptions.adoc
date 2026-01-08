@@ -1,16 +1,16 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsM, ExceptionsS, ExceptionsU, and ExceptionsF.
+Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsSm, ExceptionsS, ExceptionsU, and ExceptionsF.
 
-==== ExceptionsM Machine-Mode Exceptions
+==== ExceptionsSm Machine-Mode Exceptions
 
 These tests are run on any configuration with machine mode that supports exceptions.
 
-[[t-ExceptionsM-coverpoints]]
-.ExceptionsM Coverpoints
+[[t-ExceptionsSm-coverpoints]]
+.ExceptionsSm Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsM.adoc[]
+//include::{testplansdir}/ExceptionsSm.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 
@@ -153,7 +153,7 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ==== ExceptionsVMZaamo Virtual Memory AMO Exceptions
 
 [[t-ExceptionsVMZaamo-coverpoints]]
-.ExceptionsM Coverpoints
+.ExceptionsVMZaamo Coverpoints
 ,===
 //include::{testplansdir}/ExceptionsVMZaamo.adoc[]
 ,===

@@ -10,9 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SSSTRICTM
+`define COVER_SSSTRICTSM
 
-covergroup SsstrictM_mcsr_cg with function sample(ins_t ins);
+covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -78,7 +78,7 @@ covergroup SsstrictM_mcsr_cg with function sample(ins_t ins);
 endgroup
 
 
-covergroup SsstrictM_instr_cg with function sample(ins_t ins);
+covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_instr.svh"
@@ -135,7 +135,7 @@ covergroup SsstrictM_instr_cg with function sample(ins_t ins);
 
 endgroup
 
-covergroup SsstrictM_comp_instr_cg with function sample(ins_t ins);
+covergroup SsstrictSm_comp_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "priv/RISCV_coverage_comp_instr.svh"
@@ -146,10 +146,10 @@ covergroup SsstrictM_comp_instr_cg with function sample(ins_t ins);
     cp_compressed10: cross priv_mode_m, compressed10;
 endgroup
 
-function void ssstrictm_sample(int hart, int issue, ins_t ins);
-    SsstrictM_instr_cg.sample(ins);
-    SsstrictM_comp_instr_cg.sample(ins);
-    SsstrictM_mcsr_cg.sample(ins);
+function void ssstrictsm_sample(int hart, int issue, ins_t ins);
+    SsstrictSm_instr_cg.sample(ins);
+    SsstrictSm_comp_instr_cg.sample(ins);
+    SsstrictSm_mcsr_cg.sample(ins);
 
 // $display("mode: %b, csr: %h, csrrs: %b, csrrc: %b, walking: %b",
 //          ins.current.mode,

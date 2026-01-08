@@ -1,9 +1,9 @@
 ///////////////////////////////////////////
-// ZicsrS.S
+// S.S
 //
 // Written: vkrishna@hmc.edu 01 February 2024
 //
-// Purpose: Functional coverage tests for CSRs in supervisor mode
+// Purpose: Functional coverage tests for CSRs and priv instructions in supervisor mode
 //
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////

@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZICSRM
-covergroup ZicsrM_mcause_cg with function sample(ins_t ins);
+`define COVER_SM
+covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -73,13 +73,13 @@ covergroup ZicsrM_mcause_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    // This is ZicsrM machine-mode testing, so all coverpoints are in Machine mode.
+    // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
     cp_mcause_write_exception: cross csrrw_mcause, priv_mode_m, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
     cp_mcause_write_interrupt: cross csrrw_mcause, priv_mode_m, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
 endgroup
 
 
-covergroup ZicsrM_mstatus_cg with function sample(ins_t ins);
+covergroup Sm_mstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -99,7 +99,7 @@ covergroup ZicsrM_mstatus_cg with function sample(ins_t ins);
     cp_mstatus_sd_write: cross priv_mode_m, csrrw_mstatus, cp_mstatus_sd, cp_mstatus_fs, cp_mstatus_vs, cp_mstatus_xs;
 endgroup
 
-covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
+covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -218,10 +218,10 @@ covergroup ZicsrM_mprivinst_cg with function sample(ins_t ins);
     cp_sret: cross sret, priv_mode_m, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
 endgroup
 
-function void zicsrm_sample(int hart, int issue, ins_t ins);
+function void sm_sample(int hart, int issue, ins_t ins);
     //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-    //    $display("ZicsrM_sample: PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
-    ZicsrM_mcause_cg.sample(ins);
-    ZicsrM_mstatus_cg.sample(ins);
-    ZicsrM_mprivinst_cg.sample(ins);
+    //    $display("Smle: PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
+    Sm_mcause_cg.sample(ins);
+    Sm_mstatus_cg.sample(ins);
+    Sm_mprivinst_cg.sample(ins);
 endfunction

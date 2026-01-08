@@ -90,13 +90,13 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Za64rs|Max 64B Reservation Sets|<<t-Za64rs-coverpoints>>|||x|x|x
 |Zic64bZicboz|64B Cache Blocks|<<t-Zic64bZicboz-coverpoints>>|||x|x|x
 8+^|Privileged
-|ZicsrM|Machine CSRs|<<t-ZicsrM-coverpoints>>||x|x|x|x
-|ZicsrS|Supervisor CSRs|<<t-ZicsrS-coverpoints>>|||x|x|x
-|ZicsrU|User CSRs|<<t-ZicsrU-coverpoints>>|||x|x|x
-|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
-|ZicsrUF|User Float CSRs|<<t-ZicsrUF-coverpoints>>|||x|x|x
-|ZicsrZkr|Entropy CSR|<<t-ZicsrZkr-coverpoints>>|||o|o|o
-|ExceptionsM|Machine Exceptions|<<t-ExceptionsM-coverpoints>>||x|x|x|x
+|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
+|S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
+|U|User CSRs|<<t-U-coverpoints>>|||x|x|x
+|SmF|Float CSRs|<<t-SmF-coverpoints>>|o||x|x|x
+|UF|User Float CSRs|<<t-UF-coverpoints>>|||x|x|x
+|Zkr|Entropy CSR|<<t-Zkr-coverpoints>>|||o|o|o
+|ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
 |ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
 |ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
 |ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
@@ -108,22 +108,22 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVM|Virt Mem Exceptions|<<t-ExceptionsVM-coverpoints>>|||x|x|x
 |ExceptionsVMZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsVMZalrsc-coverpoints>>|||x|x|x
 |ExceptionsVMZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsVMZaamo-coverpoints>>|||x|x|x
-|InterruptsM|Machine Interrupts|<<t-InterruptsM-coverpoints>>||x|x|x|x
+|InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
 |InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
-|ZicntrM|Machine Counters|<<t-ZicntrM-coverpoints>>|o|x|x|x|x
+|ZicntrSm|Machine Counters|<<t-ZicntrSm-coverpoints>>|o|x|x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
 |ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
-|EndianM|Machine Endian|<<t-EndianM-coverpoints>>|||||
+|EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
 |EndianU|User Endian|<<t-EndianU-coverpoints>>|||||
 |EndianZaamo|AMO Endian|<<t-EndianZaamo-coverpoints>>|||||
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMPM|Machine PMP|<<t-PMPM-coverpoints>>||x|x|x|x
+|PMPSm|Machine PMP|<<t-PMPSm-coverpoints>>||x|x|x|x
 |PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
 |PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
 |PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
@@ -149,7 +149,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Sstvecd|Direct Vector|<<t-Sstvecd-coverpoints>>|||x|x|x
 |Sstvala|stval Addresses|<<t-Sstvala-coverpoints>>|||x|x|x
 8+^|Strict
-|SsstrictM|Machine Strict (unratified)|<<t-SsstrictM-coverpoints>>|||o|o|o
+|SsstrictSm|Machine Strict (unratified)|<<t-SsstrictSm-coverpoints>>|||o|o|o
 |SsstrictS|Superisor Strict|<<t-SsstrictS-coverpoints>>|||o|o|o
 8+^|Vector
 |Vx8|Vector Integer 8-bit|<<t-Vx-coverpoints>>|||o|o|x
@@ -186,13 +186,12 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
 |ExceptionsVls|Vector Load/Store Exceptions|<<t-ExceptionsVls-coverpoints>>|||o|o|x
-|ZicsrV|Vector CSRs|<<t-ZicsrV-coverpoints>>|||o|o|x
-|ZicsrVF|Vector FP CSRs|<<t-ZicsrVF-coverpoints>>|||o|o|x
-|ZicsrUV|User Vector CSRs|<<t-ZicsrUV-coverpoints>>|||o|o|x
+|SmV|Vector CSRs|<<t-SmV-coverpoints>>|||o|o|x
+|VF|Vector FP CSRs|<<t-VF-coverpoints>>|||o|o|x
+|UV|User Vector CSRs|<<t-UV-coverpoints>>|||o|o|x
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|ZicsrH|Hypervisor CSRs|<<t-ZicsrH-coverpoints>>|||o|o|x
 |ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
 |ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
@@ -298,7 +297,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
-|Zkr|Entropy Generation||||o|o
 |===
 
 *** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)

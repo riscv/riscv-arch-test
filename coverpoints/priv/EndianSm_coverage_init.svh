@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicsrU_uprivinst_cg = new();    ZicsrU_uprivinst_cg.set_inst_name("obj_ZicsrU_uprivinst");
+   EndianSm_endian_cg = new();         EndianSm_endian_cg.set_inst_name("obj_EndianSm_endian");

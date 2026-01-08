@@ -89,3 +89,24 @@ class MissingCoverpointGeneratorError(MissingRegistryItemError):
             registry_location=registry_location,
         )
         self.coverpoint = coverpoint
+
+
+class MissingPrivGeneratorError(MissingRegistryItemError):
+    """Raised when no priv test generator is registered."""
+
+    def __init__(self, extension: str, available_patterns: list[str] | None = None) -> None:
+        """
+        Initialize the exception with helpful context.
+
+        Args:
+            extension: The extension that was not found
+            available_patterns: List of all registered coverpoint patterns
+        """
+        registry_location = Path(__file__).parent.parent / "priv_generators"
+        super().__init__(
+            extension,
+            available_patterns,
+            item_type="priv test generator",
+            registry_location=registry_location,
+        )
+        self.extension = extension

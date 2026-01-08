@@ -2,7 +2,7 @@
 === Priv
 
 The privileged tests exercise CSRs that are mandatory in each privilege mode.
-They also tests mandatory privileged instructions: `ecall`, `ebreak`, `mret`, and `sret`.
+They also test mandatory privileged instructions: `ecall`, `ebreak`, `mret`, and `sret`.
 The CSR read/write/set/clear instructions themselves are tested in the
 unprivileged Zicsr tests of <<Zicsr Control/Status Register Instructions>>.
 
@@ -40,7 +40,7 @@ https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6
 
 ==== U User-Mode CSRs
 
-These test additional CSRs that exist in user mode, and privileged instructions in user mode..
+These test additional CSRs that exist in user mode, and privileged instructions in user mode.
 
 [[t-U-coverpoints]]
 .U Coverpoints
@@ -75,7 +75,7 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 
 *** reorganize
 
-==== V Vector Floatin-PointCSRs
+==== V Vector Floatin-Point CSRs
 
 These test additional CSRs that exist when vector floating-point is supported.
 

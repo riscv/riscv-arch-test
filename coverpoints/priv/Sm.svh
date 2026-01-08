@@ -220,7 +220,7 @@ endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
     //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-    //    $display("Smle: PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
+    //    $display("PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);

@@ -13,11 +13,7 @@ from pathlib import Path
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.writer import write_test_file
-from testgen.priv.registry import (
-    get_priv_test_defines,
-    get_priv_test_extensions,
-    get_priv_test_generator,
-)
+from testgen.priv.registry import get_priv_test_defines, get_priv_test_generator
 
 
 def generate_priv_test(extension: str, output_test_dir: Path) -> None:
@@ -49,7 +45,6 @@ def generate_priv_test(extension: str, output_test_dir: Path) -> None:
     priv_test_generator = get_priv_test_generator(extension)
     body_lines = priv_test_generator(test_data)
 
-    print(f"Generating tests for {output_path}")
     write_test_file(
         test_data,
         body_lines,

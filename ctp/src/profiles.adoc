@@ -105,9 +105,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
 |ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
 |ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
-|ExceptionsVM|Virt Mem Exceptions|<<t-ExceptionsVM-coverpoints>>|||x|x|x
-|ExceptionsVMZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsVMZalrsc-coverpoints>>|||x|x|x
-|ExceptionsVMZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsVMZaamo-coverpoints>>|||x|x|x
+|ExceptionsSv|Virt Mem Exceptions|<<t-ExceptionsSv-coverpoints>>|||x|x|x
+|ExceptionsSvZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsSvZalrsc-coverpoints>>|||x|x|x
+|ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
@@ -134,9 +134,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
-|VMPMP|VM + PMP|<<t-VMPMP-coverpoints>>|||x|x|x
-|VMZicbo|VM + CBOM/CBOZ|<<t-VMZicbo-coverpoints>>|||x|x|x
-|VMPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-VMPMPZicbo-coverpoints>>|||x|x|x
+|SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
+|SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
+|SvPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-SvPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
 |SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
@@ -199,8 +199,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
 |HV|Hypervisor + Vector CSRs|<<t-HV-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
-|VMH|Hypervisor Virtual Memory|<<t-VMH-coverpoints>>|||o|o|x
-|VMHCBO|Hypervisor Virtual Memory + CBO|<<t-VMHCBO-coverpoints>>|||o|o|x
+|SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
+|SvHCBO|Hypervisor Virtual Memory + CBO|<<t-SvHCBO-coverpoints>>|||o|o|x
 |Shcounterenw|Counter Enables|<<t-Shcounterenw-coverpoints>>|||o|o|x
 |Shvsatpa|VM Modes Supported|<<t-Shvsatpa-coverpoints>>|||o|o|x
 |Shgatpa|VM x4 Modes Supported|<<t-Shgatpa-coverpoints>>|||o|o|x

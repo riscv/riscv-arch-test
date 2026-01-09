@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-VM_CBO_exceptions_cg = new(); VM_CBO_exceptions_cg.set_inst_name("obj_VM_CBO_exceptions");
+    ExceptionsSvZaamo_cg = new();         ExceptionsSvZaamo_cg.set_inst_name("obj_ExceptionsSvZaamo");

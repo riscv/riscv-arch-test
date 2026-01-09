@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_VM_CBO
-covergroup VM_CBO_exceptions_cg with function sample(ins_t ins);
+`define COVER_SVCBO
+covergroup SvCBO_exceptions_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
     //pte permission for leaf PTEs
@@ -284,6 +284,6 @@ covergroup VM_CBO_exceptions_cg with function sample(ins_t ins);
 
 endgroup
 
-function void vm_cbo_sample(int hart, int issue, ins_t ins);
-    VM_CBO_exceptions_cg.sample(ins);
+function void svcbo_sample(int hart, int issue, ins_t ins);
+    SvCBO_exceptions_cg.sample(ins);
 endfunction

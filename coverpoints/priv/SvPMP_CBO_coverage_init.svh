@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsVMZalrsc_cg = new();         ExceptionsVMZalrsc_cg.set_inst_name("obj_ExceptionsVMZalrsc");
+    SvPMP_CBO_cg = new(); SvPMP_CBO_cg.set_inst_name("obj_SvPMP_CBO");

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VM_PMP_cg = new(); VM_PMP_cg.set_inst_name("obj_VM_PMP");
+SvCBO_exceptions_cg = new(); SvCBO_exceptions_cg.set_inst_name("obj_SvCBO_exceptions");

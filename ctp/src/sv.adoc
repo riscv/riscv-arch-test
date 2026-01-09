@@ -20,31 +20,31 @@
 ,===
 
 
-==== VMPMP VM + PMP
+==== SvPMP VirtMem + PMP
 
-[[t-VMPMP-coverpoints]]
-.VMPMP Coverpoints
+[[t-SvPMP-coverpoints]]
+.SvPMP Coverpoints
 ,===
-//include::{testplansdir}/VMPMP.adoc[]
+//include::{testplansdir}/SvPMP.adoc[]
 ,===
 
-==== VMZicbo VM + CBOM/CBOZ
+==== SvZicbo VirtMem + CBOM/CBOZ
 
 *** config file determines whether to run cbom/cboz/both
-[[t-VMZicbo-coverpoints]]
-.VMZicbo Coverpoints
+[[t-SvZicbo-coverpoints]]
+.SvZicbo Coverpoints
 ,===
-//include::{testplansdir}/VMZicbo.adoc[]
+//include::{testplansdir}/SvZicbo.adoc[]
 ,===
 
-==== VMPMPZicbo VM + PMP + CBOM/CBOZ
+==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 
 *** config file determines whether to run cbom/cboz/both
 
-[[t-VMPMPZicbo-coverpoints]]
-.VMPMPZicbo Coverpoints
+[[t-SvPMPZicbo-coverpoints]]
+.SvPMPZicbo Coverpoints
 ,===
-//include::{testplansdir}/VMPMPZicbo.adoc[]
+//include::{testplansdir}/SvPMPZicbo.adoc[]
 ,===
 
 

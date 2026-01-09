@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_VM_PMP
-covergroup VM_PMP_cg with function sample(ins_t ins);
+`define COVER_SVPMP
+covergroup SvPMP_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
     //pte permission for leaf PTEs
@@ -166,6 +166,6 @@ covergroup VM_PMP_cg with function sample(ins_t ins);
     }
 endgroup
 
-function void vm_pmp_sample(int hart, int issue, ins_t ins);
-    VM_PMP_cg.sample(ins);
+function void svpmp_sample(int hart, int issue, ins_t ins);
+    SvPMP_cg.sample(ins);
 endfunction

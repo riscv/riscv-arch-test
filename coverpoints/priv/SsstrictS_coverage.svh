@@ -26,7 +26,7 @@ covergroup SsstrictS_scsr_cg with function sample(ins_t ins);
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
     }
-    // csr is similar to in ZicsrM, but also exercises custom/debug machine mode CSRs, which should trap from supervisor level
+    // csr is similar to in Sm, but also exercises custom/debug machine mode CSRs, which should trap from supervisor level
     csr: coverpoint ins.current.insn[31:20]  {
         bins user_std0[] = {[12'h000:12'h0FF]};
         bins super_std0[] = {[12'h100:12'h17F]};

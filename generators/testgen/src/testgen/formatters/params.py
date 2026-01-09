@@ -2,7 +2,7 @@
 # formatters/params.py
 #
 # Random parameter generation for instructions.
-#
+# jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 

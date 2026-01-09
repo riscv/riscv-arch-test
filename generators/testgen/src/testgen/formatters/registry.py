@@ -2,7 +2,7 @@
 # formatters/registry.py
 #
 # Instruction formatter registry with automatic discovery.
-#
+# jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 

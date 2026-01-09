@@ -1,7 +1,8 @@
 ##################################
-# unpriv_generators.py
+# unpriv/generate.py
 #
-# Jordan Carlin jcarlin@hmc.edu Jan 6 2026
+# Unprivileged test generation orchestration.
+# jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -10,10 +11,10 @@
 from pathlib import Path
 
 from testgen.coverpoints import generate_tests_for_coverpoint
-from testgen.data.test_config import TestConfig
-from testgen.data.test_data import TestData
-from testgen.utils.test_writer import write_test_file
-from testgen.utils.testplans import read_testplan
+from testgen.data.config import TestConfig
+from testgen.data.state import TestData
+from testgen.io.testplans import read_testplan
+from testgen.io.writer import write_test_file
 
 # Max testcases per file before splitting. Individual coverpoints won't be split,
 # so if one coverpoint exceeds this, the file will exceed this limit.
@@ -33,7 +34,6 @@ def generate_unpriv_extension_tests(
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
     """
-
     # Read testplan for this extension
     instructions = read_testplan(testplan_dir / f"{extension}.csv")
     if extension == "I" and E_ext:
@@ -76,7 +76,7 @@ def _generate_unpriv_tests_for_instruction(
 ) -> None:
     """
     Generate tests for a specific instruction based on its coverpoints.
-    Splits tests into multiple parts if they exceed TESTS_PER_FILE.
+    Splits tests into multiple parts if they exceed TESTCASES_PER_FILE.
 
     Args:
         instr_name: Instruction mnemonic (e.g., 'add', 'lw')

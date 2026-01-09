@@ -1,19 +1,23 @@
 ##################################
 # exceptions.py
 #
-# Custom exceptions for testgen with helpful error messages.
+# Base exceptions for testgen.
 # jcarlin@hmc.edu Nov 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Custom exceptions for testgen with helpful error messages."""
+"""Base exceptions for testgen."""
 
 from difflib import get_close_matches
 from pathlib import Path
 
 
 class MissingRegistryItemError(KeyError):
-    """Base class for missing registry item errors with helpful suggestions."""
+    """Base class for missing registry item errors with helpful suggestions.
+
+    Subclasses should be defined in their respective registry modules
+    (e.g., MissingInstructionFormatterError in formatters/registry.py).
+    """
 
     def __init__(
         self,
@@ -29,7 +33,8 @@ class MissingRegistryItemError(KeyError):
         Args:
             item_name: The item that was not found
             available_items: List of all registered items
-            item_type: Human-readable description of what type of item (e.g., "instruction formatter", "coverpoint generator")
+            item_type: Human-readable description of what type of item
+                       (e.g., "instruction formatter", "coverpoint generator")
             registry_location: Path where new items can be added
         """
         if available_items:

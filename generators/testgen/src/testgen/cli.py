@@ -19,12 +19,10 @@ from typing import Annotated
 import typer
 from rich.progress import track
 
+from testgen.constants import E_EXTENSION_TESTS
+from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
-from testgen.priv import generate_priv_test, get_priv_test_extensions
-from testgen.unpriv import generate_unpriv_extension_tests
-
-# Tests to generate RV32/64E variants for
-E_EXTENSION_TESTS = {"I", "M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
+from testgen.priv import get_priv_test_extensions
 
 # CLI interface setup
 testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]}, add_completion=False)

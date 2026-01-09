@@ -16,10 +16,24 @@ from typing import Literal
 
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.exceptions import MissingInstructionFormatterError
+from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
 InstructionFormatter = Callable[[str, TestData, InstructionParams], tuple[list[str], list[str], list[str]]]
+
+
+class MissingInstructionFormatterError(MissingRegistryItemError):
+    """Raised when no instruction formatter is registered for a given instruction type."""
+
+    def __init__(self, instr_type: str, available_types: list[str] | None = None) -> None:
+        registry_location = Path(__file__).parent / "types"
+        super().__init__(
+            instr_type,
+            available_types,
+            item_type="instruction formatter",
+            registry_location=registry_location,
+        )
+        self.instr_type = instr_type
 
 
 @dataclass

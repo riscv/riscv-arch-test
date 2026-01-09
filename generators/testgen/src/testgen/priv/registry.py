@@ -13,10 +13,25 @@ from importlib import import_module
 from pathlib import Path
 
 from testgen.data.state import TestData
-from testgen.exceptions import MissingPrivGeneratorError
+from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for priv test generator functions
 PrivTestGenerator = Callable[[TestData], list[str]]
+
+
+class MissingPrivGeneratorError(MissingRegistryItemError):
+    """Raised when no priv test generator is registered for a given extension."""
+
+    def __init__(self, extension: str, available_extensions: list[str] | None = None) -> None:
+        registry_location = Path(__file__).parent / "extensions"
+        super().__init__(
+            extension,
+            available_extensions,
+            item_type="privileged test generator",
+            registry_location=registry_location,
+        )
+        self.extension = extension
+
 
 # Registry: dict mapping extension name to (priv_test_generator, extra_defines)
 _PRIV_TEST_GENERATORS: dict[str, tuple[PrivTestGenerator, list[str]]] = {}

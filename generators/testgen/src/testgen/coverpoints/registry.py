@@ -13,8 +13,9 @@ from pathlib import Path
 from random import seed
 
 from testgen.asm.helpers import reproducible_hash
+from testgen.constants import SKIP_COVERPOINTS
 from testgen.data.state import TestData
-from testgen.exceptions import MissingCoverpointGeneratorError
+from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for coverpoint generator functions
 # The generator function takes:
@@ -24,6 +25,21 @@ from testgen.exceptions import MissingCoverpointGeneratorError
 # - test_data: TestData
 # and returns a list of strings (test lines)
 CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
+
+
+class MissingCoverpointGeneratorError(MissingRegistryItemError):
+    """Raised when no coverpoint generator is registered for a given coverpoint."""
+
+    def __init__(self, coverpoint: str, available_patterns: list[str] | None = None) -> None:
+        registry_location = Path(__file__).parent
+        super().__init__(
+            coverpoint,
+            available_patterns,
+            item_type="coverpoint generator",
+            registry_location=registry_location,
+        )
+        self.coverpoint = coverpoint
+
 
 # Registry: list of (pattern, generator) tuples sorted by pattern length (longest first)
 _COVERPOINT_GENERATORS: list[tuple[str, CoverpointGenerator]] = []
@@ -71,31 +87,6 @@ def _discover_and_import_coverpoint_generators() -> None:
 
 # Discover and import coverpoint generators at module load
 _discover_and_import_coverpoint_generators()
-
-
-# Coverpoints that don't need dedicated test generation
-SKIP_COVERPOINTS = frozenset(
-    {
-        "cp_gpr_hazard_rw",
-        "cp_gpr_hazard_w",
-        "cp_gpr_hazard_r",
-        "cp_rd_sign",  # Already covered by rd_edges
-        "cmp_rd_rs1_eqval",  # Already covered by cr_rs1_rs2_edges
-        "cmp_rd_rs2_eqval",  # Already covered by cr_rs1_rs2_edges
-        # Covered by edge tests
-        "cp_csr_fflags_n",
-        "cp_csr_fflags_on",
-        "cp_csr_fflags_v",
-        "cp_csr_fflags_vd",
-        "cp_csr_fflags_vdon",
-        "cp_csr_fflags_vdoun",
-        "cp_csr_fflags_vn",
-        "cp_csr_fflags_von",
-        "cp_csr_fflags_voun",
-        "cp_csr_fflags_vun",
-        "cp_fclass",
-    }
-)
 
 
 def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:

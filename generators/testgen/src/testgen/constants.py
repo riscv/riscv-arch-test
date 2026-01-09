@@ -38,11 +38,18 @@ E_EXTENSION_TESTS = frozenset(
 
 # Extensions that require config-dependent test generation and cannot use common directory.
 # Applies to tests that use preprocessor conditionals based on the DUT configuration.
+# Only unpriv extensions are listed here; privileged tests are always config-dependent.
 CONFIG_DEPENDENT_EXTENSIONS = frozenset(
     {
-        "Zicntr",
+        "Zicntr",  # Depends on TIME_CSR_IMPLEMENTED
     }
 )
+
+# Testplan to param mapping. These names are removed from the extension list and the corresponding
+# parameter is added to the @PARAMS@ field in the header of the generated test along with the required value.
+EXTENSION_PARAM_MAP = {
+    "Misalign": "MISALIGNED_LDST: true",
+}
 
 # =============================================================================
 # FLEN Mapping

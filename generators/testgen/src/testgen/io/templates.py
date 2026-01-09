@@ -12,6 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
+from testgen.constants import EXTENSION_PARAM_MAP
 from testgen.data.config import TestConfig
 
 
@@ -66,12 +67,9 @@ def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[lis
     params: list[str] = []
     if xlen > 0:
         params.append(f"MXLEN: {xlen}")
-    param_lookup = {
-        "Misalign": "MISALIGNED_LDST: true",
-    }
     for ext in ext_components:
-        if ext in param_lookup:
-            params.append(param_lookup[ext])
+        if ext in EXTENSION_PARAM_MAP:
+            params.append(EXTENSION_PARAM_MAP[ext])
             ext_components.remove(ext)
 
     # Canonicize extensions

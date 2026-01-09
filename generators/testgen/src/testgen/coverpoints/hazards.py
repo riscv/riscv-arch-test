@@ -7,10 +7,10 @@
 
 """Hazard coverpoint generators (cp_gpr_hazard, cp_fpr_hazard)."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.instruction_formatters import format_instruction
-from testgen.utils.param_generator import generate_random_params
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
+from testgen.formatters import format_instruction
+from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_gpr_hazard", "cp_fpr_hazard")

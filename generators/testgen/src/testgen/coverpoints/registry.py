@@ -1,5 +1,5 @@
 ##################################
-# coverpoints.py
+# coverpoints/registry.py
 #
 # jcarlin@hmc.edu Oct 2025
 # SPDX-License-Identifier: Apache-2.0
@@ -12,9 +12,9 @@ from importlib import import_module
 from pathlib import Path
 from random import seed
 
-from testgen.data.test_data import TestData
-from testgen.utils.common import reproducible_hash
-from testgen.utils.exceptions import MissingCoverpointGeneratorError
+from testgen.asm.helpers import reproducible_hash
+from testgen.data.state import TestData
+from testgen.exceptions import MissingCoverpointGeneratorError
 
 # Type alias for coverpoint generator functions
 # The generator function takes:
@@ -56,11 +56,12 @@ def add_coverpoint_generator(*patterns: str) -> Callable[[CoverpointGenerator], 
 
 def _discover_and_import_coverpoint_generators() -> None:
     """Auto-import all generator modules to trigger decorator registration."""
-    package_dir = Path(__file__).parent
+    current_file = Path(__file__)
+    package_dir = current_file.parent
 
-    # Recursively import all Python files except coverpoints.py and files starting with _
+    # Recursively import all Python files except this file and files starting with _
     for module_file in package_dir.rglob("*.py"):
-        if module_file.stem != "coverpoints" and not module_file.stem.startswith("_"):
+        if module_file.stem != current_file and not module_file.stem.startswith("_"):
             # Convert file path to module path (e.g., special/branch.py -> testgen.coverpoints.special.branch)
             relative_path = module_file.relative_to(package_dir)
             module_parts = [*list(relative_path.parts[:-1]), relative_path.stem]

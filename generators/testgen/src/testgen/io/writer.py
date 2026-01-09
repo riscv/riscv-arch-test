@@ -1,6 +1,7 @@
 ##################################
-# test_writer.py
+# io/writer.py
 #
+# Test file writing utilities.
 # Jordan Carlin jcarlin@hmc.edu Jan 6 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -9,16 +10,16 @@
 
 from pathlib import Path
 
-from testgen.data.test_data import TestData
-from testgen.utils.common import generate_test_data_section, generate_test_string_section
-from testgen.utils.templates import insert_footer_template, insert_header_template
+from testgen.asm.sections import generate_test_data_section, generate_test_string_section
+from testgen.data.state import TestData
+from testgen.io.templates import insert_footer_template, insert_header_template
 
 
 def write_test_file(
     test_data: TestData,
     body_lines: list[str],
     output_dir: Path,
-    file_idx: int = 00,
+    file_idx: int = 0,
     extra_defines: list[str] | None = None,
 ) -> None:
     """

@@ -1,23 +1,22 @@
 ##################################
-# load_templates.py
+# io/templates.py
 #
-# jcarlin@hmc.edu 5 Oct 2025
+# Template loading and insertion for test files.
+# jcarlin@hmc.edu 5 October 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""
-Insert templates into test files.
-"""
+"""Template loading and insertion for test files."""
 
 import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.data.test_config import TestConfig
+from testgen.data.config import TestConfig
 
 
 def load_template(template_name: str) -> str:
-    """Insert a header/footer template file into the test file."""
+    """Load a template file from the templates package."""
     with importlib.resources.open_text("testgen.templates", template_name) as template_file:
         template = template_file.read()
     return template
@@ -32,7 +31,8 @@ def insert_header_template(
     xlen = test_config.xlen
     extension = test_config.extension
     E_ext = test_config.E_ext
-    ext_components, march, params = canonicalize_extension(extension, xlen, E_ext)
+    ext_components, params = canonicalize_extensions(extension, xlen, E_ext)
+    march = generate_march_string(ext_components, xlen)
     if extra_defines is None:
         extra_defines = []
     extra_defines.extend(generate_defines_from_extensions(ext_components))
@@ -58,7 +58,7 @@ def insert_footer_template(test_data_section: str, test_string_section: str) -> 
     return template
 
 
-def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list[str], str, list[str]]:
+def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[list[str], list[str]]:
     """Canonicalize extension string."""
     ext_components = re.findall(r"[A-Z][a-z]*", extension)
 
@@ -85,10 +85,19 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
         ext_components.append("D")  # Add D if Zcd is present
     if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa"]) and "F" not in ext_components:
         ext_components.append("F")  # Add F if any floating point extension is present
+    if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]) and "F" not in ext_components:
+        ext_components.append("Zicsr")  # Add Zicsr is any priv extension is present
 
+    return ext_components, params
+
+
+def generate_march_string(ext_components: list[str], xlen: int) -> str:
+    """Generate march string from extension components."""
     # Construct march string
     ext_str = ""
     for ext in ext_components:
+        if ext in ["Sm", "S", "U"]:
+            continue  # Skip privilege modes in march string
         if len(ext_str) > 0:
             ext_str += "_"
         ext_str += ext
@@ -96,7 +105,7 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
     march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
     march = march.replace("zaamo", "a").replace("zalrsc", "a")  # gcc 14 does not accept Zaamo/Zalrsc
 
-    return ext_components, march, params
+    return march
 
 
 def format_params(params: list[str]) -> str:

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 ##################################
-# testgen.py
+# cli.py
 #
-# jcarlin@hmc.edu 5 Oct 2025
+# Command-line interface for test generation.
+# jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
-#
-# Generate directed tests for functional coverage
 ##################################
+
+"""Top-level command-line interface for test generation."""
 
 import os
 from concurrent.futures import ProcessPoolExecutor
@@ -18,11 +19,9 @@ from typing import Annotated
 import typer
 from rich.progress import track
 
-from testgen.priv_generators.priv_generators import generate_priv_test, get_priv_test_extensions
-from testgen.unpriv.unpriv_generators import generate_unpriv_extension_tests
-from testgen.utils.testplans import get_extensions
-
-# Global constants
+from testgen.io.testplans import get_extensions
+from testgen.priv import generate_priv_test, get_priv_test_extensions
+from testgen.unpriv import generate_unpriv_extension_tests
 
 # Tests to generate RV32/64E variants for
 E_EXTENSION_TESTS = {"I", "M", "Zmmul", "Zca", "Zcb", "Zba", "Zbb", "Zbs"}  # TODO: Add Zcmp and Zcmt when implemented
@@ -33,6 +32,8 @@ testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"
 
 @dataclass
 class UnprivTask:
+    """Task for generating unprivileged tests."""
+
     xlen: int
     E_ext: bool
     extension: str
@@ -42,11 +43,12 @@ class UnprivTask:
 
 @dataclass
 class PrivTask:
+    """Task for generating privileged tests."""
+
     extension: str
     output_test_dir: Path
 
 
-# Main command to generate all tests, run from the CLI
 @testgen_app.command()
 def generate_all_tests(
     testplan_dir: Annotated[
@@ -76,6 +78,7 @@ def generate_all_tests(
     available_priv_extensions = get_priv_test_extensions()
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
+
     if extensions == "all":
         unpriv_ext_list = available_unpriv_extensions
         priv_ext_list = available_priv_extensions
@@ -89,7 +92,7 @@ def generate_all_tests(
             else:
                 raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}.")
 
-    # Build list of unpriv test generation tasks
+    # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []
 
     for xlen in [32, 64]:
@@ -104,14 +107,14 @@ def generate_all_tests(
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
-        futures = [executor.submit(dispatch_test_gen, task) for task in tasks]
+        futures = [executor.submit(_dispatch_test_gen, task) for task in tasks]
 
         # Process completed tasks with progress tracking
         for future in track(futures, description="[cyan]Generating tests...", total=len(futures)):
             future.result()  # Re-raise any exceptions
 
 
-def dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
+def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
     """Dispatch test generation based on task type."""
     if isinstance(task, UnprivTask):
         generate_unpriv_extension_tests(
@@ -131,7 +134,8 @@ def dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
 
 
 def main() -> None:
-    testgen_app()  # runs generate_tests() using Typer to fill in args
+    """Entry point for the CLI."""
+    testgen_app()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 ##################################
-# priv/generate.py
+# generate/priv.py
 #
 # Privileged test generation orchestration.
 # jcarlin@hmc.edu Jan 2026

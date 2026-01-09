@@ -1,5 +1,5 @@
 ##################################
-# unpriv/generate.py
+# generate/unpriv.py
 #
 # Unprivileged test generation orchestration.
 # jcarlin@hmc.edu Jan 2026
@@ -10,15 +10,16 @@
 
 from pathlib import Path
 
+from testgen.constants import (
+    CONFIG_DEPENDENT_EXTENSIONS,
+    TESTCASES_PER_FILE,
+    get_flen_for_extension,
+)
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
-
-# Max testcases per file before splitting. Individual coverpoints won't be split,
-# so if one coverpoint exceeds this, the file will exceed this limit.
-TESTCASES_PER_FILE = 1000
 
 
 def generate_unpriv_extension_tests(
@@ -42,14 +43,9 @@ def generate_unpriv_extension_tests(
     # Create extension-wide test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{extension}"
     output_dir.mkdir(parents=True, exist_ok=True)
-    flen = (
-        128
-        if extension in ["Q", "ZfaQ", "ZfhQ"]
-        else 64
-        if extension in ["D", "ZfaD", "ZfhD", "Zcd", "ZfaZfhD", "ZfhminD"]
-        else 32
-    )
-    config_dependent = extension in ["Zicntr"]
+
+    flen = get_flen_for_extension(extension)
+    config_dependent = extension in CONFIG_DEPENDENT_EXTENSIONS
     test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, E_ext=E_ext, config_dependent=config_dependent)
 
     # Iterate through each instruction in the extension; generate separate test files for each

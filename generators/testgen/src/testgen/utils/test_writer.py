@@ -31,13 +31,15 @@ def write_test_file(
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
     """
-    # Extract test configuration and instruction name
+    # Extract test configuration
     test_config = test_data.config
     extension = test_config.extension
-    instr_name = test_data.instr_name
 
     # Construct filename and paths
-    filename = f"{extension}-{instr_name}-{file_idx:02d}.S" if instr_name else f"{extension}-{file_idx:02d}.S"
+    try:
+        filename = f"{extension}-{test_data.instr_name}-{file_idx:02d}.S"
+    except ValueError:  # instr_name is None for extension-level tests
+        filename = f"{extension}-{file_idx:02d}.S"
     test_file = output_dir / filename
     arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}" if test_config.xlen else ""
     test_file_relative = Path(arch_dir) / extension / filename if arch_dir else Path(extension) / filename

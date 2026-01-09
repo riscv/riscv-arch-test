@@ -20,15 +20,19 @@ from testgen.utils.testplans import read_testplan
 TESTCASES_PER_FILE = 1000
 
 
-def generate_unpriv_extension_tests(task: tuple[int, bool, str, Path, Path]) -> None:
+def generate_unpriv_extension_tests(
+    xlen: int, E_ext: bool, extension: str, testplan_dir: Path, output_test_dir: Path
+) -> None:
     """
     Generate tests for all instructions in a given unprivileged extension.
 
     Args:
-        task: Tuple of (xlen, E_ext, extension, testplan_dir, output_test_dir)
+        xlen: Target XLEN (32 or 64)
+        E_ext: Whether to generate RV32E tests
+        extension: Extension to generate tests for (e.g., 'I', 'M', 'Zmmul')
+        testplan_dir: Directory containing testplan CSV files
+        output_test_dir: Directory to output generated tests
     """
-    # Unpack task parameters
-    xlen, E_ext, extension, testplan_dir, output_test_dir = task
 
     # Read testplan for this extension
     instructions = read_testplan(testplan_dir / f"{extension}.csv")

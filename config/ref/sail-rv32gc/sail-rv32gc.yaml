@@ -4,61 +4,72 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: sail-rv32gc
-description: The rv32gc configuration of Core-V Wally;
+description: An rv32gc configuration of the Sail model
 implemented_extensions:
-  - { name: I, version: "2.1" }
-  - { name: A, version: "2.1.0" }
-  - { name: M, version: "2.0" }
-  - { name: F, version: "2.2.0" }
-  - { name: D, version: "2.2.0" }
-  - { name: C, version: "2.0" }
-  - { name: B, version: "1.0.0" }
-  - { name: Zic64b, version: "1.0.0" }
-  - { name: Zicbom, version: "1.0.0" }
-  - { name: Zicbop, version: "1.0.0" }
-  - { name: Zicboz, version: "1.0.0" }
-  - { name: Ziccamoa, version: "1.0.0" }
-  - { name: Ziccif, version: "1.0.0" }
-  - { name: Ziccrse, version: "1.0.0" }
-  - { name: Zicntr, version: "2.0" }
-  - { name: Zicond, version: "1.0.0" }
-  - { name: Zicsr, version: "2.0" }
-  - { name: Zifencei, version: "2.0.0" }
-  - { name: Zihintpause, version: "2.0.0" }
-  - { name: Zihpm, version: "2.0.0" }
-  - { name: Za64rs, version: "1.0.0" }
-  - { name: Zfa, version: "1.0.0" }
-  - { name: Zfh, version: "1.0.0" }
-  - { name: Zfhmin, version: "1.0.0" }
-  - { name: Zcb, version: "1.0.0" }
-  - { name: Zbc, version: "1.0.0" }
-  - { name: Zkn, version: "1.0.0" }
-  - { name: Zksed, version: "1.0.0" }
-  - { name: Zksh, version: "1.0.0" }
-  - { name: Zkt, version: "1.0.0" }
-  - { name: U, version: "1.0.0" }
-  - { name: S, version: "1.12.0" }
-  - { name: Ssccptr, version: "1.0.0" }
-  - { name: Sscounterenw, version: "1.0.0" }
-  - { name: Ssstrict, version: "1.0.0" }
-  - { name: Sstc, version: "1.0.0" }
-  - { name: Sstvala, version: "1.0.0" }
-  - { name: Sstvecd, version: "1.0.0" }
-  - { name: Sv32, version: "1.13.0" }
-  - { name: Svade, version: "1.0.0" }
-  - { name: Svadu, version: "1.0.0" }
-  - { name: Svbare, version: "1.0.0" }
-  - { name: Svinval, version: "1.0.0" }
-  - { name: Sm, version: "1.12.0" }
-  - { name: Smpmp, version: "1.12.0" }
-  - { name: Smhpm, version: "1.12.0" }
+  - { name: I, version: "= 2.1" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: M, version: "= 2.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zic64b, version: "= 1.0.0" }
+  - { name: Zicbom, version: "= 1.0.0" }
+  - { name: Zicbop, version: "= 1.0.0" }
+  - { name: Zicboz, version: "= 1.0.0" }
+  - { name: Ziccamoa, version: "= 1.0.0" }
+  - { name: Ziccif, version: "= 1.0.0" }
+  - { name: Ziccrse, version: "= 1.0.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zicond, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: Za64rs, version: "= 1.0.0" }
+  - { name: Za128rs, version: "= 1.0.0" }
+  - { name: Zfa, version: "= 1.0.0" }
+  - { name: Zfh, version: "= 1.0.0" }
+  - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zknh, version: "= 1.0.0" }
+  - { name: Zknd, version: "= 1.0.0" }
+  - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zksed, version: "= 1.0.0" }
+  - { name: Zksh, version: "= 1.0.0" }
+  - { name: Zkt, version: "= 1.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: S, version: "= 1.12.0" }
+  - { name: Ssccptr, version: "= 1.0.0" }
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  - { name: Ssstrict, version: "= 1.0.0" }
+  - { name: Sstc, version: "= 1.0.0" }
+  - { name: Sstvala, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  - { name: Sv32, version: "= 1.13.0" }
+  # - { name: Svade, version: "= 1.0.0" }
+  # - { name: Svadu, version: "= 1.0.0" } # TODO: Reenable when https://github.com/riscv-software-src/riscv-unified-db/issues/1217 is fixed
+  - { name: Svbare, version: "= 1.0.0" }
+  - { name: Svinval, version: "= 1.0.0" }
+  - { name: Sm, version: "= 1.12.0" }
+  - { name: Smpmp, version: "= 1.12.0" }
+  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # A params
   MISALIGNED_AMO: false
-  LRSC_RESERVATION_STRATEGY: reserve exactly enough to cover the access # XLEN size reservation
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access" # XLEN size reservation
   LRSC_FAIL_ON_VA_SYNONYM: false
-  LRSC_MISALIGNED_BEHAVIOR: always raise access fault
+  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
   MUTABLE_MISA_A: false
   # M params
@@ -81,13 +92,13 @@ params:
   # U params
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
-  UXLEN: 32
+  UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
   MUTABLE_MISA_S: false
-  ASID_WIDTH: 16
+  ASID_WIDTH: 9
   S_MODE_ENDIANNESS: dynamic
-  SXLEN: 32
+  SXLEN: [32]
   REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
@@ -143,8 +154,6 @@ params:
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: true
-  MSTATUS_FS_WRITABLE: true
-  MSTATUS_VS_WRITABLE: false
   MSTATUS_VS_LEGAL_VALUES: [0]
   MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
@@ -152,8 +161,10 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
-  ARCH_ID: 0x24
-  IMP_ID: 0x100
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x24
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x100
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
   MISALIGNED_LDST: true
@@ -172,15 +183,17 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 64
+  MTVAL_WIDTH: 32
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3 # Not explicit in config
-  PHYS_ADDR_WIDTH: 56
+  PHYS_ADDR_WIDTH: 34
   M_MODE_ENDIANNESS: dynamic
   MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   # Smpmp params
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 4

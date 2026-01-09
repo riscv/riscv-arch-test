@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsVM_cg = new();         ExceptionsVM_cg.set_inst_name("obj_ExceptionsVM");
+    SvPMP_cg = new(); SvPMP_cg.set_inst_name("obj_SvPMP");

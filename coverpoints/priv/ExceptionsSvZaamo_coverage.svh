@@ -11,8 +11,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_EXCEPTIONSVMZALRSC
-covergroup ExceptionsVMZalrsc_cg with function sample(ins_t ins);
+`define COVER_EXCEPTIONSSVZAAMO
+covergroup ExceptionsSvZaamo_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -35,8 +35,7 @@ covergroup ExceptionsVMZalrsc_cg with function sample(ins_t ins);
         }
     `endif
     amemops: coverpoint ins.current.insn {
-        wildcard bins lr_w     = {32'b000100000000_?????_010_?????_0101111};
-        wildcard bins sc_w     = {32'b0001100_?????_?????_010_?????_0101111};
+        wildcard bins amoadd_w = {32'b0000000_?????_?????_010_?????_0101111};
     }
     medeleg_walk: coverpoint ins.current.csr[12'h302] {
         bins zeros                    = {16'b0000_0000_0000_0000};
@@ -72,6 +71,6 @@ covergroup ExceptionsVMZalrsc_cg with function sample(ins_t ins);
 
 endgroup
 
-function void exceptionsvmzalrsc_sample(int hart, int issue, ins_t ins);
-    ExceptionsVMZalrsc_cg.sample(ins);
+function void exceptionssvzaamo_sample(int hart, int issue, ins_t ins);
+    ExceptionsSvZaamo_cg.sample(ins);
 endfunction

@@ -487,7 +487,7 @@ mCsrSkip = (
 
 ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
 
-pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictM-CSR-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictSm-CSR-Tests.h"
 csrtests(pathname, mCsrSkip + sCsrSkip + uCsrSkip)
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictS-CSR-Tests.h"

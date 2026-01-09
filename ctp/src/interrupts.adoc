@@ -3,14 +3,14 @@
 
 Interrupt tests are organized according to the privilege mode or extension supported.
 
-==== InterruptsM Machine-Mode Interrupts
+==== InterruptsSm Machine-Mode Interrupts
 
 These tests are run on any configuration with machine mode that supports interrupts.
 
-[[t-InterruptsM-coverpoints]]
-.InterruptsM Coverpoints
+[[t-InterruptsSm-coverpoints]]
+.InterruptsSm Coverpoints
 ,===
-//include::{testplansdir}/InterruptsM.adoc[]
+//include::{testplansdir}/InterruptsSm.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
 

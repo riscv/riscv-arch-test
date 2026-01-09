@@ -59,7 +59,7 @@ Parameters will eventually all have formal names in UDB when they are all identi
 
 * Coverage files: a SystemVerilog .svh file containing all of the covergroups for an extension or combination of extensions, such as I_coverage.svh or ZfaD_coverage.svh.
 
-* Covergroup: A SystemVerilog construct that contains one or more coverpoints.  Covergroups are used to collect functional coverage of a particular feature or set of features in the RISC-V architecture.  For example, the I_coverage.svh file contains a covergroup for each instruction in the I extension, such as add, addi, sub, etc.  The InterruptsM_coverage.svh contains a single InterruptsM_cg covergroup with all the coverpoints for machine-mode interrupts.
+* Covergroup: A SystemVerilog construct that contains one or more coverpoints.  Covergroups are used to collect functional coverage of a particular feature or set of features in the RISC-V architecture.  For example, the I_coverage.svh file contains a covergroup for each instruction in the I extension, such as add, addi, sub, etc.  The InterruptsSm_coverage.svh contains a single InterruptsSm_cg covergroup with all the coverpoints for machine-mode interrupts.
 
 * Coverpoint: A SystemVerilog construct describing a set of conditions to test.  For example, the cp_rd coverpoint checks that all 32 destination registers x0-x31 are exercised by instructions that don't trap. Each coverpoint has one or more bins; for example, cp_rd has 32 bins for the different registers.
 

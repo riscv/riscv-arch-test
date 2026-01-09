@@ -1,12 +1,12 @@
 
 === Endian
 
-==== EndianM Machine-Mode Endianness
+==== EndianSm Machine-Mode Endianness
 
-[[t-EndianM-coverpoints]]
-.EndianM Coverpoints
+[[t-EndianSm-coverpoints]]
+.EndianSm Coverpoints
 ,===
-//include::{testplansdir}/EndianM.adoc[]
+//include::{testplansdir}/EndianSm.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=220856688#gid=220856688[Google Sheet Testplan]
 

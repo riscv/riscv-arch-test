@@ -1,18 +1,17 @@
 ##################################
-# common.py
+# asm/helpers.py
 #
+# Assembly generation helpers for test code.
 # jcarlin@hmc.edu 5 Oct 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""
-Common utilities for riscv-arch-test test generation.
-"""
+"""Assembly generation helpers for test code."""
 
 from typing import Literal
 
 from testgen.data.params import InstructionParams
-from testgen.data.test_data import TestData
+from testgen.data.state import TestData
 
 
 def to_hex(value: int, bits: int) -> str:
@@ -76,6 +75,8 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
             + f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
             + f'RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, "test_{test_data.test_count}")'
         )
+    else:
+        raise ValueError(f"Unknown sig_type: {sig_type}")
 
 
 def reproducible_hash(s: str) -> int:
@@ -87,45 +88,6 @@ def reproducible_hash(s: str) -> int:
     for c in s:
         h = (h * 31 + ord(c)) & 0xFFFFFFFF
     return h
-
-
-def generate_test_data_section(test_data: TestData) -> str:
-    """
-    Generate the .data section containing all test values.
-
-    Args:
-        test_data: TestData object containing the values to generate
-
-    Returns:
-        Assembly code for the .data section
-    """
-    lines: list[str] = []
-
-    # Use .word for 32-bit, .dword for 64-bit
-    data_size = max(test_data.xlen, test_data.flen)
-    directive = ".word" if data_size == 32 else ".dword"  # TODO: handle Q extension
-
-    for value in test_data.test_data_values:
-        hex_value = to_hex(value, data_size)
-        lines.append(f"{directive} {hex_value}")
-
-    return "\n".join(lines)
-
-
-def generate_test_string_section(test_data: TestData) -> str:
-    """
-    Generate the .data section containing all test strings.
-
-    Args:
-        test_data: TestData object containing the strings to generate
-
-    Returns:
-        Assembly code for the .data section
-    """
-    lines: list[str] = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
-    lines.extend(test_data.test_data_strings)
-
-    return "\n".join(lines)
 
 
 def return_test_regs(test_data: TestData, params: InstructionParams) -> None:

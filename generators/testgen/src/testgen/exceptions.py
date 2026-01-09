@@ -1,6 +1,7 @@
 ##################################
 # exceptions.py
 #
+# Custom exceptions for testgen with helpful error messages.
 # jcarlin@hmc.edu Nov 2025
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -60,7 +61,7 @@ class MissingInstructionFormatterError(MissingRegistryItemError):
             instr_type: The instruction type that was not found
             available_types: List of all registered instruction types
         """
-        registry_location = Path(__file__).parent.parent / "instruction_formatters"
+        registry_location = Path(__file__).parent / "formatters" / "types"
         super().__init__(
             instr_type,
             available_types,
@@ -81,7 +82,7 @@ class MissingCoverpointGeneratorError(MissingRegistryItemError):
             coverpoint: The coverpoint that was not found
             available_patterns: List of all registered coverpoint patterns
         """
-        registry_location = Path(__file__).parent.parent / "coverpoints"
+        registry_location = Path(__file__).parent / "coverpoints"
         super().__init__(
             coverpoint,
             available_patterns,
@@ -100,13 +101,13 @@ class MissingPrivGeneratorError(MissingRegistryItemError):
 
         Args:
             extension: The extension that was not found
-            available_patterns: List of all registered coverpoint patterns
+            available_patterns: List of all registered extension patterns
         """
-        registry_location = Path(__file__).parent.parent / "priv_generators"
+        registry_location = Path(__file__).parent / "priv" / "extensions"
         super().__init__(
             extension,
             available_patterns,
-            item_type="priv test generator",
+            item_type="privileged test generator",
             registry_location=registry_location,
         )
         self.extension = extension

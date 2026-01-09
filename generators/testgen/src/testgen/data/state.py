@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from testgen.data.config import TestConfig
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
-from testgen.data.test_config import TestConfig
 
 
 class TestData:

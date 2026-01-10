@@ -60,7 +60,7 @@
   #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
     LREG       \_TMPREG_(), \_OFF_*REGWIDTH(T1) ;\
     beq        \_TMPREG_(), T3                  ;\
-    jal  T2, test_failure                       
+    jal  T2, test_failure
 #else
   #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
     SREG       \_TMPREG_,   \_OFF_*REGWIDTH(T1) ;\

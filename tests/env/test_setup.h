@@ -26,7 +26,7 @@
 
   // rvtest_entry_pt has model specific code
   j rvtest_entry_pt
-  
+
   // Test initialization
   .global rvtest_init
   rvtest_init:
@@ -132,7 +132,7 @@
 
   // When the test starts, it jumps here (to the end of the test)
   // Here we can place model specific macros, so that the code size remains constant
-  rvtest_entry_pt: 
+  rvtest_entry_pt:
     RVMODEL_BOOT                  // Boot code that is of unknown length
     RVMODEL_IO_INIT(T1, T2, T3)
     LA (T1, rvtest_init)

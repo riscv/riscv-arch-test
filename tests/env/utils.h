@@ -46,7 +46,7 @@
 # FLEN specific macros
 #define FREGWIDTH (FLEN>>3)      // in units of #bytes
 
-#if (ZDINX | ZFINX | ZHINX)
+#ifdef ZFINX
   #define FLREG LREG
   #define FSREG SREG
 #else
@@ -143,30 +143,6 @@
     csrs mstatus, HELPER_GPR                          ;\
     csrr VLENB_CACHE, vlenb
 
-
-/* TODO: Add support for Zfinx
-#if ZFINX==1
-    #define FLREG ld
-    #define FSREG sd
-    #define FREGWIDTH 8
-    #define FLEN 64
-    #if XLEN==64
-        #define SIGALIGN 8
-    #else
-        #define SIGALIGN 4
-    #endif
-    #elif ZDINX==1
-        #define FLREG LREG
-        #define FSREG SREG
-        #define FREGWIDTH 8
-        #define FLEN 64
-    #elif ZHINX==1
-        #define FLREG lw
-        #define FSREG sw
-        #define FREGWIDTH 4
-        #define FLEN 32
-#endif
-*/
 
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent

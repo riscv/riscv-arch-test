@@ -182,7 +182,7 @@
   #define INT_CAUSE_MSK ((1<<5)-1)
 #endif
 
-        // set defaults
+// set defaults
 #ifndef   NUM_SPECD_EXCPTCAUSES
   #define NUM_SPECD_EXCPTCAUSES 24
   #define EXCPT_CAUSE_MSK ((1<<5)-1)
@@ -236,12 +236,12 @@
         // Separately, the SET_ZERO_TVAL_MASK must be set for exceptions that always set TVAL to zero
         // These must be an input to the sail configuration
     #define SET_REL_TVAL_MSK (( \
-         1<<CAUSE_MISALIGNED_FETCH | 1<<CAUSE_FETCH_ACCESS     /* illegal op -no rel */    | 1<<CAUSE_BREAKPOINT        | \
-         1<<CAUSE_MISALIGNED_LOAD  | 1<<CAUSE_LOAD_ACCESS      | 1<<CAUSE_MISALIGNED_STORE | 1<<CAUSE_STORE_ACCESS      | \
-         1<<CAUSE_USER_ECALL       | 1<<CAUSE_SUPERVISOR_ECALL | 1<<CAUSE_HYPERVISOR_ECALL | 1<<CAUSE_MACHINE_ECALL     | \
-         1<<CAUSE_FETCH_PAGE_FAULT | 1<<CAUSE_LOAD_PAGE_FAULT  /* RSVD */                  | 1<<CAUSE_STORE_PAGE_FAULT  | \
-         /* no tval for DOUBLE_TRAP    * RSVD *                SW_FAULT -cause:no reloc:*/   1<<CAUSE_HARDWARE_ERROR    | \
-         1<<CAUSE_FETCH_GUEST_PAGE_FAULT | 1<<CAUSE_LOAD_GUEST_PAGE_FAULT | /*virt illop*/   1<<CAUSE_STORE_GUEST_PAGE_FAULT \
+         1<<CAUSE_MISALIGNED_FETCH | 1<<CAUSE_FETCH_ACCESS     /* illegal op -no rel */            | 1<<CAUSE_BREAKPOINT           | \
+         1<<CAUSE_MISALIGNED_LOAD  | 1<<CAUSE_LOAD_ACCESS      | 1<<CAUSE_MISALIGNED_STORE         | 1<<CAUSE_STORE_ACCESS         | \
+         1<<CAUSE_USER_ECALL       | 1<<CAUSE_SUPERVISOR_ECALL | 1<<CAUSE_VIRTUAL_SUPERVISOR_ECALL | 1<<CAUSE_MACHINE_ECALL        | \
+         1<<CAUSE_FETCH_PAGE_FAULT | 1<<CAUSE_LOAD_PAGE_FAULT  /* RSVD */                          | 1<<CAUSE_STORE_PAGE_FAULT     | \
+         /* no tval for DOUBLE_TRAP    * RSVD *                SW_FAULT -cause:no reloc:*/           1<<CAUSE_HARDWARE_ERROR_FAULT | \
+         1<<CAUSE_FETCH_GUEST_PAGE_FAULT | 1<<CAUSE_LOAD_GUEST_PAGE_FAULT | /*virt illop*/           1<<CAUSE_STORE_GUEST_PAGE_FAULT \
         ) & 0xFFFFFFFF)
     #endif
 
@@ -411,19 +411,6 @@
 #define _ARG1(_1ST,...) _1ST
 #define NARG(...) _ARG5(__VA_OPT__(__VA_ARGS__,)4,3,2,1,0)
 
-// this implements the self-checking of trap signatures, using a tempreg and the offset in the entry as parameters
-.macro TRAP_SIGUPD _TMPREG_,    _OFF_
-  #ifdef RVTEST_SELFCHK
-        LREG       \_TMPREG_(), \_OFF_*REGWIDTH(T1)
-        beq        \_TMPREG_(), T3
-        jal  T2, test_failure   
-  #else
-        SREG       \_TMPREG_,   \_OFF_*REGWIDTH(T1)
-        nop
-        nop
-  #endif
-.endm
-
 /*****************************************************************/
 /**** initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
@@ -435,7 +422,7 @@
 .endm
 
 /* init regs, to ensure you catch any errors */
-.macro RVTEST_INIT_GPRS
+.macro RVTEST_INIT_REGS
     #ifdef rvtest_mtrap_routine
      LI  (x1, 0)
      // Initialising CSR registers (mpec, mtval, mstatus, mip)
@@ -1286,7 +1273,7 @@ spcl_\__MODE__\()chk4ecall:
 /****  x3=0 indicates go2mmode; if mem(EPC-4)== SKP_IF_EQ, its a miscompare, else GOTO_MMODE       ****/
 /****  note that if both prev_op is SKP_IF_EQ and x3=0, a1 is ignored ??                           ****/
 /******************************************************************************************************/
-#ifdef SELFCHK_MODE                             // now known to be an ecall: skip if not selfchk mode
+#ifdef RVTEST_SELFCHECK                         // now known to be an ecall: skip if not selfchk mode
   #define SKP_IF_EQ       0x263                 // BEQ opcode + offset 4 (
   #define RS1RS2_MSK  ((1<<25)-(1<<15)+(1<<12)) // mask of RS1, RS2 and BEQ vs. BNE bit
 

@@ -15,7 +15,7 @@
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _R - Register containing value to store/compare
 //  _STR_PTR - label to string describing the test
-#ifdef SELFCHECK
+#ifdef RVTEST_SELFCHECK
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
@@ -51,6 +51,22 @@
     nop
 #endif
 
+// TRAP_SIGUPD(tempreg, offset)
+// Used to compare/write signatures while handling traps.
+// In Self Check mode, compare reference and DUT signatures and jump to
+// test_failure in case of a mismatch.
+// If not in Self Check mode, just store the signatures to the signature region
+#ifdef RVTEST_SELFCHECK
+  #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
+    LREG       \_TMPREG_(), \_OFF_*REGWIDTH(T1) ;\
+    beq        \_TMPREG_(), T3                  ;\
+    jal  T2, test_failure                       
+#else
+  #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
+    SREG       \_TMPREG_,   \_OFF_*REGWIDTH(T1) ;\
+    nop                                         ;\
+    nop
+#endif
 
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, strptr)
 // compares the value in sigreg with the value in memory at 0(sigptr) and the
@@ -73,7 +89,7 @@
   #error "Q on RV32 is not supported yet."
 #endif
 #if FLEN > XLEN
-  #ifdef SELFCHECK
+  #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
@@ -123,7 +139,7 @@
       addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE
   #endif
 #else
-  #ifdef SELFCHECK
+  #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _STR_PTR)  \
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\

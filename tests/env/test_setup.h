@@ -32,7 +32,7 @@
   .global rvtest_init
   rvtest_init:
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
-    RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
+    RVTEST_INIT_REGS // 0xF0E1D2C3B4A59687
 
     #ifdef rvtest_mtrap_routine
       // set up PMP so user and supervisor mode can access full address space
@@ -52,7 +52,7 @@
 
     // Initial signature check to confirm self-checking is working
     LI(T1, CANARY_VALUE)
-    #ifdef SELFCHECK
+    #ifdef RVTEST_SELFCHECK
       // Can't use DEFAULT_*_REG macros here because of macro expansion order
       // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
       RVTEST_SIGUPD(x2, x5, x4, T1, "canary_mismatch") # sig_begin_canary
@@ -131,9 +131,9 @@
     SREG    T1, -4(T4)            // save into last signature canary
     j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
-  // when the text starts, it jumps to this at end of test code to keep test code constant size
+  // When the test starts, it jumps to this at end of test code to keep test code constant size
   rvtest_entry_pt: 
-      RVMODEL_BOOT          // [boot code] (BOOT code also has RVMODEL macro defs which are >1 op)
+      RVMODEL_BOOT          // Boot code that is of unknown length
       LA (T1, rvtest_init)
       jr T1                 // now go back to test prolog & fall thru to actual test
 
@@ -181,7 +181,7 @@
   .align 12
   #ifndef RVTEST_NO_IDENTY_MAP
   #ifdef rvtest_strap_routine
-//this is a valid global pte entry w/ all permissions. IF at root level, it forms an identity map.
+  // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
     rvtest_Sroot_pg_tbl:
     RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
 
@@ -234,7 +234,7 @@
       .align 3
     #endif
     signature_base:
-      #ifdef SELFCHECK
+      #ifdef RVTEST_SELFCHECK
         // Preload signature region with correct values for self-checking
         #include SIGNATURE_FILE
       #else

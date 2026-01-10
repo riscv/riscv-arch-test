@@ -2005,7 +2005,7 @@ from_hs_u:
         csrr    T2, CSR_MEPC            /* get rtn addr in orig mode's VM */
         sub     T2, T2, T6              /* calc reloc amt callerEPC-callerBgn   */
         addi    sp, sp, -sv_area_sz     //undo preadjust
-	LREG    T4, code_bgn_off-0*sv_area_sz(sp)    /* get M   mode code begin */
+        LREG    T4, code_bgn_off-0*sv_area_sz(sp)    /* get M   mode code begin */
 rtn_fm_mmode:
         add     T2, T4, T2              /* calc rtn_addr in Mmode VM            */
 

@@ -67,7 +67,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
-                    "#ifdef SELFCHECK",
+                    "#ifdef RVTEST_SELFCHECK",
                     f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
                     write_sigupd(params.temp_reg, test_data),
                     # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word

@@ -6,7 +6,7 @@
 #include "rvtest_config.h"
 #include "encoding.h"
 #include "utils.h"
-#ifdef SELFCHECK
+#ifdef RVTEST_SELFCHECK
   #include "model_test.h"
 #else
   #include "sail_test.h"

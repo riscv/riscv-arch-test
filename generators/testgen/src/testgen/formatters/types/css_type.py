@@ -60,7 +60,7 @@ def format_css_type(
     test = [f"{instr_name} x{params.rs2}, {params.immval}(sp) # perform store"]
 
     check = [
-        "#ifdef SELFCHECK",
+        "#ifdef RVTEST_SELFCHECK",
         f"LREG x{params.temp_reg}, 0(x{test_data.int_regs.sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),
         "#else",

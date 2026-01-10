@@ -75,18 +75,32 @@
     PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                  ;\
 
 #define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
-	LI (t0, VA)                                                 ;\
-	LA (t1, PA_LBL)                                             ;\
-	sub t0, t0, t1                                              ;\
+	LI(  t0, VA)                                                ;\
     srli t0, t0, 12                                             ;\
     slli t0, t0, 12                                             ;\
-    LI (t2, 0xFFF)                                              ;\
-    and t2, t1, t2                                              ;\
-    or  t2, t0, t2                                              ;\
-	sub t0, t2, t1                                              ;\
 	LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
-	add t2, t1, t0                                              ;\
+    LI(  t2, 0xFFF)                                             ;\
+    and  t2, t1, t2                                             ;\
+    or   t0, t0, t2                                             ;\
+	LA(  t2, PA_LBL)                                            ;\
+	sub  t0, t0, t2                                             ;\
+	add  t2, t1, t0                                             ;\
+	SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;
+
+#define SAVE_AREA_SETUP_V(VA, PA_LBL, _REG_NAME)                ;\
+	LI(  t0, VA)                                                ;\
+    srli t0, t0, 12                                             ;\
+    slli t0, t0, 12                                             ;\
+	LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
+    LI(  t2, 0xFFF)                                             ;\
+    and  t2, t1, t2                                             ;\
+    or   t0, t0, t2                                             ;\
+	LA(  t2, PA_LBL)                                            ;\
+	sub  t0, t0, t2                                             ;\
+	add  t2, t1, t0                                             ;\
+    addi sp, sp, 2*sv_area_sz                                   ;\
 	SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
+    addi sp, sp, -2*sv_area_sz                                  ;
 
 #define PTE_SETUP_RV64(_PAR, _PR, _TR0, _TR1, VA, level, mode)  ;\
     srli _PAR, _PAR, 12                                         ;\

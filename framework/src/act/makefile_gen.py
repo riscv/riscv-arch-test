@@ -150,7 +150,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
     return (
         "# Run test on Sail to generate log\n"
         f"{sail_trace}: {elf}\n"
-        f"\tln -s {elf}.objdump {objdump_link} # Create symlink to objdump in coverage directory for easier debugging\n"
+        f"\tln -sf {elf}.objdump {objdump_link} # Create symlink to objdump in coverage directory for easier debugging\n"
         f"\t{config.ref_model_exe} --trace-all \\\n"
         f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
         f"\t\t{elf} \\\n"

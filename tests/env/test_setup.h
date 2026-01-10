@@ -17,10 +17,6 @@
   .global rvtest_entry_point
   rvtest_entry_point:
 
-  // Include model specific boot code
-  RVMODEL_BOOT
-  RVMODEL_IO_INIT(T1, T2, T3)
-
   // Disable assembler/linker optimizations
   .option push
   .option rvc
@@ -28,6 +24,9 @@
   .option norvc
   .section .text.init
 
+  // rvtest_entry_pt has model specific code
+  j rvtest_entry_pt
+  
   // Test initialization
   .global rvtest_init
   rvtest_init:
@@ -122,7 +121,7 @@
   // Include test failure handling code
   RVTEST_FAILURE_CODE
 
-  # TODO: This should be removed once priv tests are self-checking
+  // TODO: This should be removed once priv tests are self-checking
   abort_tests:
     LREG    T4, sig_bgn_off(sp)   // calculate Mmode sig_end addr in handler's mode
     LREG    T1, sig_seg_siz(sp)
@@ -131,11 +130,13 @@
     SREG    T1, -4(T4)            // save into last signature canary
     j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
-  // When the test starts, it jumps to this at end of test code to keep test code constant size
+  // When the test starts, it jumps here (to the end of the test)
+  // Here we can place model specific macros, so that the code size remains constant
   rvtest_entry_pt: 
-      RVMODEL_BOOT          // Boot code that is of unknown length
-      LA (T1, rvtest_init)
-      jr T1                 // now go back to test prolog & fall thru to actual test
+    RVMODEL_BOOT                  // Boot code that is of unknown length
+    RVMODEL_IO_INIT(T1, T2, T3)
+    LA (T1, rvtest_init)
+    jr T1                         // Jump back to the start of the test
 
   .option pop
 .endm

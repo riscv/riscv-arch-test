@@ -130,9 +130,15 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     }
     old_mstatus_sie: coverpoint ins.prev.csr[12'h300][1] {
     }
-    walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
-        bins b_1[] = { [0:`XLEN-1] };
-    }
+
+    cp_mprivinst: cross privinstrs, priv_mode_m;
+    cp_mret: cross mret, priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
+    cp_sret: cross sret, priv_mode_m, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+endgroup
+
+covergroup Sm_mcsr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     mcsrname_all : coverpoint ins.current.insn[31:20] { // extended set for access tests, including read-only CSRs
         bins mstatus  = {12'h300};
@@ -210,18 +216,42 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
         bins csrrs = {3'b010};
         bins csrrc = {3'b011};
     }
+    walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        bins b_1[] = { [0:`XLEN-1] };
+    }
+
+    csr_debug: coverpoint ins.current.insn[31:20]  {
+        bins debug_only[] = {[12'h7B0:12'h7BF]};
+    }
+    csr_ro: coverpoint ins.current.insn[31:20] {
+        bins readonly[] = {[12'hC00:12'hFFF]};
+    }
+
+    csrr: coverpoint ins.current.insn  {
+        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+    }
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+    }
+    nonzerord: coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = { [1:$] }; // rd != 0
+    }
+    rs1_ones: coverpoint ins.current.rs1_val {
+        bins ones = {'1};
+    }
 
     cp_mcsr_access: cross priv_mode_m, mcsrname_all, csraccesses;
     cp_mcsrwalk : cross priv_mode_m, mcsrname, csrop, walking_ones;
-    cp_mprivinst: cross privinstrs, priv_mode_m;
-    cp_mret: cross mret, priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret: cross sret, priv_mode_m, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+    cp_csr_insufficient_priv: cross priv_mode_m, csrr,   csr_debug, nonzerord;
+    cp_csr_ro:                cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
-    //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-    //    $display("PC = %h (%s) rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.rs1_val);
+    if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
+        $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
+    Sm_mcsr_cg.sample(ins);
 endfunction

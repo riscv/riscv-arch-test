@@ -141,6 +141,18 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     }
     old_sstatus_sie: coverpoint ins.prev.csr[12'h100][1] {
     }
+    // main coverpoints
+    cp_mprivinst: cross privinstrs, priv_mode_s;
+    cp_mret_s:    cross mret,       priv_mode_s;
+    cp_sret_s:    cross sret,       priv_mode_s, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+    cp_mret_m:    cross mret,       priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
+    cp_sret_m:    cross sret,       priv_mode_m, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+endgroup
+
+covergroup S_scsr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
         bins b_1[] = { [0:`XLEN-1] };
     }
@@ -162,17 +174,29 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
         bins csrrc = {3'b011};
     }
 
-    // main coverpoints
-    cp_scsrwalk:  cross csrname, csrop, priv_mode_s, walking_ones;
-    cp_mprivinst: cross privinstrs, priv_mode_s;
-    cp_mret_s:    cross mret,       priv_mode_s;
-    cp_sret_s:    cross sret,       priv_mode_s, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
-    cp_mret_m:    cross mret,       priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret_m:    cross sret,       priv_mode_m, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+
+
+    csr_machine: coverpoint ins.current.insn[31:20]  {
+        bins machine_0[] = {[12'h300:12'h3FF]};
+        bins machine_1[] = {[12'h700:12'h7FF]};
+        bins machine_2[] = {[12'hB00:12'hBFF]};
+        bins machine_3[] = {[12'hF00:12'hFFF]};
+    }
+    csrr: coverpoint ins.current.insn  {
+        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+    }
+    nonzerord: coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = { [1:$] }; // rd != 0
+    }
+
+    cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones;
+    cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);
     S_scause_cg.sample(ins);
     S_sstatus_cg.sample(ins);
     S_sprivinst_cg.sample(ins);
+    S_scsr_cg.sample(ins);
 endfunction

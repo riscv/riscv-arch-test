@@ -356,6 +356,9 @@ def makePrivBody() -> None:
                         addCSRReadTest("mstatus", "t0", f"{coverpoint}/{coverpoint}/{binname}_mstatus_rval")
     body_lines += "\n\tCSRW(mstatus, s0)    # restore CSR\n"
 
+    covergroup = "Sm_mcsr_cg"
+    coverpoint = "cp_mcsr_access"
+
     csrs = [
         "mstatus",
         "misa",
@@ -372,8 +375,6 @@ def makePrivBody() -> None:
     ]
     csrs32 = ["mstatush", "menvcfgh"]  # medelegh only in Sm1p13
     csrsro = ["mvendorid", "mimpid", "marchid", "mhartid", "mconfigptr"]
-
-    coverpoint = "cp_mcsr_access"
 
     body_lines += dedent("""
         /////////////////////////////////
@@ -415,6 +416,37 @@ def makePrivBody() -> None:
     for csr in csrs32:
         addWalkTest(csr, covergroup, coverpoint)
     body_lines += "#endif\n"
+
+    coverpoint = "cp_csr_insufficient_priv"
+
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_csr_insufficient_priv
+        //   Attempt to read debug-mode registers.  Should throw illegal instruction
+        /////////////////////////////////
+
+        """)
+
+    for csr in range(0x7B0, 0x7C0):
+        body_lines += (
+            f"\tCSRR(t0, 0x{csr:03x})    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction\n"
+        )
+
+    coverpoint = "cp_csr_ro"
+
+    body_lines += dedent("""
+        /////////////////////////////////
+        // cp_csr_ro
+        //   Attempt to write read-only CSRs.  Should throw illegal instruction
+        /////////////////////////////////
+
+        """)
+
+    body_lines += "\tLI(t0, -1)          # t0 = all 1s\n"
+    for csr in range(0xC00, 0x1000):
+        body_lines += (
+            f"\tCSRW(0x{csr:03x}, t0)   # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n"
+        )
 
 
 ##################################

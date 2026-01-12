@@ -9,3 +9,4 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     U_uprivinst_cg = new();    U_uprivinst_cg.set_inst_name("obj_U_uprivinst");
+    U_ucsr_cg = new();         U_ucsr_cg.set_inst_name("obj_U_ucsr");

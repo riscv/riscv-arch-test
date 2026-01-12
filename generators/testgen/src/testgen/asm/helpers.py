@@ -14,6 +14,29 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 
 
+def comment_banner(title: str, description: str | None = None) -> str:
+    """
+    Generate a comment banner for a test section.
+
+    Args:
+        title: The title of the section (e.g., coverpoint name)
+        description: Optional multi-line description
+
+    Returns:
+        Formatted comment banner string
+    """
+    lines = [
+        "",
+        "/////////////////////////////////",
+        f"// {title}",
+    ]
+    if description:
+        for line in description.strip().split("\n"):
+            lines.append(f"//   {line}")
+    lines.append("/////////////////////////////////")
+    return "\n".join(lines)
+
+
 def to_hex(value: int, bits: int) -> str:
     """
     Convert an integer to a hex string for assembly output.

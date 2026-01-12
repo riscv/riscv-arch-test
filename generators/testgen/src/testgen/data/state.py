@@ -156,21 +156,36 @@ class TestData:
         """Get the list of test data strings to be stored in .data section."""
         return self._test_data_strings
 
-    def add_testcase(self, cp: str) -> str:
+    def add_testcase(self, coverpoint: str, bin_name: str | None = None, covergroup: str | None = None) -> str:
         """
-        Add a test data string and return the testcase label line.
+        Add a test data string and return the testcase label line. Also increments test count.
 
         Args:
             cp: The coverpoint name
+            covergroup: Optional covergroup name. Defaults to '{extension}_{instr_name}_cg'.
+            bin_name: Optional bin name to append to the coverpoint name.
 
         Returns:
-            Label line string in format '{extension}_{instr_name}_cg_{test_count}:'
+            Label line string in format '{covergroup}_{coverpoint}_{bin_name}}:'
         """
         self.increment_test_count()
+
+        if covergroup is None:
+            covergroup = f"{self.extension}_{self.instr_name}_cg"
+
+        if bin_name is None:
+            bin_name = f"test_{self.test_count}"
+
+        # Construct full coverpoint name
+        full_name = f"{covergroup}_{coverpoint}_{bin_name}"
+
+        # Add testcase string to test data strings
         self._test_data_strings.append(
-            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {self.extension}_{self.instr_name}_cg/{cp}\\""'
+            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {full_name}\\""'
         )
-        return f"\n{self.extension}_{self.instr_name}_cg_{cp}_test_{self.test_count}:"
+
+        # Return label
+        return f"\n{full_name}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

@@ -25,11 +25,11 @@ include::{testplansdir}/Zknh.adoc[]
 
 [[t-Zksed-coverpoints]]
 .Zksed Instruction Coverpoints
-//include::{testplansdir}/Zksed.adoc[]
+include::{testplansdir}/Zksed.adoc[]
 
 
 ==== Zksh ShangMi SM3 Hashing
 
 [[t-Zksh-coverpoints]]
 .Zksh Instruction Coverpoints
-//include::{testplansdir}/Zksh.adoc[]
+include::{testplansdir}/Zksh.adoc[]

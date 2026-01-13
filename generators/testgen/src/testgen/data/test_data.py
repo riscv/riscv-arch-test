@@ -26,30 +26,28 @@ class TestData:
         int_regs: Integer register file for allocation
         float_regs: Floating-point register file for allocation
         sigupd_count: Running count of integer signature updates
-        sigupd_count_float: Running count of floating-point signature updates
         test_data_values: List of values to be stored in test_data section
     """
 
-    def __init__(self, test_config: TestConfig, instr_name: str) -> None:
+    def __init__(self, test_config: TestConfig, instr_name: str | None = None) -> None:
         """
         Initialize test data with configuration and empty state.
 
         Args:
             test_config: Immutable test configuration
-            instr_name: Instruction name this test is exercising
+            instr_name: Instruction name this test is exercising. Optional for priv/extension-level tests.
         """
         self._config = test_config
         self._instr_name = instr_name
         self._int_regs = IntegerRegisterFile(test_config.E_ext)
         self._float_regs = FloatRegisterFile()
         self._sigupd_count = 10  # Start with a margin of 10 spaces in signature
-        self._sigupd_count_float = 0
         self._test_count = 0
         self._test_data_values: list[int] = []  # List of integer values
         self._test_data_strings: list[str] = []  # List of string values
 
     def __repr__(self) -> str:
-        return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, sigupd_count_float={self._sigupd_count_float})"
+        return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, test_count={self._test_count})"
 
     # Configuration accessor
     @property
@@ -61,6 +59,8 @@ class TestData:
     @property
     def instr_name(self) -> str:
         """Get the instruction name this test is exercising."""
+        if self._instr_name is None:
+            raise ValueError("Instruction name is not set in TestData.")
         return self._instr_name
 
     @property
@@ -96,14 +96,6 @@ class TestData:
     @sigupd_count.setter
     def sigupd_count(self, value: int) -> None:
         self._sigupd_count = value
-
-    @property
-    def sigupd_count_float(self) -> int:
-        return self._sigupd_count_float
-
-    @sigupd_count_float.setter
-    def sigupd_count_float(self, value: int) -> None:
-        self._sigupd_count_float = value
 
     # Read-only properties delegated to config
     @property
@@ -190,7 +182,6 @@ class TestData:
 
         # Copy signature counts
         new_data._sigupd_count = self._sigupd_count
-        new_data._sigupd_count_float = self._sigupd_count_float
         new_data._test_count = self._test_count
 
         # Copy data values

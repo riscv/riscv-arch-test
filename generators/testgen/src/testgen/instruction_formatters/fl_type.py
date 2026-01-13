@@ -7,13 +7,15 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import to_hex, write_sigupd
 
-
-@add_instruction_formatter(
-    "FL", required_params={"fd", "rs1", "temp_fval", "immval", "temp_reg"}, imm_bits=12, imm_signed=True
+fl_config = InstructionTypeConfig(
+    required_params={"fd", "rs1", "temp_fval", "immval", "temp_reg"}, imm_bits=12, imm_signed=True
 )
+
+
+@add_instruction_formatter("FL", fl_config)
 def format_fl_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

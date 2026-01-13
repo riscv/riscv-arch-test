@@ -8,11 +8,17 @@
 
 from testgen.data.params import InstructionParams
 from testgen.data.test_data import TestData
-from testgen.instruction_formatters.instruction_formatters import add_instruction_formatter
+from testgen.instruction_formatters.instruction_formatters import InstructionTypeConfig, add_instruction_formatter
 from testgen.utils.common import load_int_reg, write_sigupd
 
+css_config = InstructionTypeConfig(
+    required_params={"rs2", "rs2val", "immval", "temp_reg"},
+    imm_bits=9,
+    imm_signed=False,
+)
 
-@add_instruction_formatter("CSS", required_params={"rs2", "rs2val", "immval", "temp_reg"}, imm_bits=9, imm_signed=False)
+
+@add_instruction_formatter("CSS", css_config)
 def format_css_type(
     instr_name: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:

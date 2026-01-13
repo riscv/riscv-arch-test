@@ -7,7 +7,7 @@ normative_rule_definitions:
   - name: c-ebreak_op
     coverpoint: ["ExceptionsZca_exceptions_cg/cp_breakpoint"]
   - name: Zca_align16
-    coverpoint: ["ExceptionsM_exceptions_cg/cp_instr_access_fault"]
+    coverpoint: ["ExceptionsSm_exceptions_cg/cp_instr_access_fault"]
   - name: Zca_illegal
     coverpoint: ["ExceptionsZca_exceptions_cg/cp_illegal_instruction"]
   - name: Zca_no_misaligned

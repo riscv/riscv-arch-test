@@ -1,16 +1,16 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsM, ExceptionsS, ExceptionsU, and ExceptionsF.
+Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsSm, ExceptionsS, ExceptionsU, and ExceptionsF.
 
-==== ExceptionsM Machine-Mode Exceptions
+==== ExceptionsSm Machine-Mode Exceptions
 
 These tests are run on any configuration with machine mode that supports exceptions.
 
-[[t-ExceptionsM-coverpoints]]
-.ExceptionsM Coverpoints
+[[t-ExceptionsSm-coverpoints]]
+.ExceptionsSm Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsM.adoc[]
+//include::{testplansdir}/ExceptionsSm.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 
@@ -132,29 +132,29 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1054505393#gid=1054505393[Google Sheet Testplan]
 
-==== ExceptionsVM Virtual Memory Exceptions
+==== ExceptionsSv Virtual Memory Exceptions
 
-[[t-ExceptionsVM-coverpoints]]
-.ExceptionsVM Coverpoints
+[[t-ExceptionsSv-coverpoints]]
+.ExceptionsSv Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVM.adoc[]
+//include::{testplansdir}/ExceptionsSv.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=270777025#gid=270777025[Google Sheet Testplan]
 
-==== ExceptionsVMZalrsc  Virtual Memory LR/SC Exceptions
+==== ExceptionsSvZalrsc  Virtual Memory LR/SC Exceptions
 
-[[t-ExceptionsVMZalrsc-coverpoints]]
-.ExceptionsVMZalrsc Coverpoints
+[[t-ExceptionsSvZalrsc-coverpoints]]
+.ExceptionsSvZalrsc Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVMZalrsc.adoc[]
+//include::{testplansdir}/ExceptionsSvZalrsc.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=287426144#gid=287426144[Google Sheet Testplan]
 
-==== ExceptionsVMZaamo Virtual Memory AMO Exceptions
+==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
 
-[[t-ExceptionsVMZaamo-coverpoints]]
-.ExceptionsM Coverpoints
+[[t-ExceptionsSvZaamo-coverpoints]]
+.ExceptionsSvZaamo Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVMZaamo.adoc[]
+//include::{testplansdir}/ExceptionsSvZaamo.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1747092954#gid=1747092954[Google Sheet Testplan]

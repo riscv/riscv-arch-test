@@ -401,7 +401,7 @@ wheels = [
 
 [[package]]
 name = "testgen"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "generators/testgen" }
 dependencies = [
     { name = "rich" },

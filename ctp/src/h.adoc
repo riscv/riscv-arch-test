@@ -7,21 +7,12 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 .Hypervisor Normative Rules
 ***
 
-==== H Hypervisor Instructions
+==== H Hypervisor CSRs and Instructions
 
 [[t-H-coverpoints]]
 .H Coverpoints
 ,===
 //include::{testplansdir}/H.adoc[]
-,===
-https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2001628267#gid=2001628267[Google Sheet Testplan]
-
-==== ZicsrH Hypervisor CSRs
-
-[[t-ZicsrH-coverpoints]]
-.ZicsrH Coverpoints
-,===
-//include::{testplansdir}/ZicsrH.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262865576#gid=262865576[Google Sheet Testplan]
 
@@ -51,6 +42,16 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 //include::{testplansdir}/InterruptsH.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552831967#gid=552831967[Google Sheet Testplan]
+
+==== HV Hypervisor Vector CSRs
+
+[[t-HV-coverpoints]]
+.HV Coverpoints
+,===
+//include::{testplansdir}/HV.adoc[]
+,===
+***[Google Sheet Testplan]
+
 
 ==== EndianH Hypervisor Endianness
 
@@ -84,45 +85,23 @@ ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=161540329#gid=161540329[Google Sheet Testplan]
 
-==== RV32VMH Hypervisor 2-Stage Virtual Memory
+==== SvH Hypervisor 2-Stage Virtual Memory
 
-[[t-RV32VMH-coverpoints]]
-.RV32VMH Coverpoints
+[[t-SvH-coverpoints]]
+.SvH Coverpoints
 ,===
-//include::{testplansdir}/RV32VMH.adoc[]
+//include::{testplansdir}/SvH.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884[Google Sheet Testplan]
 
-==== RV32VMH_CBO Hypervisor VM + Cache Block Operations
+==== SvH_CBO Hypervisor VirtMem + Cache Block Operations
 
-[[t-RV32VMH_CBO-coverpoints]]
-.RV32VMH_CBO Coverpoints
+[[t-SvH_CBO-coverpoints]]
+.SvH_CBO Coverpoints
 ,===
-//include::{testplansdir}/RV32VMH_CBO.adoc[]
+//include::{testplansdir}/SvH_CBO.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128[Google Sheet Testplan]
-
-==== RV64VMH Hypervisor 2-Stage Virtual Memory
-
-Virtual memory behavior introduced by Hypervisor extension.
-
-[[t-RV64VMH-coverpoints]]
-.RV64VMH Coverpoints
-,===
-//include::{testplansdir}/RV64VMH.adoc[]
-,===
-https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1056442231#gid=1056442231[Google Sheet Testplan]
-
-==== RV64VMH_CBO Hypervisor VM + Cache Block Operations
-
-Virtual memory / CBO behavior introduced by Hypervisor extension.
-
-[[t-RV64VMH_CBO-coverpoints]]
-.RV64VMH_CBO Coverpoints
-,===
-//include::{testplansdir}/RV64VMH_CBO.adoc[]
-,===
-https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=216799752#gid=216799752[Google Sheet Testplan]
 
 ==== Shcounterenw Writable Counter Enables
 

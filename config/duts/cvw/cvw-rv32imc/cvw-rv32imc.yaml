@@ -6,15 +6,16 @@ type: fully configured
 name: cvw-rv32imc
 description: The rv32imc configuration of Core-V Wally;
 implemented_extensions:
-  - { name: I, version: "2.1" }
-  - { name: M, version: "2.0" }
-  - { name: C, version: "2.0" }
-  - { name: Zicntr, version: "2.0" }
-  - { name: Zicsr, version: "2.0" }
-  - { name: Zihpm, version: "2.0.0" }
-  - { name: U, version: "1.0.0" }
-  - { name: Sm, version: "1.12.0" }
-  - { name: Smhpm, version: "1.12.0" }
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: Sm, version: "= 1.12.0" }
+  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # M params
@@ -26,15 +27,17 @@ params:
   # U params
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: little
-  UXLEN: 32
+  UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # Sm params
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
-  ARCH_ID: 0x24
-  IMP_ID: 0x100
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x24
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x100
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
   MISALIGNED_LDST: true
@@ -53,15 +56,17 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 64
+  MTVAL_WIDTH: 32
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3 # Not explicit in config
-  PHYS_ADDR_WIDTH: 56
+  PHYS_ADDR_WIDTH: 32
   M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   # Smhpm params
   HPM_COUNTER_EN:
     [

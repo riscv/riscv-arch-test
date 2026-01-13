@@ -335,7 +335,13 @@
     csrc _CSR, _R1      ;\
     nop      # in case csr op traps
 
+// Macros for instructions that can trap
+// each instruction is followed by a nop in case the access causes a trap
+// because the trap return skips the next instruction
 
+#define SFENCE_VMA \
+    sfence.vma         ;\
+    nop      # in case sfence.vma traps
 
 // Utility Macros
 

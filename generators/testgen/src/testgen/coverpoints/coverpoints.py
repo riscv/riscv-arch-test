@@ -13,14 +13,19 @@ from pathlib import Path
 from random import seed
 
 from testgen.data.test_data import TestData
-from testgen.utils.common import myhash
+from testgen.utils.common import reproducible_hash
 from testgen.utils.exceptions import MissingCoverpointGeneratorError
 
 # Type alias for coverpoint generator functions
+# The generator function takes:
+# - instr_name: str
+# - instr_type: str
+# - coverpoint: str
+# - test_data: TestData
+# and returns a list of strings (test lines)
 CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
 
-
-# Registry storage: list of (pattern, generator) tuples sorted by pattern length (longest first)
+# Registry: list of (pattern, generator) tuples sorted by pattern length (longest first)
 _COVERPOINT_GENERATORS: list[tuple[str, CoverpointGenerator]] = []
 
 
@@ -30,11 +35,6 @@ def add_coverpoint_generator(*patterns: str) -> Callable[[CoverpointGenerator], 
 
     Args:
         patterns: One or more coverpoint prefixes this generator can process
-
-    Example:
-        @add_coverpoint_generator("cp_rd")
-        def make_rd(instr_name, instr_type, coverpoint, test_data):
-            ...
     """
 
     def decorator(func: CoverpointGenerator) -> CoverpointGenerator:
@@ -112,7 +112,7 @@ def generate_tests_for_coverpoint(instr_name: str, instr_type: str, coverpoint: 
         return ""
 
     generator = _select_coverpoint_generator(coverpoint)
-    hashval = myhash(instr_name + coverpoint)
+    hashval = reproducible_hash(instr_name + coverpoint)
     seed(hashval)
     test_lines = [f"\n\n{coverpoint}_tests:"]
     test_lines.extend(generator(instr_name, instr_type, coverpoint, test_data))

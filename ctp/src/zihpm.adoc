@@ -5,8 +5,10 @@ These tests exercise the custom hardware performance monitor CSRs.
 Their behavior is user-defined, so these tests just check that the
 set of writable bits match the reference model.
 
-[[t-Zihpm-coverpoints]]
-.Zihpm Coverpoints
+*** Rewrite or remove; basic hpm moved to Zi
+
+[[t-ZihpmM-coverpoints]]
+.ZihpmM Coverpoints
 ,===
 //include::{testplansdir}/Zihpm.adoc[]
 ,===

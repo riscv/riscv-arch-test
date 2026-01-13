@@ -16,24 +16,45 @@ from pathlib import Path
 from testgen.data.test_config import TestConfig
 
 
-def insert_setup_template(template_name: str, test_config: TestConfig, test_file: Path, extra_defines: str) -> str:
+def load_template(template_name: str) -> str:
     """Insert a header/footer template file into the test file."""
+    with importlib.resources.open_text("testgen.templates", template_name) as template_file:
+        template = template_file.read()
+    return template
+
+
+def insert_header_template(
+    test_config: TestConfig, test_file: Path, sigupd_count: int, extra_defines: list[str] | None = None
+) -> str:
+    """Load testgen header template file and replace placeholders."""
+    template = load_template("testgen_header.S")
+    # Extract extension components
     xlen = test_config.xlen
     extension = test_config.extension
     E_ext = test_config.E_ext
     ext_components, march, params = canonicalize_extension(extension, xlen, E_ext)
-    with importlib.resources.open_text("testgen.templates", template_name) as template_file:
-        template = template_file.read()
+    if extra_defines is None:
+        extra_defines = []
+    extra_defines.extend(generate_defines_from_extensions(ext_components))
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
         .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
-        .replace("@MARCH@", march.lower())
         .replace("@PARAMS@", format_params(params))
-        .replace("@EXTRA_DEFINES@", extra_defines)
-        .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
+        .replace("@MARCH@", march)
+        .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
+        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
+        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
+    return template
+
+
+def insert_footer_template(test_data_section: str, test_string_section: str) -> str:
+    """Load testgen footer template file and replace placeholders."""
+    template = load_template("testgen_footer.S")
+    # Replace placeholders
+    template = template.replace("@TEST_DATA@", test_data_section).replace("@TESTCASE_STRINGS@", test_string_section)
     return template
 
 
@@ -42,7 +63,9 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
     ext_components = re.findall(r"[A-Z][a-z]*", extension)
 
     # Extract parameters
-    params: list[str] = [f"MXLEN: {xlen}"]
+    params: list[str] = []
+    if xlen > 0:
+        params.append(f"MXLEN: {xlen}")
     param_lookup = {
         "Misalign": "MISALIGNED_LDST: true",
     }
@@ -58,12 +81,10 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
             ext_components.insert(0, "E")
         else:
             ext_components.insert(0, "I")
-    if ("Zcf" in ext_components or "D" in ext_components) and "F" not in ext_components:
-        ext_components.append("F")  # Add F if Zcf or D is present
     if "Zcd" in ext_components and "D" not in ext_components:
         ext_components.append("D")  # Add D if Zcd is present
-    if "Misalign" in ext_components:
-        ext_components.remove("Misalign")
+    if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa"]) and "F" not in ext_components:
+        ext_components.append("F")  # Add F if any floating point extension is present
 
     # Construct march string
     ext_str = ""
@@ -71,15 +92,37 @@ def canonicalize_extension(extension: str, xlen: int, E_ext: bool) -> tuple[list
         if len(ext_str) > 0:
             ext_str += "_"
         ext_str += ext
-    march = f"rv{xlen}{ext_str}"
-    march = march.replace("Zaamo", "A").replace("Zalrsc", "A")  # gcc 14 does not accept Zaamo/Zalrsc
+    ext_str = ext_str.lower()
+    march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
+    march = march.replace("zaamo", "a").replace("zalrsc", "a")  # gcc 14 does not accept Zaamo/Zalrsc
 
     return ext_components, march, params
 
 
 def format_params(params: list[str]) -> str:
     """Format parameters for insertion into template."""
+    if not params:
+        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
     for param in params:
         param_lines.append(f"#   {param}")
     return "\n".join(param_lines)
+
+
+def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
+    """Generate extra #define statements from extension components."""
+    extra_defines: list[str] = []
+    # Enable floating point if needed
+    if "F" in ext_components:
+        extra_defines.append("#define RVTEST_FP")
+    # TODO: Enable vector extension if needed when vector testgen is integrated
+
+    # Enable trap handlers if needed
+    if "H" in ext_components:
+        extra_defines.append("#define rvtest_vtrap_routine")
+    if any(ext in ext_components for ext in ["H", "S"]):
+        extra_defines.append("#define rvtest_strap_routine")
+    if any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):
+        extra_defines.append("#define rvtest_mtrap_routine")
+
+    return extra_defines

@@ -22,6 +22,8 @@ __all__ = [
     "comment_banner",
     "csr_access_test",
     "csr_walk_test",
+    "gen_csr_read_sigupd",
+    "gen_csr_write_sigupd",
     "generate_test_data_section",
     "generate_test_string_section",
     "load_float_reg",
@@ -29,7 +31,5 @@ __all__ = [
     "reproducible_hash",
     "return_test_regs",
     "to_hex",
-    "gen_csr_read_sigupd",
-    "gen_csr_write_sigupd",
     "write_sigupd",
 ]

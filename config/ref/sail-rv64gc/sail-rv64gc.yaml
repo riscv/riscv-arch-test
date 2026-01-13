@@ -38,6 +38,7 @@ implemented_extensions:
   - { name: Zksh, version: "1.0.0" }
   - { name: Zkt, version: "1.0.0" }
   - { name: U, version: "1.0.0" }
+  #  - { name: V, version: "1.0.0" }
   - { name: S, version: "1.12.0" }
   - { name: Ssccptr, version: "1.0.0" }
   - { name: Sscounterenw, version: "1.0.0" }
@@ -78,6 +79,9 @@ params:
   MUTABLE_MISA_C: false
   # B params
   MUTABLE_MISA_B: true
+  # V params
+  #MUTABLE_MISA_V: false
+  #HW_MSTATUS_VS_DIRTY_UPDATE: precise
   # CBO params
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false

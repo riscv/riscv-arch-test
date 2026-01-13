@@ -187,7 +187,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `endif
     }
 
-    mcsrname : coverpoint ins.current.insn[31:20] {
+    mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus  = {12'h300};
         bins misa     = {12'h301};
         bins medeleg  = {12'h302};
@@ -248,8 +248,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
-    if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-        $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
+    //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
+    //    $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);

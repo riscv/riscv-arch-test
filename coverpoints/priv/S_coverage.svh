@@ -96,7 +96,7 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
         wildcard bins csrrw = {32'b000100000000_?????_001_?????_1110011};  // csrrw to sstatus
     }
     // main coverpoints
-    cp_mstatus_sd_write: cross priv_mode_s, csrrw_sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
+    cp_sstatus_sd_write: cross priv_mode_s, csrrw_sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
 
 endgroup
 
@@ -142,7 +142,7 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     old_sstatus_sie: coverpoint ins.prev.csr[12'h100][1] {
     }
     // main coverpoints
-    cp_mprivinst: cross privinstrs, priv_mode_s;
+    cp_sprivinst: cross privinstrs, priv_mode_s;
     cp_mret_s:    cross mret,       priv_mode_s;
     cp_sret_s:    cross sret,       priv_mode_s, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
     cp_mret_m:    cross mret,       priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
@@ -157,6 +157,15 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins b_1[] = { [0:`XLEN-1] };
     }
 
+    walking_ones_nonmode: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        `ifdef XLEN64
+            bins b_1[] = { [0:`XLEN-5] };
+        `else
+            bins b_1[] = { [0:`XLEN-2] };
+        `endif
+    }
+
+
     csrname : coverpoint ins.current.insn[31:20] {
         bins sstatus       = {12'h100};
         bins sie           = {12'h104};
@@ -169,12 +178,46 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins senvcfg       = {12'h10A};
         bins scounteren    = {12'h106};
     }
+    csruname : coverpoint ins.current.insn[31:20] {
+        `ifdef F_SUPPORTED
+            bins fcsr      = {12'h003};
+            bins fflags    = {12'h001};
+            bins frm       = {12'h002};
+        `endif
+        `ifdef V_SUPPORTED
+            bins vstart = {12'h008};
+            bins vxsat  = {12'h009};
+            bins vxrm   = {12'h00A};
+            bins vcsr   = {12'h00F};
+            bins vl     = {12'hC20};
+            bins vtype  = {12'hC21};
+            bins vlenb  = {12'hC22};
+        `endif
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp          = {12'h180};
+    }
+
     csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
         bins csrrs = {3'b010};
         bins csrrc = {3'b011};
     }
 
-
+    csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
+        `ifdef XLEN64
+            bins csrrc_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
+            bins csrrw0    = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
+            bins csrrw1    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
+            bins csrrs_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
+            bins csrr      = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
+        `else
+            bins csrrc_all = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
+            bins csrrw0    = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
+            bins csrrw1    = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
+            bins csrrs_all = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
+            bins csrr      = {35'b00000000_00000000_00000000_00000000_010}; // csrr
+        `endif
+    }
 
     csr_machine: coverpoint ins.current.insn[31:20]  {
         bins machine_0[] = {[12'h300:12'h3FF]};
@@ -189,8 +232,28 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
     }
+    shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+        bins mstatus_sstatus = { {12'h300, 12'h100} };
+        bins mie_sie         = { {12'h304, 12'h104} };
+        bins mip_sip         = { {12'h344, 12'h144} };
+        bins sstatus_mstatus = { {12'h100, 12'h300} };
+        bins sie_mie         = { {12'h104, 12'h304} };
+        bins sip_mip         = { {12'h144, 12'h344} };
+    }
+    csrw_prev: coverpoint ins.prev.insn {
+        wildcard bins csrr = {32'b????????????_?????_001_?????_1110011};
+    }
+    rs1_prev: coverpoint ins.prev.rs1_val {
+        bins zero = { 0  };
+        bins ones = { -1 };
+    }
 
+    cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;
     cp_scsrwalk:              cross priv_mode_s, csrname, csrop, walking_ones;
+    cp_scsr_from_m:           cross priv_mode_m, csrname, csraccesses;
+    cp_ucsr_from_s:           cross priv_mode_s, csruname, csraccesses;
+    cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
+    cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
 endgroup
 

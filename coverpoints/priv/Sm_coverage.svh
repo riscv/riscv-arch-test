@@ -140,35 +140,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    mcsrname_all : coverpoint ins.current.insn[31:20] { // extended set for access tests, including read-only CSRs
-        bins mstatus  = {12'h300};
-        bins misa     = {12'h301};
-        bins medeleg  = {12'h302};
-        bins mideleg  = {12'h303};
-        bins mie      = {12'h304};
-        bins mtvec    = {12'h305};
-        bins mscratch = {12'h340};
-        bins mepc     = {12'h341};
-        bins mcause   = {12'h342};
-        bins mtval    = {12'h343};
-        bins mip      = {12'h344};
-        bins menvcfg  = {12'h30A};
+    mcsrname_ro : coverpoint ins.current.insn[31:20] { // extended set for access tests, including read-only CSRs
         bins mvendorid= {12'hF11};
         bins marchid  = {12'hF12};
         bins mimpid   = {12'hF13};
         bins mhartid  = {12'hF14};
         bins mconfigptr= {12'hF15};
-        `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
-            bins mseccfg  = {12'h747};
-        `endif
-        `ifdef XLEN32
-            bins mstatush = {12'h310};
-            // bins medelegh = {12'h312}; # in Sm1p13 only
-            bins menvcfgh = {12'h31A};
-            `ifdef MSECCFG_SUPPORTED // update this in two places when UDB gives a name to this parameter
-                bins mseccfgh = {12'h757};
-            `endif
-        `endif
     }
 
     csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
@@ -200,6 +177,36 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins mtval    = {12'h343};
         bins mip      = {12'h344};
         bins menvcfg  = {12'h30A};
+        bins mcountinhibit = {12'h320};
+        bins mhpmevent3 = {12'hB03};
+        bins mhpmevent4 = {12'hB04};
+        bins mhpmevent5 = {12'hB05};
+        bins mhpmevent6 = {12'hB06};
+        bins mhpmevent7 = {12'hB07};
+        bins mhpmevent8 = {12'hB08};
+        bins mhpmevent9 = {12'hB09};
+        bins mhpmevent10= {12'hB0A};
+        bins mhpmevent11= {12'hB0B};
+        bins mhpmevent12= {12'hB0C};
+        bins mhpmevent13= {12'hB0D};
+        bins mhpmevent14= {12'hB0E};
+        bins mhpmevent15= {12'hB0F};
+        bins mhpmevent16= {12'hB10};
+        bins mhpmevent17= {12'hB11};
+        bins mhpmevent18= {12'hB12};
+        bins mhpmevent19= {12'hB13};
+        bins mhpmevent20= {12'hB14};
+        bins mhpmevent21= {12'hB15};
+        bins mhpmevent22= {12'hB16};
+        bins mhpmevent23= {12'hB17};
+        bins mhpmevent24= {12'hB18};
+        bins mhpmevent25= {12'hB19};
+        bins mhpmevent26= {12'hB1A};
+        bins mhpmevent27= {12'hB1B};
+        bins mhpmevent28= {12'hB1C};
+        bins mhpmevent29= {12'hB1D};
+        bins mhpmevent30= {12'hB1E};
+        bins mhpmevent31= {12'hB1F};
         `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
             bins mseccfg  = {12'h747};
         `endif
@@ -212,6 +219,73 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    mcounters : coverpoint ins.current.insn[31:20] {
+        bins mcycle      = {12'hB00};
+        bins minstret    = {12'hB02};
+        bins mhpmcounter3 = {12'hB03};
+        bins mhpmcounter4 = {12'hB04};
+        bins mhpmcounter5 = {12'hB05};
+        bins mhpmcounter6 = {12'hB06};
+        bins mhpmcounter7 = {12'hB07};
+        bins mhpmcounter8 = {12'hB08};
+        bins mhpmcounter9 = {12'hB09};
+        bins mhpmcounter10= {12'hB0A};
+        bins mhpmcounter11= {12'hB0B};
+        bins mhpmcounter12= {12'hB0C};
+        bins mhpmcounter13= {12'hB0D};
+        bins mhpmcounter14= {12'hB0E};
+        bins mhpmcounter15= {12'hB0F};
+        bins mhpmcounter16= {12'hB10};
+        bins mhpmcounter17= {12'hB11};
+        bins mhpmcounter18= {12'hB12};
+        bins mhpmcounter19= {12'hB13};
+        bins mhpmcounter20= {12'hB14};
+        bins mhpmcounter21= {12'hB15};
+        bins mhpmcounter22= {12'hB16};
+        bins mhpmcounter23= {12'hB17};
+        bins mhpmcounter24= {12'hB18};
+        bins mhpmcounter25= {12'hB19};
+        bins mhpmcounter26= {12'hB1A};
+        bins mhpmcounter27= {12'hB1B};
+        bins mhpmcounter28= {12'hB1C};
+        bins mhpmcounter29= {12'hB1D};
+        bins mhpmcounter30= {12'hB1E};
+        bins mhpmcounter31= {12'hB1F};
+        `ifdef XLEN32
+            bins mcycleh      = {12'hB80};
+            bins minstreth    = {12'hB82};
+            bins mhpmcounter3h = {12'hB83};
+            bins mhpmcounter4h = {12'hB84};
+            bins mhpmcounter5h = {12'hB85};
+            bins mhpmcounter6h = {12'hB86};
+            bins mhpmcounter7h = {12'hB87};
+            bins mhpmcounter8h = {12'hB88};
+            bins mhpmcounter9h = {12'hB89};
+            bins mhpmcounter10h= {12'hB8A};
+            bins mhpmcounter11h= {12'hB8B};
+            bins mhpmcounter12h= {12'hB8C};
+            bins mhpmcounter13h= {12'hB8D};
+            bins mhpmcounter14h= {12'hB8E};
+            bins mhpmcounter15h= {12'hB8F};
+            bins mhpmcounter16h= {12'hB90};
+            bins mhpmcounter17h= {12'hB91};
+            bins mhpmcounter18h= {12'hB92};
+            bins mhpmcounter19h= {12'hB93};
+            bins mhpmcounter20h= {12'hB94};
+            bins mhpmcounter21h= {12'hB95};
+            bins mhpmcounter22h= {12'hB96};
+            bins mhpmcounter23h= {12'hB97};
+            bins mhpmcounter24h= {12'hB98};
+            bins mhpmcounter25h= {12'hB99};
+            bins mhpmcounter26h= {12'hB9A};
+            bins mhpmcounter27h= {12'hB9B};
+            bins mhpmcounter28h= {12'hB9C};
+            bins mhpmcounter29h= {12'hB9D};
+            bins mhpmcounter30h= {12'hB9E};
+            bins mhpmcounter31h= {12'hB9F};
+        `endif
+    }
+
     csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
         bins csrrs = {3'b010};
         bins csrrc = {3'b011};
@@ -241,10 +315,24 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
-    cp_mcsr_access: cross priv_mode_m, mcsrname_all, csraccesses;
-    cp_mcsrwalk : cross priv_mode_m, mcsrname, csrop, walking_ones;
-    cp_csr_insufficient_priv: cross priv_mode_m, csrr,   csr_debug, nonzerord;
-    cp_csr_ro:                cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
+    mcounti
+
+    cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
+    cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
+    cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
+    cp_csr_insufficient_priv:   cross priv_mode_m, csrr,   csr_debug, nonzerord;
+    cp_csr_ro:                  cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
+
+    // counters
+    cp_cntr_access :            cross priv_mode_m, mcounters, csraccesses;
+    cp_inhibit :                cross mcountinhibit0, mcountinhibit2, mctr_read;
+endgroup
+
+covergroup Sm_mcounters_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
@@ -254,4 +342,5 @@ function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    Sm_mcounters_cg.sample(ins);
 endfunction

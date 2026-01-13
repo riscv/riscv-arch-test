@@ -316,7 +316,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Write walkint=g ones and zeros to all writable M-mode CSRs
+    # Write walking ones and zeros to all writable M-mode CSRs
     coverpoint = "cp_mcsrwalk"
     lines.append(
         comment_banner(

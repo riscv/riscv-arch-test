@@ -88,7 +88,9 @@ def generate_all_tests(
             elif ext in available_priv_extensions:
                 priv_ext_list.append(ext)
             else:
-                raise ValueError(f"Extension {ext} not found in testplans at {testplan_dir}.")
+                raise ValueError(
+                    f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators."
+                )
 
     # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []

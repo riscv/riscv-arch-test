@@ -13,7 +13,7 @@ REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64
 
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
-EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
 TESTDIR        := tests

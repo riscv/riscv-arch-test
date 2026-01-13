@@ -7,12 +7,12 @@
 
 """Floating point cross-product register edge value coverpoint generators (cr_fs1_fs2_edges, cr_fs1_fs2_edges_frm, etc.)."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.instruction_formatters import format_single_test
-from testgen.utils.common import return_test_regs
-from testgen.utils.edges import FLOAT_EDGES
-from testgen.utils.param_generator import generate_random_params
+from testgen.asm.helpers import return_test_regs
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.edges import FLOAT_EDGES
+from testgen.data.state import TestData
+from testgen.formatters import format_single_test
+from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_fs1_fs2_edges")

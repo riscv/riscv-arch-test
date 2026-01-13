@@ -33,3 +33,4 @@ ctp/src/norm
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 ctp/mismatch_report.txt
+tests/priv/Sm/Sm-00.S

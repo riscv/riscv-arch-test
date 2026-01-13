@@ -5,20 +5,15 @@
 
 [project]
 name = "testgen"
-version = "0.4.0"
-description = "RISC-V Architecture Compatibility Test Generator"
+version = "0.5.0"
+description = "RISC-V Architectural Certification Test Generator"
 # readme = "README.md"
-authors = [
-    { name = "Jordan Carlin", email = "jcarlin@hmc.edu" }
-]
+authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
 requires-python = ">=3.12"
-dependencies = [
-    "typer>=0.20.0",
-    "rich>=13.0.0",
-]
+dependencies = ["typer>=0.20.0", "rich>=13.0.0"]
 
 [project.scripts]
-testgen = "testgen.testgen:main"
+testgen = "testgen.cli:main"
 
 ##### BUILD #####
 [build-system]

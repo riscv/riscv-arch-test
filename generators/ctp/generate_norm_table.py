@@ -390,7 +390,7 @@ def main() -> None:
     # Default: download the canonical norm-rules.json from the ISA manual snapshot
     # canonical remote JSON used as default and as the fetch target when
     # --always-fetch is requested
-    canonical_json_url = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
+    canonical_json_url = 'https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
     p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
     p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
     p.add_argument('--out', default='ctp/src/norm/', help='Output directory for ASCIIDoc files (default: ctp/src/norm/)')
@@ -465,8 +465,8 @@ def main() -> None:
     # The link should apply to the tagged text (tag['text']) and the
     # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
-        UNPRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
-        PRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/privileged/index.html'
+        UNPRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
+        PRIV_BASE = 'https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html'
         tags_iter = [tags] if isinstance(tags, dict) else list(tags) if tags is not None else []
         for tg in tags_iter:
             if not isinstance(tg, dict):

@@ -86,7 +86,7 @@ sudo dnf install autoconf automake python3 libmpc-devel mpfr-devel gmp-devel \
 git clone https://github.com/riscv/riscv-gnu-toolchain
 cd riscv-gnu-toolchain
 ./configure --prefix=</path/to/install> --with-multilib-generator="rv32e-ilp32e--;rv32i-ilp32--;rv32im-ilp32--;rv32iac-ilp32--;rv32imac-ilp32--;rv32imafc-ilp32f--;rv32imafdc-ilp32d--;rv64i-lp64--;rv64ic-lp64--;rv64iac-lp64--;rv64imac-lp64--;rv64imafdc-lp64d--;rv64im-lp64--;"
-sudo make  # sudo may required depending on the selected `prefix`
+sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
 **Important**: Add the toolchain to your `PATH` by adding this line to your `~/.bashrc`:

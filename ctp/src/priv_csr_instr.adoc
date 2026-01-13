@@ -12,7 +12,7 @@ Privileged tests do not test reserved or custom instructions or CSRs because the
 Reserved instructions and CSRs are tested in the <<Ssstrict>> Ssstrict tests,
 where they should throw an Illegal Instruction exception if not implemented.
 
-==== Sm Machine-Mode CSRs
+==== Sm Machine-Mode CSRs and Instructions
 
 These test CSRs and privileged instructions in machine mode.
 
@@ -21,13 +21,13 @@ These test CSRs and privileged instructions in machine mode.
 ,===
 //include::{testplansdir}/Sm.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=1563313604#gid=1563313604[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604[Google Sheet Testplan]
 
 *** find all WPRI and WLRL fields.  Don't look at WPRI results.  Only test legal values of WLRL.
   TODO check WARL, WLRL, WPRI behaviors
 
 
-==== S Supervisor-Mode CSRs
+==== S Supervisor-Mode CSRs and Instructions
 
 These test additional CSRs that exist in supervisor mode, and privileged instructions in supervisor mode.
 
@@ -36,9 +36,9 @@ These test additional CSRs that exist in supervisor mode, and privileged instruc
 ,===
 //include::{testplansdir}/S.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=335048477#gid=335048477[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=335048477#gid=335048477[Google Sheet Testplan]
 
-==== U User-Mode CSRs
+==== U User-Mode CSRs and Instructions
 
 These test additional CSRs that exist in user mode, and privileged instructions in user mode.
 
@@ -47,7 +47,7 @@ These test additional CSRs that exist in user mode, and privileged instructions 
 ,===
 //include::{testplansdir}/U.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=1720466356#gid=1720466356[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356[Google Sheet Testplan]
 
 ==== SmF Floating-Point CSRs
 
@@ -58,13 +58,13 @@ These test additional CSRs that exist when floating-point is supported.
 ,===
 //include::{testplansdir}/SmF.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=29805079#gid=29805079[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079[Google Sheet Testplan]
 
 *** this should move to F, which requires CSRs fcsr, frm, fflags
 
-==== V Vector CSRs
+==== V Vector CSRs and Instructions
 
-These test additional CSRs that exist when vector is supported.
+These test additional CSRs and vset* instructions that exist when vector is supported.
 
 [[t-V-coverpoints]]
 .V Coverpoints
@@ -75,7 +75,7 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 
 *** reorganize
 
-==== V Vector Floatin-Point CSRs
+==== V Vector Floating-Point CSRs
 
 These test additional CSRs that exist when vector floating-point is supported.
 
@@ -97,7 +97,7 @@ These test additional CSR scenarios that exist when floating-point and user mode
 ,===
 //include::{testplansdir}/UF.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=242878857#gid=242878857[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=242878857#gid=242878857[Google Sheet Testplan]
 
 ==== UV User-Mode Vector CSRs
 
@@ -108,7 +108,7 @@ These test additional CSR scenarios that exist when vector and user mode are sup
 ,===
 //include::{testplansdir}/UV.adoc[]
 ,===
-https://docs.google.com/spreadsheets/d/1LEkptHit5Hs1UVtTlHc7nL0zl1ThB9_EPRIZVjQ6WdQ/edit?gid=1488477674#gid=1488477674[Google Sheet Testplan]
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1488477674#gid=1488477674[Google Sheet Testplan]
 
 ==== Zkr Entropy CSR
 

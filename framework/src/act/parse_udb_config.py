@@ -11,9 +11,11 @@ import filecmp
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
+import rich
 from ruamel.yaml import YAML
 
 
@@ -43,7 +45,11 @@ def validate_udb_config(udb_config_file: Path) -> None:
     ]
     env = os.environ.copy()
     env["PODMAN"] = "true"
-    subprocess.run(validate_udb_config_cmd, check=True, env=env)
+    try:
+        subprocess.run(validate_udb_config_cmd, check=True, env=env)
+    except subprocess.CalledProcessError:
+        rich.print(f"[red][bold]UDB configuration validation failed for {udb_config_file.name}.[endc]")
+        sys.exit(1)
 
 
 def get_config_params(udb_config_file: Path) -> dict[str, Any]:

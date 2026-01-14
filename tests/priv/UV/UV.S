@@ -3,7 +3,7 @@
 //
 // Written: David_Harris@hmc.edu 12 January 2025
 //
-// Purpose: Functional coverage tests for floating-point CSRs from user mode
+// Purpose: Functional coverage tests for vector CSRs from user mode
 //
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 ///////////////////////////////////////////

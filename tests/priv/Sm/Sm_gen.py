@@ -429,7 +429,8 @@ def makePrivBody() -> None:
 
     for csr in range(0x7B0, 0x7C0):
         body_lines += (
-            f"\tCSRR(t0, 0x{csr:03x})    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction\n"
+            f"\n{covergroup}_{coverpoint}_{csr}:\n",
+            f"\tCSRR(t0, 0x{csr:03x})    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction\n",
         )
 
     coverpoint = "cp_csr_ro"
@@ -445,7 +446,8 @@ def makePrivBody() -> None:
     body_lines += "\tLI(t0, -1)          # t0 = all 1s\n"
     for csr in range(0xC00, 0x1000):
         body_lines += (
-            f"\tCSRW(0x{csr:03x}, t0)   # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n"
+            f"\n{covergroup}_{coverpoint}_{csr}:\n",
+            f"\tCSRW(0x{csr:03x}, t0)   # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
         )
 
 

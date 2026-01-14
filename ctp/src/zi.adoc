@@ -20,7 +20,7 @@ include::{testplansdir}/Zifencei.adoc[]
 include::norm/Zifencei_norm_rules.adoc[]
 
 [[t-Zifencei-coverpoint-definitions]]
-.I Coverpoint Definitions
+.Zifencei Coverpoint Definitions
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition

@@ -354,13 +354,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `endif
 endgroup
 
-covergroup Sm_mcounters_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-
-endgroup
-
 function void sm_sample(int hart, int issue, ins_t ins);
     //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
     //    $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
@@ -368,5 +361,4 @@ function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
-    Sm_mcounters_cg.sample(ins);
 endfunction

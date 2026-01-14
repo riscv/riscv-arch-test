@@ -77,7 +77,7 @@ jobs:
           draft: false
           prerelease: ${{ ! (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true') }}
           make_latest: true
-          generate_release_notes: true
+          # generate_release_notes: true
           tag_name: ctp-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
           name: "CTP Release ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
           body: |

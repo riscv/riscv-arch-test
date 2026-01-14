@@ -1,20 +1,10 @@
 
 === Zicntr
 
-These tests exercise the mtime, mcycle, and minstret counters and related registers (time, cycle, instret).
-
-*** edit coverpoints to pull out hpm
-
-==== ZicntrSm Machine-Mode Counters
-
-[[t-ZicntrSm-coverpoints]]
-.ZicntrSm Coverpoints
-,===
-//include::{testplansdir}/ZicntrSm.adoc[]
-,===
-https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=0#gid=0[Google Sheet Testplan]
-
-*** move this to Sm because these counters are mandatory
+These privileged tests exercise access to counters and HPMs (`time`, `cycle`, `instret`, `hpmcounter[31:3]`)
+from lower privilege modes, as controlled by `mcounteren`, etc..
+Note the the Zicntr and Ziphm unprivileged tests exercise access to these counters from M-mode
+and the Sm tests exercise access to `mcycle`, `minstret`, `mhpmcounter`, etc. from M-mode.
 
 ==== ZicntrS Supervisor-Mode Counters
 

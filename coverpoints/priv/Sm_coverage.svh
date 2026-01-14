@@ -315,7 +315,28 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
-    mcounti
+    old_mcountinhibit0: coverpoint ins.prev.csr[12'h320][0] {
+        bins zero = {1'b0};
+        `ifdef COUNTINHIBIT_EN_0
+            bins one = {1'b1}; // only if counter can be inhibited
+        `endif
+    }
+    old_mcountinhibit2: coverpoint ins.prev.csr[12'h320][2] {
+        bins zero = {1'b0};
+        `ifdef COUNTINHIBIT_EN_2
+            bins one = {1'b1}; // only if counter can be inhibited
+        `endif
+    }
+
+    mcycle: coverpoint ins.current.insn[31:20] {
+        bins mcycle = {12'hB00};
+    }
+    minstret: coverpoint ins.current.insn[31:20] {
+        bins minstret = {12'hB02};
+    }
+    time_csr: coverpoint ins.current.insn[31:20] {
+        bins time_csr = {12'hC01};
+    }
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
@@ -325,7 +346,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, csraccesses;
-    cp_inhibit :                cross mcountinhibit0, mcountinhibit2, mctr_read;
+    cp_inhibit_0 :              cross priv_mode_m, csrr, mcycle, old_mcountinhibit0;
+    cp_inhibit_2 :              cross priv_mode_m, csrr, minstret, old_mcountinhibit2;
+
+    `ifdef TIME_CSR_IMPLEMENTED
+        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes time has been written
+    `endif
 endgroup
 
 covergroup Sm_mcounters_cg with function sample(ins_t ins);

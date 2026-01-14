@@ -58,6 +58,9 @@ def generate_all_tests(
     extensions: Annotated[
         str, typer.Option("--extensions", "-e", help="Comma-separated list of extensions to generate tests for")
     ] = "all",
+    exclude: Annotated[
+        str, typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation")
+    ] = "",
     jobs: Annotated[
         int | None, typer.Option("--jobs", "-j", show_default="number of CPU cores", help="Number of parallel jobs")
     ] = None,
@@ -91,6 +94,15 @@ def generate_all_tests(
                 raise ValueError(
                     f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators."
                 )
+
+    # Handle extension exclusions
+    if exclude:
+        for ext in exclude.split(","):
+            ext = ext.strip()
+            if ext in unpriv_ext_list:
+                unpriv_ext_list.remove(ext)
+            if ext in priv_ext_list:
+                priv_ext_list.remove(ext)
 
     # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []

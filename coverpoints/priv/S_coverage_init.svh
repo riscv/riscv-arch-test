@@ -11,3 +11,4 @@
     S_scause_cg = new();      S_scause_cg.set_inst_name("obj_scause");
     S_sstatus_cg = new();     S_sstatus_cg.set_inst_name("obj_sstatus");
     S_sprivinst_cg = new();   S_sprivinst_cg.set_inst_name("obj_sprivinst");
+    S_scsr_cg = new();        S_scsr_cg.set_inst_name("obj_scsr");

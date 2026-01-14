@@ -8,5 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    U_uprivinst_cg = new();    U_uprivinst_cg.set_inst_name("obj_U_uprivinst");
-    U_ucsr_cg = new();         U_ucsr_cg.set_inst_name("obj_U_ucsr");
+    UV_uvcsr_cg = new();         UV_uvcsr_cg.set_inst_name("obj_UV_uvcsr");

@@ -8,17 +8,9 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 ///////////////////////////////////////////
 
-// General notes:
-// Use csrrw/csrrs/csrrc t6, csr, rs1    when modifying a CSR to also check the old value.
-
-// There is no better place to test the pause instruction, so it is included here.
-// Therefore, Zihintpause is needed in the MARCH to compile the pause instruction.
-// If Zihintpause is not supported on the DUT, the pause instruction behaves as a NOP.
-// Therefore, Zihintpause is not needed in the REQUIRED_EXTENSIONS.
-
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, U, Zicsr, Sm]
-# MARCH: rv${XLEN}i_zicsr_zihintpause
+# REQUIRED_EXTENSIONS: [I, U, Zicsr]
+# MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

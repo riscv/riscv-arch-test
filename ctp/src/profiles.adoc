@@ -112,7 +112,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
 |InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
-|ZicntrSm|Machine Counters|<<t-ZicntrSm-coverpoints>>|o|x|x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
 |ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x

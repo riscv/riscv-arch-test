@@ -33,6 +33,7 @@ main:
     li a0, 0
     ecall
 
+# just a stub so far.  Insert actual tests here.
 
 finished:
     // return to machine mode

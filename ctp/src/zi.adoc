@@ -19,7 +19,7 @@ include::{testplansdir}/Zifencei.adoc[]
 
 include::norm/Zifencei_norm_rules.adoc[]
 
-[[t-Zifencei-coverpoint Definitions]]
+[[t-Zifencei-coverpoint-definitions]]
 .I Coverpoint Definitions
 [cols="2, 1, 4" options=header]
 |===
@@ -102,10 +102,11 @@ include::norm/Zicond_norm_rules.adoc[]
 
 ==== Zicntr Counters
 
-Zicntr provides unprivileged read access to the cycle, time, and instret counters.
+Zicntr provides unprivileged read access to the `cycle`, `time`, and `instret` counters.
 Note that, like all other unprivileged tests, these tests are performed in M-mode.
-The ZicntrS and ZicntrU privileged tests exercise reading the counters in S-mode and U-mode,
+The <<t-ZicntrS-coverpoints, ZicntrS>> and <<t-ZicntrU-coverpoints, ZicntrU>> privileged tests exercise reading the counters in S-mode and U-mode,
 with control by `mcounteren` and `scounteren` CSRs.
+The <<t-Sm-coverpoints, Sm>> privileged tests exercise `mcycle`, `minstret`, and HPMs from M-mode.
 
 [[t-Zicntr-coverpoints]]
 .Zicntr Instruction Coverpoints
@@ -113,12 +114,12 @@ include::{testplansdir}/Zicntr.adoc[]
 
 include::norm/Zicntr_norm_rules.adoc[]
 
-*** add normative rule for TIME_CSR_IMPLEMENTED UDB parameter
+TODO: add normative rule for TIME_CSR_IMPLEMENTED UDB parameter
 referencing the following text from the priv spec:
 
 ````
-[#norm:TIME_CSR_IMPLEMENTED]#emulate this
-functionality on behalf of less-privileged modes in M-mode software#.
+emulate this
+functionality on behalf of less-privileged modes in M-mode software.
 ````
 This rule is checked by the time bin of cp_cntr coverpoint.
 
@@ -128,17 +129,17 @@ This rule is checked by the time bin of cp_cntr coverpoint.
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr|3|Read each of the counters (cycle, time, instret) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for instret, or at least 1 for cycle, 0 for time (time may not increment between reads).
-For RV32, also check cycleh, timeh, instreth with the same definitions.
-Skip time and timeh if parameter TIME_CSR_IMPLEMENTED = False.
+|cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, 0 for `time` (`time` may not increment between reads).
+For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
+Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 
 [[t-Zicntr-parameters]]
 .Zicntr Parameters
-[cols="2, 1, 4" options=header]
+[cols="2, 4" options=header]
 |===
 |Parameter|Definition
-|TIME_CSR_IMPLEMENTED|Defines whether the time and timeh CSRs are implemented.  If False, the cp_cntr coverpoint skips checking time and timeh.
+|TIME_CSR_IMPLEMENTED|Defines whether the `time` and `timeh` CSRs are implemented.  If False, the cp_cntr coverpoint skips checking `time` and `timeh`.
 |===
 
 ==== Zihpm Hardware Performance Monitors
@@ -162,7 +163,7 @@ include::norm/Zihpm_norm_rules.adoc[]
 Note that this coverpoint assumes that reading hpmcounter* never traps.
 See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issue #2558] for discussion.
 There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
-sometimes trap.
+sometimes trap because unprivileged tests should not trap.
 
 ==== Zihintpause Pause Hint
 

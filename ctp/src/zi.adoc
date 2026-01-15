@@ -10,6 +10,7 @@ This section includes a variety of unprivileged extensions.
 .Zicsr Instruction Coverpoints
 include::{testplansdir}/Zicsr.adoc[]
 
+*UDB Parameters:* None.  TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).
 
 ==== Zifencei Instruction-Fetch Fence
 
@@ -28,6 +29,8 @@ include::norm/Zifencei_norm_rules.adoc[]
 |===
 
 The Zifencei tests must write an instruction to an address, execute `fence.i`, and then execute the instruction to check that the new instruction is executed.
+
+*UDB Parameters:* None.
 
 ==== Misalign: Misaligned Loads/Stores
 
@@ -73,13 +76,14 @@ include::norm/MisalignZca_norm_rules.adoc[]
 |cp_misalign|8|All 8 combinations of the three least significant bits of the address.
 |===
 
+*UDB Parameters:* Misaligned tests are only executed if MISALIGNED_LDST=True.  ExceptionsSm has multiple tests that may fault depending on MISALIGNED_LDST
 
 ==== Zicclsm Misaligned Loads/Stores
 
 The Zicclsm extension, defined in the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22] and
 https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] profiles, provides the following normative rule.  The extension applies to privilege modes below M-mode (because the profiles apply to supervisor-mode execution environment), and requires that misaligned scalar and vector loads and stores to main memory either are handled in hardware or raise a misaligned exception that is handled by the execution environment.  This is tested by Exceptions coverpoints that either return the expected value or throw a misaligned trap. Misaligned atomics are not part of Zicclsm, but are checked in {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
 
-[[t-Zicclsm-normative_rules]]
+[[t-Zicclsm-normative-rules]]
 .Zicclsm Normative Rules
 [cols="1,4,3", options="header"]
 |===
@@ -87,6 +91,8 @@ https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] 
 
 |zicclsm_op |Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported. |{ExceptionsS, ExceptionsU, ExceptionsZc, ExceptionsF, ExceptionsVls}/{cp_load_address_misaligned, cp_store_address_misaligned}
 |===
+
+*UDB Parameters:* None.
 
 *** ExceptionsVls coverpoints need to be written.
 *** update normative rule when tagged in profile and hyperlink is available
@@ -99,6 +105,8 @@ https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] 
 include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zicntr Counters
 
@@ -134,13 +142,7 @@ For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
 Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 
-[[t-Zicntr-parameters]]
-.Zicntr Parameters
-[cols="2, 4" options=header]
-|===
-|Parameter|Definition
-|TIME_CSR_IMPLEMENTED|Defines whether the `time` and `timeh` CSRs are implemented.  If False, the cp_cntr coverpoint skips checking `time` and `timeh`.
-|===
+*UDB Parameters:* TIME_CSR_IMPLEMENTED defines whether the `time` and `timeh` CSRs are implemented.  If False, the cp_cntr coverpoint skips checking `time` and `timeh`.
 
 ==== Zihpm Hardware Performance Monitors
 
@@ -165,6 +167,8 @@ See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issu
 There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
 sometimes trap because unprivileged tests should not trap.
 
+*UDB Parameters:* None.  MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN, exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
+
 ==== Zihintpause Pause Hint
 
 [[t-Zihintpause-coverpoints]]
@@ -172,6 +176,8 @@ sometimes trap because unprivileged tests should not trap.
 include::{testplansdir}/Zihintpause.adoc[]
 
 include::norm/Zihintpause_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zihintntl Non-temporal Locality Hint
 
@@ -181,11 +187,15 @@ include::norm/Zihintpause_norm_rules.adoc[]
 //include::{testplansdir}/Zihintntl.adoc[]
 ,===
 
+*UDB Parameters:* None.
+
 ==== ZihintntlZca Compressed Non-temporal Locality Hint
 
 Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all` are a subset of the `c.add` hints. They are tested by the Zca_c_hint_cg/cp_chint_add coverpoint, so require no additional coverpoints.
 
 include::norm/ZihintntlZca_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zicbom Cache Block Flush/Invalidate
 

@@ -30,6 +30,8 @@ include::{testplansdir}/F.adoc[]
 
 include::norm/F_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ==== D Double-Precision FP
 
 [[t-D-coverpoints]]
@@ -37,6 +39,8 @@ include::norm/F_norm_rules.adoc[]
 include::{testplansdir}/D.adoc[]
 
 include::norm/D_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zfh Half-Precision FP
 
@@ -46,6 +50,8 @@ include::{testplansdir}/Zfh.adoc[]
 
 include::norm/Zfh_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZfhD
 
 [[t-ZfhD-coverpoints]]
@@ -53,6 +59,8 @@ include::norm/Zfh_norm_rules.adoc[]
 include::{testplansdir}/ZfhD.adoc[]
 
 include::norm/ZfhD_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ===== Zfhmin
 
@@ -62,6 +70,8 @@ include::{testplansdir}/Zfhmin.adoc[]
 
 include::norm/Zfhmin_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZfhminD
 
 [[t-ZfhminD-coverpoints]]
@@ -69,6 +79,8 @@ include::norm/Zfhmin_norm_rules.adoc[]
 include::{testplansdir}/ZfhminD.adoc[]
 
 include::norm/ZfhminD_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zfa Additional FP
 
@@ -80,6 +92,8 @@ include::{testplansdir}/ZfaF.adoc[]
 
 include::norm/ZfaF_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZfaD
 
 [[t-ZfaD-coverpoints]]
@@ -88,6 +102,8 @@ include::{testplansdir}/ZfaD.adoc[]
 
 include::norm/ZfaD_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZfaZfh
 
 [[t-ZfaZfh-coverpoints]]
@@ -95,6 +111,8 @@ include::norm/ZfaD_norm_rules.adoc[]
 include::{testplansdir}/ZfaZfh.adoc[]
 
 include::norm/ZfaZfh_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ===== ZfaZfhD
 
@@ -107,6 +125,8 @@ include::{testplansdir}/ZfaZfhD.adoc[]
 
 include::norm/ZfaZfhD_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== Zfbfmin Scalar BF16 Converts
 
 [[t-Zfbfmin-coverpoints]]
@@ -115,3 +135,5 @@ include::norm/ZfaZfhD_norm_rules.adoc[]
 
 
 //include::norm/Zfbfmin_norm_rules.adoc[]
+
+*UDB Parameters:* None.

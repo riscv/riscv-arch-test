@@ -9,6 +9,7 @@ include::{testplansdir}/M.adoc[]
 
 include::norm/M_norm_rules.adoc[]
 
+*UDB Parameters:* None
 
 ==== Zmmul
 
@@ -19,3 +20,5 @@ The Zmmul extension is a subset of the M extension that includes only the multip
 include::{testplansdir}/Zmmul.adoc[]
 
 include::norm/Zmmul_norm_rules.adoc[]
+
+*UDB Parameters:* None

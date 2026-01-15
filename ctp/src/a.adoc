@@ -43,10 +43,10 @@ include::{testplansdir}/Zalrsc.adoc[]
 [cols="2, 1, 4" options=header]
 |===
 |Coverpoint|Bins|Definition
-.3+|cp_custom_lr coverpoints
+3+^|cp_custom_lr coverpoints
 |cp_custom_aqrl|3|none, aq, aqrl
 |cp_custom_rd_edges|3|rd_value = 0, 1, -1
-.3+|cp_custom_sc coverpoints
+3+^|cp_custom_sc coverpoints
 |cp_custom_aqrl|3|none, rl, aqrl
 |cp_custom_sc_after_sc|2|sc followed by sc
 |cp_custom_sc_after_store|4|store followed by sc

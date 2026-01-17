@@ -350,7 +350,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_inhibit_2 :              cross priv_mode_m, csrr, minstret, old_mcountinhibit2;
 
     `ifdef TIME_CSR_IMPLEMENTED
-        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes time has been written
+        cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
     `endif
 endgroup
 

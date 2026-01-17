@@ -209,6 +209,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT`
 
+**Timer Macros**: Can be left blank if timer is not tested.
+
+- `RVMODEL_SET_MTIME`
+
 **Interrupt Macros**: Can be left blank if interrupts are not supported. `RVMODEL_WRITE_GEIP` should be blank if hypervisor is not supported.
 
 - `RVMODEL_SET_MEXT_INT`

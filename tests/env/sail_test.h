@@ -64,6 +64,17 @@
   j 1b                       ;/* Loop */             \
 3:
 
+##### Machine Timer #####
+
+# Set the machine timer (mtime) to the value in the register _R1.
+# _R2 can be used as a temporary register (e.g. address of mtime).
+# For RV32, only write the lower 32 bits of mtime.
+#define MTIME_ADDR  0x0200BFF8  /* Address of mtime CSR */
+#define RVMODEL_SET_MTIME(_R1, _R2)        \
+    li   _R2, MTIME_ADDR        ; /* MTIME address */ \
+    SREG _R1, 0(_R2)            ; /* Set MTIME low */     \
+
+
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT

@@ -80,10 +80,10 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
-|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|o|o|x|x|x
+|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
+|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-normative-rules>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
@@ -148,8 +148,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Sstvecd|Direct Vector|<<t-Sstvecd-coverpoints>>|||x|x|x
 |Sstvala|stval Addresses|<<t-Sstvala-coverpoints>>|||x|x|x
 8+^|Strict
-|SsstrictSm|Machine Strict (unratified)|<<t-SsstrictSm-coverpoints>>|||o|o|o
-|SsstrictS|Superisor Strict|<<t-SsstrictS-coverpoints>>|||o|o|o
+|SsstrictSm|Machine Strict (unratified)|<<SsstrictSm>>|||o|o|o
+|SsstrictS|Supervisor Strict|<<SsstrictS>>|||o|o|o
 8+^|Vector
 |Vx8|Vector Integer 8-bit|<<t-Vx-coverpoints>>|||o|o|x
 |Vx16|Vector Integer 16-bit|<<t-Vx-coverpoints>>|||o|o|x
@@ -228,7 +228,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zawrs|Wait on Reservation Set|<<t-Zawrs-coverpoints>>||||x|x
 |Sdtrig|Debug Triggers|<<t-Sdtrig-coverpoints>>||||o|o
 8+^|Non-Profile Extensions
-|E|Embedded 16 Regs|<<t-E-normative_rules>>|||||
+|E|Embedded 16 Regs|<<t-E-normative-rules>>|||||
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||
 |Zdinx|Double in Int Regs|<<t-Zdinx-coverpoints>>|||||
 |Zhinx|Half in Int Regs|<<t-Zhinx-coverpoints>>|||||

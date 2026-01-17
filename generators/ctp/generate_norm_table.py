@@ -281,7 +281,7 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
         ''
     ])
     if base:
-        lines.extend([f'[[t-{base}-normative_rules]]', f'.{base} Normative Rules'])
+        lines.extend([f'[[t-{base}-normative-rules]]', f'.{base} Normative Rules'])
 
     lines.extend([
         '[cols="1,4,3", options="header"]',

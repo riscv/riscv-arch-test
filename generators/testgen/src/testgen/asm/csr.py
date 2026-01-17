@@ -28,8 +28,8 @@ def gen_csr_read_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> s
     """
     test_data.sigupd_count += 1
     return (
-        f"# Read {csr_name} into x{check_reg} and check against expected.\n"
-        f"RVTEST_SIGUPD_CSR_READ({csr_name}, x{check_reg}, test_{test_data.test_count}) "
+        f"\t# Read {csr_name} into x{check_reg} and check against expected.\n"
+        f"\tRVTEST_SIGUPD_CSR_READ({csr_name}, x{check_reg}, test_{test_data.test_count}) "
     )
 
 
@@ -71,21 +71,22 @@ def csr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpo
     save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
-        f"    CSRR(x{save_reg}, {csr_name})    # Save CSR",
-        f"    li x{temp_reg}, -1           # x{temp_reg} = all 1s",
-        f"    CSRW({csr_name}, x{temp_reg})    # Write all 1s to CSR",
+        f"\n# CSR Access Tests for {csr_name}",
+        f"\tCSRR(x{save_reg}, {csr_name})    # Save CSR",
+        f"\tli x{temp_reg}, -1           # x{temp_reg} = all 1s",
         test_data.add_testcase(coverpoint, f"{csr_name}_writeall1s", covergroup),
+        f"\tCSRW({csr_name}, x{temp_reg})    # Write all 1s to CSR",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        f"    CSRW({csr_name}, zero)   # Write all 0s to CSR",
         test_data.add_testcase(coverpoint, f"{csr_name}_writeall0s", covergroup),
+        f"\tCSRW({csr_name}, zero)   # Write all 0s to CSR",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        f"    CSRS({csr_name}, x{temp_reg})    # Set all CSR bits",
         test_data.add_testcase(coverpoint, f"{csr_name}_setall", covergroup),
+        f"\tCSRS({csr_name}, x{temp_reg})    # Set all CSR bits",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        f"    CSRC({csr_name}, x{temp_reg})    # Clear all CSR bits",
         test_data.add_testcase(coverpoint, f"{csr_name}_clearall", covergroup),
+        f"\tCSRC({csr_name}, x{temp_reg})    # Clear all CSR bits",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        f"    CSRW({csr_name}, x{save_reg})       # Restore CSR",
+        f"\tCSRW({csr_name}, x{save_reg})       # Restore CSR",
     ]
     test_data.int_regs.return_registers([save_reg, temp_reg, check_reg])
     return lines

@@ -44,8 +44,8 @@ covergroup ExceptionsZaamo_exceptions_cg with function sample(ins_t ins);
         // auto fills 000 through 111
     }
     // main coverpoints
-    cp_load_address_misaligned:  cross amo_instrs, adr_LSBs;
-    cp_load_access_fault:        cross amo_instrs, illegal_address;
+    cp_amo_address_misaligned:  cross amo_instrs, adr_LSBs;
+    cp_amo_access_fault:        cross amo_instrs, illegal_address;
 
 endgroup
 

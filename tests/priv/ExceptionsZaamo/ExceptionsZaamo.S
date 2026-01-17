@@ -22,7 +22,7 @@
 main:
 
 /////////////////////////////////
-//cp_load_address_misaligned
+//cp_amo_address_misaligned
 /////////////////////////////////
 
 // Test values 0-7 as the LSB for rs1 of the AMO instructions
@@ -41,11 +41,11 @@ loop:
     blt  a2, a3, loop   // If a2 is less than 8, branch back to 'loop'
 
 /////////////////////////////////
-//cp_load_access_fault
+//cp_amo_access_fault
 /////////////////////////////////
 
     // Call the Zaamo_Instructions function
-    // No missalignment (a2 = 0),
+    // No misalignment (a2 = 0),
     // Enable Instruction access fault (a1 = 1)
     li  a0, 0
     li  a1, 1

@@ -346,8 +346,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, csraccesses;
-    cp_inhibit_0 :              cross priv_mode_m, csrr, mcycle, old_mcountinhibit0;
-    cp_inhibit_2 :              cross priv_mode_m, csrr, minstret, old_mcountinhibit2;
+    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit0;
+    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit2;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written

@@ -501,7 +501,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     # Test inhibiting mcycle
-    coverpoint = "cp_inhibit_0"
+    coverpoint = "cp_inhibit_mcycle"
     lines.append(
         comment_banner(
             f"{coverpoint}",
@@ -521,8 +521,8 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Test inhibiting mcycle
-    coverpoint = "cp_inhibit_2"
+    # Test inhibiting minstret
+    coverpoint = "cp_inhibit_minstret"
     lines.append(
         comment_banner(
             f"{coverpoint}",

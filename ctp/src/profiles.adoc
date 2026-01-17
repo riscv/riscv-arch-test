@@ -149,7 +149,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Sstvala|stval Addresses|<<t-Sstvala-coverpoints>>|||x|x|x
 8+^|Strict
 |SsstrictSm|Machine Strict (unratified)|<<SsstrictSm>>|||o|o|o
-|SsstrictS|Superisor Strict|<<SsstrictS>>|||o|o|o
+|SsstrictS|Supervisor Strict|<<SsstrictS>>|||o|o|o
 8+^|Vector
 |Vx8|Vector Integer 8-bit|<<t-Vx-coverpoints>>|||o|o|x
 |Vx16|Vector Integer 16-bit|<<t-Vx-coverpoints>>|||o|o|x

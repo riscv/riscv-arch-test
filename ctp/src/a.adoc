@@ -28,7 +28,7 @@ include::{testplansdir}/Zaamo.adoc[]
 
 |===
 
-*UDB Parameters:* None. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>).
+*UDB Parameters:* None. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>), but not Zaamo.
 
 ==== Zalrsc Load-Reserved / Store-Conditional Extension
 
@@ -67,7 +67,9 @@ TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as
 described in <<sec:lrscseq>>, are also permitted.
 
-*UDB Parameters:* None. The LRSC_MISALIGNED_BEHAVIOR parameter affects the expected results of ExceptionsZalrsc/cp_{load/store}_address_misaligned (<<t-ExceptionsZalrsc-coverpoints>>).
-LRSC_RESERVATION_STRATEGY affects the expected results of sc_w/cp_custom_sc_address.
-LRSC_FAIL_ON_NON_EXACT_LRSC affects the expected results of sc_d/cg_cp_custom_sc_lrsc and sc_w/cp_custom_sc_address.
-LRSC_FAIL_ON_VA_SYNONYM is not tested.
+*UDB Parameters:*
+
+* LRSC_RESERVATION_STRATEGY affects the expected results of sc_w/cp_custom_sc_address.
+* LRSC_FAIL_ON_NON_EXACT_LRSC affects the expected results of sc_d/cg_cp_custom_sc_lrsc and sc_w/cp_custom_sc_address.
+* The LRSC_MISALIGNED_BEHAVIOR parameter affects the expected results of ExceptionsZalrsc/cp_{load/store}_address_misaligned (<<t-ExceptionsZalrsc-coverpoints>>).
+* LRSC_FAIL_ON_VA_SYNONYM is not tested.

@@ -41,10 +41,12 @@ def validate_udb_config(udb_config_file: Path) -> None:
         "./external/riscv-unified-db/bin/udb",
         "validate",
         "cfg",
-        f"cfgs/{udb_config_file.name}",
+        f"{udb_config_file}",
+        # f"cfgs/{udb_config_file.name}",
     ]
     env = os.environ.copy()
     env["PODMAN"] = "true"
+    env["UDB_CONTAINER_BIND"] = str(udb_config_file.parent.resolve())
     try:
         subprocess.run(validate_udb_config_cmd, check=True, env=env)
     except subprocess.CalledProcessError:
@@ -68,12 +70,13 @@ def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
             "list",
             "extensions",
             "--config",
-            f"cfgs/{udb_config_file.name}",
+            f"{udb_config_file}",
             "--output",
             f"{udb_config_file.stem}_extensions.txt",
         ]
         env = os.environ.copy()
         env["PODMAN"] = "true"
+        env["UDB_CONTAINER_BIND"] = str(udb_config_file.parent.resolve())
         subprocess.run(generate_extensions_list_cmd, check=True, env=env)
         shutil.move(f"./external/riscv-unified-db/{udb_config_file.stem}_extensions.txt", extension_list_file)
 
@@ -83,15 +86,13 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
 
 
 def generate_udb_files(udb_config_file: Path, output_dir: Path) -> None:
-    update_udb_submodule()
-
-    # TODO: Figure out a more robust way to handle UDB validation
-    # Currently only works if using docker as container runtime and requires copying UDB config into riscv-unified-db directory
-    copied_udb_config = Path(f"./external/riscv-unified-db/cfgs/{udb_config_file.name}")
-    if not copied_udb_config.exists() or not filecmp.cmp(udb_config_file, copied_udb_config):
-        shutil.copy(udb_config_file, copied_udb_config)
+    if (
+        not (output_dir / "extensions.txt").exists()
+        or (output_dir / "extensions.txt").stat().st_mtime < udb_config_file.stat().st_mtime
+    ):
+        update_udb_submodule()
         validate_udb_config(udb_config_file)
-    generate_extension_list(udb_config_file, output_dir)
+        generate_extension_list(udb_config_file, output_dir)
 
     # TODO: Generate DUT specific header file from UDB
 

@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - run: git submodule update --init external/riscv-unified-db
 
@@ -49,15 +49,15 @@ jobs:
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 
-      # - name: Compile and run tests on Sail
-      #   run: CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+      - name: Compile and run tests on Sail
+        run: CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
 
   vector-testgen:
     name: Vector Testgen
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
@@ -69,7 +69,7 @@ jobs:
     name: Build CTP
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6

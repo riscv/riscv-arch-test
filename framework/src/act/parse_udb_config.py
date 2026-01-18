@@ -7,7 +7,6 @@
 # Parse UDB configuration file
 ##################################
 
-import filecmp
 import os
 import shutil
 import subprocess

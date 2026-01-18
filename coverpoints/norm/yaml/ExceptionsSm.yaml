@@ -1,0 +1,29 @@
+normative_rule_definitions:
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: [""]
+
+  # store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint: [""]
+
+  # If an instruction may raise multiple synchronous exceptions, the decreasing
+  # priority order of &lt;&lt;norm:exc_priority&gt;&gt; indicates which exception is
+  # taken and reported in mcause. Load/store/AMO address-misaligned exceptions may
+  # have either higher or lower priority than load/store/AMO page-fault and
+  # access-fault exceptions.
+  - name: mcause_exccode_pri
+    coverpoint: [""]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
+  # 1|During instruction address translation: First encountered page fault or access
+  # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
+  # 8,9,11 3 3|Illegal instruction Instruction address misaligned Environment call
+  # Environment break Load/store/AMO address breakpoint¶|4,6|Optionally:
+  # Load/store/AMO address misaligned¶|13, 15, 5, 7|During address translation for
+  # an explicit memory access: First encountered page fault or access
+  # fault¶|5,7|With physical address for an explicit memory access: Load/store/AMO
+  # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
+  # misaligned ===
+  - name: exc_priority
+    coverpoint: ["TODO: ExceptionsSm"]

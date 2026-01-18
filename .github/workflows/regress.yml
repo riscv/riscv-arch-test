@@ -36,9 +36,6 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y podman
-
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
@@ -51,7 +48,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+        run: DOCKER=1 CONFIG_FILE="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
 
   vector-testgen:
     name: Vector Testgen

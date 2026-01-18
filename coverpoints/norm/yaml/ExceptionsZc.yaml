@@ -11,8 +11,12 @@ normative_rule_definitions:
   - name: Zca_illegal
     coverpoint: ["ExceptionsZca_exceptions_cg/cp_illegal_instruction"]
   - name: Zca_no_misaligned
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Exceptions/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
+      ]
 
   - name: misa-c_set
-    coverpoint: []
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mcsr_access/misa"]
       # MISA.C is set if the following extensions are selected: | Zca and not F Zca, Zcf and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified (RV32 only)  this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified (RV64 only)  this configuration excludes Zcmp, Zcmt

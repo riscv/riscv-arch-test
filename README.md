@@ -212,6 +212,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 **Timer Macros**: Can be left blank if `mtime` is not supported..
 
 - `RVMODEL_SET_MTIME`
+- `RVMODEL_SET_MTIMEH` (RV32 only)
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported. `RVMODEL_WRITE_GEIP` should be blank if hypervisor is not supported.
 
@@ -305,6 +306,49 @@ A common source of errors is configuration mismatches, so ensure that:
 - The Sail config file matches your UDB configuration and DUT
 - Your `model_test.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
+
+## Developing Certification Test Plan, Coverpoints, and Tests
+
+The process of developing the CTP, coverpoints, and tests for a new suite differs
+for table-driven unprivileged tests and for spreadsheet-driven privileged tests.
+Each is described below.
+
+TODO: Jordan is writing most of this section.
+
+### Table-Driven Unprivileged Coverpoints and Tests
+
+### Spreadsheet-Driven Privileged Tests
+
+### Certification Test Plan
+
+Each test suite needs a section in the CTP describing the coverpoints, the
+mapping of normative rules to coverpoints, and any UDB parameters that affect
+the suite.
+
+For unprivileged suites, only non-standard coverpoints need to be defined.
+See the CTP section "C Compressed Extension" for examples. For privileged
+suites, there are no standard coverpoints and instead the testplan links to
+a Google Sheet. See the CTP Section "Sm Machine-Mode CSRs and Instructions"
+for an example.
+
+Both privileged and unprivileged suites need a mapping between the normative
+rules and coverpoints. This mapping is a YAML file in coverpoints/norm/yaml
+containing a list of rule names and the coverpoints that exercise them. There
+should be one YAML for each test suite.
+
+Instead of typing this YAML from scratch, it is easier to make an outline
+from the normative rules already in the riscv-isa-manual repo. Make sure
+you have a current copy of riscv-isa-manual and have run "make" successfully
+to build the normative_rule_defs subdirectory and build/norm-rules.json.
+Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
+create one yaml file per ISA manual chapter in coverpoints/norm/yaml/chapters.
+(You may need to edit riscv_isa_manual_dir in the Python file to point to
+its location in your tree). Then copy the yaml from the chapter related to the
+test suite up one level (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/yaml/Sm.yaml`) and edit it.
+
+When you run `make` in the `ctp` directory, the YAML file is parsed to build an
+ASCIIDoc file (in ctp/norm) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
+`include::norm/Sm_norm_rules.adoc[]`
 
 ## Contributing
 

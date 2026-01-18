@@ -10,6 +10,8 @@ This section includes a variety of unprivileged extensions.
 .Zicsr Instruction Coverpoints
 include::{testplansdir}/Zicsr.adoc[]
 
+include::norm/Zicsr_norm_rules.adoc[]
+
 *UDB Parameters:* None.  TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).
 
 ==== Zifencei Instruction-Fetch Fence

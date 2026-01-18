@@ -45,6 +45,16 @@
   #error "RVMODEL_IO_WRITE_STR not defined. Make sure to define it in model_test.h."
 #endif
 
+##### MTIME #####
+
+#ifndef RVMODEL_MTIME_ADDR
+  #error "RVMODEL_MTIME_ADDR not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_SET_MTIME
+  #error "RVMODEL_SET_MTIME not defined. Make sure to define it in model_test.h."
+#endif
+
 ##### Machine Interrupts #####
 
 #ifndef RVMODEL_SET_MEXT_INT

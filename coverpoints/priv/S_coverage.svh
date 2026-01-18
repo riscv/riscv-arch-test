@@ -170,6 +170,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins sstatus       = {12'h100};
         bins sie           = {12'h104};
         bins stvec         = {12'h105};
+        bins scounteren    = {12'h106};
         bins sscratch      = {12'h140};
         bins sepc          = {12'h141};
         bins scause        = {12'h142};

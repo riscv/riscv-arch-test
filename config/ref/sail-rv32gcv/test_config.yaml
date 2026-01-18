@@ -1,7 +1,7 @@
 name: sail-rv32gcv
-compiler_exe: /opt/riscv/bin/riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
-objdump_exe: /opt/riscv/bin/riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
-ref_model_exe: /opt/riscv/bin/sail_riscv_sim # executable name on $PATH or full path to executable
+compiler_exe: bin/riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: bin/riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: bin/sail_riscv_sim # executable name on $PATH or full path to executable
 ref_model_type: sail # sail or spike
 udb_config: sail-rv32gcv.yaml
 linker_script: link.ld

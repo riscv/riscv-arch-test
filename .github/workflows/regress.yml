@@ -33,10 +33,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - run: git submodule update --init external/riscv-unified-db
-
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y podman
 
       - name: Install sail-riscv model
         run: |

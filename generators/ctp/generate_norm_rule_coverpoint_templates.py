@@ -10,7 +10,7 @@ each rule to an empty coverpoint list, with comments from norm-rules.json.
 import json
 import yaml
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 
 def load_norm_rules_json(json_path: Path) -> Dict[str, Dict[str, Any]]:

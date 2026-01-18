@@ -297,6 +297,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
+|Writable *XL fields|SXL/UXL fields in `mstatus/sstatus are writable|||||
+|Writable `misa` fields|MXL and Extensions fields in `misa` are writable|||||
+|NMI|Non-maskable interrupts|||||
 |===
 
 *** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)

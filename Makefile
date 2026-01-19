@@ -5,8 +5,7 @@
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
 # REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
-# CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
-CONFIG_FILES ?= config/duts/cve2/cv32e20/test_config.yaml #Temporary default
+CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
 REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rv32gc-clang/test_config.yaml config/ref/sail-rv64gc-clang/test_config.yaml
@@ -14,7 +13,8 @@ REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64
 
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
-EXTENSIONS  ?= I,M,C,Zca,Zicsr,Zifencei # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
 TESTDIR        := tests
@@ -56,7 +56,7 @@ elfs: generate-makefiles-dut Makefile
 .PHONY: generate-makefiles-dut
 generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(DEBUG),--debug)
+	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
 
 .PHONY: clean
 clean: clean-tests clean-ref
@@ -72,7 +72,7 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS))
+	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen
@@ -108,7 +108,7 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 .PHONY: generate-makefiles-ref
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(DEBUG),--debug)
+	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
 
 .PHONY: coverage
 coverage: generate-makefiles-ref Makefile

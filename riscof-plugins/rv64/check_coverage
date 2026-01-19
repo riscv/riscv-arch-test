@@ -1,0 +1,355 @@
+#!/bin/bash
+set -e
+
+# Create parent folder once
+rm -rf all_riscof_works 
+mkdir -p all_riscof_works
+
+
+# Run coverage for A extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/a/rv64ia.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/A \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                (Covered)/(Total)                      Percentage"
+grep -E '^[[:space:]]*(amoadd.d|amoadd.w|amoand.d|amoand.w|amomax.d|amomax.w|amomaxu.d|amomaxu.w|amomin.d|amomin.w|amominu.d|amominu.w|amoor.d|amoor.w|amoswap.d|amoswap.w|amoxor.d|amoxor.w)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_A"
+mv riscof_work all_riscof_works/riscof_work_A
+
+
+# Run coverage for B extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/b/rv64i_b.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/B \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(add.uw|andn|bclr|bclri|bext|bexti|binv|binvi|bset|bseti|clmul|clmulh|clmulr|clz|clzw|cpop|cpopw|ctz|ctzw|max|maxu|min|minu|orcb_64|orn|rev8|rol|rolw|ror|rori|roriw|rorw|sext.b|sext.h|sh1add|sh1add.uw|sh2add|sh2add.uw|sh3add|sh3add.uw|slli.uw|xnor|zext.h_64)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_B"
+mv riscof_work all_riscof_works/riscof_work_B
+
+
+# Run coverage for C extension (Zca, Zcb)
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/c/rv64ic.cgf \
+  --cgf-file ../../coverage/c/rv64i_zcb.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/C \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(cadd|caddi|caddi16sp|caddi4spn|caddiw|caddw|cand|candi|cbeqz|cbnez|cebreak|cj|cjalr|cjr|clbu|cld|cldsp|clh|clhu|cli|clui|clw|clwsp|cmul|cmv|cnop|cnot|cor|csb|csd|csdsp|csext.b|csext.h|csh|cslli|csrai|csrli|csub|csubw|csw|cswsp|cxor|czext.b|czext.h|czext.w)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_C"
+mv riscof_work all_riscof_works/riscof_work_C
+
+
+# Run coverage for Zcd
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/cgfs_fext/RV64Zcd/fld.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/D_Zcd \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label             (Covered)/(Total)                         Percentage"
+grep -E '^[[:space:]]*(c.fld|c.fldsp|c.fsd|c.fsdsp)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_D_Zcd"
+mv riscof_work all_riscof_works/riscof_work_D_Zcd
+
+
+# Run coverage for CMO extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/cmo/rvi_cmo.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/CMO/ \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label            (Covered)/(Total)                          Percentage"
+grep -E '^[[:space:]]*(cbozero)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_CMO"
+mv riscof_work all_riscof_works/riscof_work_CMO
+
+
+# Run coverage for F extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/cgfs_fext/RV64F/fcvt.l.s.cgf --cgf-file ../../coverage/cgfs_fext/RV64F/fcvt.lu.s.cgf \
+  --cgf-file ../../coverage/cgfs_fext/RV64F/fcvt.s.l.cgf --cgf-file ../../coverage/cgfs_fext/RV64F/fcvt.s.lu.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/F \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(fcvt.l.s_b1|fcvt.l.s_b22|fcvt.l.s_b23|fcvt.l.s_b24|fcvt.l.s_b27|fcvt.l.s_b28|fcvt.l.s_b29|fcvt.lu.s_b1|fcvt.lu.s_b22|fcvt.lu.s_b23|fcvt.lu.s_b24|fcvt.lu.s_b27|fcvt.lu.s_b28|fcvt.lu.s_b29|fcvt.s.l_b25|fcvt.s.l_b26|fcvt.s.lu_b25|fcvt.s.lu_b26)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_F"
+mv riscof_work all_riscof_works/riscof_work_F
+
+
+# Run coverage for D extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/cgfs_fext/RV64D/fcvt.d.l.cgf --cgf-file ../../coverage/cgfs_fext/RV64D/fcvt.d.lu.cgf --cgf-file ../../coverage/cgfs_fext/RV64D/fcvt.l.d.cgf \
+  --cgf-file ../../coverage/cgfs_fext/RV64D/fcvt.lu.d.cgf --cgf-file ../../coverage/cgfs_fext/RV64D/fmv.d.x.cgf --cgf-file ../../coverage/cgfs_fext/RV64D/fmv.x.d.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/D \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(fcvt.d.l_b25|fcvt.d.l_b26|fcvt.d.lu_b25|fcvt.d.lu_b26|fcvt.l.d_b1|fcvt.l.d_b22|fcvt.l.d_b23|fcvt.l.d_b24|fcvt.l.d_b27|fcvt.l.d_b28|fcvt.l.d_b29|fcvt.lu.d_b1|fcvt.lu.d_b22|fcvt.lu.d_b23|fcvt.lu.d_b24|fcvt.lu.d_b27|fcvt.lu.d_b28|fcvt.lu.d_b29|fmv.d.x_b25|fmv.d.x_b26|fmv.x.d_b1|fmv.x.d_b22|fmv.x.d_b23|fmv.x.d_b24|fmv.x.d_b27|fmv.x.d_b28|fmv.x.d_b29)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_D"
+mv riscof_work all_riscof_works/riscof_work_D
+
+
+# Run coverage for F_Zfa extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zfa/fleq.s.cgf --cgf-file ../../coverage/zfa/fli.s.cgf --cgf-file ../../coverage/zfa/fltq.s.cgf \
+  --cgf-file ../../coverage/zfa/fmaxm.s.cgf --cgf-file ../../coverage/zfa/fminm.s.cgf --cgf-file ../../coverage/zfa/fround.s.cgf \
+  --cgf-file ../../coverage/zfa/froundnx.s.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/F_Zfa \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label               (Covered)/(Total)                       Percentage"
+grep -E '^[[:space:]]*(fleq_b1|fleq_b19|fli_b1|fltq_b1|fltq_b19|fmaxm_b1|fmaxm_b19|fminm_b1|fminm_b19|fround_b1|froundnx_b1)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_F_Zfa"
+mv riscof_work all_riscof_works/riscof_work_F_Zfa
+
+
+# Run coverage for D_Zfa extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zfa/fcvtmod.w.d.cgf --cgf-file ../../coverage/zfa/fleq.d.cgf --cgf-file ../../coverage/zfa/fleq.s.cgf \
+  --cgf-file ../../coverage/zfa/fli.d.cgf --cgf-file ../../coverage/zfa/fltq.d.cgf --cgf-file ../../coverage/zfa/fltq.s.cgf \
+  --cgf-file ../../coverage/zfa/fmaxm.d.cgf --cgf-file ../../coverage/zfa/fmaxm.s.cgf --cgf-file ../../coverage/zfa/fminm.d.cgf \
+  --cgf-file ../../coverage/zfa/fminm.s.cgf --cgf-file ../../coverage/zfa/fmvh.x.d.cgf --cgf-file ../../coverage/zfa/fmvp.d.x.cgf \
+  --cgf-file ../../coverage/zfa/fround.d.cgf --cgf-file ../../coverage/zfa/fround.s.cgf --cgf-file ../../coverage/zfa/froundnx.d.cgf \
+  --cgf-file ../../coverage/zfa/froundnx.s.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/D_Zfa \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label               (Covered)/(Total)                       Percentage"
+grep -E '^[[:space:]]*(fcvtmod.w.d_b1|fcvtmod.w.d_b22|fcvtmod.w.d_b23|fcvtmod.w.d_b24|fcvtmod.w.d_b27|fcvtmod.w.d_b28|fcvtmod.w.d_b29|fleq.d_b1|fleq.d_b19|fleq_b1|fleq_b19|fli.d_b1|fltq.d_b1|fltq.d_b19|fltq_b1|fltq_b19|fmaxm.d_b1|fmaxm.d_b19|fmaxm_b1|fmaxm_b19|fminm.d_b1|fminm.d_b19|fminm_b1|fminm_b19|fround.d_b1|fround_b1|froundnx.d_b1|froundnx_b1)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_D_Zfa"
+mv riscof_work all_riscof_works/riscof_work_D_Zfa
+
+
+# Run coverage for I extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/i/rv64i.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/I \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(lui|auipc|jal|jalr|beq|bne|blt|bge|bltu|bgeu|lb|lh|lw|ld|lbu|lhu|lwu|sb|sh|sw|sd|addi|slti|sltiu|xori|ori|andi|slli|srli|srai|add|sub|sll|slt|sltu|xor|srl|sra|or|and|addiw|slliw|srliw|sraiw|subw|sllw|srlw|sraw)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_I"
+mv riscof_work all_riscof_works/riscof_work_I
+
+
+# Run coverage for K extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/k/rv64i_k.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/K/ \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+echo "Extracting RISCOF Coverage Summary..."
+w3m -dump riscof_work/coverage.html > coverage.txt
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(aes64ds|aes64dsm|aes64es|aes64esm|aes64im|aes64ks1i|aes64ks2|brev8|pack|packh|packw|sha256sig0|sha256sig1|sha256sum0|sha256sum1|sha512sig0|sha512sig1|sha512sum0|sha512sum1|sm3p0|sm3p1|sm4ed|sm4ks|xperm4|xperm8)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_K"
+mv riscof_work all_riscof_works/riscof_work_K
+
+
+# Run coverage for M extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/m/rv64im.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/M \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction (e.g., div, mul)
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(mul|mulh|mulhsu|mulhu|div|divu|rem|remu)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_M"
+mv riscof_work all_riscof_works/riscof_work_M
+
+
+# Run coverage for Privilege
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/priv/rv64i_priv.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/privilege \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label              (Covered)/(Total)                        Percentage"
+grep -E '^[[:space:]]*(ebreak|ecall|misalign-beq|misalign-bge|misalign-bgeu|misalign-blt|misalign-bltu|misalign-bne|misalign-jal|misalign-ld|misalign-lh|misalign-lhu|misalign-lw|misalign-lwu|misalign-sd|misalign-sh|misalign-sw|misalign1-cjalr|misalign1-cjr|misalign1-jalr|misalign2-jalr)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Privilege"
+mv riscof_work all_riscof_works/riscof_work_Privilege
+
+
+# Run coverage for Zcmop Extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zcmop/zcmop.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/Zcmop \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label       (Covered)/(Total)                               Percentage"
+grep -E '^[[:space:]]*(c.mop.1|c.mop.11|c.mop.13|c.mop.15|c.mop.3|c.mop.5|c.mop.7|c.mop.9)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Zcmop"
+mv riscof_work all_riscof_works/riscof_work_Zcmop
+
+
+# Run coverage for Zicond Extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zicond/zicond.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/Zicond \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(czero.eqz|czero.nez)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Zicond"
+mv riscof_work all_riscof_works/riscof_work_Zicond
+
+
+# Run coverage for Zifenci Extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/Zifencei/rv64i_fencei.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/Zifencei \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label        (Covered)/(Total)                              Percentage"
+grep -E '^[[:space:]]*(fencei)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Zifencei"
+mv riscof_work all_riscof_works/riscof_work_Zifencei
+
+
+# Run coverage for Zimop Extension
+riscof coverage --config=config.ini --cgf-file ../../coverage/dataset.cgf \
+  --cgf-file ../../coverage/zimop/zimop.cgf \
+  --suite ../../riscv-test-suite/rv64i_m/Zimop \
+  --env ../../riscv-test-suite/env \
+  -h ../../coverage/header_file.yaml
+[ -d riscof_work ] && echo "riscof_work exists" || echo "riscof_work missing"
+w3m -dump riscof_work/coverage.html > coverage.txt
+echo "Extracting RISCOF Coverage Summary..."
+#
+# Print total coverpoints line
+grep "Total Coverpoints" coverage.txt
+#
+# Extract lines with coverage stats for each instruction
+echo -e "\nCoverage Label                  (Covered)/(Total)                    Percentage"
+grep -E '^[[:space:]]*(mop.r.0|mop.r.1|mop.r.10|mop.r.11|mop.r.12|mop.r.13|mop.r.14|mop.r.15|mop.r.16|mop.r.17|mop.r.18|mop.r.19|mop.r.2|mop.r.20|mop.r.21|mop.r.22|mop.r.23|mop.r.24|mop.r.25|mop.r.26|mop.r.27|mop.r.28|mop.r.29|mop.r.3|mop.r.30|mop.r.31|mop.r.4|mop.r.5|mop.r.6|mop.r.7|mop.r.8|mop.r.9|mop.rr.0|mop.rr.1|mop.rr.2|mop.rr.3|mop.rr.4|mop.rr.5|mop.rr.6|mop.rr.7)[[:space:]]+[0-9]+/[0-9]+[[:space:]]+[0-9]+\.[0-9]+%' coverage.txt
+echo "Moving riscof_work to all_riscof_works/riscof_work_Zimop"
+mv riscof_work all_riscof_works/riscof_work_Zimop

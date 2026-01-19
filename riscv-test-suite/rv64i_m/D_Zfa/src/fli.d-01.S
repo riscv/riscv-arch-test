@@ -21,7 +21,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*D.*Zfa.*);def TEST_CASE_1=True;",fli.d)
+RVTEST_CASE(0,"//check ISA:=regex(.*RV64.*I.*D.*Zfa.*);def TEST_CASE_1=True;",fli.d_b1)
 
 // Registers with a special purpose
 #define SIG_BASEREG x1

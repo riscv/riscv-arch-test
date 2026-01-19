@@ -159,7 +159,10 @@ csr_reg_num_to_str = {
     940: 'pmpcfg12',
     941: 'pmpcfg13',
     942: 'pmpcfg14',
-    943: 'pmpcfg15'
+    943: 'pmpcfg15',
+    266: 'senvcfg',
+    778: 'menvcfg',
+    1863: 'mseccfg'
 }
 
 class cross():
@@ -185,7 +188,7 @@ class cross():
         self.result = 0
         self.queue = []
 
-        self.tracked_regs = set()
+        self.tracked_regs = OrderedSet()
         self.instr_addr_of_tracked_reg = {} # tracked_reg: instr_addr of instr which triggered its tracking
         self.instr_stat_meta_at_addr = {} # start_instr_addr: [is_ucovpt, num_exp, num_obs, num_rem, covpts_hit, code_seq, store_addresses, store_vals]
 
@@ -250,7 +253,7 @@ class cross():
         Also perform tracking for generating the data propagation report
         '''
         hit_covpt = False
-        regs_to_track = set()
+        regs_to_track = OrderedSet()
 
         for index in range(len(self.ops)):
             instr = self.queue[index]
@@ -521,7 +524,7 @@ class csr_registers(MutableMapping):
             "mie":int('304',16),
             "mtvec":int('305',16),
             "mcounteren":int('306',16),
-            "784":int('310',16),
+            "mstatush":int('310',16),
             "mscratch":int('340',16),
             "mepc":int('341',16),
             "mcause":int('342',16),
@@ -571,7 +574,10 @@ class csr_registers(MutableMapping):
             "vxsat": int('009',16),
             "fflags":int('1',16),
             "frm":int('2',16),
-            "fcsr":int('3',16)
+            "fcsr":int('3',16),
+            "menvcfg":int('30A', 16),
+            "senvcfg":int('10A', 16),
+            "mseccfg":int('747', 16)
         }
         for i in range(16):
             self.csr_regs["pmpaddr"+str(i)] = int('3B0',16)+i
@@ -637,7 +643,7 @@ class archState:
             self.fcsr = 0
         elif flen == 32:
             self.f_rf = ['00000000']*32
-            
+
         else:
             self.f_rf = ['0000000000000000']*32
         self.pc = 0
@@ -687,9 +693,9 @@ class statistics:
 
         return temp
 
-def pretty_print_yaml(yaml):
+def pretty_print_yaml(yaml_obj):
     res = ''''''
-    for line in ruamel.yaml.round_trip_dump(yaml, indent=5, block_seq_indent=3).splitlines(True):
+    for line in utils.dump_yaml(yaml_obj, indent=5, block_seq_indent=3).splitlines(True):
         res += line
     return res
 
@@ -914,8 +920,8 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
     inxFlg = arch_state.inxFlg
 
     # Set of elements to monitor for tracking signature updates
-    tracked_regs_immutable = set()
-    tracked_regs_mutable = set()
+    tracked_regs_immutable = OrderedSet()
+    tracked_regs_mutable = OrderedSet()
     tracked_instrs = [] # list of tuples of the type (list_instr_names, triggering_instr_addr)
 
     instr_stat_meta_at_addr = {} # Maps an address to the stat metadata of the instruction present at that address [is_ucovpt, num_exp, num_obs, num_rem, covpts_hit, code_seq, store_addresses, store_vals]
@@ -951,21 +957,25 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
             #csr regfile track for the previous instruction(old_csr_regfile)
             old_csr_regfile = {}
             for i in csr_regfile.csr_regs:
-                old_csr_regfile[i] = int(csr_regfile[i],16)
+                if isinstance(csr_regfile[i], str):
+                    old_csr_regfile[i] = int(csr_regfile[i],16)
+                else:
+                    old_csr_regfile[i] = csr_regfile[i]
+
             def old_fn_csr_comb_covpt(csr_reg):
                 return old_csr_regfile[csr_reg]
 
-            #update the arch state and csr_regfile for the current instruction
-            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
             #update instr_vars using updated arch state and updated csr_regfile
             instr.evaluate_instr_vars(xlen, flen, arch_state, csr_regfile, instr_vars)
+            #update the arch state and csr_regfile for the current instruction
+            instr.update_arch_state(arch_state, csr_regfile, mem_vals)
 
             #update the state of trap registers in csr_reg file using instr_vars
-            if instr_vars["mode_change"] is not None:  #change the state only on the instruction
-                csr_regfile["mcause"] = instr_vars["mcause"]
-                csr_regfile["scause"] = instr_vars["scause"]
-                csr_regfile["mtval"] = instr_vars["mtval"]
-                csr_regfile["stval"] = instr_vars["stval"]
+            # if instr_vars["mode_change"] is not None:  #change the state only on the instruction
+            csr_regfile["mcause"] = instr_vars["mcause"]
+            csr_regfile["scause"] = instr_vars["scause"]
+            csr_regfile["mtval"]  = instr_vars["mtval"]
+            csr_regfile["stval"]  = instr_vars["stval"]
 
             if 'rs1' in instr_vars:
                 rs1 = instr_vars['rs1']
@@ -980,8 +990,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 is_rd_valid = False
 
             for i in csr_regfile.csr_regs:
-                instr_vars[i] = int(csr_regfile[i],16)
-
+                if isinstance(csr_regfile[i], str):
+                    instr_vars[i] = int(csr_regfile[i],16)
+                else:
+                    instr_vars[i] = csr_regfile[i]
             instr.iptw_update(instr_vars, iptw_dict)
             instr.ptw_update(instr_vars)
 
@@ -1026,40 +1038,91 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 else:
                     return None
 
-            def get_pte_prop(prop_name,pa, pte_addr, pgtb_addr):
-                pte_per = get_pte(pa, pte_addr, pgtb_addr)
-                if pte_per is not None:
-                    pte_per = get_pte(pa, pte_addr, pgtb_addr) & 0x3FF
-                    prop_name_lower = prop_name.lower()
-                    if prop_name_lower == 'v' and (pte_per & 0x01 != 0):
-                        return 1
-                    elif prop_name_lower == 'r' and (pte_per & 0x02 != 0):
-                        return 1
-                    elif prop_name_lower == 'w' and (pte_per & 0x04 != 0):
-                        return 1
-                    elif prop_name_lower == 'x' and (pte_per & 0x08 != 0):
-                        return 1
-                    elif prop_name_lower == 'u' and (pte_per & 0x10 != 0):
-                        return 1
-                    elif prop_name_lower == 'g' and (pte_per & 0x20 != 0):
-                        return 1
-                    elif prop_name_lower == 'a' and (pte_per & 0x40 != 0):
-                        return 1
-                    elif prop_name_lower == 'd' and (pte_per & 0x80 != 0):
-                        return 1
-                    else:
+            def get_pte_prop(prop_name, pte_addr):
+                """
+                Function to check specific permissions of a PTE.
+
+                :param prop_name: string containing properties to check.
+                                Uppercase letters mean the bits should be set.
+                                Lowercase letters mean the bits should NOT be set.
+                                Example: "uAdW" checks U and D bits are NOT set,
+                                        while A and W bits are set.
+                :param pte_addr: PTE address to examine (int or hex).
+                :return: 1 if conditions are met, 0 otherwise.
+                """
+                if pte_addr is None:
+                    return 0
+                
+                bitmask_dict = {
+                    'V': 0x01, 'R': 0x02, 'W': 0x04, 'X': 0x08,
+                    'U': 0x10, 'G': 0x20, 'A': 0x40, 'D': 0x80
+                }
+
+                # Get permission bits from PTE address
+                pte_per = pte_addr & 0x3FF
+
+                # Check each property in prop_name
+                for char in prop_name:
+                    # Check if uppercase character should be set or lowercase should NOT be set
+                    bitmask = bitmask_dict.get(char.upper())
+                    if bitmask is None:
+                        return 0  # If unrecognized character, then return overall zero prematurely.
+
+                    if (char.isupper() and not (pte_per & bitmask)) or (char.islower() and (pte_per & bitmask)):
                         return 0
 
+                return 1
+
+
+            def pmp_rgn_chk(req_addr, access_len, pmp_config, pmp_addr, prev_pmp_addr = None):
+                """
+                Function to check whether the requested address is inside the required setup pmpaddr entry.
+
+                :param req_addr: value for the requested addrress (int or hex).
+                :param access_len: For instance, 1 for lb, 2 for lh and ...
+                :param pmp_config: Selected PMP Configuration for that region. i.e., TOR, NA4, NAPOT
+                :param pmp_addr: pmpaddr csr value to examine (int or hex).
+                :param prev_pmp_addr: prev pmpaddr csr value to examine required in case of TOR (int or hex).
+
+                :return: True if conditions are met, False otherwise.
+                """
+
+                #Skip the not required cases.
+                if pmp_addr is None or access_len is None:
+                    return False
+
+                #Implementation credits: Sail RISC-V Golden Reference Model.
+                if pmp_config == "NAPOT":
+                    mask = pmp_addr ^ (pmp_addr + 1)
+                    lo = pmp_addr & (~(mask))
+                    length = mask + 1
+                    #requested address is above the minimum and below the maximum + access_len.
+                    #Here, we are giving relaxation of access_len + max because we have to verify cases
+                    #in which we are crossing the boundary as well upto the access len (for instance, 8 Bytes in case of ld).
+                    return (req_addr) >= (lo*4) and (req_addr + access_len) < (((lo + length)*4) + access_len)
+
+                elif pmp_config == "TOR":
+                    if prev_pmp_addr is None:
+                        raise ValueError("The 'prev_pmp_addr' argument is required when 'TOR' is selected.")
+                    else:
+                        return (req_addr) >= prev_pmp_addr*4 and (req_addr + access_len) < (pmp_addr*4 + access_len)
+
+                elif pmp_config == "NA4":
+                    return (req_addr) >= pmp_addr and (req_addr + access_len) < (pmp_addr*4 + 4) + access_len
+
+                elif pmp_config == "OFF":
+                    return False
                 else:
-                    return None
+                    raise ValueError("PMP Config is not selected properly. Select b/w NA4, NAPOT, TOR only")
 
             globals()['get_addr'] = check_label_address
+            globals()['old_csr_val'] = old_fn_csr_comb_covpt
             globals()['get_mem_val'] = get_mem_val
             globals()['get_pte'] = get_pte
             globals()['get_pte_prop'] = get_pte_prop
+            globals()['pmp_rgn_chk'] = pmp_rgn_chk
 
             if enable :
-                print(instr_vars)
                 ucovpt = []
                 covpt = []
                 csr_covpt = []
@@ -1136,7 +1199,6 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                     value['rs3'][rs3] += 1
 
                                 if 'op_comb' in value and len(value['op_comb']) != 0 :
-                                    
                                     for coverpoints in value['op_comb']:
                                         if eval(coverpoints, globals(), instr_vars):
                                             if cgf[cov_labels]['op_comb'][coverpoints] == 0:
@@ -1150,10 +1212,10 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                     lcls={}
                                     if instr.is_rvp and "rs1" in value:
                                         op_width = 64 if instr.rs1_nregs == 2 else xlen
-                                        simd_val_unpack(value['val_comb'], op_width, "rs1", rs1_val, lcls)
+                                        simd_val_unpack(value['val_comb'], op_width, "rs1", instr_vars['rs1_val'], lcls)
                                     if instr.is_rvp and "rs2" in value:
                                         op_width = 64 if instr.rs2_nregs == 2 else xlen
-                                        simd_val_unpack(value['val_comb'], op_width, "rs2", rs2_val, lcls)
+                                        simd_val_unpack(value['val_comb'], op_width, "rs2", instr_vars['rs2_val'], lcls)
                                     instr_vars.update(lcls)
                                     for coverpoints in value['val_comb']:
                                         if eval(coverpoints, globals(), instr_vars):
@@ -1189,7 +1251,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                             return key
                                                     return None
                                                 #check the old_csr_value only for the register of interest
-                                                pattern_csr = r'old\("([^"]+)"\)'
+                                                pattern_csr = r'old_csr_val\("([^"]+)"\)'
                                                 match = re.search(pattern_csr, coverpoints)
                                                 if match:
                                                     required_csr = match.group(1)
@@ -1200,7 +1262,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                     coverpoints,
                                                     {
                                                         "__builtins__":None,
-                                                        "old": old_fn_csr_comb_covpt,
+                                                        "old_csr_val": old_fn_csr_comb_covpt,
                                                         "write": write_fn_csr_comb_covpt,
                                                         "get_addr": check_label_address,
                                                         "get_mem_val":get_mem_val,
@@ -1231,7 +1293,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                                                 coverpoints,
                                                 {
                                                     "__builtins__":None,
-                                                    "old": old_fn_csr_comb_covpt,
+                                                    "old_csr_val": old_fn_csr_comb_covpt,
                                                     "write": write_fn_csr_comb_covpt,
                                                     "get_addr": check_label_address,
                                                     "get_mem_val":get_mem_val,
@@ -1255,7 +1317,7 @@ def compute_per_line(queue, event, cgf_queue, stats_queue, cgf, xlen, flen, addr
                 if hit_csr_covpt:
                     stats.cov_pt_sig += covpt
 
-                    csr_regs_involved_in_covpt = set()
+                    csr_regs_involved_in_covpt = OrderedSet()
                     for covpt in csr_covpt:
                         for reg in csr_reg_num_to_str.values():
                             if reg in covpt:
@@ -1517,7 +1579,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
 
     if dump is not None:
         dump_f = open(dump, 'w')
-        dump_f.write(ruamel.yaml.round_trip_dump(cgf, indent=5, block_seq_indent=3))
+        dump_f.write(utils.dump_yaml(cgf, indent=5, block_seq_indent=3))
         dump_f.close()
         sys.exit(0)
 
@@ -1679,7 +1741,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
     rpt_str = gen_report(rcgf, detailed)
     logger.info('Writing out updated cgf : ' + test_name + '.cgf')
     dump_file = open(test_name+'.cgf', 'w')
-    dump_file.write(ruamel.yaml.round_trip_dump(rcgf, indent=5, block_seq_indent=3))
+    dump_file.write(utils.dump_yaml(rcgf, indent=5, block_seq_indent=3))
     dump_file.close()
 
     if sig_addrs:
@@ -1710,7 +1772,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
                 _x = (hex(x[0]), hex(x[1]), str(int((x[1]-x[0])/4)) + ' words')
             sig_addrs_hex.append(_x)
 
-        cov_set = set()
+        cov_set = OrderedSet()
         count = 1
         for addrs,vals,cover,code in stats.stat1:
             sig = ''
@@ -1746,7 +1808,7 @@ def compute(trace_file, test_name, cgf, parser_name, decoder_name, detailed, xle
             stat3_log += _l + '\n\n'
 
         stat5_log = ''
-        sig_set = set()
+        sig_set = OrderedSet()
         overwrites = 0
         for addr, val, cover, code in stats.stat5:
             if addr in sig_set:

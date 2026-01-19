@@ -11,7 +11,7 @@
 
 #include "test_macros_vector.h"
 
-RVTEST_ISA("RV32IV_Zicsr_Zvkb,RV64IV_Zicsr_Zvkb")
+RVTEST_ISA("RV32IV_Zicsr_Zvbc,RV64IV_Zicsr_Zvbc")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -22,7 +22,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*I.*V.*Zicsr.*Zvkb);def TEST_CASE_1=True;",vclmul.vx)
+RVTEST_CASE(0,"//check ISA:=regex(.*I.*V.*Zicsr.*Zvbc);def TEST_CASE_1=True;",vclmul.vx)
 
 RVTEST_V_ENABLE()
 RVTEST_VALBASEUPD(DATA_BASE, dataset_tc1)

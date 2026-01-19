@@ -1,0 +1,836 @@
+# This coverpoint checks the coverage of Lock bit test.
+# req = The old value of the pmpcfgs and pmpaddrs should be equal to the new one since the Lock bit is set and the new write try will fail.
+pmp_cfg_locked_write_unrelated:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw}" : 0
+  csr_comb:
+    # (Lock bit set) and (req) and (old_value_pmpcfg != 0)
+    (pmpcfg{{0 ... 15} >> 2} >> {0, 8, 16, 24}{[$2%4]} & 0x80 == 0x80) and (((old_csr_val("pmpcfg$2") ^ pmpcfg$2) >> $3 & 0xFF) == 0x00) and old_csr_val("pmpcfg$2") != 0: 0 
+    (pmpcfg{{0 ... 15} >> 2} >> {0, 8, 16, 24}{[$1%4]} & 0x80 == 0x80) and (old_csr_val("pmpaddr$1") == (pmpaddr$1)) and (pmpcfg$2 != 0): 0
+
+#This coverpoint checks the coverage of pmp-CSR-access.cgf (PMP CSRs accesses in different modes)
+#Checks pmpcgf and pmpaddr are only accessible in M mode and gets fault in S and U mode when accessed.
+PMP_access_permission:
+  config:
+    - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw}" : 0
+  csr_comb:
+    #Check successful update for pmpcfg in M Mode
+    mode == 'M' and ((old_csr_val("pmpcfg{0 ... 3}")    != (pmpcfg$1))    and pmpcfg$1 != 0x0): 0            
+    #Check successful update for pmpaddr in M Mode
+    mode == 'M' and ((old_csr_val("pmpaddr{0 ... 15}")  != (pmpaddr$1))   and pmpaddr$1 != 0x0): 0        #pmpaddr successfully updated in M mode
+    #Check for fault for pmpcfg, pmpaddr in S, U Mode
+    mode == {'S', 'U'} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}: 0 #check for illegal instruction fault
+
+# This coverpoint checks the coverage for the pmp-NAPOT-R.S
+# R bit is set for pmpcfg but wx is not set for the region, so there should be store and fetch access fault. 
+PMP_NAPOT_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x99) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NAPOT-X.S
+# X bit is set for pmpcfg but RW is not set for the region, so there should be load and store access fault. 
+PMP_NAPOT_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9C) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+    
+# This coverpoint checks the coverage for the pmp-NAPOT-RW.S
+# RW bit is set for pmpcfg but X is not set for the region, so there should be fetch access fault. 
+PMP_NAPOT_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9B) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NAPOT-RX.S
+# RX bit is set for pmpcfg but W is not set for the region, so there should be store access fault. 
+PMP_NAPOT_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9D) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NAPOT-RWX.S
+# R,W,X bit is set for pmpcfg, so there should be NO access fault. 
+PMP_NAPOT_rwx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+  val_comb:
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9F) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-TOR-R.S
+# R bit is set for pmpcfg but wx is not set for the region, so there should be store and fetch access fault. 
+PMP_TOR_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 16) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the tor region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 16) & 0x9F == 0x89) and ${TOR_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-TOR-X.S
+# X bit is set for pmpcfg but RW is not set for the region, so there should be load and store access fault. 
+PMP_TOR_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit not set, W bit not set, X bit is set, NAPOT Mode is set
+    "(pmpcfg0 >> 16) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the tor region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 16) & 0x9F == 0x8C) and ${TOR_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-TOR-RW.S
+# RW bit is set for pmpcfg but X is not set for the region, so there should be fetch access fault. 
+PMP_TOR_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit is set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 16) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the tor region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 16) & 0x9F == 0x8B) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-TOR-RX.S
+# RX bit is set for pmpcfg but W is not set for the region, so there should be store access fault. 
+PMP_TOR_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit is set, TOR Mode is set
+    "(pmpcfg0 >> 16) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the tor region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 16) & 0x9F == 0x8D) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-TOR-RWX.S
+# R,W,X bit is set for pmpcfg, so there should be NO access fault. 
+PMP_TOR_rwx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg0 >> 16) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+  val_comb:
+    #Check the tor region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 16) & 0x9F == 0x8F) and ${NAPOT_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NA4-R.S
+# R bit is set for pmpcfg but wx is not set for the region, so there should be store and fetch access fault. 
+PMP_NA4_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x91) and ${NA4_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NA4-X.S
+# X bit is set for pmpcfg but RW is not set for the region, so there should be load and store access fault. 
+PMP_NA4_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit not set, W bit not set, X bit set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x94) and ${NA4_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NA4-RW.S
+# RW bit is set for pmpcfg but X is not set for the region, so there should be fetch access fault. 
+PMP_NA4_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit is set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x93) and ${NA4_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NA4-RX.S
+# RX bit is set for pmpcfg but W is not set for the region, so there should be store access fault. 
+PMP_NA4_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x95) and ${NA4_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the pmp-NA4-RWX.S
+# R,W,X bit is set for pmpcfg, so there should be NO access fault. 
+PMP_NA4_rwx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+  val_comb:
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x97) and ${NA4_REGION_ADDRESS_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_r_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets  R  permission -- NAPOT region selected
+# R succeeds while we get Store fault and fetch access fault
+PMP_NAPOT_priority_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x99) and ${NAPOT_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_x_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets   X permission -- NAPOT region selected
+# fetch succeeds while we get read access fault and store access fault
+PMP_NAPOT_priority_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x9C) and ${NAPOT_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_rw_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets RW  permission -- NAPOT region selected
+# load, store succeeds while we get fetch access fault
+PMP_NAPOT_priority_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x9B) and ${NAPOT_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_rx_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets R X permission -- NAPOT region selected
+# load, fetch succeeds while we get store access fault
+PMP_NAPOT_priority_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, NAPOT Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x9D) and ${NAPOT_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_r_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets  R  permission -- TOR region selected
+# R succeeds while we get Store fault and fetch access fault
+PMP_TOR_priority_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x89) and ${TOR_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_x_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets   X permission -- TOR region selected
+# X succeeds while we get load and store access faults
+PMP_TOR_priority_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x8C) and ${TOR_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_rw_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets RW  permission -- TOR region selected
+# R,W succeeds while we get fetch access fault
+PMP_TOR_priority_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x8B) and ${TOR_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_rx_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets R X permission -- TOR region selected
+# R,X succeeds while we get store access faults
+PMP_TOR_priority_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x8D) and ${TOR_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_r_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets R   permission -- NA4 region selected
+# R succeeds while we get store and fetch access fault
+PMP_NA4_priority_r:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x91) and ${NA4_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_x_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets   X permission -- NA4 region selected
+# X succeeds while we get load and store access fault
+PMP_NA4_priority_x:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x94) and ${NA4_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_rw_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets RW  permission -- NA4 region selected
+# R,W succeeds while we get fetch access fault
+PMP_NA4_priority_rw:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x93) and ${NA4_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_rx_priority.S
+# This is a priority test.
+# pmpcfg3 -->  low priority entry gets RWX permission -- TOR   region selected
+# pmpcfg0 --> high priority entry gets R X permission -- NA4 region selected
+# R,X succeeds while we get store access fault
+PMP_NA4_priority_rx:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, NA4 Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the na4 region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 24) & 0x9F == 0x95) and ${NA4_PRIORITY_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_r_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R   permission -- NAPOT region selected
+# R succeeds while we get Store fault and fetch access fault
+PMP_NAPOT_priority_r_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x99) and ${NAPOT_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_x_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets   X permission -- NAPOT region selected
+# X succeeds while we get load and store access fault
+PMP_NAPOT_priority_x_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit not set, W bit not set, X bit is set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9C) and ${NAPOT_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_rw_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets RW  permission -- NAPOT region selected
+# R,W succeeds while we get fetch access fault
+PMP_NAPOT_priority_rw_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9B) and ${NAPOT_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NAPOT_rx_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R X permission -- NAPOT region selected
+# R,X succeeds while we get store access fault
+PMP_NAPOT_priority_rx_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, NAPOT Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NAPOT_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x9D) and ${NAPOT_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_r_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R   permission -- TOR region selected
+# R succeeds while we get store and fetch access fault
+PMP_TOR_priority_r_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x89) and ${TOR_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_x_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets   X permission -- TOR region selected
+# X succeeds while we get load and store access fault
+PMP_TOR_priority_x_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit not set, W bit not set, X bit is set, TOR Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x8C) and ${TOR_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_rw_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets RW  permission -- TOR region selected
+# R,W succeeds while we get fetch access fault
+PMP_TOR_priority_rw_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x8B) and ${TOR_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_TOR_rx_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R X permission -- TOR region selected
+# R, X succeeds while we get store access fault
+PMP_TOR_priority_rx_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, TOR Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x8D) and ${TOR_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_r_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R   permission -- NA4 region selected
+# R succeeds while we get store and fetch access fault
+PMP_NA4_priority_r_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_R_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x91) and ${NA4_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_rw_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets RW  permission -- NA4 region selected
+# R,W succeeds while we get fetch access fault
+PMP_NA4_priority_rw_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit is set, X bit not set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RW_SET}": 0
+  val_comb:
+    #Check for execute fault
+    mode == 'M' and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_FETCH_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x93) and ${NA4_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_x_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets   X permission -- NA4 region selected
+# X succeeds while we get load and store access fault
+PMP_NA4_priority_x_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit not set, W bit not set, X bit is set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_X_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check for load fault on lb, lh, lw instruction
+    mnemonic == {'lb', 'lh', 'lw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_LOAD_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x94) and ${NA4_PRIORITY_2_REGION_MATCH}': 0
+
+# This coverpoint checks the coverage for the PMP_NA4_rx_priority_level_2.S
+# This is a priority test.
+# pmpcfg3[31:24] -->  low priority entry      gets RWX permission -- TOR   region selected
+# pmpcfg0[31:24] -->  high priority entry     gets     permission -- TOR   region selected
+# pmpcfg0[15:8]  -->  highest priority entry  gets R X permission -- NA4 region selected
+# R,X succeeds while we get store access fault
+PMP_NA4_priority_rx_level_2:
+  config:
+  - check ISA:=regex(.*32.*); check ISA:=regex(.*I.*Zicsr.*);  def rvtest_mtrap_routine=True;
+  mnemonics:
+    "{csrrs, csrrw, lw, sw, lb, sb, lh, sh}" : 0
+  csr_comb:
+    # Low priority entry     -- Check Lock bit is set, R bit is set, W bit is set, X bit is set, TOR Mode is set
+    "(pmpcfg3 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_ONLY_RWX_SET}": 0
+    # High priority entry    -- Check Lock bit is set, R bit not set, W bit not set, X bit not set, TOR Mode is set
+    "(pmpcfg0 >> 24) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_TOR_MODE}+${PMPCFG_BIT_NOT_SET}": 0
+    # Higest priority entry  -- Check Lock bit is set, R bit is set, W bit not set, X bit is set, NA4 Mode is set
+    "(pmpcfg0 >> 8) & ${PMPCFG_ALL_BIT} == ${PMPCFG_L_BIT}+${PMPCFG_NA4_MODE}+${PMPCFG_ONLY_RX_SET}": 0
+  val_comb:
+    #Check for store fault on sb , sh, sw instruction
+    mnemonic == {'sb', 'sh', 'sw'} and mode_change == {'M to M', 'U to M', 'S to M'} and (mcause == ${CAUSE_STORE_ACCESS}): 0
+    #Check the napot region is accessed at least once
+    '(mnemonic == {"lw", "lh", "lb", "sw", "sh", "sb"}) and ((pmpcfg0 >> 8) & 0x9F == 0x95) and ${NA4_PRIORITY_2_REGION_MATCH}': 0

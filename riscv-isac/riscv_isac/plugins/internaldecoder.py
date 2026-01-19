@@ -1,3 +1,4 @@
+from ordered_set import OrderedSet
 import riscv_isac.plugins as plugins
 
 class disassembler():
@@ -13,7 +14,7 @@ class disassembler():
             0b0100011: self.store_ops,
             0b0010011: self.arithi_ops,
             0b0110011: self.arith_ops,
-            0b0001111: self.fence_ops,
+            0b0001111: self.mem_ops,
             0b1110011: self.priviledged_ops,
             0b0011011: self.rv64i_arithi_ops,
             0b0111011: self.rv64i_arith_ops,
@@ -38,9 +39,9 @@ class disassembler():
         self.C_OPCODES = C_OPCODES
         self.OPCODES = OPCODES
         self.init_rvp_dictionary()
-        self.rvp_rs1_is_64bit_set = set('smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 wext wexti'.split())
-        self.rvp_rs2_is_64bit_set = set(     'add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64'.split())
-        self.rvp_rd_is_64bit_set  = set('smul16 smulx16 umul16 umulx16 smul8 smulx8 umul8 umulx8 smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 smar64 smsr64 umar64 umsr64 kmar64 kmsr64 ukmar64 ukmsr64 smalbb smalbt smaltt smalda smalxda smalds smaldrs smalxds smslda smslxda mulr64 mulsr64 wext wexti'.split())
+        self.rvp_rs1_is_64bit_set = OrderedSet('smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 wext wexti'.split())
+        self.rvp_rs2_is_64bit_set = OrderedSet(     'add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64'.split())
+        self.rvp_rd_is_64bit_set  = OrderedSet('smul16 smulx16 umul16 umulx16 smul8 smulx8 umul8 umulx8 smal add64 radd64 uradd64 kadd64 ukadd64 sub64 rsub64 ursub64 ksub64 uksub64 smar64 smsr64 umar64 umsr64 kmar64 kmsr64 ukmar64 ukmsr64 smalbb smalbt smaltt smalda smalxda smalds smaldrs smalxds smslda smslxda mulr64 mulsr64 wext wexti'.split())
 
     def init_rvp_dictionary(self):
         # Create RVP Dictiory 0 for instruction:  clrs8  clrs16  clrs32  clo8  clo16  clo32  clz8  clz16  clz32  kabs8  kabs16  kabsw  sunpkd810  sunpkd820  sunpkd830  sunpkd831  sunpkd832  swap8  zunpkd810  zunpkd820  zunpkd830  zunpkd831  zunpkd832  kabs32
@@ -565,6 +566,11 @@ class disassembler():
         funct6 = (instr & self.FUNCT6_MASK) >> 26
         funct7 = (instr >> 25)
         rd = ((instr & self.RD_MASK) >> 7, 'x')
+
+        if funct3 == 0b110:
+            if rd[0] == 0:
+                return self.prefetch_ops(instrObj)
+
         rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
         rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
         rs3 = ((instr & self.RS3_MASK) >> 27, 'x')
@@ -1263,7 +1269,11 @@ class disassembler():
                 instrObj.rs1 = rs1
                 instrObj.rs2 = rs2
                 instrObj.rd = rd
-
+            elif funct7 == 0b0000111:
+                instrObj.instr_name = 'czero.eqz'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                instrObj.rd = rd
 
         if funct3 == 0b110:
             if funct7 == 0b0100000:
@@ -1300,10 +1310,23 @@ class disassembler():
                 instrObj.rs1 = rs1
                 instrObj.rs2 = rs2
                 instrObj.rd = rd
+            elif funct7 == 0b0000111:
+                instrObj.instr_name = 'czero.nez'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                instrObj.rd = rd
             else:
                 instrObj.instr_name = 'and'
 
         return instrObj
+
+    def mem_ops(self, instrObj):
+        instr = instrObj.instr
+        func3 = (instr & self.FUNCT3_MASK) >> 12
+        if func3 == 0b000 or func3 == 0b001:
+            return self.fence_ops(instrObj)
+        elif func3 == 0b010 :
+            return self.cbo_ops(instrObj)
 
     def fence_ops(self, instrObj):
         instr = instrObj.instr
@@ -1321,23 +1344,69 @@ class disassembler():
 
         return instrObj
 
+    def cbo_ops(self, instrObj):
+        instr = instrObj.instr
+        func = (instr) >> 20
+        instrObj.rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        instrObj.imm = 0
+        if func == 0b1:
+            instrObj.instr_name = "cbo.clean"
+        elif func == 0b10:
+            instrObj.instr_name = "cbo.flush"
+        elif func == 0b0:
+            instrObj.instr_name = "cbo.inval"
+        elif func == 0b100:
+            instrObj.instr_name = "cbo.zero"
+        return instrObj
+
+    def prefetch_ops(self, instrObj):
+        instr = instrObj.instr
+        func = (instr & self.RS2_MASK) >> 20
+        instrObj.rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+
+        imm_11_5 = (instr & 0xfe000000) >> 20
+        instrObj.imm = self.twos_comp(imm_11_5, 12)
+
+        if func == 0b0:
+            instrObj.instr_name = "prefetch.i"
+        elif func == 0b1:
+            instrObj.instr_name = "prefetch.r"
+        elif func == 0b11:
+            instrObj.instr_name = "prefetch.w"
+        return instrObj
+
     def priviledged_ops(self, instrObj):
         instr = instrObj.instr
         funct3 = (instr & self.FUNCT3_MASK) >> 12
+        rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
 
-        # Test for ecall and ebreak ops
+        # Test for ecall, ebreak and sfence.vma ops
         if funct3 == 0b000:
-            etype = (instr >> 20) & 0x01
+            etype = (instr >> 20) & 0x0fff
+            funct7 = (instr >> 25) & 0x7f
             if etype == 0b0:
                 instrObj.instr_name = 'ecall'
                 return instrObj
             if etype == 0b1:
                 instrObj.instr_name = 'ebreak'
                 return instrObj
+            if funct7 == 0b0001001:
+                instrObj.instr_name = 'sfence.vma'
+                instrObj.rs1 = rs1
+                instrObj.rs2 = rs2
+                return instrObj
+            
+
+        MOP_R_MASK = 0xB3C00000
+        MOP_RR_MASK = 0xB2000000
+        mop_r_n = ((instr & 0x40000000) >> 26) + ((instr & 0xC000000) >> 24) + ((instr & 0x300000) >> 20)
+        mop_rr_n = ((instr & 0x40000000) >> 28) + ((instr & 0xC000000) >> 26)
 
         # Test for csr ops
         rd = ((instr & self.RD_MASK) >> 7, 'x')
         rs1 = ((instr & self.RS1_MASK) >> 15, 'x')
+        rs2 = ((instr & self.RS2_MASK) >> 20, 'x')
         csr = (instr >> 20)
 
         instrObj.rd = rd
@@ -1350,6 +1419,20 @@ class disassembler():
             instrObj.instr_name = 'csrrs'
         if funct3 == 0b011:
             instrObj.instr_name = 'csrrc'
+        if funct3 == 0b100:
+            if (instr & MOP_R_MASK == 0x81C00000):
+                for n in range(32):
+                    if (mop_r_n == n):
+                        instrObj.instr_name = 'mop.r.' + str(n)
+                        instrObj.csr = None
+                        break     
+            elif (instr & MOP_RR_MASK == 0x82000000):
+                for n in range(8):
+                    if (mop_rr_n == n):
+                        instrObj.instr_name = 'mop.rr.' + str(n)
+                        instrObj.rs2 = rs2
+                        instrObj.csr = None
+                        break
         if funct3 == 0b101:
             instrObj.instr_name = 'csrrwi'
             instrObj.rs1 = None
@@ -1562,6 +1645,12 @@ class disassembler():
             0b11100: 'amomaxu.d'
     }
 
+    zacas_instr_names = {
+            0b010: 'zacas.w',
+            0b011: 'zacas.d',
+            0b100: 'zacas.q',
+    }
+
     def rv64_rv32_atomic_ops(self, instrObj):
 
         instr = instrObj.instr
@@ -1580,25 +1669,28 @@ class disassembler():
         instrObj.rl = rl
         instrObj.aq = aq
 
-        #RV32A instructions
-        if funct3 == 0b010:
-            if funct5 == 0b00010:
-                instrObj.rs2 = None
-                instrObj.instr_name = self.rv32a_instr_names[funct5]
-            else:
-                instrObj.instr_name = self.rv32a_instr_names[funct5]
+        if funct5 == 0b00101:
+            instrObj.instr_name = self.zacas_instr_names[funct3]
+        else:
+            #RV32A instructions
+            if funct3 == 0b010:
+                if funct5 == 0b00010:
+                    instrObj.rs2 = None
+                    instrObj.instr_name = self.rv32a_instr_names[funct5]
+                else:
+                    instrObj.instr_name = self.rv32a_instr_names[funct5]
 
-            return instrObj
+                return instrObj
 
-        #RV64A instructions
-        if funct3 == 0b011:
-            if funct5 == 0b00010:
-                instrObj.rs2 = None
-                instrObj.instr_name = self.rv64a_instr_names[funct5]
-            else:
-                instrObj.instr_name = self.rv64a_instr_names[funct5]
+            #RV64A instructions
+            if funct3 == 0b011:
+                if funct5 == 0b00010:
+                    instrObj.rs2 = None
+                    instrObj.instr_name = self.rv64a_instr_names[funct5]
+                else:
+                    instrObj.instr_name = self.rv64a_instr_names[funct5]
 
-            return instrObj
+        return instrObj
 
     def flw_fld(self, instrObj):
         instr = instrObj.instr
@@ -1793,7 +1885,7 @@ class disassembler():
                 instrObj.instr_name = 'fsgnjx.d'
                 return instrObj
 
-        # fmin, fmax
+        # fmin, fmax, fminm, fmaxm
         if funct7 == 0b0010100:
             if rm == 0b000:
                 instrObj.instr_name = 'fmin.s'
@@ -1801,12 +1893,24 @@ class disassembler():
             elif rm == 0b001:
                 instrObj.instr_name = 'fmax.s'
                 return instrObj
+            elif rm == 0b010:
+                instrObj.instr_name = 'fminm.s'
+                return instrObj
+            elif rm == 0b011:
+                instrObj.instr_name = 'fmaxm.s'
+                return instrObj
         elif funct7 == 0b0010101:
             if rm == 0b000:
                 instrObj.instr_name = 'fmin.d'
                 return instrObj
             elif rm == 0b001:
                 instrObj.instr_name = 'fmax.d'
+                return instrObj
+            elif rm == 0b010:
+                instrObj.instr_name = 'fminm.d'
+                return instrObj
+            elif rm == 0b011:
+                instrObj.instr_name = 'fmaxm.d'
                 return instrObj
 
         # fcvt.w, fcvt.wu, fcvt.l, fcvt.lu
@@ -1828,15 +1932,31 @@ class disassembler():
                 instrObj.instr_name = 'fcvt.lu.s'
                 return instrObj
 
-        # fcvt.s.d, fcvt.d.s
+        # fcvt.s.d, fround.s, froundnx.s, fcvt.d.s, fround.d, froundnx.d
         if funct7 == 0b0100000:
             if rs2[0] == 0b00001:
                 instrObj.instr_name = 'fcvt.s.d'
                 instrObj.rs2 = None
                 return instrObj
+            elif rs2[0] == 0b00100:
+                instrObj.instr_name = 'fround.s'
+                instrObj.rs2 = None
+                return instrObj
+            elif rs2[0] == 0b00101:
+                instrObj.instr_name = 'froundnx.s'
+                instrObj.rs2 = None
+                return instrObj
         if funct7 == 0b0100001:
             if rs2[0] == 0b00000:
                 instrObj.instr_name = 'fcvt.d.s'
+                instrObj.rs2 = None
+                return instrObj
+            elif rs2[0] == 0b00100:
+                instrObj.instr_name = 'fround.d'
+                instrObj.rs2 = None
+                return instrObj
+            elif rs2[0] == 0b00101:
+                instrObj.instr_name = 'froundnx.d'
                 instrObj.rs2 = None
                 return instrObj
 
@@ -1855,7 +1975,7 @@ class disassembler():
                 instrObj.rm = None
                 return instrObj
 
-        # feq, flt, fle
+        # feq, flt, fle, fltq, fleq
         if funct7 == 0b1010000:
             instrObj.rd = (rd[0], 'x')
             if rm == 0b010:
@@ -1866,6 +1986,14 @@ class disassembler():
                 return instrObj
             elif rm == 0b000:
                 instrObj.instr_name = 'fle.s'
+                return instrObj
+            elif rm == 0b101:
+                instrObj.instr_name = 'fltq.s'
+                instrObj.rd = (rd[0], 'x')
+                return instrObj
+            elif rm == 0b100:
+                instrObj.instr_name = 'fleq.s'
+                instrObj.rd = (rd[0], 'x')
                 return instrObj
 
         if funct7 == 0b1010001:
@@ -1878,6 +2006,14 @@ class disassembler():
                 return instrObj
             elif rm == 0b000:
                 instrObj.instr_name = 'fle.d'
+                return instrObj
+            elif rm == 0b101:
+                instrObj.instr_name = 'fltq.d'
+                instrObj.rd = (rd[0], 'x')
+                return instrObj
+            elif rm == 0b100:
+                instrObj.instr_name = 'fleq.d'
+                instrObj.rd = (rd[0], 'x')
                 return instrObj
 
         # fcvt.s.w, fcvt.s.wu, fcvt.s.l, fcvt.s.lu
@@ -1898,14 +2034,20 @@ class disassembler():
                 instrObj.instr_name = 'fcvt.s.lu'
                 return instrObj
 
-        # fmv.w.x
+        # fmv.w.x, fli.s
         if funct7 == 0b1111000:
-            instrObj.instr_name = 'fmv.w.x'
-            instrObj.rs1 = (rs1[0], 'x')
-            instrObj.rs2 = None
-            return instrObj
+            if rs2[0] == 0:
+                instrObj.instr_name = 'fmv.w.x'
+                instrObj.rs1 = (rs1[0], 'x')
+                instrObj.rs2 = None
+                return instrObj
+            elif rs2[0] == 1:
+                instrObj.instr_name = 'fli.s'
+                instrObj.rs1 = (rs1[0], 'x')
+                instrObj.rs2 = None
+                return instrObj
 
-        # fclass.d, fmv.x.d
+        # fclass.d, fmv.x.d, fmvh.x.d
         if funct7 == 0b1110001:
             if rm == 0b001:
                 instrObj.instr_name = 'fclass.d'
@@ -1913,12 +2055,25 @@ class disassembler():
                 instrObj.rs2 = None
                 return instrObj
             elif rm == 0b000:
-                instrObj.instr_name = 'fmv.x.d'
-                instrObj.rd = (rd[0], 'x')
-                instrObj.rs2 = None
-                return instrObj
+                if rs2[0] == 0:
+                    instrObj.instr_name = 'fmv.x.d'
+                    instrObj.rd = (rd[0], 'x')
+                    instrObj.rs2 = None
+                    return instrObj
+                elif rs2[0] == 1:
+                    instrObj.instr_name = 'fmvh.x.d'
+                    instrObj.rd = (rd[0], 'x')
+                    instrObj.rs2 = None
+                    return instrObj
+                
+        # fmvp.d.x
+        if funct7 == 0b1011001:
+            instrObj.instr_name = 'fmvp.d.x'
+            instrObj.rs1 = (rs1[0], 'x')
+            instrObj.rs2 = (rs2[0], 'x')
+            return instrObj
 
-        # fcvt.w.d, fcvt.wu.d, fcvt.d.w, fcvt.d.wu, fcvt.l.d, fcvt.lu.d
+        # fcvt.w.d, fcvt.wu.d, fcvt.d.w, fcvt.d.wu, fcvt.l.d, fcvt.lu.d, fcvtmod.w.d
         if funct7 == 0b1100001:
             mode = rs2[0]
             instrObj.rs2 = None
@@ -1939,6 +2094,12 @@ class disassembler():
                 instrObj.instr_name = 'fcvt.lu.d'
                 instrObj.rs2 = None
                 return instrObj
+            elif mode == 0b01000:
+                instrObj.instr_name = 'fcvtmod.w.d'
+                instrObj.rd = (rd[0], 'x')
+                instrObj.rs2 = None
+                return instrObj
+            
 
         if funct7 == 0b1101001:
             mode = rs2[0]
@@ -1962,10 +2123,16 @@ class disassembler():
                 return instrObj
 
         if funct7 == 0b1111001:
-            instrObj.instr_name = 'fmv.d.x'
-            instrObj.rs1 = (rs1[0], 'x')
-            instrObj.rs2 = None
-            return instrObj
+            if rs2[0] == 0:
+                instrObj.instr_name = 'fmv.d.x'
+                instrObj.rs1 = (rs1[0], 'x')
+                instrObj.rs2 = None
+                return instrObj
+            elif rs2[0] == 1:
+                instrObj.instr_name = 'fli.d'
+                instrObj.rs1 = (rs1[0], 'x')
+                instrObj.rs2 = None
+                return instrObj
 
         if instrObj.instr_name != 'None':
             return instrObj
@@ -1991,6 +2158,7 @@ class disassembler():
     C1_IMM_16_12_MASK = 0x007c
     C1_MINOR_OP_MASK = 0x0C00
     C1_MINOR_OP2_MASK = 0x0060
+    C1_ZCMOP_MASK = 0x18FC
 
     def get_bit(self, val, pos):
         return (val & (1 << pos)) >> pos
@@ -2054,6 +2222,33 @@ class disassembler():
                 instrObj.rs1 = (8 + rs1prime, 'x')
                 instrObj.imm = uimm_7_6_5_3
 
+        elif funct3 == 0b100:
+            if uimm_5_3 == 0:
+                instrObj.instr_name = 'c.lbu'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_7_6 >> 6
+            elif uimm_5_3 == 8 and uimm_2 == 4:
+                instrObj.instr_name = 'c.lh'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+            elif uimm_5_3 == 8 and uimm_2 == 0:
+                instrObj.instr_name = 'c.lhu'
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+            elif uimm_5_3 == 16:
+                instrObj.instr_name = 'c.sb'
+                instrObj.rs2 = (8 + rs2prime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_7_6 >> 6
+            elif uimm_5_3 == 24 and uimm_2 == 0:
+                instrObj.instr_name = 'c.sh'
+                instrObj.rs2 = (8 + rs2prime, 'x')
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.imm = uimm_6 >> 5
+               
         elif funct3 == 0b101:
             instrObj.instr_name = 'c.fsd'
             instrObj.rs1 = (8 + rs1prime, 'x')
@@ -2121,6 +2316,8 @@ class disassembler():
         imm_addi_9 = self.get_bit(instr, 12) << 9
         imm_addi = imm_addi_5 + imm_addi_8_7 + imm_addi_6 + imm_addi_4 + imm_addi_9
 
+        zcmop_n = (instr & 0x0700) >> 8
+
         op = (self.C1_MINOR_OP_MASK & instr) >> 10
         op2 = (self.C1_MINOR_OP2_MASK & instr) >> 5
 
@@ -2157,6 +2354,23 @@ class disassembler():
                 instrObj.imm = imm
                 instrObj.rs1 = (rd, 'x')
                 instrObj.rd = (rd, 'x')
+            elif (instr & self.C1_ZCMOP_MASK == 0x0080):
+                if (zcmop_n == 0):
+                    instrObj.instr_name = 'c.mop.1'
+                elif (zcmop_n == 1):
+                    instrObj.instr_name = 'c.mop.3'
+                elif (zcmop_n == 2):
+                    instrObj.instr_name = 'c.mop.5'
+                elif (zcmop_n == 3):
+                    instrObj.instr_name = 'c.mop.7'
+                elif (zcmop_n == 4):
+                    instrObj.instr_name = 'c.mop.9'
+                elif (zcmop_n == 5):
+                    instrObj.instr_name = 'c.mop.11'
+                elif (zcmop_n == 6):
+                    instrObj.instr_name = 'c.mop.13'
+                elif (zcmop_n == 7):
+                    instrObj.instr_name = 'c.mop.15'
         elif funct3 == 4:
             if op == 0 and imm != 0:
                 instrObj.instr_name = 'c.srli'
@@ -2203,6 +2417,35 @@ class disassembler():
                 instrObj.rs1 = (8 + rs1prime, 'x')
                 instrObj.rd = (8 + rdprime, 'x')
                 instrObj.rs2 = (8 + rs2prime, 'x')
+            elif op == 3 and imm_4_0 == 24 and imm_5 == 32:
+                instrObj.instr_name = 'c.zext.b'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 25 and imm_5 == 32:
+                instrObj.instr_name = 'c.sext.b'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 26 and imm_5 == 32:
+                instrObj.instr_name = 'c.zext.h'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 27 and imm_5 == 32:
+                instrObj.instr_name = 'c.sext.h'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and imm_4_0 == 29 and imm_5 == 32:
+                instrObj.instr_name = 'c.not'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+            elif op == 3 and op2 == 2 and imm_5 == 32:
+                instrObj.instr_name = 'c.mul'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
+                instrObj.rs2 = (8 + rs2prime, 'x')
+            elif op == 3 and imm_4_0 == 28 and imm_5 == 32 and self.arch == 'rv64':
+                instrObj.instr_name = 'c.zext.w'
+                instrObj.rs1 = (8 + rs1prime, 'x')
+                instrObj.rd = (8 + rdprime, 'x')
         elif funct3 == 5:
             instrObj.instr_name = 'c.j'
             instrObj.rd = (0, 'x')
@@ -2259,7 +2502,7 @@ class disassembler():
             instrObj.rd = (rd, 'x')
             instrObj.rs1 = (rs1, 'x')
             instrObj.imm = imm_slli
-        elif funct3 == 1 and self.arch == 'rv64':
+        elif funct3 == 1:
             instrObj.instr_name = 'c.fldsp'
             instrObj.rd = (rd, 'f')
             instrObj.imm = imm_fldsp
@@ -2276,7 +2519,7 @@ class disassembler():
             instrObj.imm = imm_lwsp
         elif funct3 == 3 and self.arch == 'rv64':
             instrObj.instr_name = 'c.ldsp'
-            instrObj.rd = (rd, 'f')
+            instrObj.rd = (rd, 'x')
             instrObj.rs1 = (2, 'x')
             instrObj.imm = imm_ldsp
         elif funct3 == 4 and rs1 != 0 and imm_5 == 0 and rs2 == 0:

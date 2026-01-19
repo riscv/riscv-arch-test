@@ -17,7 +17,13 @@ yaml.default_flow_style = False
 yaml.allow_unicode = True
 
 def load_yaml(foo):
+    """
+    Loads the template file or file list and returns the data in a dictionary.
+    """    
     try:
+        if isinstance(foo, list):
+            with combineReader(foo) as fp:
+                return dict(yaml.load(fp))
         with open(foo, "r") as file:
             return dict(yaml.load(file))
     except ruamel.yaml.constructor.DuplicateKeyError as msg:
@@ -33,7 +39,7 @@ def gen_format_data():
         - ISA
             - Mnemonics
     '''    
-    op_template = load_yaml(const.template_file)
+    op_template = load_yaml(const.template_files)
 
     # Initialize nested dictionary
     nested_dict = lambda: defaultdict(nested_dict)
@@ -60,9 +66,6 @@ def get_instr_list():
 
     return instr_lst
 
-def load_yamls(foo):
-    with combineReader(foo) as fp:
-        return dict(yaml.load(fp))
 
 class makeUtil():
     """

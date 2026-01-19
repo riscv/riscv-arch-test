@@ -18,7 +18,7 @@ include::{testplansdir}/Zca.adoc[]
 Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  As defined in <<t-unprivileged-coverpoints>>, the p versions of coverpoints work on registers x8-x15.
 
 [[t-Zc-modified-coverpoints]]
-.I Modified Coverpoints
+.Zc Modified Coverpoints
 [cols="2, 1, 4" options=header]
 |===
 |Modified Coverpoint|Bins|Definition

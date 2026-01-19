@@ -1,0 +1,25 @@
+normative_rule_definitions:
+  # If S-mode is not supported, SBE is read-only 0. Otherwise, SBE controls whether
+  # explicit load and store memory accesses made from S-mode are little-endian
+  # (SBE=0) or big-endian (SBE=1).
+  - name: mstatus_sbe_op
+    coverpoint: [""]
+
+  # For implicit accesses to supervisor-level memory management data structures,
+  # such as page tables, endianness is always controlled by SBE.
+  - name: mstatus_sbe_implicit
+    coverpoint: [""]
+
+  # For implicit accesses to supervisor-level memory management data structures,
+  # such as page tables, endianness is always controlled by SBE. Since changing SBE
+  # alters the implementation’s interpretation of these data structures, if any such
+  # data structures remain in use across a change to SBE, M-mode software must
+  # follow such a change to SBE by executing an SFENCE.VMA instruction with rs1=x0
+  # and rs2=x0.
+  - name: mstatus_sbe_change_fence
+    coverpoint: [""]
+
+  # If S-mode is supported, an implementation may make SBE be a read-only copy of
+  # MBE.
+  - name: mstatus_sbe_rocopy
+    coverpoint: [""]

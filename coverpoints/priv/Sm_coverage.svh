@@ -163,18 +163,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus  = {CSR_MSTATUS};
-        bins misa     = {CSR_MISA};
-        bins medeleg  = {CSR_MEDELEG};
-        bins mideleg  = {CSR_MIDELEG};
-        bins mie      = {CSR_MIE};
-        bins mtvec    = {CSR_MTVEC};
-        bins mscratch = {CSR_MSCRATCH};
-        bins mepc     = {CSR_MEPC};
-        bins mcause   = {CSR_MCAUSE};
-        bins mtval    = {CSR_MTVAL};
-        bins mip      = {CSR_MIP};
-        bins menvcfg  = {CSR_MENVCFG};
+        bins mstatus    = {CSR_MSTATUS};
+        bins misa       = {CSR_MISA};
+        bins medeleg    = {CSR_MEDELEG};
+        bins mideleg    = {CSR_MIDELEG};
+        bins mie        = {CSR_MIE};
+        bins mtvec      = {CSR_MTVEC};
+        bins mcounteren = {CSR_MCOUNTEREN};
+        bins mscratch   = {CSR_MSCRATCH};
+        bins mepc       = {CSR_MEPC};
+        bins mcause     = {CSR_MCAUSE};
+        bins mtval      = {CSR_MTVAL};
+        bins mip        = {CSR_MIP};
+        bins menvcfg    = {CSR_MENVCFG};
         bins mcountinhibit = {CSR_MCOUNTINHIBIT};
         bins mhpmevent3 = {CSR_MHPMEVENT3};
         bins mhpmevent4 = {CSR_MHPMEVENT4};
@@ -335,6 +336,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {CSR_TIME};
     }
+    `ifdef XLEN32
+        timeh_csr: coverpoint ins.current.insn[31:20] {
+            bins timeh_csr = {CSR_TIMEH};
+        }
+    `endif
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
@@ -349,6 +355,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+        `ifdef XLEN32
+            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
+        `endif
     `endif
 endgroup
 

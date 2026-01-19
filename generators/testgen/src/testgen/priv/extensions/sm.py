@@ -275,6 +275,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         "mideleg",
         "mie",
         "mtvec",
+        "mcounteren",
         "mscratch",
         "mepc",
         "mcause",
@@ -583,6 +584,14 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"\tsub x{r2}, x{r2}, x{r1}          # difference should be small",
             f"\tslti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
             write_sigupd(r2, test_data),
+            "#if __riscv_xlen == 32",
+            test_data.add_testcase(coverpoint, "h", covergroup),
+            f"\tLI(x{r1}, 67)        # value to write to mtimeh",
+            f"\tRVMODEL_SET_MTIMEH(x{r1}, x{r2})    # write MTIMEH = 57",
+            f"\tCSRR(x{r2}, timeh)        # read timeh",
+            f"\tsub x{r2}, x{r2}, x{r1}          # difference should be zero",
+            write_sigupd(r2, test_data),
+            "#endif",
         ]
     )
 

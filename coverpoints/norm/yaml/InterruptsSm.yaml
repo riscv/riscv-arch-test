@@ -1,4 +1,50 @@
 normative_rule_definitions:
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The Interrupt bit in the mcause register is set if the trap was caused by an
+  # interrupt.
+  - name: mcause_intr_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  - name: mcause_exccode_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_M-mode
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
   # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
   # respectively. When a hart is executing in privilege mode x, interrupts are
   # globally enabled when xIE=1 and globally disabled when xIE=0.

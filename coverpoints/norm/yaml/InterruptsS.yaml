@@ -1,4 +1,53 @@
 normative_rule_definitions:
+  # When a trap is delegated to S-mode the scause register is written with the trap
+  # cause; the sepc register is written with the virtual address of the instruction
+  # that took the trap; the stval register is written with an exception-specific
+  # datum; the SPP field of mstatus is written with the active privilege mode at the
+  # time of the trap; the SPIE field of mstatus is written with the value of the SIE
+  # field at the time of the trap; and the SIE field of mstatus is cleared.
+  - name: trap_del_S-mode_op
+    coverpoint: ["InterruptsS_cg/cp_priority_mideleg_s"]
+
+  # implementations can provide individual read/write bits within medeleg and
+  # mideleg to indicate that certain exceptions and interrupts should be processed
+  # directly by a lower privilege level. setting a bit in medeleg or mideleg will
+  # delegate the corresponding trap, when occurring in S-mode or U-mode, to the
+  # S-mode trap handler.
+  - name: mideleg_op
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_{mti/msi/mei/sti/ssi_mip/ssi_sip/sei_sei_seip}",
+      ]
+
+  # mideleg holds trap delegation bits for individual interrupts, with the layout of
+  # bits matching those in the mip register
+  - name: mideleg_enc
+    coverpoint:
+      [
+        "InterruptsS_cg/cp_trigger_{mti/msi/mei/sti/ssi_mip/ssi_sip/sei_sei_seip}",
+      ]
+
+  # Traps never transition from a more-privileged mode to a less-privileged mode.
+  # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
+  # and M-mode software later executes an illegal instruction, the trap is taken in
+  # M-mode, rather than being delegated to S-mode.
+  - name: trap_never_trans_lower
+    coverpoint: ["TODO"]
+
+  # traps may be taken horizontally. Using the same example, if M-mode has delegated
+  # illegal-instruction exceptions to S-mode, and S-mode software later executes an
+  # illegal instruction, the trap is taken in S-mode.
+  - name: trap_horiz
+    coverpoint: ["TODO"]
+
+  # Delegated interrupts result in the interrupt being masked at the delegator
+  # privilege level. For example, if the supervisor timer interrupt (STI) is
+  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
+  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
+  # and regardless of current mode will transfer control to M-mode.
+  - name: trap_del_intr_priv_lvl
+    coverpoint: ["TODO"]
+
   # When S-mode is implemented, then executing WFI in U-mode causes an
   # illegal-instruction exception, regardless of the value of the TW bit, unless the
   # instruction completes within an implementation-specific, bounded time limit.

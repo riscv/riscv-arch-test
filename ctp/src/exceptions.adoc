@@ -13,6 +13,8 @@ These tests are run on any configuration with machine mode that supports excepti
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsSm_norm_rules.adoc[]
+
 ==== ExceptionsS Supervisor-Mode Exceptions
 
 These additional exception tests are run on configurations with supervisor mode.
@@ -23,6 +25,8 @@ These additional exception tests are run on configurations with supervisor mode.
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2127390256#gid=2127390256[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsS_norm_rules.adoc[]
+
 ==== ExceptionsU User-Mode Exceptions
 
 These additional exception tests are run on configurations with user mode.
@@ -32,6 +36,8 @@ These additional exception tests are run on configurations with user mode.
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=593261374#gid=593261374[Google Sheet Testplan]
 ,===
+
+include::norm/ExceptionsU_norm_rules.adoc[]
 
 ==== ExceptionsF Floating-Point Exceptions
 

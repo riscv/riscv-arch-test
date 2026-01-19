@@ -9,8 +9,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Load which extensions are supported in this configuration (from $WALLY/config/<config>/coverage.svh)
+// Load configuration parameters
 `include "rvtest_config.svh"
+
+// Load generated instruction/CSR decode package
+`include "coverage/RISCV_decode_pkg.svh"
 
 // Load disassembler
 `include "disassemble.svh"

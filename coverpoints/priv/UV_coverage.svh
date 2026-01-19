@@ -16,13 +16,13 @@ covergroup UV_uvcsr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     csrname : coverpoint ins.current.insn[31:20] {
-        bins vstart = {12'h008};
-        bins vxsat  = {12'h009};
-        bins vxrm   = {12'h00A};
-        bins vcsr   = {12'h00F};
-        bins vl     = {12'hC20};
-        bins vtype  = {12'hC21};
-        bins vlenb  = {12'hC22};
+        bins vstart = {CSR_VSTART};
+        bins vxsat  = {CSR_VXSAT};
+        bins vxrm   = {CSR_VXRM};
+        bins vcsr   = {CSR_VCSR};
+        bins vl     = {CSR_VL};
+        bins vtype  = {CSR_VTYPE};
+        bins vlenb  = {CSR_VLENB};
     }
 
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
@@ -30,24 +30,16 @@ covergroup UV_uvcsr_cg with function sample(ins_t ins);
     }
 
     csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+        bins csrrs = {CSRRS};
+        bins csrrc = {CSRRC};
     }
 
-    csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
-        `ifdef XLEN64
-            bins csrrc_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
-            bins csrrw0    = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
-            bins csrrw1    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
-            bins csrrs_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
-            bins csrr      = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
-        `else
-            bins csrrc_all = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
-            bins csrrw0    = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
-            bins csrrw1    = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
-            bins csrrs_all = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
-            bins csrr      = {35'b00000000_00000000_00000000_00000000_010}; // csrr
-        `endif
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
     cp_uvcsr_access:           cross priv_mode_u, csrname, csraccesses;

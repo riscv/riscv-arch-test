@@ -7,9 +7,9 @@
 
 """cp_custom_fence_i coverpoint generator."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
 
 
 def encode_addi(rd: int, rs1: int, imm: int) -> int:

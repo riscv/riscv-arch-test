@@ -6,60 +6,53 @@
 [[t-EndianSm-coverpoints]]
 .EndianSm Coverpoints
 ,===
-//include::{testplansdir}/EndianSm.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=220856688#gid=220856688[Google Sheet Testplan]
+,===
 
 ==== EndianS Supervisor-Mode Endianness
 
 [[t-EndianS-coverpoints]]
 .EndianS Coverpoints
 ,===
-//include::{testplansdir}/EndianS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=561554401#gid=561554401[Google Sheet Testplan]
+,===
 
 ==== EndianU User-Mode Endianness
 
 [[t-EndianU-coverpoints]]
 .EndianU Coverpoints
 ,===
-//include::{testplansdir}/EndianU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
 
 ==== EndianZaamo Endianness for AMOs
 
 [[t-EndianZaamo-coverpoints]]
 .EndianZaamo Coverpoints
 ,===
-//include::{testplansdir}/EndianZaamo.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=470611865#gid=470611865[Google Sheet Testplan]
+,===
 
 ==== EndianZalrsc Endianness for LR/SC
 
 [[t-EndianZalrsc-coverpoints]]
 .EndianZalrsc Coverpoints
 ,===
-//include::{testplansdir}/EndianZalrsc.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1511292549#gid=1511292549[Google Sheet Testplan]
+,===
 
 ==== EndianF Endianness for Floats
 
 [[t-EndianF-coverpoints]]
 .EndianF Coverpoints
 ,===
-//include::{testplansdir}/EndianF.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1999049510#gid=1999049510[Google Sheet Testplan]
+,===
 
 ==== EndianZca Endianness for Compressed Instructions
 
 [[t-EndianZca-coverpoints]]
 .EndianZca Coverpoints
 ,===
-//include::{testplansdir}/EndianZca.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=547928668#gid=547928668[Google Sheet Testplan]
+,===

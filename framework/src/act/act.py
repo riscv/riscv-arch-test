@@ -41,6 +41,10 @@ def run_act(
         str,
         typer.Option("--extensions", "-e", help="Comma-separated list of extensions to generate tests for"),
     ] = "all",
+    exclude: Annotated[
+        str,
+        typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation"),
+    ] = "",
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
@@ -48,7 +52,7 @@ def run_act(
     if workdir is None:
         workdir = Path.cwd() / "work"
     # Generate test list
-    full_test_dict = generate_test_dict(test_dir, extensions)
+    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
     rv32i_common_tests = get_common_tests(full_test_dict, 32, False)
     rv32e_common_tests = get_common_tests(full_test_dict, 32, False)
     rv64i_common_tests = get_common_tests(full_test_dict, 64, False)

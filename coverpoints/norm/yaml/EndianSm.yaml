@@ -1,0 +1,5 @@
+normative_rule_definitions:
+  # MBE controls whether non-instruction-fetch memory accesses made from M-mode
+  # (assuming mstatus.MPRV=0) are little-endian (MBE=0) or big-endian (MBE=1).
+  - name: mstatus_mbe_op
+    coverpoint: [""]

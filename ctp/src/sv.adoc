@@ -31,6 +31,7 @@
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
 *** config file determines whether to run cbom/cboz/both
+
 [[t-SvZicbo-coverpoints]]
 .SvZicbo Coverpoints
 ,===

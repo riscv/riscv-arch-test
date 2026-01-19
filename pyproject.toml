@@ -7,7 +7,7 @@
 members = ["framework", "generators/testgen", "generators/ctp"]
 
 [dependency-groups]
-dev = ["pyright>=1.1.407", "ruff==0.14.10"]
+dev = ["pyright==1.1.408", "ruff==0.14.10"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]

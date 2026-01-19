@@ -76,6 +76,7 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         bins direct   = {2'b00};
     }
     mtvec_vectored: coverpoint ins.current.csr[12'h305][1:0] {
+        bins direct   = {2'b00};
         bins vector   = {2'b01};
     }
     wfi: coverpoint ins.current.insn {

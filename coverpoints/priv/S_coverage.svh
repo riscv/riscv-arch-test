@@ -170,13 +170,13 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins sstatus       = {12'h100};
         bins sie           = {12'h104};
         bins stvec         = {12'h105};
+        bins scounteren    = {12'h106};
         bins sscratch      = {12'h140};
         bins sepc          = {12'h141};
         bins scause        = {12'h142};
         bins stval         = {12'h143};
         bins sip           = {12'h144};
         bins senvcfg       = {12'h10A};
-        bins scounteren    = {12'h106};
     }
     csruname : coverpoint ins.current.insn[31:20] {
         `ifdef F_SUPPORTED

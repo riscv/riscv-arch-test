@@ -165,18 +165,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus  = {12'h300};
-        bins misa     = {12'h301};
-        bins medeleg  = {12'h302};
-        bins mideleg  = {12'h303};
-        bins mie      = {12'h304};
-        bins mtvec    = {12'h305};
-        bins mscratch = {12'h340};
-        bins mepc     = {12'h341};
-        bins mcause   = {12'h342};
-        bins mtval    = {12'h343};
-        bins mip      = {12'h344};
-        bins menvcfg  = {12'h30A};
+        bins mstatus    = {12'h300};
+        bins misa       = {12'h301};
+        bins medeleg    = {12'h302};
+        bins mideleg    = {12'h303};
+        bins mie        = {12'h304};
+        bins mtvec      = {12'h305};
+        bins mcounteren = {12'h306};
+        bins mscratch   = {12'h340};
+        bins mepc       = {12'h341};
+        bins mcause     = {12'h342};
+        bins mtval      = {12'h343};
+        bins mip        = {12'h344};
+        bins menvcfg    = {12'h30A};
         bins mcountinhibit = {12'h320};
         bins mhpmevent3 = {12'h323};
         bins mhpmevent4 = {12'h324};
@@ -337,6 +338,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {12'hC01};
     }
+    `ifdef XLEN32
+        timeh_csr: coverpoint ins.current.insn[31:20] {
+            bins timeh_csr = {12'hC81};
+        }
+    `endif
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
@@ -351,6 +357,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
+        `ifdef XLEN32
+            cp_mtimeh_write :   cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
+        `endif
     `endif
 endgroup
 

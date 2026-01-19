@@ -26,13 +26,14 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro.
 |RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string
-|RVMODEL_SET_MTIME(_R1, _R2)|Set the machine timer (`mtime``) to the value in the register _R1. _R2 is a temporary register that may be trashed by the macro.
+|RVMODEL_SET_MTIME(_R1, _R2)|Set the machine timer (`mtime`) to the value in the register _R1. _R2 is a temporary register that may be trashed by the macro.
+|RVMODEL_SET_MTIMEH(_R1, _R2)|Set the machine timer upper 32 bits (`mtimeh`) to the value in the register _R1. _R2 is a temporary register that may be trashed by the macro.  RV32 only.
 |RVMODEL_SET_MEXT_INT| Sets the Machine External Interrupt (`mip.MEIP` = 1, if supported)
 |RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt (`mip.MEIP` = 0)
 |RVMODEL_SET_MTIMER_INT|Sets the Machine Timer Interrupt (`mip.MTIP` = 1, if supported)
 |RVMODEL_CLR_MTIMER_INT|Clears the Machine Timer Interrupt (`mip.MTIP` = 0)
 |RVMODEL_SET_MTIMER_INT_SOON|Cause the Machine Timer Interrupt to rise soon, but not immediately.  This is used to check that an interrupt can fire in the future, such as for WFI.  A delay of about 100 cycles is typically adequate to run a small amount of code after this macro.
-|RVMODEL_SET_MSW_INT|Sets the Machine Software Interrupt (`mip.MSIP` = 1)
+|RVMODEL_SET_MSW_INT|Sets the Machine Software Interrupt (`mip.MSIP` = 1, if supported)
 |RVMODEL_CLR_MSW_INT|Clears the Machine Software Interrupt (`mip.MSIP` = 0)
 |RVMODEL_SET_SEXT_INT|Sets the Supervisor External Interrupt (`sip.SEIP` = 1, if supported)
 |RVMODEL_CLR_SEXT_INT|Clears the Supervisor External Interrupt (`sip.SEIP` = 0)
@@ -41,7 +42,13 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_SET_STIMER_INT_SOON|Cause the Supervisor Timer Interrupt to rise soon, but not immediately.
 |RVMODEL_SET_SSW_INT|Sets the Supervisor Software Interrupt (`mip.SSIP` = 1, if supported)
 |RVMODEL_CLR_SSW_INT|Clears the Supervisor Software Interrupt (`mip.SSIP` = 0)
-|RVMODEL_WRITE_GEIP(_R)|Write the value in _R to the Guest External Interrupt Pending (`hgeip`) register, if supported.  This is used to test guest external interrupts. Only the bottom `GEILEN` bits are written.  TODO: Looks like this is unnecessary because one could just write the `hgeip` CSR directly.  Drop unless it is needed, and search and remove everywhere.
+|RVMODEL_SET_VEXT_INT|Set the Virtual Supervisor External Interrupt
+|RVMODEL_CLR_VEXT_INT|Clear the Virtual Supervisor External Interrupt
+|RVMODEL_SET_VTIMER_INT|Set the Virtual Supervisor Timer Interrupt
+|RVMODEL_CLR_VTIMER_INT|Clear the Virtual Supervisor Timer Interrupt
+|RVMODEL_SET_VTIMER_INT_SOON|Cause the Virtual Supervisor Timer Interrupt to rise soon, but not immediately.
+|RVMODEL_SET_VSW_INT|Set the Virtual Supervisor Software Interrupt
+|RVMODEL_CLR_VSW_INT|Clear the Virtual Supervisor Software Interrupt
 |ACCESS_FAULT_ADDRESS|An address that causes an access fault when read or written. This is used to test exceptions.
 |===
 

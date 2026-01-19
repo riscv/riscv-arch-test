@@ -338,9 +338,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     time_csr: coverpoint ins.current.insn[31:20] {
         bins time_csr = {12'hC01};
     }
-    timeh_csr: coverpoint ins.current.insn[31:20] {
-        bins timeh_csr = {12'hC81};
-    }
+    `ifdef XLEN32
+        timeh_csr: coverpoint ins.current.insn[31:20] {
+            bins timeh_csr = {12'hC81};
+        }
+    `endif
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;

@@ -214,7 +214,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_SET_MTIME`
 - `RVMODEL_SET_MTIMEH` (RV32 only)
 
-**Interrupt Macros**: Can be left blank if interrupts are not supported. `RVMODEL_WRITE_GEIP` should be blank if hypervisor is not supported.
+**Interrupt Macros**: Can be left blank if interrupts are not supported.
 
 - `RVMODEL_SET_MEXT_INT`
 - `RVMODEL_CLR_MEXT_INT`
@@ -230,7 +230,6 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_SET_STIMER_INT_SOON`
 - `RVMODEL_SET_SSW_INT`
 - `RVMODEL_CLR_SSW_INT`
-- `RVMODEL_WRITE_GEIP(_R)`
 
 Complete examples are available for an example DUT ([config/duts/cvw/cvw-rv64gc/model_test.h](./config/duts/cvw/cvw-rv64gc/model_test.h)) and for the RISC-V Sail reference model ([config/ref/sail-rv64gc/model_test.h](./config/ref/sail-rv64gc/model_test.h)).
 

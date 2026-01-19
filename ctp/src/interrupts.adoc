@@ -13,7 +13,7 @@ These tests are run on any configuration with machine mode that supports interru
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
 ,===
 
-TODO: coverpoints will need to ignore bins with mie/msie nonzero:
+TODO: coverpoints will need to ignore bins with mie.msie nonzero:
   # If a system has only one hart, or if a platform standard supports the delivery
   # of machine-level interprocessor interrupts through external interrupts (MEI)
   # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.

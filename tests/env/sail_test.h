@@ -113,6 +113,18 @@
 
 ##### Hypervisor Interrupts #####
 
-#define RVMODEL_WRITE_GEIP
+#define RVMODEL_SET_VEXT_INT
+
+#define RVMODEL_CLR_VEXT_INT
+
+#define RVMODEL_SET_VTIMER_INT
+
+#define RVMODEL_CLR_VTIMER_INT
+
+#define RVMODEL_SET_VTIMER_INT_SOON
+
+#define RVMODEL_SET_VSW_INT
+
+#define RVMODEL_CLR_VSW_INT
 
 #endif // _COMPLIANCE_MODEL_H

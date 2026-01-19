@@ -46,9 +46,9 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |RVMODEL_CLR_VEXT_INT|Clear the Virtual Supervisor External Interrupt
 |RVMODEL_SET_VTIMER_INT|Set the Virtual Supervisor Timer Interrupt
 |RVMODEL_CLR_VTIMER_INT|Clear the Virtual Supervisor Timer Interrupt
+|RVMODEL_SET_VTIMER_INT_SOON|Cause the Virtual Supervisor Timer Interrupt to rise soon, but not immediately.
 |RVMODEL_SET_VSW_INT|Set the Virtual Supervisor Software Interrupt
 |RVMODEL_CLR_VSW_INT|Clear the Virtual Supervisor Software Interrupt
-|RVMODEL_WRITE_GEIP(_R)|Write the value in _R to the Guest External Interrupt Pending (`hgeip`) register, if supported.  This is used to test guest external interrupts. Only the bottom `GEILEN` bits are written.  TODO: Looks like this is unnecessary because one could just write the `hgeip` CSR directly.  Drop unless it is needed, and search and remove everywhere.
 |ACCESS_FAULT_ADDRESS|An address that causes an access fault when read or written. This is used to test exceptions.
 |===
 

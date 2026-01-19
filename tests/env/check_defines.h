@@ -47,12 +47,14 @@
 
 ##### MTIME #####
 
-#ifndef RVMODEL_MTIME_ADDR
-  #error "RVMODEL_MTIME_ADDR not defined. Make sure to define it in model_test.h."
+#ifndef RVMODEL_SET_MTIME
+  #error "RVMODEL_SET_MTIME not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_SET_MTIME
-  #error "RVMODEL_SET_MTIME not defined. Make sure to define it in model_test.h."
+  #if __riscv_xlen == 32
+    #error "RVMODEL_SET_MTIMEH not defined. Make sure to define it in model_test.h for RV32."
+  #endif
 #endif
 
 ##### Machine Interrupts #####
@@ -88,35 +90,59 @@
 ##### Supervisor Interrupts #####
 
 #ifndef RVMODEL_SET_SEXT_INT
-  #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_CLR_SEXT_INT
-  #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_SET_STIMER_INT
-  #error "RVMODEL_SET_MTIMER_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_SET_STIMER_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_CLR_STIMER_INT
-  #error "RVMODEL_CLR_MTIMER_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_CLR_STIMER_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_SET_STIMER_INT_SOON
-  #error "RVMODEL_SET_MTIMER_INT_SOON not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_SET_STIMER_INT_SOON not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_SET_SSW_INT
-  #error "RVMODEL_SET_MSW_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_SET_SSW_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 #ifndef RVMODEL_CLR_SSW_INT
-  #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in model_test.h."
+  #error "RVMODEL_CLR_SSW_INT not defined. Make sure to define it in model_test.h."
 #endif
 
 ##### Hypervisor Interrupts #####
 
-#ifndef RVMODEL_WRITE_GEIP
-  #error "RVMODEL_WRITE_GEIP not defined. Make sure to define it in model_test.h."
+#ifndef RVMODEL_SET_VEXT_INT
+  #error "RVMODEL_SET_VEXT_INT not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_CLR_VEXT_INT
+  #error "RVMODEL_CLR_VEXT_INT not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_SET_VTIMER_INT
+  #error "RVMODEL_SET_VTIMER_INT not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_CLR_VTIMER_INT
+  #error "RVMODEL_CLR_VTIMER_INT not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_SET_VTIMER_INT_SOON
+  #error "RVMODEL_SET_VTIMER_INT_SOON not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_SET_VSW_INT
+  #error "RVMODEL_SET_VSW_INT not defined. Make sure to define it in model_test.h."
+#endif
+
+#ifndef RVMODEL_CLR_VSW_INT
+  #error "RVMODEL_CLR_VSW_INT not defined. Make sure to define it in model_test.h."
 #endif

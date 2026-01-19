@@ -89,7 +89,7 @@
 
 #define RVMODEL_SET_MTIMEH(_R1, _R2)        \
     li   _R2, RVMODEL_MTIME_ADDR        ; /* MTIME address */ \
-    SREG _R1, 4(_R2)            ; /* Set MTIME low */
+    SREG _R1, 4(_R2)            ; /* Set MTIME high */
 
 ##### Machine Interrupts #####
 
@@ -125,6 +125,18 @@
 
 ##### Hypervisor Interrupts #####
 
-#define RVMODEL_WRITE_GEIP
+#define RVMODEL_SET_VEXT_INT
+
+#define RVMODEL_CLR_VEXT_INT
+
+#define RVMODEL_SET_VTIMER_INT
+
+#define RVMODEL_CLR_VTIMER_INT
+
+#define RVMODEL_SET_VTIMER_INT_SOON
+
+#define RVMODEL_SET_VSW_INT
+
+#define RVMODEL_CLR_VSW_INT
 
 #endif // _COMPLIANCE_MODEL_H

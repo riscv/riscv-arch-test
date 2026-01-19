@@ -13,8 +13,11 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    csrrw_mcause: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b001101000010_?????_001_?????_1110011};  // csrrw to mcause
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    mcause: coverpoint ins.current.insn[31:20] {
+        bins mcause = {CSR_MCAUSE};
     }
     mcause_interrupt : coverpoint ins.current.rs1_val[XLEN-1] {
         bins interrupt = {1};
@@ -74,8 +77,8 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
 
     // main coverpoints
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
-    cp_mcause_write_exception: cross csrrw_mcause, priv_mode_m, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
-    cp_mcause_write_interrupt: cross csrrw_mcause, priv_mode_m, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+    cp_mcause_write_exception: cross csrrw, mcause, priv_mode_m, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
+    cp_mcause_write_interrupt: cross csrrw, mcause, priv_mode_m, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
 endgroup
 
 
@@ -93,10 +96,13 @@ covergroup Sm_mstatus_cg with function sample(ins_t ins);
     }
     cp_mstatus_xs: coverpoint ins.current.rs1_val[16:15] {
     }
-    csrrw_mstatus: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b001100000000_?????_001_?????_1110011};  // csrrw to mstatus
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
     }
-    cp_mstatus_sd_write: cross priv_mode_m, csrrw_mstatus, cp_mstatus_sd, cp_mstatus_fs, cp_mstatus_vs, cp_mstatus_xs;
+    mstatus: coverpoint ins.current.insn[31:20] {
+        bins mstatus = {CSR_MSTATUS};
+    }
+    cp_mstatus_sd_write: cross priv_mode_m, csrrw, mstatus, cp_mstatus_sd, cp_mstatus_fs, cp_mstatus_vs, cp_mstatus_xs;
 endgroup
 
 covergroup Sm_mprivinst_cg with function sample(ins_t ins);
@@ -104,31 +110,31 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     privinstrs: coverpoint ins.current.insn  {
-        bins ecall  = {32'h00000073};
-        bins ebreak = {32'h00100073};
+        bins ecall  = {ECALL};
+        bins ebreak = {EBREAK};
     }
     mret: coverpoint ins.current.insn  {
-        bins mret   = {32'h30200073};
+        bins mret   = {MRET};
     }
     sret: coverpoint ins.current.insn  {
-        bins sret   = {32'h10200073};
+        bins sret   = {SRET};
     }
-    old_mstatus_tsr: coverpoint ins.prev.csr[12'h300][22] {
+    old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
     }
-    old_mstatus_mprv: coverpoint ins.prev.csr[12'h300][17] {
+    old_mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
     }
-    old_mstatus_mpp: coverpoint ins.prev.csr[12'h300][12:11] {
+    old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
         bins M_mode = {2'b11};
     }
-    old_mstatus_spp: coverpoint ins.prev.csr[12'h300][8] {
+    old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
     }
-    old_mstatus_mpie: coverpoint ins.prev.csr[12'h300][7] {
+    old_mstatus_mpie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {
     }
-    old_mstatus_mie: coverpoint ins.prev.csr[12'h300][3] {
+    old_mstatus_mie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
     }
-    old_mstatus_spie: coverpoint ins.prev.csr[12'h300][5] {
+    old_mstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {
     }
-    old_mstatus_sie: coverpoint ins.prev.csr[12'h300][1] {
+    old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
     }
 
     cp_mprivinst: cross privinstrs, priv_mode_m;
@@ -141,154 +147,146 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     mcsrname_ro : coverpoint ins.current.insn[31:20] { // extended set for access tests, including read-only CSRs
-        bins mvendorid= {12'hF11};
-        bins marchid  = {12'hF12};
-        bins mimpid   = {12'hF13};
-        bins mhartid  = {12'hF14};
-        bins mconfigptr= {12'hF15};
+        bins mvendorid  = {CSR_MVENDORID};
+        bins marchid    = {CSR_MARCHID};
+        bins mimpid     = {CSR_MIMPID};
+        bins mhartid    = {CSR_MHARTID};
+        bins mconfigptr = {CSR_MCONFIGPTR};
     }
 
-    csraccesses : coverpoint {ins.current.rs1_val, ins.current.insn[14:12]} iff (ins.current.insn[6:0] == 7'b1110011) {
-        `ifdef XLEN64
-            bins csrrc_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_011};
-            bins csrrw0    = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_001};
-            bins csrrw1    = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_001};
-            bins csrrs_all = {67'b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111_010};
-            bins csrr      = {67'b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000_010};
-        `else
-            bins csrrc_all = {35'b11111111_11111111_11111111_11111111_011}; // csrc all ones
-            bins csrrw0    = {35'b00000000_00000000_00000000_00000000_001}; // csrw all zeros
-            bins csrrw1    = {35'b11111111_11111111_11111111_11111111_001}; // csrw all ones
-            bins csrrs_all = {35'b11111111_11111111_11111111_11111111_010}; // csrs all ones
-            bins csrr      = {35'b00000000_00000000_00000000_00000000_010}; // csrr
-        `endif
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
-        bins mstatus  = {12'h300};
-        bins misa     = {12'h301};
-        bins medeleg  = {12'h302};
-        bins mideleg  = {12'h303};
-        bins mie      = {12'h304};
-        bins mtvec    = {12'h305};
-        bins mscratch = {12'h340};
-        bins mepc     = {12'h341};
-        bins mcause   = {12'h342};
-        bins mtval    = {12'h343};
-        bins mip      = {12'h344};
-        bins menvcfg  = {12'h30A};
-        bins mcountinhibit = {12'h320};
-        bins mhpmevent3 = {12'h323};
-        bins mhpmevent4 = {12'h324};
-        bins mhpmevent5 = {12'h325};
-        bins mhpmevent6 = {12'h326};
-        bins mhpmevent7 = {12'h327};
-        bins mhpmevent8 = {12'h328};
-        bins mhpmevent9 = {12'h329};
-        bins mhpmevent10= {12'h32A};
-        bins mhpmevent11= {12'h32B};
-        bins mhpmevent12= {12'h32C};
-        bins mhpmevent13= {12'h32D};
-        bins mhpmevent14= {12'h32E};
-        bins mhpmevent15= {12'h32F};
-        bins mhpmevent16= {12'h330};
-        bins mhpmevent17= {12'h331};
-        bins mhpmevent18= {12'h332};
-        bins mhpmevent19= {12'h333};
-        bins mhpmevent20= {12'h334};
-        bins mhpmevent21= {12'h335};
-        bins mhpmevent22= {12'h336};
-        bins mhpmevent23= {12'h337};
-        bins mhpmevent24= {12'h338};
-        bins mhpmevent25= {12'h339};
-        bins mhpmevent26= {12'h33A};
-        bins mhpmevent27= {12'h33B};
-        bins mhpmevent28= {12'h33C};
-        bins mhpmevent29= {12'h33D};
-        bins mhpmevent30= {12'h33E};
-        bins mhpmevent31= {12'h33F};
+        bins mstatus  = {CSR_MSTATUS};
+        bins misa     = {CSR_MISA};
+        bins medeleg  = {CSR_MEDELEG};
+        bins mideleg  = {CSR_MIDELEG};
+        bins mie      = {CSR_MIE};
+        bins mtvec    = {CSR_MTVEC};
+        bins mscratch = {CSR_MSCRATCH};
+        bins mepc     = {CSR_MEPC};
+        bins mcause   = {CSR_MCAUSE};
+        bins mtval    = {CSR_MTVAL};
+        bins mip      = {CSR_MIP};
+        bins menvcfg  = {CSR_MENVCFG};
+        bins mcountinhibit = {CSR_MCOUNTINHIBIT};
+        bins mhpmevent3 = {CSR_MHPMEVENT3};
+        bins mhpmevent4 = {CSR_MHPMEVENT4};
+        bins mhpmevent5 = {CSR_MHPMEVENT5};
+        bins mhpmevent6 = {CSR_MHPMEVENT6};
+        bins mhpmevent7 = {CSR_MHPMEVENT7};
+        bins mhpmevent8 = {CSR_MHPMEVENT8};
+        bins mhpmevent9 = {CSR_MHPMEVENT9};
+        bins mhpmevent10= {CSR_MHPMEVENT10};
+        bins mhpmevent11= {CSR_MHPMEVENT11};
+        bins mhpmevent12= {CSR_MHPMEVENT12};
+        bins mhpmevent13= {CSR_MHPMEVENT13};
+        bins mhpmevent14= {CSR_MHPMEVENT14};
+        bins mhpmevent15= {CSR_MHPMEVENT15};
+        bins mhpmevent16= {CSR_MHPMEVENT16};
+        bins mhpmevent17= {CSR_MHPMEVENT17};
+        bins mhpmevent18= {CSR_MHPMEVENT18};
+        bins mhpmevent19= {CSR_MHPMEVENT19};
+        bins mhpmevent20= {CSR_MHPMEVENT20};
+        bins mhpmevent21= {CSR_MHPMEVENT21};
+        bins mhpmevent22= {CSR_MHPMEVENT22};
+        bins mhpmevent23= {CSR_MHPMEVENT23};
+        bins mhpmevent24= {CSR_MHPMEVENT24};
+        bins mhpmevent25= {CSR_MHPMEVENT25};
+        bins mhpmevent26= {CSR_MHPMEVENT26};
+        bins mhpmevent27= {CSR_MHPMEVENT27};
+        bins mhpmevent28= {CSR_MHPMEVENT28};
+        bins mhpmevent29= {CSR_MHPMEVENT29};
+        bins mhpmevent30= {CSR_MHPMEVENT30};
+        bins mhpmevent31= {CSR_MHPMEVENT31};
         `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
-            bins mseccfg  = {12'h747};
+            bins mseccfg  = {CSR_MSECCFG};
         `endif
         `ifdef XLEN32
-            bins mstatush = {12'h310};
+            bins mstatush = {CSR_MSTATUSH};
             // bins medelegh = {12'h312}; // move this to Sm1p13 coverpoints
-            bins menvcfgh = {12'h31A};
+            bins menvcfgh = {CSR_MENVCFGH};
             `ifdef MSECCFG_SUPPORTED // update this in four places when UDB gives a name to this parameter
-                bins mseccfgh = {12'h757};
+                bins mseccfgh = {CSR_MSECCFGH};
             `endif
         `endif
     }
     mcounters : coverpoint ins.current.insn[31:20] {
-        bins mcycle      = {12'hB00};
-        bins minstret    = {12'hB02};
-        bins mhpmcounter3 = {12'hB03};
-        bins mhpmcounter4 = {12'hB04};
-        bins mhpmcounter5 = {12'hB05};
-        bins mhpmcounter6 = {12'hB06};
-        bins mhpmcounter7 = {12'hB07};
-        bins mhpmcounter8 = {12'hB08};
-        bins mhpmcounter9 = {12'hB09};
-        bins mhpmcounter10= {12'hB0A};
-        bins mhpmcounter11= {12'hB0B};
-        bins mhpmcounter12= {12'hB0C};
-        bins mhpmcounter13= {12'hB0D};
-        bins mhpmcounter14= {12'hB0E};
-        bins mhpmcounter15= {12'hB0F};
-        bins mhpmcounter16= {12'hB10};
-        bins mhpmcounter17= {12'hB11};
-        bins mhpmcounter18= {12'hB12};
-        bins mhpmcounter19= {12'hB13};
-        bins mhpmcounter20= {12'hB14};
-        bins mhpmcounter21= {12'hB15};
-        bins mhpmcounter22= {12'hB16};
-        bins mhpmcounter23= {12'hB17};
-        bins mhpmcounter24= {12'hB18};
-        bins mhpmcounter25= {12'hB19};
-        bins mhpmcounter26= {12'hB1A};
-        bins mhpmcounter27= {12'hB1B};
-        bins mhpmcounter28= {12'hB1C};
-        bins mhpmcounter29= {12'hB1D};
-        bins mhpmcounter30= {12'hB1E};
-        bins mhpmcounter31= {12'hB1F};
+        bins mcycle      = {CSR_MCYCLE};
+        bins minstret    = {CSR_MINSTRET};
+        bins mhpmcounter3 = {CSR_MHPMCOUNTER3};
+        bins mhpmcounter4 = {CSR_MHPMCOUNTER4};
+        bins mhpmcounter5 = {CSR_MHPMCOUNTER5};
+        bins mhpmcounter6 = {CSR_MHPMCOUNTER6};
+        bins mhpmcounter7 = {CSR_MHPMCOUNTER7};
+        bins mhpmcounter8 = {CSR_MHPMCOUNTER8};
+        bins mhpmcounter9 = {CSR_MHPMCOUNTER9};
+        bins mhpmcounter10= {CSR_MHPMCOUNTER10};
+        bins mhpmcounter11= {CSR_MHPMCOUNTER11};
+        bins mhpmcounter12= {CSR_MHPMCOUNTER12};
+        bins mhpmcounter13= {CSR_MHPMCOUNTER13};
+        bins mhpmcounter14= {CSR_MHPMCOUNTER14};
+        bins mhpmcounter15= {CSR_MHPMCOUNTER15};
+        bins mhpmcounter16= {CSR_MHPMCOUNTER16};
+        bins mhpmcounter17= {CSR_MHPMCOUNTER17};
+        bins mhpmcounter18= {CSR_MHPMCOUNTER18};
+        bins mhpmcounter19= {CSR_MHPMCOUNTER19};
+        bins mhpmcounter20= {CSR_MHPMCOUNTER20};
+        bins mhpmcounter21= {CSR_MHPMCOUNTER21};
+        bins mhpmcounter22= {CSR_MHPMCOUNTER22};
+        bins mhpmcounter23= {CSR_MHPMCOUNTER23};
+        bins mhpmcounter24= {CSR_MHPMCOUNTER24};
+        bins mhpmcounter25= {CSR_MHPMCOUNTER25};
+        bins mhpmcounter26= {CSR_MHPMCOUNTER26};
+        bins mhpmcounter27= {CSR_MHPMCOUNTER27};
+        bins mhpmcounter28= {CSR_MHPMCOUNTER28};
+        bins mhpmcounter29= {CSR_MHPMCOUNTER29};
+        bins mhpmcounter30= {CSR_MHPMCOUNTER30};
+        bins mhpmcounter31= {CSR_MHPMCOUNTER31};
         `ifdef XLEN32
-            bins mcycleh      = {12'hB80};
-            bins minstreth    = {12'hB82};
-            bins mhpmcounter3h = {12'hB83};
-            bins mhpmcounter4h = {12'hB84};
-            bins mhpmcounter5h = {12'hB85};
-            bins mhpmcounter6h = {12'hB86};
-            bins mhpmcounter7h = {12'hB87};
-            bins mhpmcounter8h = {12'hB88};
-            bins mhpmcounter9h = {12'hB89};
-            bins mhpmcounter10h= {12'hB8A};
-            bins mhpmcounter11h= {12'hB8B};
-            bins mhpmcounter12h= {12'hB8C};
-            bins mhpmcounter13h= {12'hB8D};
-            bins mhpmcounter14h= {12'hB8E};
-            bins mhpmcounter15h= {12'hB8F};
-            bins mhpmcounter16h= {12'hB90};
-            bins mhpmcounter17h= {12'hB91};
-            bins mhpmcounter18h= {12'hB92};
-            bins mhpmcounter19h= {12'hB93};
-            bins mhpmcounter20h= {12'hB94};
-            bins mhpmcounter21h= {12'hB95};
-            bins mhpmcounter22h= {12'hB96};
-            bins mhpmcounter23h= {12'hB97};
-            bins mhpmcounter24h= {12'hB98};
-            bins mhpmcounter25h= {12'hB99};
-            bins mhpmcounter26h= {12'hB9A};
-            bins mhpmcounter27h= {12'hB9B};
-            bins mhpmcounter28h= {12'hB9C};
-            bins mhpmcounter29h= {12'hB9D};
-            bins mhpmcounter30h= {12'hB9E};
-            bins mhpmcounter31h= {12'hB9F};
+            bins mcycleh      = {CSR_MCYCLEH};
+            bins minstreth    = {CSR_MINSTRETH};
+            bins mhpmcounter3h = {CSR_MHPMCOUNTER3H};
+            bins mhpmcounter4h = {CSR_MHPMCOUNTER4H};
+            bins mhpmcounter5h = {CSR_MHPMCOUNTER5H};
+            bins mhpmcounter6h = {CSR_MHPMCOUNTER6H};
+            bins mhpmcounter7h = {CSR_MHPMCOUNTER7H};
+            bins mhpmcounter8h = {CSR_MHPMCOUNTER8H};
+            bins mhpmcounter9h = {CSR_MHPMCOUNTER9H};
+            bins mhpmcounter10h= {CSR_MHPMCOUNTER10H};
+            bins mhpmcounter11h= {CSR_MHPMCOUNTER11H};
+            bins mhpmcounter12h= {CSR_MHPMCOUNTER12H};
+            bins mhpmcounter13h= {CSR_MHPMCOUNTER13H};
+            bins mhpmcounter14h= {CSR_MHPMCOUNTER14H};
+            bins mhpmcounter15h= {CSR_MHPMCOUNTER15H};
+            bins mhpmcounter16h= {CSR_MHPMCOUNTER16H};
+            bins mhpmcounter17h= {CSR_MHPMCOUNTER17H};
+            bins mhpmcounter18h= {CSR_MHPMCOUNTER18H};
+            bins mhpmcounter19h= {CSR_MHPMCOUNTER19H};
+            bins mhpmcounter20h= {CSR_MHPMCOUNTER20H};
+            bins mhpmcounter21h= {CSR_MHPMCOUNTER21H};
+            bins mhpmcounter22h= {CSR_MHPMCOUNTER22H};
+            bins mhpmcounter23h= {CSR_MHPMCOUNTER23H};
+            bins mhpmcounter24h= {CSR_MHPMCOUNTER24H};
+            bins mhpmcounter25h= {CSR_MHPMCOUNTER25H};
+            bins mhpmcounter26h= {CSR_MHPMCOUNTER26H};
+            bins mhpmcounter27h= {CSR_MHPMCOUNTER27H};
+            bins mhpmcounter28h= {CSR_MHPMCOUNTER28H};
+            bins mhpmcounter29h= {CSR_MHPMCOUNTER29H};
+            bins mhpmcounter30h= {CSR_MHPMCOUNTER30H};
+            bins mhpmcounter31h= {CSR_MHPMCOUNTER31H};
         `endif
     }
 
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
         bins b_1[] = { [0:`XLEN-1] };
@@ -302,10 +300,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     csrr: coverpoint ins.current.insn  {
-        wildcard bins csrr = {32'b????????????_00000_010_?????_1110011};
+        wildcard bins csrr = {CSRR};
     }
     csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {32'b????????????_?????_001_?????_1110011};
+        wildcard bins csrrw = {CSRRW};
     }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
@@ -315,13 +313,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
-    old_mcountinhibit0: coverpoint ins.prev.csr[12'h320][0] {
+    old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
         bins zero = {1'b0};
         `ifdef COUNTINHIBIT_EN_0
             bins one = {1'b1}; // only if counter can be inhibited
         `endif
     }
-    old_mcountinhibit2: coverpoint ins.prev.csr[12'h320][2] {
+    old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
         bins zero = {1'b0};
         `ifdef COUNTINHIBIT_EN_2
             bins one = {1'b1}; // only if counter can be inhibited
@@ -329,13 +327,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     mcycle: coverpoint ins.current.insn[31:20] {
-        bins mcycle = {12'hB00};
+        bins mcycle = {CSR_MCYCLE};
     }
     minstret: coverpoint ins.current.insn[31:20] {
-        bins minstret = {12'hB02};
+        bins minstret = {CSR_MINSTRET};
     }
     time_csr: coverpoint ins.current.insn[31:20] {
-        bins time_csr = {12'hC01};
+        bins time_csr = {CSR_TIME};
     }
 
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
@@ -346,8 +344,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, csraccesses;
-    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit0;
-    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit2;
+    cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
+    cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written

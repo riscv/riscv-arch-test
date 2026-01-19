@@ -11,6 +11,15 @@
         .align 8; .global end_regstate; end_regstate:                   \
         .word 4;
 
+
+#ifndef RVMODEL_PMP_GRAIN
+  #define RVMODEL_PMP_GRAIN   0
+#endif
+
+#ifndef RVMODEL_NUM_PMPS
+  #define RVMODEL_NUM_PMPS    16
+#endif
+
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT    ;\
 li x1, 1                ;\
@@ -28,7 +37,7 @@ li x1, 1                ;\
 
 //RV_COMPLIANCE_DATA_END
 #define RVMODEL_DATA_END                                                      \
-  .align 4; .global end_signature; end_signature:  
+  .align 4; .global end_signature; end_signature:
 
 //RVTEST_IO_INIT
 #define RVMODEL_IO_INIT
@@ -51,5 +60,7 @@ li x1, 1                ;\
 
 #define RVMODEL_CLEAR_MEXT_INT
 
+#define RVMODEL_PMP_GRAIN 0
+#define RVMODEL_NUM_PMPS 16
 
 #endif // _COMPLIANCE_MODEL_H

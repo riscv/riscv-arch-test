@@ -1,0 +1,19 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fsgnjx.d_b1:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*Zdinx.*)
+    mnemonics: 
+      fsgnjx.d: 0
+    rs1: 
+      <<: *pair_regs
+    rs2:
+      <<: *pair_regs
+    rd: 
+      <<: *pair_regs
+    op_comb: 
+      <<: *rfmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,64, "fsgnjx.d", 2, True)': 0
+        

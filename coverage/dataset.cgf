@@ -180,6 +180,16 @@ datasets:
     x13: 0
     x14: 0
     x15: 0
+
+  c_fregs: &c_fregs
+    f8: 0
+    f9: 0
+    f10: 0
+    f11: 0
+    f12: 0
+    f13: 0
+    f14: 0
+    f15: 0
   
   all_regs_mx2: &all_regs_mx2
     x1: 0

@@ -70,7 +70,7 @@ TEST_CASE_WVV(4, 32, VINST, v15, 2*4, v14, 3*4, v18, 8*4)
 //sig[116*4]
 
 inst_8:
-TEST_CASE_WVV(4, 32, VINST, v16, 0*4, v17, 4*4, v16, 0*4)
+TEST_CASE_WVV(4, 32, VINST, v18, 0*4, v17, 4*4, v16, 0*4)
 //sig[120*4]
 
 inst_9:

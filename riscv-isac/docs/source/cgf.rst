@@ -647,6 +647,8 @@ syntax for the Translator:
 
             Operations can be performed on the *number_placeholder_index* to get the required value. Consider another example:
 
+            .. tip:: Use the modulus operator represented by % in python if you want to traverse over the length of the list !!! 
+
                 .. code-block:: python
 
                     csr_comb:

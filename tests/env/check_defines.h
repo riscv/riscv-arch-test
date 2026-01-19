@@ -51,7 +51,7 @@
   #error "RVMODEL_SET_MTIME not defined. Make sure to define it in model_test.h."
 #endif
 
-#ifndef RVMODEL_SET_MTIME
+#ifndef RVMODEL_SET_MTIMEH
   #if __riscv_xlen == 32
     #error "RVMODEL_SET_MTIMEH not defined. Make sure to define it in model_test.h for RV32."
   #endif

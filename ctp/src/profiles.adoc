@@ -297,10 +297,21 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
-|Writable *XL fields|SXL/UXL fields in `mstatus/sstatus are writable|||||
-|Writable `misa` fields|MXL and Extensions fields in `misa` are writable|||||
-|NMI|Non-maskable interrupts|||||
 |===
+
+Furthermore, the following features are not supported in this version of the certification test plan:
+
+* Non-conforming machine mode; without this, it is very difficult to write the tests
+* Multicore or multi-master systems; atomics and memory consistency are only lightly tested on a single core
+* sfence.vma, sinval, and hypervisor fences are lightly tested because it is hard to prove they don't work
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities
+* Testing privilege modes whose XLEN differs from MXLEN; low ROI
+* Testing extensions that have been disabled with `misa` fields; low ROI
+* Non-Maskable Interrupts (NMI) - no standard way to generate them yet
+* Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make thse interrupts delegatable from M-mode to S-mode"
+* Custom extensions
+
+A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.
 
 *** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)
 *** which of the Zicc extensions are tested by regular instructions?

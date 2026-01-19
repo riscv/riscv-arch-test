@@ -131,9 +131,10 @@ include::norm/ZfaZfhD_norm_rules.adoc[]
 
 [[t-Zfbfmin-coverpoints]]
 .Zfbfmin Instruction Coverpoints
-//include::{testplansdir}/Zfbfmin.adoc[]
+include::{testplansdir}/Zfbfmin.adoc[]
 
+include::norm/Zfbfmin_norm_rules.adoc[]
 
-//include::norm/Zfbfmin_norm_rules.adoc[]
+See also <<t-Zfhmin-normative-rules,Zfhmin normative rules>>.
 
 *UDB Parameters:* None.

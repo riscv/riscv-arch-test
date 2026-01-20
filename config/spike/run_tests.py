@@ -10,6 +10,7 @@
 
 import argparse
 import os
+import shlex
 import subprocess
 import sys
 from functools import partial
@@ -19,14 +20,14 @@ from pathlib import Path
 # command prefix (elf path will be appended)
 
 
-def run_test(cmd: str, log_dir: Path, elf_path: Path) -> bool:
+def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     """Run a single ELF and return (elf_path, passed, exit_code)."""
 
     # Create log file path
     log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
-    full_cmd = [cmd, str(elf_path)]
+    full_cmd = [*cmd, str(elf_path)]
 
     with log_file.open("w") as f:
         result = subprocess.run(full_cmd, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60)
@@ -59,7 +60,8 @@ def main() -> int:
         sys.exit(1)
 
     # Partial function with fixed command and log_dir
-    partial_run_test = partial(run_test, args.command, log_dir)
+    cmd = shlex.split(args.command)
+    partial_run_test = partial(run_test, cmd, log_dir)
 
     failed = 0
 

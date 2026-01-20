@@ -81,7 +81,10 @@ def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[lis
             ext_components.insert(0, "I")
     if "Zcd" in ext_components and "D" not in ext_components:
         ext_components.append("D")  # Add D if Zcd is present
-    if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa"]) and "F" not in ext_components:
+    if (
+        any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin"])
+        and "F" not in ext_components
+    ):
         ext_components.append("F")  # Add F if any floating point extension is present
     if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]) and "F" not in ext_components:
         ext_components.append("Zicsr")  # Add Zicsr is any priv extension is present

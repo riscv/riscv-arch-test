@@ -16,7 +16,7 @@ covergroup VMH_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//	                                vsatp_mode_field, hgatp_mode_field, and satp_mode_field
+//	                              vsatp_mode_field, hgatp_mode_field, and satp_mode_field
 //---------------------------------------------------------------------------------------------------------------------------------
 
     `ifdef XLEN64
@@ -52,12 +52,12 @@ covergroup VMH_cg with function sample(ins_t ins);
         }
 
         vsatp_mode_field: cross priv_mode_hs, vsatp_mode, write_to_vsatp, mode_field_values;
-        satp_mode_field: cross priv_mode_vs, satp_mode, write_to_satp, mode_field_values;
+        satp_mode_field:  cross priv_mode_vs, satp_mode, write_to_satp, mode_field_values;
         hgatp_mode_field: cross priv_mode_hs, hgatp_mode, write_to_hgatp, mode_field_values;
     `endif
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//	                                         vsatp_ppn_field & vsatp_asidlen_detect
+//	                                         vsatp_ppn_field and vsatp_asidlen_detect
 //---------------------------------------------------------------------------------------------------------------------------------
 
     `ifdef XLEN64
@@ -153,17 +153,35 @@ covergroup VMH_cg with function sample(ins_t ins);
         `endif 
     }
 
-    vsatp_ppn_field: cross priv_mode_hs, vsatp_mode, write_to_vsatp, ppn_field_values;
+    vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, write_to_vsatp, ppn_field_values;
     vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, write_to_vsatp, asid_field_value;
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//	                                         vsatp_mprv_effects
+//	       vsatp_mprv_effects, vsatp_sum_set, vsatp_sum_unset, vsatp_endianess, vsatp_invalid_pte, and vsatp_nonleaf_lvl0
 //---------------------------------------------------------------------------------------------------------------------------------
 
     read_acc: coverpoint ins.current.read_access {
         bins set = {1};
     }
     write_acc: coverpoint ins.current.write_access {
+        bins set = {1};
+    }
+    exec_acc: coverpoint ins.current.execute_access {
+        bins set = {1};
+    }
+
+    sum_vsstatus: coverpoint ins.current.csr[12'h200][18] {
+        bins unset = {0};
+        bins set = {1};
+    }
+
+    mxr_vsstatus: coverpoint ins.current.csr[12'h200][19] {
+        bins unset = {0};
+        bins set = {1};    
+    }
+
+    vsbe_hstatus: coverpoint ins.current.csr[12'h600][5] {
+        bins unset = {0};
         bins set = {1};
     }
 
@@ -211,10 +229,68 @@ covergroup VMH_cg with function sample(ins_t ins);
         wildcard bins pte_u = {8'b11?11001};
     }
 
+    g_pte_xwr111_u_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins leaf_pte = {8'b11?11111};
+    }
+    g_pte_xwr111_u_i: coverpoint ins.current.g_pte_i[7:0] {
+        wildcard bins leaf_pte = {8'b11?11111};
+    }
+
+    g_pte_i_inv: coverpoint ins.current.g_pte_i[7:0] {
+        wildcard bins invalid_pte = {8'b11??1??0};
+    }
+    g_pte_d_inv: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins invalid_pte = {8'b11???110};
+    }
+
+    pte_nonleaf_lvl0_i: coverpoint ins.current.g_pte_i[7:0] {
+        wildcard bins lvl0_xwr000 = {8'b????0001};
+    }
+    pte_nonleaf_lvl0_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins lvl0_xwr000 = {8'b????0001};
+    }
+
+    pte_xwr_comb_i: coverpoint ins.current.g_pte_i[7:0] {
+        wildcard bins rwx001_u = {8'b???11001};
+        wildcard bins rwx001_s = {8'b???01001};
+        wildcard bins rwx111_u = {8'b???11111};
+        wildcard bins rwx111_s = {8'b???01111};
+    }
+    pte_xwr_comb_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins rwx001_u = {8'b???11001};
+        wildcard bins rwx001_s = {8'b???01001};
+        wildcard bins rwx111_u = {8'b???11111};
+        wildcard bins rwx111_s = {8'b???01111};
+    }
+
     vsatp_mprv_effects_s_read:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_access;
     vsatp_mprv_effects_s_write: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, write_access;
     vsatp_mprv_effects_u_read:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_access;
     vsatp_mprv_effects_u_write: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, write_access;
+
+    vsatp_sum_effects_u_read:   cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, read_acc;
+    vsatp_sum_effects_u_write:  cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, write_access;
+    vsatp_sum_effects_u_exec:   cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_i, exec_acc;
+
+    // *** Need to have a look again.
+    vsatp_endianess_read:       cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_acc; 
+    vsatp_endianess_write:      cross priv_mode_vs, vsatp_mode, vsbe_hstatus, write_acc; 
+
+    vsatp_invalid_pte_read:     cross vsatp_mode, g_pte_d_inv, read_acc;
+    vsatp_invalid_pte_write:    cross vsatp_mode, g_pte_d_inv, write_acc;
+    vsatp_invalid_pte_exec:     cross vsatp_mode, g_pte_i_inv, exec_acc;
+
+    vsatp_nonleaf_lvl0_read:    cross vsatp_mode, pte_nonleaf_lvl0_d, read_acc;
+    vsatp_nonleaf_lvl0_write:   cross vsatp_mode, pte_nonleaf_lvl0_d, write_acc;
+    vsatp_nonleaf_lvl0_exec:    cross vsatp_mode, pte_nonleaf_lvl0_i, exec_acc;
+
+    vsstatus_vs_mxr_sum_read:      cross priv_mode_vs, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_acc;
+    vsstatus_vs_mxr_sum_write:     cross priv_mode_vs, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, write_acc; 
+    vsstatus_vs_mxr_sum_exec:      cross priv_mode_vs, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
+
+    vsstatus_vu_mxr_sum_read:      cross priv_mode_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_acc;
+    vsstatus_vu_mxr_sum_write:     cross priv_mode_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, write_acc; 
+    vsstatus_vu_mxr_sum_exec:      cross priv_mode_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
 
 endgroup
 

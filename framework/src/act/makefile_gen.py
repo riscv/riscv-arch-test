@@ -23,6 +23,8 @@ MAKEFILE_HEADER = """
 .PHONY: compile
 """
 
+OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
+
 
 def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:
     """Get the path to the internal Sail config file for the given XLEN.
@@ -101,7 +103,7 @@ def gen_compile_targets(
         f"\n"
         # Objdump (only if debug and objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Sd -M no-aliases,numeric \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
             if debug and config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
@@ -127,7 +129,7 @@ def gen_compile_targets(
         f"\t\t{test_path}\n"
         # Objdump (objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Sd -M no-aliases,numeric \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
             if config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
@@ -139,6 +141,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
     coverage_dir = base_dir / "coverage"
     elf_dir = base_dir / "elfs"
     elf = elf_dir / test_name.with_suffix(".elf")
+    objdump_link = coverage_dir / test_name.with_suffix(".elf.objdump")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
     sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
@@ -147,6 +150,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
     return (
         "# Run test on Sail to generate log\n"
         f"{sail_trace}: {elf}\n"
+        f"\tln -sf {elf}.objdump {objdump_link} # Create symlink to objdump in coverage directory for easier debugging\n"
         f"\t{config.ref_model_exe} --trace-all \\\n"
         f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
         f"\t\t{elf} \\\n"
@@ -412,10 +416,19 @@ def gen_coverage_targets(
         # Use merge_summaries script to properly format the combined output
         summary_files = " ".join([str(s) for s in sorted(coverage_reports)])
 
+        # how to remove all coverage reports after merging
+        makefile_lines.append(
+            f"# Clean up individual coverage summaries after merging\n"
+            f".PHONY: clean-coverage-summaries\n"
+            f"clean-coverage-summaries:\n"
+            f"\trm -f {' '.join([str(s) for s in sorted(coverage_reports) if s != overall_summary])}\n"
+        )
+
         makefile_lines.append(
             f"# Generate overall coverage summary by merging all individual summaries\n"
             f"{overall_summary}: {summary_files}\n"
             f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
+            f"\t$(MAKE) clean-coverage-summaries # remove individual coverage summaries after merging\n"
         )
         coverage_reports.append(overall_summary)
 

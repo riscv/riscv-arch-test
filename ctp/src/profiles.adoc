@@ -80,23 +80,23 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
-|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-coverpoints>>|o|o|x|x|x
+|Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
+|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-normative-rules>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
 |Za64rs|Max 64B Reservation Sets|<<t-Za64rs-coverpoints>>|||x|x|x
 |Zic64bZicboz|64B Cache Blocks|<<t-Zic64bZicboz-coverpoints>>|||x|x|x
 8+^|Privileged
-|ZicsrM|Machine CSRs|<<t-ZicsrM-coverpoints>>||x|x|x|x
-|ZicsrS|Supervisor CSRs|<<t-ZicsrS-coverpoints>>|||x|x|x
-|ZicsrU|User CSRs|<<t-ZicsrU-coverpoints>>|||x|x|x
-|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
-|ZicsrUF|User Float CSRs|<<t-ZicsrUF-coverpoints>>|||x|x|x
-|ZicsrZkr|Entropy CSR|<<t-ZicsrZkr-coverpoints>>|||o|o|o
-|ExceptionsM|Machine Exceptions|<<t-ExceptionsM-coverpoints>>||x|x|x|x
+|Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
+|S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
+|U|User CSRs|<<t-U-coverpoints>>|||x|x|x
+|SmF|Float CSRs|<<t-SmF-coverpoints>>|o||x|x|x
+|UF|User Float CSRs|<<t-UF-coverpoints>>|||x|x|x
+|Zkr|Entropy CSR|<<t-Zkr-coverpoints>>|||o|o|o
+|ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
 |ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
 |ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
 |ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
@@ -105,25 +105,24 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
 |ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
 |ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
-|ExceptionsVM|Virt Mem Exceptions|<<t-ExceptionsVM-coverpoints>>|||x|x|x
-|ExceptionsVMZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsVMZalrsc-coverpoints>>|||x|x|x
-|ExceptionsVMZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsVMZaamo-coverpoints>>|||x|x|x
-|InterruptsM|Machine Interrupts|<<t-InterruptsM-coverpoints>>||x|x|x|x
+|ExceptionsSv|Virt Mem Exceptions|<<t-ExceptionsSv-coverpoints>>|||x|x|x
+|ExceptionsSvZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsSvZalrsc-coverpoints>>|||x|x|x
+|ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
+|InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
 |InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
-|ZicntrM|Machine Counters|<<t-ZicntrM-coverpoints>>|o|x|x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
 |ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
-|EndianM|Machine Endian|<<t-EndianM-coverpoints>>|||||
+|EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
 |EndianS|Supervisor Endian|<<t-EndianS-coverpoints>>|||||
 |EndianU|User Endian|<<t-EndianU-coverpoints>>|||||
 |EndianZaamo|AMO Endian|<<t-EndianZaamo-coverpoints>>|||||
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMPM|Machine PMP|<<t-PMPM-coverpoints>>||x|x|x|x
+|PMPSm|Machine PMP|<<t-PMPSm-coverpoints>>||x|x|x|x
 |PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
 |PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
 |PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
@@ -134,9 +133,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
-|VMPMP|VM + PMP|<<t-VMPMP-coverpoints>>|||x|x|x
-|VMZicbo|VM + CBOM/CBOZ|<<t-VMZicbo-coverpoints>>|||x|x|x
-|VMPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-VMPMPZicbo-coverpoints>>|||x|x|x
+|SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
+|SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
+|SvPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-SvPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
 |SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
@@ -149,8 +148,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Sstvecd|Direct Vector|<<t-Sstvecd-coverpoints>>|||x|x|x
 |Sstvala|stval Addresses|<<t-Sstvala-coverpoints>>|||x|x|x
 8+^|Strict
-|SsstrictM|Machine Strict (unratified)|<<t-SsstrictM-coverpoints>>|||o|o|o
-|SsstrictS|Superisor Strict|<<t-SsstrictS-coverpoints>>|||o|o|o
+|SsstrictSm|Machine Strict (unratified)|<<SsstrictSm>>|||o|o|o
+|SsstrictS|Supervisor Strict|<<SsstrictS>>|||o|o|o
 8+^|Vector
 |Vx8|Vector Integer 8-bit|<<t-Vx-coverpoints>>|||o|o|x
 |Vx16|Vector Integer 16-bit|<<t-Vx-coverpoints>>|||o|o|x
@@ -186,21 +185,21 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
 |ExceptionsVls|Vector Load/Store Exceptions|<<t-ExceptionsVls-coverpoints>>|||o|o|x
-|ZicsrV|Vector CSRs|<<t-ZicsrV-coverpoints>>|||o|o|x
-|ZicsrVF|Vector FP CSRs|<<t-ZicsrVF-coverpoints>>|||o|o|x
-|ZicsrUV|User Vector CSRs|<<t-ZicsrUV-coverpoints>>|||o|o|x
+|SmV|Vector CSRs|<<t-SmV-coverpoints>>|||o|o|x
+|VF|Vector FP CSRs|<<t-VF-coverpoints>>|||o|o|x
+|UV|User Vector CSRs|<<t-UV-coverpoints>>|||o|o|x
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|ZicsrH|Hypervisor CSRs|<<t-ZicsrH-coverpoints>>|||o|o|x
 |ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
 |ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
+|HV|Hypervisor + Vector CSRs|<<t-HV-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
-|VMH|Hypervisor Virtual Memory|<<t-VMH-coverpoints>>|||o|o|x
-|VMHCBO|Hypervisor Virtual Memory + CBO|<<t-VMHCBO-coverpoints>>|||o|o|x
+|SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
+|SvHCBO|Hypervisor Virtual Memory + CBO|<<t-SvHCBO-coverpoints>>|||o|o|x
 |Shcounterenw|Counter Enables|<<t-Shcounterenw-coverpoints>>|||o|o|x
 |Shvsatpa|VM Modes Supported|<<t-Shvsatpa-coverpoints>>|||o|o|x
 |Shgatpa|VM x4 Modes Supported|<<t-Shgatpa-coverpoints>>|||o|o|x
@@ -229,7 +228,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zawrs|Wait on Reservation Set|<<t-Zawrs-coverpoints>>||||x|x
 |Sdtrig|Debug Triggers|<<t-Sdtrig-coverpoints>>||||o|o
 8+^|Non-Profile Extensions
-|E|Embedded 16 Regs|<<t-E-normative_rules>>|||||
+|E|Embedded 16 Regs|<<t-E-normative-rules>>|||||
 |Zfinx|Float in Int Regs|<<t-Zfinx-coverpoints>>|||||
 |Zdinx|Double in Int Regs|<<t-Zdinx-coverpoints>>|||||
 |Zhinx|Half in Int Regs|<<t-Zhinx-coverpoints>>|||||
@@ -298,8 +297,20 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
-|Zkr|Entropy Generation||||o|o
 |===
+
+Furthermore, the following features are not supported in this version of the certification test plan:
+
+* sfence.vma, sinval, and hypervisor fences are lightly tested because it is hard to prove they don't work
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities
+* Testing privilege modes whose XLEN differs from MXLEN; low ROI
+* Testing extensions that have been disabled with `misa` fields; low ROI
+* Non-Maskable Interrupts (NMI) - no standard way to generate them yet
+* Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make thse interrupts delegatable from M-mode to S-mode"
+* Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested
+* Custom extensions
+
+A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.
 
 *** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)
 *** which of the Zicc extensions are tested by regular instructions?

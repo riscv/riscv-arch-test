@@ -3,16 +3,25 @@
 
 Interrupt tests are organized according to the privilege mode or extension supported.
 
-==== InterruptsM Machine-Mode Interrupts
+==== InterruptsSm Machine-Mode Interrupts
 
 These tests are run on any configuration with machine mode that supports interrupts.
 
-[[t-InterruptsM-coverpoints]]
-.InterruptsM Coverpoints
-,===
-//include::{testplansdir}/InterruptsM.adoc[]
+[[t-InterruptsSm-coverpoints]]
+.InterruptsSm Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
+,===
+
+TODO: coverpoints will need to ignore bins with mie.msie nonzero:
+  # If a system has only one hart, or if a platform standard supports the delivery
+  # of machine-level interprocessor interrupts through external interrupts (MEI)
+  # instead, then mip.MSIP and mie.MSIE may both be read-only zeros.
+  - name: mie_msie_maybe_rdonly0
+TODO: mip.MSIP update time
+  # When the memory-mapped msip register changes, it is guaranteed to be reflected
+  # in mip.MSIP eventually, but not necessarily immediately.
+  - name: msip_update_max_time
 
 ==== InterruptsS Supervisor-Mode Interrupts
 
@@ -21,9 +30,8 @@ These tests are run on any configuration with supervisor mode that supports inte
 [[t-InterruptsS-coverpoints]]
 .InterruptsS Coverpoints
 ,===
-//include::{testplansdir}/InterruptsS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=664673151#gid=664673151[Google Sheet Testplan]
+,===
 
 ==== InterruptsU User-Mode Interrupts
 
@@ -32,9 +40,8 @@ These tests are run on any configuration with user mode that supports interrupts
 [[t-InterruptsU-coverpoints]]
 .InterruptsU Coverpoints
 ,===
-//include::{testplansdir}/InterruptsU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=1458360883#gid=1458360883[Google Sheet Testplan]
+,===
 
 ==== InterruptsSstc Supervisor Timer Compare Interrupts
 
@@ -43,6 +50,5 @@ These tests are run when the Sstc supervisor timer compare extension is supporte
 [[t-InterruptsSstc-coverpoints]]
 .InterruptsSstc Coverpoints
 ,===
-//include::{testplansdir}/InterruptsSstc.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
+,===

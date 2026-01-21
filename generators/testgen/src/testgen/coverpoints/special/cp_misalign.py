@@ -7,9 +7,9 @@
 
 """cp_misalign coverpoint generator."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
 
 
 @add_coverpoint_generator("cp_misalign")
@@ -23,7 +23,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     test_lines: list[str] = []
 
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
-    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=range(8, 16))
+    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=list(range(8, 16)))
 
     if instr_type == "L" or instr_type == "FL" or instr_type == "CL" or instr_type == "CILS":
         test_lines.extend(

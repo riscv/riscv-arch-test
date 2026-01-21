@@ -309,41 +309,47 @@
 
 #define CSRRW(_R2, _CSR, _R1) \
     csrrw _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRRS(_R2, _CSR, _R1) \
     csrrs _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRRC(_R2, _CSR, _R1) \
     csrrc _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRR(_R2, _CSR) \
     csrr _R2, _CSR      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRW(_CSR, _R1) \
     csrw _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRS(_CSR, _R1) \
     csrs _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRC(_CSR, _R1) \
     csrc _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
+// Macros for instructions that can trap
+// each instruction is followed by a nop in case the access causes a trap
+// because the trap return skips the next instruction
 
+#define SFENCE_VMA \
+    sfence.vma         ;\
+    nop
 
 // Utility Macros
 
 // Place 1 in msb
 #if XLEN == 64
 #define SET_MSB(_R) \
-    LI(_R, 0x8000000000000000)    // 1 in bit 63
+    LI(_R, 0x8000000000000000)
 #else  /* XLEN == 32 */
 #define SET_MSB(_R) \
-    LI(_R, 0x80000000)    // 1 in bit 31
+    LI(_R, 0x80000000)
 #endif

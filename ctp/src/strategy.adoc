@@ -130,7 +130,7 @@ The testplan for each extension contains a list of normative rules applicable to
 Normative rules are generally direct quotations from a ratified RISC-V specification describing a single certifiable feature.  Normative rules specify the behaviors an implementation must meet in order to be compliant with the standard. In particular, introductory overview and
 non-normative explanatory text is not quoted as a normative rule.
 
-See https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual/blob/main/tagging_normative_rules.adoc[tagging_normative_rules] for more information about normative rules and IDs and how to tag them in the specification.
+See https://github.com/riscv/riscv-isa-manual/blob/main/tagging_normative_rules.adoc[tagging_normative_rules] for more information about normative rules and IDs and how to tag them in the specification.
 
 === Coverpoints
 

@@ -40,6 +40,7 @@
       CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
       li t0, -1
       CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+      sfence.vma
     #endif
 
   // Start of test
@@ -231,7 +232,7 @@
       tsig_begin_canary:
         CANARY
       mtrap_sigptr:
-        .fill 200*(XLEN/32),4,0xdeadbeef
+        .fill 20000*(XLEN/32),4,0xdeadbeef
       tsig_end_canary:
         CANARY
     #endif

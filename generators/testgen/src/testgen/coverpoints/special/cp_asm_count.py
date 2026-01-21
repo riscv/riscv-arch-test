@@ -5,8 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
 
 
 @add_coverpoint_generator("cp_asm_count")

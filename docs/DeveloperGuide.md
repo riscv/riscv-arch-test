@@ -99,25 +99,37 @@ See the [`generators/coverage/templates`](../generators/coverage/templates)
 directory for example coverpoints. A few hints are included below:
 
 - All data about the instruction is accessed using the `ins` object.
-- There are many pre-built functions to make writing coverpoints for RISC-V easier. Be sure to look through some of the example coverpoints before implementing any complex logic from scratch. \*\*\* TODO: Add documentation of the riscvISACOV functions/enums/etc.
+- There are many pre-built functions to make writing coverpoints for RISC-V easier. Be sure to look through some of the example coverpoints before implementing any complex logic from scratch. TODO: Add documentation of the riscvISACOV functions/enums/etc.
 - If no `bins` are specified for a coverpoint, bins will automatically be created for all possible states of the sampled signal.
 - All unprivileged coverpoints should have an `iff (ins.trap == 0)` check to ensure they are only measured when the hart is not trapping.
 
 #### Coverpoint Test Generators
 
 Each coverpoint needs a Python generator that produces an assembly language test
-that exercises the relevant behaviors. All coverpoint test generators go in
-[`generators/testgen/src/testgen/coverpoints`](../generators/testgen/src/testgen/coverpoints).
+that exercises the relevant behaviors.
 
-Coverpoint test generators can largely be broken into two categories:
-standard and special.
+The following applies to all coverpoint test generators:
+
+- All coverpoint test generators must go in [`generators/testgen/src/testgen/coverpoints`](../generators/testgen/src/testgen/coverpoints). All Python files in that directory are automatically discovered and imported.
+- All coverpoint generator functions must be decorated with the `@add_coverpoint_generator("<coverpoint_name>")` decorator. This tells the framework which coverpoints to use this generator for. Multiple comma-separated coverpoints can be specified if necessary.
+- All coverpoint generator functions must use the following signature:
+
+  ```py
+  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+  ```
+
+  - `instr_name` is the instruction currently being tested. This allows coverpoint test generators to be reused for multiple instructions.
+  - `instr_type` is the type of the instruction currently being tested. This allows the correct instruction formatter (see below) to be selected.
+  - `coverpoint` is the full name of the coverpoint, including any variant suffix. Coverpoint test generators can match multiple variants of a coverpoint. This argument allows different values, registers, etc. to be selected based on the variant.
+  - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, test values, debug strings, etc.
+  - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
+
+Coverpoint test generators can largely be broken into two categories: standard and special.
 Standard generators use the [instruction formatters]() and can be applied to a wide range
 of instructions. Examples include `cp_rs1`, `cp_imm_edges`, and `cr_rs1_rs2_edges`.
 Special generators include all of the test code inline and are used for coverpoints
 that apply to only a small set of instructions. Examples include `cp_custom_fence`
 and `cp_align`.
-
-All coverpoint test generators
 
 ##### Standard Generators
 

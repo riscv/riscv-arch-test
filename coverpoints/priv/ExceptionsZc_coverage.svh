@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZC
-covergroup ExceptionsZc_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsZc_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -76,11 +76,12 @@ covergroup ExceptionsZc_exceptions_cg with function sample(ins_t ins);
     cp_load_access_fault:                    cross loadops, illegal_address;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
     cp_store_access_fault:                   cross storeops, illegal_address;
+    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; bins illegal1 = {'1}; }
 
 endgroup
 
 function void exceptionszc_sample(int hart, int issue, ins_t ins);
-    ExceptionsZc_exceptions_cg.sample(ins);
+    ExceptionsZc_cg.sample(ins);
 
     //$display("OP: %b, LSB: %b, rs1: %b, SPdata???: %b ", ins.current.insn[15:0], {ins.current.rs1_val + ins.current.imm}[2:0], ins.current.rs1_val, ins.current.x_wdata[2][2:0]);
 endfunction

@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SVCBO
-covergroup SvCBO_exceptions_cg with function sample(ins_t ins);
+covergroup SvCBO_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
     //pte permission for leaf PTEs
@@ -285,5 +285,5 @@ covergroup SvCBO_exceptions_cg with function sample(ins_t ins);
 endgroup
 
 function void svcbo_sample(int hart, int issue, ins_t ins);
-    SvCBO_exceptions_cg.sample(ins);
+    SvCBO_cg.sample(ins);
 endfunction

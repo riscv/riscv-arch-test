@@ -1,22 +1,43 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # From c-st-ext chapter
-  - name: c-ebreak
-    coverpoint: ["ExceptionsZca_exceptions_cg/cp_breakpoint"]
-  - name: c-ebreak_op
-    coverpoint: ["ExceptionsZca_exceptions_cg/cp_breakpoint"]
-  - name: Zca_align16
-    coverpoint: ["ExceptionsSm_exceptions_cg/cp_instr_access_fault"]
-  - name: Zca_illegal
-    coverpoint: ["ExceptionsZca_exceptions_cg/cp_illegal_instruction"]
+  # With the addition of the C extension, no instructions can raise
+  # instruction-address-misaligned exceptions.
   - name: Zca_no_misaligned
     coverpoint:
       [
         "Exceptions/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
       ]
 
+  # A 16-bit instruction with all bits zero is permanently reserved as an illegal
+  # instruction.
+  - name: Zca_illegal
+    coverpoint: ["ExceptionsZca_cg/cp_illegal_instruction"]
+
+  # Debuggers can use the C.EBREAK instruction, which expands to ebreak, to cause
+  # control to be transferred back to the debugging environment. C.EBREAK shares the
+  # opcode with the C.ADD instruction, but with rd and rs2 both zero, thus can also
+  # use the CR format.
+  - name: c-ebreak_op
+    coverpoint: ["ExceptionsZca_cgint"]
+
+  # From c-st-ext chapter
+  - name: c-ebreak
+    coverpoint: ["ExceptionsZca_cg/cp_breakpoint"]
+
+  - name: Zca_align16
+    coverpoint: ["ExceptionsSm_cg/cp_instr_access_fault"]
+
   - name: misa-c_set
     coverpoint:
       ["Sm_mcsr_cg/cp_mcsr_access/misa"]
       # MISA.C is set if the following extensions are selected: | Zca and not F Zca, Zcf and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified (RV32 only)  this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified (RV64 only)  this configuration excludes Zcmp, Zcmt
+
+  - name: branch_misaligned_c_no_exception
+    coverpoint: ["ExceptionsSm_cg/cp_instr_adr_misaligned_branch"]
+
+  - name: jump_misaligned_c_no_exception
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
+      ]

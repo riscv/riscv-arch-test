@@ -1,0 +1,47 @@
+
+== RVI20 Certificate
+
+The RVI20 Certificate comes in RVI20-32 and RVI20-64 flavors covering cores compatible with the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20U32] and https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20U64] profiles, respectively. They are identical except that the base extension is RV32I or RV64I.
+
+The RVI20 Certificate is intended to cover basic RISC-V functionality and optional unprivileged features from RV64GC.
+
+=== Extensions
+
+[[t-RVI20-extensions]]
+.RVI20 Extensions
+[cols="1, 1, 1, 5" options=header]
+|===
+|Extension|Version|Required|Definition
+|I|2.1|Mandatory|I Base Integer ISA (RV32I or RV64I)
+|M|2.0|Optional|Multiply/Divide
+|A|2.1|Optional|Atomic
+|F|2.2|Optional|Single-Precision Floating-Point
+|D|2.2|Optional|Double-Precision Floating-Point
+|C|2.0|Optional|Zca Compressed Instructions + Zcf/Zcd Compressed Floating-Point if F/D included
+|Zifencei|2.0|Optional|Instruction-fetch Fence
+|Zicntr|2.0|Optional|Basic Counters
+|Zihpm|2.0|Optional|Hardware Performance Monitors
+|===
+
+RVI20 is an unprivileged profile, meaning that no privileged architecture features are required or tested
+during certification. If an implementation has privileged modes, certification tests are conducted directly after
+reset (i.e. in Machine mode).
+
+The `ecall` and `ebreak` instructions are OUT-of-SCOPE because the execution environment is not specified
+and untestable.
+
+The Zicsr extension is OUT-OF-SCOPE except when it is used to access CSRs defined in Zicntr, Zihpm, or F.
+
+=== Parameters
+
+[[t-RVI20-parameters]]
+.RVI20 Parameters
+[cols="2, 1, 1, 4" options=header]
+|===
+|Parameters|Dependency|Supported Values|Definition
+|MXLEN|n/a|32, 64|Integer register width (privilege mode not specified).
+|M_MODE_ENDIANNESS|n/a|little|Endianness.  Applies to all tests (privilege mode not specified).
+|MISALIGNED_LDST|n/a|True, False|True: test non-atomic misaligned loads and stores to main memory; False: do not test misaligned loads and stores.
+|===
+
+All other parameters are OUT-OF-SCOPE for RVI20 certification.

@@ -1,0 +1,56 @@
+[[manual:drd,RISC-V Certification Requirements Document]]
+= RISC-V Certification Requirements Document
+// These attributes have been copied over from riscv-isa-manual and are not yet all tested
+include::..//docs-resources/global-config.adoc[]
+:description: Certification Requirements Document (Draft 2.0)
+:colophon:
+:preface-title: Preamble
+:appendix-caption: Appendix
+:imagesoutdir: {docdir}/../build/images-out
+:imagesdir: ../docs-resources/images
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+ifdef::draft-watermark[]
+:page-background-image: image:/draft.png[opacity=20%]
+endif::[]
+:back-cover-image: image:risc-v_logo.svg[opacity=25%]
+// Settings:
+:experimental:
+:reproducible:
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:sectnums:
+:sectnumlevels: 5
+:toc: left
+:toclevels: 5
+:source-highlighter: rouge
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:data-uri:
+:hide-uri-scheme:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* James Ball
+* David Harris
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+include::intro.adoc[]
+include::general.adoc[]
+include::rvi20.adoc[]
+include::mc100.adoc[]
+//include::rva23.adoc[]

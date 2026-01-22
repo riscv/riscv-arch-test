@@ -3,24 +3,6 @@
 
 The RVA22 Certificate covers 64-bit basic applications-class processors with supervisor and user mode compatible with the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64] profile.
 
-As compared to RVB23, it omits
-
-* Zcb additional compressed instructions
-* Zfa additional floating-point instructions
-* Zicond conditional instructions
-* Ssnpm pointer masking
-* Sdtrig Debug triggers
-* Various minor extensions
-
-As compared to RVA23 it further omits
-
-* Sha augmented hypervisor
-* V vector
-* Zicfilp/Zicfiss landing pads and shadow stacks
-* Zacas/Zabha atomics
-* Zkr entropy CSR
-* Various minor extensions
-
 === Extensions
 
 [[t-RVA22-extensions]]

@@ -29,7 +29,7 @@ These parameters defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
 |===
 |Parameters|Dependency|Supported Values|Summary
 |MXLEN|Sm|32, 64|Integer register width
-|M_MODE_ENDIANNESS|Sm|little|Endianness.  Applies to all tests (privilege mode not specified).
+|M_MODE_ENDIANNESS|Sm|little|Endianness.
 |MISALIGNED_LDST|I|True, False|True: test non-atomic misaligned loads and stores to main memory; False: do not test misaligned loads and stores.
 |ARCH_ID|Sm|MXLEN-bit integer|Architecture ID value
 |IMP_ID|Sm|MXLEN-bit integer|Implementation ID value

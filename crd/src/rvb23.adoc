@@ -1,15 +1,15 @@
 
 == RVB23 Certificate
 
-The RVB23 Certificate covers 64-bit basic applications-class processors with supervisor and user mode compatible with the https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64] profile.
+The RVB23 Certificate covers 64-bit applications-class processors with supervisor and user mode compatible with the https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64] profile.
 
-As compared to RVA23, it omits
+As compared to RVA22, it adds
 
-* Sha augmented hypervisor
-* V vector
-* Zicfilp/Zicfiss landing pads and shadow stacks
-* Zacas/Zabha atomics
-* Zkr entropy CSR
+* Zcb additional compressed instructions
+* Zfa additional floating-point instructions
+* Zicond conditional instructions
+* Ssnpm pointer masking
+* Sdtrig Debug triggers
 * Various minor extensions
 
 === Extensions

@@ -1,7 +1,16 @@
 
-== RVA22 Certificate
+== RVA23 Certificate
 
-The RVA23 Certificate covers 64-bit basic applications-class processors with supervisor and user mode compatible with the https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23S64] profile.
+The RVA23 Certificate covers 64-bit applications-class processors with hypervisor, supervisor, and user mode compatible with the https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23S64] profile.
+
+As compared to RVB23 it adds
+
+* Sha augmented hypervisor
+* V vector
+* Zicfilp/Zicfiss landing pads and shadow stacks
+* Zacas/Zabha atomics
+* Zkr entropy CSR
+* Various minor extensions
 
 === Extensions
 

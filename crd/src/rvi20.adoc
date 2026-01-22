@@ -3,7 +3,7 @@
 
 The RVI20 Certificate comes in RVI20-32 and RVI20-64 flavors covering cores compatible with the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20U32] and https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20U64] profiles, respectively. They are identical except that the base extension is RV32I or RV64I.
 
-The RVI20 Certificate is intended to cover basic RISC-V functionality and optional unprivileged features from RV64GC.
+The RVI20 Certificate is intended to cover basic RISC-V functionality and optional unprivileged features from RV{32/64}GC.
 
 === Extensions
 
@@ -42,6 +42,7 @@ The Zicsr extension is OUT-OF-SCOPE except when it is used to access CSRs define
 |MXLEN|n/a|32, 64|Integer register width (privilege mode not specified).
 |M_MODE_ENDIANNESS|n/a|little|Endianness.  Applies to all tests (privilege mode not specified).
 |MISALIGNED_LDST|n/a|True, False|True: test non-atomic misaligned loads and stores to main memory; False: do not test misaligned loads and stores.
+|TIME_CSR_IMPLEMENTED|Zicntr|True, False|True: time CSR is implemented; False accessing time is not tested
 |===
 
 All other parameters are OUT-OF-SCOPE for RVI20 certification.

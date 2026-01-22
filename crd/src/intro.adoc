@@ -1,7 +1,7 @@
 
 == Introduction
 
-This document describes requirements t
+This document describes requirements for each certificate offered through the RISC-V Certification Program.
 
 === What's a CRD?
 

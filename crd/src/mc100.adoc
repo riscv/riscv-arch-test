@@ -35,7 +35,7 @@ These parameters defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
 |IMP_ID|Sm|MXLEN-bit integer|Implementation ID value
 |HART_ID|Sm|MXLEN-bit integer|Hart ID value
 |MISALIGNED_LDST_EXCEPTION_PRIORITY|Sm|High, Low|High: misaligned load/store exceptions have higher priority than page-fault and access-fault exceptions; Low: misaligned load/store exceptions have lower priority than page-fault and access-fault exceptions.
-|MISALIGNED_MAX_ATOMICITY_GRANULARITY|Sm|4, 8, ..., 4096|If MISALIGNED_LDST=True,misaligned load and stores fully-contained in a
+|MISALIGNED_MAX_ATOMICITY_GRANULARITY|Sm|4, 8, ..., 4096|If MISALIGNED_LDST=True, misaligned load and stores fully-contained in a
 region of this size are atomic and do not throw a misaligned exception.
 |MISALIGNED_SPLIT_STRATEGY|MISALIGNED_LD_ST|sequential_bytes, custom|
 |MISA_CSR_IMPLEMENTED|Sm|True, False|True: misa CSR is implemented; False: misa CSR reads as zero.

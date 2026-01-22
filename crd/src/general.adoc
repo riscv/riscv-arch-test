@@ -7,7 +7,7 @@ If a certificate requires privileged modes, then a conforming machine mode imple
 so that tests can be written using machine-mode instructions to configure and control the hart.  This is
 true even for profiles such as RVA23S64, which defines supervisor but not machine mode behavior.
 
-=== Sstrict Illegal Instruction Behavior
+=== Ssstrict Illegal Instruction Behavior
 
 The Ssstrict extension indicates that
 

@@ -8,7 +8,7 @@ This section describes AIA extension test plans.
 [[t-Smaia-coverpoints]]
 .Smaia Coverpoints
 //,===
-//include::{testplansdir}/Smaia.adoc[])
+//include::{testplansdir}/Smaia.adoc[]
 //,===
 
 ==== Ssaia Supervisor-Mode Advanced Interrupt Architecture
@@ -16,7 +16,7 @@ This section describes AIA extension test plans.
 [[t-Ssaia-coverpoints]]
 .Ssaia Coverpoints
 //,===
-//include::{testplansdir}/Ssaia.adoc[])
+//include::{testplansdir}/Ssaia.adoc[]
 //,===
 
 ==== IMSIC Incoming MSI Controller
@@ -24,7 +24,7 @@ This section describes AIA extension test plans.
 [[t-imsic-coverpoints]]
 .IMSIC Coverpoints
 //,===
-//include::{testplansdir}/imsic.adoc[])
+//include::{testplansdir}/imsic.adoc[]
 //,===
 
 ==== APLIC Advanced Platform-Level Interrupt Controller
@@ -32,5 +32,5 @@ This section describes AIA extension test plans.
 [[t-aplic-coverpoints]]
 .APLIC Coverpoints
 //,===
-//include::{testplansdir}/aplic.adoc[])
+//include::{testplansdir}/aplic.adoc[]
 //,===

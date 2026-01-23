@@ -8,5 +8,5 @@ This section describes IOMMU extension test plans.
 [[t-iommu-coverpoints]]
 .IOMMU Coverpoints
 //,===
-//include::{testplansdir}/iommu.adoc[])
+//include::{testplansdir}/iommu.adoc[]
 //,===

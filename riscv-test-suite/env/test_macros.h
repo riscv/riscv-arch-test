@@ -1479,6 +1479,455 @@ ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
     sub x1,x1,tempreg			;\
     RVTEST_SIGUPD(swreg,x1,offset) 
 
+#define SSPUSH_X1()     .word 0xCE104073
+#define SSPOPCHK_X1()   .word 0xCDC0C073
+#define SSPUSH_X5()     .word 0xCE504073
+#define SSPOPCHK_X5()   .word 0xCDC2C073
+
+#define C_SSPUSH_X1()   .half 0x6081
+#define C_SSPOPCHK_X5() .half 0x6281
+
+#define ENABLE_ZICFISS(priv) \
+  li x11, MENVCFG_SSE                       ;\
+  csrw CSR_MENVCFG, x11                     ;\
+  .if (priv == Umode)                       ;\
+  li x11, SENVCFG_SSE                       ;\
+  csrw CSR_SENVCFG, x11                     ;\
+  .endif
+
+#define DISABLE_ZICFISS() \
+  csrw CSR_SENVCFG, x0                      ;\
+  csrw CSR_MENVCFG, x0                      ;\
+
+#define SETUP_PMP_ZICFISS_TEST() \
+  LI(x11, PMP_TOR | PMP_X | PMP_W | PMP_R)  ;\
+  csrw pmpcfg0, x11                         ;\
+  csrr x11, pmpcfg0                         ;\
+  beq  x11, x0, no_TOR_try_NAPOT            ;\
+  LI(x11, 0xFFFFFFFF)                       ;\
+  csrw pmpaddr0, x11                        ;\
+  j Mend_PMP                                ;\
+no_TOR_try_NAPOT:                           ;\
+  LI(x11, PMP_NAPOT | PMP_X | PMP_W | PMP_R);\
+  csrw pmpcfg0, x11                         ;\
+  csrr x11, pmpcfg0                         ;\
+  beq  x11, x0, Mend_PMP                    ;\
+  LI(x11, 0x1FFFFFFF)                       ;\
+  csrw pmpaddr0, x11                        ;\
+Mend_PMP:                                   ;\
+
+// The VA->PA mappings are setup as follows
+// For RV64:
+//  VA: 0x00000000 to 0x3FFFFFFF -> PA: 0x80000000 to 0xBFFFFFFF (-W-) (SS)
+//  VA: 0x40000000 to 0x7FFFFFFF -> PA: 0x80000000 to 0xBFFFFFFF (R--)
+//  VA: 0x80000000 to 0xBFFFFFFF -> PA: 0x80000000 to 0xBFFFFFFF (RWX)
+//  VA: 0xC0000000 to 0xFFFFFFFF -> PA: 0x80000000 to 0xBFFFFFFF (RWX)
+// For RV32:
+//  VA: 0x00000000 to 0x003FFFFF -> PA: 0x80000000 to 0x803FFFFF (-W-) (SS)
+//  VA: 0x40000000 to 0x403FFFFF -> PA: 0x80000000 to 0x803FFFFF (R--)
+//  VA: 0x80000000 to 0x803FFFFF -> PA: 0x80000000 to 0x803FFFFF (RWX)
+//  VA: 0xC0000000 to 0xC03FFFFF -> PA: 0x80000000 to 0x803FFFFF (RWX)
+// 
+#define PTE_RWX_PERM (PTE_A | PTE_D | PTE_X | PTE_W | PTE_R | PTE_V)
+#define PTE_SS_PERM  (PTE_A | PTE_D | PTE_W | PTE_V)
+#define SETUP_SHADOW_STACK(priv) \
+  SETUP_PMP_ZICFISS_TEST()                                 ;\
+  j make_ss                                                ;\
+  .align 12                                                ;\
+  shadow_stack_start:                                      ;\
+  .fill  4096/REGWIDTH, REGWIDTH, 0                        ;\
+  shadow_stack_end:                                        ;\
+make_ss:                                                   ;\
+  LA(x12, rvtest_entry_point)                              ;\
+  srli x12, x12, 12                                        ;\
+  slli x12, x12, 10                                        ;\
+  ori x12, x12, PTE_SS_PERM                                ;\
+  .if (priv == Umode)                                      ;\
+  ori x12, x12, PTE_U                                      ;\
+  .endif                                                   ;\
+  LA(x11, rvtest_Sroot_pg_tbl)                             ;\
+  SREG x12, (x11)                                          ;\
+  ori x12, x12, PTE_RWX_PERM                               ;\
+  .if (XLEN==64)                                           ;\
+  SREG x12, 16(x11)                                        ;\
+  SREG x12, 24(x11)                                        ;\
+  .else                                                    ;\
+  addi x11, x11, 1024                                      ;\
+  addi x11, x11, 1024                                      ;\
+  SREG x12, (x11)                                          ;\
+  addi x11, x11, 1024                                      ;\
+  SREG x12, (x11)                                          ;\
+  LA(x11, rvtest_Sroot_pg_tbl)                             ;\
+  .endif                                                   ;\
+  xori x12, x12, (PTE_W | PTE_X)                           ;\
+  .if (XLEN==64)                                           ;\
+  SREG x12,  8(x11)                                        ;\
+  .else                                                    ;\
+  SREG x12, 1024(x11)                                      ;\
+  .endif                                                   ;\
+  LA(x11, shadow_stack_end)                                ;\
+  LI(x12, 0x3FFFFFFF)                                      ;\
+  and x11, x11, x12                                        ;\
+  addi x11, x11, -REGWIDTH                                 ;\
+  csrw CSR_SSP, x11                                        ;\
+  LA(x11, rvtest_Sroot_pg_tbl)                             ;\
+  srli x11, x11, 12                                        ;\
+  .if (XLEN==64)                                           ;\
+  LI(x12, ((SATP_MODE & ~(SATP_MODE<<1)) * SATP_MODE_SV39));\
+  .else                                                    ;\
+  LI(x12, ((SATP_MODE & ~(SATP_MODE<<1)) * SATP_MODE_SV32));\
+  .endif                                                   ;\
+  or x11, x11, x12                                         ;\
+  csrw satp, x11                                           ;\
+  sfence.vma
+
+// x11, x12, x13 - temporary registers
+// x1, x5        - used by ss instructions
+// x15           - swreg
+// x10           - test signature
+#define TEST_SSPUSH_SSPOP_OP(swreg, offset, immval, priv)   \
+  mv x15, swreg                                            ;\
+  mv x10, x0                                               ;\
+/* Setup PMP and SS page for the first invocation         */;\
+  .if (offset == 0)                                        ;\
+  SETUP_SHADOW_STACK(priv)                                 ;\
+  .endif                                                   ;\
+                                                           ;\
+/* store deadbeef at ssp-8                               */;\
+  LA(x11, shadow_stack_end)                                ;\
+  LI(x12, 0xdeadbeef)                                      ;\
+  SREG x12, -8(x11)                                        ;\
+/* Go to lower privilege with Zicfiss not enabled        */;\
+  RVTEST_GOTO_LOWER_MODE priv                              ;\
+                                                           ;\
+/* Zicfiss is not enabled; ss insts should be zimops     */;\
+  LI(x1, immval)                                           ;\
+  SSPUSH_X1()                                              ;\
+  SSPOPCHK_X1()                                            ;\
+  SSPUSH_X5()                                              ;\
+  SSPOPCHK_X5()                                            ;\
+  RVTEST_GOTO_MMODE                                        ;\
+                                                           ;\
+/* ensure that shadow stack was not changed              */;\
+  LA(x11, shadow_stack_end)                                ;\
+  LREG x11, -8(x11)                                        ;\
+  LI(x12, 0xdeadbeef)                                      ;\
+  sub x12, x12, x11                                        ;\
+  seqz x12, x12                                            ;\
+  or x10, x10, x12                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+  ENABLE_ZICFISS(priv)                                     ;\
+                                                           ;\
+  RVTEST_GOTO_LOWER_MODE priv                              ;\
+                                                           ;\
+  LI(x1, immval)                                           ;\
+  mv x5, x1                                                ;\
+                                                           ;\
+/* Four tests                                            */;\
+/* 1. Push using x1; popchk using x1                     */;\
+/* 1. Push using x1; popchk using x5                     */;\
+/* 1. Push using x5; popchk using x1                     */;\
+/* 1. Push using x5; popchk using x5                     */;\
+/* After each test ensure ssp back to initial value      */;\
+  csrr x11, CSR_SSP                                        ;\
+  SSPUSH_X1()                                              ;\
+  SSPOPCHK_X1()                                            ;\
+  csrr x12, CSR_SSP                                        ;\
+  sub x11, x11, x12                                        ;\
+  seqz x11, x11                                            ;\
+  or x10, x10, x11                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+  csrr x11, CSR_SSP                                        ;\
+  SSPUSH_X1()                                              ;\
+  SSPOPCHK_X5()                                            ;\
+  csrr x12, CSR_SSP                                        ;\
+  sub x11, x11, x12                                        ;\
+  seqz x11, x11                                            ;\
+  or x10, x10, x11                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+  csrr x11, CSR_SSP                                        ;\
+  SSPUSH_X5()                                              ;\
+  SSPOPCHK_X5()                                            ;\
+  csrr x12, CSR_SSP                                        ;\
+  sub x11, x11, x12                                        ;\
+  seqz x11, x11                                            ;\
+  or x10, x10, x11                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+  csrr x11, CSR_SSP                                        ;\
+  SSPUSH_X5()                                              ;\
+  SSPOPCHK_X1()                                            ;\
+  csrr x12, CSR_SSP                                        ;\
+  sub x11, x11, x12                                        ;\
+  seqz x11, x11                                            ;\
+  or x10, x10, x11                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+/* Check that imm value was stored at ssp-8              */;\
+  LI(x1, immval)                                           ;\
+  LA(x11, shadow_stack_end)                                ;\
+  LREG x11, -8(x11)                                        ;\
+  sub  x11, x11, x1                                        ;\
+  seqz x11, x11                                            ;\
+  or x10, x10, x11                                         ;\
+  sllw x10, x10, 1                                         ;\
+                                                           ;\
+/* Cause SW check exception for first invocation         */;\
+  .if (offset == 0)                                        ;\
+                                                           ;\
+  LI(x1, immval)                                           ;\
+  addi x5, x1, 1                                           ;\
+  SSPUSH_X1()                                              ;\
+/* This popchk should fail                               */;\
+  .align 2                                                 ;\
+  SSPOPCHK_X5()                                            ;\
+  nop                                                      ;\
+  nop                                                      ;\
+/* This popchk should pass                               */;\
+  SSPOPCHK_X1()                                            ;\
+                                                           ;\
+  LI(x5, immval)                                           ;\
+  addi x1, x5, 1                                           ;\
+  SSPUSH_X5()                                              ;\
+/* This popchk should fail                               */;\
+  .align 2                                                 ;\
+  SSPOPCHK_X1()                                            ;\
+  nop                                                      ;\
+  nop                                                      ;\
+/* This popchk should pass                               */;\
+  SSPOPCHK_X5()                                            ;\
+                                                           ;\
+/* Make SSP point to non shadow stack RWX location       */;\
+  csrr x12, CSR_SSP                                        ;\
+  LA(x11, shadow_stack_end)                                ;\
+  csrw CSR_SSP, x11                                        ;\
+                                                           ;\
+/* This sspush encounters stamo access fault             */;\
+  .align 2                                                 ;\
+  SSPUSH_X1()                                              ;\
+  nop                                                      ;\
+  nop                                                      ;\
+                                                           ;\
+/* This sspopchk encounters stamo access fault           */;\
+  .align 2                                                 ;\
+  SSPOPCHK_X5()                                            ;\
+  nop                                                      ;\
+  nop                                                      ;\
+                                                           ;\
+/* restore SSP                                           */;\
+  csrw CSR_SSP, x12                                        ;\
+                                                           ;\
+  .endif                                                   ;\
+                                                           ;\
+  mv swreg, x15                                            ;\
+  RVTEST_GOTO_MMODE                                        ;\
+  DISABLE_ZICFISS()                                        ;\
+  RVTEST_SIGUPD(swreg, x10, offset) 
+
+// x11, x12, x13 - temporary registers
+// x1, x5        - used by ss instructions
+// x15           - swreg
+// x10           - test signature
+#define TEST_C_SSPUSH_SSPOP_OP(swreg, offset, immval, priv) \
+  mv x15, swreg                                            ;\
+  mv x10, x0                                               ;\
+/* Setup PMP and SS page for the first invocation        */;\
+  .if (offset == 0)                                        ;\
+  SETUP_SHADOW_STACK(priv)                                 ;\
+  .endif                                                   ;\
+                                                           ;\
+/* store deadbeef at ssp-8                               */;\
+  LA(x11, shadow_stack_end)                                ;\
+  LI(x12, 0xdeadbeef)                                      ;\
+  SREG x12, -8(x11)                                        ;\
+/* Go to lower privilege with Zicfiss not enabled        */;\
+  RVTEST_GOTO_LOWER_MODE priv                              ;\
+                                                           ;\
+/* Zicfiss is not enabled; ss insts should be zimops     */;\
+  LI(x1, immval)                                           ;\
+  C_SSPUSH_X1()                                            ;\
+  C_SSPOPCHK_X5()                                          ;\
+  RVTEST_GOTO_MMODE                                        ;\
+                                                           ;\
+/* ensure that shadow stack was not changed              */;\
+  LA(x11, shadow_stack_end)                                ;\
+  LREG x11, -8(x11)                                        ;\
+  LI(x12, 0xdeadbeef)                                      ;\
+  sub x12, x12, x11                                        ;\
+  add x10, x10, x12                                        ;\
+                                                           ;\
+  ENABLE_ZICFISS(priv)                                     ;\
+                                                           ;\
+  RVTEST_GOTO_LOWER_MODE priv                              ;\
+                                                           ;\
+  LI(x1, immval)                                           ;\
+  mv x5, x1                                                ;\
+                                                           ;\
+/* Push using x1; popchk using x5                        */;\
+/* After test ensure ssp back to initial value           */;\
+  csrr x11, CSR_SSP                                        ;\
+  C_SSPUSH_X1()                                            ;\
+  C_SSPOPCHK_X5()                                          ;\
+  csrr x12, CSR_SSP                                        ;\
+  sub x11, x11, x12                                        ;\
+  add x10, x10, x11                                        ;\
+                                                           ;\
+/* Check that imm value was stored at ssp-8              */;\
+  LI(x1, immval)                                           ;\
+  LA(x11, shadow_stack_end)                                ;\
+  LREG x11, -8(x11)                                        ;\
+  sub  x11, x11, x1                                        ;\
+  add x10, x10, x11                                        ;\
+                                                           ;\
+/* Cause SW check exception for first invocation         */;\
+  .if (offset == 0)                                        ;\
+                                                           ;\
+  LI(x1, immval)                                           ;\
+  addi x5, x1, 1                                           ;\
+  C_SSPUSH_X1()                                            ;\
+/* This popchk should fail                               */;\
+  .align 2                                                 ;\
+  C_SSPOPCHK_X5()                                          ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+/* This popchk should pass                               */;\
+  mv x5, x1                                                ;\
+  C_SSPOPCHK_X5()                                          ;\
+                                                           ;\
+  .endif                                                   ;\
+                                                           ;\
+  mv swreg, x15                                            ;\
+  RVTEST_GOTO_MMODE                                        ;\
+  DISABLE_ZICFISS()                                        ;\
+  RVTEST_SIGUPD(swreg, x10, offset) 
+
+#define TEST_SSAMOSWAP_OP(inst, destreg, origptr, reg2, origval, updval, swreg, testreg, Priv) \
+                                                           ;\
+  .if (zicfiss_setup_done == 0)                            ;\
+  mv x15, swreg                                            ;\
+  SETUP_SHADOW_STACK(Priv)                                 ;\
+  mv swreg, x15                                            ;\
+  LA(testreg, shadow_stack_start)                          ;\
+  SREG swreg, (testreg)                                    ;\
+                                                           ;\
+/* Cause illegal-inst when Zicfiss not enabled           */;\
+  RVTEST_GOTO_LOWER_MODE Priv                              ;\
+  inst destreg, reg2, (origptr)                            ;\
+  nop                                                      ;\
+  nop                                                      ;\
+                                                           ;\
+  RVTEST_GOTO_MMODE                                        ;\
+  ENABLE_ZICFISS(Priv)                                     ;\
+  .set zicfiss_setup_done, 1                               ;\
+  .endif                                                   ;\
+                                                           ;\
+/* Store origval on shadow stack                         */;\
+  LA(origptr, shadow_stack_end)                            ;\
+  addi origptr, origptr, -REGWIDTH                         ;\
+  LI(reg2, origval)                                        ;\
+  .if (inst == ssamoswap.w)                                ;\
+  sw reg2, (origptr)                                       ;\
+  .else                                                    ;\
+  sd reg2, (origptr)                                       ;\
+  .endif                                                   ;\
+                                                           ;\
+                                                           ;\
+/* Go to Priv mode                                       */;\
+  RVTEST_GOTO_LOWER_MODE Priv                              ;\
+                                                           ;\
+/* Swap that with updval using ssamswap                  */;\
+  csrr origptr, CSR_SSP                                    ;\
+  LI(reg2, updval)                                         ;\
+  inst destreg, reg2, (origptr)                            ;\
+  mv testreg, destreg                                      ;\
+                                                           ;\
+/* build test signature                                  */;\
+  LA(origptr, shadow_stack_end)                            ;\
+  addi origptr, origptr, -REGWIDTH                         ;\
+  .if (inst == ssamoswap.w)                                ;\
+  lw destreg, (origptr)                                    ;\
+  .endif                                                   ;\
+  .if (inst == ssamoswap.d)                                ;\
+  ld destreg, (origptr)                                    ;\
+  .endif                                                   ;\
+  add testreg, testreg, destreg                            ;\
+                                                           ;\
+  LA(origptr, shadow_stack_start)                          ;\
+  LREG swreg, (origptr)                                    ;\
+                                                           ;\
+  RVTEST_SIGUPD(swreg, testreg, 0)                         ;\
+                                                           ;\
+  LA(origptr, shadow_stack_start)                          ;\
+  addi swreg, swreg, REGWIDTH                              ;\
+  SREG swreg, (origptr)                                    ;\
+                                                           ;\
+/* Return to Machine mode                                */;\
+  RVTEST_GOTO_MMODE
+
+#define TEST_SSRDP_OP(inst, destreg, swreg, testreg, Priv) \
+                                                           ;\
+  .if (zicfiss_setup_done == 0)                            ;\
+  mv x15, swreg                                            ;\
+  SETUP_SHADOW_STACK(Priv)                                 ;\
+  mv swreg, x15                                            ;\
+  LA(testreg, shadow_stack_start)                          ;\
+  SREG swreg, (testreg)                                    ;\
+  .set zicfiss_setup_done, 1                               ;\
+  .endif                                                   ;\
+                                                           ;\
+/* Go to Priv mode with Zicfiss disabled                 */;\
+  RVTEST_GOTO_LOWER_MODE Priv                              ;\
+                                                           ;\
+/* ssrdp should be a zimop and write 0 to dest             */;\
+  LI(destreg, 1)                                           ;\
+  inst destreg                                             ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+  nop                                                      ;\
+                                                           ;\
+  LA(testreg, shadow_stack_start)                          ;\
+  LREG swreg, (testreg)                                    ;\
+                                                           ;\
+  RVTEST_SIGUPD(swreg, destreg, 0)                         ;\
+  RVTEST_GOTO_MMODE                                        ;\
+                                                           ;\
+/* Go to Priv mode with Zicfiss enabled                  */;\
+  ENABLE_ZICFISS(Priv)                                     ;\
+  RVTEST_GOTO_LOWER_MODE Priv                              ;\
+                                                           ;\
+  csrr testreg, CSR_SSP                                    ;\
+  inst destreg                                             ;\
+  xor destreg, testreg, destreg                            ;\
+                                                           ;\
+  LA(testreg, shadow_stack_start)                          ;\
+  LREG swreg, (testreg)                                    ;\
+                                                           ;\
+/* Continue signature from before                        */;\
+  LREG testreg, (swreg)                                    ;\
+  xor destreg, destreg, testreg                            ;\
+                                                           ;\
+  RVTEST_SIGUPD(swreg, destreg, 0)                         ;\
+                                                           ;\
+  LA(testreg, shadow_stack_start)                          ;\
+  addi swreg, swreg, REGWIDTH                              ;\
+  SREG swreg, (testreg)                                    ;\
+                                                           ;\
+/* Return to Machine mode                                */;\
+  RVTEST_GOTO_MMODE                                        ;\
+  DISABLE_ZICFISS()                                        ;\
+
+
+
 
 // for updating signatures of Zacas paired destination register (RV32/RV64).
 #define RVTEST_SIGUPD_PZACAS(_BR,_R1,_R2,...)		;\

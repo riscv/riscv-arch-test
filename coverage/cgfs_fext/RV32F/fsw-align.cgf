@@ -1,0 +1,19 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fsw-align:
+    config: 
+      - check ISA:=regex(.*F.*)
+    mnemonics: 
+      fsw: 0
+    rs2: 
+      <<: *all_fregs
+    rs1: 
+      <<: *all_regs_mx0
+    val_comb:
+        'ea_align == 0 and (imm_val % 4) == 0 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 1 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 2 and fcsr == 0': 0
+        'ea_align == 0 and (imm_val % 4) == 3 and fcsr == 0': 0
+        'imm_val > 0  and fcsr == 0': 0
+        'imm_val < 0  and fcsr == 0': 0
+        'imm_val == 0 and fcsr == 0': 0

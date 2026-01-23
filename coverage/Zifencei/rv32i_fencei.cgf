@@ -1,0 +1,6 @@
+fencei:
+  config: 
+    - check ISA:=regex(.*I.*Zifencei.*)
+  mnemonics: 
+    fence.i: 0
+

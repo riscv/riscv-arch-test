@@ -1,0 +1,9 @@
+include LICENSE.incore
+include README.rst
+include riscv_ctg/requirements.txt
+recursive-include riscv_ctg/data/ *
+recursive-include riscv_ctg/env/ *
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude tests/ *

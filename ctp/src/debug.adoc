@@ -8,7 +8,7 @@ This section describes ISA and non-ISA debug-related extensions not required in 
 [[t-DM-coverpoints]]
 .DM Coverpoints
 //,===
-//include::{testplansdir}/DM.adoc[])
+//include::{testplansdir}/DM.adoc[]
 //,===
 
 ==== DTM Debug Transport Module
@@ -16,7 +16,7 @@ This section describes ISA and non-ISA debug-related extensions not required in 
 [[t-DTM-coverpoints]]
 .DTM Coverpoints
 //,===
-//include::{testplansdir}/DTM.adoc[])
+//include::{testplansdir}/DTM.adoc[]
 //,===
 
 ==== Sdext Debug Extension
@@ -24,5 +24,5 @@ This section describes ISA and non-ISA debug-related extensions not required in 
 [[t-Sdext-coverpoints]]
 .Sdext Coverpoints
 //,===
-//include::{testplansdir}/Sdext.adoc[])
+//include::{testplansdir}/Sdext.adoc[]
 //,===

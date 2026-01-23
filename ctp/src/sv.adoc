@@ -6,7 +6,7 @@
 [[t-Svbare-coverpoints]]
 .Svbare Coverpoints
 //,===
-//include::{testplansdir}/Svbare.adoc[])
+//include::{testplansdir}/Svbare
 //,===
 
 ==== Sv

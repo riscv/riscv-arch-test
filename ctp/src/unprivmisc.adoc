@@ -8,7 +8,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-Zfinx-coverpoints]]
 .Zfinx Coverpoints
 //,===
-//include::{testplansdir}/Zfinx.adoc[])
+//include::{testplansdir}/Zfinx
 //,===
 
 ==== Zdinx Double in Integer Regs
@@ -16,7 +16,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-Zdinx-coverpoints]]
 .Zdinx Coverpoints
 //,===
-//include::{testplansdir}/Zdinx.adoc[])
+//include::{testplansdir}/Zdinx
 //,===
 
 ==== Zhinx Half in Integer Regs
@@ -24,7 +24,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-Zhinx-coverpoints]]
 .Zhinx Coverpoints
 //,===
-//include::{testplansdir}/Zhinx.adoc[])
+//include::{testplansdir}/Zhinx
 //,===
 
 ==== Zhinxmin Half Converts in Integer Regs
@@ -32,7 +32,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-Zhinxmin-coverpoints]]
 .Zhinxmin Coverpoints
 //,===
-//include::{testplansdir}/Zhinxmin.adoc[])
+//include::{testplansdir}/Zhinxmin
 //,===
 
 ==== Q Quad-Precision Floating-Point
@@ -40,7 +40,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-Q-coverpoints]]
 .Q Coverpoints
 //,===
-//include::{testplansdir}/Q.adoc[])
+//include::{testplansdir}/Q
 //,===
 
 ==== ZfhQ Half-Quad Instructions
@@ -48,7 +48,7 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 [[t-ZfhQ-coverpoints]]
 .ZfhQ Coverpoints
 //,===
-//include::{testplansdir}/ZfhQ.adoc[])
+//include::{testplansdir}/ZfhQ
 //,===
 
 ==== ZfhminQ Half-Quad Conversion Instructions
@@ -58,21 +58,21 @@ Note that ZfhminQ is the same as ZfhQ
 [[t-ZfhminQ-coverpoints]]
 .ZfhminQ Coverpoints
 //,===
-//include::{testplansdir}/ZfhminQ.adoc[])
+//include::{testplansdir}/ZfhminQ
 //,===
 
 ==== ZfaQ Additional Quad-Precision Floating-Point Instructions
 [[t-ZfaQ-coverpoints]]
 .ZfaQ Coverpoints
 //,===
-//include::{testplansdir}/ZfaQ.adoc[])
+//include::{testplansdir}/ZfaQ
 //,===
 
 ==== ZfaZfhQ Additional Half-Quad Conversion Instructions
 [[t-ZfaZfhQ-coverpoints]]
 .ZfaZfhQ Coverpoints
 //,===
-//include::{testplansdir}/ZfaZfhQ.adoc[])
+//include::{testplansdir}/ZfaZfhQ
 //,===
 
 ==== Zcmp Compressed Push/Pop
@@ -80,7 +80,7 @@ Note that ZfhminQ is the same as ZfhQ
 [[t-Zcmp-coverpoints]]
 .Zcmp Coverpoints
 //,===
-//include::{testplansdir}/Zcmp.adoc[])
+//include::{testplansdir}/Zcmp
 //,===
 
 include::norm/Zcmp_norm_rules.adoc[]
@@ -91,7 +91,7 @@ include::norm/Zcmp_norm_rules.adoc[]
 [[t-Zcmt-coverpoints]]
 .Zcmt Coverpoints
 //,===
-//include::{testplansdir}/Zcmt.adoc[])
+//include::{testplansdir}/Zcmt
 //,===
 
 include::norm/Zcmt_norm_rules.adoc[]
@@ -102,7 +102,7 @@ include::norm/Zcmt_norm_rules.adoc[]
 [[t-Zilsd-coverpoints]]
 .Zilsd Coverpoints
 //,===
-//include::{testplansdir}/Zilsd.adoc[])
+//include::{testplansdir}/Zilsd
 //,===
 
 ==== Zclsd Compressed Load/Store Double
@@ -110,5 +110,5 @@ include::norm/Zcmt_norm_rules.adoc[]
 [[t-Zclsd-coverpoints]]
 .Zclsd Coverpoints
 //,===
-//include::{testplansdir}/Zclsd.adoc[])
+//include::{testplansdir}/Zclsd
 //,===

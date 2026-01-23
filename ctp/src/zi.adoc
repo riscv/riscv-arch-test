@@ -186,7 +186,7 @@ include::norm/Zihintpause_norm_rules.adoc[]
 [[t-Zihintntl-coverpoints]]
 .Zihintntl Instruction Coverpoints
 //,===
-//include::{testplansdir}/Zihintntl.adoc[])
+//include::{testplansdir}/Zihintntl
 //,===
 
 *UDB Parameters:* None.

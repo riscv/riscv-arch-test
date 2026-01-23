@@ -8,6 +8,62 @@ normative_rule_definitions:
       [
         "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
       ]
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint: ["ExceptionsSm/cp_illegal_instruction (etc)"]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  - name: mcause_exccode_enc
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["TODO"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["TODO"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["TODO"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_M-mode
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: [""]
 
   # No instruction-address-misaligned exception is generated for a conditional
   # branch that is not taken.

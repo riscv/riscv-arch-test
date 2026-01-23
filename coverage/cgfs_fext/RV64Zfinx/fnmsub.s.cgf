@@ -1,0 +1,247 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+fnmsub_b1:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b2:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b2(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b3:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b3(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b4:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b4(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b5:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b5(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b6:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b6(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b7:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b7(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b8:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b8(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b14:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b14(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b15:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b15(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b16:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b16(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b17:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b17(flen,32, "fnmsub.s", 3, True)': 0
+        
+fnmsub_b18:
+    config: 
+      - check ISA:=regex(.*I.*Zfinx.*)
+    mnemonics: 
+      fnmsub.s: 0
+    rs1: 
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rs3:
+      <<: *all_regs
+    rd: 
+      <<: *all_regs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b18(flen,32, "fnmsub.s", 3, True)': 0

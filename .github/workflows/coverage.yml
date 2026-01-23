@@ -1,0 +1,155 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI coverage (for dev)
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow Actions manually
+  workflow_dispatch:
+
+   # Triggers the action 2am on the first day of every month.
+  schedule:
+    - cron: "0 2 1 * *"
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  ACT-sail-spike:
+    name: ACT-coverage-sail (RV${{ matrix.xlen }})
+    runs-on: ubuntu-22.04
+    # Set a 60-minute time limit for this job
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        xlen: [32, 64]
+
+    steps:
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip python3-venv
+          sudo apt-get install -y gcc git autoconf automake libtool curl make unzip
+          sudo apt-get install -y autoconf automake autotools-dev curl python3 python3-pip libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev pkg-config
+          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev w3m
+
+      - name: Build RISCV-GNU Toolchain (${{ matrix.xlen }} bit)
+        run: |
+          wget -c https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2024.09.03/riscv${{ matrix.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
+          tar -xzf riscv${{ matrix.xlen }}-elf-ubuntu-20.04-gcc-nightly-2024.09.03-nightly.tar.gz
+          mv riscv riscv${{ matrix.xlen }}
+          echo $GITHUB_WORKSPACE/riscv${{ matrix.xlen }}/bin >> $GITHUB_PATH
+
+      - name: Install latest riscof
+        run: |
+          git clone https://github.com/riscv-software-src/riscof.git
+          cd riscof
+          pip3 install --editable .
+
+      - name: Install latest riscv-config
+        run: |
+          git clone https://github.com/riscv-software-src/riscv-config.git
+          cd riscv-config
+          pip3 install --editable .
+
+      - name: Install riscv-isac
+        run: |
+          cd riscv-isac
+          pip3 install --editable .
+
+      - name: Install riscv-ctg
+        run: |
+          cd riscv-ctg
+          pip3 install --editable .
+
+      - name: Get Latest Spike Commit
+        run: |
+              SPIKE_HASH=$(git ls-remote https://github.com/riscv/riscv-isa-sim.git HEAD | awk '{ print $1}')
+              echo "SPIKE_HASH=$SPIKE_HASH" >> "$GITHUB_ENV"
+
+      - name: Restore cached Spike
+        id: cache-spike-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/spike
+          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
+
+      - name: Install Spike
+        if: steps.cache-spike-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/riscv/riscv-isa-sim.git
+          cd riscv-isa-sim
+          mkdir build
+          cd build
+          ../configure --prefix=$GITHUB_WORKSPACE/spike
+          make -j$(nproc)
+          make install
+
+      - name: Save cached Spike
+        if: steps.cache-spike-restore.outputs.cache-hit != 'true'
+        id: cache-spike-save
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
+
+      - name: Install Sail
+        run: |
+          mkdir sail-riscv
+          wget -qO- https://github.com/riscv/sail-riscv/releases/download/0.8/sail-riscv-Linux-x86_64.tar.gz | tar -xvzf - --directory=sail-riscv --strip-components=1
+          mkdir -p $GITHUB_WORKSPACE/sail
+          mv sail-riscv/bin/sail_riscv_sim $GITHUB_WORKSPACE/sail/sail_riscv_sim
+
+      - name: Set PATH
+        run: |
+              echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
+              echo $GITHUB_WORKSPACE/sail >> $GITHUB_PATH
+
+      - name: Config and check coverage via riscof for RV${{ matrix.xlen }}
+        run: |
+          cd riscof-plugins/rv${{ matrix.xlen }}
+          chmod +x ./check_coverage
+          ./check_coverage
+
+      #Check the existance of the riscof work folder, and add the PATH to environment variable
+      - name: Check size and determine upload path
+        if: always()
+        id: check_size
+        run: |
+          work_folder="${{ github.workspace }}/riscof-plugins/rv${{ matrix.xlen }}/all_riscof_works/"
+          report_file="$work_folder/report.html"
+          if [ -d "$work_folder" ]; then
+            folder_size=$(du -sm "$work_folder" | cut -f1)
+            echo "Folder size: ${folder_size} MB"
+            if [ "$folder_size" -gt 100000 ]; then
+              echo "Size exceeds 10 GB. Checking if report exists."
+              if [ -f "$report_file" ]; then
+                echo "Uploading RISCOF generated report only."
+                echo "upload_path=$report_file" >> $GITHUB_ENV
+              else
+                echo "No report found. Skipping upload."
+                echo "upload_path=" >> $GITHUB_ENV
+              fi
+            else
+              echo "Size is within limit. Uploading complete RISCOF_WORK Folder."
+              echo "upload_path=$work_folder" >> $GITHUB_ENV
+            fi
+          else
+            echo "Folder does not exist. Skipping upload."
+            echo "upload_path=" >> $GITHUB_ENV
+          fi
+
+      # Upload the appropriate artifact (folder or report) and skip in case not exists
+      - name: Upload riscof artifact for rv${{ matrix.xlen }}
+        if: always() && env.upload_path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: riscof-artifact-rv${{ matrix.xlen }}
+          path: ${{ env.upload_path }}
+          compression-level: 6
+          overwrite: true

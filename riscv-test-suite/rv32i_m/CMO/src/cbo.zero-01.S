@@ -16,11 +16,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // -----------
 //
-// This assembly file tests the cbo.zero instruction of the RISC-V RV32ZicbozZicsr extension for the cbozero covergroup.
+// This assembly file tests the cbo.zero instruction of the RISC-V RV32Zicboz extension for the cbozero covergroup.
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32IZicbozZicsr")
+RVTEST_ISA("RV32IZicboz_Zicsr")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -30,7 +30,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*I.*Zicboz.*Zicsr.*);def TEST_CASE_1=True;",cbozero)
+RVTEST_CASE(0,"//check ISA:=regex(.*32.*I.*Zicboz.*Zicsr.*);def TEST_CASE_1=True;",cbozero)
 
 RVTEST_SIGBASE(x2,signature_x2_1)
 

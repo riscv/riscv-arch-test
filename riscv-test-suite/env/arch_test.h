@@ -1,8 +1,16 @@
+// ***DELETEME** note to self
+// this version adds instret counts to the signature
+// this version modifies the LA macro to skip generation if rd=x0 (or X0)
+// this version detects ECALL cause even in CLIC mode
+
 // -----------
 // Copyright (c) 2020-2023. RISC-V International. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // -----------
 
+        //********************************************************************************
+        //********** FIXME: these comments are now completely out of order****************
+        //********************************************************************************
 
 // This file is divided into the following sections:
 //      RV Arch Test Constants
@@ -37,15 +45,15 @@
 //  (Data section) - align to 4K boundary
 // RVTEST_DATA_BEGIN
 //**************************************
-//*****(Ld/St test data is here)********
-//**************************************
-//
-//**************************************
 //*****(trap handler data is here)******
 //**************************************
 //
-//    rvtest_trap_sig:   [global trap signature start (shared by all modes) inited to mtrap_sigptr] **FIXME: needs VA=PA
-//    RVTEST_TRAP_SAVEAREA      [handler sv area(m, ms, or msv) temp reg save, CSRs, tramp table, ptrs]
+//**************************************
+//*****(Ld/St test data is here)********
+//**************************************
+//
+//    rvtest_trap_sig:   [ptr toglobal trap signature start (shared by all modes) inited to mtrap_sigptr] **FIXME: needs VA=PA
+//    RVTEST_TRAP_SAVEAREA [handler sv area(m, ms, or msv) temp reg save, CSRs, tramp table, ptrs]
 //      rvtest_data_begin: [input data     (shared by all modes)]
 //    RVTEST_DATA_END
 //      rvtest_data_end:
@@ -203,12 +211,14 @@
     #define GOTO_M_OP   ecall
 #endif
 
-//this is a valid global pte entry with all permissions. IF at the root entry, it forms an identity map.
-#define RVTEST_PTE_IDENT_MAP  .fill   4096/REGWIDTH, REGWIDTH, (PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-#define RVTEST_PTE_NOACC_MAP  .fill   4096/REGWIDTH, REGWIDTH, (PTE_G | PTE_U )
+//this is pte entry permision bits for all permissions.
+#define RVTEST_ALLPERMS ( PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+//this is pte entry permision bits for no permissions.
+#define RVTEST_NOACC    ( PTE_G | PTE_U )
 
 //_ADDR_SZ_ is a global variable extracted from YAML; set a default if it isn't defined
-// This should be the MAX(phy_addr_size, VADDR_SZ) from YAML, where VADDR_SZ is derived from SATP.mode at reset
+// This should be the MAX(phy_addr_size, VADDR_SZ) from YAML, 
+// where VADDR_SZ is derived from SATP.mode at reset
 #ifndef _ADDR_SZ_
   #if XLEN==64
     #define _ADDR_SZ_ 57
@@ -216,6 +226,25 @@
     #define _ADDR_SZ_ 32
   #endif
 #endif
+
+// this is the position of the last level PPN in each root page table PTE
+  #define ROOT_PPN_LSB 10
+    #if XLEN==32
+      #define PPN_SZ   10
+      #define LVLS     2
+    #else
+      #define PPN_SZ   9
+      #define LVLS   ((_ADDR_SZ_-4)/PPN_SZ)
+    #endif
+
+// this defines a page of PTEs at top level (depending on _ADDR_SZ_) with named permissions
+// for the largest size page and a common base (which is set to zero for identify mapping)
+#define RVTEST_PTE_IDENT_MAP(PGBASE,LVLS,PERMS)                                 ;\
+    .set ppn, 0                                                                 ;\
+    .rept (4096 >> REGWIDTH)                                                    ;\
+      .fill   1, REGWIDTH, (PGBASE | (ppn<<(10+(LVLS-1)*PPN_SZ)) | PERMS)       ;\
+      .set ppn, (ppn+1)                                                         ;\
+    .endr                                                                       ;\
 
 // define a bunch of XLEN dependent constants
 #if   XLEN==32
@@ -242,10 +271,32 @@
     #define FLREG fld
     #define FSREG fsd
     #define FREGWIDTH 8
-#else
+#elif FLEN==128
     #define FLREG flq
     #define FSREG fsq
     #define FREGWIDTH 16
+#endif
+
+#if ZFINX==1
+  #define FLREG ld
+  #define FSREG sd
+  #define FREGWIDTH 8
+  #define FLEN 64
+  #if XLEN==64
+    #define SIGALIGN 8
+  #else
+      #define SIGALIGN 4
+  #endif
+#elif ZDINX==1
+  #define FLREG LREG
+  #define FSREG SREG
+  #define FREGWIDTH 8
+  #define FLEN 64
+#elif ZHINX==1
+  #define FLREG lw
+  #define FSREG sw
+  #define FREGWIDTH 4
+  #define FLEN 32
 #endif
 
 
@@ -269,6 +320,7 @@
 #define MPRV_LSB  17    //bit pos of LSB of the mstatus.MPRV field
 #define MPV_LSB    7    // bit pos of prev vmod mstatush.MPV in either mstatush or mstatus upper
 #define MPP_SMODE (1<<MPP_LSB)
+#define MPP_MMODE (3<<MPP_LSB)
 //define sizes
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 5) * 4)     // 5 is added ops before common entry pt
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
@@ -436,14 +488,15 @@
 
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
 #define LA(reg,val)     ;\
+    .ifnc(reg, X0)       ;\
         .option push    ;\
         .option rvc     ;\
         .align UNROLLSZ ;\
         .option norvc   ;\
         la reg,val      ;\
         .align UNROLLSZ ;\
-        .option pop
-
+        .option pop     ;\
+    .endif
 #define ADDI(dst, src, imm) /* helper*/ ;\
 .if ((imm<=2048) & (imm>=-2048))        ;\
         addi    dst, src, imm           ;\
@@ -456,41 +509,61 @@
 /**** initialize regs, just to make sure you catch any errors ****/
 /*****************************************************************/
 
+.macro DBLSHIFT7 dstreg, oldreg
+        srli  \dstreg\(), \oldreg\(), 7
+        srli  x15   , \oldreg\(), XLEN-7
+        or    \dstreg\(), \dstreg\(), x15
+.endm
 /* init regs, to ensure you catch any errors */
 .macro RVTEST_INIT_GPRS
-     LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
-     LI (x2,  (0xFF76DF56FF76DF56 & MASK))
-     LI (x3,  (0x7FBB6FAB7FBB6FAB & MASK))
-     LI (x4,  (0xBFDDB7D5BFDDB7D5 & MASK))
-     LI (x5,  (0xDFEEDBEADFEEDBEA & MASK))
-     LI (x6,  (0x6FF76DF56FF76DF5 & MASK))
-     LI (x7,  (0xB7FBB6FAB7FBB6FA & MASK))
-     LI (x8,  (0x5BFDDB7D5BFDDB7D & MASK))
-     LI (x9,  (0xADFEEDBEADFEEDBE & MASK))
-     LI (x10, (0x56FF76DF56FF76DF & MASK))
-     LI (x11, (0xAB7FBB6FAB7FBB6F & MASK))
-     LI (x12, (0xD5BFDDB7D5BFDDB7 & MASK))
-     LI (x13, (0xEADFEEDBEADFEEDB & MASK))
-     LI (x14, (0xF56FF76DF56FF76D & MASK))
-     LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
+    #ifdef rvtest_mtrap_routine
+     LI  (x1, 0)
+     // Initialising CSR registers (mpec, mtval, mstatus, mip)
+     csrw  CSR_MSTATUS,    x1
+     csrw  CSR_MEPC,       x1
+     csrw  CSR_MIP,        x1
+     csrw  CSR_MTVAL,      x1
+     csrw  CSR_MCAUSE,     x1
+    #endif
    #ifndef RVTEST_E
      LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
-     LI (x17, (0xBEADFEEDBEADFEED & MASK))
-     LI (x18, (0xDF56FF76DF56FF76 & MASK))
-     LI (x19, (0x6FAB7FBB6FAB7FBB & MASK))
-     LI (x20, (0xB7D5BFDDB7D5BFDD & MASK))
-     LI (x21, (0xDBEADFEEDBEADFEE & MASK))
-     LI (x22, (0x6DF56FF76DF56FF7 & MASK))
-     LI (x23, (0xB6FAB7FBB6FAB7FB & MASK))
-     LI (x24, (0xDB7D5BFDDB7D5BFD & MASK))
-     LI (x25, (0xEDBEADFEEDBEADFE & MASK))
-     LI (x26, (0x76DF56FF76DF56FF & MASK))
-     LI (x27, (0xBB6FAB7FBB6FAB7F & MASK))
-     LI (x28, (0xDDB7D5BFDDB7D5BF & MASK))
-     LI (x29, (0xEEDBEADFEEDBEADF & MASK))
-     LI (x30, (0xF76DF56FF76DF56F & MASK))
-     LI (x31, (0xFBB6FAB7FBB6FAB7 & MASK))
+     DBLSHIFT7 x17, x16
+     DBLSHIFT7 x18, x17
+     DBLSHIFT7 x19, x18
+     DBLSHIFT7 x20, x19
+     DBLSHIFT7 x21, x20
+     DBLSHIFT7 x22, x21
+     DBLSHIFT7 x23, x22
+     DBLSHIFT7 x24, x23
+     DBLSHIFT7 x25, x24
+     DBLSHIFT7 x26, x25
+     DBLSHIFT7 x27, x26
+     DBLSHIFT7 x28, x27
+     DBLSHIFT7 x29, x28
+     DBLSHIFT7 x30, x29
    #endif
+     LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
+     DBLSHIFT7 x2, x1
+     DBLSHIFT7 x3, x2
+     DBLSHIFT7 x4, x3
+     DBLSHIFT7 x5, x4
+     DBLSHIFT7 x6, x5
+     DBLSHIFT7 x7, x6
+     DBLSHIFT7 x8, x7
+     DBLSHIFT7 x9, x8
+     DBLSHIFT7 x10, x9
+     DBLSHIFT7 x11, x10
+     DBLSHIFT7 x12, x11
+     DBLSHIFT7 x13, x12
+
+#ifdef RVTEST_ENAB_INSTRET_CNT
+     csrr  x14, CSR_MSCRATCH
+     csrr  x15, CSR_MINSTRET
+     SREG  x15, tramp_sz+4*8(x14)               // this replaces initial canary val w/ instret counter val
+
+     DBLSHIFT7 x14, x13
+     LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
+#endif
 .endm
 /******************************************************************************/
 /**** this is a helper macro that conditionally instantiates the macros    ****/
@@ -574,13 +647,13 @@
 /******************************************************************************/
 
  .macro XCSR_RENAME __MODE__    // enable CSR names to be parameterized, V,S merged
-  .ifc   \__MODE__, M
+  .ifc   \__MODE__ , M
        _XCSR_RENAME_M
   .endif
-  .ifc   \__MODE__, S
+  .ifc   \__MODE__ , S
        _XCSR_RENAME_S
   .endif
-  .ifc  \__MODE__,  V
+  .ifc  \__MODE__ ,  V
        _XCSR_RENAME_S
   .endif
 .endm
@@ -593,13 +666,13 @@
 /******************************************************************************/
 
  .macro XCSR_VRENAME __MODE__   // enable CSR names to be parameterized, V,S separate 
-  .ifc   \__MODE__, M
+  .ifc   \__MODE__ , M
        _XCSR_RENAME_M
   .endif
-  .ifc   \__MODE__, S
+  .ifc   \__MODE__ , S
        _XCSR_RENAME_S
   .endif
-  .ifc  \__MODE__,  V
+  .ifc  \__MODE__ ,  V
        _XCSR_RENAME_V
   .endif
  .endm
@@ -611,7 +684,7 @@
 //**** NOTE: Only be use for debug! Xregs containing addresses won't be relocated ****//
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#define RVTEST_SAVE_GPRSM(_BR, _LBL, ...)               ;\
+#define RVTEST_SAVE_GPRS(_BR, _LBL, ...)               ;\
         .option push                                    ;\
         .option norvc                                   ;\
         .set __SV_MASK__,  -1 /* default to save all */ ;\
@@ -717,55 +790,6 @@
     .option pop                                         ;\
 #endif
 
-/********************* REQUIRED FOR NEW TESTS *************************/
-/**** new macro encapsulating RVMODEL_DATA_BEGIN (signature area)  ****/
-/**** defining rvtest_sig_begin: label to enabling direct stores   ****/
-/**** into the signature area to be properly relocated             ****/
-/**********************************************************************/
-#define RVTEST_SIG_BEGIN                                                  ;\
-.global rvtest_sig_begin        /* defines beginning of signature area */ ;\
-    RVMODEL_DATA_BEGIN          /* model specific stuff                */ ;\
-sig_begin_canary:                                                         ;\
-CANARY                                                                    ;\
-rvtest_sig_begin:
-
-// Tests allocate normal signature space here, then define
-// the mtrap_sigptr: label to separate normal and trap
-// signature space, then allocate trap signature space
-
-/********************* REQUIRED FOR NEW TESTS *************************/
-/**** new macro definong start of trap signature area              ****/
-/**** defining rvtest_sig_end: label to enabling direct stores     ****/
-/**** into the signature area to be properLY relocated             ****/
-/**********************************************************************/
-#define RVTEST_TSIG_BEGIN                                                ;\
-.global rvtest_tsig_begin     /* defines beginning of trap sig area   */ ;\
-                                                                         ;\
-tsig_begin_canary:                                                       ;\
-   CANARY                                                                ;\
-   mtrap_sigptr:        .fill 3*(XLEN/32),4,0xdeadbeef                   ;\
-   tsig_end_canary:                                                      ;\
-   CANARY
-
-/********************* REQUIRED FOR NEW TESTS *************************/
-/**** new macro encapsulating RVMODEL_SIG_END (signature area)     ****/
-/**** defining rvtest_sig_end: label to enabling direct stores     ****/
-/**** into the signature area to be properLY relocated             ****/
-/**********************************************************************/
-#define RVTEST_SIG_END                                                   ;\
-.global rvtest_sig_end  /* defines beginning of trap sig area         */ ;\
-                                                                         ;\
-#ifdef rvtest_gpr_save                                                   ;\
-gpr_save:                                                                ;\
-  .fill 32*(XLEN/32),4,0xdeadbeef                                        ;\
-#endif                                                                   ;\
-                                                                         ;\
-sig_end_canary:                                                          ;\
-  CANARY                                                                 ;\
-  CANARY                /* add one extra word of guardband            */ ;\
-rvtest_sig_end:                                                          ;\
-RVMODEL_DATA_END        /* model specific stuff */
-
 
 /***********************************************************************************/
 /**** At end of test, this code is entered. It sets a register x2 to 0 and by   ****/
@@ -799,12 +823,14 @@ RVMODEL_DATA_END        /* model specific stuff */
 .endm
 
 
-/**** This is a helper macro that causes harts to transition from    ****/
-/**** M-mode to a lower priv mode at the instruction that follows    ****/
-/**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/**** The H,U variations leave V unchanged. This uses T4 only.       ****/
-/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
-/**** FIXME - SATP & VSATP must point to the identity map page table ****/
+/**** This is a helper macro that causes harts to transition from               ****/
+/**** M-mode to a lower priv mode at the instruction that follows               ****/
+/**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
+/**** HUmode,Smode & Umode.                                                     ****/
+/**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
+/**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
 #define HSmode  0x9
 #define HUmode  0x8
@@ -828,15 +854,22 @@ RVMODEL_DATA_END        /* model specific stuff */
 
   LI(    T4, MSTATUS_MPP)
   csrc   CSR_MSTATUS, T4                /* clr PP always                */
-
   .if    ((\LMODE\()==VSmode) || (\LMODE\()==HSmode) || (\LMODE\()==Smode))
+#ifdef rvtest_strap_routine
     LI(  T4, MPP_SMODE)                 /* val for Smode                */
+#else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+#endif
     csrs CSR_MSTATUS, T4                /* set in PP                    */
   .endif
         // do the same if XLEN=64
 #else                           /* XLEN=64, maybe 128? FIXME for 128    */
   .if ((\LMODE\()==Smode) || (\LMODE\()==Umode)) /* lv V unchanged here  */
-    LI(  T4,  MSTATUS_MPP)      /* but always clear PP                  */
+  #ifdef rvtest_strap_routine
+    LI(  T4, MPP_SMODE)                 /* val for Smode                */
+  #else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+  #endif
   .else
     LI(  T4, (MSTATUS_MPP | MSTATUS_MPV))       /* clr V and P          */
   .endif
@@ -846,7 +879,11 @@ RVMODEL_DATA_END        /* model specific stuff */
     .if      (\LMODE\()==VSmode)
       LI(  T4, (MPP_SMODE | MSTATUS_MPV)) /* val for pp & v             */
     .elseif ((\LMODE\()==HSmode) || (\LMODE\()==Smode))
-      LI(  T4, (MPP_SMODE))     /* val for pp only                      */
+    #ifdef rvtest_strap_routine
+       LI(  T4, MPP_SMODE)                 /* val for Smode             */
+    #else
+       LI(  T4, MPP_MMODE)                 /* val for no Smode          */
+    #endif
     .else                       /* only VU left; set MPV only           */
       li   T4, 1                /* optimize for single bit              */
       slli T4, T4, 32+MPV_LSB   /* val for v only                       */
@@ -854,17 +891,19 @@ RVMODEL_DATA_END        /* model specific stuff */
     csrs CSR_MSTATUS, T4        /* set correct mode and Vbit            */
   .endif
 #endif
-  csrr   sp, CSR_MSCRATCH       /* ensure sp points to Mmode datae area */
+  csrr   T2, CSR_MSCRATCH       /* ensure GPR T2 points to Mmode datae area */
         /**** mstatus MPV and PP now set up to desired mode    ****/
         /**** set MEPC to mret+4; requires relocating the pc   ****/
 .if     (\LMODE\() == Vmode)     // get trapsig_ptr & init val up 2 save areas (M<-S<-V)
-        LREG    T1, code_bgn_off + 2*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 2*sv_area_sz(T2)
+#ifdef rvtest_strap_routine
 .elseif (\LMODE\() == Smode || \LMODE\() == Umode)     // get trapsig_ptr & init val up 1 save areas (M<-S)
-        LREG    T1, code_bgn_off + 1*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 1*sv_area_sz(T2)
+#endif
 .else                            // get trapsig ptr & init val for this Mmode, (M)
-        LREG    T1, code_bgn_off + 0*sv_area_sz(sp)
+        LREG    T1, code_bgn_off + 0*sv_area_sz(T2)
 .endif
-        LREG    T4, code_bgn_off(sp)
+        LREG    T4, code_bgn_off(T2)
   sub   T1, T1,T4               /* calc addr delta between this mode (M) and lower mode code */
   addi  T1, T1, 4*WDBYTSZ       /* bias by # ops after auipc continue executing at mret+4 */
   auipc T4, 0
@@ -979,10 +1018,10 @@ init_\__MODE__\()scratch:
 //----------------------------------------------------------------------
 init_\__MODE__\()edeleg:
         li      T2, 0                   // save and clear edeleg so we can exit to Mmode
-.if (\__MODE__\() == V)
+.ifc \__MODE__ , V
         csrrw   T2, CSR_VEDELEG, T2     // special case: VS EDELEG available from Vmode
 .else
-  .if (\__MODE__\() == M)
+  .ifc \__MODE__ , M
     #ifdef rvtest_strap_routine
         csrrw   T2, CSR_XEDELEG, T2     // this handles M  mode save, but only if Smode exists
     #endif
@@ -996,6 +1035,13 @@ init_\__MODE__\()edeleg:
 init_\__MODE__\()satp:
 .ifnc \__MODE__ , M                      // if S or VS mode **FIXME: fixed offset frm trapreg_sv?
         LA(     T4, rvtest_\__MODE__\()root_pg_tbl)     // rplc xsatp w/ identity-mapped pg table 
+        srli T4, T4, 12
+      #if (XLEN==32)
+        LI(T3, SATP32_MODE)
+      #else
+        LI(T3, (SATP64_MODE) & (SATP_MODE_SV39 << 60))
+      #endif
+        or      T4, T4, T3
         csrrw   T4, CSR_XSATP, T4
         SREG    T4, xsatp_sv_off(T1)
 .endif
@@ -1151,8 +1197,9 @@ common_\__MODE__\()entry:
 //spcl case handling for ECALL in GOTO_MMODE mode,)  ****tests can't use ECALL T2=0****
 spcl_\__MODE__\()2mmode_test:
         csrr    T5, CSR_XCAUSE
-        addi    T4, T5, -8                      // is cause 8..11? Mmode should avoid ECALL 0
-        andi    T4, T4, -4                      // NOTE: cause 10 is RSVD.  Sail will diverge, but buggy anyway  
+        LI(T4,(1<<(XLEN-1))+(1<<12 - 1<<2))     // make a mask of int bit and cause(11:2). This 
+        and     T4, T4, T5                      // Keep int bit and cause[11:2]  NOTE: cause 10 is RSVD.  Sail will diverge, but buggy anyway  
+        addi    T4, T4, -8                      // map cause 8..11 to 0.  Mmode should avoid ECALL 0
         bnez    T4, \__MODE__\()trapsig_ptr_upd // no, not in special mode, just continue
         LREG    T2, trap_sv_off+7*REGWIDTH(sp)  // get test x2 (which is sp, which has been saved in the trap_sv area
         beqz    T2, rtn2mmode                   // spcl code 0 in T2 means spcl ECALL goto_mmode, just rtn after ECALL
@@ -1249,26 +1296,26 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
   // calculate the delta between trap mode and handler mode sv areas & add to sp
   // This code calculates this table: (H-ext is determined by Vtrap_routine variable
-
-  // +-------+-------+-------+-------+---------+
-  // | Hndlr | vMPP | M.GVA | H-ext | sv area |
+  // lglmsk(vMPP,H,GVA)=(1x1,x01)=0x5D
+  // +-------+------+-------+-------+---------+
+  // | Hndlr | vMPP | H-ext | M.GVA | sv area |
   // | Mode  |  =3  |       |       |  delta  |
   // +-------+------+-------+-------+---------+
   // |   M   |   0  |   1   |   1   |   2     |
-  // |   M   |   0  |   0   |   x   |   1     |
-  // |   M   |   1  |   0   |   x   |   0     |
-  // |   M   |   x  |   1   |   0   | illegal |
-  // |   M   |   1  |   1   |   x   | illegal |
+  // |   M   |   0  |   x   |   0   |   1     |
+  // |   M   |   1  |   x   |   0   |   0     |
+  // |   M   |   x  |   0   |   1   | illegal |
+  // |   M   |   1  |   x   |   1   | illegal |
   // +-------+------+-------+-------+---------+
-  // |       |      | H.GVA | H-ext | sv area |
+  // |       |      | H-ext | H.GVA | sv area |
   // +-------+------+-------+-------+---------+
   // | S/HS  |   0* |   1   |   1   |   1     |
-  // | S/HS  |   0* |   0   |   1   |   0     |
-  // | S/HS  |   0* |   *   |   0   |   0     |
+  // | S/HS  |   0* |   1   |   0   |   0     |
+  // | S/HS  |   0* |   0   |   *   |   0     |
   // +-------+------+-------+-------+---------+
-  // |       |      | noGVA | H-ext | sv area |                 |
+  // |       |      | H-ext | noGVA | sv area |
   // +-------+------+-------+-------+---------+
-  // |   VS  |   0* |   -   |   1*  |   0     |
+  // |   VS  |   0* |   1*  |   -*  |   0     |
   // +-------+------+-------+-------+---------+
 // where vMPP is
   // +-------+-------+-------+-------+------+
@@ -1291,50 +1338,47 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
         
         // create an index from these values: vMPP, x.GVA , H-ext
-        // where vMPP = m.PRV ? svedMPP : m.MPP & svedMPP
+        // where vMPP = m.PRV ? svedMPP : m.MPP
         
   .ifc \__MODE__ ,  M
         csrr    T6, CSR_MSTATUS
-        LREG    T4, mpp_sv_off(sp)      /* saved MPP, overwritten if MPRV=1     */
 // extract MPRV into bit0. Note that only Mmode cares; all other modes can have garbage
         slli    T3, T6, XLEN-MPRV_LSB-1 /* put MPRV into sign bit & test        */
         bge     T3, x0, 1f
-        and     T4, T4, T6              /* MPP=11 if MPRV=0, so AND w/ prevMPP  */
+        LREG    T6, mpp_sv_off(sp)      /* saved MPP, overwritten if MPRV=1     */
 1:
-        // FIXME: add code here to end test if MPRV=1 & MPP<3
-        // e.g.   rt justify, extract, add mprv, end if <4
-// now convert 2 bit xMPP field into a single bit 2
-        srli    T4, T4, MPP_LSB         /* now cvt MPP (in its natural position)*/
+// create a mask in T4[2:0] with (xMPP==3, H-ext, GVA)        
+        srli    T4, T6, MPP_LSB         /* now cvt MPP (in its natural position)*/
         andi    T4, T4, 3               /* to a single bit in bit2 iff ==3      */
         addi    T4, T4, 1
         andi    T4, T4, 4               
-// extract GVA into bit 1
+// extract GVA into bit 0
     #if (rvtest_vtrap_routine)
       #if (XLEN==32)
         csrr    T3, CSR_MSTATUSH        /* get CSR with GVA bit, but only H-ext */
-        srli    T3, T3, GVA_LSB-1       /* reposition RV32 mstatush into bit1   */
+        srli    T3, T3, GVA_LSB         /* reposition RV32 mstatush into bit1   */
       #else
-        srli    T3, T6, GVA_LSB-1+32    /* reposition RV32 mstatus  into bit1   */
+        srli    T3, T4, GVA_LSB+32      /* reposition RV32 mstatus  into bit1   */
       #endif
-        andi    T3, T3, 1<<1
+        andi    T3, T3, 1
         or      T4, T4, T3              /* extract GVA in bit1, insert into msk */
 // put H-extension implemented into bit 0       
         ori     T4, T4, 1               /* set LSB if H-ext present             */
         //****FIXME: this doesn't work if misa.H is RW but set to zero ****/
     #endif
 // chk for illegal combination
-        LI(     T6, 0x3B)                /*lgl msk(vMPP,GVA,H)= 011,00x,10x=0x3B */
+        LI(     T6, 0x5D)               /*lglmsk(vMPP,H,GVA)=(1x1,011,0x0)=0x5D */
         srl     T6, T6, T4
-        andi    T6, T6, 1
-        beq     T6, x0, rvtest_\__MODE__\()endtest    /* illegal combination */
+        andi    T6, T6, 1               /* extract lgl bit val & end test if 0  */
+        beq     T6, x0, rvtest_\__MODE__\()endtest 
 //determine sv offset multiplier
         LI(     T6, sv_area_sz)
-        andi    T3, T4, 2
-        srli    T3, T3, 1               /* extract GVA & move to bito cases     */
-        srl     T6, T6, T3              /* mul by 2 if GVAelse mul by 1         */ 
-        slli    T3, T4, XLEN-3
-        srai    T3, T3, XLEN-1          /* sg ext vMPP, user it to clr delta    */
-        and     T6, T6, T3
+        andi    T3, T4, 1               /* GVA indicates *2 or sll of 1         */
+        sll     T6, T6, T3              /* mul by 2 if GVA else mul by 1        */ 
+        slli    T3, T4, XLEN-3          /* but mul by 0 if bit2 (vMPP==3) == 1  */
+        srai    T3, T3, XLEN-1          /* make 0s msk if vMMP==3 bit =1        */
+        xori    T3, T3, -1
+        and     T4, T6, T3
         
   .else       // do it again, but from VS or HS mode
     .ifc \__MODE__ ,  S
@@ -1358,8 +1402,17 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:
+#ifndef rvtest_strap_routine             // Access Smode sv area only if Smode is supported
+                                        // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        li T4, 0
+#endif
         add     T4, T4, sp              /* calc address of correct sv_area      */
         csrr    T2, CSR_XEPC            /* T4 now pts to trapping sv_area mode  */
+
+#ifdef SKIP_MEPC
+        addi T3, T3, 0
+        j adj_\__MODE__\()epc
+#endif
 
         LREG    T3, vmem_bgn_off(T4)            // see if epc is in the vmem area
         LREG    T6, vmem_seg_siz(T4)
@@ -1387,11 +1440,25 @@ adj_\__MODE__\()epc:
 sv_\__MODE__\()epc:
         SREG    T3, 2*REGWIDTH(T1)      // save 3rd sig value, (rel mepc) into trap sig area
 
+#ifdef SKIP_MEPC
+        LI (T6, 0xACCE)                         // A Constant value to compare if x1 has this value
+        bne x3, T6, adj_\__MODE__\()epc_rtn     // If not called from macro, then skip
+        csrr T3, CSR_XCAUSE                     // Read xcause to check trap type
+        LI (T6, CAUSE_FETCH_PAGE_FAULT)         // Exception code, CAUSE_FETCH_PAGE_FAULT = 0xC
+        beq     T3, T6, 1f                      // If Fetch Page Fault, go to label 1
+        LI (T6, CAUSE_FETCH_ACCESS)             // CAUSE_FETCH_ACCESS = 0x1        
+        bne T3, T6, adj_\__MODE__\()epc_rtn     // Skip if it's not Fetch Page Fault
+1:      csrw    CSR_XEPC, x4                    // Assign xpec with the return label
+        j skp_adj_\__MODE__\()epc
+#endif
+
+
 adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
         andi    T6, T2, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
         addi    T6, T6,  2*WDBYTSZ         // adjust mepc so it skips past op, has padding & 4B aligned
         csrw    CSR_XEPC, T6            // restore adjusted value, w/ 2,4 or 6B of padding
 
+skp_adj_\__MODE__\()epc:
   /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
         for 64b insts,  2B or 4B of padding   ****/
 
@@ -1407,6 +1474,11 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
              the mode of the mstatus.mpp that is stored in Xtrampend_sv ****/
 
         csrr    T2, CSR_XTVAL
+
+#ifdef SKIP_MTVAL
+        addi T3, T3, 0
+        j adj_\__MODE__\()tval
+#endif
 
 chk_\__MODE__\()tval:
         andi    T5, T5, EXCPT_CAUSE_MSK // ensures shift amt will be within range
@@ -1677,7 +1749,11 @@ rtn2mmode:
   #endif
         slli    T2, T2, WDSZ-MPV_LSB-1  /* but V into MSB  ****FIXME if RV128   */ 
 #endif
+#ifdef rvtest_strap_routine             // Only if S-mode is defined, then access S-mode save area
         LREG    T6, code_bgn_off+1*sv_area_sz(sp)    /* get U/S mode code begin */
+#else                                   // Otherwise take address from Mmode save area (applied for architectures which does not support S)
+        LREG    T6, code_bgn_off+0*sv_area_sz(sp)    /* get U/S mode code begin */
+#endif
         bgez    T2, from_u_s            /* V==0, not virtualized, *1 offset     */
 from_v:
         LREG    T6, code_bgn_off+2*sv_area_sz(sp)/* get VU/VS   mode code begin */
@@ -1864,6 +1940,8 @@ rvtest_\__MODE__\()end:
 
 rvtest_init:                            //instantiate prologs here
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG
+rvtest_entrypoint:
+// RVMODEL_BOOT                        // Commenting this one as temporary fix
   RVTEST_INIT_GPRS                      // 0xF0E1D2C3B4A59687
 rvtest_code_begin:
  .option pop
@@ -1875,7 +1953,7 @@ rvtest_code_begin:
 /****                    So the test is here                                     ****/
 /****        the below is instantiated at the end   of the actual test           ****/
 /************************************************************************************/
-
+/*                ----------------> test inserted here <----------------             */
 /**************************************************************************************/
 /**** RVTEST_CODE_END macro  defines end of test code: saves regs, transitions to  ****/
 /**** Mmode, & instantiates epilog using RVTEST_TRAP_EPILOG() macros. Test code    ****/
@@ -1896,6 +1974,13 @@ rvtest_code_end:                // RVMODEL_HALT should get here
   #endif
     RVTEST_GOTO_MMODE           // if only Mmode used by tests, this has no effect
 cleanup_epilogs:                // jump here to quit, will restore state for each mode
+#ifdef RVTEST_ENAB_INSTRET_CNT
+     csrr  x15, CSR_MINSTRET
+     csrr  x14, CSR_MSCRATCH
+     LREG  x13, tramp_sz+4*8(x14)       // initial instret point stored here
+     sub   x15, x15, x13                // calc instret delta
+     SREG  x13, tramp_sz+4*8(x14)       //put it back in the signature
+#endif
 
 //restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
 #ifdef rvtest_mtrap_routine
@@ -1923,13 +2008,9 @@ abort_tests:
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
 
 exit_cleanup:                   // *** RVMODEL_HALT MUST follow this***, then data
-
+//RVMODEL_HALT
   .option pop
 .endm                           // end of RVTEST_CODE_END
-
-/************************************************************************************/
-/**** RVTEST_CODE_END macros must fall thru or jump to an RVMODEL_HALT macro here ***/
-/************************************************************************************/
 
 /*===================================data section starts here========================*/
 
@@ -1962,28 +2043,87 @@ rvtest_data_begin:
 .endm
 
 /************************************************************************************/
+/*            ----------------> test data inserted here <----------------           */
+/************************************************************************************/
+
+/************************************************************************************/
 /**************** RVTEST_DATA_END macro; defines global label rvtest_data_end    ****/
 /************************************************************************************/
 .macro RVTEST_DATA_END
 .global rvtest_data_end
- #ifndef rvtest_mtrap_routine
-  mtrap_sigptr:
-    .fill 2,4,0xdeadbeef
- #endif
 
 /**** create identity mapped page tables here if mmu is present ****/
 .align 12
 
 #ifndef RVTEST_NO_IDENTY_MAP
   #ifdef rvtest_strap_routine
+//this is a valid global pte entry w/ all permissions. IF at root level, it forms an identity map.
     rvtest_Sroot_pg_tbl:
-      RVTEST_PTE_IDENT_MAP
-
+    RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+        
     #ifdef rvtest_vtrap_routine
-    rvtest_Vroot_pg_tbl:
-      RVTEST_PTE_IDENT_MAP
+      rvtest_Vroot_pg_tbl: 
+      RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
     #endif
   #endif
 #endif
 rvtest_data_end:
+.endm
+
+/********************* REQUIRED FOR NEW TESTS *************************/
+/**** new macro encapsulating RVMODEL_DATA_BEGIN (signature area)  ****/
+/**** defining rvtest_sig_begin: label to enabling direct stores   ****/
+/**** into the signature area to be properly relocated             ****/
+/**********************************************************************/
+.macro RVTEST_SIG_BEGIN
+.global rvtest_sig_begin        /* defines beginning of signature area */
+    RVMODEL_DATA_BEGIN          /* model specific stuff                */
+sig_begin_canary:
+CANARY
+rvtest_sig_begin:
+.endm
+
+// Tests allocate normal signature space here, then define
+// the mtrap_sigptr: label to separate normal and trap
+// signature space, then allocate trap signature space
+
+/********************* REQUIRED FOR NEW TESTS *************************/
+/**** new macro defining start of trap signature area              ****/
+/**** defining rvtest_sig_end: label to enabling direct stores     ****/
+/**** into the signature area to be properLY relocated             ****/
+/**********************************************************************/
+//.macro RVTEST_TSIG_BEGIN
+.macro RVTEST_SIG_END
+.global rvtest_tsig_begin     /* defines beginning of trap sig area   */
+
+tsig_begin_canary:
+   CANARY
+mtrap_sigptr:
+  #ifndef rvtest_mtrap_routine /* install dummy or dflt trap sig area */
+    .fill  3*(XLEN/32),4,0xdeadbeef
+  #else 
+    .fill 64*(XLEN/32),4,0xdeadbeef
+  #endif
+tsig_end_canary:
+   CANARY
+//.endm
+
+/********************* REQUIRED FOR NEW TESTS *************************/
+/**** new macro encapsulating RVMODEL_SIG_END (signature area)     ****/
+/**** defining rvtest_sig_end: label to enabling direct stores     ****/
+/**** into the signature area to be properLY relocated             ****/
+/**********************************************************************/
+//.macro RVTEST_SIG_END
+.global rvtest_sig_end  /* defines beginning of trap sig area         */
+
+#ifdef rvtest_gpr_save
+gpr_save:
+  .fill 32*(XLEN/32),4,0xdeadbeef
+#endif
+
+sig_end_canary:
+  CANARY
+  CANARY                /* add one extra word of guardband            */
+rvtest_sig_end:
+RVMODEL_DATA_END        /* model specific stuff                       */
 .endm

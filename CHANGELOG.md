@@ -44,6 +44,119 @@ Add missing check ISA fields in recently modified div and amo tests
 - Add ACTs for Atomic Extension excluding Lr/Sc Instructions.
 - Added Test macro for the execution of atomic instructions.
 
+## [3.7.1] - 2023-07-30
+- Add support for unratified Svadu extension
+
+## [3.8.20] - 2024-05-08
+- Add Zimop extension.
+- 
+## [3.8.19] - 2024-05-08
+- Add support for unratified Svadu extension
+
+## [3.8.18] - 2024-05-08
+- Add Zacas ISA extension support.
+
+## [3.8.17] - 2024-05-03
+- Add Zfa support.
+- 
+## [3.8.16] - 2024-04-26
+- Split rv32i_m/F/fnmadd_b15.S, fnmsub_b15.S, fmadd_b15.S, fmsub_b15.S into multiple smaller tests
+
+## [3.8.15] - 2024-04-20
+Corrected missing 32 string in RVTEST_CASE macros for Zcb rv32i_m/C/clh-01.S
+	
+## [3.8.14] - 2024-04-16
+Add missing `Zfh` ISA in RVTEST_CASE for `Zfh` fdiv related tests
+
+## [3.8.13] - 2024-04-13
+- Fixed missing `F` and `Zfh` ISA identifiers in `Zfh/flh-align-01` RVTEST_CASE macro.
+
+
+## [3.8.12] - 2024-03-26
+Corrected missing RV64 strings in RVTEST_CASE macros for Zfh fcvt.h.l and similar tests
+
+## [3.8.11] - 2024-03-26
+- Added test suites for Zfh extensions.
+- Introduced half word and half width in Nan boxing functionality to accomdate Zfh extensions.
+- Added test suites for Zfinx extensions.
+
+## [3.8.10] -- 2024-03-24
+- Updated TEST_JALR_OP in test_macros.h
+- The macro no longer works when rd = x0 in versions of GCC newer than 2023.12.20
+- riscof throws a message /home/jstine/cvw/addins/riscv-arch-test/riscv-test-suite/rv32i_m/I/src/jalr-01.S:72: Error: illegal operands `la x0,5b'
+- The TEST_JALR_OP  macro invokes LA, which does not like x0 as an operand
+- replacing LA(rd, 5b) with auipc rd, 0 in test_macros.h solves the compiler issue and produces similar code but without a bunch of preceeding nops
+
+
+## [3.8.9] -- 2024-01-12
+- Fixed Check ISA fields to include 32/64 in Zicond tests.  Note that the riscv-ctg CGFs have not been updated.
+
+## [3.8.8] -- 2024-01-04
+- Fixed macros to allow assembling tests with LLVM.
+
+## [3.8.7] -- 2024-01-02
+- Update satp initialization macro
+
+## [3.8.6] -- 2023-12-24
+- Fixed check ISA fields to include 32/64 in Zca and CMO tests.  Note that the riscv-ctg CGFs have not been updated.
+- Fixed check ISA fields in rv32e_m/B/src/ror-01 and rori-01 that listed I instead of E. Again, CGF has not been updated.
+
+## [3.8.5] -- 2023-12-23
+- Renamed rv32e_unratified to rv32e_m because the E extension has been ratified January 2023
+- Copied missing ebreak.S and ecall.S tests from rv32i_m/privilege to rv32e_m/privilege and update ISA for E
+
+## [3.8.3] - 2023-11-30
+- Add Zicond ISA extension support
+
+## [3.8.4] - 2023-11-30
+
+- Added test suites for `zcb` from code size reduction extension.
+- Added test macro for instructions with single operand.
+
+## [3.8.2.3] -- 2013-11-19
+-Fixed typo in regex in 3.8.2.2
+
+## [3.8.2.2] -- 2013-11-17
+- Restored *RV32 Check ISA attributes to RV32IM test cases where they were dropped in 3.8.2. Missed these on 3.8.2.1.
+
+## [3.8.2.1] -- 2013-11-15
+- Restored *RV64 Check ISA attributes to RV64IM test cases where they were dropped in 3.8.2.  Similar to 3.7.5
+
+## [3.8.2] - 2023-11-14
+- Added "most negative number divided by -1" case for RV64IM and RV32IM in remw, divw, div and rem tests
+
+## [3.8.1] - 2023-11-01
+- Updated trap handler to avoid using mstatush when used for Priv Arch 1.11
+- Updated GOTO_Lower_Mode macro to adjust the save area when switching to Umode.
+
+## [3.8.0] - 2023-10-26
+- Updated trap handler to handle delegated exceptions in S-mode for both bare and virtual modes.
+- Added Hypervisor mode support in Trap handler
+- Updated the save area within the trap handler file.
+- Improved CSR Rename macro for code clarity.
+
+## [3.7.5] - 2023-10-11
+Add missing check ISA fields in recently modified div and amo tests
+
+## [3.7.4] - 2023-10-04
+- Fix typos in CONTRIBUTION.md
+
+## [3.7.3] - 2023-09-29
+- Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
+- Added tests for resolving missing coverage issue of harcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+## [3.7.2] - 2023-08-16
+- Added RV32E_Privilege,RV32E_B and RV32E_Fencei tests with cgf files
+
+## [3.7.2] - 2023-09-27
+- Modified macros to allow assembling tests with LLVM 18+
+
+## [3.7.1] - 2023-08-03
+- Add ACTs for Atomic Extension excluding Lr/Sc Instructions.
+- Added Test macro for the execution of atomic instructions.
+
+## [3.7.1] - 2023-07-30
+- Add support for unratified Svadu extension
+
 ## [3.7.0] - 2023-05-16
 - Updated the LI macro
 - Make Trap handler compatible for RV32E
@@ -62,6 +175,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.1] - 2023-07-22
 - Added test case for division if most negative number by -1
 - Solved the [issue #300](https://github.com/riscv-non-isa/riscv-arch-test/issues/300)
+
 
 ## [3.7.0] - 2023-05-16
 - Updated the LI macro

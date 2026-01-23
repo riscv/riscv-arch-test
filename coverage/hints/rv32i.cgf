@@ -1,0 +1,397 @@
+
+#coverpoint for fence
+fence:
+  config: 
+    - check ISA:=regex(.*I.*)
+  mnemonics: 
+    fence: 0
+
+
+# coverpoint for add hint
+add:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      add: 0                          # checks for add instruction
+      
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be zero
+
+      
+    op_comb:
+      "mnemonic == 'add'": 0         # opcode is add
+       
+    
+    val_comb:
+      # rs1 + rs2 should not be equal to rd and rd should be zero, this will hit everytime
+      mnemonic == 'add' and (rs1_val + rs2_val) != rd_val and rd_val == 0x0: 0
+
+#coverpoint for addi hint
+addi:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      addi: 0                        # checks for addi instruction
+
+    
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'addi'": 0       # opcode is addi          
+    
+    
+    val_comb:
+      # rs1 + imm should not be equal to rd and rd should be zero, this will hit everytime
+      mnemonic == 'addi' and (rs1_val + imm_val) != rd_val and rd_val == 0x0: 0
+
+
+#coverpoint for and hint
+and:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      and: 0                          # checks for and instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'and'": 0          # opcode should be and
+    
+    
+    val_comb:
+      # rs1 & rs2 should not be equal to rd and rd should be zero, this will hit everytime
+      mnemonic == 'and' and (rs1_val & rs2_val) != rd and rd_val == 0x0: 0
+
+
+# coverpoint for andi hint
+andi:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      andi: 0                         # check for andi instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'andi'": 0         # opcode should be andi
+    
+    val_comb:
+      # rs1 & imm should not be equal to rd and rd should be zero, this will hit everytime
+      mnemonic == 'andi' and (rs1_val & imm_val) != rd and rd_val == 0x0: 0
+
+# coverpoint for auipc hint
+auipc:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      auipc: 0                       # check for auipc instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+
+    op_comb:
+      "mnemonic == 'auipc'": 0       # opcode should be auipc
+
+    val_comb:
+      # the value should not be updated in the rd and rd should be zero, this will hit everytime
+      mnemonic == 'auipc' and rd_val == 0x0: 0
+      
+# coverpoint for lui instruction
+lui:
+    config:                           # specifies the configurations under which this particular covergroup is applicable 
+      - check ISA:=regex(.*I.*Zicsr)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup 
+      lui: 0                        # check for lui instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions 
+      x0: 0                         # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'lui'": 0        # opcode should be lui
+    
+    val_comb:
+      # the value should not be loaded in the rd and rd should be zero, this will hit everytime
+      mnemonic == 'lui' and rd_val == 0x0: 0
+      
+    
+# coverpoint for or hint     
+or:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      or: 0                           # check for or instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'or'": 0           # opcode should be or
+    
+    val_comb:
+      # rs1 | rs2 should not be equal to rd and rd should be 0, this will hit everytime
+      mnemonic == 'or' and (rs1_val | rs2_val) != rd and rd_val == 0x0: 0
+
+# coverpoint for ori hint
+ori:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      ori: 0                          # check for ori instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'ori'": 0          # opcode should be ori
+    
+    val_comb:
+      # rs1 | imm should not be equal to rd and rd should be 0, this will hit everytime
+      mnemonic == 'ori' and (rs1_val | imm_val) != rd and rd_val == 0x0: 0
+
+
+# coverpoint for sll instruction   
+sll:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      sll: 0                          # check for sll instruction
+
+      
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'sll'": 0          # opcode should be sll
+    
+    
+    val_comb:
+       # when the opcode is sll and rd is x0, rd_val should be 0, this will hit everytime
+      mnemonic == 'sll' and rd_val == 0x0: 0      
+
+# coverpoint for slli instrcution
+slli:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      slli: 0                         # check for slli instruction
+
+    
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'slli'": 0        # opcode should be slli for the coverpoint to be tested
+    
+    
+    val_comb:
+      # when the opcode is slli and rd is x0, rd_val should be 0, this will hit everytime
+      mnemonic == 'slli' and rd_val == 0x0: 0
+
+# coverpoint for slt instruction
+slt:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      slt: 0                          # check for slt instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'slt'": 0          # opcode should be slt
+    
+    
+    val_comb:
+      # when the opcode is slt and rd is x0, rd_val should be 0, this will hit everytime
+      mnemonic == 'slt' and rd_val == 0x0: 0
+
+# coverpoint for slti instruction
+slti:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      slti: 0                        # check for slti instruction
+
+    
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'slti'": 0        # opcode should be slti
+    
+    
+    val_comb:
+      # when the opcode is slti and rd is x0, rd_val should be 0, this will hit everytime
+      mnemonic == 'slti' and rd_val == 0x0: 0
+
+# coverpoint for xor instruction
+xor:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      xor: 0                          # check for xor instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'xor'": 0          # opcode should be xor
+    
+    val_comb:
+      # rs1 ^ rs2 should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'xor' and (rs1_val ^ rs2_val) != rd and rd_val == 0x0: 0
+
+# coverpoint for xori instruction
+xori:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      xori: 0                         # check for xori instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'xori'": 0         # opcode should be xori
+    
+    val_comb:
+      # rs1 ^ imm should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'xori' and (rs1_val ^ imm_val) != rd and rd_val == 0x0: 0
+
+# coverpoint for sub instruction
+sub:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      sub: 0                          # check for sub instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'sub'": 0         # check for sub opcode
+    
+    
+    val_comb:
+      # # rs1 - rs2 should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'sub' and (rs1_val - rs2_val) != rd and rd_val == 0x0: 0
+
+# coverpoint for srl instruction
+srl:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      srl: 0                          # check for srl instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'srl'": 0          # opcode should be srl
+    
+    
+    val_comb:
+      # rs1 << rs1 should not be equal to rd, and rd_val should be zero
+      mnemonic == 'srl' and rd_val == 0x0: 0
+
+# coverpoint for srli instruction
+srli:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      srli: 0                        # check for srli instruction
+
+   
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'srli'": 0        # opcode should be srli
+    
+    
+    val_comb:
+      # rs1 << imm should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'srli' and rd_val == 0x0: 0
+
+# coverpoint for sra instruction
+sra:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      sra: 0                          # check for sra instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'sra'": 0          # opcode should be sra
+    
+    
+    val_comb:
+      # rs1 >> rs2 should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'sra' and rd_val == 0x0: 0
+
+# coverpoint for srai instruction
+srai:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      srai: 0                         # check for srai instruction
+
+   
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'srai'": 0         # opcode should be srai
+    
+    
+    val_comb:
+      # rs1 >> imm should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'srai' and rd_val == 0x0: 0
+
+# coveproint for sltu instruction
+sltu:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      sltu: 0                         # check for sltu instruction
+
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                          # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'sltu'": 0        # opcode should be sltu
+    
+    
+    val_comb:
+      # rs1 < rs2 should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'sltu' and rd_val == 0x0: 0
+
+# coverpoint for sltiu instruction
+sltiu:
+    config:                           # specifies the configurations under which this particular covergroup is applicable
+      - check ISA:=regex(.*I.*Zicsr.*)
+    mnemonics:                        # describes the mnemonics coverpoints necessary for the covergroup
+      sltiu: 0                        # check for sltiu instruction
+
+   
+    rd:                               # describes the register coverpoints for the rd field in instructions
+      x0: 0                           # rd should be x0
+      
+    op_comb:
+      "mnemonic == 'sltiu'": 0       # opcode should be sltiu
+ 
+    
+    val_comb:
+      # rs1 < imm should not be euqal to rd, rd should be zero, this will hit everytime
+      mnemonic == 'sltiu' and rd_val == 0x0: 0
+      
+
+
+
+
+

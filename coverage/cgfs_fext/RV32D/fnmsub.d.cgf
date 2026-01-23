@@ -1,0 +1,248 @@
+# For Licence details look at https://gitlab.com/incoresemi/riscv-compliance/riscv_ctg/-/blob/master/LICENSE.incore
+
+fnmsub.d_b1:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b1(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b2:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b2(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b3:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b3(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b4:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b4(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b5:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b5(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b6:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b6(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b7:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b7(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b8:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b8(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b14:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b14(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b15:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b15(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b16:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b16(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b17:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b17(flen,64, "fnmsub.d", 3)': 0
+        
+fnmsub.d_b18:
+    config: 
+      - check ISA:=regex(.*I.*D.*)
+    mnemonics: 
+      fnmsub.d: 0
+    rs1: 
+      <<: *all_fregs
+    rs2:
+      <<: *all_fregs
+    rs3:
+      <<: *all_fregs
+    rd: 
+      <<: *all_fregs
+    op_comb: 
+      <<: *r4fmt_op_comb
+    val_comb:
+      abstract_comb:
+        'ibm_b18(flen,64, "fnmsub.d", 3)': 0

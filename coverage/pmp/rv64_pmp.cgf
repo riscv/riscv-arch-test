@@ -210,8 +210,8 @@ PMP_access_permission:
     "{csrrs, csrrw}" : 0
   csr_comb:
     #Check successful update for pmpcfg in M Mode
-    mode == 'M' and (((old("pmpcfg{0 , 2}") ^ (pmpcfg$1)) != 0x00) and pmpcfg$1 != 0x0): 0              #pmpcfg successfully updated in M mode
+    mode == 'M' and (((old_csr_val("pmpcfg{0 , 2}") ^ (pmpcfg$1)) != 0x00) and pmpcfg$1 != 0x0): 0              #pmpcfg successfully updated in M mode
     #Check successful update for pmpaddr in M Mode
-    mode == 'M' and (((old("pmpaddr{0 ... 15}") ^ (pmpaddr$1)) != 0x00) and pmpaddr$1 != 0x0): 0        #pmpaddr successfully updated in M mode
+    mode == 'M' and (((old_csr_val("pmpaddr{0 ... 15}") ^ (pmpaddr$1)) != 0x00) and pmpaddr$1 != 0x0): 0        #pmpaddr successfully updated in M mode
     #Check for fault for pmpcfg, pmpaddr in S, U Mode
     mode == {'S', 'U'} and mcause == ${CAUSE_ILLEGAL_INSTRUCTION}: 0 #check for illegal instruction fault

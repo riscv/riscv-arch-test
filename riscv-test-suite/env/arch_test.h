@@ -320,6 +320,7 @@
 #define MPRV_LSB  17    //bit pos of LSB of the mstatus.MPRV field
 #define MPV_LSB    7    // bit pos of prev vmod mstatush.MPV in either mstatush or mstatus upper
 #define MPP_SMODE (1<<MPP_LSB)
+#define MPP_MMODE (3<<MPP_LSB)
 //define sizes
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 5) * 4)     // 5 is added ops before common entry pt
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
@@ -515,6 +516,15 @@
 .endm
 /* init regs, to ensure you catch any errors */
 .macro RVTEST_INIT_GPRS
+    #ifdef rvtest_mtrap_routine
+     LI  (x1, 0)
+     // Initialising CSR registers (mpec, mtval, mstatus, mip)
+     csrw  CSR_MSTATUS,    x1
+     csrw  CSR_MEPC,       x1
+     csrw  CSR_MIP,        x1
+     csrw  CSR_MTVAL,      x1
+     csrw  CSR_MCAUSE,     x1
+    #endif
    #ifndef RVTEST_E
      LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
      DBLSHIFT7 x17, x16
@@ -813,12 +823,14 @@
 .endm
 
 
-/**** This is a helper macro that causes harts to transition from    ****/
-/**** M-mode to a lower priv mode at the instruction that follows    ****/
-/**** the macro invocation. Legal params are VS,HS,VU,HU,S,U.        ****/
-/****  This uses T1,T2&T4. The H,U variations leave V unchanged.     ****/
-/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE ****/
-/**** FIXME - SATP & VSATP must point to the identity map page table ****/
+/**** This is a helper macro that causes harts to transition from               ****/
+/**** M-mode to a lower priv mode at the instruction that follows               ****/
+/**** the macro invocation. Legal params are VSmode,HSmode,VUmode,              ****/
+/**** HUmode,Smode & Umode.                                                     ****/
+/**** This macro will stay in Mmode, if requested lower mode doesn't exist.     ****/
+/****  This uses T1,T2&T4. The H,U variations leave V unchanged.                ****/
+/**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE            ****/
+/**** FIXME - SATP & VSATP must point to the identity map page table            ****/
 
 #define HSmode  0x9
 #define HUmode  0x8
@@ -842,15 +854,22 @@
 
   LI(    T4, MSTATUS_MPP)
   csrc   CSR_MSTATUS, T4                /* clr PP always                */
-
   .if    ((\LMODE\()==VSmode) || (\LMODE\()==HSmode) || (\LMODE\()==Smode))
+#ifdef rvtest_strap_routine
     LI(  T4, MPP_SMODE)                 /* val for Smode                */
+#else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+#endif
     csrs CSR_MSTATUS, T4                /* set in PP                    */
   .endif
         // do the same if XLEN=64
 #else                           /* XLEN=64, maybe 128? FIXME for 128    */
   .if ((\LMODE\()==Smode) || (\LMODE\()==Umode)) /* lv V unchanged here  */
-    LI(  T4,  MSTATUS_MPP)      /* but always clear PP                  */
+  #ifdef rvtest_strap_routine
+    LI(  T4, MPP_SMODE)                 /* val for Smode                */
+  #else
+    LI(  T4, MPP_MMODE)                 /* val for no Smode             */
+  #endif
   .else
     LI(  T4, (MSTATUS_MPP | MSTATUS_MPV))       /* clr V and P          */
   .endif
@@ -860,7 +879,11 @@
     .if      (\LMODE\()==VSmode)
       LI(  T4, (MPP_SMODE | MSTATUS_MPV)) /* val for pp & v             */
     .elseif ((\LMODE\()==HSmode) || (\LMODE\()==Smode))
-      LI(  T4, (MPP_SMODE))     /* val for pp only                      */
+    #ifdef rvtest_strap_routine
+       LI(  T4, MPP_SMODE)                 /* val for Smode             */
+    #else
+       LI(  T4, MPP_MMODE)                 /* val for no Smode          */
+    #endif
     .else                       /* only VU left; set MPV only           */
       li   T4, 1                /* optimize for single bit              */
       slli T4, T4, 32+MPV_LSB   /* val for v only                       */
@@ -1417,11 +1440,25 @@ adj_\__MODE__\()epc:
 sv_\__MODE__\()epc:
         SREG    T3, 2*REGWIDTH(T1)      // save 3rd sig value, (rel mepc) into trap sig area
 
+#ifdef SKIP_MEPC
+        LI (T6, 0xACCE)                         // A Constant value to compare if x1 has this value
+        bne x3, T6, adj_\__MODE__\()epc_rtn     // If not called from macro, then skip
+        csrr T3, CSR_XCAUSE                     // Read xcause to check trap type
+        LI (T6, CAUSE_FETCH_PAGE_FAULT)         // Exception code, CAUSE_FETCH_PAGE_FAULT = 0xC
+        beq     T3, T6, 1f                      // If Fetch Page Fault, go to label 1
+        LI (T6, CAUSE_FETCH_ACCESS)             // CAUSE_FETCH_ACCESS = 0x1        
+        bne T3, T6, adj_\__MODE__\()epc_rtn     // Skip if it's not Fetch Page Fault
+1:      csrw    CSR_XEPC, x4                    // Assign xpec with the return label
+        j skp_adj_\__MODE__\()epc
+#endif
+
+
 adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of padding after op
         andi    T6, T2, ~WDBYTMSK       // adjust mepc to prev 4B alignment (if 2B aligned)
         addi    T6, T6,  2*WDBYTSZ         // adjust mepc so it skips past op, has padding & 4B aligned
         csrw    CSR_XEPC, T6            // restore adjusted value, w/ 2,4 or 6B of padding
 
+skp_adj_\__MODE__\()epc:
   /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
         for 64b insts,  2B or 4B of padding   ****/
 

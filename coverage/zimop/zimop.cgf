@@ -164,10 +164,10 @@ mop.r.0:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.1:
     config:
@@ -181,10 +181,10 @@ mop.r.1:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.2:
     config:
@@ -198,10 +198,10 @@ mop.r.2:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.3:
     config:
@@ -215,10 +215,10 @@ mop.r.3:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.4:
     config:
@@ -232,10 +232,10 @@ mop.r.4:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.5:
     config:
@@ -249,10 +249,10 @@ mop.r.5:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.6:
     config:
@@ -266,10 +266,10 @@ mop.r.6:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.7:
     config:
@@ -283,10 +283,10 @@ mop.r.7:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.8:
     config:
@@ -300,10 +300,10 @@ mop.r.8:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.9:
     config:
@@ -317,10 +317,10 @@ mop.r.9:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.10:
     config:
@@ -334,10 +334,10 @@ mop.r.10:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.11:
     config:
@@ -351,10 +351,10 @@ mop.r.11:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.12:
     config:
@@ -368,10 +368,10 @@ mop.r.12:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.13:
     config:
@@ -385,10 +385,10 @@ mop.r.13:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.14:
     config:
@@ -402,10 +402,10 @@ mop.r.14:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.15:
     config:
@@ -419,10 +419,10 @@ mop.r.15:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.16:
     config:
@@ -436,10 +436,10 @@ mop.r.16:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.17:
     config:
@@ -453,10 +453,10 @@ mop.r.17:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.18:
     config:
@@ -470,10 +470,10 @@ mop.r.18:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.19:
     config:
@@ -487,10 +487,10 @@ mop.r.19:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.20:
     config:
@@ -504,10 +504,10 @@ mop.r.20:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.21:
     config:
@@ -521,10 +521,10 @@ mop.r.21:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.22:
     config:
@@ -538,10 +538,10 @@ mop.r.22:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.23:
     config:
@@ -555,10 +555,10 @@ mop.r.23:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.24:
     config:
@@ -572,10 +572,10 @@ mop.r.24:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.25:
     config:
@@ -589,10 +589,10 @@ mop.r.25:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.26:
     config:
@@ -606,10 +606,10 @@ mop.r.26:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.27:
     config:
@@ -623,10 +623,10 @@ mop.r.27:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.28:
     config:
@@ -640,10 +640,10 @@ mop.r.28:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.29:
     config:
@@ -657,10 +657,10 @@ mop.r.29:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.30:
     config:
@@ -674,10 +674,10 @@ mop.r.30:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking
 
 mop.r.31:
     config:
@@ -691,7 +691,7 @@ mop.r.31:
     op_comb:
       <<: *ifmt_op_comb
     val_comb:
-      <<: [ *ifmt_val_comb_sgn, *base_rs1val_sgn, *ifmt_base_immval_sgn]
+      <<: *base_rs1val_sgn
     abstract_comb:
-      'sp_dataset(xlen,["rs1_val",("imm_val",12)])': 0
-      <<: [*rs1val_walking, *ifmt_immval_walking]
+      'sp_dataset(xlen,["rs1_val"])': 0
+      <<: *rs1val_walking

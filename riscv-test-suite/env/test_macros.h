@@ -1479,6 +1479,168 @@ ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
     sub x1,x1,tempreg			;\
     RVTEST_SIGUPD(swreg,x1,offset) 
 
+// Test landing pads
+//  First test invokes following conditions
+//  - rs1=x1/x5/x7        -> no lpad - no trap expected
+//  - rs1=x10,x7=$immval+1-> lpad $immval - label mismatch trap
+//  - rs1=x2,x7=$immval   -> lpad $0 - no trap expected
+//  - rs1=x4,x7=$immval   -> misaligned lpad $immval trap
+//  - rs1=x5,x7=$immval   -> no lpad - no lpad trap
+// All tests invoke this condition
+//  - rs1=x3,x7=$immval   -> lpad $immval - label match
+#define lpad(label)   auipc x0, label
+#define TEST_LPAD(tempreg, swreg, offset, immval) \
+.align 2                    ;\
+.option push                ;\
+.option norvc               ;\
+    li tempreg, offset      ;\
+    bne tempreg, x0, 9f     ;\
+                            ;\
+    la x1, 2f               ;\
+    jalr x1, (x1)           ;\
+2:  nop                     ;\
+                            ;\
+    la x5, 3f               ;\
+    jalr x5, (x5)           ;\
+3:  nop                     ;\
+                            ;\
+    la x7, 4f		        ;\
+    jalr x7, (x7)           ;\
+4:  mv x9, x7               ;\
+                            ;\
+    lui x7, immval          ;\
+    la x10, 5f		        ;\
+    jalr x10, (x10)         ;\
+5:  lpad(immval ^ 1)        ;\
+    lpad(immval)            ;\
+    lpad(immval)            ;\
+                            ;\
+    lui x7, immval          ;\
+    la x2, 6f               ;\
+    jalr x2, (x2)           ;\
+6:  lpad(0)                 ;\
+                            ;\
+    lui x7, immval          ;\
+    la x4, 7f               ;\
+    jalr x4, (x4)           ;\
+.option rvc                 ;\
+    c.nop                   ;\
+.option norvc               ;\
+7:  lpad(immval)            ;\
+.option rvc                 ;\
+    c.nop                   ;\
+.option norvc               ;\
+    lpad(immval)            ;\
+    lpad(immval)            ;\
+                            ;\
+    lui x7, immval          ;\
+    la x12, 8f              ;\
+    jalr x12, (x12)         ;\
+8:  jalr x12, (x12)         ;\
+    lpad(immval)            ;\
+    lpad(immval)            ;\
+                            ;\
+9:                          ;\
+    lui x7, immval          ;\
+    la x3, 10f              ;\
+    jalr x3, (x3)           ;\
+10: lpad(immval)            ;\
+.option pop
+
+#define LPAD_SIGUPD(swreg, offset) \
+    add x1, x1, x2                              ;\
+    add x1, x1, x3                              ;\
+    add x1, x1, x4                              ;\
+    add x1, x1, x5                              ;\
+    add x1, x1, x6                              ;\
+    add x1, x1, x9                              ;\
+    add x1, x1, x10                             ;\
+    add x1, x1, x11                             ;\
+    add x1, x1, x12                             ;\
+    RVTEST_SIGUPD(x30, x1, offset)              ;\
+    mv swreg, x30
+
+
+#define TEST_LPAD_MMODE(tempreg, swreg, offset, immval) \
+    mv x30, swreg                               ;\
+                                                ;\
+    la x6, 1f                                   ;\
+    jalr x6, (x6)                               ;\
+1:                                              ;\
+    li x1, MSECCFG_MLPE                         ;\
+    csrr x2, CSR_MSECCFG                        ;\
+    or x2, x2, x1                               ;\
+    csrw CSR_MSECCFG, x2                        ;\
+                                                ;\
+    TEST_LPAD(tempreg, swreg, offset, immval)   ;\
+                                                ;\
+    li x11, MSECCFG_MLPE                        ;\
+    csrr x12, CSR_MSECCFG                       ;\
+    xor x11, x12, x11                           ;\
+    csrw CSR_MSECCFG, x11                       ;\
+                                                ;\
+    LPAD_SIGUPD(swreg, offset)
+
+#define TEST_LPAD_SMODE(tempreg, swreg, offset, immval) \
+    mv x30, swreg                               ;\
+                                                ;\
+    RVTEST_GOTO_LOWER_MODE Smode                ;\
+                                                ;\
+    la x6, 1f                                   ;\
+    jalr x6, (x6)                               ;\
+1:                                              ;\
+    RVTEST_GOTO_MMODE                           ;\
+    nop                                         ;\
+                                                ;\
+    li x1, MENVCFG_LPE                          ;\
+    csrr x2, CSR_MENVCFG                        ;\
+    or x2, x2, x1                               ;\
+    csrw CSR_MENVCFG, x2                        ;\
+                                                ;\
+    RVTEST_GOTO_LOWER_MODE Smode                ;\
+                                                ;\
+    TEST_LPAD(tempreg, swreg, offset, immval)   ;\
+                                                ;\
+    RVTEST_GOTO_MMODE                           ;\
+    nop                                         ;\
+                                                ;\
+    li x1, MENVCFG_LPE                          ;\
+    csrr x2, CSR_MENVCFG                        ;\
+    xor x2, x2, x1                              ;\
+    csrw CSR_MENVCFG, x2                        ;\
+                                                ;\
+    LPAD_SIGUPD(swreg, offset)
+
+#define TEST_LPAD_UMODE(tempreg, swreg, offset, immval) \
+    mv x30, swreg                               ;\
+                                                ;\
+    RVTEST_GOTO_LOWER_MODE Umode                ;\
+                                                ;\
+    la x6, 1f                                   ;\
+    jalr x6, (x6)                               ;\
+1:                                              ;\
+    RVTEST_GOTO_MMODE                           ;\
+    nop                                         ;\
+                                                ;\
+    li x1, SENVCFG_LPE                          ;\
+    csrr x2, CSR_SENVCFG                        ;\
+    or x2, x2, x1                               ;\
+    csrw CSR_SENVCFG, x2                        ;\
+                                                ;\
+    RVTEST_GOTO_LOWER_MODE Umode                ;\
+                                                ;\
+    TEST_LPAD(tempreg, swreg, offset, immval)   ;\
+                                                ;\
+    RVTEST_GOTO_MMODE                           ;\
+    nop                                         ;\
+                                                ;\
+    li x1, SENVCFG_LPE                          ;\
+    csrr x2, CSR_SENVCFG                        ;\
+    xor x2, x2, x1                              ;\
+    csrw CSR_SENVCFG, x2                        ;\
+                                                ;\
+    LPAD_SIGUPD(swreg, offset)
+
 
 // for updating signatures of Zacas paired destination register (RV32/RV64).
 #define RVTEST_SIGUPD_PZACAS(_BR,_R1,_R2,...)		;\

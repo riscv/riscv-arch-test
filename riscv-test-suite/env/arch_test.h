@@ -1189,6 +1189,7 @@ common_\__MODE__\()handler:                     // enter with vector addr in T6 
         jr      T5                              // needed if trampoline gets moved elsewhere, else it's effectively a noop
 
 common_\__MODE__\()entry:
+        auipc   x0, 0                           // Zicfilp: landing pad
         SREG    T4, trap_sv_off+4*REGWIDTH(sp)  //x29
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  //x28
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  //x7

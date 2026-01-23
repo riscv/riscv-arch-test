@@ -232,50 +232,99 @@ Mend_PMP:                                    ;\
     .endif                                                        ;\
     PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
 
-#define PTE_SETUP_SV39(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
-    .if (level==2)                                                ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==1)                                                ;\
-        LA(_TR1, rvtest_slvl2_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==0)                                                ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
-    .endif                                                        ;\
-    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+#define PTE_SETUP_SV39(_PAR, _PR, _TR0, _TR1, VA, level)                                     \
+    srli _PAR, _PAR, 12                 /* Shift PA right by 12 to get PPN */               ;\
+    slli _PAR, _PAR, 10                 /* Shift left by 10 to align PPN in PTE format */   ;\
+    or _PAR, _PAR, _PR                  /* Combine PPN with permissions */                  ;\
+    .if (level==2)                      /* Level 2 (1GB superpage) */                       ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>30)&0x1FF)<<3)   /* Calculate index for LEVEL2 (bits 38:30) */       ;\
+    .endif                                                                                  ;\
+    .if (level==1)                      /* Level 1 (2MB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl2_pg_tbl)   /* Load level 2 page table address */               ;\
+        LI(_TR0, ((VA>>21)&0x1FF)<<3)   /* Calculate index for LEVEL1 (bits 29:21) */       ;\
+    .endif                                                                                  ;\
+    .if (level==0)                      /* Level 0 (4KB page) */                            ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)   /* Load level 1 page table address */               ;\
+        LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
+    .endif                                                                                  ;\
+    add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
+    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
 
-#define PTE_SETUP_SV48(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
-    .if (level==3)                                                ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==2)                                                ;\
-        LA(_TR1, rvtest_slvl3_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==1)                                                ;\
-        LA(_TR1, rvtest_slvl2_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==0)                                                ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
-    .endif                                                        ;\
-    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+// More Robust version of PTE_SETUP_SV39 to setup a PTE for a PA using VA
+// in a single line.
+// args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
+// args: VA: Virtual Address in hex, level: Level to store at (0, 1, or 2)
+#define PTE_SETUP_RV39_New(PA_LBL, PERMS, VA, level)                                         \
+    LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
+    LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
+    PTE_SETUP_SV39(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV39 macro */             ;\
 
-#define PTE_SETUP_SV57(_PAR, _PR, _TR0, _TR1, _VAR, level)  	  ;\
-    .if (level==4)                                                ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==3)                                                ;\
-        LA(_TR1, rvtest_slvl4_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==2)                                                ;\
-        LA(_TR1, rvtest_slvl3_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==1)                                                ;\
-        LA(_TR1, rvtest_slvl2_pg_tbl)                             ;\
-    .endif                                                        ;\
-    .if (level==0)                                                ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                             ;\
-    .endif                                                        ;\
-    PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)
+#define PTE_SETUP_SV48(_PAR, _PR, _TR0, _TR1, VA, level)                                    ;\
+    srli _PAR, _PAR, 12                 /* Shift PA right by 12 to get PPN */               ;\
+    slli _PAR, _PAR, 10                 /* Shift left by 10 to align PPN in PTE format */   ;\
+    or _PAR, _PAR, _PR                  /* Combine PPN with permissions */                  ;\
+    .if (level==3)                      /* Level 3 (512GB superpage) */                     ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>39)&0x1FF)<<3)   /* Calculate index for LEVEL3 (bits 47:39) */       ;\
+    .endif                                                                                  ;\
+    .if (level==2)                      /* Level 2 (1GB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl3_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>30)&0x1FF)<<3)   /* Calculate index for LEVEL2 (bits 38:30) */       ;\
+    .endif                                                                                  ;\
+    .if (level==1)                      /* Level 1 (2MB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl2_pg_tbl)   /* Load level 2 page table address */               ;\
+        LI(_TR0, ((VA>>21)&0x1FF)<<3)   /* Calculate index for LEVEL1 (bits 29:21) */       ;\
+    .endif                                                                                  ;\
+    .if (level==0)                      /* Level 0 (4KB page) */                            ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)   /* Load level 1 page table address */               ;\
+        LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
+    .endif                                                                                  ;\
+    add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
+    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+
+// More Robust version of PTE_SETUP_SV48 to setup a PTE for a PA using VA in a single line.
+// args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
+// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2 or 3)
+#define PTE_SETUP_SV48_New(PA_LBL, PERMS, VA, level)                                        ;\
+    LA(a0, PA_LBL)                              /* Load physical address label into a0 */   ;\
+    LI(a1, PERMS)                               /* Load permissions into a1 */              ;\
+    PTE_SETUP_SV48(a0, a1, t0, t1, VA, level)   /* Call PTE_SETUP_SV48 macro */             ;\
+
+#define PTE_SETUP_SV57(_PAR, _PR, _TR0, _TR1, VA, level)                                    ;\
+    srli _PAR, _PAR, 12                 /* Shift PA right by 12 to get PPN */               ;\
+    slli _PAR, _PAR, 10                 /* Shift left by 10 to align PPN in PTE format */   ;\
+    or _PAR, _PAR, _PR                  /* Combine PPN with permissions */                  ;\
+    .if (level==4)                      /* Level 4 (256TB superpage) */                     ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)   /* Load root page table address */                  ;\
+        LI(_TR0, ((VA>>48)&0x1FF)<<3)   /* Calculate index for LEVEL3 (bits 56:48) */       ;\
+    .endif                                                                                  ;\
+    .if (level==3)                      /* Level 3 (512GB superpage) */                     ;\
+        LA(_TR1, rvtest_slvl4_pg_tbl)   /* Load level 3 page table address */               ;\
+        LI(_TR0, ((VA>>39)&0x1FF)<<3)   /* Calculate index for LEVEL3 (bits 47:39) */       ;\
+    .endif                                                                                  ;\
+    .if (level==2)                      /* Level 2 (1GB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl3_pg_tbl)   /* Load level 2 page table address */               ;\
+        LI(_TR0, ((VA>>30)&0x1FF)<<3)   /* Calculate index for LEVEL2 (bits 38:30) */       ;\
+    .endif                                                                                  ;\
+    .if (level==1)                      /* Level 1 (2MB superpage) */                       ;\
+        LA(_TR1, rvtest_slvl2_pg_tbl)   /* Load level 1 page table address */               ;\
+        LI(_TR0, ((VA>>21)&0x1FF)<<3)   /* Calculate index for LEVEL1 (bits 29:21) */       ;\
+    .endif                                                                                  ;\
+    .if (level==0)                      /* Level 0 (4KB page) */                            ;\
+        LA(_TR1, rvtest_slvl1_pg_tbl)   /* Load level 0 page table address */               ;\
+        LI(_TR0, ((VA>>12)&0x1FF)<<3)   /* Calculate index for LEVEL0 (bits 20:12) */       ;\
+    .endif                                                                                  ;\
+    add _TR1, _TR1, _TR0                /* Add index to page table base */                  ;\
+    SREG _PAR, 0(_TR1)                  /* Store PTE at calculated address */               ;\
+
+// More Robust version of PTE_SETUP_SV57 to setup a PTE for a PA using VA in a single line.
+// args: PA_LBL: Label of Physical Address, PERMS: permissions in hex
+// args: VA: Virtual Address in hex, level: Level to store at (0, 1, 2, 3 or 4)
+#define PTE_SETUP_SV57_New(PA_LBL, PERMS, VA, level)                                        ;\
+    LA(a0, PA_LBL)                                                                          ;\
+    LI(a1, PERMS)                                                                           ;\
+    PTE_SETUP_SV57(a0, a1, t0, t1, VA, level)                                               ;\
 
 
 #define PTE_SETUP_RV64(_PAR, _PR, _TR0, _TR1, VA, level, mode)  ;\
@@ -383,6 +432,49 @@ Mend_PMP:                                    ;\
     or t6, t6, t5                                               ;\
     csrw satp, t6                                               ;
 
+// macro to update the signature region for hints
+#define TEST_STORE_GPRS_AND_STATUS(sigptr)  ;\
+    /* Store all general-purpose registers (x0 to x31) to the signature region */ ;\
+    RVTEST_SIGUPD(sigptr, x1)              /* Store x1 */ ;\
+    RVTEST_SIGUPD(sigptr, x2)              /* Store x2 */ ;\
+    RVTEST_SIGUPD(sigptr, x4)              /* Store x4 */ ;\
+    RVTEST_SIGUPD(sigptr, x5)              /* Store x5 */ ;\
+    RVTEST_SIGUPD(sigptr, x6)              /* Store x6 */ ;\
+    RVTEST_SIGUPD(sigptr, x7)              /* Store x7 */ ;\
+    RVTEST_SIGUPD(sigptr, x8)              /* Store x8 */ ;\
+    RVTEST_SIGUPD(sigptr, x9)              /* Store x9 */ ;\
+    RVTEST_SIGUPD(sigptr, x10)             /* Store x10 */ ;\
+    RVTEST_SIGUPD(sigptr, x11)             /* Store x11 */ ;\
+    RVTEST_SIGUPD(sigptr, x12)             /* Store x12 */ ;\
+    RVTEST_SIGUPD(sigptr, x13)             /* Store x13 */ ;\
+    RVTEST_SIGUPD(sigptr, x14)             /* Store x14 */ ;\
+    RVTEST_SIGUPD(sigptr, x15)             /* Store x15 */ ;\
+    RVTEST_SIGUPD(sigptr, x16)             /* Store x16 */ ;\
+    RVTEST_SIGUPD(sigptr, x17)             /* Store x17 */ ;\
+    RVTEST_SIGUPD(sigptr, x18)             /* Store x18 */ ;\
+    RVTEST_SIGUPD(sigptr, x19)             /* Store x19 */ ;\
+    RVTEST_SIGUPD(sigptr, x20)             /* Store x20 */ ;\
+    RVTEST_SIGUPD(sigptr, x21)             /* Store x21 */ ;\
+    RVTEST_SIGUPD(sigptr, x22)             /* Store x22 */ ;\
+    RVTEST_SIGUPD(sigptr, x23)             /* Store x23 */ ;\
+    RVTEST_SIGUPD(sigptr, x24)             /* Store x24 */ ;\
+    RVTEST_SIGUPD(sigptr, x25)             /* Store x25 */ ;\
+    RVTEST_SIGUPD(sigptr, x26)             /* Store x26 */ ;\
+    RVTEST_SIGUPD(sigptr, x27)             /* Store x27 */ ;\
+    RVTEST_SIGUPD(sigptr, x28)             /* Store x28 */ ;\
+    RVTEST_SIGUPD(sigptr, x29)             /* Store x29 */ ;\
+	#ifdef rvtest_mtrap_routine			;\
+	/* Store the CSR registers */ ;\
+    csrr a0, mepc                          /* Read mepc register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mepc */ ;\
+    csrr a0, mtval                         /* Read mtval register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mtval */ ;\
+    csrr a0, mstatus                       /* Read mstatus register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mstatus */ ;\
+    csrr a0, mip                           /* Read mip register */ ;\
+    RVTEST_SIGUPD(sigptr, a0)              /* Store mip */ ;\
+	#endif
+
 //Tests for atomic memory operation(AMO) instructions
 #define TEST_AMO_OP(inst, destreg, origptr, reg2, origval, updval, sigptr, ...) ;\
       .if NARG(__VA_ARGS__) == 1			;\
@@ -489,6 +581,57 @@ Mend_PMP:                                    ;\
   SREG _R,offset(_BR)					;\
   .set offset,offset+REGWIDTH
 
+/* RVTEST_SIGUPD_CSR(SIG, TMP, CSR)					*/
+/* This macro reads the provided CSR and stores the value in the	*/
+/* signature referenced by SIG using the help of the temporary register	*/
+/* TMP.									*/
+#define RVTEST_SIGUPD_CSR(_SIG, _TMP, _CSR)				;\
+  csrr _TMP, _CSR							;\
+  RVTEST_SIGUPD(_SIG, _TMP)
+
+/* RVTEST_TOOGLE_BITS_IN_CSR(CSR, MASK, TMP1, TMP2)			*/
+/* This macro is used to toogle the set bits of the provided MASK in	*/
+/* the given CSR (read-modify-write) with the help of the temporary	*/
+/* registers TMP1 and TMP2.						*/
+#define RVTEST_TOGGLE_BITS_IN_CSR(_CSR, _MASK, _TMP1, _TMP2)		;\
+  csrr  _TMP1, _CSR							;\
+  LI(_TMP2, _MASK)							;\
+  xor  _TMP1, _TMP1, _TMP2						;\
+  csrw  _CSR, _TMP1
+
+/* RVTEST_CSR_TOGGLE_TEST_CASE(CSR, MASK, TMP1, TMP2, SIG)		*/
+/* This macro is used to toggle the set bits of the provided MASK in	*/
+/* the given CSR (read-modify-write) and store the read-back value of	*/
+/* the CSR in the signature referenced by SIG using the help of the	*/
+/* temporary registers TMP1 and TMP2.					*/
+#define RVTEST_CSR_TOGGLE_TEST_CASE(_CSR, _MASK, _TMP1, _TMP2, _SIG)	;\
+  TOGGLE_BITS_IN_CSR(_CSR, _MASK, _TMP1, _TMP2)				;\
+  RVTEST_SIGUPD_CSR(_CSR, _TMP2, _SIG)
+
+/* RVTEST_CSR_READ_ILLEGAL(CSR, TMP1)					*/
+/* This macro is used to emit CSR read test, which is expected to fail */
+/* with an illegal instruction exception (e.g. because of access	*/
+/* violations).  The code is followed by NOPs to ensure the trap will	*/
+/* will return within this sequence.					*/
+#define RVTEST_CSR_READ_ILLEGAL(_CSR, _TMP1)				;\
+  csrr _CSR, _TMP1							;\
+  nop									;\
+  nop									;\
+  nop									;\
+  nop
+
+/* RVTEST_CSR_WRITE_ILLEGAL(CSR, TMP1)					*/
+/* This macro is used to emit CSR write test, which is expected to fail */
+/* with an illegal instruction exception (e.g. because of access	*/
+/* violations).  The code is followed by NOPs to ensure the trap will	*/
+/* will return within this sequence.					*/
+#define RVTEST_CSR_WRITE_ILLEGAL(_CSR, _TMP1)				;\
+  cswr _CSR, _TMP1							;\
+  nop									;\
+  nop									;\
+  nop									;\
+  nop
+
 /* RVTEST_SIGUPD_F(basereg, sigreg,flagreg,newoff)			 */
 /* This macro is used to store the signature values of (32 & 64) F and D */
 /* teats which use TEST_(FPSR_OP, FPIO_OP, FPRR_OP, FPR4_OP) opcodes	 */
@@ -577,6 +720,25 @@ Mend_PMP:                                    ;\
       .set offset,offset+(REGWIDTH)
 
 
+ /* Stores register into signature region and increment the signature pointer */
+ /* RVTEST_SIGUPD does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE and RVTEST_SIGUPD in the same program */
+ /* RVTEST_SIGWRITE(basereg, sigreg) stores sigreg at 0(basereg) and increments basereg by regwidth	 */
+ #define RVTEST_SIGWRITE(_BR,_R)            ;\
+      SREG _R, 0(_BR)					;\
+      addi _BR, _BR, REGWIDTH 
+
+ /* Stores register into signature region and increment the signature pointer*/
+ /* RVTEST_SIGUPD_F does not properly handle code that jumps over macros due to garbling the offset.*/
+ /* Do not mix RVTEST_SIGWRITE_F and RVTEST_SIGUPD_F in the same program */
+ /* RVTEST_SIGWRITE_F(basereg, sigreg, flagreg) stores sigreg at 0(basereg) and increments basereg by sigalign	 */
+ /* SIGALIGN is set to the max(FREGWIDTH, REGWIDTH)*/
+#define RVTEST_SIGWRITE_F(_BR,_R,_f)        ;\
+      FSREG _R, 0(_BR)					;\
+      SREG _F, SIGALIGN(_BR)					;\
+      addi _BR, _BR, 2*SIGALIGN
+
+
 
   /* DEPRECATE this is redundant with RVTEST_BASEUPD(BR,_NR),	*/
   /* except it doesn't correct for offset overflow while moving */
@@ -599,9 +761,9 @@ Mend_PMP:                                    ;\
 
 #define RVTEST_BASEUPD(_BR,...)				;\
  /* deal with case where offset>=2047 */		;\
-       .set corr 2048-REGWIDTH				;\
+       .set corr, 2048-REGWIDTH				;\
     .if offset <2048 					;\
-       .set corr offset					;\
+       .set corr, offset				;\
     .endif						;\
     .set offset, offset-corr				;\
 							;\
@@ -848,6 +1010,7 @@ ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
       1:				;\
       inst destreg, imm			;\
       sub destreg, destreg, testreg	;\
+      li testreg, 0 ;\
       )
 
 //Tests for instructions with register-immediate operand
@@ -1578,3 +1741,4 @@ ADDI(swreg, swreg, RVMODEL_CBZ_BLOCKSIZE)
 #ifdef RVTEST_IO_CHECK
   #warning "RVTEST_IO_CHECK is deprecated in v0.2.
 #endif
+

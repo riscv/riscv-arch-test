@@ -17,7 +17,7 @@ irrespective of their original size.')
     instr_pattern_c_sail= re.compile(
         '\[\d*\]\s\[(?P<mode>.*?)\]:\s(?P<addr>[0-9xABCDEF]+)\s\((?P<instr>[0-9xABCDEF]+)\)\s*(?P<mnemonic>.*)')
     instr_pattern_c_sail_regt_reg_val = re.compile('(?P<regt>[xf])(?P<reg>[\d]+)\s<-\s(?P<val>[0-9xABCDEF]+)')
-    instr_pattern_c_sail_csr_reg_val = re.compile('(?P<CSR>CSR|clint::tick)\s(?P<reg>[a-z0-9]+)\s<-\s(?P<val>[0-9xABCDEF]+)(?:\s\(input:\s(?P<input_val>[0-9xABCDEF]+)\))?')
+    instr_pattern_c_sail_csr_reg_val = re.compile(r'(?P<CSR>CSR|clint::tick)\s(?P<reg>[a-z0-9]+)\s\((?P<csr_address>0x[0-9A-Fa-f]+)\)\s<-\s(?P<input_val>0x[0-9A-Fa-f]+)')
     instr_pattern_c_sail_mem_val = re.compile('mem\[(?P<addr>[0-9xABCDEF]+)\]\s<-\s(?P<val>[0-9xABCDEF]+)')
     instr_pattern_c_sail_trap = re.compile(r'trapping\sfrom\s(?P<mode_change>\w+\sto\s\w+)\sto\shandle\s(?P<call_type>\w+.*)\shandling\sexc#(?P<exc_num>0x[0-9a-fA-F]+)\sat\spriv\s\w\swith\stval\s(?P<tval>0x[0-9a-fA-F]+)')
     instr_pattern_c_sail_interrupt = re.compile(r'Handling\s(?P<call_type>\w+):\s(?P<intr_num>0x[0-9a-fA-F]+)\shandling\sint#0x[0-9a-fA-F]+\sat\spriv\s\w\swith\stval\s(?P<tval>0x[0-9a-fA-F]+)')

@@ -37,70 +37,70 @@ RVTEST_SIGBASE(x1,signature_x1_1)
 
 inst_0:
 // rs1 == rd, rs1==f14, rd==f14,fs1 == 0 and fe1 == 0x9d and fm1 == 0x7ffffc and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f14; dest:f14; op1val:0x9d00000007ffffc; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f14; dest:f14; op1val:0x4efffffc; valaddr_reg:x3;
 val_offset:0*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f14, f14, 0, 0, x3, 0*FLEN/8, x4, x1, x2)  
 
 inst_1:
 // rs1 != rd, rs1==f5, rd==f9,fs1 == 0 and fe1 == 0x9d and fm1 == 0x7ffffd and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f5; dest:f9; op1val:0x9d00000007ffffd; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f5; dest:f9; op1val:0x4efffffd; valaddr_reg:x3;
 val_offset:1*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f9, f5, 0, 0, x3, 1*FLEN/8, x4, x1, x2)  
 
 inst_2:
 // rs1==f10, rd==f28,fs1 == 0 and fe1 == 0x9d and fm1 == 0x7ffffe and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f10; dest:f28; op1val:0x9d00000007ffffe; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f10; dest:f28; op1val:0x4efffffe; valaddr_reg:x3;
 val_offset:2*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f28, f10, 0, 0, x3, 2*FLEN/8, x4, x1, x2)  
 
 inst_3:
 // rs1==f3, rd==f22,fs1 == 0 and fe1 == 0x9d and fm1 == 0x7fffff and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f3; dest:f22; op1val:0x9d00000007fffff; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f3; dest:f22; op1val:0x4effffff; valaddr_reg:x3;
 val_offset:3*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f22, f3, 0, 0, x3, 3*FLEN/8, x4, x1, x2)  
 
 inst_4:
 // rs1==f30, rd==f24,fs1 == 0 and fe1 == 0x9e and fm1 == 0x000000 and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f30; dest:f24; op1val:0x9e0000000000000; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f30; dest:f24; op1val:0x4f000000; valaddr_reg:x3;
 val_offset:4*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f24, f30, 0, 0, x3, 4*FLEN/8, x4, x1, x2)  
 
 inst_5:
 // rs1==f18, rd==f30,fs1 == 0 and fe1 == 0x9e and fm1 == 0x000001 and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f18; dest:f30; op1val:0x9e0000000000001; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f18; dest:f30; op1val:0x4f000001; valaddr_reg:x3;
 val_offset:5*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f30, f18, 0, 0, x3, 5*FLEN/8, x4, x1, x2)  
 
 inst_6:
 // rs1==f29, rd==f2,fs1 == 0 and fe1 == 0x9e and fm1 == 0x000002 and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f29; dest:f2; op1val:0x9e0000000000002; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f29; dest:f2; op1val:0x4f000002; valaddr_reg:x3;
 val_offset:6*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f2, f29, 0, 0, x3, 6*FLEN/8, x4, x1, x2)  
 
 inst_7:
 // rs1==f23, rd==f27,fs1 == 0 and fe1 == 0x9e and fm1 == 0x000003 and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f23; dest:f27; op1val:0x9e0000000000003; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f23; dest:f27; op1val:0x4f000003; valaddr_reg:x3;
 val_offset:7*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f27, f23, 0, 0, x3, 7*FLEN/8, x4, x1, x2)  
 
 inst_8:
 // rs1==f17, rd==f4,fs1 == 0 and fe1 == 0x9e and fm1 == 0x000004 and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f17; dest:f4; op1val:0x9e0000000000004; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f17; dest:f4; op1val:0x4f000004; valaddr_reg:x3;
 val_offset:8*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f4, f17, 0, 0, x3, 8*FLEN/8, x4, x1, x2)  
 
 inst_9:
 // rs1==f22, rd==f31,
-/* opcode: fcvt.d.s ; op1:f22; dest:f31; op1val:0x0; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f22; dest:f31; op1val:0x4f000004; valaddr_reg:x3;
 val_offset:9*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f31, f22, 0, 0, x3, 9*FLEN/8, x4, x1, x2)  
@@ -261,7 +261,7 @@ TEST_FPSR_OP_NRM(fcvt.d.s, f23, f21, 0, 0, x3, 31*FLEN/8, x4, x1, x2)
 
 inst_32:
 // fs1 == 0 and fe1 == 0x9d and fm1 == 0x7ffffc and  fcsr == 0x0 and rm_val == 7  and rs1_nan_prefix == 0xffffffff  
-/* opcode: fcvt.d.s ; op1:f30; dest:f31; op1val:0x9d00000007ffffc; valaddr_reg:x3;
+/* opcode: fcvt.d.s ; op1:f30; dest:f31; op1val:0x4efffffc; valaddr_reg:x3;
 val_offset:32*FLEN/8; correctval:??; testreg:x2;
 fcsr_val: 0 */
 TEST_FPSR_OP_NRM(fcvt.d.s, f31, f30, 0, 0, x3, 32*FLEN/8, x4, x1, x2)  
@@ -279,51 +279,39 @@ rvtest_data:
 .word 0xbecafeba
 .word 0xecafebab
 test_dataset_0:
-NAN_BOXED(0x4efffffc325400060,32,FLEN)
-NAN_BOXED(0x4efffffc325400060,32,FLEN)
-NAN_BOXED(0x4efffffc325400060,32,FLEN)
-NAN_BOXED(0x4efffffc325400060,32,FLEN)
-NAN_BOXED(0x4efffffc325400060,32,FLEN)
-NAN_BOXED(0x4efffffd325400061,32,FLEN)
-NAN_BOXED(0x4efffffd325400061,32,FLEN)
-NAN_BOXED(0x4efffffd325400061,32,FLEN)
-NAN_BOXED(0x4efffffd325400061,32,FLEN)
-NAN_BOXED(0x4efffffd325400061,32,FLEN)
-NAN_BOXED(0x4efffffe325400062,32,FLEN)
-NAN_BOXED(0x4efffffe325400062,32,FLEN)
-NAN_BOXED(0x4efffffe325400062,32,FLEN)
-NAN_BOXED(0x4efffffe325400062,32,FLEN)
-NAN_BOXED(0x4efffffe325400062,32,FLEN)
-NAN_BOXED(0x4effffff325400063,32,FLEN)
-NAN_BOXED(0x4effffff325400063,32,FLEN)
-NAN_BOXED(0x4effffff325400063,32,FLEN)
-NAN_BOXED(0x4effffff325400063,32,FLEN)
-NAN_BOXED(0x4effffff325400063,32,FLEN)
-NAN_BOXED(0x4f000000325400064,32,FLEN)
-NAN_BOXED(0x4f000000325400064,32,FLEN)
-NAN_BOXED(0x4f000000325400064,32,FLEN)
-NAN_BOXED(0x4f000000325400064,32,FLEN)
-NAN_BOXED(0x4f000000325400064,32,FLEN)
-NAN_BOXED(0x4f000001325400065,32,FLEN)
-NAN_BOXED(0x4f000001325400065,32,FLEN)
-NAN_BOXED(0x4f000001325400065,32,FLEN)
-NAN_BOXED(0x4f000001325400065,32,FLEN)
-NAN_BOXED(0x4f000001325400065,32,FLEN)
-NAN_BOXED(0x4f000002325400066,32,FLEN)
-NAN_BOXED(0x4f000002325400066,32,FLEN)
-NAN_BOXED(0x4f000002325400066,32,FLEN)
-NAN_BOXED(0x4f000002325400066,32,FLEN)
-NAN_BOXED(0x4f000002325400066,32,FLEN)
-NAN_BOXED(0x4f000003325400067,32,FLEN)
-NAN_BOXED(0x4f000003325400067,32,FLEN)
-NAN_BOXED(0x4f000003325400067,32,FLEN)
-NAN_BOXED(0x4f000003325400067,32,FLEN)
-NAN_BOXED(0x4f000003325400067,32,FLEN)
-NAN_BOXED(0x4f000004325400068,32,FLEN)
-NAN_BOXED(0x4f000004325400068,32,FLEN)
-NAN_BOXED(0x4f000004325400068,32,FLEN)
-NAN_BOXED(0x4f000004325400068,32,FLEN)
-NAN_BOXED(0x4f000004325400068,32,FLEN)
+NAN_BOXED(0x4efffffc,32,FLEN)
+NAN_BOXED(0x4efffffd,32,FLEN)
+NAN_BOXED(0x4efffffe,32,FLEN)
+NAN_BOXED(0x4effffff,32,FLEN)
+NAN_BOXED(0x4f000000,32,FLEN)
+NAN_BOXED(0x4f000001,32,FLEN)
+NAN_BOXED(0x4f000002,32,FLEN)
+NAN_BOXED(0x4f000003,32,FLEN)
+NAN_BOXED(0x4f000004,32,FLEN)
+NAN_BOXED(0x4f000004,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x0,32,FLEN)
+NAN_BOXED(0x4efffffc,32,FLEN)
 RVTEST_DATA_END
 
 RVMODEL_DATA_BEGIN

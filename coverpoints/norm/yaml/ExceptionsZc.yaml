@@ -19,7 +19,7 @@ normative_rule_definitions:
   # opcode with the C.ADD instruction, but with rd and rs2 both zero, thus can also
   # use the CR format.
   - name: c-ebreak_op
-    coverpoint: ["ExceptionsZca_cgint"]
+    coverpoint: ["ExceptionsZca_cg/cp_breakpoint"]
 
   # From c-st-ext chapter
   - name: c-ebreak

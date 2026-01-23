@@ -53,6 +53,9 @@ This document has been created by the following people (in alphabetical order of
 |================================================================================
 | _Revision_ | _Date_            | _Author_ | _Modification_
 
+| 1.2.9 Draft | 23 May 2023 | Vaibhav Jain |
+	* Added description for RVMODEL_MTVEC_ALIGN macro under - Optional, Model-defined Macros Section
+
 | 1.2.8 Draft | 16 December 2022 | S Pawan Kumar | 
 	* Size constraint of signature region updated to multiple of 4. 
 	* Added section to describe CondStr of RVTEST_CASE macro.
@@ -508,6 +511,13 @@ the test.
     - This macro needs to include a routine to clear the machine external interrupt.
     - Currently the test forces an empty macro if a target does not declare this. Future tests may
       change this.
+
+  `RVMODEL_MTVEC_ALIGN`::
+    - This macro is to specify an integer number for a ".align" assembler directive related to trap handler's
+      start address. This is based on alignment restriction, if any, as dictated by an implementation specific MTVEC.
+    - Currently the resulting default value for corresponding .align directive, if a target does not declare
+      this macro is 6. Thus resulting in ".align 6" as directive for trap handler start address, or a 64-byte 
+      aligned location. Future tests may change this.
 
 === Required labels
   

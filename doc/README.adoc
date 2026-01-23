@@ -277,6 +277,5 @@ The <<The target shell, _target shell_>> is the software and hardware environmen
 
 == Porting a new target
 
-Please refer to the RISCOF's guide on [Running
-RISCV-ARCH-TESTS](https://riscof.readthedocs.io/en/stable/arch-tests.html) to run the architectural
+Please refer to the RISCOF's guide on [Running RISCV-ARCH-TESTS](https://riscof.readthedocs.io/en/stable/arch-tests.html) to run the architectural
 test-suite on your DUT.

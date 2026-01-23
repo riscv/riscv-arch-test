@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+fmvp.d.x_b25:
+    config:
+      - check ISA:=regex(.*RV32.*I.*D.*Zfa.*)
+    mnemonics:
+      fmvp.d.x: 0
+    rs1:
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_fregs
+    val_comb:
+      abstract_comb:
+        'ibm_b25(flen, 64, "fmv.d.x", 2)': 0
+
+fmvp.d.x_b26:
+    config:
+      - check ISA:=regex(.*RV32.*I.*D.*Zfa.*)
+    mnemonics:
+      fmvp.d.x: 0
+    rs1:
+      <<: *all_regs
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_fregs
+    val_comb:
+      abstract_comb:
+        'ibm_b26(64, "fmv.d.x", 2)': 0
+
+

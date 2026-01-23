@@ -1,0 +1,133 @@
+sspush_popchk_u:
+    config: 
+      - check ISA:=regex(.*I.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics: 
+      sspushpopchk_u: 0
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+sspush_popchk_s:
+    config:
+      - check ISA:=regex(.*I.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      sspushpopchk_s: 0
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+csspush_popchk_u:
+    config: 
+      - check ISA:=regex(.*I.*C.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics: 
+      c.sspushpopchk_u: 0
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+csspush_popchk_s:
+    config:
+      - check ISA:=regex(.*I.*C.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      c.sspushpopchk_s: 0
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+ssamoswap.w_s:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssamoswap.w_s: 0
+    rs1:
+      <<: *all_regs_mx0
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: [*ramofmt_op_comb]
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+ssamoswap.d_s:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssamoswap.d_s: 0
+    rs1:
+      <<: *all_regs_mx0
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: [*ramofmt_op_comb]
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+
+ssamoswap.w_u:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssamoswap.w_u: 0
+    rs1:
+      <<: *all_regs_mx0
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: [*ramofmt_op_comb]
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+ssamoswap.d_u:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssamoswap.d_u: 0
+    rs1:
+      <<: *all_regs_mx0
+    rs2:
+      <<: *all_regs
+    rd:
+      <<: *all_regs
+    op_comb:
+      <<: [*ramofmt_op_comb]
+    val_comb:
+      <<: [*base_rs2val_sgn]
+      abstract_comb:
+        <<: [*rs2val_walking]
+
+ssrdp_u:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssrdp_u: 0
+    rd:
+      <<: *all_regs_mx0
+    op_comb:
+      <<: *rfmt_op_comb
+
+ssrdp_s:
+    config:
+      - check ISA:=regex(.*I.*A.*Zicsr.*Zicfiss.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True
+    mnemonics:
+      ssrdp_s: 0
+    rd:
+      <<: *all_regs_mx0
+    op_comb:
+      <<: *rfmt_op_comb
+

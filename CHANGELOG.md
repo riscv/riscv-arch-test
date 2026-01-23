@@ -7,7 +7,7 @@
 - Fixed check ISA fields to include 32/64 in Zca and CMO tests.  Note that the riscv-ctg CGFs have not been updated.
 - Fixed check ISA fields in rv32e_m/B/src/ror-01 and rori-01 that listed I instead of E. Again, CGF has not been updated.
 
-## [3.8.5] -- 2013-12-23
+## [3.8.5] -- 2023-12-23
 - Renamed rv32e_unratified to rv32e_m because the E extension has been ratified January 2023
 - Copied missing ebreak.S and ecall.S tests from rv32i_m/privilege to rv32e_m/privilege and update ISA for E
 
@@ -60,6 +60,9 @@ Add missing check ISA fields in recently modified div and amo tests
 - Add ACTs for Atomic Extension excluding Lr/Sc Instructions.
 - Added Test macro for the execution of atomic instructions.
 
+## [3.7.1] - 2023-07-30
+- Add support for unratified Svadu extension
+
 ## [3.7.0] - 2023-05-16
 - Updated the LI macro
 - Make Trap handler compatible for RV32E
@@ -78,6 +81,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.1] - 2023-07-22
 - Added test case for division if most negative number by -1
 - Solved the [issue #300](https://github.com/riscv-non-isa/riscv-arch-test/issues/300)
+
 
 ## [3.7.0] - 2023-05-16
 - Updated the LI macro

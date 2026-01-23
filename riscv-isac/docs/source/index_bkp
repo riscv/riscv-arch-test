@@ -1,0 +1,103 @@
+.. See LICENSE.incore for details
+
+.. _home:
+
+RISC-V ISA Coverage Documentation
+###############################################
+
+Welcome to RISC-V ISA Coverage documentation version: |version|
+
+For information about the changes and additions for releases, 
+please refer to the :ref:`Revisions <revisions>` documentation.
+
+.. raw:: html
+
+   <ul class="grid">
+       <li class="grid-item">
+	   <a href="overview.html">
+          <span class="grid-icon fa fa-info" aria-hidden="true"></span>
+	       <h2>Overview</h2>
+	   </a>
+	   <p>Introduction</p>
+       </li>
+       <li class="grid-item">
+	   <a href="getting_started.html">
+               <span class="grid-icon fa fa-angle-double-right" aria-hidden="true"></span>
+	       <h2>Getting Started Guide</h2>
+	   </a>
+	   <p>Guide</p>
+       </li>
+       <li class="grid-item">
+	   <a href="features.html">
+               <span class="grid-icon fa fa-puzzle-piece"></span>
+	       <h2>Features</h2>
+	   </a>
+	   <p>Features</p>
+       </li>
+       <li class="grid-item">
+	   <a href="tests.html">
+               <span class="grid-icon fa fa-line-chart"></span>
+	       <h2>Tests</h2>
+	   </a>
+	   <p>Tests</p>
+       </li>
+       <li class="grid-item">
+	   <a href="cli.html">
+               <span class="grid-icon fa fa-cogs"></span>
+	       <h2>Options</h2>
+	   </a>
+	   <p>User Options</p>
+       </li>
+       <li class="grid-item">
+	   <a href="https://gitlab.com/incoresemi/riscv-compliance/riscv_isac">
+               <span class="grid-icon fa fa-gitlab"></span>
+	       <h2>Code Access</h2>
+	   </a>
+	   <p>The entire RISC-V ISA Coverage code is available on GitLab</p>
+       </li>
+   </ul>
+
+.. include:: <isonum.txt>
+
+.. only:: latex
+
+  .. note::
+    
+    This document provides detailed information of the IPs generated and maintained by InCore
+    Semiconductors Pvt. Ltd. 
+    
+    **Proprietary Notice**
+    
+    Copyright (c) 2020, InCore Semiconductors Pvt. Ltd. 
+    
+    Information in this document is provided "as is" with faults, if any.
+    
+    InCore expressly disclaims all warranties, representations, and conditions of any kind, whether
+    express or implied, including, but not limited to, the implied warranties or conditions of 
+    merchantability, fitness for a particular purpose and non-infringement.
+    
+    InCore does not assume any liability rising out of the application or use of any product or circuit,
+    and specifically disclaims any and all liability, including without limitation indirect, incidental, 
+    special, exemplary, or consequential damages.
+    
+    InCore reserves the right to make changes without further notice to any products herein.
+
+.. only:: html
+
+   Sections
+   ********
+
+.. toctree::
+  :glob:
+  :maxdepth: 1
+  :numbered:
+
+  overview
+  getting_started
+  features
+  installation
+  cli
+  tests
+  contriburing
+  revisions
+  licensing

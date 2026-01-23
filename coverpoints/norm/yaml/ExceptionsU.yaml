@@ -1,1 +1,5 @@
 normative_rule_definitions:
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
+  # the value of xIE; xIE is set to 0; and xPP is set to y.
+  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+    coverpoint: [""]

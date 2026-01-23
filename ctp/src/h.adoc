@@ -87,8 +87,8 @@ https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59
 
 ==== SvH_CBO Hypervisor VirtMem + Cache Block Operations
 
-[[t-SvH_CBO-coverpoints]]
-.SvH_CBO Coverpoints
+[[t-SvHZicbo-coverpoints]]
+.SvHZicbo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128[Google Sheet Testplan]
 ,===

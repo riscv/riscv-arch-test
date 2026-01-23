@@ -12,3 +12,33 @@ normative_rule_definitions:
   # globally-disabled interrupts when the instruction is executed.
   - name: mstatus_tw_always_illegal
     coverpoint: [""]
+
+  # each privilege mode x that can respond to interrupts has a two-level stack of
+  # interrupt-enable bits and privilege modes. xPIE holds the value of the
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous
+  # privilege mode.
+  - names: [mstatus_xpie_op, mstatus_xpp_op]
+    coverpoint: [""]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
+  # the value of xIE; xIE is set to 0; and xPP is set to y.
+  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+    coverpoint: [""]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg. be evaluated
+  # immediately following the execution of an xRET instruction or an explicit write
+  # to a CSR on which these interrupt trap conditions expressly depend (including
+  # mip, mie, mstatus, and mideleg).
+  - name: intr_mip_mie_xret_csrwr
+
+  # When TW=0, the WFI instruction may execute in modes less privileged than M when
+  # not prevented for some other reason. When TW=1, then if WFI is executed in any
+  # less-privileged mode, and it does not complete within an
+  # implementation-specific, bounded time limit, the WFI instruction causes an
+  # illegal-instruction exception.
+  - name: mstatus_tw_op
+    coverpoint: [""]

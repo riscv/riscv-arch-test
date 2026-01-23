@@ -7,49 +7,49 @@ Zfinx replaces the F extension with a similar set of instructions that operate o
 
 [[t-Zfinx-coverpoints]]
 .Zfinx Coverpoints
-,===
-//include::{testplansdir}/Zfinx.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zfinx.adoc[])
+//,===
 
 ==== Zdinx Double in Integer Regs
 
 [[t-Zdinx-coverpoints]]
 .Zdinx Coverpoints
-,===
-//include::{testplansdir}/Zdinx.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zdinx.adoc[])
+//,===
 
 ==== Zhinx Half in Integer Regs
 
 [[t-Zhinx-coverpoints]]
 .Zhinx Coverpoints
-,===
-//include::{testplansdir}/Zhinx.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zhinx.adoc[])
+//,===
 
 ==== Zhinxmin Half Converts in Integer Regs
 
 [[t-Zhinxmin-coverpoints]]
 .Zhinxmin Coverpoints
-,===
-//include::{testplansdir}/Zhinxmin.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zhinxmin.adoc[])
+//,===
 
 ==== Q Quad-Precision Floating-Point
 
 [[t-Q-coverpoints]]
 .Q Coverpoints
-,===
-//include::{testplansdir}/Q.adoc[]
-,===
+//,===
+//include::{testplansdir}/Q.adoc[])
+//,===
 
 ==== ZfhQ Half-Quad Instructions
 
 [[t-ZfhQ-coverpoints]]
 .ZfhQ Coverpoints
-,===
-//include::{testplansdir}/ZfhQ.adoc[]
-,===
+//,===
+//include::{testplansdir}/ZfhQ.adoc[])
+//,===
 
 ==== ZfhminQ Half-Quad Conversion Instructions
 
@@ -57,31 +57,31 @@ Note that ZfhminQ is the same as ZfhQ
 
 [[t-ZfhminQ-coverpoints]]
 .ZfhminQ Coverpoints
-,===
-//include::{testplansdir}/ZfhminQ.adoc[]
-,===
+//,===
+//include::{testplansdir}/ZfhminQ.adoc[])
+//,===
 
 ==== ZfaQ Additional Quad-Precision Floating-Point Instructions
 [[t-ZfaQ-coverpoints]]
 .ZfaQ Coverpoints
-,===
-//include::{testplansdir}/ZfaQ.adoc[]
-,===
+//,===
+//include::{testplansdir}/ZfaQ.adoc[])
+//,===
 
 ==== ZfaZfhQ Additional Half-Quad Conversion Instructions
 [[t-ZfaZfhQ-coverpoints]]
 .ZfaZfhQ Coverpoints
-,===
-//include::{testplansdir}/ZfaZfhQ.adoc[]
-,===
+//,===
+//include::{testplansdir}/ZfaZfhQ.adoc[])
+//,===
 
 ==== Zcmp Compressed Push/Pop
 
 [[t-Zcmp-coverpoints]]
 .Zcmp Coverpoints
-,===
-//include::{testplansdir}/Zcmp.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zcmp.adoc[])
+//,===
 
 include::norm/Zcmp_norm_rules.adoc[]
 
@@ -90,9 +90,9 @@ include::norm/Zcmp_norm_rules.adoc[]
 
 [[t-Zcmt-coverpoints]]
 .Zcmt Coverpoints
-,===
-//include::{testplansdir}/Zcmt.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zcmt.adoc[])
+//,===
 
 include::norm/Zcmt_norm_rules.adoc[]
 
@@ -101,14 +101,14 @@ include::norm/Zcmt_norm_rules.adoc[]
 
 [[t-Zilsd-coverpoints]]
 .Zilsd Coverpoints
-,===
-//include::{testplansdir}/Zilsd.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zilsd.adoc[])
+//,===
 
 ==== Zclsd Compressed Load/Store Double
 
 [[t-Zclsd-coverpoints]]
 .Zclsd Coverpoints
-,===
-//include::{testplansdir}/Zclsd.adoc[]
-,===
+//,===
+//include::{testplansdir}/Zclsd.adoc[])
+//,===

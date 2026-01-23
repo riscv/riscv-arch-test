@@ -20,7 +20,7 @@
 // 
 #include "model_test.h"
 #include "arch_test.h"
-RVTEST_ISA("RV32IZicsr_Zicboz")
+RVTEST_ISA("RV32IZicboz_Zicsr")
 
 .section .text.init
 .globl rvtest_entry_point
@@ -30,7 +30,7 @@ RVTEST_CODE_BEGIN
 
 #ifdef TEST_CASE_1
 
-RVTEST_CASE(0,"//check ISA:=regex(.*32.*I.*Zicsr.*Zicboz.*);def TEST_CASE_1=True;",cbozero)
+RVTEST_CASE(0,"//check ISA:=regex(.*32.*I.*Zicboz.*Zicsr.*);def TEST_CASE_1=True;",cbozero)
 
 RVTEST_SIGBASE(x2,signature_x2_1)
 

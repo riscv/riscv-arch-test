@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+vaesef.vv:
+    config:
+      - check ISA:=(.*I.*V.*Zvkned)
+    mnemonics:
+      vaesef.vv: 0
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      'rs2 == rd and rs2 != 0': 0
+      'rs2 != rd and rs2 != 0': 0
+
+vaesef.vs:
+    config:
+      - check ISA:=(.*I.*V.*Zvkned)
+    mnemonics:
+      vaesef.vs: 0
+    rs2:
+      <<: *all_vregs
+    rd:
+      <<: *all_vregs
+    op_comb:
+      'rs2 == rd and rs2 != 0': 0
+      'rs2 != rd and rs2 != 0': 0

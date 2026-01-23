@@ -581,6 +581,57 @@ Mend_PMP:                                    ;\
   SREG _R,offset(_BR)					;\
   .set offset,offset+REGWIDTH
 
+/* RVTEST_SIGUPD_CSR(SIG, TMP, CSR)					*/
+/* This macro reads the provided CSR and stores the value in the	*/
+/* signature referenced by SIG using the help of the temporary register	*/
+/* TMP.									*/
+#define RVTEST_SIGUPD_CSR(_SIG, _TMP, _CSR)				;\
+  csrr _TMP, _CSR							;\
+  RVTEST_SIGUPD(_SIG, _TMP)
+
+/* RVTEST_TOOGLE_BITS_IN_CSR(CSR, MASK, TMP1, TMP2)			*/
+/* This macro is used to toogle the set bits of the provided MASK in	*/
+/* the given CSR (read-modify-write) with the help of the temporary	*/
+/* registers TMP1 and TMP2.						*/
+#define RVTEST_TOGGLE_BITS_IN_CSR(_CSR, _MASK, _TMP1, _TMP2)		;\
+  csrr  _TMP1, _CSR							;\
+  LI(_TMP2, _MASK)							;\
+  xor  _TMP1, _TMP1, _TMP2						;\
+  csrw  _CSR, _TMP1
+
+/* RVTEST_CSR_TOGGLE_TEST_CASE(CSR, MASK, TMP1, TMP2, SIG)		*/
+/* This macro is used to toggle the set bits of the provided MASK in	*/
+/* the given CSR (read-modify-write) and store the read-back value of	*/
+/* the CSR in the signature referenced by SIG using the help of the	*/
+/* temporary registers TMP1 and TMP2.					*/
+#define RVTEST_CSR_TOGGLE_TEST_CASE(_CSR, _MASK, _TMP1, _TMP2, _SIG)	;\
+  TOGGLE_BITS_IN_CSR(_CSR, _MASK, _TMP1, _TMP2)				;\
+  RVTEST_SIGUPD_CSR(_CSR, _TMP2, _SIG)
+
+/* RVTEST_CSR_READ_ILLEGAL(CSR, TMP1)					*/
+/* This macro is used to emit CSR read test, which is expected to fail */
+/* with an illegal instruction exception (e.g. because of access	*/
+/* violations).  The code is followed by NOPs to ensure the trap will	*/
+/* will return within this sequence.					*/
+#define RVTEST_CSR_READ_ILLEGAL(_CSR, _TMP1)				;\
+  csrr _CSR, _TMP1							;\
+  nop									;\
+  nop									;\
+  nop									;\
+  nop
+
+/* RVTEST_CSR_WRITE_ILLEGAL(CSR, TMP1)					*/
+/* This macro is used to emit CSR write test, which is expected to fail */
+/* with an illegal instruction exception (e.g. because of access	*/
+/* violations).  The code is followed by NOPs to ensure the trap will	*/
+/* will return within this sequence.					*/
+#define RVTEST_CSR_WRITE_ILLEGAL(_CSR, _TMP1)				;\
+  cswr _CSR, _TMP1							;\
+  nop									;\
+  nop									;\
+  nop									;\
+  nop
+
 /* RVTEST_SIGUPD_F(basereg, sigreg,flagreg,newoff)			 */
 /* This macro is used to store the signature values of (32 & 64) F and D */
 /* teats which use TEST_(FPSR_OP, FPIO_OP, FPRR_OP, FPR4_OP) opcodes	 */

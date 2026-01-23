@@ -66,7 +66,9 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 The ACT framework is compatible with GCC or LLVM. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file).
 
-> **Note**: The toolchain installation will take significant time (up to several hours depending on your system).
+> [!NOTE]
+>
+> The toolchain installation will take significant time (up to several hours depending on your system).
 
 To install `riscv64-unknown-elf-gcc`:
 
@@ -103,7 +105,7 @@ riscv64-unknown-elf-gcc --version
 
 For more information or if you have issues installing the RISC-V toolchain, refer to the [riscv-gnu-toolchain README](https://github.com/riscv-collab/riscv-gnu-toolchain).
 
-#### 4. RISC-V Sail Golden Reference Model
+#### 4. RISC-V Sail Reference Model
 
 The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.9 of the model.
 
@@ -277,6 +279,10 @@ CONFIG_FILES=config/duts/<your_config_here>/test_config.yaml make --jobs $(nproc
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `work/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
 Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `work/<config_name>/build` or `work/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+
+> [!NOTE]
+>
+> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `uv` to be installed.
 
 ### Running Certification Tests
 

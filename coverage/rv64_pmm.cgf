@@ -1,0 +1,959 @@
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_S_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_S_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_S_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_S_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_U_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_U_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_U_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_U_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_S_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_S_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_S_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_S_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_U_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_U_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_U_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_U_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'sb', 'sh', 'sw'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_S_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_S_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_S_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_S_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_U_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_U_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_U_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_U_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_S_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_S_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_S_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_S_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'S' and ((menvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_U_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_U_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_U_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_U_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'U' and ((senvcfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_M_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrw, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_M_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_atomic_M_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'lr.d', 'sc.w', 'sc.d'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_atomic_M_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*A.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lr.w, sc.w, lr.d, sc.d}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lr.w', 'sc.w', 'lr.d', 'sc.d'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_M_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_M_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_basic_M_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and mcause == {0xd, 0xf}{[$1/6]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_basic_M_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, lb, lh, lw, lbu, lhu, lwu, sb, sh, sw, sd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'lb', 'lh', 'lw', 'lbu', 'lhu', 'lwu', 'sb', 'sh', 'sw', 'sd'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_M_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_M_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_compressed_M_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and mcause == {0xd, 0xf}{[$1/4]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_compressed_M_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*C.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, c.lw, c.sw, c.ld, c.sd, c.lwsp, c.swsp, c.ldsp, c.sdsp}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'c.lw',  'c.ld', 'c.lwsp', 'c.ldsp', 'c.sw', 'c.sd',  'c.swsp', 'c.sdsp'} and (len_dptw == 1)": 0
+
+#Test Case 1
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_M_mode_SV48_tag00:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+
+#Test Case 2
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_M_mode_SV48_tag01:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 3
+#Pointer Masking Disabled -> Page faults
+#Pointer Masking Enabled -> No fault
+pm_float_M_mode_SV48_tag02:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was expected page faults
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and mcause == {0xd, 0xf}{[$1/2]}": 0
+
+#Test Case 4
+#Pointer Masking Disabled -> No fault
+#Pointer Masking Enabled -> No fault
+pm_float_M_mode_SV48_tag03:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*F.*D.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True;
+  mnemonics:
+    #LR/SC instructions for atomic
+    "{csrrs, flw, fsw, fld, fsd}": 0
+  csr_comb:
+  #check whether the Pointer Masking is enabled for SV-48
+    "((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48})": 0
+  val_comb:
+    #Enabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_SV48}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0
+    #Disabled Pointer Masking
+    #Verify that there was no fault by confirming there is atleast a page table walk of length 1
+    "mode == 'M' and ((mseccfg & ${PMM_MASK}) == ${PMM_MASK_DISABLED}) and mnemonic == {'flw', 'fld', 'fsw', 'fsd'} and (len_dptw == 1)": 0

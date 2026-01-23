@@ -32,6 +32,16 @@
 #define SIG  sig_bgn_off
 #define VMEM vmem_bgn_off
 
+//This macro is used to go from M -> M with virtualization enabled
+#define ENABLE_VIRT_MMODE()      ;\
+	LI (s7, MSTATUS_MPRV)           ;\
+	csrs mstatus,s7                 ;\
+	LI (s7, MSTATUS_MPP)            ;\
+	csrs mstatus,s7                 ;\
+	auipc t0, 0					    ;\
+	addi t0, t0, 16					;\
+	csrw mepc, t0					;\
+	mret;
 
 #define SATP_SETUP(_TR0, _TR1, MODE);\
     LA(_TR0, rvtest_Sroot_pg_tbl) ;\

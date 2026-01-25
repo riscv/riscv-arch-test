@@ -416,10 +416,19 @@ def gen_coverage_targets(
         # Use merge_summaries script to properly format the combined output
         summary_files = " ".join([str(s) for s in sorted(coverage_reports)])
 
+        # how to remove all coverage reports after merging
+        makefile_lines.append(
+            f"# Clean up individual coverage summaries after merging\n"
+            f".PHONY: clean-coverage-summaries\n"
+            f"clean-coverage-summaries:\n"
+            f"\trm -f {' '.join([str(s) for s in sorted(coverage_reports) if s != overall_summary])}\n"
+        )
+
         makefile_lines.append(
             f"# Generate overall coverage summary by merging all individual summaries\n"
             f"{overall_summary}: {summary_files}\n"
             f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
+            f"\t$(MAKE) clean-coverage-summaries # remove individual coverage summaries after merging\n"
         )
         coverage_reports.append(overall_summary)
 

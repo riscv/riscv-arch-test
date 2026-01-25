@@ -281,7 +281,7 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
         ''
     ])
     if base:
-        lines.extend([f'[[t-{base}-normative_rules]]', f'.{base} Normative Rules'])
+        lines.extend([f'[[t-{base}-normative-rules]]', f'.{base} Normative Rules'])
 
     lines.extend([
         '[cols="1,4,3", options="header"]',
@@ -383,6 +383,100 @@ def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
 def truncate_rule_text(text: str) -> str:
     """Return rule text without truncation."""
     return text
+
+
+def render_rule_text(name: str, json_text_map: dict[str, str], json_links_map: dict[str, list[str]]) -> str:
+    """Return the display text (with links) for a normative rule name."""
+    text = truncate_rule_text(json_text_map.get(name, ''))
+    links = json_links_map.get(name, [])
+    if links:
+        text = (text + '  ' + ' '.join(links)).strip()
+    return text
+
+
+def build_rows_from_groups(
+    groups: Iterable[dict[str, Any]],
+    json_text_map: dict[str, str],
+    json_links_map: dict[str, list[str]]
+) -> tuple[list[tuple[str, str, Any]], dict[str, Any], set[str]]:
+    """Create table rows while keeping grouped names on a single row.
+
+    When a YAML entry contains multiple names, emit one row whose Normative Rule
+    cell lists all of those names (comma-separated) instead of one row per name.
+    Coverpoints are still resolved per-name when brace lists are used, and the
+    resulting coverpoints are combined into the single row to avoid losing
+    information.
+    """
+
+    rows: list[tuple[str, str, Any]] = []
+    cover_map: dict[str, Any] = {}
+    yaml_names: set[str] = set()
+
+    for g in groups:
+        if not isinstance(g, dict):
+            continue
+
+        names = g.get('names', []) or []
+        if not names:
+            continue
+
+        names = list(names)
+        cp = g.get('coverpoint')
+
+        yaml_names.update(names)
+
+        # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
+        chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
+        for n, c in zip(names, chosen_cps):
+            cover_map[n] = c
+
+        if len(names) == 1:
+            n = names[0]
+            text = render_rule_text(n, json_text_map, json_links_map)
+            rows.append((n, text, chosen_cps[0]))
+            continue
+
+        # Multi-name group: keep a single row with the names combined.
+        combined_name = ', '.join(names)
+
+        # Combine rule texts, preserving order and collapsing duplicates.
+        text_parts: list[tuple[str, str]] = []
+        seen_texts: set[str] = set()
+        for n in names:
+            t = render_rule_text(n, json_text_map, json_links_map)
+            if not t:
+                continue
+            if t in seen_texts:
+                continue
+            text_parts.append((n, t))
+            seen_texts.add(t)
+
+        if not text_parts:
+            text = ''
+        elif len(text_parts) == 1:
+            text = text_parts[0][1]
+        else:
+            # Annotate which text corresponds to which name when they differ.
+            text = '\n'.join(f'{n}: {t}' for n, t in text_parts)
+
+        # Combine coverpoints; keep per-name detail when they differ.
+        unique_cps: list[Any] = []
+        for c in chosen_cps:
+            if c not in unique_cps:
+                unique_cps.append(c)
+
+        if len(unique_cps) == 1:
+            cp_cell = unique_cps[0]
+        else:
+            cp_bits = []
+            for n, c in zip(names, chosen_cps):
+                val = '' if c is None else str(c)
+                cp_bits.append(f'{n}: {val}')
+            cp_cell = '; '.join(cp_bits)
+
+        rows.append((combined_name, text, cp_cell))
+
+    return rows, cover_map, yaml_names
 
 
 def main() -> None:
@@ -596,29 +690,8 @@ def main() -> None:
             ydata = load_yaml(yfile)
             groups = build_coverpoint_groups(ydata)
 
-            # Build rows and mappings
-            cover_map = {}
-            yaml_names = set()
-            rows = []
-            for g in groups:
-                names = g.get('names', [])
-                cp = g.get('coverpoint')
-                for idx, n in enumerate(names):
-                    # If coverpoint contains multiple brace-delimited groups,
-                    # pick the one corresponding to this name's index.
-                    chosen_cp = pick_cover_for_name(g.get('coverpoint'), names, idx)
-                    cover_map[n] = chosen_cp
-                    yaml_names.add(n)
-                    if idx == 0:
-                        text = truncate_rule_text(json_text_map.get(n, ''))
-                        # append tag links (if any) to the rule text
-                        tlinks = json_links_map.get(n, [])
-                        if tlinks:
-                            # separate text and links with two spaces so ADOC treats it as appended content
-                            text = (text + '  ' + ' '.join(tlinks)).strip()
-                    else:
-                        text = 'see above'
-                    rows.append((n, text, chosen_cp))
+            # Build rows and mappings; keep grouped names on a single row.
+            rows, cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
             missing_in_json = sorted(list(yaml_names - json_names))
@@ -692,26 +765,7 @@ def main() -> None:
     groups = build_coverpoint_groups(ydata)
 
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
-    cover_map = {}
-    yaml_names = set()
-    rows = []
-    for g in groups:
-        names = g.get('names', [])
-        cp = g.get('coverpoint')
-        # populate cover_map and create one row per normative rule name
-        for idx, n in enumerate(names):
-            chosen_cp = pick_cover_for_name(cp, names, idx)
-            cover_map[n] = chosen_cp
-            yaml_names.add(n)
-            # Only include the rule text for the first name in the group
-            if idx == 0:
-                text = truncate_rule_text(json_text_map.get(n, ''))
-                tlinks = json_links_map.get(n, [])
-                if tlinks:
-                    text = (text + '  ' + ' '.join(tlinks)).strip()
-            else:
-                text = 'see above'
-            rows.append((n, text, chosen_cp))
+    rows, cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
     missing_in_json = sorted(list(yaml_names - json_names))
     missing_in_yaml = sorted(list(json_names - yaml_names))

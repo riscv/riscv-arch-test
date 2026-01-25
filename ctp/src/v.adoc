@@ -259,7 +259,7 @@ Vector bit manipulation extensions include Zvbb and Zvbc.
 
 === Zvk* Vector Cryptography Extension
 
-There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions are not yet supported.
+There are several Zvk* vector cryptography extensions.
 
 ==== Zvkb Vector Crypto Bit Manipulation Extension
 
@@ -296,7 +296,7 @@ There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions 
 // include::{testplansdir}/Zvksed.adoc[]
 
 
-==== Zvksh{a/b} Vector ShangMi SM3 Hashing
+==== Zvksh Vector ShangMi SM3 Hashing
 
 [[t-Zvksh-coverpoints]]
 .Zvksh Instruction Coverpoints

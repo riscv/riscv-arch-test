@@ -9,7 +9,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`include "coverage/RISCV_decode_pkg.svh"
 `include "coverage/RISCV_disassemble_helpers.svh"
 
 function string disassemble (logic [31:0] instrRaw);

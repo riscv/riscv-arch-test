@@ -72,7 +72,7 @@ class TestData:
             return "double"
         elif self.instr_name.endswith(("s", "w")) or self.instr_name in ("c.fswsp", "c.flwsp"):
             return "single"
-        elif self.instr_name.endswith("h"):
+        elif self.instr_name.endswith(("h", "bf16")):
             return "half"
         else:
             raise ValueError(

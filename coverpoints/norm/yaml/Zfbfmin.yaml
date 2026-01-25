@@ -1,0 +1,11 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: fcvt-bf16-s_op
+    coverpoint:
+      ["Zfbfmin_fcvt_bf16_s/{cp_fs1, cp_fd, cp_fs1_edges, cp_NaNBox_S_H}"]
+      # Narrowing convert FP32 value to a BF16 value. Round according to the RM field.
+  - name: fcvt-s-bf16_op
+    coverpoint:
+      ["Zfbfmin_fcvt_bf16_s/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
+      # Converts a BF16 value to an FP32 value. The conversion is exact.

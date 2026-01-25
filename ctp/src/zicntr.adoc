@@ -11,15 +11,13 @@ and the <<t-Sm-coverpoints, Sm>> tests exercise access to `mcycle`, `minstret`, 
 [[t-ZicntrS-coverpoints]]
 .ZicntrS Coverpoints
 ,===
-//include::{testplansdir}/ZicntrS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=521853953#gid=521853953[Google Sheet Testplan]
+,===
 
 ==== ZicntrU User-Mode Counter Reads
 
 [[t-ZicntrU-coverpoints]]
 .ZicntrU Coverpoints
 ,===
-//include::{testplansdir}/ZicntrU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=516633595#gid=516633595[Google Sheet Testplan]
+,===

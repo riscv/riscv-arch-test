@@ -32,5 +32,7 @@ tests/rv64e
 ctp/src/norm
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
+coverpoints/norm/yaml/chapters
 ctp/mismatch_report.txt
 tests/priv/Sm/Sm-00.S
+crd/build

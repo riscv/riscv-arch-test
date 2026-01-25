@@ -28,8 +28,9 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
-    # Exception causes
+    ######################################
     coverpoint = "cp_mcause_write_exception"
+    ######################################
     for i in range(24):
         if i in {14, 17}:  # skip reserved causes
             continue
@@ -51,8 +52,9 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Interrupt causes
+    ######################################
     coverpoint = "cp_mcause_write_interrupt"
+    ######################################
     for i in range(14):
         if i in {0, 4, 8}:  # skip reserved causes
             continue
@@ -73,8 +75,10 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
 
 def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
     """Generate mstatus SD field write tests."""
+    ######################################
     covergroup = "Sm_mstatus_cg"
     coverpoint = "cp_mstatus_sd_write"
+    ######################################
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -121,8 +125,10 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
 
 def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     """Generate ecall and ebreak tests."""
+    ######################################
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mprvinst"
+    ######################################
     check_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
@@ -150,8 +156,10 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
 def _generate_mret_tests(test_data: TestData) -> list[str]:
     """Generate mret tests with mpp, mprv, mpie, mie sweep."""
+    ######################################
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mret"
+    ######################################
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -200,8 +208,10 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
 
 def _generate_sret_tests(test_data: TestData) -> list[str]:
     """Generate sret tests with spp, mprv, spie, sie, tsr sweep."""
+    ######################################
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_sret"
+    ######################################
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -254,7 +264,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_mcsr_tests(test_data: TestData) -> list[str]:
-    """Generate CSR access tests (read, write all 1s/0s, set all, clear all)."""
+    """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
 
     # Standard M-mode CSRs
@@ -265,20 +275,52 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         "mideleg",
         "mie",
         "mtvec",
+        "mcounteren",
         "mscratch",
         "mepc",
         "mcause",
         "mtval",
         "mip",
         "menvcfg",
+        "mcountinhibit",
+        "mhpmevent3",
+        "mhpmevent4",
+        "mhpmevent5",
+        "mhpmevent6",
+        "mhpmevent7",
+        "mhpmevent8",
+        "mhpmevent9",
+        "mhpmevent10",
+        "mhpmevent11",
+        "mhpmevent12",
+        "mhpmevent13",
+        "mhpmevent14",
+        "mhpmevent15",
+        "mhpmevent16",
+        "mhpmevent17",
+        "mhpmevent18",
+        "mhpmevent19",
+        "mhpmevent20",
+        "mhpmevent21",
+        "mhpmevent22",
+        "mhpmevent23",
+        "mhpmevent24",
+        "mhpmevent25",
+        "mhpmevent26",
+        "mhpmevent27",
+        "mhpmevent28",
+        "mhpmevent29",
+        "mhpmevent30",
+        "mhpmevent31",
     ]
     # RV32-only high CSRs
     csrs32 = ["mstatush", "menvcfgh"]
     # Read-only CSRs
     csrsro = ["mvendorid", "mimpid", "marchid", "mhartid", "mconfigptr"]
 
-    # Test access to all M-mode CSRs
+    ######################################
     coverpoint = "cp_mcsr_access"
+    ######################################
     lines = [
         comment_banner(
             f"{coverpoint}",
@@ -316,8 +358,9 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Write walking ones and zeros to all writable M-mode CSRs
+    ######################################
     coverpoint = "cp_mcsrwalk"
+    ######################################
     lines.append(
         comment_banner(
             "cp_mcsrwalk",
@@ -338,6 +381,222 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
     lines.append("#endif")
 
+    ######################################
+    coverpoint = "cp_csr_insufficient_priv"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Attempt to read debug-mode registers.  Should throw illegal instruction",
+        ),
+    )
+    for csr in range(0x7B0, 0x7C0):
+        lines.extend(
+            [
+                # Test the write value
+                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                f"\tCSRR(t0, 0x{csr:03x})    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
+            ]
+        )
+
+    ######################################
+    coverpoint = "cp_csr_ro"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Attempt to write read-only CSRs.  Should throw illegal instruction",
+        ),
+    )
+
+    lines.append("\tLI(t0, -1)          # t0 = all 1s\n")
+    for csr in range(0xC00, 0x1000):
+        lines.extend(
+            [
+                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                f"\tCSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
+            ]
+        )
+
+    return lines
+
+
+def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
+    """Generate CSR counter tests."""
+    covergroup = "Sm_mcsr_cg"
+
+    ######################################
+    coverpoint = "cp_cntr_access"
+    ######################################
+    lines = []
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode counters",
+        ),
+    )
+
+    cntrs = [
+        "mcycle",
+        "minstret",
+        "mhpmcounter3",
+        "mhpmcounter4",
+        "mhpmcounter5",
+        "mhpmcounter6",
+        "mhpmcounter7",
+        "mhpmcounter8",
+        "mhpmcounter9",
+        "mhpmcounter10",
+        "mhpmcounter11",
+        "mhpmcounter12",
+        "mhpmcounter13",
+        "mhpmcounter14",
+        "mhpmcounter15",
+        "mhpmcounter16",
+        "mhpmcounter17",
+        "mhpmcounter18",
+        "mhpmcounter19",
+        "mhpmcounter20",
+        "mhpmcounter21",
+        "mhpmcounter22",
+        "mhpmcounter23",
+        "mhpmcounter24",
+        "mhpmcounter25",
+        "mhpmcounter26",
+        "mhpmcounter27",
+        "mhpmcounter28",
+        "mhpmcounter29",
+        "mhpmcounter30",
+        "mhpmcounter31",
+    ]
+    # RV32-only high counters
+    cntrsh = [
+        "mcycleh",
+        "minstreth",
+        "mhpmcounter3h",
+        "mhpmcounter4h",
+        "mhpmcounter5h",
+        "mhpmcounter6h",
+        "mhpmcounter7h",
+        "mhpmcounter8h",
+        "mhpmcounter9h",
+        "mhpmcounter10h",
+        "mhpmcounter11h",
+        "mhpmcounter12h",
+        "mhpmcounter13h",
+        "mhpmcounter14h",
+        "mhpmcounter15h",
+        "mhpmcounter16h",
+        "mhpmcounter17h",
+        "mhpmcounter18h",
+        "mhpmcounter19h",
+        "mhpmcounter20h",
+        "mhpmcounter21h",
+        "mhpmcounter22h",
+        "mhpmcounter23h",
+        "mhpmcounter24h",
+        "mhpmcounter25h",
+        "mhpmcounter26h",
+        "mhpmcounter27h",
+        "mhpmcounter28h",
+        "mhpmcounter29h",
+        "mhpmcounter30h",
+        "mhpmcounter31h",
+    ]
+    for csr in cntrs:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    lines.extend(
+        [
+            "",
+            "// RV32-only h CSRs",
+            "#if __riscv_xlen == 32",
+        ]
+    )
+    for csr in cntrsh:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    lines.append("#endif")
+
+    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+    ######################################
+    coverpoint = "cp_inhibit_mcycle"
+    ######################################
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Inhibit mcycle",
+        ),
+    )
+    lines.extend(
+        [
+            test_data.add_testcase(coverpoint, "", covergroup),
+            f"\tLI(x{r1}, 0b1)        # inhibit mcycle",
+            f"\tCSRW(mcountinhibit, x{r1})        # inhibit mcycle",
+            f"\tCSRR(x{r1}, mcycle)        # read mcycle",
+            "\tnop\n\tnop\n\tnop\n\tnop\n\tnop\n\tnop # wait a bit",
+            f"\tCSRR(x{r2}, mcycle)        # read mcycle again",
+            f"\tsub x{r2}, x{r2}, x{r1}          # difference should be 0",
+            write_sigupd(r2, test_data),
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_inhibit_minstret"
+    ######################################
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Inhibit minstret",
+        ),
+    )
+    lines.extend(
+        [
+            test_data.add_testcase(coverpoint, "", covergroup),
+            f"\tLI(x{r1}, 0b100)        # inhibit minstret",
+            f"\tCSRW(mcountinhibit, x{r1})        # inhibit minstret",
+            f"\tCSRR(x{r1}, minstret)        # read minstret",
+            "\tnop\n\tnop\n\tnop\n\tnop\n\tnop\n\tnop # wait a bit",
+            f"\tCSRR(x{r2}, minstret)        # read minstret again",
+            f"\tsub x{r2}, x{r2}, x{r1}          # difference should be 0",
+            write_sigupd(r2, test_data),
+        ]
+    )
+
+    ######################################
+    coverpoint = "cp_mtime_write"
+    ######################################
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Write mtime and read back time",
+        ),
+    )
+    lines.extend(
+        [
+            test_data.add_testcase(coverpoint, "", covergroup),
+            f"\tLI(x{r1}, 42)        # value to write to mtime",
+            f"\tRVMODEL_SET_MTIME(x{r1}, x{r2})    # write MTIME = 42",
+            f"\tCSRR(x{r2}, time)        # read time",
+            f"\tsub x{r2}, x{r2}, x{r1}          # difference should be small",
+            f"\tslti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
+            write_sigupd(r2, test_data),
+            "#if __riscv_xlen == 32",
+            test_data.add_testcase(coverpoint, "h", covergroup),
+            f"\tLI(x{r1}, 67)        # value to write to mtimeh",
+            f"\tRVMODEL_SET_MTIMEH(x{r1}, x{r2})    # write MTIMEH = 57",
+            f"\tCSRR(x{r2}, timeh)        # read timeh",
+            f"\tsub x{r2}, x{r2}, x{r1}          # difference should be zero",
+            write_sigupd(r2, test_data),
+            "#endif",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r1, r2])
+
     return lines
 
 
@@ -352,5 +611,6 @@ def make_sm(test_data: TestData) -> list[str]:
     lines.extend(_generate_mret_tests(test_data))
     lines.extend(_generate_sret_tests(test_data))
     lines.extend(_generate_mcsr_tests(test_data))
+    lines.extend(_generate_mcsr_cntr_tests(test_data))
 
     return lines

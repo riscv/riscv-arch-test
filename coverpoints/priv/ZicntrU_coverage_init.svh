@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicntrU_cg = new();         ZicntrU_cg.set_inst_name("obj_zicntru");
+    ZicntrU_cg = new();         ZicntrU_cg.set_inst_name("obj_ZicntrU");

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-SvCBO_cg = new(); SvCBO_cg.set_inst_name("obj_SvCBO_exceptions");
+SvZicbo_cg = new(); SvZicbo_cg.set_inst_name("obj_SvZicbo");

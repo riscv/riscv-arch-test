@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 `define COVER_UV
 
-covergroup UV_uvcsr_cg with function sample(ins_t ins);
+covergroup UV_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -48,5 +48,5 @@ covergroup UV_uvcsr_cg with function sample(ins_t ins);
 endgroup
 
 function void uv_sample(int hart, int issue, ins_t ins);
-    UV_uvcsr_cg.sample(ins);
+    UV_cg.sample(ins);
 endfunction

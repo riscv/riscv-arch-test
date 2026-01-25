@@ -71,6 +71,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, test_data: TestD
         f"addi x{r2}, x{r2}, 1 # delay a bit",
         f"addi x{r2}, x{r2}, 1 # delay a bit",
         f"{instr_name} x{r2}, {cntr}, x0",
+        f"{instr_name} x{r2}, {cntr}, x0",  # read again to increase delay a bit more
         f"sub x{r1}, x{r2}, x{r1} # compute difference",
         f"{slt}",
         write_sigupd(r1, test_data, "int"),  # record difference as signature

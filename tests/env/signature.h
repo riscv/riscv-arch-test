@@ -57,15 +57,16 @@
 // test_failure in case of a mismatch.
 // If not in Self Check mode, just store the signatures to the signature region
 #ifdef RVTEST_SELFCHECK
-  #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
-    LREG       \_TMPREG_(), \_OFF_*REGWIDTH(T1) ;\
-    beq        \_TMPREG_(), T3                  ;\
-    jal  T2, test_failure
+  #define TRAP_SIGUPD(_TMPREG, _OFF)                         \
+    LREG       _TMPREG, _OFF*REGWIDTH(T1)                   ;\
+    beq        _TMPREG, T3, 2f                              ;\
+    jal  T2, failedtest_x5_x4                               ;\
+    2:                                                      ;
 #else
-  #define TRAP_SIGUPD(_TMPREG_, _OFF_)           \
-    SREG       \_TMPREG_,   \_OFF_*REGWIDTH(T1) ;\
-    nop                                         ;\
-    nop
+  #define TRAP_SIGUPD(_TMPREG, _OFF)                         \
+    SREG       _TMPREG,   _OFF*REGWIDTH(T1)                 ;\
+    nop                                                     ;\
+    nop                                                     ;
 #endif
 
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, strptr)

@@ -74,18 +74,31 @@
     LI(a1, PERMS)                                              ;\
     PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                  ;\
 
+// Appends 12-bit page offset from PA to VA, and stores it
+// to S save area; a0 must point to M save area
 #define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
     LI(  t0, VA)                                                ;\
+    LA(  t1, PA_LBL)                                            ;\
     srli t0, t0, 12                                             ;\
     slli t0, t0, 12                                             ;\
-    LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
     LI(  t2, 0xFFF)                                             ;\
     and  t2, t1, t2                                             ;\
-    or   t0, t0, t2                                             ;\
-    LA(  t2, PA_LBL)                                            ;\
-    sub  t0, t0, t2                                             ;\
-    add  t2, t1, t0                                             ;\
-    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;
+    or   t2, t0, t2                                             ;\
+    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;
+
+// Appends 12-bit page offset from PA to VA, and stores it
+// to V save area; a0 must point to M save area
+#define GUEST_SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)            ;\
+    LI(  t0, VA)                                                ;\
+    LA(  t1, PA_LBL)                                            ;\
+    srli t0, t0, 12                                             ;\
+    slli t0, t0, 12                                             ;\
+    LI(  t2, 0xFFF)                                             ;\
+    and  t2, t1, t2                                             ;\
+    or   t2, t0, t2                                             ;\
+    addi a0, a0, 2*sv_area_sz                                   ;\
+    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
+    addi a0, a0, -2*sv_area_sz                                  ;
 
 #define SAVE_AREA_SETUP_V(VA, PA_LBL, _REG_NAME)                ;\
     LI(  t0, VA)                                                ;\

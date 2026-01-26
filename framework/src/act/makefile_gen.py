@@ -124,7 +124,7 @@ def gen_compile_targets(
         f"{final_elf}: {sig_elf} {result_file} | {final_elf.parent}\n"
         f"\t{config.compiler_string} $(CFLAGS) \\\n"
         f"\t\t-o {final_elf} \\\n"
-        f"\t\t-march={march} -mabi={mabi} --DRVTEST_SELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
+        f"\t\t-march={march} -mabi={mabi} -DRVTEST_SELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
         f'\t\t-DSIGNATURE_FILE=\\"{result_file}\\" \\\n'
         f"\t\t{test_path}\n"
         # Objdump (objdump_exe is set)

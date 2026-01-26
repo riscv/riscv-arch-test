@@ -1,0 +1,57 @@
+
+== MC100 Certificate
+
+The MC100 Certificate comes in MC100-32 and MC100-64 flavors covering basic microcontrollers with machine-mode support for exceptions and interrupts.  It has been developed because of the demand for microcontroller certificates, and does not correspond to any existing ratified RISC-V profile.
+
+=== Extensions
+
+[[t-MC100-extensions]]
+.MC100 Extensions
+[cols="1, 1, 1, 5" options=header]
+|===
+|Extension|Version|Required|Definition
+|I|2.1|Mandatory|I Base Integer ISA (RV32I or RV64I)
+|M|2.0|Mandatory|Multiply/Divide
+|Zca|2.0|Mandatory|Compressed Instructions
+|Zifencei|2.0|Mandatory|Instruction-fetch Fence
+|Sm|1.11|Mandatory|Machine Mode
+|Zicsr|2.0|Mandatory|Control and Status Registers
+|Zicntr|2.0|Mandatory|Basic Counters
+|===
+
+=== Parameters
+
+These parameters defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
+
+[[t-MC100-parameters]]
+.MC100 Parameters
+[cols="2, 1, 1, 4" options=header]
+|===
+|Parameters|Dependency|Supported Values|Summary
+|MXLEN|Sm|32, 64|Integer register width
+|M_MODE_ENDIANNESS|Sm|little|Endianness.
+|MISALIGNED_LDST|I|True, False|True: test non-atomic misaligned loads and stores to main memory; False: do not test misaligned loads and stores.
+|ARCH_ID|Sm|MXLEN-bit integer|Architecture ID value
+|IMP_ID|Sm|MXLEN-bit integer|Implementation ID value
+|HART_ID|Sm|MXLEN-bit integer|Hart ID value
+|MISALIGNED_LDST_EXCEPTION_PRIORITY|Sm|High, Low|High: misaligned load/store exceptions have higher priority than page-fault and access-fault exceptions; Low: misaligned load/store exceptions have lower priority than page-fault and access-fault exceptions.
+|MISALIGNED_MAX_ATOMICITY_GRANULARITY|Sm|4, 8, ..., 4096|If MISALIGNED_LDST=True, misaligned load and stores fully-contained in a
+region of this size are atomic and do not throw a misaligned exception.
+|MISALIGNED_SPLIT_STRATEGY|MISALIGNED_LD_ST|sequential_bytes, custom|
+|MISA_CSR_IMPLEMENTED|Sm|True, False|True: misa CSR is implemented; False: misa CSR reads as zero.
+|MTVAL_WIDTH|Sm|>=PHYS_ADDR_WIDTH|Width of mtval CSR in bits.
+|MTVEC_BASE_ALIGNMENT_DIRECT|Sm|>=4|
+|MTVEC_BASE_ALIGNMENT_VECTORED|Sm|>=4|
+|MTVEC_MODES|Sm|0,1|0=Directed only, 1=Vectored supported TODO: clarify if 2-bit
+|PHYS_ADDR_WIDTH|Sm|2-64|Width of physical addresses in bits.
+|TIME_CSR_IMPLEMENTED|Zicntr|True, False|True: time CSR is implemented; False accessing time is unspecified
+|TRAP_ON_EBREAK|Sm|True, False|True: ebreak instruction causes a trap to machine-mode handler; False: ebreak is OUT-OF-SCOPE.
+|TRAP_ON_ECALL_FROM_M|Sm|True, False|True: ecall from machine mode causes a trap to machine-mode handler; False: ecall from machine mode is OUT-OF-SCOPE.
+|VENDOR_ID_BANK|Sm|25-bit integer|mvendorid
+|VENDOR_ID_OFFSET|Sm|7-bit integer|mvendorid
+|===
+
+Notes:
+Don't believe we need PRECISE_SYNCHRONOUS_EXCEPTIONS because spec says exceptions are synchronous [TODO: quote]
+Is MTVEC_MODES 2 bits or 1?
+MISALIGNED_MAX_ATOMICITY_GRANULARITY seems it should not allow values < 4

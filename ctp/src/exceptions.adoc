@@ -1,18 +1,21 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsM, ExceptionsS, ExceptionsU, and ExceptionsF.
+Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run ExceptionsSm, ExceptionsS, ExceptionsU, and ExceptionsF.
 
-==== ExceptionsM Machine-Mode Exceptions
+==== ExceptionsSm Machine-Mode Exceptions
 
 These tests are run on any configuration with machine mode that supports exceptions.
 
-[[t-ExceptionsM-coverpoints]]
-.ExceptionsM Coverpoints
-,===
-//include::{testplansdir}/ExceptionsM.adoc[]
+[[t-ExceptionsSm-coverpoints]]
+.ExceptionsSm Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsSm_norm_rules.adoc[]
+
+include::param/ExceptionsSm_parameters.adoc[]
 
 ==== ExceptionsS Supervisor-Mode Exceptions
 
@@ -21,9 +24,10 @@ These additional exception tests are run on configurations with supervisor mode.
 [[t-ExceptionsS-coverpoints]]
 .ExceptionsS Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2127390256#gid=2127390256[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsS_norm_rules.adoc[]
 
 ==== ExceptionsU User-Mode Exceptions
 
@@ -32,9 +36,10 @@ These additional exception tests are run on configurations with user mode.
 [[t-ExceptionsU-coverpoints]]
 .ExceptionsU Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=593261374#gid=593261374[Google Sheet Testplan]
+,===
+
+include::norm/ExceptionsU_norm_rules.adoc[]
 
 ==== ExceptionsF Floating-Point Exceptions
 
@@ -43,9 +48,8 @@ These additional exception tests are run on configurations with floating-point (
 [[t-ExceptionsF-coverpoints]]
 .ExceptionsF Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsF.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1241522932#gid=1241522932[Google Sheet Testplan]
+,===
 
 ==== ExceptionsVx Vector Integer Exceptions
 
@@ -54,9 +58,8 @@ These additional exception tests are run on configurations with vector (V extens
 [[t-ExceptionsVx-coverpoints]]
 .ExceptionsVx Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVx.adoc[]
-,===
 
+,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1139310135#gid=1139310135[Google Sheet Testplan]
 
 [[t-ExceptionsVf-coverpoints]]
@@ -66,9 +69,8 @@ These additional exception tests are run on configurations with vector (V extens
 
 
 ,===
-//include::{testplansdir}/ExceptionsVf.adoc[]
-,===
 
+,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1839120623#gid=1839120623[Google Sheet Testplan]
 
 
@@ -78,9 +80,8 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions.
 
 ,===
-//include::{testplansdir}/ExceptionsVls.adoc[]
-,===
 
+,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1814229778#gid=1814229778[Google Sheet Testplan]
 
 ==== ExceptionsZalrsc Atomic LR/SC Exceptions
@@ -88,18 +89,16 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 [[t-ExceptionsZalrsc-coverpoints]]
 .ExceptionsZalrsc Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsZalrsc.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=891200072#gid=891200072[Google Sheet Testplan]
+,===
 
 ==== ExceptionsZaamo Atomic Memory Operation Exceptions
 
 [[t-ExceptionsZaamo-coverpoints]]
 .ExceptionsZaamo Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsZaamo.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2143559149#gid=2143559149[Google Sheet Testplan]
+,===
 
 ==== ExceptionsZc Compressed Instruction Exceptions
 
@@ -108,53 +107,49 @@ These additional exception tests are run on configurations with compressed instr
 [[t-ExceptionsZc-coverpoints]]
 .ExceptionsZc Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsZc.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067[Google Sheet Testplan]
+,===
 
 include::norm/ExceptionsZc_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
 
 [[t-ExceptionsZicboS-coverpoints]]
 .ExceptionsZicboS Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsZicboS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=927893239#gid=927893239[Google Sheet Testplan]
+,===
 
 ==== ExceptionsZicboU User-Mode CBO Exceptions
 
 [[t-ExceptionsZicboU-coverpoints]]
 .ExceptionsZicboU Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsZicboU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1054505393#gid=1054505393[Google Sheet Testplan]
-
-==== ExceptionsVM Virtual Memory Exceptions
-
-[[t-ExceptionsVM-coverpoints]]
-.ExceptionsVM Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVM.adoc[]
+
+==== ExceptionsSv Virtual Memory Exceptions
+
+[[t-ExceptionsSv-coverpoints]]
+.ExceptionsSv Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=270777025#gid=270777025[Google Sheet Testplan]
-
-==== ExceptionsVMZalrsc  Virtual Memory LR/SC Exceptions
-
-[[t-ExceptionsVMZalrsc-coverpoints]]
-.ExceptionsVMZalrsc Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVMZalrsc.adoc[]
+
+==== ExceptionsSvZalrsc  Virtual Memory LR/SC Exceptions
+
+[[t-ExceptionsSvZalrsc-coverpoints]]
+.ExceptionsSvZalrsc Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=287426144#gid=287426144[Google Sheet Testplan]
-
-==== ExceptionsVMZaamo Virtual Memory AMO Exceptions
-
-[[t-ExceptionsVMZaamo-coverpoints]]
-.ExceptionsM Coverpoints
 ,===
-//include::{testplansdir}/ExceptionsVMZaamo.adoc[]
+
+==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
+
+[[t-ExceptionsSvZaamo-coverpoints]]
+.ExceptionsSvZaamo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1747092954#gid=1747092954[Google Sheet Testplan]
+,===

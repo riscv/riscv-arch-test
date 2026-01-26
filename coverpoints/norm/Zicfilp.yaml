@@ -1,0 +1,10 @@
+normative_rule_definitions:
+  # The Zicfilp extension adds the SPELP and MPELP fields that hold the previous
+  # ELP, and are updated as specified in &lt;&lt;ZICFILP_FORWARD_TRAPS&gt;&gt;.
+  - names: [mstatus_spelp_op, mstatus_mpelp_op]
+    coverpoint: [""]
+
+  # The x`PELP` fields are encoded as follows: 0 - NO_LP_EXPECTED - no landing pad
+  # instruction expected. 1 - LP_EXPECTED - a landing pad instruction is expected.
+  - names: [mstatus_spelp_enc, mstatus_mpelp_enc]
+    coverpoint: [""]

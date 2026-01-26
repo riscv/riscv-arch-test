@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsS_exceptions_cg = new();         ExceptionsS_exceptions_cg.set_inst_name("obj_ExceptionsS_exceptions");
+    ExceptionsS_cg = new();         ExceptionsS_cg.set_inst_name("obj_ExceptionsS");

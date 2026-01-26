@@ -1,33 +1,23 @@
 
 === Zicntr
 
-These tests exercise the mtime, mcycle, and minstret counters and related registers (time, cycle, instret).
+These privileged tests exercise counters and HPMs reads (`time`, `cycle`, `instret`, `hpmcounter[31:3]`)
+from lower privilege modes, as controlled by `mcounteren`, etc..
+Note that the <<t-Zicntr-coverpoints, Zicntr>> and <<t-Zihpm-coverpoints, Zihpm>> unprivileged tests exercise access to these counters from M-mode
+and the <<t-Sm-coverpoints, Sm>> tests exercise access to `mcycle`, `minstret`, `mhpmcounter`, etc. from M-mode.
 
-*** edit coverpoints to pull out hpm
-
-==== ZicntrM Machine-Mode Counters
-
-[[t-ZicntrM-coverpoints]]
-.ZicntrM Coverpoints
-,===
-//include::{testplansdir}/ZicntrM.adoc[]
-,===
-https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=0#gid=0[Google Sheet Testplan]
-
-==== ZicntrS Supervisor-Mode Counters
+==== ZicntrS Supervisor-Mode Counter Reads
 
 [[t-ZicntrS-coverpoints]]
 .ZicntrS Coverpoints
 ,===
-//include::{testplansdir}/ZicntrS.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=521853953#gid=521853953[Google Sheet Testplan]
+,===
 
-==== ZicntrU User-Mode Counters
+==== ZicntrU User-Mode Counter Reads
 
 [[t-ZicntrU-coverpoints]]
 .ZicntrU Coverpoints
 ,===
-//include::{testplansdir}/ZicntrU.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1wfMzXqXOjg_ND9BhFxChQCi9s4BwsZREPtGS8O1q4tM/edit?gid=516633595#gid=516633595[Google Sheet Testplan]
+,===

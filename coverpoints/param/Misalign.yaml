@@ -1,0 +1,6 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: MISALIGNED_LDST
+    coverpoint: ["cp_misalign"]
+    effect: ["Coverpoints only run if True, and should not throw exceptions"]

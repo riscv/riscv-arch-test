@@ -5,110 +5,113 @@
 
 [[t-Sm1p13-coverpoints]]
 .Sm1p13 Coverpoints
-,===
+//,===
 //include::{testplansdir}/Sm1p13.adoc[]
-,===
+//,===
 
 ==== Smstateen Machine State Enable
 
 [[t-Smstateen-coverpoints]]
 .Smstateen Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smstateen.adoc[]
-,===
+//,===
 
 ==== Smcsrind Machine-Mode Indirect CSR Access
 
 [[t-Smcsrind-coverpoints]]
 .Smcsrind Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smcsrind.adoc[]
-,===
+//,===
 
 ==== Sscsrind Supervisor-Mode Indirect CSR Access
 
 [[t-Sscsrind-coverpoints]]
 .Sscsrind Coverpoints
-,===
+//,===
 //include::{testplansdir}/Sscsrind.adoc[]
-,===
+//,===
 
 ==== Smepmp Enhanced PMP
 
 [[t-Smepmp-coverpoints]]
 .Smepmp Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smepmp.adoc[]
-,===
+//,===
 
 ==== Smrnmi Machine-Mode Resumable Non-Maskable Interrupts
 
 [[t-Smrnmi-coverpoints]]
 .Smrnmi Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smrnmi.adoc[]
-,===
+//,===
 
 ==== Ssrnmi Supervisor-Mode Resumable Non-Maskable Interrupts
 
 [[t-Ssrnmi-coverpoints]]
 .Ssrnmi Coverpoints
-,===
+//,===
 //include::{testplansdir}/Ssrnmi.adoc[]
-,===
+//,===
 
 ==== Smcntrpmf Counter Privilege Mode Filtering
 
 [[t-Smcntrpmf-coverpoints]]
 .Smcntrpmf Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smcntrpmf.adoc[]
-,===
+//,===
 
 ==== Smcdeleg Counter Delegation
 
 [[t-Smcdeleg-coverpoints]]
 .Smcdeleg Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smcdeleg.adoc[]
-,===
+//,===
 
 ==== Ssccfg Counter Delegation
 
 [[t-Ssccfg-coverpoints]]
 .Ssccfg Coverpoints
-,===
+//,===
 //include::{testplansdir}/Ssccfg.adoc[]
-,===
+//,===
 
 ==== Smdbltrp Machine Double Traps
 
 [[t-Smdbltrp-coverpoints]]
 .Smdbltrp Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smdbltrp.adoc[]
-,===
+//,===
 
 ==== Ssdbltrp Supervisor Double Traps
 
 [[t-Ssdbltrp-coverpoints]]
 .Ssdbltrp Coverpoints
-,===
+//,===
 //include::{testplansdir}/Ssdbltrp.adoc[]
-,===
+//,===
 
-==== Smctr Control Transer Records
+==== Smctr Control Transfer Records
 
 [[t-Smctr-coverpoints]]
 .Smctr Coverpoints
-,===
+//,===
 //include::{testplansdir}/Smctr.adoc[]
-,===
+//,===
 
 ==== Ssqosid Quality-of-Service ID
 
 [[t-Ssqosid-coverpoints]]
 .Ssqosid Coverpoints
-,===
+//,===
 //include::{testplansdir}/Ssqosid.adoc[]
-,===
+//,===
+
+TODO: This text is here to prevent Asciidoctor from rendering strangely after an empty table.
+Delete it when table is populated.

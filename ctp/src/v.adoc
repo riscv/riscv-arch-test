@@ -3,7 +3,7 @@
 
 The vector coverpoints are intended to be flexible to support the full V extension, the Zve* embedded vector extensions, and arbitrary mixes of supported vector length (VLEN), element lengths (SEW~MIN~, ELEN), and floating-point precisions.
 
-The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and three privileged portions (ZicsrV, ExceptionsV, SsstrictV) discussed in XREF.
+The vector extension is huge.  The testplan is partitioned into three unprivileged portions discussed here, and two privileged portions (ExceptionsV, SsstrictV) discussed in XREF.
 
 The full V extension supports all selected element widths SEW={8, 16, 32, 64}.  The vector coverage files and tests are organized by SEW.  Thus, a DUT could handle any contiguous subset of SEW from SEW~MIN~ to ELEN.  For example, a DUT with SEW~MIN~=16 and ELEN=32 would support SEW={16, 32}.
 
@@ -11,7 +11,7 @@ The tests detect VLMAX and set the vector length accordingly, up to some configu
 
 ==== Vector File Organization
 
-<<f-vector-organization>> summarizes the structure of the coverpoint and test files for the vector extension.  The unprivileged vector tests are organized by integer (Vx), load/store (Vls), and floating-point (Vf) types of instructions. Each applies to SEW=8, 16, 32, and/or 64. The ExceptionsV, ZicsrV, and SsstrictV privileged tests are described in section XREF.
+<<f-vector-organization>> summarizes the structure of the coverpoint and test files for the vector extension.  The unprivileged vector tests are organized by integer (Vx), load/store (Vls), and floating-point (Vf) types of instructions. Each applies to SEW=8, 16, 32, and/or 64. The ExceptionsV, V, and SsstrictV privileged tests are described in section XREF.
 
 The vector tests are organized by XLEN=32 and XLEN=64 because the scalar registers behavior differs by XLEN.  For example, vadd.vx with SEW=64 sign-extends XLEN=32 scalar registers but does not modify XLEN=64 scalar registers.  For a given XLEN, the vector tests are organized by type (Vx/Vls/Vf) and SEW (8/16/32/64).  Each directory contains a .S file for every vector instruction of that type footnote:[Certain instructions are omitted if not supported for a given SEW.  For example, widening add vwadd.vv is not supported for SEW=64, and vrgatherei16.v is not supported for SEW=8.].  Vector load/store instructions run with any SEW but also specify EEW as part of the instruction name.  For example, vle8.v and vle16.v can both be executed in either SEW=8 or SEW=16, and the EMUL behavior is different between these modes.  Therefore, all the load/store variants are included in all of Vls{8/16/32/64}.
 
@@ -40,7 +40,7 @@ fcov
         Vf64_coverage.svh
       priv
         ExceptionsV_coverage.svh
-        ZicsrV_coverage.svh
+        V_coverage.svh ***reorganize
         SsstrictV_coverage.svh
 tests
     rv32
@@ -101,7 +101,7 @@ tests
         Vf64
     priv
         ExceptionsV.S
-        ZicsrV.S
+        V.S *** reorganize
         SsstrictV.S
 ----
 
@@ -259,7 +259,7 @@ Vector bit manipulation extensions include Zvbb and Zvbc.
 
 === Zvk* Vector Cryptography Extension
 
-There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions are not yet supported.
+There are several Zvk* vector cryptography extensions.
 
 ==== Zvkb Vector Crypto Bit Manipulation Extension
 
@@ -296,7 +296,7 @@ There are several Zvk* vector cryptography extensions.  Zvks ShangMi extensions 
 // include::{testplansdir}/Zvksed.adoc[]
 
 
-==== Zvksh{a/b} Vector ShangMi SM3 Hashing
+==== Zvksh Vector ShangMi SM3 Hashing
 
 [[t-Zvksh-coverpoints]]
 .Zvksh Instruction Coverpoints

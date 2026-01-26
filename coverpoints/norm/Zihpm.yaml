@@ -1,0 +1,8 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: zihpm_op_sz_mode_acc
+    coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]
+
+  - name: hpmcounter_op_sz_mode
+    coverpoint: ["Zihpm_csrrs_cg/{cp_cntr_hpm}"]

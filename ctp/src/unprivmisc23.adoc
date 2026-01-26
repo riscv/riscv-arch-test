@@ -1,21 +1,34 @@
 
 === Miscellaneous RV23 Unprivileged Extensions
 
-==== Zacas Atomic Compare and Swap
+==== Zacas Atomic Compare-and-Swap
 
 [[t-Zacas-coverpoints]]
 .Zacas Coverpoints
-//,===
-//include::{testplansdir}/Zacas.adoc[]
-//,===
+include::{testplansdir}/Zacas.adoc[]
+
+TODO: Add .d to RV32 and .q to RV64 in testplans directory when testgen is updated to handle register pairs.
 
 ==== Zabha Subword Atomics
 
 [[t-Zabha-coverpoints]]
 .Zabha Coverpoints
-//,===
-//include::{testplansdir}/Zabha.adoc[]
-//,===
+include::{testplansdir}/Zabha.adoc[]
+
+==== ZacasZabha Subword Atomic Compare-and-Swap
+
+<<t-ZacasZabha-coverpoints>> summarizes the coverpoints applicable when both Zacas and Zabha are supported.
+
+[[t-ZacasZabha-coverpoints]]
+.ZacasZabha Instruction Coverpoints
+include::{testplansdir}/ZacasZabha.adoc[]
+
+[[t-ZacasZabha-normative-rules]]
+.ZacasZabha Normative Rules
+[cols="1, 4, 2" options=header]
+|===
+
+|===
 
 ==== Zimop Maybe-Ops
 

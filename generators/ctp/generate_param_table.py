@@ -425,25 +425,6 @@ def main() -> None:
     udb_path = Path(args.udb)
     if not udb_path.exists() or True:
         alt = script_dir.parent / args.udb
-        print(f"Looking for UDB directory at alternative location: {alt}")
-        alt = Path(alt).resolve()
-        print(f"Looking for UDB directory at alternative location: {alt}")
-        p = script_dir.parent.parent
-        # list files in p
-        print(f"Listing files in parent directory: {p}")
-        for f in p.iterdir():
-            print(f" - {f}")
-            if "external" in f.name:
-                print(f"Found external directory: {f}")
-                p2 = p / f
-                for f2 in p2.iterdir():
-                    print(f"   - {f2}")
-                    if "riscv-unified-db" in f2.name:
-                        print(f"Found riscv-unified-db directory: {f2}")
-                        p3 = p2 / f2
-                        for f3 in p3.iterdir():
-                            print(f"     - {f3}")
-
         if alt.exists():
             udb_path = alt
         else:

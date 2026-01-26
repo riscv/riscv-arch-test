@@ -211,6 +211,24 @@ coverpoint generators can also be used as examples.
 
 ##### _Special Generators_
 
+Special coverpoint generators should only be used when the coverpoint being tested requires
+a more complex sequence of instructions or requires a different pattern than most other
+coverpoints that apply to a particular instruction. They use significantly more handwritten
+assembly and need support to be explicitly added for each instruction type (or in some
+cases each individual instruction).
+
+Special coverpoint generators vary widely, so it is impossible to provide a complete guide,
+but they usually follow the same initial flow as a standard coverpoint and then diverge
+where the call to `format_single_test` would be. Instead of calling `format_single_test`,
+special coverpoint generators manually add assembly code to the `test_lines` list. While
+most of this code is handwritten, you are still encouraged to use helper Python functions.
+The most useful helpers for special coverpoints tends to be `load_int_reg` and
+`write_sigupd`. See [Adding New Instruction Formats](#adding-new-instruction-formats) for
+details on those functions.
+
+If you are writing a new special coverpoint generator, it is highly encouraged to look at
+several examples from the [`generators/testgen/src/testgen/coverpoints/special`](../generators/testgen/src/testgen/coverpoints/special/) directory.
+
 ### Adding New Instruction Formats
 
 ## Spreadsheet-Driven Privileged Tests

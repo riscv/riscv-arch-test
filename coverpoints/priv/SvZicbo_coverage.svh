@@ -8,7 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SVPMPZICBO
+`define COVER_SVZICBO
 covergroup SvZicbo_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"

@@ -1,6 +1,4 @@
-# RISC-V Architectural Certification Test Developer's Guide
-
-# Developing Certification Test Plan, Coverpoints, and Tests
+# RISC-V Architectural Certification Test Developer's Guide: Developing Certification Test Plan, Coverpoints, and Tests
 
 All extensions require a Certification Test Plan (CTP), coverpoints, and tests.
 The process of developing the CTP, coverpoints, and tests for a new suite differs

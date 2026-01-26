@@ -125,7 +125,9 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/yaml --out $(SRC_DIR)/norm --report mismatch_report.txt
+	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/ --out $(SRC_DIR)/norm --report mismatch_report.txt
+	@echo "Generating parameter rule tables...."
+	../generators/ctp/generate_param_table.py --yaml ../coverpoints/param --udb ../external/riscv-unified-db/spec/std/isa/param --out $(SRC_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

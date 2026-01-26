@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ENDIANZAAMO
-covergroup EndianZaamo_endian_cg with function sample(ins_t ins);
+covergroup EndianZaamo_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests for Zaamo atomic instructions"
@@ -34,5 +34,5 @@ covergroup EndianZaamo_endian_cg with function sample(ins_t ins);
 endgroup
 
 function void endianzaamo_sample(int hart, int issue, ins_t ins);
-    EndianZaamo_endian_cg.sample(ins);
+    EndianZaamo_cg.sample(ins);
 endfunction

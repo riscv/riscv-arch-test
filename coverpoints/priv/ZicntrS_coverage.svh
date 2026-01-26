@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICNTRS
-covergroup ZicntrS_scounters_cg with function sample(ins_t ins);
+covergroup ZicntrS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in supervisor mode
@@ -319,6 +319,6 @@ endgroup
 
 
 function void zicntrs_sample(int hart, int issue, ins_t ins);
-    ZicntrS_scounters_cg.sample(ins);
+    ZicntrS_cg.sample(ins);
    // $display("ins; %h mcounteren; %h privmode: %h enabled: %b %b %b",ins.current.insn, ins.current.csr[12'h306][31:0], ins.prev.mode, {ins.current.insn[31:20], ins.current.csr[12'h306][31:0] } == {12'hC00, 32'b00000000000000000000000000000001}, ins.prev.mode == {2'b01}, ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[19:12] == 8'b00000010);
 endfunction

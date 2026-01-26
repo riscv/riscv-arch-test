@@ -55,6 +55,7 @@ include::norm/MisalignF_norm_rules.adoc[]
 [[t-MisalignD-coverpoints]]
 .MisalignedD Coverpoints
 include::{testplansdir}/MisalignD.adoc[]
+
 include::norm/MisalignD_norm_rules.adoc[]
 
 [[t-MisalignQ-coverpoints]]
@@ -69,15 +70,15 @@ include::{testplansdir}/MisalignZca.adoc[]
 
 include::norm/MisalignZca_norm_rules.adoc[]
 
-[[t-Misaligned-coverpoint-definitions]]
-.Misaligned Coverpoint Definitions
+[[t-Misalign-coverpoint-definitions]]
+.Misalign Coverpoint Definitions
 [cols="2, 1, 4" options=header]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_misalign|8|All 8 combinations of the three least significant bits of the address.
 |===
 
-*UDB Parameters:* Misaligned tests are only executed if MISALIGNED_LDST=True.  ExceptionsSm has multiple tests that may fault depending on MISALIGNED_LDST
+include::param/Misalign_parameters.adoc[]
 
 ==== Zicclsm Misaligned Loads/Stores
 
@@ -143,7 +144,7 @@ For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
 Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 
-*UDB Parameters:* TIME_CSR_IMPLEMENTED defines whether the `time` and `timeh` CSRs are implemented.  If False, the cp_cntr coverpoint skips checking `time` and `timeh`.
+include::param/Zicntr_parameters.adoc[]
 
 ==== Zihpm Hardware Performance Monitors
 
@@ -184,9 +185,9 @@ include::norm/Zihintpause_norm_rules.adoc[]
 
 [[t-Zihintntl-coverpoints]]
 .Zihintntl Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zihintntl.adoc[]
-,===
+//,===
 
 *UDB Parameters:* None.
 
@@ -202,38 +203,38 @@ include::norm/ZihintntlZca_norm_rules.adoc[]
 
 [[t-Zicbom-coverpoints]]
 .Zicbom Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicbom.adoc[]
-,===
+//,===
 
 ==== Zicboz Cache Block Zero
 
 [[t-Zicboz-coverpoints]]
 .Zicboz Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicboz.adoc[]
-,===
+//,===
 
 ==== Zicbop Cache Block Prefetch
 
 [[t-Zicbop-coverpoints]]
 .Zicbop Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicbop.adoc[]
-,===
+//,===
 
 ==== Za64rs Max 64B Reservation Set
 
 [[t-Za64rs-coverpoints]]
 .Za64rs Coverpoints
-,===
+//,===
 //include::{testplansdir}/Za64rs.adoc[]
-,===
+//,===
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
 [[t-Zic64bZicboz-coverpoints]]
 .Zic64bZicboz Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zic64bZicboz.adoc[]
-,===
+//,===

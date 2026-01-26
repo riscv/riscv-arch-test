@@ -20,6 +20,14 @@ If Ssstrict is tested as a required or optional behavior in a certificate, it wi
 and all lower privilege modes.  In Machine mode, the trap will take place to the machine-mode handler rather
 than the supervisor-mode handler.
 
+=== Required Parameters
+
+For DUTs with privileged support (Sm, ExceptionsSm, etc.), MTVEC_ACCESS must be "rw".  If it is "ro", the privileged tests cannot set a trap vector to record activity.
+
+=== Unsupported Parameters
+
+MTVEC_BASE_ALIGNMENT_DIRECT and MTVEC_BASE_ALIGNMENT_VECTORED values > 4 are not yet supported, but could be supported with a .align before the trap handler if desired.
+
 === UDB Description
 
 Every core being certified must provide a UDB configuration (in JSON format) of the features and parameters that it implements.

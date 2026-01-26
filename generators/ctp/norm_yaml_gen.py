@@ -17,7 +17,7 @@ Usage:
 Defaults:
     testplans: testplans/
     json:      coverpoints/norm/norm-rules.json
-    yaml:      coverpoints/norm/yaml
+    yaml:      coverpoints/norm
     output:    coverpoints/norm/yaml/new
 
 For each CSV file in the testplans directory, this script creates a YAML file
@@ -206,8 +206,8 @@ def main() -> int:
     parser.add_argument(
         '--yaml',
         type=Path,
-        default=Path('coverpoints/norm/yaml'),
-        help='Directory to check for existing YAML files (default: coverpoints/norm/yaml)',
+        default=Path('coverpoints/norm'),
+        help='Directory to check for existing YAML files (default: coverpoints/norm)',
     )
     parser.add_argument(
         '--output',

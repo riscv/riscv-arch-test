@@ -20,7 +20,7 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - run: git submodule update --init ctp/docs-resources
+      - run: git submodule update --init ctp/docs-resources crd/docs-resources external/riscv-unified-db
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest

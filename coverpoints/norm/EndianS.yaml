@@ -1,4 +1,35 @@
 normative_rule_definitions:
+  # The EEI will define whether the memory system is little-endian or big-endian.
+  - name: ENDIANNESS_LITTLE_OR_BIG
+    coverpoint: [""]
+
+  # In RISC-V, endianness is byte-address invariant.
+  - name: ldst_endian_byte_invariant
+    coverpoint: [""]
+
+  # In a system for which endianness is byte-address invariant, the following
+  # property holds: if a byte is stored to memory at some address in some
+  # endianness, then a byte-sized load from that address in any endianness returns
+  # the stored value.
+  - name: ldst_endian_byte_op
+    coverpoint: [""]
+
+  # In a little-endian configuration, multibyte stores write the least-significant
+  # register byte at the lowest memory byte address, followed by the other register
+  # bytes in ascending order of their significance. Loads similarly transfer the
+  # contents of the lesser memory byte addresses to the less-significant register
+  # bytes.
+  - name: ldst_little_endian_op
+    coverpoint: [""]
+
+  # In a big-endian configuration, multibyte stores write the most-significant
+  # register byte at the lowest memory byte address, followed by the other register
+  # bytes in descending order of their significance. Loads similarly transfer the
+  # contents of the greater memory byte addresses to the less-significant register
+  # bytes.
+  - name: ldst_big_endian_op
+    coverpoint: [""]
+
   # When MPRV=0, explicit memory accesses behave as normal, using the translation
   # and protection mechanisms of the current privilege mode. When MPRV=1, load and
   # store memory addresses are translated and protected, and endianness is applied,

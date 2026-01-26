@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSF
-covergroup ExceptionsF_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -90,7 +90,7 @@ endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);
     //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[12'h300][14:13], ins.current.csr[12'h003][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
-    ExceptionsF_exceptions_cg.sample(ins);
+    ExceptionsF_cg.sample(ins);
 
 
 endfunction

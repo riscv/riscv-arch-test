@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSS
-covergroup ExceptionsS_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -184,7 +184,7 @@ covergroup ExceptionsS_exceptions_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionss_sample(int hart, int issue, ins_t ins);
-    ExceptionsS_exceptions_cg.sample(ins);
+    ExceptionsS_cg.sample(ins);
 
 // $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 //     ins.current.mode,

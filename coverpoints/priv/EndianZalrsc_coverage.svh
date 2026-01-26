@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ENDIANZALRSC
-covergroup EndianZalrsc_endian_cg with function sample(ins_t ins);
+covergroup EndianZalrsc_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests for Zalrsc atomic instructions"
@@ -41,5 +41,5 @@ covergroup EndianZalrsc_endian_cg with function sample(ins_t ins);
 endgroup
 
 function void endianzalrsc_sample(int hart, int issue, ins_t ins);
-    EndianZalrsc_endian_cg.sample(ins);
+    EndianZalrsc_cg.sample(ins);
 endfunction

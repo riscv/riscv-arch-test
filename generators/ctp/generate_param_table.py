@@ -415,7 +415,7 @@ def main() -> None:
 
     yaml_path = Path(args.yaml)
     if not yaml_path.exists():
-        alt = script_dir.parent.parent / args.yaml
+        alt = script_dir.parent / args.yaml
         if alt.exists():
             yaml_path = alt
         else:
@@ -425,6 +425,10 @@ def main() -> None:
     udb_path = Path(args.udb)
     if not udb_path.exists():
         alt = script_dir.parent / args.udb
+        print(f"Looking for UDB directory at alternative location: {alt}")
+        alt = Path(alt).resolve()
+        print(f"Looking for UDB directory at alternative location resolved: {alt}")
+
         if alt.exists():
             udb_path = alt
         else:

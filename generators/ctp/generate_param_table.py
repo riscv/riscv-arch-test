@@ -419,16 +419,16 @@ def main() -> None:
         if alt.exists():
             yaml_path = alt
         else:
-            print(f'Error: YAML directory not found: {args.yaml}', file=sys.stderr)
+            print(f'Error: YAML directory not found: {args.yaml} or {alt}', file=sys.stderr)
             sys.exit(2)
 
     udb_path = Path(args.udb)
     if not udb_path.exists():
-        alt = script_dir.parent.parent / args.udb
+        alt = script_dir.parent / args.udb
         if alt.exists():
             udb_path = alt
         else:
-            print(f'Error: UDB directory not found: {args.udb}', file=sys.stderr)
+            print(f'Error: UDB directory not found: {args.udb} or {alt}', file=sys.stderr)
             sys.exit(2)
 
     out_path = Path(args.out)

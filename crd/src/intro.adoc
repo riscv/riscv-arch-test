@@ -1,0 +1,53 @@
+
+== Introduction
+
+This document describes requirements for each certificate offered through the RISC-V Certification Program.
+
+=== What's a CRD?
+
+Certification Requirements Documents (CRDs) list requirements an implementation must meet
+to obtain an associated RVI (RISC-V International) certificate.
+CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
+with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
+
+The CRDs refer to information provided in existing
+https://riscv.org/specifications/ratified/[ratified RVI standards].
+The standards include many options, which are formally named as parameters in
+https://github.com/riscv-software-src/riscv-unified-db/tree/main/spec/std/isa/param[Unified Database] (UDB).
+The relevant UDB parameters and their legal values are given for each certificate.
+
+At the time of this writing, certificates are defined for standalone RISC-V cores.
+Later certificates may cover multi-core processors,  non-processor system IP (e.g., IOMMU),
+and system platforms (processor + system IP) hardware standards.
+There are multiple classes of processor certificates available to accommodate the wide range of
+RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
+
+Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
+Note that not all behaviors allowed in RISC-V standards are necessarily supported by a particular CRD.
+
+=== Requirements Terminology
+
+.Requirement Types
+[%autowidth]
+|===
+| Term | Meaning
+
+| MANDATORY | You have to implement it to get a certificate and the certificate tests will cover it
+| OPTIONAL | It's up to you if you implement or not. If you claim to implement it, certificate tests will cover it
+| IN-SCOPE | Either MANDATORY or OPTIONAL
+| OUT-OF-SCOPE | It's up to you if you implement or not. If you implement it, it won't be certified but make sure you don't mess up anything we are certifying.
+| INCOMPATIBLE | If you implement it you won't get a certificate
+|===
+
+.Definition of CSR Fields
+[%autowidth]
+|===
+| Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
+
+| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional
+| Implementations are permitted but not required to raise an illegal-instruction exception if an instruction attempts to write a non-supported value to a WLRL field. Implementations can return arbitrary bit patterns on the read of a WLRL field when the last write was of an illegal value, but the value returned should deterministically depend on the illegal written value and the value of the field prior to the write.
+| WARL | Any deterministic legal value | Any architectural hart state | Prohibited
+| Implementations will not raise an exception on writes of unsupported values to a WARL field. Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
+| WPRI | 0 | Nothing | Not specified
+| Some whole read/write fields are reserved for future use. Implementations that do not furnish these fields must make them read-only zero.
+|===

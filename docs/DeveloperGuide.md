@@ -109,7 +109,7 @@ directory for example coverpoints. A few hints are included below:
 - All data about the instruction is accessed using the `ins` object.
 - There are many pre-built functions to make writing coverpoints for RISC-V easier. Be sure to look through some of the example coverpoints before implementing any complex logic from scratch. TODO: Add documentation of the riscvISACOV functions/enums/etc.
 - If no `bins` are specified for a coverpoint, bins will automatically be created for all possible states of the sampled signal.
-- All unprivileged coverpoints should have an `iff (ins.trap == 0)` check to ensure they are only measured when the hart is not trapping.
+- All unprivileged coverpoints should have an `iff (ins.trap == 0)` check to ensure they are only satisfied when the hart is not trapping.
 
 #### Coverpoint Test Generators
 

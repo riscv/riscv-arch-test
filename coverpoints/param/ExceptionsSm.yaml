@@ -1,0 +1,63 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: MISALIGNED_LDST
+    coverpoint:
+      [
+        "cp_{load_address_misaligned, store_address_misaligned, cp_misaligned_priority_load, cp_misaligned_priority_store}",
+      ]
+    effect: ["When true, misaligned loads and stores do not cause exceptions"]
+  - name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+    coverpoint: ["cp_misaligned_priority_load, cp_misaligned_priority_store"]
+    effect: ["When true, misaligned loads and stores do not cause exceptions"]
+  - name: MTVAL_WIDTH
+    coverpoint: ["TODO"]
+    effect: [""]
+  - name: MTVEC_ACCESS
+    coverpoint: ["all exception coverpoints"]
+    effect: ["If 'ro', tests cannot set `mtvec` and generate a trap signature"]
+  - name: MTVEC_BASE_ALIGNMENT_DIRECT
+    coverpoint: ["all exception coverpoints"]
+    effect: ["Values > 4 not yet supported"]
+  - name: MTVEC_BASE_ALIGNMENT_VECTORED
+    coverpoint: ["all "]
+    effect: ["Values > 4 not yet supported"]
+  - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
+    coverpoint: ["TODO"]
+    effect: [""]
+  - name: MTVEC_MODES
+    coverpoint: ["TODO"]
+    effect: [""]
+  - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTON
+    coverpoint: ["cp_illegal_instruction"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_BREAKPOINT
+    coverpoint: ["cp_breakpoint"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_VAULT
+    coverpoint: ["cp_instr_access_fault"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED
+    coverpoint:
+      [
+        "cp_instr_adr_misaligned_branch, cp_instr_misaligned_jal, cp_instr_misaligned_jalr",
+      ]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT
+    coverpoint: ["cp_load_access_fault"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED
+    coverpoint: ["cp_load_address_misaligned"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT
+    coverpoint: ["cp_store_access_fault"]
+    effect: ["Affects value written to `mtval`"]
+  - name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED
+    coverpoint: ["cp_store_address_misaligned"]
+    effect: ["Affects value written to `mtval`"]
+  - name: TRAP_ON_EBREAK
+    coverpoint: ["cp_breakpoint"]
+    effect: ["TODO"]
+  - name: TRAP_ON_ECALL_FROM_M
+    coverpoint: ["cp_ecall_m"]
+    effect: ["TODO"]

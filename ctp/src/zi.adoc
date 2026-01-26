@@ -70,15 +70,15 @@ include::{testplansdir}/MisalignZca.adoc[]
 
 include::norm/MisalignZca_norm_rules.adoc[]
 
-[[t-Misaligned-coverpoint-definitions]]
-.Misaligned Coverpoint Definitions
+[[t-Misalign-coverpoint-definitions]]
+.Misalign Coverpoint Definitions
 [cols="2, 1, 4" options=header]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_misalign|8|All 8 combinations of the three least significant bits of the address.
 |===
 
-*UDB Parameters:* Misaligned tests are only executed if MISALIGNED_LDST=True.  ExceptionsSm has multiple tests that may fault depending on MISALIGNED_LDST
+include::param/Misalign_parameters.adoc[]
 
 ==== Zicclsm Misaligned Loads/Stores
 
@@ -144,7 +144,7 @@ For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
 Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 
-*UDB Parameters:* TIME_CSR_IMPLEMENTED defines whether the `time` and `timeh` CSRs are implemented.  If False, the cp_cntr coverpoint skips checking `time` and `timeh`.
+include::param/Zicntr_parameters.adoc[]
 
 ==== Zihpm Hardware Performance Monitors
 

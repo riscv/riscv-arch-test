@@ -92,7 +92,7 @@ def generate_all_tests(
                 priv_ext_list.append(ext)
             else:
                 print(
-                    f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators. This is normatl for handwritten tests."
+                    f"Extension {ext} not found in unpriv testplans at {testplan_dir} or priv test generators. This is normal for handwritten tests."
                 )
 
     # Handle extension exclusions

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    UF_ufcsr_cg = new();         UF_ufcsr_cg.set_inst_name("obj_UF_ufcsr");
+    UF_cg = new();         UF_cg.set_inst_name("obj_UF");

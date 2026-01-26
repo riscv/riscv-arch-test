@@ -1,0 +1,7 @@
+
+[appendix]
+== UDB Parameters
+
+<<t-used-parameters>> summarizes all of the UDB parameters that affect coverpoints in this testplan.  <<t-unused-parameters>> summarizes the UDB parameters that are not yet exercised.
+
+include::param/summary.adoc[]

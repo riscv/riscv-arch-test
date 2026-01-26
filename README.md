@@ -331,7 +331,7 @@ a Google Sheet. See the CTP Section "Sm Machine-Mode CSRs and Instructions"
 for an example.
 
 Both privileged and unprivileged suites need a mapping between the normative
-rules and coverpoints. This mapping is a YAML file in coverpoints/norm/yaml
+rules and coverpoints. This mapping is a YAML file in coverpoints/norm
 containing a list of rule names and the coverpoints that exercise them. There
 should be one YAML for each test suite.
 
@@ -343,11 +343,13 @@ Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
 create one yaml file per ISA manual chapter in coverpoints/norm/yaml/chapters.
 (You may need to edit riscv_isa_manual_dir in the Python file to point to
 its location in your tree). Then copy the yaml from the chapter related to the
-test suite up one level (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/yaml/Sm.yaml`) and edit it.
+test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/Sm.yaml`) and edit it.
 
 When you run `make` in the `ctp` directory, the YAML file is parsed to build an
 ASCIIDoc file (in ctp/norm) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
 `include::norm/Sm_norm_rules.adoc[]`
+
+TODO: mention coverpoint/param in similar fashion
 
 ## Contributing
 

@@ -14,7 +14,10 @@ normative_rule_definitions:
 
   # M-mode code can access all CSRs at lower privilege levels.
   - name: M_access_all_lower_priv_CSRs
-    coverpoint: ["TODO S_***, U***, hypervisor***"]
+    coverpoint:
+      [
+        "S_scsr_cg/cp_scsr_from_m, UF_ufcsr_cg/cp_ufcsr_from_m, UV_vucsr_cg/cp_vucsr_from_m, H_mcsr_cg/cp_hcsr_access",
+      ]
 
   # The misa CSR is a WARL read-write register
   - name: misa_acc
@@ -76,10 +79,7 @@ normative_rule_definitions:
   # The Extensions field is a WARL field that can contain writable bits where the
   # implementation allows the supported ISA to be modified.
   - names: [misa_extensions_warl, misa_extensions_op]
-    coverpoint:
-      [
-        "Sm_mcsr_cg/cp_mcsr_access/misa, TODO: tests with Ssstrict with writable bits disabled",
-      ]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
 
   # The Extensions field is a WARL field that can contain writable bits where the
   # implementation allows the supported ISA to be modified.
@@ -96,7 +96,9 @@ normative_rule_definitions:
   # defined or reserved behaviors as if the extension is not implemented.
   - name: misa_extensions_disabling
     coverpoint:
-      ["Untestable because reserved instructions behavior is UNSPECIFIED"]
+      [
+        "Out of scope; also untestable without Ssstrict because reserved instructions behavior is UNSPECIFIED",
+      ]
 
   # For a given RISC-V execution environment, an instruction, extension, or other
   # feature of the RISC-V ISA is ordinarily judged to be implemented or not by the
@@ -115,7 +117,9 @@ normative_rule_definitions:
   # exception.
   - name: misa_extensions_disabling_def
     coverpoint:
-      ["Untestable because reserved instructions behavior is UNSPECIFIED"]
+      [
+        "Out of scope; also untestable without Ssstrict because reserved instructions behavior is UNSPECIFIED",
+      ]
 
   # All bits that are reserved for future use must return zero when read.
   - name: misa_extensions_rsv_ret_0
@@ -150,6 +154,13 @@ normative_rule_definitions:
   - name: misa_u_op
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa and tests for U"]
 
+  # MISA.C is set if the following extensions are selected: Zca and not F Zca, Zcf
+  # and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified
+  # (RV32 only) this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified
+  # (RV64 only) this configuration excludes Zcmp, Zcmt
+  - name: misa-c_set
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
+
   # Unless misa is all read-only zero, the "E" bit always reads as the complement of
   # the "I" bit.
   - name: misa_e_not_i
@@ -173,7 +184,7 @@ normative_rule_definitions:
   # instruction's address is not IALIGN-bit aligned, the write to misa is
   # suppressed, leaving misa unchanged.
   - name: misa_inc_ialign
-    coverpoint: ["TODO - needs test"]
+    coverpoint: ["Out of scope"]
 
   # The mvendorid CSR is a 32-bit read-only register providing the JEDEC
   # manufacturer ID of the provider of the core.
@@ -365,12 +376,12 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    coverpoint: ["TODO: ref PMP, VM, Endian coverpoints"]
+    coverpoint: ["Sv_cg/{ms.2, ms.3, ms.4}, PMPS_cg/cp_mprv, PMPU_cg/cp_mprv"]
 
   # Instruction address-translation and protection are unaffected by the setting of
   # MPRV.
   - name: mstatus_mprv_inst_xlat_op
-    coverpoint: ["TODO: ref PMP, VM coverpoints"]
+    coverpoint: ["Sv_cg/{ms.2, ms.3, ms.4}, PMPS_cg/cp_mprv, PMPU_cg/cp_mprv"]
 
   # MPRV is read-only 0 if U-mode is not supported.
   - name: mstatus_mprv_rdonly0_no_umode
@@ -379,14 +390,14 @@ normative_rule_definitions:
   # An MRET or SRET instruction that changes the privilege mode to a mode less
   # privileged than M also sets MPRV=0.
   - name: mstatus_mprv_clr_mret_sret_less_priv
-    coverpoint: ["TODO: ***"]
+    coverpoint: ["{Sm_mprivinst_cg/S_sprivinst_cg}/{cp_mret, cp_sret}"]
 
   # When MXR=0, only loads from pages marked readable (R=1 in
   # &lt;&lt;sv32pte&gt;&gt;) will succeed. When MXR=1, loads from pages marked
   # either readable or executable (R=1 or X=1) will succeed. MXR has no effect when
   # page-based virtual memory is not in effect.
   - name: mstatus_mxr_op
-    coverpoint: ["TODO: ref VM"]
+    coverpoint: ["Sv_cg/{pte.11,pte.12}"]
 
   # MXR is read-only 0 if S-mode is not supported.
   - name: mstatus_mxr_rdonly0_no_smode
@@ -396,16 +407,16 @@ normative_rule_definitions:
   # in &lt;&lt;sv32pte&gt;&gt;) will fault. When SUM=1, these accesses are
   # permitted.
   - name: mstatus_sum_op
-    coverpoint: ["TODO: ref VM"]
+    coverpoint: ["Sv_cg/{ms.3, ms.4, pte.5, pte.6, pte.8, pte.9"]
 
   # SUM has no effect when page-based virtual memory is not in effect.
   - name: mstatus_sum_op_no-vm
-    coverpoint: ["TODO: ref VM"]
+    coverpoint: ["TODO"]
 
   # while SUM is ordinarily ignored when not executing in S-mode, it is in effect
   # when MPRV=1 and MPP=S.
   - name: mstatus_sum_op_mprv_mpp
-    coverpoint: ["TODO: ref VM"]
+    coverpoint: ["Sv_cg/{ms.3, ms.4}"]
 
   # SUM is read-only 0 if S-mode is not supported or if satp.MODE is read-only 0.
   - name: mstatus_sum_rdonly0
@@ -415,7 +426,7 @@ normative_rule_definitions:
   # in page-table entries. In particular, they have no impact on whether
   # access-fault exceptions are raised due to PMAs or PMP.
   - name: mstatus_mxr_sum_op_acc_fault
-    coverpoint: ["TODO: ref PMP"]
+    coverpoint: ["TODO by UET: add to {PMPSm/PMPS/PMPU}_cg/cp_cfg_RW tests"]
 
   # The MBE, SBE, and UBE bits in mstatus and mstatush are WARL fields
   - names:
@@ -440,7 +451,7 @@ normative_rule_definitions:
   # these operations are permitted in S-mode. TVM is read-only 0 when S-mode is not
   # supported.
   - name: mstatus_tvm_warl
-    coverpoint: ["TODO: ref Sv"]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mstatus"]
 
   # The TVM (Trap Virtual Memory) bit is a WARL field that supports intercepting
   # supervisor virtual-memory management operations. When TVM=1, attempts to read or
@@ -449,7 +460,7 @@ normative_rule_definitions:
   # these operations are permitted in S-mode. TVM is read-only 0 when S-mode is not
   # supported.
   - name: mstatus_tvm_op
-    coverpoint: ["TODO: ref Sv"]
+    coverpoint: ["Sv_cg/ms.1, Svinval_cg/cp_svinval"]
 
   # TW is read-only 0 when there are no modes less privileged than M.
   - name: mstatus_tw_acc
@@ -478,7 +489,7 @@ normative_rule_definitions:
   # The FS field encodes the status of the floating-point unit state, including the
   # floating-point registers f0–f31 and the CSRs fcsr, frm, and fflags.
   - name: mstatus_fs_op
-    coverpoint: ["TODO: test with float"]
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
 
   # The VS field encodes the status of the vector extension state, including the
   # vector registers v0–v31 and the CSRs vcsr, vxrm, vxsat, vstart, vl, vtype, and
@@ -496,7 +507,7 @@ normative_rule_definitions:
   # None dirty or clean, some on None dirty, some clean Some dirty ===
   - names: [mstatus_fs_enc, mstatus_vs_enc, mstatus_xs_enc]
     coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mstatus, TODO: test with float and vector"]
+      ["Sm_mcsr_cg/cp_mcsr_access/mstatus, SmF_cg/cp_mstatus_FS_transition"]
 
   # If the F extension is implemented, the FS field shall not be read-only zero. If
   # neither the F extension nor S-mode is implemented, then FS is read-only zero.
@@ -516,7 +527,7 @@ normative_rule_definitions:
   # If S-mode is implemented but the v registers are not, VS may optionally be
   # read-only zero.
   - name: mstatus_vs_rdonly0_s-no-v
-    coverpoint: [""]
+    coverpoint: ["TODO"]
 
   # In harts without additional user extensions requiring new state, the XS field is
   # read-only zero.
@@ -526,7 +537,7 @@ normative_rule_definitions:
   # Every additional extension with state provides a CSR field that encodes the
   # equivalent of the XS states.
   - name: mstatus_xs_equiv
-    coverpoint: ["Untested"]
+    coverpoint: ["Out of scope"]
 
   # The SD bit is a read-only bit
   - name: mstatus_sd_acc
@@ -544,7 +555,10 @@ normative_rule_definitions:
   # When an extension's status is set to Off, any instruction that attempts to read
   # or write the corresponding state will cause an illegal-instruction exception.
   - name: mstatus_fs_vs_xs_off_op
-    coverpoint: ["TODO: test with float, vector"]
+    coverpoint:
+      [
+        "SmF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO for Vector",
+      ]
 
   # When the status is Initial, the corresponding state should have an initial
   # constant value.
@@ -554,12 +568,12 @@ normative_rule_definitions:
   # When the status is Clean, the corresponding state is potentially different from
   # the initial value, but matches the last value stored on a context swap.
   - name: mstatus_fs_vs_xs_clean_op
-    coverpoint: ["TODO: test with float, vector"]
+    coverpoint: ["Untestable"]
 
   # When the status is Dirty, the corresponding state has potentially been modified
   # since the last context save.
   - name: mstatus_fs_vs_xs_dirty_op
-    coverpoint: [""]
+    coverpoint: ["cp_mstatus_FS_transition"]
 
   # The status fields will also be updated during execution of instructions,
   # regardless of privilege mode.
@@ -582,19 +596,25 @@ normative_rule_definitions:
   # floating-point state may cause the state to transition from Initial or Clean to
   # Dirty.
   - name: mstatus_fs_imprecise
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable.  TODO: imprecise dirty tracking could be a problem to match the reference model in cp_mstatus_FS_transition",
+      ]
 
   # dirtiness might not be tracked at all, in which case the valid FS states are Off
   # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to
   # Dirty.
   - name: mstatus_fs_no_dirty_track
-    coverpoint: ["TODO: test with float"]
+    coverpoint: ["SmF_cg/{cp_fcsr_frm_write, cp_mstatus_FS_transition}"]
 
   # If an instruction explicitly or implicitly writes a floating-point register or
   # the fcsr but does not alter its contents, and FS=Initial or FS=Clean, it is
   # implementation-defined whether FS transitions to Dirty.
   - name: mstatus_fs_no_change_dirty
-    coverpoint: ["TODO: test with float, param"]
+    coverpoint:
+      [
+        "Untestable without UDB parameters to control this behavior in the ref model",
+      ]
 
   # Implementations may choose to track the dirtiness of the floating-point register
   # state imprecisely by reporting the state to be dirty even when it has not been
@@ -604,13 +624,13 @@ normative_rule_definitions:
   # state in an analogous imprecise fashion, including possibly setting VS to Dirty
   # when software attempts to set VS=Initial or VS=Clean.
   - name: mstatus_vs_imprecise
-    coverpoint: ["TODO: test with vector"]
+    coverpoint: ["Untestable"]
 
   # When VS=Initial or VS=Clean, it is implementation-defined whether an instruction
   # that writes a vector register or vector CSR but does not alter its contents
   # causes VS to transition to Dirty.
   - name: mstatus_vs_no_change_dirty
-    coverpoint: ["TODO: test with vector"]
+    coverpoint: ["Untestable"]
 
   # TODO: Add description for mtvec_enc
   - name: mtvec_enc
@@ -639,46 +659,10 @@ normative_rule_definitions:
   - name: mtvec_base_align_func_mode
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
 
-  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
-  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
-  - name: mtvec_mode_enc
-    coverpoint:
-      ["Sm_mcsr_cg/cp_mcsr_access/mtvec, TODO: xref exceptions & interrupts"]
-
-  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
-  # address in the BASE field.
-  - name: mtvec_mode_direct_op
-    coverpoint: ["TODO: exceptions & interrupts"]
-
-  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
-  # be set to the address in the BASE field, whereas interrupts cause the pc to be
-  # set to the address in the BASE field plus four times the interrupt cause number.
-  - name: mtvec_mode_vectored_op
-    coverpoint: ["TODO: exceptions & interrupts"]
-
-  # implementations can provide individual read/write bits within medeleg and
-  # mideleg to indicate that certain exceptions and interrupts should be processed
-  # directly by a lower privilege level. setting a bit in medeleg or mideleg will
-  # delegate the corresponding trap, when occurring in S-mode or U-mode, to the
-  # S-mode trap handler.
-  - name: mideleg_op
-    coverpoint: ["TODO ExceptionsS/***, InterruptsS/***"]
-
-  # medeleg has a bit position allocated for every synchronous exception shown in
-  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position
-  # equal to the value returned in the mcause register
-  - name: medeleg_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medeleg, TODO: xref exceptions"]
-
   # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
   # of medeleg.
   - names: [medelegh_sz_xlen32, medelegh_acc_xlen32, medelegh_enc_xlen32]
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/medelegh"]
-
-  # mideleg holds trap delegation bits for individual interrupts, with the layout of
-  # bits matching those in the mip register
-  - name: mideleg_enc
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mideleg, TODO: xref interrupts"]
 
   # When XLEN=32, medelegh is a 32-bit read/write register that aliases bits 63:32
   # of medeleg.
@@ -799,10 +783,7 @@ normative_rule_definitions:
   # implemented. Further, if the H extension is implemented, then hip.VSTIP also
   # reverts its defined behavior as if this extension is not implemented.
   - name: menvcfg-stce
-    coverpoint:
-      [
-        "Sm_mcsr_cg/cp_mcsrwalk/menvcfg, TODO ref InterruptsSstc and InterruptsSstcH",
-      ]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
   # to menvcfg. When the CBZE field is set to 1, it enables execution of the cache
@@ -810,7 +791,10 @@ normative_rule_definitions:
   # the instruction raises an illegal-instruction exception in modes less privileged
   # than M. When the Zicboz extension is not implemented, CBZE is read-only zero.
   - name: menvcfg-cbze
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, TODO ref Zicboz"]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicboz_cg/{zero.1, zero.2, zero.4, zero.5}",
+      ]
 
   # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
   # Enable) field to menvcfg. When the CBCFE field is set to 1, it enables execution
@@ -819,7 +803,8 @@ normative_rule_definitions:
   # instructions raise an illegal-instruction exception in modes less privileged
   # than M. When the Zicbom extension is not implemented, CBCFE is read-only zero.
   - name: menvcfg-cbcfe
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, TODO ref Zicbom"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicbom_cg/{cl.1, cl.4, fl.1, fl.4}"]
 
   # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
   # WARL field to menvcfg to control execution of the cache block invalidate
@@ -828,12 +813,13 @@ normative_rule_definitions:
   # privileged than M. When the Zicbom extension is not implemented, CBIE is
   # read-only zero. The encoding 10b is reserved.
   - name: menvcfg-cbie
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, TODO ref Zicbom"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mcsrwalk/menvcfg, Zicbom_cg/{inv.1, inv.4, inv.6}"]
 
   # When CBIE is set to 01b or 11b, and when enabled for execution in modes less
   # privileged than M, it behaves as follows:
   - name: cbo-inval_m-mode_op
-    coverpoint: ["TODO ref Zicbom"]
+    coverpoint: ["Zicbom_cg/{inv.1, inv.4, inv.6}"]
 
   # The mcycle CSR counts the number of clock cycles executed by the processor core
   # on which the hart is running.
@@ -1034,7 +1020,10 @@ normative_rule_definitions:
   # controls the availability of the hardware performance-monitoring counters to the
   # next-lower privileged mode.
   - name: mcounteren_op
-    coverpoint: ["TODO in ZicntrS, ZicntrU, ZicntrH"]
+    coverpoint:
+      [
+        "ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u, ZicntrH_cg/cp_mcounteren_access_vs",
+      ]
 
   # The settings in this register only control accessibility. The act of reading or
   # writing this register does not affect the underlying counters, which continue to
@@ -1050,26 +1039,15 @@ normative_rule_definitions:
   # to read the cycle, time, instret, or hpmcountern register while executing in
   # S-mode or U-mode will cause an illegal-instruction exception.
   - name: mcounteren_clr_ill_inst_exc
-    coverpoint: ["TODO in ZicntrS, ZicntrU"]
+    coverpoint:
+      ["ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u"]
 
   # When one of these bits is set, access to the corresponding register is permitted
   # in the next implemented privilege mode (S-mode if implemented, otherwise
   # U-mode).
   - name: mcounteren_set_nxt_priv
-    coverpoint: ["TODO in ZicntrS, ZicntrU"]
-
-  # when the TM bit in the mcounteren register is clear, attempts to access the
-  # stimecmp or vstimecmp register while executing in a mode less privileged than M
-  # will cause an illegal-instruction exception.
-  - name: mcounteren_tm_clr
-    coverpoint: ["TODO in ZicntrS, ZicntrH"]
-
-  # When this bit is set, access to the stimecmp or vstimecmp register is permitted
-  # in S-mode if implemented, and access to the vstimecmp register (via stimecmp) is
-  # permitted in VS-mode if implemented and not otherwise prevented by the TM bit in
-  # hcounteren.
-  - name: mcounteren_tm_set
-    coverpoint: ["TODO in ZicntrS, ZicntrH"]
+    coverpoint:
+      ["ZicntrS_cg/cp_mcounteren_access_s, ZicntrU_cg/cp_mcounteren_access_u"]
 
   # In harts with U-mode, the mcounteren must be implemented, but all fields are
   # WARL
@@ -1121,7 +1099,10 @@ normative_rule_definitions:
 
   # In harts without U-mode, the mcounteren register should not exist.
   - name: mcounteren_presence
-    coverpoint: ["TODO: Ssstrict"]
+    coverpoint:
+      [
+        "Untestable because nonexistent registers are reserved and unspecified except in SsstrictM",
+      ]
 
   # The cycle, instret, and hpmcountern CSRs are read-only shadows of mcycle,
   # minstret, and mhpmcounter n, respectively.
@@ -1240,13 +1221,6 @@ normative_rule_definitions:
   - name: mepc_inv_addr_conv
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
 
-  # When a trap is taken into M-mode, mepc is written with the virtual address of
-  # the instruction that was interrupted or that encountered the exception.
-  # Otherwise, mepc is never written by the implementation, though it may be
-  # explicitly written by software.
-  - name: mepc_op
-    coverpoint: ["TODO: Exceptions & Interrupts"]
-
   # TODO: Add description for mepc_enc
   - name: mepc_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
@@ -1258,22 +1232,6 @@ normative_rule_definitions:
   # TODO: Add description for mcause_enc
   - name: mcause_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcause"]
-
-  # When a trap is taken into M-mode, mcause is written with a code indicating the
-  # event that caused the trap. Otherwise, mcause is never written by the
-  # implementation, though it may be explicitly written by software.
-  - name: mcause_op
-    coverpoint: ["TODO: Exceptions & Interrupts"]
-
-  # The Interrupt bit in the mcause register is set if the trap was caused by an
-  # interrupt.
-  - name: mcause_intr_op
-    coverpoint: ["TODO: Exceptions & Interrupts"]
-
-  # The Exception Code field contains a code identifying the last exception or
-  # interrupt.
-  - name: mcause_exccode_op
-    coverpoint: ["TODO: Exceptions & Interrupts"]
 
   # Interrupt|Exception Code|Description === 1 1 1 1|0 1 2 3|Reserved Supervisor
   # software interrupt Reserved Machine software interrupt¶1 1 1 1|4 5 6 7|Reserved
@@ -1289,7 +1247,7 @@ normative_rule_definitions:
   # Store/AMO page fault Double trap Reserved Software check Hardware error Reserved
   # Designated for custom use Reserved Designated for custom use Reserved ===
   - name: mcause_exccode_enc
-    coverpoint: ["TODO: Exceptions & Interrupts"]
+    coverpoint: ["See mcause_op"]
 
   # The Exception Code is a WLRL field, so is only guaranteed to hold supported
   # exception codes.
@@ -1336,44 +1294,10 @@ normative_rule_definitions:
   - name: nmi_addr
     coverpoint: ["Out of scope"]
 
-  # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M-mode
-    coverpoint: ["TODO: Exceptions & Interrupts"]
-
-  # When a trap is delegated to S-mode the scause register is written with the trap
-  # cause; the sepc register is written with the virtual address of the instruction
-  # that took the trap; the stval register is written with an exception-specific
-  # datum; the SPP field of mstatus is written with the active privilege mode at the
-  # time of the trap; the SPIE field of mstatus is written with the value of the SIE
-  # field at the time of the trap; and the SIE field of mstatus is cleared.
-  - name: trap_del_S-mode_op
-    coverpoint: ["TODO: ExceptionsS & InterruptsS"]
-
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.
   - name: trap_del_S-mode_no_M-mode
     coverpoint:
       [
-        "TODO: ExceptionsS & InterruptsS should check that m state is not changed (tricky)",
+        "Untested; S-mode handler does not have access to M-mode CSRs and changing to M-mode disturbs CSRs",
       ]
-
-  # Traps never transition from a more-privileged mode to a less-privileged mode.
-  # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
-  # and M-mode software later executes an illegal instruction, the trap is taken in
-  # M-mode, rather than being delegated to S-mode.
-  - name: trap_never_trans_lower
-    coverpoint: ["TODO: ExceptionsS & InterruptsS"]
-
-  # traps may be taken horizontally. Using the same example, if M-mode has delegated
-  # illegal-instruction exceptions to S-mode, and S-mode software later executes an
-  # illegal instruction, the trap is taken in S-mode.
-  - name: trap_horiz
-    coverpoint: ["TODO: ExceptionsS & InterruptsS"]
-
-  # Delegated interrupts result in the interrupt being masked at the delegator
-  # privilege level. For example, if the supervisor timer interrupt (STI) is
-  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
-  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
-  # and regardless of current mode will transfer control to M-mode.
-  - name: trap_del_intr_priv_lvl
-    coverpoint: ["TODO: ExceptionsS & InterruptsS"]

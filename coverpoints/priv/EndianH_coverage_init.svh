@@ -10,4 +10,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-   EndianH_endian_cg = new();         EndianH_endian_cg.set_inst_name("obj_EndianH_endian");
+   EndianH_cg = new();         EndianH_cg.set_inst_name("obj_EndianH");

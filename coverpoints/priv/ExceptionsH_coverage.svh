@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSH
-covergroup ExceptionsH_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsH_cg with function sample(ins_t ins);
    option.per_instance = 0;
 
    // Include standard RISCV coverpoints
@@ -571,5 +571,5 @@ endgroup
 
 
 function void exceptionsh_sample(int hart, int issue, ins_t ins);
-   ExceptionsH_exceptions_cg.sample(ins);
+   ExceptionsH_cg.sample(ins);
 endfunction

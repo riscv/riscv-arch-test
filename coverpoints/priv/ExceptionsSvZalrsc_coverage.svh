@@ -34,7 +34,7 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
             // auto fill 1/0 for the physical address being valid
         }
     `endif
-    amemops: coverpoint ins.current.insn {
+    lrscops: coverpoint ins.current.insn {
         wildcard bins lr_w     = {32'b000100000000_?????_010_?????_0101111};
         wildcard bins sc_w     = {32'b0001100_?????_?????_010_?????_0101111};
     }
@@ -63,12 +63,12 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_misaligned_priority_m:        cross priv_mode_m, amemops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
-    cp_medeleg_m:                    cross priv_mode_m, amemops,  d_page_table_entry_invalid, medeleg_walk;
-    cp_misaligned_priority_s:        cross priv_mode_s, amemops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
-    cp_medeleg_s:                    cross priv_mode_s, amemops, d_page_table_entry_invalid, medeleg_walk;
-    cp_misaligned_priority_u:        cross priv_mode_u, amemops,  d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
-    cp_medeleg_u:                    cross priv_mode_u, amemops,  d_page_table_entry_invalid, medeleg_walk;
+    cp_misaligned_priority_m:        cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+    cp_medeleg_m:                    cross priv_mode_m, lrscops,  d_page_table_entry_invalid, medeleg_walk;
+    cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+    cp_medeleg_s:                    cross priv_mode_s, lrscops, d_page_table_entry_invalid, medeleg_walk;
+    cp_misaligned_priority_u:        cross priv_mode_u, lrscops,  d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+    cp_medeleg_u:                    cross priv_mode_u, lrscops,  d_page_table_entry_invalid, medeleg_walk;
 
 endgroup
 

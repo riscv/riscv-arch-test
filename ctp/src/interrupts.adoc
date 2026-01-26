@@ -13,6 +13,8 @@ These tests are run on any configuration with machine mode that supports interru
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=399538825#gid=399538825[Google Sheet Testplan]
 ,===
 
+include::norm/InterruptsSm_norm_rules.adoc[]
+
 TODO: coverpoints will need to ignore bins with mie.msie nonzero:
   # If a system has only one hart, or if a platform standard supports the delivery
   # of machine-level interprocessor interrupts through external interrupts (MEI)
@@ -33,6 +35,9 @@ These tests are run on any configuration with supervisor mode that supports inte
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=664673151#gid=664673151[Google Sheet Testplan]
 ,===
 
+
+include::norm/InterruptsS_norm_rules.adoc[]
+
 ==== InterruptsU User-Mode Interrupts
 
 These tests are run on any configuration with user mode that supports interrupts.
@@ -43,6 +48,8 @@ These tests are run on any configuration with user mode that supports interrupts
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=1458360883#gid=1458360883[Google Sheet Testplan]
 ,===
 
+include::norm/InterruptsU_norm_rules.adoc[]
+
 ==== InterruptsSstc Supervisor Timer Compare Interrupts
 
 These tests are run when the Sstc supervisor timer compare extension is supported.
@@ -52,3 +59,5 @@ These tests are run when the Sstc supervisor timer compare extension is supporte
 ,===
 https://docs.google.com/spreadsheets/d/18S2xJ6lxXhe2X9N9zcahoPMdvrqEnBFKdldi1fc7fOA/edit?gid=347804969#gid=347804969[Google Sheet Testplan]
 ,===
+
+include::norm/InterruptsSstc_norm_rules.adoc[]

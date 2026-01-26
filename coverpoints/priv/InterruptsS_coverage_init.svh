@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    InterruptsS_cg = new();         InterruptsS_cg.set_inst_name("obj_interruptss");
+    InterruptsS_cg = new();         InterruptsS_cg.set_inst_name("obj_InterruptsS");

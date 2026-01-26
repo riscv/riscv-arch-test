@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-SvCBO_exceptions_cg = new(); SvCBO_exceptions_cg.set_inst_name("obj_SvCBO_exceptions");
+    SvaduPMP_cg = new(); SvaduPMP_cg.set_inst_name("obj_SvaduPMP");

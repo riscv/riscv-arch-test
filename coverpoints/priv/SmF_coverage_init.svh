@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SmF_fcsr_cg = new();         SmF_fcsr_cg.set_inst_name("obj_SmF_fcsr");
+    SmF_cg = new();         SmF_cg.set_inst_name("obj_SmF");

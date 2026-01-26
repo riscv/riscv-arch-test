@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SMF
-covergroup SmF_fcsr_cg with function sample(ins_t ins);
+covergroup SmF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -151,5 +151,5 @@ covergroup SmF_fcsr_cg with function sample(ins_t ins);
 endgroup
 
 function void smf_sample(int hart, int issue, ins_t ins);
-    SmF_fcsr_cg.sample(ins);
+    SmF_cg.sample(ins);
 endfunction

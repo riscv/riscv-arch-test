@@ -87,7 +87,9 @@ def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[lis
     ):
         ext_components.append("F")  # Add F if any floating point extension is present
     if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]) and "F" not in ext_components:
-        ext_components.append("Zicsr")  # Add Zicsr is any priv extension is present
+        ext_components.append("Zicsr")  # Add Zicsr if any priv extension is present
+    if any(ext in ext_components for ext in ["V", "Zvfh"]) and "M" not in ext_components:
+        ext_components.append("M")  # Add M if V is present (required for gcc 15)
 
     return ext_components, params
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [3.11.0] - 2026-01-26
+- Add Makefile-based build system as a robust alternative to pip/riscof (especially for Linux distros)
+- Applied alignment workaround in arch_test.h for RISC-V GNU assembler (v2.43.50) alignment bug
+
 ## [3.10.0] - 2024-11-04
 - Add support for Zvk* extensions
 - Split float and double test cases into smaller ones

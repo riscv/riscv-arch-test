@@ -1609,6 +1609,7 @@ spcl_\__MODE__\()dispatch:
 /**** Note that the external interrupt routines are expected to ****/
 /**** return with an interrupt ID in T3                         ****/
 
+        .align 2
         .align 3                        //make sure this is a dblwd boundary
 clrint_\__MODE__\()tbl:                 //this code should only touch T2..T6
 #ifdef rvtest_vtrap_routine  //  M/S/V/U
@@ -2022,6 +2023,7 @@ exit_cleanup:                   // *** RVMODEL_HALT MUST follow this***, then da
 .macro RVTEST_DATA_BEGIN
 .data
 
+.align 2
 .align 4        //ensure dbl alignment
 /**************************************************************************************/
 /**** this is the pointer to the current trap signature part of the signature area ****/
@@ -2053,6 +2055,7 @@ rvtest_data_begin:
 .global rvtest_data_end
 
 /**** create identity mapped page tables here if mmu is present ****/
+.align 2
 .align 12
 
 #ifndef RVTEST_NO_IDENTY_MAP

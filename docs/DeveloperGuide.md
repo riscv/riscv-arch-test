@@ -52,7 +52,7 @@ ASCIIDoc file (in `ctp/norm`) with a table of normative rule names, definitions,
 ## Table-Driven Unprivileged Coverpoints and Tests
 
 Unprivileged tests are tests that exercise individual instructions and do not trap.
-Unprivileged tests require a [CSV testplan](#creating-new-csv-testplans), [coverpoint generators](#adding-new-coverpoints), and [instruction formatters](#adding-new-instruction-formats).
+Unprivileged tests always require a [CSV testplan](#creating-new-csv-testplans) and [updates to the instruction decoder](#adding-instructions-to-the-decoder). They may also require new [coverpoint generators](#adding-new-coverpoints) and/or [instruction formatters](#adding-new-instruction-formats).
 
 ### Creating New CSV Testplans
 
@@ -81,6 +81,16 @@ auipc,U,x,x,x,,,x,,,,,,,,,,,20bit,,,
 See [`I.csv`](../testplans/I.csv) for a complete example.
 
 Most new extension testplans will be able to reuse existing coverpoints and instruction formats. If any new coverpoints, coverpoint variants, or instruction formats are added, make sure to follow [adding new coverpoints](#adding-new-coverpoints) or [adding new instruction formats](#adding-new-instruction-formats) respectively.
+
+### Adding Instructions to the Decoder
+
+Unprivileged instructions are decoded in [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh).
+All new instructions need to be added to the case statement.
+[`disassemble.svh`](../framework/src/act/fcov/disassemble.svh) translates the encoding
+into an instruction mnemonic and instruction arguments. The encodings themselves come
+from the auto-generated [`RISCV_imported_decode_pkg.svh`](../framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh) header.
+This header is generated using [riscv-opcodes](https://github.com/riscv/riscv-opcodes)
+and should not be manually modified. <!-- TODO: Update this to use a header generated from UDB -->
 
 ### Adding New Coverpoints
 
@@ -131,9 +141,75 @@ Special generators include all of the test code inline and are used for coverpoi
 that apply to only a small set of instructions. Examples include `cp_custom_fence`
 and `cp_align`.
 
-##### Standard Generators
+##### _Standard Generators_
 
-##### Special Generators
+Standard coverpoint generators are used for many instructions and make up the majority
+of the coverpoint generators. A good example to get familiar with the structure of a
+coverpoint generator is the `cp_rd` generator in
+[`cp_regs.py`](../generators/testgen/src/testgen/coverpoints/cp_regs.py).
+It is also included below with many additional comments added to explain how it works.
+
+```py
+# All coverpoint generators use the add_coverpoint_generator decorator to specify
+# which coverpoints they apply to.
+@add_coverpoint_generator("cp_rd")
+# Coverpoint generators all use the standard signature described above.
+def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+    """Generate tests for destination register coverpoints."""
+    # Determine which rd registers to test based on the coverpoint variant.
+    # Multiple variants can match to the same generator. This is useful when
+    # the difference between variants in minor (e.g. just the register values).
+    if coverpoint == "cp_rd":
+        rd_regs = list(range(test_data.int_regs.reg_count))
+    elif coverpoint.endswith("_nx0"):
+        rd_regs = list(range(1, test_data.int_regs.reg_count))  # Exclude x0
+    elif coverpoint.endswith("rd_p"):
+        rd_regs = list(range(8, 16))  # x8-x15 for compressed instructions
+    else:
+        # Raise an error if an unexpected variant was matched to this coverpoint
+        # to make debugging easy.
+        raise ValueError(f"Unknown cp_rd coverpoint variant: {coverpoint} for {instr_name}")
+
+    # Initialize a list of strings to build up the test
+    test_lines: list[str] = []
+
+    # Generate tests
+    # A common pattern is to use a loop to iterate over some value that is being testing
+    # in a particular coverpoint. This could be register numbers, register values,
+    # immediate values, etc.
+    for rd in rd_regs:
+        # Each testcase needs to include a call to the test_data.add_testcase function.
+        # This adds a label for the test to the generated file and adds the appropriate
+        # debugging string.
+        test_lines.append(test_data.add_testcase(coverpoint))
+        # Any registers that are explicitly used must be marked as used using the
+        # test_data.int_regs.consume_registers function. This will automatically move
+        # any reserved registers to ensure the desired register is free.
+        test_lines.append(test_data.int_regs.consume_registers([rd]))
+        # The generate_random_params function will populate any instruction parameters
+        # used by the provided instruction type that are not explicitly specified with
+        # random (legal) values. In this case, only rd is specified, so rs1, rs2, imm, etc.
+        # will get random values.
+        params = generate_random_params(test_data, instr_type, rd=rd)
+        desc = f"{coverpoint} (Test destination rd = x{rd})"
+        # format_single_test is the key part of standard coverpoint generators. It takes
+        # the provided instruction parameters (created above) and produces the assembly
+        # sequence necessary to test the given instruction.
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        # Once registers are no longer in use, they need to be marked as available again
+        # so that the register allocator knows that they can be reused.
+        return_test_regs(test_data, params)
+
+    # The final list of assembly lines is returned. It will be concatendated with newlines
+    # when the test is written to a file.
+    return test_lines
+```
+
+Additional documentation for all of these functions (and many other helper functions) is
+available as docstrings in the Python files where they are defined. Other standard
+coverpoint generators can also be used as examples.
+
+##### _Special Generators_
 
 ### Adding New Instruction Formats
 

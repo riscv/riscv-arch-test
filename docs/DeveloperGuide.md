@@ -262,4 +262,81 @@ directory for example instruction format sample sequences.
 
 #### Python Instruction Formatters
 
+The standard coverpoint generators rely on instruction formatters to produce the necessary
+assembly to test each instruction. Each instruction type needs a Python generator that produces an assembly language test.
+
+The following applies to all instruction formatters:
+
+- All instruction formatters must go in [`generators/testgen/src/testgen/formatters/types`](../generators/testgen/src/testgen/formatters/types). All Python files in that directory are automatically discovered and imported.
+- All instruction formatter functions must be decorated with the `@add_instruction_formatter("<TYPE_NAME>", <type_name>_config)` decorator. This tells the framework which instruction type to use this generator for and how to generate the parameters for it.
+  - The `<type_name>_config` argument is an `InstructionTypeConfig` object that contains the `required_params` for an instruction type along with constraints on those parameters, like `reg_range`, `imm_rage`, etc. See the `InstructionTypeConfig` docstring in [`generators/testgen/src/testgen/formatters/registry.py`](../generators/testgen/src/testgen/formatters/registry.py) for more details.
+- All instruction formatter functions must use the following signature:
+
+  ```py
+    def format_name_type(instr_name: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
+  ```
+
+  - `instr_name` is the instruction currently being tested. This allows instruction formatters to be reused for multiple instructions of the same type.
+  - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, test values, debug strings, etc.
+  - `params` is a dataclass containing values for all of the instruction arguments (rs1, rs1val, immval, etc.). See its definition in [`generators/testgen/src/testgen/data/params.py`](../generators/testgen/src/testgen/data/params.py) for all of the options.
+  - The generator must return a tuple of three lists of strings:
+    - Code to set up the test.
+    - The test itself (usually just the instruction being tested).
+    - Code to check the results of the test (usually signature checks).
+
+A good example to get familiar with the structure of an instruction formatter is the
+[`r_type`](../generators/testgen/src/testgen/formatters/types/r_type.py).
+It is also included below with many additional comments added to explain how it works.
+
+```py
+# The InstructionTypeConfig object is used when generating random parameters.
+# At a minimum, it specifies the `required_params` that must be populated with values.
+# It can also optionally specify constrains or additional details for these parameters,
+# including reg_range, imm_bits, imm_signed, etc.
+r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
+
+# All instruction formatters use the add_instruction_formatter decorator to specify
+# what instruction type it applies to and what configuration object to use.
+@add_instruction_formatter("R", r_config)
+# Instruction formatters all use the standard signature described above
+def format_r_type(instr_name: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
+    """Format R-type instruction."""
+    # The assert statements are used to satisfy the type checker and help ensure
+    # none of the necessary params are left out of the required_params above.
+    assert params.rs1 is not None and params.rs1val is not None
+    assert params.rs2 is not None and params.rs2val is not None
+    assert params.rd is not None
+    # setup is a list of strings of assembly code that should be run before the test.
+    # The most common thing to do here is populate registers with specified values.
+    # The load_int_reg and load_float_reg helper functions load values from memory
+    # to ensure the instruction sequence is consistent and to simplify the process
+    # of populating floating-point values. The functions will automatically include
+    # the values in the data section at the end of the test.
+    setup = [
+        load_int_reg("rs1", params.rs1, params.rs1val, test_data),
+        load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+    ]
+    # test is a (usually one item) list of strings with the assembly to actually
+    # run the test. Note that all of the arguments to the instruction come from
+    # the params object that is passed to the formatter. This allows the coverpoint
+    # generators to customize the instruction arguments as needed.
+    test = [
+        f"{instr_name} x{params.rd}, x{params.rs1}, x{params.rs2} # perform operation",
+    ]
+    # check is a list of strings of assembly code that validate the results of the test.
+    # While check can contain anything, it is usually made up of calls to the
+    # write_sigupd helper function. This function inserts a RVTEST_SIGUPD macro with
+    # all of the appropriate arguments populated.
+    check = [write_sigupd(params.rd, test_data, "int")]
+    # The three lists of strings are returned as a tuple. They are usually joined
+    # with newlines and then passed back to the coverpoint generator.
+    return (setup, test, check)
+```
+
+Additional documentation for all of these functions (and many other helper functions) is
+available as docstrings in the Python files where they are defined. Other instruction formatters
+can also be used as examples.
+
 ## Spreadsheet-Driven Privileged Tests
+
+TODO

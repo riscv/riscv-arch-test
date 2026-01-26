@@ -80,8 +80,6 @@ jobs:
           # generate_release_notes: true
           tag_name: ctp-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
           name: "CTP Release ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
-          body: |
-            This release was created by: ${{ github.event.sender.login }}
           files: |
             ctp.pdf
             ctp.html

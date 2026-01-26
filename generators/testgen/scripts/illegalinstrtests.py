@@ -154,6 +154,7 @@ gen("cp_upperreg_fmv_x_w_rs1", "1110000000001EEEE000000011010011")  # rs1 in upp
 gen("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011")  # rd in upper regs for fmv.x.w
 gen("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011")  # rs1 in upper regs for fmv.w.x
 gen("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011")  # rd in upper regs for fmv.w.x
+gen("cp_amocas_odd",           "00101RRRRRRRRRRREEEERRRRE0101111")  # each type of AMOCAS with odd rd or rs1
 outfile.close()
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictInstrCompressed-Tests.h"

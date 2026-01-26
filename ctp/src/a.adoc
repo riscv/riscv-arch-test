@@ -1,7 +1,7 @@
 
 === A Atomic Extension
 
-The A extension is subdivided into Zaamo and Zalrsc.
+The A extension is subdivided into Zaamo and Zalrsc.  It also has related Zabha and Zacas extensions.
  <<t-A-normative-rules>> lists the normative rules in the RV{32/64}A specification applicable to all instructions, and the unprivileged coverpoints that exercise them.
 
 [[t-A-normative-rules]]
@@ -73,3 +73,49 @@ described in <<sec:lrscseq>>, are also permitted.
 * LRSC_FAIL_ON_NON_EXACT_LRSC affects the expected results of sc_d/cg_cp_custom_sc_lrsc and sc_w/cp_custom_sc_address.
 * The LRSC_MISALIGNED_BEHAVIOR parameter affects the expected results of ExceptionsZalrsc/cp_{load/store}_address_misaligned (<<t-ExceptionsZalrsc-coverpoints>>).
 * LRSC_FAIL_ON_VA_SYNONYM is not tested.
+
+
+==== Zabha Subword AMOs
+
+<<t-Zabha-coverpoints>> summarizes the coverpoints for the Zabha extension.
+
+[[t-Zabha-coverpoints]]
+.Zabha Instruction Coverpoints
+include::{testplansdir}/Zabha.adoc[]
+
+[[t-Zabha-normative-rules]]
+.Zabha Normative Rules
+[cols="1, 4, 2" options=header]
+|===
+
+|===
+
+==== Zacas Atomic Compare-and-Swap
+
+<<t-Zacas-coverpoints>> summarizes the coverpoints for the Zacas extension.
+
+[[t-Zacas-coverpoints]]
+.Zacas Instruction Coverpoints
+include::{testplansdir}/Zacas.adoc[]
+
+[[t-Zacas-normative-rules]]
+.Zacas Normative Rules
+[cols="1, 4, 2" options=header]
+|===
+
+|===
+
+==== ZacasZabha Subword Atomic Compare-and-Swap
+
+<<t-ZacasZabha-coverpoints>> summarizes the coverpoints applicable when both Zacas and Zabha are supported.
+
+[[t-ZacasZabha-coverpoints]]
+.ZacasZabha Instruction Coverpoints
+include::{testplansdir}/ZacasZabha.adoc[]
+
+[[t-ZacasZabha-normative-rules]]
+.ZacasZabha Normative Rules
+[cols="1, 4, 2" options=header]
+|===
+
+|===

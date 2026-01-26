@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSSM
-covergroup ExceptionsSm_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // building blocks for the main coverpoints
@@ -90,9 +90,6 @@ covergroup ExceptionsSm_exceptions_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {12'h015};
     }
-    csr_0x000: coverpoint ins.current.insn[31:20] {
-        bins zero = {12'h000};
-    }
     mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
         // auto fills 1 and 0
     }
@@ -121,7 +118,6 @@ covergroup ExceptionsSm_exceptions_cg with function sample(ins_t ins);
     cp_instr_access_fault:                   cross jalr, illegal_address, priv_mode_m;
     cp_illegal_instruction:                  cross illegalops, priv_mode_m;
     cp_illegal_instruction_seed:             cross csrops, rs1_zero, seed, priv_mode_m;
-    cp_illegal_instruction_csr:              cross csrops, csr_0x000, priv_mode_m;
     cp_breakpoint:                           cross ebreak, priv_mode_m;
     cp_load_address_misaligned:              cross loadops, adr_LSBs, priv_mode_m;
     cp_load_access_fault:                    cross loadops, illegal_address, priv_mode_m;
@@ -135,5 +131,5 @@ endgroup
 
 
 function void exceptionssm_sample(int hart, int issue, ins_t ins);
-    ExceptionsSm_exceptions_cg.sample(ins);
+    ExceptionsSm_cg.sample(ins);
 endfunction

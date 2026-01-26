@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICNTRU
-covergroup ZicntrU_ucounters_cg with function sample(ins_t ins);
+covergroup ZicntrU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // Counter access in user mode
@@ -172,5 +172,5 @@ endgroup
 
 
 function void zicntru_sample(int hart, int issue, ins_t ins);
-  ZicntrU_ucounters_cg.sample(ins);
+  ZicntrU_cg.sample(ins);
 endfunction

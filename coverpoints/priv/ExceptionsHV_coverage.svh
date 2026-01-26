@@ -12,7 +12,7 @@
 
 `define COVER_EXCEPTIONSHV
 
-covergroup ExceptionsHV_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsHV_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
@@ -61,5 +61,5 @@ endgroup
 
 
 function void exceptionshv_sample(int hart, int issue, ins_t ins);
-    ExceptionsHV_exceptions_cg.sample(ins);
+    ExceptionsHV_cg.sample(ins);
 endfunction

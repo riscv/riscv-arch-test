@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SVADU_PMP
-covergroup Svadu_PMP_cg with function sample(ins_t ins);
+`define COVER_SVADUPMP
+covergroup SvaduPMP_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -114,6 +114,6 @@ covergroup Svadu_PMP_cg with function sample(ins_t ins);
 
 endgroup
 
-function void svadu_pmp_sample(int hart, int issue, ins_t ins);
-    Svadu_PMP_cg.sample(ins);
+function void svadupmp_sample(int hart, int issue, ins_t ins);
+    SvaduPMP_cg.sample(ins);
 endfunction

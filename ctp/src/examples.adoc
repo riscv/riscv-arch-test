@@ -1,4 +1,5 @@
 
+[appendix]
 == Examples
 
 This appendix gives examples of coverpoints and tests consistent with the test plan.  These examples are not the only way to satisfy the testplan.

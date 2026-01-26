@@ -1,4 +1,5 @@
 
+[appendix]
 == Non-ISA Test Plan
 
 This chapter contains test plans for ratified RISC-V standards outside the Unprivileged and Privileged ISA specifications.

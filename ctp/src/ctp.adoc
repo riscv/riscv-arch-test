@@ -69,7 +69,6 @@ include::ref.adoc[]
 include::framework.adoc[]
 include::todo.adoc[]
 
-[appendix]
 include::unpriv.adoc[]
 include::priv.adoc[]
 include::nonisa.adoc[]

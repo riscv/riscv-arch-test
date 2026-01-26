@@ -133,7 +133,7 @@ The following applies to all coverpoint test generators:
   - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
 
 Coverpoint test generators can largely be broken into two categories: standard and special.
-Standard generators use the [instruction formatters]() and can be applied to a wide range
+Standard generators use the [instruction formatters](#python-instruction-formatters) and can be applied to a wide range
 of instructions. Examples include `cp_rs1`, `cp_imm_edges`, and `cr_rs1_rs2_edges`.
 Special generators include all of the test code inline and are used for coverpoints
 that apply to only a small set of instructions. Examples include `cp_custom_fence`
@@ -156,7 +156,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     """Generate tests for destination register coverpoints."""
     # Determine which rd registers to test based on the coverpoint variant.
     # Multiple variants can match to the same generator. This is useful when
-    # the difference between variants in minor (e.g. just the register values).
+    # the difference between variants is minor (e.g. just the register values).
     if coverpoint == "cp_rd":
         rd_regs = list(range(test_data.int_regs.reg_count))
     elif coverpoint.endswith("_nx0"):
@@ -172,7 +172,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     test_lines: list[str] = []
 
     # Generate tests
-    # A common pattern is to use a loop to iterate over some value that is being testing
+    # A common pattern is to use a loop to iterate over some value that is being tested
     # in a particular coverpoint. This could be register numbers, register values,
     # immediate values, etc.
     for rd in rd_regs:
@@ -198,7 +198,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # so that the register allocator knows that they can be reused.
         return_test_regs(test_data, params)
 
-    # The final list of assembly lines is returned. It will be concatendated with newlines
+    # The final list of assembly lines is returned. It will be concatenated with newlines
     # when the test is written to a file.
     return test_lines
 ```
@@ -267,7 +267,7 @@ The following applies to all instruction formatters:
 
 - All instruction formatters must go in [`generators/testgen/src/testgen/formatters/types`](../generators/testgen/src/testgen/formatters/types). All Python files in that directory are automatically discovered and imported.
 - All instruction formatter functions must be decorated with the `@add_instruction_formatter("<TYPE_NAME>", <type_name>_config)` decorator. This tells the framework which instruction type to use this generator for and how to generate the parameters for it.
-  - The `<type_name>_config` argument is an `InstructionTypeConfig` object that contains the `required_params` for an instruction type along with constraints on those parameters, like `reg_range`, `imm_rage`, etc. See the `InstructionTypeConfig` docstring in [`generators/testgen/src/testgen/formatters/registry.py`](../generators/testgen/src/testgen/formatters/registry.py) for more details.
+  - The `<type_name>_config` argument is an `InstructionTypeConfig` object that contains the `required_params` for an instruction type along with constraints on those parameters, like `reg_range`, `imm_range`, etc. See the `InstructionTypeConfig` docstring in [`generators/testgen/src/testgen/formatters/registry.py`](../generators/testgen/src/testgen/formatters/registry.py) for more details.
 - All instruction formatter functions must use the following signature:
 
   ```py
@@ -289,7 +289,7 @@ It is also included below with many additional comments added to explain how it 
 ```py
 # The InstructionTypeConfig object is used when generating random parameters.
 # At a minimum, it specifies the `required_params` that must be populated with values.
-# It can also optionally specify constrains or additional details for these parameters,
+# It can also optionally specify constraints or additional details for these parameters,
 # including reg_range, imm_bits, imm_signed, etc.
 r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
 

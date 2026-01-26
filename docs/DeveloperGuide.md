@@ -94,7 +94,7 @@ and should not be manually modified. <!-- TODO: Update this to use a header gene
 
 ### Adding New Coverpoints
 
-Addings a new coverpoint requires adding a template for the coverpoint itself along with a
+Adding a new coverpoint requires adding a template for the coverpoint itself along with a
 Python generator to generate tests for that coverpoint.
 
 #### Coverpoint SystemVerilog Templates
@@ -223,12 +223,43 @@ where the call to `format_single_test` would be. Instead of calling `format_sing
 special coverpoint generators manually add assembly code to the `test_lines` list. While
 most of this code is handwritten, you are still encouraged to use helper Python functions.
 The most useful helpers for special coverpoints tends to be `load_int_reg` and
-`write_sigupd`. See [Adding New Instruction Formats](#adding-new-instruction-formats) for
+`write_sigupd`. See [Python Instruction Formatters](#python-instruction-formatters) for
 details on those functions.
 
 If you are writing a new special coverpoint generator, it is highly encouraged to look at
 several examples from the [`generators/testgen/src/testgen/coverpoints/special`](../generators/testgen/src/testgen/coverpoints/special/) directory.
 
 ### Adding New Instruction Formats
+
+Adding a new instruction format requires adding a new SystemVerilog sample template and a
+Python instruction formatter.
+
+#### Instruction Format Sample Templates
+
+All instruction formats need a template file in
+[`generators/coverage/templates`](../generators/coverage/templates).
+These templates should be named `sample_<INSTRUCTION_TYPE>.txt`.
+The instruction format templates are directly included in a SystemVerilog
+case statement.
+
+All instruction sample templates must match the following format:
+
+```sv
+        "INSTR"     : begin
+            ins.add_rd(0);
+            ins.add_rs1(1);
+            ins.add_rs2(2);
+        end
+```
+
+- `INSTR` will be replaced by the instruction name and is the key in a case statement.
+- `ins` is a data structure that holds all information about the current instruction. The purpose of the sample function is to populate the data structure.
+- The various `add_*` functions assign parameters from the instruction's assembly string to variables. The number indicates which parameter from the assembly string should be assigned to the specified variable. For example, in the code above, the first parameter is assigned to `rd`, the second to `rs1`, and the third to `rs2`.
+- For a full list of all the `add_*` functions, see [`RISCV_instruction_base.svh`](../framework/src/act/fcov/coverage/RISCV_instruction_base.svh).
+
+See the [`generators/coverage/templates`](../generators/coverage/templates)
+directory for example instruction format sample sequences.
+
+#### Python Instruction Formatters
 
 ## Spreadsheet-Driven Privileged Tests

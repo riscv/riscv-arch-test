@@ -112,3 +112,6 @@
 //,===
 //include::{testplansdir}/Ssqosid.adoc[]
 //,===
+
+TODO: This text is here to prevent Asciidoctor from rendering strangely after an empty table.
+Delete it when table is populated.

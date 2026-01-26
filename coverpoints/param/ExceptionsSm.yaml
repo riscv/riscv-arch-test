@@ -20,7 +20,7 @@ parameter_definitions:
     coverpoint: ["all exception coverpoints"]
     effect: ["Values > 4 not yet supported"]
   - name: MTVEC_BASE_ALIGNMENT_VECTORED
-    coverpoint: ["all "]
+    coverpoint: ["all"]
     effect: ["Values > 4 not yet supported"]
   - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
     coverpoint: ["TODO"]
@@ -28,13 +28,13 @@ parameter_definitions:
   - name: MTVEC_MODES
     coverpoint: ["TODO"]
     effect: [""]
-  - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTON
+  - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
     coverpoint: ["cp_illegal_instruction"]
     effect: ["Affects value written to `mtval`"]
   - name: REPORT_VA_IN_MTVAL_ON_BREAKPOINT
     coverpoint: ["cp_breakpoint"]
     effect: ["Affects value written to `mtval`"]
-  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_VAULT
+  - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
     coverpoint: ["cp_instr_access_fault"]
     effect: ["Affects value written to `mtval`"]
   - name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED

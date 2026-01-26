@@ -16,7 +16,7 @@ Usage:
 
 Defaults:
     json: coverpoints/norm/norm-rules.json
-    yaml: coverpoints/norm/yaml
+    yaml: coverpoints/norm
     out:  ctp/src/norm/
 
 The script writes an .adoc file containing a table with columns:
@@ -486,7 +486,7 @@ def main() -> None:
     # --always-fetch is requested
     canonical_json_url = 'https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
     p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
-    p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
+    p.add_argument('--yaml', default='coverpoints/norm', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)')
     p.add_argument('--out', default='ctp/src/norm/', help='Output directory for ASCIIDoc files (default: ctp/src/norm/)')
     p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
     p.add_argument('--always-fetch', action='store_true', help='Always fetch the canonical remote JSON and update local cache even when --json is a local path')

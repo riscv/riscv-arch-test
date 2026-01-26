@@ -423,7 +423,7 @@ def main() -> None:
             sys.exit(2)
 
     udb_path = Path(args.udb)
-    if not udb_path.exists() or True:
+    if not udb_path.exists():
         alt = script_dir.parent / args.udb
         if alt.exists():
             udb_path = alt

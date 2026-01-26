@@ -34,6 +34,7 @@ normative_rule_definitions:
   # to a CSR on which these interrupt trap conditions expressly depend (including
   # mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
+    coverpoint: [""]
 
   # When TW=0, the WFI instruction may execute in modes less privileged than M when
   # not prevented for some other reason. When TW=1, then if WFI is executed in any

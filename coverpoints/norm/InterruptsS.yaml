@@ -109,6 +109,7 @@ normative_rule_definitions:
   # to a CSR on which these interrupt trap conditions expressly depend (including
   # mip, mie, mstatus, and mideleg).
   - name: intr_mip_mie_xret_csrwr
+    coverpoint: [""]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
   - name: intr_M-mode_highest_pri

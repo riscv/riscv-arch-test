@@ -25,14 +25,12 @@ include::{testplansdir}/Zbc.adoc[]
 .Zbs Instruction Coverpoints
 include::{testplansdir}/Zbs.adoc[]
 
-*eters:* None.
 
 ==== Zbkb Bit-Manipulation for Cryptography
 
 [[t-Zbkb-coverpoints]]
 .Zbkb Instruction Coverpoints
 include::{testplansdir}/Zbkb.adoc[]
-
 
 
 ==== Zbkc Carry-less Multiplication for Cryptography

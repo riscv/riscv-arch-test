@@ -24,8 +24,19 @@ covergroup SvH_cg with function sample(ins_t ins);
         bins exec_acc  = {1'b1};
     }
 
+    acc_instr: coverpoint ins.current.insn {
+        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
+        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
+        wildcard bins hlv_w = {32'b0110100_00000_?????_100_?????_1110011};
+        wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
+    }
+
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
+    }
+
+    pte_rsw: coverpoint ins.current.g_pte_i[9:8] {
+        bins all_comb[] = {[2'd0:2'd3]};
     }
 
     `ifdef XLEN64
@@ -58,6 +69,40 @@ covergroup SvH_cg with function sample(ins_t ins);
 
         satp: coverpoint ins.current.insn[31:20] {
             bins satp = {CSR_SATP};
+        }
+
+        pbmte_menvcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "menvcfg", "pbmte") {
+            bins no_support = {1'b0};
+        }
+
+        svpbmt_g_pte_i: coverpoint ins.current.g_pte_i[62:61] {
+            bins all_comb[] = {[2'd0:2'd3]};
+        }
+        svpbmt_g_pte_d: coverpoint ins.current.g_pte_d[62:61] {
+            bins all_comb[] = {[2'd0:2'd3]};
+        }
+
+        reserved_g_pte_i: coverpoint ins.current.g_pte_i[60:54] {
+            bins all_zeros      = {7'b0000000};
+            bins walking_one_54 = {7'b0000001};
+            bins walking_one_55 = {7'b0000010};
+            bins walking_one_56 = {7'b0000100};
+            bins walking_one_57 = {7'b0001000};
+            bins walking_one_58 = {7'b0010000};
+            bins walking_one_59 = {7'b0100000};
+            bins walking_one_60 = {7'b1000000};
+            bins all_ones       = {7'b1111111};
+        }
+        reserved_g_pte_d: coverpoint ins.current.g_pte_d[60:54] {
+            bins all_zeros      = {7'b0000000};
+            bins walking_one_54 = {7'b0000001};
+            bins walking_one_55 = {7'b0000010};
+            bins walking_one_56 = {7'b0000100};
+            bins walking_one_57 = {7'b0001000};
+            bins walking_one_58 = {7'b0010000};
+            bins walking_one_59 = {7'b0100000};
+            bins walking_one_60 = {7'b1000000};
+            bins all_ones       = {7'b1111111};
         }
     `endif
 
@@ -234,10 +279,31 @@ covergroup SvH_cg with function sample(ins_t ins);
         wildcard bins rwx111_s = {8'b???01111};
     }
 
+    g_pte_legal_xwr_i: coverpoint ins.current.g_pte_i[7:0] {
+        wildcard bins rwx001 = {8'b???00011};
+        wildcard bins rwx011 = {8'b???00111};
+        wildcard bins rwx100 = {8'b???01001};
+        wildcard bins rwx101 = {8'b???01011};
+        wildcard bins rwx111 = {8'b???01111};
+    }
+    g_pte_legal_xwr_d: coverpoint ins.current.g_pte_d[7:0] {
+        wildcard bins rwx001 = {8'b???00011};
+        wildcard bins rwx011 = {8'b???00111};
+        wildcard bins rwx100 = {8'b???01001};
+        wildcard bins rwx101 = {8'b???01011};
+        wildcard bins rwx111 = {8'b???01111};
+    }
+
     `ifdef XLEN64
         vsatp_mode_field: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, mode_field_values;
         satp_mode_field:  cross priv_mode_vs, satp_mode, csrrw, satp, mode_field_values;
         hgatp_mode_field: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, mode_field_values;
+
+        vsatp_svpbmt_rw: cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_d read_write_acc;
+        vsatp_svpbmt_x:  cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_i exec_acc;
+
+        vsatp_reserved_rw: cross priv_mode_vs, vsatp_mode, reserved_g_pte_d, read_write_acc;
+        vsatp_reserved_x : cross priv_mode_vs, vsatp_mode, reserved_g_pte_i, exec_acc;
     `endif
 
     vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
@@ -247,6 +313,7 @@ covergroup SvH_cg with function sample(ins_t ins);
     vsatp_mprv_effects_u: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
 
     vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_write_acc;
+    vsatp_pte_rsw:     cross priv_mode_vs, vsatp_mode, pte_rsw;
     hgatp_tvm_effects: cross priv_mode_hs, tvm_mstatus, csrrw, hgatp;
 
     vsatp_invalid_pte_rw: cross priv_mode_vs, vsatp_mode, g_pte_d_inv, read_write_acc;
@@ -261,6 +328,8 @@ covergroup SvH_cg with function sample(ins_t ins);
     vsstatus_vs_mxr_sum_rw: cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_write_acc;
     vsstatus_vs_mxr_sum_x:  cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
 
+    vsatp_spages_sum_rw: cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_d, read_write_acc;
+    vsatp_spages_sum_x:  cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_i, exec_acc;
 
 endgroup
 

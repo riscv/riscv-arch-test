@@ -68,7 +68,7 @@ jobs:
 
       - name: Get current date
         run: |
-          echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Create Release
@@ -80,6 +80,7 @@ jobs:
           # generate_release_notes: true
           tag_name: ctp-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
           name: "CTP Release ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
+          body: "Automated release of the CTP built on ${{ env.CURRENT_DATE }} from commit ${{ env.SHORT_SHA }}."
           files: |
             ctp.pdf
             ctp.html

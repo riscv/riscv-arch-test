@@ -388,6 +388,53 @@ class cross():
         freg = random.choice(list(freg_Sol))
         return (sreg, freg)
 
+    def get_source_fp_regs(cross_comb_instrs):
+        
+        #This function extracts all floating point registers used as source operands (rs1, rs2, rs3) in the cross-combination instruction sequence.
+    
+        #Input argument:
+            #- cross_comb_instrs type: list(dict()) Holds info of various instructions in the sequence
+        
+        #Return:
+           # - OrderedSet of source FP register names
+
+        source_fp_regs = OrderedSet()
+        
+        for instr_dict in cross_comb_instrs:
+            for operand in ['rs1', 'rs2', 'rs3']:
+                if operand in instr_dict:
+                    reg_val = instr_dict[operand]
+                    if reg_val[0] == 'f':  # Check if it's a floating point register
+                        source_fp_regs.add(reg_val)
+        
+        return source_fp_regs
+
+    def get_fp_init_str(cross_comb_instrs, freg):
+        '''
+        This function generates initialization code for floating point registers that are used as source operands in the cross-combination sequence.
+        
+        Input argument:
+            - cross_comb_instrs type: list(dict()) Holds info of various instructions in the sequence
+            - freg type: str The temporary register used to load FP register values
+        
+        Return:
+            - List of FP register initialization strings
+        '''
+        fp_init_lst = OrderedSet()
+        source_fp_regs = cross.get_source_fp_regs(cross_comb_instrs)
+        
+        # Generate initialization for each source FP register
+        if source_fp_regs:
+            # Initialize the temporary register with FP bit pattern
+            freg_init = REG_INIT[freg].replace('& MASK', '>> FREGWIDTH')
+            fp_init_lst.add(freg_init)
+            
+            # Load each source FP register
+            for fp_reg in source_fp_regs:
+                fp_init_lst.add('FLREG ' + fp_reg + ', 0(' + freg + ')')
+        
+        return list(fp_init_lst)
+
     def get_reginit_str(cross_comb_instrs, freg):
         '''
         This function fetches the register initlialization macro to initialize
@@ -396,6 +443,7 @@ class cross():
 
         Input argument:
             - cross_comb_instrs type: list(dict()) Holds info of various instructions in the sequence
+            - freg type: str The temporary register used for FP operations
         
         Return:
             - List of initialization strings
@@ -454,6 +502,12 @@ class cross():
             
             sig_label = "signature_" + sreg + "_" + str(sreg_dict[sreg])
             code = code + "\nRVTEST_SIGBASE(" + sreg + ", "+ sig_label + ")\n\n"
+
+            if self.if_fp:
+                fp_init_strs = cross.get_fp_init_str(cross_sol, freg)
+                if fp_init_strs:
+                    code += '// Initialize floating point source registers\n'
+                    code += '\n'.join(fp_init_strs) + '\n\n'
 
             rd_lst = OrderedSet()
             # Generate instruction corresponding to each instruction dictionary

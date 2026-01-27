@@ -20,10 +20,8 @@ covergroup SvH_cg with function sample(ins_t ins);
         bins write_acc = {2'b10};
     }
 
-    read_write_exec_acc: coverpoint {ins.current.execute_access, ins.current.write_access, ins.current.read_access} {
-        bins read_acc  = {3'b001};
-        bins write_acc = {3'b010};
-        bins exec_acc  = {3'b100};
+    exec_acc: coverpoint ins.current.execute_access {
+        bins exec_acc  = {1'b1};
     }
 
     csrrw: coverpoint ins.current.insn {
@@ -169,6 +167,11 @@ covergroup SvH_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "tvm") {
+        bins tvm_set = {1};
+        bins tvm_unset = {0};
+    }
+
     mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mprv") {
         bins mprv_set = {1};
     }
@@ -240,14 +243,24 @@ covergroup SvH_cg with function sample(ins_t ins);
     vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
     vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
 
-    vsatp_mprv_effects_s:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_write_acc;
-    vsatp_mprv_effects_u:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
+    vsatp_mprv_effects_s: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_write_acc;
+    vsatp_mprv_effects_u: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
 
-    vsatp_endianess:        cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_write_acc;
-    vsatp_invalid_pte:      cross priv_mode_vs, vsatp_mode, g_pte_d_inv, read_write_exec_acc;
-    vsatp_sum_effects:      cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, read_write_exec_acc;
-    vsatp_nonleaf_lvl0:     cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_d, read_write_exec_acc;
-    vsstatus_vs_mxr_sum:    cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_write_exec_acc;
+    vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_write_acc;
+    hgatp_tvm_effects: cross priv_mode_hs, tvm_mstatus, csrrw, hgatp;
+
+    vsatp_invalid_pte_rw: cross priv_mode_vs, vsatp_mode, g_pte_d_inv, read_write_acc;
+    vsatp_invalid_pte_x:  cross priv_mode_vs, vsatp_mode, g_pte_i_inv, exec_acc;
+
+    vsatp_sum_effects_rw: cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, read_write_acc;
+    vsatp_sum_effects_x : cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_i, exec_acc;
+
+    vsatp_nonleaf_lvl0_rw: cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_d, read_write_acc;
+    vsatp_nonleaf_lvl0_x:  cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_i, exec_acc;
+
+    vsstatus_vs_mxr_sum_rw: cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_write_acc;
+    vsstatus_vs_mxr_sum_x:  cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
+
 
 endgroup
 

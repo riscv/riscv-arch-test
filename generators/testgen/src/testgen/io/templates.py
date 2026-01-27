@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP
+from testgen.constants import EXTENSION_PARAM_MAP, PRIV_TEST_EXCLUDE_COMPONENTS
 from testgen.data.config import TestConfig
 
 
@@ -70,6 +70,9 @@ def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[lis
     for ext in ext_components:
         if ext in EXTENSION_PARAM_MAP:
             params.append(EXTENSION_PARAM_MAP[ext])
+            ext_components.remove(ext)
+        # Remove priv test exclude extensions
+        if ext in PRIV_TEST_EXCLUDE_COMPONENTS:
             ext_components.remove(ext)
 
     # Canonicize extensions

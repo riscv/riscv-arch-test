@@ -98,8 +98,6 @@
 */
 // don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
 
-#include "encoding.h"
-#include "test_macros.h"
 #define RVTEST_ISA(_STR)         //empty macro used by framework
 
 #define T1      x6
@@ -324,7 +322,7 @@
 //define sizes
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 5) * 4)     // 5 is added ops before common entry pt
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
-#define ptr_sv_sz       (16*8)
+#define ptr_sv_sz       (17*8)
 #define reg_sv_sz       ( 8*REGWIDTH)
 #define sv_area_sz      (tramp_sz + ptr_sv_sz + reg_sv_sz)           // force dblword alignment
 #define int_hndlr_tblsz (XLEN*2*WDBYTSZ)
@@ -353,7 +351,11 @@
 #define xtvec_new_off        (tramp_sz+13*8)  //  (tvec_new       -Mtrapreg_sv)
 #define xtvec_sav_off        (tramp_sz+14*8)  //  (tvec_save      -Mtrapreg_sv)
 #define xscr_save_off        (tramp_sz+15*8)  //  (scratch_save   -Mtrapreg_sv)
-#define trap_sv_off          (tramp_sz+16*8)  //  (trapreg_sv     -Mtrapreg_sv) 8 registers long
+#define instret_sav_off      (tramp_sz+16*8)  //  (instret_save   -Mtrapreg_sv)
+#define trap_sv_off          (tramp_sz+17*8)  //  (trapreg_sv     -Mtrapreg_sv) 8 registers long
+
+#include "encoding.h"
+#include "test_macros.h"
 
 //==============================================================================
 // this section has  general test helper macros, required,  optional, or just useful
@@ -559,7 +561,7 @@
 #ifdef RVTEST_ENAB_INSTRET_CNT
      csrr  x14, CSR_MSCRATCH
      csrr  x15, CSR_MINSTRET
-     SREG  x15, tramp_sz+4*8(x14)               // this replaces initial canary val w/ instret counter val
+     SREG  x15, instret_sav_off(x14)
 
      DBLSHIFT7 x14, x13
      LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
@@ -1910,8 +1912,10 @@ rvtest_\__MODE__\()end:
         .dword  0               // save area for incoming mtvec                       trampsvend+14*8
 \__MODE__\()scratch_save:
         .dword  0               // save area for incoming mscratch                    trampsvend+15*8
+\__MODE__\()instret_sav:
+        .dword  0               // save area for initial instret                      trampsvend+16*8
                                 //****GLOBAL:*****  onlyMMode version used
-\__MODE__\()trapreg_sv:         // hndler regsave area, T1..T6,sp+spare keep dbl algn trampsvend+16*8
+\__MODE__\()trapreg_sv:         // hndler regsave area, T1..T6,sp+spare keep dbl algn trampsvend+17*8
         .fill   8, REGWIDTH, 0xdeadbeef
 
 \__MODE__\()sv_area_end:        // used to calc size, which is used to avoid CSR read trampsvend+24/32+8
@@ -1977,9 +1981,14 @@ cleanup_epilogs:                // jump here to quit, will restore state for eac
 #ifdef RVTEST_ENAB_INSTRET_CNT
      csrr  x15, CSR_MINSTRET
      csrr  x14, CSR_MSCRATCH
-     LREG  x13, tramp_sz+4*8(x14)       // initial instret point stored here
+     LREG  x13, instret_sav_off(x14)    // initial instret point stored here
      sub   x15, x15, x13                // calc instret delta
-     SREG  x13, tramp_sz+4*8(x14)       //put it back in the signature
+     LREG  x12, sig_bgn_off(x14)
+     LREG  x11, sig_seg_siz(x14)
+     add   x10, x12, x11
+     SREG  x15, 0(x10)
+     addi  x11, x11, REGWIDTH
+     SREG  x11, sig_seg_siz(x14)
 #endif
 
 //restore xTVEC, trampoline, regs for each mode in opposite order that they were saved

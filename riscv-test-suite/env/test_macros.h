@@ -578,6 +578,27 @@ Mend_PMP:                                    ;\
 	.set offset,_ARG1(__VA_OPT__(__VA_ARGS__,0))	;\
   .endif						;\
   CHK_OFFSET(_BR, REGWIDTH,0)				;\
+#ifdef RVTEST_DEBUG					;\
+  .option push						;\
+  .option norvc						;\
+  csrrw T1, CSR_MSCRATCH, T1 /*T1=base*/		;\
+  SREG  T2, trap_sv_off+2*REGWIDTH(T1)			;\
+  SREG  T3, trap_sv_off+3*REGWIDTH(T1)			;\
+  csrr  T2, CSR_MSCRATCH /*T2=origT1*/			;\
+  SREG  T2, trap_sv_off+1*REGWIDTH(T1)			;\
+  csrw  CSR_MSCRATCH, T1					;\
+  csrr  T2, CSR_MINSTRET				;\
+  LREG  T3, instret_sav_off(T1)				;\
+  sub   T3, T2, T3					;\
+  SREG  T3, offset(_BR)					;\
+  SREG  T2, instret_sav_off(T1)				;\
+  LREG  T3, trap_sv_off+3*REGWIDTH(T1)			;\
+  LREG  T2, trap_sv_off+2*REGWIDTH(T1)			;\
+  LREG  T1, trap_sv_off+1*REGWIDTH(T1)			;\
+  .set  offset, offset+REGWIDTH				;\
+  CHK_OFFSET(_BR, REGWIDTH,0)				;\
+  .option pop						;\
+#endif							;\
   SREG _R,offset(_BR)					;\
   .set offset,offset+REGWIDTH
 

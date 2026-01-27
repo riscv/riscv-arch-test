@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv-non-isa.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. An ACT Developer's Guide for adding more tests and coverpoints is in [LINK COMING SOON].
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv-non-isa.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 
@@ -66,7 +66,9 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 The ACT framework is compatible with GCC or LLVM. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file).
 
-> **Note**: The toolchain installation will take significant time (up to several hours depending on your system).
+> [!NOTE]
+>
+> The toolchain installation will take significant time (up to several hours depending on your system).
 
 To install `riscv64-unknown-elf-gcc`:
 
@@ -103,7 +105,7 @@ riscv64-unknown-elf-gcc --version
 
 For more information or if you have issues installing the RISC-V toolchain, refer to the [riscv-gnu-toolchain README](https://github.com/riscv-collab/riscv-gnu-toolchain).
 
-#### 4. RISC-V Sail Golden Reference Model
+#### 4. RISC-V Sail Reference Model
 
 The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.9 of the model.
 
@@ -278,6 +280,10 @@ This will create all of the ELFs that apply to your DUT (based on the provided U
 
 Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `work/<config_name>/build` or `work/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
+> [!NOTE]
+>
+> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `uv` to be installed.
+
 ### Running Certification Tests
 
 All ELFs produced in the `work/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
@@ -305,51 +311,6 @@ A common source of errors is configuration mismatches, so ensure that:
 - The Sail config file matches your UDB configuration and DUT
 - Your `model_test.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
-
-## Developing Certification Test Plan, Coverpoints, and Tests
-
-The process of developing the CTP, coverpoints, and tests for a new suite differs
-for table-driven unprivileged tests and for spreadsheet-driven privileged tests.
-Each is described below.
-
-TODO: Jordan is writing most of this section.
-
-### Table-Driven Unprivileged Coverpoints and Tests
-
-### Spreadsheet-Driven Privileged Tests
-
-### Certification Test Plan
-
-Each test suite needs a section in the CTP describing the coverpoints, the
-mapping of normative rules to coverpoints, and any UDB parameters that affect
-the suite.
-
-For unprivileged suites, only non-standard coverpoints need to be defined.
-See the CTP section "C Compressed Extension" for examples. For privileged
-suites, there are no standard coverpoints and instead the testplan links to
-a Google Sheet. See the CTP Section "Sm Machine-Mode CSRs and Instructions"
-for an example.
-
-Both privileged and unprivileged suites need a mapping between the normative
-rules and coverpoints. This mapping is a YAML file in coverpoints/norm
-containing a list of rule names and the coverpoints that exercise them. There
-should be one YAML for each test suite.
-
-Instead of typing this YAML from scratch, it is easier to make an outline
-from the normative rules already in the riscv-isa-manual repo. Make sure
-you have a current copy of riscv-isa-manual and have run "make" successfully
-to build the normative_rule_defs subdirectory and build/norm-rules.json.
-Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
-create one yaml file per ISA manual chapter in coverpoints/norm/yaml/chapters.
-(You may need to edit riscv_isa_manual_dir in the Python file to point to
-its location in your tree). Then copy the yaml from the chapter related to the
-test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/Sm.yaml`) and edit it.
-
-When you run `make` in the `ctp` directory, the YAML file is parsed to build an
-ASCIIDoc file (in ctp/norm) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
-`include::norm/Sm_norm_rules.adoc[]`
-
-TODO: mention coverpoint/param in similar fashion
 
 ## Contributing
 

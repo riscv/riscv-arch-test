@@ -10,8 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_VMH
-covergroup VMH_cg with function sample(ins_t ins);
+`define COVER_SVH
+covergroup SvH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -26,6 +26,10 @@ covergroup VMH_cg with function sample(ins_t ins);
         bins exec_acc  = {3'b100};
     }
 
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+
     `ifdef XLEN64
         mode_field_values: coverpoint ins.current.rs1_val[63:60] {
             bins values_to_write[] = {[0:15]};
@@ -36,8 +40,8 @@ covergroup VMH_cg with function sample(ins_t ins);
             bins sv39 = {8};
         }
 
-        write_to_vsatp: coverpoint ins.current.insn {
-            wildcard bins csrrw_to_vsatp = {32'b001010000000_?????_001_?????_1110011};
+        vsatp: coverpoint ins.current.insn[31:20] {
+            bins vsatp = {CSR_VSATP};
         }
 
         hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
@@ -45,8 +49,8 @@ covergroup VMH_cg with function sample(ins_t ins);
             bins sv39x4 = {8};
         }
 
-        write_to_hgatp: coverpoint ins.current.insn {
-            wildcard bins csrrw_to_hgatp = {32'b011010000000_?????_001_?????_1110011};
+        hgatp: coverpoint ins.current.insn[31:20] {
+            bins hgatp = {CSR_HGATP};
         }
 
         satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
@@ -54,20 +58,18 @@ covergroup VMH_cg with function sample(ins_t ins);
             bins sv39 = {8};
         }
 
-        write_to_satp: coverpoint ins.current.insn {
-            wildcard bins csrrw_to_vsatp = {32'b000110000000_?????_001_?????_1110011};
+        satp: coverpoint ins.current.insn[31:20] {
+            bins satp = {CSR_SATP};
         }
     `endif
 
-    `ifdef XLEN64
-        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vsatp", "mode") {
+    vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vsatp", "mode") {
+        `ifdef XLEN64
             bins sv39 = {4'b1000};
-        }
-    `else
-        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "vsatp", "mode") {
+        `else
             bins sv32 = {1'b1};
-        }
-    `endif
+        `endif
+    }
 
     ppn_field_values: coverpoint ins.current.rs1_val {
         bins all_zeros = {0};
@@ -171,31 +173,15 @@ covergroup VMH_cg with function sample(ins_t ins);
         bins mprv_set = {1};
     }
 
-    `ifdef XLEN64
-        hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
-            bins hgatp_bare = {0};
-        }
-
-        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
-            bins satp_bare = {0};
-        }
-
-        mpv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
-            bins mpv_set = {1};
-        }
-    `else
-        hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
-            bins hgatp_bare = {0};
-        }
-
-        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
-            bins satp_bare = {0};
-        }
-
-        mpv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
-            bins mpv_set = {1};
-        }
-    `endif
+    hgatp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
+        bins hgatp_bare = {0};
+    }
+    satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
+        bins satp_bare = {0};
+    }
+    mpv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstatus", "mpv") {
+        bins mpv_set = {1};
+    }
 
     mpp_mstatus_u: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mstatus", "mpp") {
         bins s_mode = {2'b00};
@@ -246,13 +232,13 @@ covergroup VMH_cg with function sample(ins_t ins);
     }
 
     `ifdef XLEN64
-        vsatp_mode_field: cross priv_mode_hs, vsatp_mode, write_to_vsatp, mode_field_values;
-        satp_mode_field:  cross priv_mode_vs, satp_mode, write_to_satp, mode_field_values;
-        hgatp_mode_field: cross priv_mode_hs, hgatp_mode, write_to_hgatp, mode_field_values;
+        vsatp_mode_field: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, mode_field_values;
+        satp_mode_field:  cross priv_mode_vs, satp_mode, csrrw, satp, mode_field_values;
+        hgatp_mode_field: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, mode_field_values;
     `endif
 
-    vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, write_to_vsatp, ppn_field_values;
-    vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, write_to_vsatp, asid_field_value;
+    vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
+    vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
 
     vsatp_mprv_effects_s:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_write_acc;
     vsatp_mprv_effects_u:  cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
@@ -266,5 +252,5 @@ covergroup VMH_cg with function sample(ins_t ins);
 endgroup
 
 function void vmh_sample(int hart, int issue, ins_t ins);
-    VMH_cg.sample(ins);
+    SvH_cg.sample(ins);
 endfunction

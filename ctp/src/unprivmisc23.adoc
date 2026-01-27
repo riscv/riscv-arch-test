@@ -7,6 +7,8 @@
 .Zacas Coverpoints
 include::{testplansdir}/Zacas.adoc[]
 
+include::norm/Zacas_norm_rules.adoc[]
+
 TODO: Add .d to RV32 and .q to RV64 in testplans directory when testgen is updated to handle register pairs.
 
 ==== Zabha Subword Atomics
@@ -14,6 +16,8 @@ TODO: Add .d to RV32 and .q to RV64 in testplans directory when testgen is updat
 [[t-Zabha-coverpoints]]
 .Zabha Coverpoints
 include::{testplansdir}/Zabha.adoc[]
+
+include::norm/Zabha_norm_rules.adoc[]
 
 ==== ZacasZabha Subword Atomic Compare-and-Swap
 
@@ -23,12 +27,7 @@ include::{testplansdir}/Zabha.adoc[]
 .ZacasZabha Instruction Coverpoints
 include::{testplansdir}/ZacasZabha.adoc[]
 
-[[t-ZacasZabha-normative-rules]]
-.ZacasZabha Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-
-|===
+include::norm/ZacasZabha_norm_rules.adoc[]
 
 ==== Zimop Maybe-Ops
 

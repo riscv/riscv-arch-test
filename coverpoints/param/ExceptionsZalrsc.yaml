@@ -1,0 +1,6 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: LRSC_MISALIGNED_BEHAVIOR
+    coverpoint: ["cp_{load/store}_address_misaligned"]
+    effect: ["Misaligned LR/SC throws misaligned exception or access fault"]

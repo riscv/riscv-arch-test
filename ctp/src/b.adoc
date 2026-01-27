@@ -7,15 +7,11 @@
 .Zba Instruction Coverpoints
 include::{testplansdir}/Zba.adoc[]
 
-*UDB Parameters:* None.
-
 ==== Zbb Basic Bit-Manipulation
 
 [[t-Zbb-coverpoints]]
 .Zbb Instruction Coverpoints
 include::{testplansdir}/Zbb.adoc[]
-
-*UDB Parameters:* None.
 
 ==== Zbc Carry-less Multiplication
 
@@ -23,15 +19,13 @@ include::{testplansdir}/Zbb.adoc[]
 .Zbc Instruction Coverpoints
 include::{testplansdir}/Zbc.adoc[]
 
-*UDB Parameters:* None.
-
 ==== Zbs Single-Bit Manipulation
 
 [[t-Zbs-coverpoints]]
 .Zbs Instruction Coverpoints
 include::{testplansdir}/Zbs.adoc[]
 
-*UDB Parameters:* None.
+*eters:* None.
 
 ==== Zbkb Bit-Manipulation for Cryptography
 
@@ -39,7 +33,7 @@ include::{testplansdir}/Zbs.adoc[]
 .Zbkb Instruction Coverpoints
 include::{testplansdir}/Zbkb.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zbkc Carry-less Multiplication for Cryptography
 
@@ -47,12 +41,10 @@ include::{testplansdir}/Zbkb.adoc[]
 .Zbkc Instruction Coverpoints
 include::{testplansdir}/Zbkc.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zbkx Permutation
 
 [[t-Zbkx-coverpoints]]
 .Zbkx Instruction Coverpoints
 include::{testplansdir}/Zbkx.adoc[]
-
-*UDB Parameters:* None.

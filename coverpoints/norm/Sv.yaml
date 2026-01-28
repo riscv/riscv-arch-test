@@ -27,7 +27,7 @@ normative_rule_definitions:
   # When SXLEN=32, the only other valid setting for MODE is Sv32, a paged
   # virtual-memory scheme described in .
   - name: satp-mode_sxlen32
-    coverpoint: [""]
+    coverpoint: ["Sv_satp_cg/satp_bare, SV_PA_VA_cg/VA_d_mode"]
 
   # When SXLEN=64, three paged virtual-memory schemes are defined: Sv39, Sv48, and
   # Sv57, described in , , and , respectively. One additional scheme, Sv64, will be
@@ -35,7 +35,7 @@ normative_rule_definitions:
   # are reserved for future use and may define different interpretations of the
   # other fields in satp.
   - name: satp-mode_sxlen64
-    coverpoint: [""]
+    coverpoint: ["Sv_satp_cg/satp_bare, SV_PA_VA_cg/VA_d_mode"]
 
   # Implementations are not required to support all MODE settings, and if satp is
   # written with an unsupported MODE, the entire write has no effect; no fields in

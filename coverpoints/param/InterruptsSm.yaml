@@ -17,9 +17,9 @@ parameter_definitions:
         "DUT config/model_test.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
       ]
   - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
-    coverpoint:
+    coverpoint: ["all"]
+    effect:
       ["If `mtvec` cannot be written with trap handler, tests will not operate"]
-    effect: [""]
   - name: MTVEC_MODES
     coverpoint: ["TODO"]
     effect:

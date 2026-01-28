@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    EndianU_endian_cg = new();         EndianU_endian_cg.set_inst_name("obj_EndianU_endian");
+    EndianU_cg = new();         EndianU_cg.set_inst_name("obj_EndianU");

@@ -27,6 +27,105 @@ normative_rule_definitions:
         "InterruptsS_cg/cp_trigger_{mti/msi/mei/sti/ssi_mip/ssi_sip/sei_sei_seip}",
       ]
 
+  # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
+  # respectively. When a hart is executing in privilege mode x, interrupts are
+  # globally enabled when xIE=1 and globally disabled when xIE=0.
+  - names: [mstatus_sie_op]
+    coverpoint: [""]
+
+  # Interrupts for lower-privilege modes, w&lt;x, are always globally disabled
+  # regardless of the setting of any global wIE bit for the lower-privilege mode.
+  # Interrupts for higher-privilege modes, y&gt;x, are always globally enabled
+  # regardless of the setting of the global yIE bit for the higher-privilege mode.
+  - name: mstatus_xie_intr_en_dis
+    coverpoint: [""]
+
+  # each privilege mode x that can respond to interrupts has a two-level stack of
+  # interrupt-enable bits and privilege modes. xPIE holds the value of the
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous
+  # privilege mode.
+  - names: [mstatus_xpie_op, mstatus_xpp_op]
+    coverpoint: [""]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
+  # the value of xIE; xIE is set to 0; and xPP is set to y.
+  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+    coverpoint: [""]
+
+  # When TW=0, the WFI instruction may execute in modes less privileged than M when
+  # not prevented for some other reason. When TW=1, then if WFI is executed in any
+  # less-privileged mode, and it does not complete within an
+  # implementation-specific, bounded time limit, the WFI instruction causes an
+  # illegal-instruction exception.
+  - name: mstatus_tw_op
+    coverpoint: [""]
+
+  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
+  # interrupt causes only, while bits 16 and above are designated for platform use.
+  - name: mip_enc
+    coverpoint: [""]
+
+  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
+  # interrupt causes only, while bits 16 and above are designated for platform use.
+  - name: mie_enc
+    coverpoint: [""]
+
+  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
+  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
+  - name: mip_std_enc
+    coverpoint: [""]
+
+  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
+  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
+  - name: mie_std_enc
+    coverpoint: [""]
+
+  # When bit i in mip is writable, a pending interrupt i can be cleared by writing 0
+  # to this bit.
+  - name: mip_bits_wr_op
+    coverpoint:
+      [
+        "InterruptsS/{cp_trigger_ssi_mip, cp_trigger_ssi_sip, cp_trigger_sei_seip}",
+      ]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg.
+  - name: intr_mip_mie_op
+    coverpoint: [""]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg. be evaluated
+  # immediately following the execution of an xRET instruction or an explicit write
+  # to a CSR on which these interrupt trap conditions expressly depend (including
+  # mip, mie, mstatus, and mideleg).
+  - name: intr_mip_mie_xret_csrwr
+    coverpoint: [""]
+
+  # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
+  - name: intr_M-mode_highest_pri
+    coverpoint: [""]
+
+  # Supervisor-level external interrupts are made pending based on the logical-OR of
+  # the software-writable SEIP bit and the signal from the external interrupt
+  # controller.
+  - name: intr_sei_op
+    coverpoint: [""]
+
+  # Multiple simultaneous interrupts destined for M-mode are handled in the
+  # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
+  - name: intr_M-mode_pri
+    coverpoint: [""]
+
   # Traps never transition from a more-privileged mode to a less-privileged mode.
   # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
   # and M-mode software later executes an illegal instruction, the trap is taken in

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsHV_exceptions_cg = new();           ExceptionsHV_exceptions_cg.set_inst_name("obj_ExceptionsHV_exceptions");
+    ExceptionsHV_cg = new();           ExceptionsHV_cg.set_inst_name("obj_ExceptionsHV");

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-   EndianZalrsc_endian_cg = new();         EndianZalrsc_endian_cg.set_inst_name("obj_EndianZalrsc_endian");
+   EndianZalrsc_cg = new();         EndianZalrsc_cg.set_inst_name("obj_EndianZalrsc");

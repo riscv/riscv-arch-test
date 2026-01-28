@@ -40,10 +40,10 @@ STAMP_DIR := $(WORKDIR)/stamps
 # Check if UV is installed and set UV variable
 UV := $(shell command -v uv 2> /dev/null)
 ifneq ($(UV),)
-		UV_RUN := $(UV) run
+  UV_RUN := $(UV) run
 else
-		UV_RUN :=
-		$(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
+  UV_RUN :=
+  $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
 endif
 
 .DEFAULT_GOAL := elfs

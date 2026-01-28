@@ -8,8 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_SVPMP_CBO
-covergroup SvPMP_CBO_cg with function sample(ins_t ins);
+`define COVER_SVPMPZICBO
+covergroup SvPMPZicbo_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -82,6 +82,6 @@ covergroup SvPMP_CBO_cg with function sample(ins_t ins);
 
 endgroup
 
-function void svpmp_cbo_sample(int hart, int issue, ins_t ins);
-    SvPMP_CBO_cg.sample(ins);
+function void svpmpzicbo_sample(int hart, int issue, ins_t ins);
+    SvPMPZicbo_cg.sample(ins);
 endfunction

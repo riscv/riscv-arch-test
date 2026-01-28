@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICNTRH
-covergroup ZicntrH_counters_cg with function sample(ins_t ins);
+covergroup ZicntrH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // counter access in hypervisor mode

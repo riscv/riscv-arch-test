@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SvPMP_CBO_cg = new(); SvPMP_CBO_cg.set_inst_name("obj_SvPMP_CBO");
+    SvPMPZicbo_cg = new(); SvPMPZicbo_cg.set_inst_name("obj_SvPMPZicbo");

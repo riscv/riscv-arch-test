@@ -94,7 +94,7 @@ params:
   # B params
   MUTABLE_MISA_B: true
   # V params
-  VLEN: 128
+  VLEN: 512
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX

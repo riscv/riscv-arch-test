@@ -20,7 +20,7 @@ normative_rule_definitions:
     # frm
     coverpoint:
       [
-        "F_fadd_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm}",
+        "F_fadd_s_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm} TODO: Use IBM coverpoints on all FP tests regarding detecting tininess after rounding",
       ]
   - name: fclass-s_op
     # fThe FCLASS.S instruction examines the value in floating-point register rs1 and writes to integer register rd a 10-bit mask that indicates the class of the floating-point number. The format of the mask is described in . The corresponding bit in rd will be set if the property is true and clear otherwise. All other bits in rd are cleared. Note that exactly one bit in rd will be set. FCLASS.S does not set the floating-point exception flags.

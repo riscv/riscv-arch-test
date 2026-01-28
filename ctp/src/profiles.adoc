@@ -199,7 +199,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |HV|Hypervisor + Vector CSRs|<<t-HV-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
-|SvHCBO|Hypervisor Virtual Memory + CBO|<<t-SvHCBO-coverpoints>>|||o|o|x
+|SvHZicbo|Hypervisor Virtual Memory + CBO|<<t-SvHZicbo-coverpoints>>|||o|o|x
 |Shcounterenw|Counter Enables|<<t-Shcounterenw-coverpoints>>|||o|o|x
 |Shvsatpa|VM Modes Supported|<<t-Shvsatpa-coverpoints>>|||o|o|x
 |Shgatpa|VM x4 Modes Supported|<<t-Shgatpa-coverpoints>>|||o|o|x

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Svadu_PMP_cg = new(); Svadu_PMP_cg.set_inst_name("obj_Svadu_PMP");
+SvZicbo_cg = new(); SvZicbo_cg.set_inst_name("obj_SvZicbo");

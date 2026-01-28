@@ -17,7 +17,7 @@ from random import randint, seed
 def gen(comment, template, length=32, exclusion=None):
     if (len(template) != length):
         print("Template length " + str(len(template)) + " does not match specified length " + str(length))
-        exit(1)
+        sys.exit(1)
     if exclusion is None:
         exclusion = []
     ebits = template.count("E")

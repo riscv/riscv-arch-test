@@ -1,7 +1,7 @@
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "/home/jcarlin/riscv-projects/sail-riscv/build/sail_riscv_config_schema.json",
   "base": {
-    "xlen": 32,
+    "xlen": 64,
     "E": false,
     "writable_misa": false,
     "writable_fiom": true,
@@ -29,7 +29,7 @@
       "napot_supported": true
     },
     "misaligned": {
-      "supported": false,
+      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0
@@ -235,7 +235,7 @@
       "supported": true
     },
     "Zcf": {
-      "supported": true
+      "supported": false
     },
     "Zcd": {
       "supported": true
@@ -360,13 +360,13 @@
       "sfence_vma_illegal_if_svbare_only": true
     },
     "Sv32": {
-      "supported": true
+      "supported": false
     },
     "Sv39": {
-      "supported": false
+      "supported": true
     },
     "Sv48": {
-      "supported": false
+      "supported": true
     },
     "Sv57": {
       "supported": false

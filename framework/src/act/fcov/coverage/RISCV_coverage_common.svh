@@ -161,21 +161,6 @@
   `endif
 `endif
 
-// Get load store/floating point coverage
-
-`ifdef VX64_COVERAGE
-  `define VLS64_COVERAGE
-`endif
-`ifdef VX32_COVERAGE
-  `define VLS32_COVERAGE
-`endif
-`ifdef VX16_COVERAGE
-  `define VLS16_COVERAGE
-`endif
-`ifdef VX8_COVERAGE
-  `define VLS8_COVERAGE
-`endif
-
 // edge cases
 `ifdef VLEN64
   `ifdef ELEN64

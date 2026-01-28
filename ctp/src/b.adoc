@@ -5,40 +5,30 @@
 
 include::{testplansdir}/Zba.adoc[]
 
-*UDB Parameters:* None.
-
 ==== Zbb Basic Bit-Manipulation
 
 include::{testplansdir}/Zbb.adoc[]
-
-*UDB Parameters:* None.
 
 ==== Zbc Carry-less Multiplication
 
 include::{testplansdir}/Zbc.adoc[]
 
-*UDB Parameters:* None.
-
 ==== Zbs Single-Bit Manipulation
 
 include::{testplansdir}/Zbs.adoc[]
 
-*UDB Parameters:* None.
 
 ==== Zbkb Bit-Manipulation for Cryptography
 
 include::{testplansdir}/Zbkb.adoc[]
 
-*UDB Parameters:* None.
 
 ==== Zbkc Carry-less Multiplication for Cryptography
 
 include::{testplansdir}/Zbkc.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zbkx Permutation
 
 include::{testplansdir}/Zbkx.adoc[]
-
-*UDB Parameters:* None.

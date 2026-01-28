@@ -32,5 +32,3 @@ include::norm/I_norm_rules.adoc[]
 Note that standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
 
 include::norm/rv64_norm_rules.adoc[]
-
-*UDB Parameters:* None.

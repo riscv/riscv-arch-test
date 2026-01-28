@@ -26,6 +26,8 @@ suites, there are no standard coverpoints and instead the testplan links to
 a Google Sheet. See the CTP Section "Sm Machine-Mode CSRs and Instructions"
 for an example.
 
+### Normative Rule - Coverpoint Mapping
+
 Both privileged and unprivileged suites need a mapping between the normative
 rules and coverpoints. This mapping is a YAML file in `coverpoints/norm`
 containing a list of rule names and the coverpoints that exercise them. There
@@ -45,7 +47,13 @@ When you run `make` in the `ctp` directory, the YAML file is parsed to build an
 ASCIIDoc file (in `ctp/norm`) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
 `include::norm/Sm_norm_rules.adoc[]`
 
-TODO: mention coverpoint/param in similar fashion
+### Parameter Lists
+
+Similar YAML files in coverpoints/param are used to make a list of the UDB parameters that apply to a test suite. Each parameter has a name (corresponding to the UDB), coverpoint (one or more coverpoints that it affects), and effect (string summarizing what it does, such as coverpoint only applying to certain parameter values, or result depending on the parameter value).
+
+The `generate_param_table.py` script turns these into .adoc files in ctp/src/param listing the parameter name, description (from UDB), coverpoints it applies to, and effect on the coverpoints. If there is a yaml for normative rules but not for parameters, the parameter adoc just indicates no parameters. The script also makes a summary.adoc table listing all of the UDB parameters used anywhere in the test plan, and UDB parameters not yet mentioned in the test plan.
+
+This script is also run automatically when making the CTP. Hence, all the developer must do is create YAML files in coverpoints/param for test suites with parameters.
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 

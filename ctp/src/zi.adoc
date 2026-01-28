@@ -10,7 +10,10 @@ include::{testplansdir}/Zicsr.adoc[]
 
 include::norm/Zicsr_norm_rules.adoc[]
 
-*UDB Parameters:* None.  TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).
+[NOTE]
+===
+TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).  It does not affect Zicsr because this is an unprivileged test that should never perform operations that trap.
+===
 
 ==== Zifencei Instruction-Fetch Fence
 
@@ -28,7 +31,7 @@ include::norm/Zifencei_norm_rules.adoc[]
 
 The Zifencei tests must write an instruction to an address, execute `fence.i`, and then execute the instruction to check that the new instruction is executed.
 
-*UDB Parameters:* None.
+
 
 ==== Misalign: Misaligned Loads/Stores
 
@@ -64,8 +67,6 @@ include::norm/MisalignZca_norm_rules.adoc[]
 |cp_misalign|8|All 8 combinations of the three least significant bits of the address.
 |===
 
-include::param/Misalign_parameters.adoc[]
-
 ==== Zicclsm Misaligned Loads/Stores
 
 The Zicclsm extension, defined in the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22] and
@@ -80,7 +81,7 @@ https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] 
 |zicclsm_op |Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported. |{ExceptionsS, ExceptionsU, ExceptionsZc, ExceptionsF, ExceptionsVls}/{cp_load_address_misaligned, cp_store_address_misaligned}
 |===
 
-*UDB Parameters:* None.
+
 
 *** ExceptionsVls coverpoints need to be written.
 *** update normative rule when tagged in profile and hyperlink is available
@@ -92,7 +93,7 @@ include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zicntr Counters
 
@@ -126,8 +127,6 @@ For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
 Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 
-include::param/Zicntr_parameters.adoc[]
-
 ==== Zihpm Hardware Performance Monitors
 
 Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.
@@ -149,7 +148,10 @@ See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issu
 There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
 sometimes trap because unprivileged tests should not trap.
 
-*UDB Parameters:* None.  MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN, exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
+[NOTE]
+===
+MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN parameters are exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
+===
 
 ==== Zihintpause Pause Hint
 
@@ -157,7 +159,7 @@ include::{testplansdir}/Zihintpause.adoc[]
 
 include::norm/Zihintpause_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zihintntl Non-temporal Locality Hint
 
@@ -167,7 +169,7 @@ include::norm/Zihintpause_norm_rules.adoc[]
 //include::{testplansdir}/Zihintntl.adoc[]
 //,===
 
-*UDB Parameters:* None.
+
 
 ==== ZihintntlZca Compressed Non-temporal Locality Hint
 
@@ -175,7 +177,7 @@ Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.n
 
 include::norm/ZihintntlZca_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zicbom Cache Block Flush/Invalidate
 

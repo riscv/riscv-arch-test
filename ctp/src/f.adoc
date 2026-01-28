@@ -30,7 +30,7 @@ include::{testplansdir}/F.adoc[]
 
 include::norm/F_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== D Double-Precision FP
 
@@ -40,7 +40,7 @@ include::{testplansdir}/D.adoc[]
 
 include::norm/D_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zfh Half-Precision FP
 
@@ -50,7 +50,7 @@ include::{testplansdir}/Zfh.adoc[]
 
 include::norm/Zfh_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== ZfhD
 
@@ -60,7 +60,7 @@ include::{testplansdir}/ZfhD.adoc[]
 
 include::norm/ZfhD_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== Zfhmin
 
@@ -70,7 +70,7 @@ include::{testplansdir}/Zfhmin.adoc[]
 
 include::norm/Zfhmin_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== ZfhminD
 
@@ -80,7 +80,7 @@ include::{testplansdir}/ZfhminD.adoc[]
 
 include::norm/ZfhminD_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ==== Zfa Additional FP
 
@@ -92,7 +92,7 @@ include::{testplansdir}/ZfaF.adoc[]
 
 include::norm/ZfaF_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== ZfaD
 
@@ -102,7 +102,7 @@ include::{testplansdir}/ZfaD.adoc[]
 
 include::norm/ZfaD_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== ZfaZfh
 
@@ -112,7 +112,7 @@ include::{testplansdir}/ZfaZfh.adoc[]
 
 include::norm/ZfaZfh_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== ZfaZfhD
 
@@ -125,7 +125,7 @@ include::{testplansdir}/ZfaZfhD.adoc[]
 
 include::norm/ZfaZfhD_norm_rules.adoc[]
 
-*UDB Parameters:* None.
+
 
 ===== Zfbfmin Scalar BF16 Converts
 
@@ -136,5 +136,3 @@ include::{testplansdir}/Zfbfmin.adoc[]
 include::norm/Zfbfmin_norm_rules.adoc[]
 
 See also <<t-Zfhmin-normative-rules,Zfhmin normative rules>>.
-
-*UDB Parameters:* None.

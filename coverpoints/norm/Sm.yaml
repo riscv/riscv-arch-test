@@ -32,7 +32,6 @@ normative_rule_definitions:
   - name: misa_csr_implemented
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
 
-  # TODO: Add description for misa_enc
   - name: misa_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
 
@@ -632,7 +631,6 @@ normative_rule_definitions:
   - name: mstatus_vs_no_change_dirty
     coverpoint: ["Untestable"]
 
-  # TODO: Add description for mtvec_enc
   - name: mtvec_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mtvec"]
 
@@ -1031,7 +1029,6 @@ normative_rule_definitions:
   - name: mcounteren_inc_inaccessible
     coverpoint: ["TODO"]
 
-  # TODO: Add description for mcounteren_enc
   - name: mcounteren_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcounteren"]
 
@@ -1151,7 +1148,6 @@ normative_rule_definitions:
         "Zicntr_csrrs_cg/cp_cntr/csr_timeh, Sm_mcsr_cg/cp_mtimeh_write, Sm_mcsr_cg/cp_csrw_readonly",
       ]
 
-  # TODO: Add description for mcountinhibit_enc
   - name: mcountinhibit_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcountinhibit"]
 
@@ -1192,7 +1188,6 @@ normative_rule_definitions:
   - names: [mscratch_sz, mscratch_acc]
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mscratch"]
 
-  # TODO: Add description for mscratch_enc
   - name: mscratch_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mscratch"]
 
@@ -1221,7 +1216,6 @@ normative_rule_definitions:
   - name: mepc_inv_addr_conv
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
 
-  # TODO: Add description for mepc_enc
   - name: mepc_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mepc"]
 
@@ -1229,7 +1223,6 @@ normative_rule_definitions:
   - names: [mcause_sz, mcause_acc]
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcause"]
 
-  # TODO: Add description for mcause_enc
   - name: mcause_enc
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcause"]
 

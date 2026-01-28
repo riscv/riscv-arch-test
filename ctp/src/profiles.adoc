@@ -220,6 +220,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
+|ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
 |Zicfiss|Shadow Stack|<<t-Zicfiss-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o

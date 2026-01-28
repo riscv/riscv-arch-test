@@ -1,7 +1,7 @@
 
 === A Atomic Extension
 
-The A extension is subdivided into Zaamo and Zalrsc.
+The A extension is subdivided into Zaamo and Zalrsc.  It also has related Zabha and Zacas extensions.
  <<t-A-normative-rules>> lists the normative rules in the RV{32/64}A specification applicable to all instructions, and the unprivileged coverpoints that exercise them.
 
 [[t-A-normative-rules]]

@@ -1,4 +1,4 @@
-// riscv-config.svh
+// riscv-arch-test_coverage.svh
 // David_Harris@hmc.edu 7 September 2024
 // SPDX-License-Identifier: Apache-2.0
 

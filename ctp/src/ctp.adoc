@@ -40,7 +40,7 @@ endif::[]
 :ne: &#8800;
 :approx: &#8776;
 :inf: &#8734;
-:testplansdir: ../testplans
+:testplansdir: testplans
 
 // :autofit-option:
 // :base-font-size-min: 0

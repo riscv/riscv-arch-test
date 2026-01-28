@@ -187,19 +187,13 @@ The coverpoints for each vector instruction are given in the following sections.
 
 The Vx testplan is the same for SEW={8, 16, 32, 64}.  Each SEW has its own coverage file (e.g. Vx8_coverages.svh) independent of XLEN, as well as tests that depend on XLEN (e.g. rv32/Vx8/vadd.vx.S).
 
-[[t-Vx-coverpoints]]
-.Vx Instruction Coverpoints
 include::{testplansdir}/Vx.adoc[]
 
 ==== Vls
 
-[[t-Vls-coverpoints]]
-.Vls Instruction Coverpoints
 include::{testplansdir}/Vls.adoc[]
 
 ==== Vf
-[[t-Vf-coverpoints]]
-.Vf Instruction Coverpoints
 include::{testplansdir}/Vf.adoc[]
 
 ==== Zvfh Vector Half-Precision Floating-Point Extension
@@ -209,8 +203,6 @@ Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions,
 ==== Zvfhmin Half-Precision Conversions
 
 Zvfhmin only exercises the widening and narrowing conversions: `vfwcvt.f.f.v` and `vfncvt.f.f.w`.
-[[t-Zvfhmin-coverpoints]]
-.Zvfhmin Instruction Coverpoints
 include::{testplansdir}/Zvfhmin.adoc[]
 
 include::norm/Zvfhmin_norm_rules.adoc[]
@@ -219,24 +211,18 @@ include::norm/Zvfhmin_norm_rules.adoc[]
 
 When Zfa and Zvfh are both implemented, RISC-V provides a `fli.h` instruction (<<t-ZfaZvfh-coverpoints>>) even if full Zfh is not supported.
 
-[[t-ZfaZvfh-coverpoints]]
-.ZfaZvfh Instruction Coverpoints
 include::{testplansdir}/ZfaZvfh.adoc[]
 
 include::norm/ZfaZvfh_norm_rules.adoc[]
 
 ==== Zvfbfmin BF16 Conversions
 
-[[t-Zvfbfmin-coverpoints]]
-.Zvfbfmin Instruction Coverpoints
 include::{testplansdir}/Zvfbfmin.adoc[]
 
 include::norm/Zvfbfmin_norm_rules.adoc[]
 
 ==== Zvfbfwma BF16 MAC
 
-[[t-Zvfbfwma-coverpoints]]
-.Zvfbfwma Instruction Coverpoints
 include::{testplansdir}/Zvfbfwma.adoc[]
 
 include::norm/Zvfbfwma_norm_rules.adoc[]

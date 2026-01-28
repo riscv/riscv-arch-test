@@ -115,9 +115,9 @@ TESTPLANS := $(wildcard ../testplans/*)
 testplans: $(TESTPLANS)
 	@echo "Copying test plans..."
 	@if [ -d ../testplans ]; then \
-		mkdir -p $(BUILD_DIR); \
-		rm -rf $(BUILD_DIR)/testplans; \
-		../generators/ctp/transpose_csv.py ../testplans $(BUILD_DIR)/testplans 10; \
+		rm -rf src/testplans; \
+        mkdir -p build; \
+		../generators/ctp/transpose_csv.py ../testplans src/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi

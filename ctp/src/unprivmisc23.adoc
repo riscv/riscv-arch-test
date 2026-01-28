@@ -3,8 +3,6 @@
 
 ==== Zacas Atomic Compare-and-Swap
 
-[[t-Zacas-coverpoints]]
-.Zacas Coverpoints
 include::{testplansdir}/Zacas.adoc[]
 
 include::norm/Zacas_norm_rules.adoc[]
@@ -13,8 +11,6 @@ TODO: Add .d to RV32 and .q to RV64 in testplans directory when testgen is updat
 
 ==== Zabha Subword Atomics
 
-[[t-Zabha-coverpoints]]
-.Zabha Coverpoints
 include::{testplansdir}/Zabha.adoc[]
 
 include::norm/Zabha_norm_rules.adoc[]
@@ -23,8 +19,6 @@ include::norm/Zabha_norm_rules.adoc[]
 
 <<t-ZacasZabha-coverpoints>> summarizes the coverpoints applicable when both Zacas and Zabha are supported.
 
-[[t-ZacasZabha-coverpoints]]
-.ZacasZabha Instruction Coverpoints
 include::{testplansdir}/ZacasZabha.adoc[]
 
 include::norm/ZacasZabha_norm_rules.adoc[]

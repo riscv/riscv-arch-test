@@ -1550,11 +1550,11 @@ def loadVxsatMode(*scalar_registers_used):
 def getLMULIfdef(lmul):
   ifdef = ""
   if (lmul == 0.5):
-    ifdef = "LMULf2_SUPPORTED & "
+    ifdef = "LMULf2_SUPPORTED"
   elif (lmul == 0.25):
-    ifdef = "LMULf4_SUPPORTED & "
+    ifdef = "LMULf4_SUPPORTED"
   elif (lmul == 0.125):
-    ifdef = "LMULf8_SUPPORTED & "
+    ifdef = "LMULf8_SUPPORTED"
   return ifdef
 
 def getELENIfdef(instruction):
@@ -1686,6 +1686,8 @@ def writeTest(description, instruction, instruction_data,
               frm=None, vxsat=None, vta=0, vma=0):
     global tab_count
 
+    writeLine("\n")
+
     [vector_register_data, scalar_register_data, floating_point_register_data, imm_val] = instruction_data
 
     vd              = vector_register_data['vd'] ['reg']
@@ -1708,14 +1710,18 @@ def writeTest(description, instruction, instruction_data,
 
     # deal with conflict before generating lmul ifdefs to not cause issue if the test is unused
 
-    ifdef_string = "\n#if "
+    if getLMULIfdef(lmul) != "":
+      writeLine("#ifdef " + getLMULIfdef(lmul))
+      tab_count += 1
 
-    ifdef_string += getLMULIfdef        (lmul)
+    ifdef_string = "#if "
+
+    # TODO want to delete once top-of-file params work
     ifdef_string += getELENIfdef        (instruction)
     ifdef_string += getMaxIndexEEWIfdef (instruction)
     ifdef_string += getSEWMINIfdef      (instruction)
 
-    if (ifdef_string != "\n#if "):
+    if (ifdef_string != "#if "):
       writeLine(ifdef_string[:-3])
       tab_count += 1
 
@@ -1822,9 +1828,14 @@ def writeTest(description, instruction, instruction_data,
     else:
       writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store)
 
-    if (ifdef_string != "\n#if "):
+    if (ifdef_string != "#if "):
       tab_count -= 1
       writeLine("#endif")
+
+    if getLMULIfdef(lmul) != "":
+      tab_count -= 1
+      writeLine("#endif")
+
 
 def getLoadEquivilentInstruction(instruction, sew):
   if instruction in whole_register_stores:

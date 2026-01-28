@@ -3,8 +3,6 @@
 
 <<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.
 
-[[t-I-coverpoints]]
-.I Instruction Coverpoints
 include::{testplansdir}/I.adoc[]
 
 [[t-I-modified-coverpoints]]

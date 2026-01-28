@@ -3,8 +3,6 @@
 
 <<t-M-coverpoints>> summarizes the coverpoints for the M extension. <<t-M-normative-rules>> summarizes the relevant normative rules.
 
-[[t-M-coverpoints]]
-.M Instruction Coverpoints
 include::{testplansdir}/M.adoc[]
 
 include::norm/M_norm_rules.adoc[]
@@ -15,8 +13,6 @@ include::norm/M_norm_rules.adoc[]
 
 The Zmmul extension is a subset of the M extension that includes only the multiply instructions.  The coverpoints are listed in <<t-Zmmul-coverpoints>>. If a configuration supports  M, it implicitly also supports Zmmul, and thus these multiply instructions are tested twice. The runtime is negligible so multiplication is left in M to avoid confusion.
 
-[[t-Zmmul-coverpoints]]
-.Zmmul Instruction Coverpoints
 include::{testplansdir}/Zmmul.adoc[]
 
 include::norm/Zmmul_norm_rules.adoc[]

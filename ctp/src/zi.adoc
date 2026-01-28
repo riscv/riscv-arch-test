@@ -6,8 +6,6 @@ This section includes a variety of unprivileged extensions.
 
 ==== Zicsr Control/Status Register Instructions
 
-[[t-Zicsr-coverpoints]]
-.Zicsr Instruction Coverpoints
 include::{testplansdir}/Zicsr.adoc[]
 
 include::norm/Zicsr_norm_rules.adoc[]
@@ -16,8 +14,6 @@ include::norm/Zicsr_norm_rules.adoc[]
 
 ==== Zifencei Instruction-Fetch Fence
 
-[[t-Zifencei-coverpoints]]
-.Zifencei Instruction Coverpoints
 include::{testplansdir}/Zifencei.adoc[]
 
 include::norm/Zifencei_norm_rules.adoc[]
@@ -40,32 +36,22 @@ Misaligned loads/stores to main memory optionally can be handled in hardware.  W
 
 The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  TODO: Add Vector misaligned.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}.
 
-[[t-Misalign-coverpoints]]
-.Misaligned Coverpoints
 include::{testplansdir}/Misalign.adoc[]
 
 include::norm/Misalign_norm_rules.adoc[]
 
-[[t-MisalignF-coverpoints]]
-.MisalignedF Coverpoints
 include::{testplansdir}/MisalignF.adoc[]
 
 include::norm/MisalignF_norm_rules.adoc[]
 
-[[t-MisalignD-coverpoints]]
-.MisalignedD Coverpoints
 include::{testplansdir}/MisalignD.adoc[]
 
 include::norm/MisalignD_norm_rules.adoc[]
 
-[[t-MisalignQ-coverpoints]]
-.MisalignedQ Coverpoints
 //include::{testplansdir}/MisalignQ.adoc[]
 
 include::norm/MisalignQ_norm_rules.adoc[]
 
-[[t-MisalignZca-coverpoints]]
-.MisalignedZca Coverpoints
 include::{testplansdir}/MisalignZca.adoc[]
 
 include::norm/MisalignZca_norm_rules.adoc[]
@@ -102,8 +88,6 @@ https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] 
 
 ==== Zicond Conditional Instructions
 
-[[t-Zicond-coverpoints]]
-.Zicond Instruction Coverpoints
 include::{testplansdir}/Zicond.adoc[]
 
 include::norm/Zicond_norm_rules.adoc[]
@@ -118,8 +102,6 @@ The <<t-ZicntrS-coverpoints, ZicntrS>> and <<t-ZicntrU-coverpoints, ZicntrU>> pr
 with control by `mcounteren` and `scounteren` CSRs.
 The <<t-Sm-coverpoints, Sm>> privileged tests exercise `mcycle`, `minstret`, and HPMs from M-mode.
 
-[[t-Zicntr-coverpoints]]
-.Zicntr Instruction Coverpoints
 include::{testplansdir}/Zicntr.adoc[]
 
 include::norm/Zicntr_norm_rules.adoc[]
@@ -150,8 +132,6 @@ include::param/Zicntr_parameters.adoc[]
 
 Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.
 
-[[t-Zihpm-coverpoints]]
-.Zihpm Instruction Coverpoints
 include::{testplansdir}/Zihpm.adoc[]
 
 include::norm/Zihpm_norm_rules.adoc[]
@@ -173,8 +153,6 @@ sometimes trap because unprivileged tests should not trap.
 
 ==== Zihintpause Pause Hint
 
-[[t-Zihintpause-coverpoints]]
-.Zihintpause Instruction Coverpoints
 include::{testplansdir}/Zihintpause.adoc[]
 
 include::norm/Zihintpause_norm_rules.adoc[]

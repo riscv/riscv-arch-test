@@ -24,8 +24,6 @@ These coverpoints do not yet certify that floating-point operations conform to t
 
 ==== F Single-Precision FP
 
-[[t-F-coverpoints]]
-.F Instruction Coverpoints
 include::{testplansdir}/F.adoc[]
 
 include::norm/F_norm_rules.adoc[]
@@ -34,8 +32,6 @@ include::norm/F_norm_rules.adoc[]
 
 ==== D Double-Precision FP
 
-[[t-D-coverpoints]]
-.D Instruction Coverpoints
 include::{testplansdir}/D.adoc[]
 
 include::norm/D_norm_rules.adoc[]
@@ -44,8 +40,6 @@ include::norm/D_norm_rules.adoc[]
 
 ==== Zfh Half-Precision FP
 
-[[t-Zfh-coverpoints]]
-.Zfh Instruction Coverpoints
 include::{testplansdir}/Zfh.adoc[]
 
 include::norm/Zfh_norm_rules.adoc[]
@@ -54,28 +48,14 @@ include::norm/Zfh_norm_rules.adoc[]
 
 ===== ZfhD
 
-[[t-ZfhD-coverpoints]]
-.ZfhD Instruction Coverpoints
-include::{testplansdir}/ZfhD.adoc[]
-
 include::norm/ZfhD_norm_rules.adoc[]
 
 *UDB Parameters:* None.
 
 ===== Zfhmin
 
-[[t-Zfhmin-coverpoints]]
-.Zfhmin Instruction Coverpoints
-include::{testplansdir}/Zfhmin.adoc[]
-
-include::norm/Zfhmin_norm_rules.adoc[]
-
-*UDB Parameters:* None.
-
 ===== ZfhminD
 
-[[t-ZfhminD-coverpoints]]
-.ZfhminD Instruction Coverpoints
 include::{testplansdir}/ZfhminD.adoc[]
 
 include::norm/ZfhminD_norm_rules.adoc[]
@@ -86,8 +66,6 @@ include::norm/ZfhminD_norm_rules.adoc[]
 
 Tests for Zfa for single-precision floating-point are called ZfaF.
 
-[[t-ZfaF-coverpoints]]
-.ZfaF Instruction Coverpoints
 include::{testplansdir}/ZfaF.adoc[]
 
 include::norm/ZfaF_norm_rules.adoc[]
@@ -96,8 +74,6 @@ include::norm/ZfaF_norm_rules.adoc[]
 
 ===== ZfaD
 
-[[t-ZfaD-coverpoints]]
-.ZfaD Instruction Coverpoints
 include::{testplansdir}/ZfaD.adoc[]
 
 include::norm/ZfaD_norm_rules.adoc[]
@@ -106,8 +82,6 @@ include::norm/ZfaD_norm_rules.adoc[]
 
 ===== ZfaZfh
 
-[[t-ZfaZfh-coverpoints]]
-.ZfaZfh Instruction Coverpoints
 include::{testplansdir}/ZfaZfh.adoc[]
 
 include::norm/ZfaZfh_norm_rules.adoc[]
@@ -119,8 +93,6 @@ include::norm/ZfaZfh_norm_rules.adoc[]
 When Zfa is supported with both Zfh and D, there are additional
 NAN-Boxing tests for 16-bit values in 64-bit registers.
 
-[[t-ZfaZfhD-coverpoints]]
-.ZfaZfhD Instruction Coverpoints
 include::{testplansdir}/ZfaZfhD.adoc[]
 
 include::norm/ZfaZfhD_norm_rules.adoc[]
@@ -129,8 +101,6 @@ include::norm/ZfaZfhD_norm_rules.adoc[]
 
 ===== Zfbfmin Scalar BF16 Converts
 
-[[t-Zfbfmin-coverpoints]]
-.Zfbfmin Instruction Coverpoints
 include::{testplansdir}/Zfbfmin.adoc[]
 
 include::norm/Zfbfmin_norm_rules.adoc[]

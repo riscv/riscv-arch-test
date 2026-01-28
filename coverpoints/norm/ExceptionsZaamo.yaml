@@ -1,0 +1,4 @@
+normative_rule_definitions:
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: [""]

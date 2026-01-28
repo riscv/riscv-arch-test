@@ -5,25 +5,33 @@
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
 # REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
-CONFIG_FILES ?= configs/duts/cvw/cvw-rv32gc/test_config.yaml configs/duts/cvw/cvw-rv64gc/test_config.yaml
-REF_CONFIG_FILES ?= configs/ref/sail-rvi20_32/test_config.yaml configs/ref/sail-rvi20_64/test_config.yaml
-# REF_CONFIG_FILES ?= configs/ref/sail-rv32gc/test_config.yaml configs/ref/sail-rv64gc/test_config.yaml
+CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
+# REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
+REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
+# REF_CONFIG_FILES ?= config/ref/sail-rv32gc-clang/test_config.yaml config/ref/sail-rv64gc-clang/test_config.yaml
+# REF_CONFIG_FILES ?= config/ref/sail-rv32e/test_config.yaml
+
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
+DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
 TESTDIR        := tests
-SRCDIR64       := $(TESTDIR)/rv64
-SRCDIR32       := $(TESTDIR)/rv32
+SRCDIR64       := $(TESTDIR)/rv64i
+SRCDIR64E      := $(TESTDIR)/rv64e
+SRCDIR32       := $(TESTDIR)/rv32i
+SRCDIR32E      := $(TESTDIR)/rv32e
 PRIVDIR        := $(TESTDIR)/priv
 PRIVHEADERSDIR := $(PRIVDIR)/headers
 PRIVDIR64      := $(PRIVDIR)/rv64
 PRIVDIR32      := $(PRIVDIR)/rv32
 
 TEMPLATEDIR := templates
-TESTGEN_SRC_DIR := generators/tests/testgen/src/testgen
-COVERGROUPGEN_SRC_DIR := generators/coverage/templates
-TESTGEN_DEPS := $(wildcard $(TESTGEN_SRC_DIR)/* $(TESTGEN_SRC_DIR)/**/*)
-COVERGROUPGEN_DEPS := $(wildcard $(COVERGROUPGEN_SRC_DIR)/* $(COVERGROUPGEN_SRC_DIR)/**)
+TESTGEN_SRC_DIR := generators/testgen
+COVERGROUPGEN_SRC_DIR := generators/coverage
+TESTGEN_DEPS := $(shell find $(TESTGEN_SRC_DIR) -type f)
+COVERGROUPGEN_DEPS := $(shell find $(COVERGROUPGEN_SRC_DIR) -type f)
 TESTPLANS_DIR := testplans
 TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
 
@@ -32,10 +40,10 @@ STAMP_DIR := $(WORKDIR)/stamps
 # Check if UV is installed and set UV variable
 UV := $(shell command -v uv 2> /dev/null)
 ifneq ($(UV),)
-		UV_RUN := $(UV) run
+  UV_RUN := $(UV) run
 else
-		UV_RUN :=
-		$(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
+  UV_RUN :=
+  $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
 endif
 
 .DEFAULT_GOAL := elfs
@@ -48,7 +56,7 @@ elfs: generate-makefiles-dut Makefile
 .PHONY: generate-makefiles-dut
 generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR)
+	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
 
 .PHONY: clean
 clean: clean-tests clean-ref
@@ -57,31 +65,31 @@ clean: clean-tests clean-ref
 ###### Test generation targets ######
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
-$(STAMP_DIR)/covergroupgen.stamp: generators/coverage/covergroupgen.py $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
+$(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/coverage/covergroupgen.py
 	@touch $@
 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
-$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests --extensions I,M,Zca,Zifencei # I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei
+$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
+	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
-$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/tests/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/vector-testgen-unpriv.py
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
 	touch $@
 
 .PHONY: privheaders
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
-$(STAMP_DIR)/csrtests.stamp: generators/tests/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/csrtests.py
+$(STAMP_DIR)/csrtests.stamp: generators/testgen/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/csrtests.py
 	@touch $@
 
-$(STAMP_DIR)/illegalinstrtests.stamp: generators/tests/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/tests/scripts/illegalinstrtests.py
+$(STAMP_DIR)/illegalinstrtests.stamp: generators/testgen/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
 	@touch $@
 
 .PHONY: tests
@@ -89,7 +97,7 @@ tests: covergroupgen testgen privheaders
 
 .PHONY: clean-tests
 clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(PRIVHEADERSDIR) $(PRIVDIR64) $(PRIVDIR32)
+	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR) $(PRIVDIR64) $(PRIVDIR32)
 	rm -rf fcov/unpriv/*
 	rm -rf $(STAMP_DIR)
 
@@ -100,7 +108,7 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 .PHONY: generate-makefiles-ref
 generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage
+	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
 
 .PHONY: coverage
 coverage: generate-makefiles-ref Makefile
@@ -108,7 +116,10 @@ coverage: generate-makefiles-ref Makefile
 
 .PHONY: clean-ref
 clean-ref:
-	rm -rf $(WORKDIR_REF)
+	@if [ -d $(WORKDIR_REF) ]; then \
+		find $(WORKDIR_REF) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR_REF) -type d -empty -delete; \
+	fi
 
 # Dev targets
 .PHONY: lint

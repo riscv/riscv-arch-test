@@ -1,23 +1,6 @@
-// RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
-// test data section into dest_reg and increments the data_ptr pointer by REGWIDTH.
-// This macro is used to load integer test values from the .data section.
-//  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
-//  _DEST_REG - Destination register to load the value into
-#define RVTEST_TESTDATA_LOAD_INT(_DATA_PTR, _DEST_REG)  \
-  LREG _DEST_REG, 0(_DATA_PTR)                          ;\
-  addi _DATA_PTR, _DATA_PTR, REGWIDTH
+// Page Table Macros
 
-// RVTEST_TESTDATA_LOAD_FLOAT(data_ptr, dest_reg) loads a floating-point value from the
-// test data section into dest_reg and increments the data_ptr pointer by FREGWIDTH.
-// This macro is used to load floating point test values from the .data section.
-//  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
-//  _DEST_REG - Floating point destination register to load the value into
-#define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
-  FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
-  addi _DATA_PTR, _DATA_PTR, FREGWIDTH
-
-
-/* This function set up the Page table entry for Sv32 Translation scheme
+/* Set up the Page table entry for Sv32 Translation scheme
     Arguments:
     _PAR: Register containing Physical Address
     _PR: Register containing Permissions for Leaf PTE.
@@ -51,14 +34,6 @@
     srli _TR0, _TR0, 12 ;\
     or _TR0, _TR0, _TR1  ;\
     csrw satp, _TR0   ;\
-
-
-#define ALL_MEM_PMP                                               ;\
-      li t2, -1                                                 ;\
-      csrw pmpaddr0, t2                                         ;\
-      li t2, 0x0F                                            ;\
-      csrw pmpcfg0, t2                                          ;\
-      sfence.vma                                                ;
 
 //****NOTE: label `rvtest_Sroot_pg_tbl` must be declared after RVTEST_DATA_END
 //          in the test aligned at 4kiB (use .align 12)
@@ -211,10 +186,3 @@
     srli t6, t6, 12                                             ;\
     or t6, t6, t5                                               ;\
     csrw satp, t6                                               ;
-
-// RVTEST_FP_ENABLE() enables floating point by setting the FS field in
-// mstatus to Initial (01) and clearing the fcsr register.
-#define RVTEST_FP_ENABLE()                  ;\
-  LI(a0, (MSTATUS_FS & (MSTATUS_FS >> 1)))  ;\
-  csrs mstatus, a0                          ;\
-  csrwi fcsr, 0

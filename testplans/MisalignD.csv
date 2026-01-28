@@ -1,0 +1,3 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_misalign
+fld,FL,x,x,x,x
+fsd,FS,x,x,x,x

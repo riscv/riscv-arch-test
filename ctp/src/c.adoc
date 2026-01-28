@@ -1,48 +1,50 @@
 
 === C Compressed Extension
 
-The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions. <<t-C-normative-rules>> lists the normative rules in the RV{32/64}C specification applicable to all instructions, and the unprivileged coverpoints that exercise them.
+The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions.
 
-[[t-C-normative-rules]]
-.C Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|27.1|The C extension allows
-16-bit instructions to be freely intermixed with 32-bit instructions, with the latter now able to start on
-any 16-bit boundary, i.e., IALIGN=16.|***
-|27.1|The compressed instruction encodings are mostly common across RV32C and
-RV64C, but as shown in <<rvc-instr-table0, Table 34>>, a few opcodes are used for
-different purposes depending on base ISA.|Run relevant test suites. ***drop
-|27.1|If the C extension is implemented, the appropriate compressed
-floating-point load and store instructions must be provided whenever the relevant standard floating-
-point extension (F and/or D) is also implemented.|Run relevant test suites. ***drop
-|27.2|CR, CI, and CSS can use any of the 32 RVI registers, but CIW,
-CL, CS, CA, and CB are limited to just 8 of them.|cp_rs1p, cp_rs2p, cp_rdp
-|27.2|Compressed register-based floating-point loads and stores also use the
-CL and CS formats respectively, with the eight registers mapping to `f8` to `f15`.|cp_fdp, cp_fs2p
-|27.2|For many RVC instructions, zero-valued immediates are disallowed and
-`x0` is not a valid 5-bit register specifier.|cp_rs1_imm_edges,cp_imm_mul, _nx0 coverpoints
-|27.4|As with base RVI instructions, the offsets of all RVC
-control transfer instructions are in multiples of 2 bytes.|***
-|27.7|A portion of the RVC encoding space is reserved for microarchitectural
-HINTs. ...these instructions do not
-modify any architectural state, except for advancing the `pc` and any
-applicable performance counters. HINTs are executed as no-ops on
-implementations that ignore them.|Hints are not tested
-|===
-
-<<t-C-priv-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior.
+<<t-C-priv-normative-rules>> summarizes normative rules relating to compressed instructions affecting privileged behavior. ***update
 
 ==== Zca Compressed Extension
 
 <<t-Zca-coverpoints>> summarizes the coverpoints for the Zca extension.
+These include standard compressed hints in the cp_custom_chint_* family (also called cp_chint_*).  Note that some of the hints are also compresssed
+Zihintntl hints.  Custom compressed hints are not certified because they are custom.
 
 [[t-Zca-coverpoints]]
 .Zca Instruction Coverpoints
 include::{testplansdir}/Zca.adoc[]
 
+Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  As defined in <<t-unprivileged-coverpoints>>, the p versions of coverpoints work on registers x8-x15.
+
+[[t-Zc-modified-coverpoints]]
+.Zc Modified Coverpoints
+[cols="2, 1, 4" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cr_rs1_imm_edges_6bit|16*13|rs1 edges x Signed 6-bit immediates 0, 1, 2, 3, 4, 8 16, 30, 31, -32, -31, -2, -1
+|cr_rs1_imm_edges_6bit_n0|16*12|rs1 edges x cp_rs1_imm_edges_6bit excluding 0
+|cr_rs1_imm_edges_c|16*11|rs1 edges x unsigned 5 or 6-bit uimm 1, 2, 3, 4, 8, 14, 15, 16, 17, 30, 31. XLEN=64 adds 32, 33, 48, 62, 63
+|cp_imm_edges_c_jal|21|Selected signed multiples of 2 from -2048 to 1024
+|cmp_rs1_rs2_c|8|Same register x8-x15 for both rs1 and rs2 (and hence rd)
+|cp_imm_mul|31|Multiples of 4 from 0 to 124
+|cp_imm_mul_4sp|63|Multiples of 4 from 0 to 252
+|cp_imm_mul_8|31|Multiples of 4 from 0 to 248
+|cp_imm_mul_8sp|63|Multiples of 8 from 0 to 504
+|cp_imm_mul_addi16sp|63|Multiples of 16 from -512 to 496
+|cp_imm_mul_addi4spn|255|Multiples of 4 from 4 to 1020
+|cp_offset_jr|2 + 4|cp_offset + rs1_val[1:0] affecting lsb of load/store address
+|cp_custom_chint|63+31+64+63+31+31|Compressed standard hints using `c.nop`, `c.addi`, `c.li`, `c.lui`, `c.mv`, `c.add`
+|===
+
+
 include::norm/Zca_norm_rules.adoc[]
+
+*** check that c-lui_hint and c-sra_hint normative rules in table above get populated when
+https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual/pull/167/changes
+is merged.
+
+*UDB Parameters:* None.
 
 ==== Zcf Compressed Floating-Point Extension
 
@@ -54,6 +56,8 @@ include::{testplansdir}/Zcf.adoc[]
 
 include::norm/Zcf_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ==== Zcd Compressed Double-Precision FP Extension
 
 <<t-Zcd-coverpoints>> summarizes the coverpoints for the Zcd extension.
@@ -63,6 +67,8 @@ include::norm/Zcf_norm_rules.adoc[]
 include::{testplansdir}/Zcd.adoc[]
 
 include::norm/Zcd_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zcb Additional Compressed Instructions
 
@@ -74,6 +80,8 @@ include::{testplansdir}/Zcb.adoc[]
 
 include::norm/Zcb_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZcbM
 
 When both Zcb and M are supported, add the instruction in <<t-ZcbM-coverpoints>> to the Zcb coverpoints.
@@ -83,6 +91,8 @@ When both Zcb and M are supported, add the instruction in <<t-ZcbM-coverpoints>>
 include::{testplansdir}/ZcbM.adoc[]
 
 include::norm/ZcbM_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ===== ZcbZba
 
@@ -94,6 +104,8 @@ include::{testplansdir}/ZcbZba.adoc[]
 
 include::norm/ZcbZba_norm_rules.adoc[]
 
+*UDB Parameters:* None.
+
 ===== ZcbZbb
 
 When both Zcb and Zbb are supported, add the instructions in <<t-ZcbZbb-coverpoints>> to the Zcb coverpoints.
@@ -103,3 +115,5 @@ When both Zcb and Zbb are supported, add the instructions in <<t-ZcbZbb-coverpoi
 include::{testplansdir}/ZcbZbb.adoc[]
 
 include::norm/ZcbZbb_norm_rules.adoc[]
+
+*UDB Parameters:* None.

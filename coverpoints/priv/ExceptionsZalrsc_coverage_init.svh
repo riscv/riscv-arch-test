@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsZalrsc_exceptions_cg = new();         ExceptionsZalrsc_exceptions_cg.set_inst_name("obj_ExceptionsZalrsc_exceptions");
+    ExceptionsZalrsc_cg = new();         ExceptionsZalrsc_cg.set_inst_name("obj_ExceptionsZalrsc");

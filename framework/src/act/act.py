@@ -13,7 +13,7 @@ from typing import Annotated
 import typer
 
 from act.config import load_config
-from act.makefile_gen import generate_makefiles
+from act.makefile_gen import ConfigData, generate_makefiles
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import get_common_tests, select_tests
@@ -33,19 +33,33 @@ def run_act(
     coverpoint_dir: Annotated[
         Path, typer.Option("--coverpoint-dir", "-c", exists=True, file_okay=False, help="Path to coverpoint directory")
     ] = Path("coverpoints"),
-    workdir: Annotated[Path | None, typer.Option("--workdir", "-w", help="Path to working directory")] = None,
-    coverage: Annotated[
-        bool, typer.Option("--coverage/--no-coverage", help="Enable or disable coverage generation")
-    ] = False,
+    workdir: Annotated[
+        Path | None,
+        typer.Option("--workdir", "-w", file_okay=False, help="Path to working directory", show_default="./work"),
+    ] = None,
+    extensions: Annotated[
+        str,
+        typer.Option("--extensions", "-e", help="Comma-separated list of extensions to generate tests for"),
+    ] = "all",
+    exclude: Annotated[
+        str,
+        typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation"),
+    ] = "",
+    *,
+    coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
+    debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
 ) -> None:
     if workdir is None:
         workdir = Path.cwd() / "work"
     # Generate test list
-    full_test_dict = generate_test_dict(test_dir)
-    rv32_common_tests = get_common_tests(full_test_dict, 32)
-    rv64_common_tests = get_common_tests(full_test_dict, 64)
+    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    rv32i_common_tests = get_common_tests(full_test_dict, 32, False)
+    rv32e_common_tests = get_common_tests(full_test_dict, 32, False)
+    rv64i_common_tests = get_common_tests(full_test_dict, 64, False)
+    rv64e_common_tests = get_common_tests(full_test_dict, 64, False)
+    common_test_dicts = [rv32i_common_tests, rv32e_common_tests, rv64i_common_tests, rv64e_common_tests]
 
-    configs = []
+    configs: list[ConfigData] = []
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
@@ -60,19 +74,26 @@ def run_act(
 
         # Select tests for config
         selected_tests = select_tests(full_test_dict, implemented_extensions, config_params)
-        configs.append({"config": config, "xlen": config_params["MXLEN"], "selected_tests": selected_tests})
+        configs.append(
+            {
+                "config": config,
+                "xlen": config_params["MXLEN"],
+                "e_ext": "E" in implemented_extensions,
+                "selected_tests": selected_tests,
+            }
+        )
 
     # TODO: Add a check that all configs use the same header files/compiler/etc. Otherwise error out or don't use common tests
 
     # Generate Makefiles
     generate_makefiles(
         configs,
-        rv32_common_tests,
-        rv64_common_tests,
+        common_test_dicts,
         test_dir.absolute(),
         coverpoint_dir.absolute(),
         workdir.absolute(),
         coverage,
+        debug,
     )
     print(f"Makefiles generated in {workdir}")
     print(f"Run make -C {workdir} compile to build all tests.")

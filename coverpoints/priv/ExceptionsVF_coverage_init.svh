@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsVF_exceptions_cg = new();           ExceptionsVF_exceptions_cg.set_inst_name("obj_ExceptionsVF_exceptions");
+    ExceptionsVF_cg = new();           ExceptionsVF_cg.set_inst_name("obj_ExceptionsVF");

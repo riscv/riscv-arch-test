@@ -1,0 +1,15 @@
+
+=== I/O Memory Management Unit (IOMMU)
+
+This section describes IOMMU extension test plans.
+
+==== IOMMU I/O Memory Management Unit
+
+[[t-iommu-coverpoints]]
+.IOMMU Coverpoints
+//,===
+//include::{testplansdir}/iommu.adoc[]
+//,===
+
+TODO: This text is here to prevent Asciidoctor from rendering strangely after an empty table.
+Delete it when table is populated.

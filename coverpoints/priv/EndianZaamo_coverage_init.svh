@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-   EndianZaamo_endian_cg = new();         EndianZaamo_endian_cg.set_inst_name("obj_EndianZammo_endian");
+   EndianZaamo_cg = new();         EndianZaamo_cg.set_inst_name("obj_EndianZammo");

@@ -1,4 +1,5 @@
 
+[appendix]
 == Unprivileged Test Plan
 
 Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
@@ -76,7 +77,6 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
-|cp_sc|2|Store conditional instruction has a success and failure case.
 |===
 
 Notes:
@@ -182,7 +182,7 @@ Notes:
 
 [NOTE]
 ====
-The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and a random number to exercise intermediate values.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
+The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and an arbitrary intermediate value.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
 ====
 
 include::i.adoc[]

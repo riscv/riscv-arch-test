@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSS
-covergroup ExceptionsS_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -102,7 +102,7 @@ covergroup ExceptionsS_exceptions_cg with function sample(ins_t ins);
     mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
         // auto fills 1 and 0
     }
-    sstatus_SIE: coverpoint ins.prev.csr[12'h100][1] {
+    mstatus_SIE: coverpoint ins.prev.csr[12'h300][1] {
         // auto fills 1 and 0
     }
     pc_bit_1: coverpoint ins.current.pc_rdata[1] {
@@ -179,12 +179,12 @@ covergroup ExceptionsS_exceptions_cg with function sample(ins_t ins);
     cp_medeleg_msu_ecall:                    cross ecall,                        priv_mode_m_s_u, medeleg_walk;
     cp_medeleg_msu_ebreak:                   cross ebreak,                       priv_mode_m_s_u, medeleg_walk;
     cp_stvec:                                cross jalr, illegal_address, priv_mode_s_u, medeleg_instraccessfault_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose instr access fault for the delegated exception
-    cp_xstatus_ie:                           cross ecall, priv_mode_s_u, mstatus_MIE, sstatus_SIE, medeleg_b8;
+    cp_xstatus_ie:                           cross ecall, priv_mode_s_u, mstatus_MIE, mstatus_SIE, medeleg_b8;
 
 endgroup
 
 function void exceptionss_sample(int hart, int issue, ins_t ins);
-    ExceptionsS_exceptions_cg.sample(ins);
+    ExceptionsS_cg.sample(ins);
 
 // $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 //     ins.current.mode,
@@ -193,4 +193,5 @@ function void exceptionss_sample(int hart, int issue, ins_t ins);
 //     ins.current.rs1_val[1:0],
 //     ins.current.pc_rdata[1],
 //     ins.current.imm[1:0]);
+
 endfunction

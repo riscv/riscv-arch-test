@@ -6,82 +6,82 @@
 // Macro to define failure detection code (functions)
 // This is instantiated after test code near the end of RVTEST_CODE_END in test_setup.h
 .macro RVTEST_FAILURE_CODE
-    # Log failure. x4 contains return address of jal from the failure and x5 is a vacant temporary register
-    failedtest_x4_x5:
-        la x5, begin_failure_scratch
-        SREG x4, 32(x5) # store return address
+    # Log failure. DEFAULT_LINK_REG (x5) contains return address of jal from the failure and DEFAULT_TEMP_REG (x4) is a vacant temporary register
+    failedtest_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG) # store return address
         j failedtest_saveregs
 
-    # Log failure. x7 contains return address of jal from the failure and x8 is a vacant temporary register
-    failedtest_x7_x8:
-        la x8, begin_failure_scratch
-        SREG x7, 56(x8) # store return address
-        SREG x4, 32(x8) # save x4
-        SREG x5, 40(x8) # save x5
-        mv x4, x7       # move return address into x4
-        mv x5, x8       # move scratch base into x5
-        # now x4 has the return address of jal from the failure and x5 is a vacant temporary register.
+    # Log failure. x8 contains return address of jal from the failure and x7 is a vacant temporary register
+    failedtest_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)               # store return address
+        SREG DEFAULT_TEMP_REG, 32(x7) # save DEFAULT_LINK_REG
+        SREG DEFAULT_LINK_REG, 40(x7) # save DEFAULT_TEMP_REG
+        mv DEFAULT_TEMP_REG, x7       # move scratch base into DEFAULT_TEMP_REG
+        mv DEFAULT_LINK_REG, x8       # move return address into DEFAULT_LINK_REG
+        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-    # Log failure. x12 contains return address of jal from the failure and x13 is a vacant temporary register
-    failedtest_x12_x13:
-        la x13, begin_failure_scratch
-        SREG x12, 96(x13) # store return address
-        SREG x4, 32(x13)  # save x4
-        SREG x5, 40(x13)  # save x5
-        mv x4, x12        # move return address into x4
-        mv x5, x13        # move scratch base into x5
-        # now x4 has the return address of jal from the failure and x5 is a vacant temporary register.
+    # Log failure. x13 contains return address of jal from the failure and x12 is a vacant temporary register
+    failedtest_x13_x12:
+        la x12, begin_failure_scratch
+        SREG x13, 104(x12) # store return address
+        SREG DEFAULT_TEMP_REG, 32(x12)  # save DEFAULT_LINK_REG
+        SREG DEFAULT_LINK_REG, 40(x12)  # save DEFAULT_TEMP_REG
+        mv DEFAULT_TEMP_REG, x12        # move scratch base into DEFAULT_TEMP_REG
+        mv DEFAULT_LINK_REG, x13        # move return address into DEFAULT_LINK_REG
+        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-    # for the rest of this code, x4 contains return address of jal from the failure, x5 points to scratch space
+    # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
     failedtest_saveregs:
-        SREG x1, 8(x5)
-        SREG x2, 16(x5)
-        SREG x3, 24(x5)
-        # SREG x4, 32(x5)
-        # SREG x5, 40(x5)
-        # x4 and x5 have already been saved if relevant
-        SREG x6, 48(x5)
-        SREG x7, 56(x5)
-        SREG x8, 64(x5)
-        SREG x9, 72(x5)
-        SREG x10, 80(x5)
-        SREG x11, 88(x5)
-        SREG x12, 96(x5)
-        SREG x13, 104(x5)
-        SREG x14, 112(x5)
-        SREG x15, 120(x5)
-        SREG x16, 128(x5)
-        SREG x17, 136(x5)
-        SREG x18, 144(x5)
-        SREG x19, 152(x5)
-        SREG x20, 160(x5)
-        SREG x21, 168(x5)
-        SREG x22, 176(x5)
-        SREG x23, 184(x5)
-        SREG x24, 192(x5)
-        SREG x25, 200(x5)
-        SREG x26, 208(x5)
-        SREG x27, 216(x5)
-        SREG x28, 224(x5)
-        SREG x29, 232(x5)
-        SREG x30, 240(x5)
-        SREG x31, 248(x5)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        SREG x3, 24(DEFAULT_TEMP_REG)
+        # SREG x4, 32(DEFAULT_TEMP_REG)
+        # SREG x5, 40(DEFAULT_TEMP_REG)
+        # x4 and x5 have already been saved if relevant (default temp and link regs)
+        SREG x6, 48(DEFAULT_TEMP_REG)
+        SREG x7, 56(DEFAULT_TEMP_REG)
+        SREG x8, 64(DEFAULT_TEMP_REG)
+        SREG x9, 72(DEFAULT_TEMP_REG)
+        SREG x10, 80(DEFAULT_TEMP_REG)
+        SREG x11, 88(DEFAULT_TEMP_REG)
+        SREG x12, 96(DEFAULT_TEMP_REG)
+        SREG x13, 104(DEFAULT_TEMP_REG)
+        SREG x14, 112(DEFAULT_TEMP_REG)
+        SREG x15, 120(DEFAULT_TEMP_REG)
+        SREG x16, 128(DEFAULT_TEMP_REG)
+        SREG x17, 136(DEFAULT_TEMP_REG)
+        SREG x18, 144(DEFAULT_TEMP_REG)
+        SREG x19, 152(DEFAULT_TEMP_REG)
+        SREG x20, 160(DEFAULT_TEMP_REG)
+        SREG x21, 168(DEFAULT_TEMP_REG)
+        SREG x22, 176(DEFAULT_TEMP_REG)
+        SREG x23, 184(DEFAULT_TEMP_REG)
+        SREG x24, 192(DEFAULT_TEMP_REG)
+        SREG x25, 200(DEFAULT_TEMP_REG)
+        SREG x26, 208(DEFAULT_TEMP_REG)
+        SREG x27, 216(DEFAULT_TEMP_REG)
+        SREG x28, 224(DEFAULT_TEMP_REG)
+        SREG x29, 232(DEFAULT_TEMP_REG)
+        SREG x30, 240(DEFAULT_TEMP_REG)
+        SREG x31, 248(DEFAULT_TEMP_REG)
 
     failedtest_saveresults:
         # failing instruction might be 16 or 32 bits, on a 16-byte boundary.
         # fetch with halfwords, report all 32 bits, let user figure it out
-        lhu x6, -14(x4)     # get upper half of the failing instruction
-        lhu x7, -16(x4)     # get lower half
+        lhu x6, -14(DEFAULT_LINK_REG)     # get upper half of the failing instruction
+        lhu x7, -16(DEFAULT_LINK_REG)     # get lower half
         slli x6, x6, 16     # reassemble
         or x6, x6, x7
-        sw x6, 256(x5)      # record 32 bits of failing instruction.  Actual instruction might be top half
+        sw x6, 256(DEFAULT_TEMP_REG)      # record 32 bits of failing instruction.  Actual instruction might be top half
 
         # Reconstruct and extract information from the beq
         # branch might be on 16-byte boundary, so fetch with halfword
-        lhu x6, -6(x4)     # get upper half of the the beq that compared good and bad registers
-        lhu x7, -8(x4)     # get lower half of the beq
+        lhu x6, -6(DEFAULT_LINK_REG)     # get upper half of the the beq that compared good and bad registers
+        lhu x7, -8(DEFAULT_LINK_REG)     # get lower half of the beq
         slli x6, x6, 16     # reassemble beq
         or x6, x6, x7
         # extract rs1 and rs2 from branch (beq format: rs2[24:20] rs1[19:15])
@@ -89,17 +89,17 @@
         andi x7, x7, 31     # x7 = rs1 of branch
         srli x8, x6, 20
         andi x8, x8, 31     # x8 = rs2 of branch
-        sw x8, 260(x5)      # record id of failing register (rs2 of beq)
+        sw x8, 260(DEFAULT_TEMP_REG)      # record id of failing register (rs2 of beq)
         # save bad value from rs2
         slli x6, x8, 3      # rs2 * 8
-        add  x6, x5, x6     # address of scratch memory containing rs2
+        add  x6, DEFAULT_TEMP_REG, x6     # address of scratch memory containing rs2
         LREG x6, 0(x6)      # value of rs2 (bad result of operation)
-        SREG x6, 272(x5)    # record bad value
+        SREG x6, 272(DEFAULT_TEMP_REG)    # record bad value
 
         # Reconstruct and extract information from the load
         # The ld loads from an offset of a base register, extract base register and offset
-        lhu x6, -10(x4)     # get upper half of the ld instruction
-        lhu x7, -12(x4)     # get lower half of the ld
+        lhu x6, -10(DEFAULT_LINK_REG)     # get upper half of the ld instruction
+        lhu x7, -12(DEFAULT_LINK_REG)     # get lower half of the ld
         slli x6, x6, 16     # reassemble ld
         or x6, x6, x7
         # ld format: imm[11:0] at bits [31:20], rs1 at bits [19:15]
@@ -108,21 +108,21 @@
         andi x6, x6, 31     # extract rs1 (base register)
         # Load the value of the sigptr register from saved state
         slli x6, x6, 3      # rs1 * 8
-        add x6, x5, x6      # address of sigptr register
+        add x6, DEFAULT_TEMP_REG, x6      # address of sigptr register
         LREG x6, 0(x6)      # get sigptr register value
         add x6, x6, x7      # sigptr + offset = address of expected value
         LREG x6, 0(x6)      # load expected value
-        SREG x6, 280(x5)    # record expected value
+        SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
 
         # Save failing address
-        addi x6, x4, -16    # address of the failing instruction (possibly including half of previous instruction)
-        SREG x6, 264(x5)
+        addi x6, DEFAULT_LINK_REG, -16    # address of the failing instruction (possibly including half of previous instruction)
+        SREG x6, 264(DEFAULT_TEMP_REG)
 
         # Get pointer to failure string
         # In SELFCHECK mode, after the jal instruction there is an XLEN-sized pointer to the test name string
-        # The jal returns to x4, which points to the instruction after jal (i.e., the pointer itself)
-        LREG x6, 0(x4)      # load the string pointer from memory
-        SREG x6, 288(x5)    # save the string pointer
+        # The jal returns to DEFAULT_LINK_REG, which points to the instruction after jal (i.e., the pointer itself)
+        LREG x6, 0(DEFAULT_LINK_REG)      # load the string pointer from memory
+        SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:
         # RVMODEL_IO_INIT(x6, x7, x8)
@@ -238,31 +238,39 @@
     .data
     .align 4
     begin_failure_scratch:
-        .fill 32,8,0xfeedf00dbaaaaaad
+        .fill 64, 4, 0xfeedf00dbaaaaaad
     failing_instruction:
         .fill 1, 4, 0xfeedf00d
     failing_reg:
         .fill 1, 4, 0xbaaaaaad
     failing_addr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failing_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
-        .fill 1, 8, 0xfeedf00dbaaaaaad
+        .fill 2, 4, 0xfeedf00dbaaaaaad
     ascii_buffer:
         .fill 20, 1, 0          # Buffer for hex string conversion (max "0x" + 16 hex digits + "\n" + null)
     end_failure_scratch:
 
     successstr:
+        // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
+        // clang does not allow implicit string concatenation with .string directives
         #ifdef SELFCHECK
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": PASSED\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": PASSED\n\n"
         #else
-            .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": SIGRUN\n"
+            .ascii "\nRVCP-SUMMARY: Test File \""
+            .ascii TEST_FILE
+            .asciz "\": SIGRUN\n"
         #endif
     failstr:
-        .string "\nRVCP-SUMMARY: Test File \"" TEST_FILE "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .ascii "\nRVCP-SUMMARY: Test File \""
+        .ascii TEST_FILE
+        .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

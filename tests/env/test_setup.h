@@ -34,26 +34,41 @@
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
     RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
 
+    #ifdef rvtest_mtrap_routine
+      # set up PMP so user and supervisor mode can access full address space
+      # gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+      CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
+      li t0, -1
+      CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+      sfence.vma
+    #endif
+
   // Start of test
   .global rvtest_code_begin
   rvtest_code_begin:
 
     // Initialize signature pointer
-    LA(x3, signature_base)
+    LA(DEFAULT_SIG_REG, signature_base)
 
     // Initial signature check to confirm self-checking is working
     LI(T1, CANARY_VALUE)
     #ifdef SELFCHECK
-      RVTEST_SIGUPD(x3, x4, x5, T1, "canary_mismatch") # sig_begin_canary
+      // Can't use DEFAULT_*_REG macros here because of macro expansion order
+      // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
+      RVTEST_SIGUPD(x2, x5, x4, T1, "canary_mismatch") # sig_begin_canary
     #else
       // nops to match selfchecking test length
       RVTEST_SIGUPD_NOPS
     #endif
     // Initialize test data pointer
-    LA(x4, rvtest_data_begin)
+    LA(DEFAULT_DATA_REG, rvtest_data_begin)
+
+    #ifdef RVTEST_FP
+      RVTEST_FP_ENABLE(T1)
+    #endif
 
     #ifdef RVTEST_VECTOR
-      RVTEST_V_ENABLE(x5, x6)
+      RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
     #endif
   .option pop
 .endm
@@ -209,7 +224,7 @@
         #include SIGNATURE_FILE
       #else
         // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*(XLEN/32),4,0xdeadbeef
+        .fill SIGUPD_COUNT*SIG_STRIDE,4,0xdeadbeef
       #endif
 
     // Signature region for trap handlers
@@ -217,7 +232,7 @@
       tsig_begin_canary:
         CANARY
       mtrap_sigptr:
-        .fill 64*(XLEN/32),4,0xdeadbeef
+        .fill 20000*(XLEN/32),4,0xdeadbeef
       tsig_end_canary:
         CANARY
     #endif

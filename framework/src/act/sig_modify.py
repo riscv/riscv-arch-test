@@ -7,6 +7,7 @@
 # Update signature file to be compatible with assembler
 ##################################
 
+import argparse
 from pathlib import Path
 
 
@@ -22,8 +23,6 @@ def add_datatype_to_signature(sig_file: Path, xlen: int) -> None:
 
 
 def main() -> None:
-    import argparse
-
     parser = argparse.ArgumentParser(description="Modify signature file for assembly compatibility")
     parser.add_argument("sig_file", type=Path, help="Path to the signature file")
     parser.add_argument("xlen", type=int, choices=[32, 64], help="XLEN value (32 or 64)")

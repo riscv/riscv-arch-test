@@ -32,7 +32,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.3
+    rev: v0.14.10
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -41,17 +41,17 @@ repos:
       - id: ruff-format
 
   # Pyright Python type checker
-  # - repo: local
-  #   hooks:
-  #     - id: pyright
-  #       name: pyright
-  #       entry: uv run pyright
-  #       language: system
-  #       types: [python]
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+        language: system
+        types: [python]
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.7
+    rev: 0.9.18
     hooks:
       - id: uv-lock
 
@@ -64,7 +64,7 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.6.2
+    rev: v3.7.4
     hooks:
       - id: prettier
 
@@ -73,6 +73,13 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
+
+  # Check links in markdown files
+  - repo: https://github.com/tcort/markdown-link-check
+    rev: v3.14.2
+    hooks:
+      - id: markdown-link-check
+        args: [-q]
 
   # clang-format for assembly files
   # - repo: https://github.com/pre-commit/mirrors-clang-format

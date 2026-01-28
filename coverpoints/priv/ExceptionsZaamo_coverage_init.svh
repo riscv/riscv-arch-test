@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsZaamo_exceptions_cg = new();         ExceptionsZaamo_exceptions_cg.set_inst_name("obj_ExceptionsZaamo_exceptions");
+    ExceptionsZaamo_cg = new();         ExceptionsZaamo_cg.set_inst_name("obj_ExceptionsZaamo");

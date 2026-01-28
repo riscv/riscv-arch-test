@@ -2,18 +2,102 @@
 
 === Zi*  Additional Unpriv Extensions
 
+This section includes a variety of unprivileged extensions.
+
 ==== Zicsr Control/Status Register Instructions
 
 [[t-Zicsr-coverpoints]]
 .Zicsr Instruction Coverpoints
 include::{testplansdir}/Zicsr.adoc[]
 
+include::norm/Zicsr_norm_rules.adoc[]
+
+*UDB Parameters:* None.  TRAP_ON_UNIMPLEMENTED_CSR affects the results of Ssstrict/cp_csrr (<<t-SsstrictS-coverpoints>>).
 
 ==== Zifencei Instruction-Fetch Fence
 
 [[t-Zifencei-coverpoints]]
 .Zifencei Instruction Coverpoints
 include::{testplansdir}/Zifencei.adoc[]
+
+include::norm/Zifencei_norm_rules.adoc[]
+
+[[t-Zifencei-coverpoint-definitions]]
+.Zifencei Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_custom_fencei|4|Executes normal `fence.i` and `fence.i` instructions with nonzero rs1, rd, and funct12 fields to verify that they execute without trapping.
+|===
+
+The Zifencei tests must write an instruction to an address, execute `fence.i`, and then execute the instruction to check that the new instruction is executed.
+
+*UDB Parameters:* None.
+
+==== Misalign: Misaligned Loads/Stores
+
+Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
+
+The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  TODO: Add Vector misaligned.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}.
+
+[[t-Misalign-coverpoints]]
+.Misaligned Coverpoints
+include::{testplansdir}/Misalign.adoc[]
+
+include::norm/Misalign_norm_rules.adoc[]
+
+[[t-MisalignF-coverpoints]]
+.MisalignedF Coverpoints
+include::{testplansdir}/MisalignF.adoc[]
+
+include::norm/MisalignF_norm_rules.adoc[]
+
+[[t-MisalignD-coverpoints]]
+.MisalignedD Coverpoints
+include::{testplansdir}/MisalignD.adoc[]
+
+include::norm/MisalignD_norm_rules.adoc[]
+
+[[t-MisalignQ-coverpoints]]
+.MisalignedQ Coverpoints
+//include::{testplansdir}/MisalignQ.adoc[]
+
+include::norm/MisalignQ_norm_rules.adoc[]
+
+[[t-MisalignZca-coverpoints]]
+.MisalignedZca Coverpoints
+include::{testplansdir}/MisalignZca.adoc[]
+
+include::norm/MisalignZca_norm_rules.adoc[]
+
+[[t-Misalign-coverpoint-definitions]]
+.Misalign Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cp_misalign|8|All 8 combinations of the three least significant bits of the address.
+|===
+
+include::param/Misalign_parameters.adoc[]
+
+==== Zicclsm Misaligned Loads/Stores
+
+The Zicclsm extension, defined in the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22] and
+https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc[RVA23] profiles, provides the following normative rule.  The extension applies to privilege modes below M-mode (because the profiles apply to supervisor-mode execution environment), and requires that misaligned scalar and vector loads and stores to main memory either are handled in hardware or raise a misaligned exception that is handled by the execution environment.  This is tested by Exceptions coverpoints that either return the expected value or throw a misaligned trap. Misaligned atomics are not part of Zicclsm, but are checked in {ExceptionsZaamo, ExceptionsZalrsc}/{cp_load_address_misaligned, cp_store_address_misaligned}.
+
+[[t-Zicclsm-normative-rules]]
+.Zicclsm Normative Rules
+[cols="1,4,3", options="header"]
+|===
+|Normative Rule |Rule Text |Coverpoints
+
+|zicclsm_op |Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported. |{ExceptionsS, ExceptionsU, ExceptionsZc, ExceptionsF, ExceptionsVls}/{cp_load_address_misaligned, cp_store_address_misaligned}
+|===
+
+*UDB Parameters:* None.
+
+*** ExceptionsVls coverpoints need to be written.
+*** update normative rule when tagged in profile and hyperlink is available
 
 
 ==== Zicond Conditional Instructions
@@ -22,64 +106,135 @@ include::{testplansdir}/Zifencei.adoc[]
 .Zicond Instruction Coverpoints
 include::{testplansdir}/Zicond.adoc[]
 
+include::norm/Zicond_norm_rules.adoc[]
+
+*UDB Parameters:* None.
+
+==== Zicntr Counters
+
+Zicntr provides unprivileged read access to the `cycle`, `time`, and `instret` counters.
+Note that, like all other unprivileged tests, these tests are performed in M-mode.
+The <<t-ZicntrS-coverpoints, ZicntrS>> and <<t-ZicntrU-coverpoints, ZicntrU>> privileged tests exercise reading the counters in S-mode and U-mode,
+with control by `mcounteren` and `scounteren` CSRs.
+The <<t-Sm-coverpoints, Sm>> privileged tests exercise `mcycle`, `minstret`, and HPMs from M-mode.
+
+[[t-Zicntr-coverpoints]]
+.Zicntr Instruction Coverpoints
+include::{testplansdir}/Zicntr.adoc[]
+
+include::norm/Zicntr_norm_rules.adoc[]
+
+TODO: add normative rule for TIME_CSR_IMPLEMENTED UDB parameter
+referencing the following text from the priv spec:
+
+````
+emulate this
+functionality on behalf of less-privileged modes in M-mode software.
+````
+This rule is checked by the time bin of cp_cntr coverpoint.
+
+
+[[t-Zicntr-coverpoint-definition]]
+.Zicntr Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, 0 for `time` (`time` may not increment between reads).
+For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
+Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
+|===
+
+include::param/Zicntr_parameters.adoc[]
+
+==== Zihpm Hardware Performance Monitors
+
+Zihpm provides unprivileged read access to custom hardware performance monitor CSRs.
+
+[[t-Zihpm-coverpoints]]
+.Zihpm Instruction Coverpoints
+include::{testplansdir}/Zihpm.adoc[]
+
+include::norm/Zihpm_norm_rules.adoc[]
+
+[[t-Zihpm-modified-coverpoints]]
+.Zihpm Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
+|===
+
+Note that this coverpoint assumes that reading hpmcounter* never traps.
+See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issue #2558] for discussion.
+There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
+sometimes trap because unprivileged tests should not trap.
+
+*UDB Parameters:* None.  MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN, exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
+
 ==== Zihintpause Pause Hint
 
 [[t-Zihintpause-coverpoints]]
 .Zihintpause Instruction Coverpoints
 include::{testplansdir}/Zihintpause.adoc[]
 
+include::norm/Zihintpause_norm_rules.adoc[]
+
+*UDB Parameters:* None.
+
 ==== Zihintntl Non-temporal Locality Hint
 
 [[t-Zihintntl-coverpoints]]
 .Zihintntl Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zihintntl.adoc[]
-,===
+//,===
+
+*UDB Parameters:* None.
 
 ==== ZihintntlZca Compressed Non-temporal Locality Hint
 
-[[t-ZihintntlZca-coverpoints]]
-.ZihintntlZca Instruction Coverpoints
-,===
-//include::{testplansdir}/ZihintntlZca.adoc[]
-,===
+Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all` are a subset of the `c.add` hints. They are tested by the Zca_c_hint_cg/cp_chint_add coverpoint, so require no additional coverpoints.
+
+include::norm/ZihintntlZca_norm_rules.adoc[]
+
+*UDB Parameters:* None.
 
 ==== Zicbom Cache Block Flush/Invalidate
 
 [[t-Zicbom-coverpoints]]
 .Zicbom Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicbom.adoc[]
-,===
+//,===
 
 ==== Zicboz Cache Block Zero
 
 [[t-Zicboz-coverpoints]]
 .Zicboz Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicboz.adoc[]
-,===
+//,===
 
 ==== Zicbop Cache Block Prefetch
 
 [[t-Zicbop-coverpoints]]
 .Zicbop Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zicbop.adoc[]
-,===
+//,===
 
 ==== Za64rs Max 64B Reservation Set
 
 [[t-Za64rs-coverpoints]]
 .Za64rs Coverpoints
-,===
+//,===
 //include::{testplansdir}/Za64rs.adoc[]
-,===
+//,===
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
 [[t-Zic64bZicboz-coverpoints]]
 .Zic64bZicboz Instruction Coverpoints
-,===
+//,===
 //include::{testplansdir}/Zic64bZicboz.adoc[]
-,===
+//,===

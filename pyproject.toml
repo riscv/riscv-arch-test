@@ -4,24 +4,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.uv.workspace]
-members = ["framework", "generators/tests/testgen", "generators/ctp"]
+members = ["framework", "generators/testgen", "generators/ctp"]
 
 [dependency-groups]
-dev = ["pyright>=1.1.407", "ruff>=0.14.3"]
+dev = ["pyright==1.1.408", "ruff==0.14.10"]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
 line-length = 120
 extend-exclude = [
   "external",
-  "_archive",
   "ctp",
   "generators/coverage",
-  "generators/tests/scripts", # Old scripts that still need to be updated
+  "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
 [tool.ruff.lint]
-select = [
+extend-select = [
   "F",   # various basic rules (pyflakes)
   "E",   # errors (pycodestyle)
   "W",   # warnings (pycodestyle)
@@ -42,7 +41,9 @@ ignore = [
   "E111",
   "E114",
   "E117",
+  "D203",
   "D206",
+  "D213",
   "D300",
   "Q000",
   "Q001",
@@ -51,21 +52,31 @@ ignore = [
   "COM812",
   "COM819",
   "E501",
+  "T201",   # allow print statements
+  "TD002",  # allow TODO comments without authors
+  "TD003",  # allow TODO comments without issue links
+  "FIX",    # allow TODO comments
 ]
 
 [tool.ty.src]
-exclude = ["external", "_archive"]
+exclude = [
+  "external",
+  "generators/ctp",
+  "generators/coverage",
+  "generators/testgen/scripts", # Old scripts that still need to be updated
+]
 
 ##### PYRIGHT CONFIG #####
 [tool.pyright]
 exclude = [
   "**/__pycache__",
+  "**/node_modules",
+  "**/.*",
   ".venv",
   "external",
-  "_archive",
   "ctp",
   "generators/ctp",
   "generators/coverage",
-  "generators/tests/scripts", # Old scripts that still need to be updated
+  "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"

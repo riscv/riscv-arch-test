@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ExceptionsZicboU_exceptions_cg = new();         ExceptionsZicboU_exceptions_cg.set_inst_name("obj_ExceptionsZicboU_exceptions");
+    ExceptionsZicboU_cg = new();         ExceptionsZicboU_cg.set_inst_name("obj_ExceptionsZicboU");

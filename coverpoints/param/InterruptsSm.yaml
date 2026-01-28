@@ -1,0 +1,28 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: MTVEC_ACCESS
+    coverpoint: ["all exception coverpoints"]
+    effect: ["If 'ro', tests cannot set `mtvec` and generate a trap signature"]
+  - name: MTVEC_BASE_ALIGNMENT_DIRECT
+    coverpoint: ["all exception coverpoints"]
+    effect:
+      [
+        "DUT config/model_test.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
+      ]
+  - name: MTVEC_BASE_ALIGNMENT_VECTORED
+    coverpoint: ["all"]
+    effect:
+      [
+        "DUT config/model_test.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
+      ]
+  - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
+    coverpoint:
+      ["If `mtvec` cannot be written with trap handler, tests will not operate"]
+    effect: [""]
+  - name: MTVEC_MODES
+    coverpoint: ["TODO"]
+    effect:
+      [
+        "If direct or vectored are not supported, tests relying on those modes will not operate TODO should not be run",
+      ]

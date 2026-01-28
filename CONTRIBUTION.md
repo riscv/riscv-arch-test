@@ -71,6 +71,14 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 - What actually happens
 - Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
 
+## Known Issues and Workarounds
+
+### RISC-V Assembler Alignment Bug
+There is a known issue in some versions of the RISC-V GNU assembler (e.g., v2.43.50) where it fails to correctly handle nested `.align` directives within macros, leading to incorrect instruction offsets.
+
+**Workaround**:
+In `arch_test.h`, a `.align 2` workaround has been applied before certain critical entry points. If you encounter unexpected instruction alignment errors, ensure your code is aligned to a 4-byte boundary before macro invocations.
+
 ## License
 By contributing, you agree that your contributions will be licensed under its permissive open source
 licenses.

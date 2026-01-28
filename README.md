@@ -243,15 +243,35 @@ $ git clone https://github.com/riscv/riscv-config.git
 
 ## Running the Tests
 
+### Method 1: Using Makefile (Preferred for standalone builds)
+
+A root Makefile is provided for simple and direct compilation of the test suite. This method is preferred when you don't need the full RISCOF orchestration but want a robust and reproducible build.
+
+```bash
+# Default build (RV32, normal mode)
+$ make
+
+# 64-bit build with per-instruction minstret tracking (DEBUG mode)
+$ make XLEN=64 DEBUG=1
+```
+
+Supported variables:
+- `XLEN`: 32 (default) or 64.
+- `DEBUG`: 1 to enable fine-grained `minstret` tracking in signatures, 0 (default) otherwise.
+- `MODEL_DIR`: Path to the model environment (default: `riscof-plugins/rv32/spike_simple/env`).
+- `RISCV_PREFIX`: Toolchain prefix (default: `riscv$(XLEN)-unknown-elf-`).
+
+### Method 2: Using RISCOF
+
 Once everything is set up, you can run the tests using the following command:
 
-```
+```bash
 $ riscof run --config config.ini --suite riscv-test-suite/ --env riscv-test-suite/env
 ```
 
 If you only want to use spike as the reference model to test, you can use the following command to using the sample environment:
 
-```
+```bash
 $ cd riscof-plugins/rv32 #If you want to run the rv64 test, change this to rv64
 $ riscof run --config config.ini --suite ../../riscv-test-suite/ --env ../../riscv-test-suite/env
 ```
@@ -260,6 +280,6 @@ $ riscof run --config config.ini --suite ../../riscv-test-suite/ --env ../../ris
 
 You can run the coverage using the following command:
 
-```
+```bash
 $ riscof coverage --config=config.ini --cgf-file covergroups/dataset.cgf --cgf-file covergroups/m/rv32im.cgf --suite /riscv-test-suite/rv32i_m/M --env /riscv-test-suite/env
 ```

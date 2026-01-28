@@ -27,3 +27,22 @@
 // Define relevant addresses
 `define ACCESS_FAULT_ADDRESS 64'h00000000
 `define CLINT_BASE 64'h02000000
+
+//define extra supported extensions to collect full coverage in Privileged files
+`define D_SUPPORTED
+`define ZFA_SUPPORTED
+`define F_SUPPORTED
+`define ZFH_SUPPORTED
+`define ZBB_SUPPORTED
+`define ZBA_SUPPORTED
+`define ZBS_SUPPORTED
+`define ZIHPM_SUPPORTED
+`define ZCA_SUPPORTED
+`define ZCB_SUPPORTED
+`define ZCD_SUPPORTED
+`define ZAAMO_SUPPORTED
+`define ZALRSC_SUPPORTED
+
+`define COUNTINHIBIT_EN_0
+`define COUNTINHIBIT_EN_2
+`define TIME_CSR_IMPLEMENTED

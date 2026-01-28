@@ -573,12 +573,8 @@ Mend_PMP:                                    ;\
  /* automatically adjust base and offset if offset gets too big, resetting offset				 */
  /* RVTEST_SIGUPD(basereg, sigreg)	  stores sigreg at offset(basereg) and updates offset by regwidth	 */
  /* RVTEST_SIGUPD(basereg, sigreg,newoff) stores sigreg at newoff(basereg) and updates offset to regwidth+newoff */
-#define RVTEST_SIGUPD(_BR,_R,...)			;\
-  .if NARG(__VA_ARGS__) == 1				;\
-	.set offset,_ARG1(__VA_OPT__(__VA_ARGS__,0))	;\
-  .endif						;\
-  CHK_OFFSET(_BR, REGWIDTH,0)				;\
-#ifdef RVTEST_DEBUG					;\
+#ifdef RVTEST_DEBUG
+#define RVTEST_DEBUG_SIGUPD(_BR)			;\
   .option push						;\
   .option norvc						;\
   csrrw T1, CSR_XSCRATCH, T1 /*T1=base*/		;\
@@ -587,6 +583,7 @@ Mend_PMP:                                    ;\
   csrr  T2, CSR_XSCRATCH /*T2=origT1*/			;\
   SREG  T2, trap_sv_off+1*REGWIDTH(T1)			;\
   csrw  CSR_XSCRATCH, T1					;\
+\
   csrr  T2, CSR_MINSTRET				;\
   LREG  T3, instret_sav_off(T1)				;\
   sub   T3, T2, T3					;\
@@ -597,8 +594,17 @@ Mend_PMP:                                    ;\
   LREG  T1, trap_sv_off+1*REGWIDTH(T1)			;\
   .set  offset, offset+REGWIDTH				;\
   CHK_OFFSET(_BR, REGWIDTH,0)				;\
-  .option pop						;\
-#endif							;\
+  .option pop
+#else
+#define RVTEST_DEBUG_SIGUPD(_BR)
+#endif
+
+#define RVTEST_SIGUPD(_BR,_R,...)			;\
+  .if NARG(__VA_ARGS__) == 1				;\
+	.set offset,_ARG1(__VA_OPT__(__VA_ARGS__,0))	;\
+  .endif						;\
+  CHK_OFFSET(_BR, REGWIDTH,0)				;\
+  RVTEST_DEBUG_SIGUPD(_BR)				;\
   SREG _R,offset(_BR)					;\
   .set offset,offset+REGWIDTH
 

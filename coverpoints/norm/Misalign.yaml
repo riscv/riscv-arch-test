@@ -1,0 +1,32 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
+    coverpoint: ["{Misalign_lw_cg,Misalign_sw_cg}/{cp_misalign}"]
+  - name: lh_op
+    # LH loads a 16-bit value from memory, then sign-extends to 32-bits before storing
+    # in rd.
+    coverpoint: ["Misalign_lh_cg/{cp_misalign}"]
+  - name: lhu_op
+    # LHU loads a 16-bit value from memory but then zero extends to
+    # 32-bits before storing in rd.
+    coverpoint: ["Misalign_lhu_cg/{cp_misalign}"]
+  - name: lw_op
+    # The LW instruction loads a 32-bit value from memory into rd.
+    coverpoint: ["Misalign_lw_cg/{cp_misalign}"]
+  - name: sh_op
+    # The SW, SH, and SB instructions store 32-bit, 16-bit, and
+    # 8-bit values from the low bits of register rs2 to memory.
+    coverpoint: ["Misalign_sh_cg/{cp_misalign}"]
+  - name: sw_op
+    # The SW, SH, and SB instructions store 32-bit, 16-bit, and
+    # 8-bit values from the low bits of register rs2 to memory.
+    coverpoint: ["Misalign_sw_cg/{cp_misalign}"]
+  - name: lwu_op
+    # The LWU instruction, on the other hand, zero-extends the 32-bit value from
+    # memory for RV64I.
+    coverpoint: ["Misalign_lwu_cg/{cp_misalign}"]
+  - name: ld_op_rv64i
+    coverpoint: ["Misalign_ld_cg/{cp_misalign}"]
+  - name: sd_op_rv64i
+    coverpoint: ["Misalign_sd_cg/{cp_misalign}"]

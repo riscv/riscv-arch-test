@@ -1,0 +1,41 @@
+normative_rule_definitions:
+  # medeleg has a bit position allocated for every synchronous exception shown in
+  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position
+  # equal to the value returned in the mcause register
+  - name: medeleg_enc
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
+
+  # When a trap is delegated to S-mode the scause register is written with the trap
+  # cause; the sepc register is written with the virtual address of the instruction
+  # that took the trap; the stval register is written with an exception-specific
+  # datum; the SPP field of mstatus is written with the active privilege mode at the
+  # time of the trap; the SPIE field of mstatus is written with the value of the SIE
+  # field at the time of the trap; and the SIE field of mstatus is cleared.
+  - name: trap_del_S-mode_op
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
+
+  # Traps never transition from a more-privileged mode to a less-privileged mode.
+  # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
+  # and M-mode software later executes an illegal instruction, the trap is taken in
+  # M-mode, rather than being delegated to S-mode.
+  - name: trap_never_trans_lower
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
+
+  # traps may be taken horizontally. Using the same example, if M-mode has delegated
+  # illegal-instruction exceptions to S-mode, and S-mode software later executes an
+  # illegal instruction, the trap is taken in S-mode.
+  - name: trap_horiz
+    coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
+
+  # Delegated interrupts result in the interrupt being masked at the delegator
+  # privilege level. For example, if the supervisor timer interrupt (STI) is
+  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
+  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
+  # and regardless of current mode will transfer control to M-mode.
+  - name: trap_del_intr_priv_lvl
+    coverpoint: ["TODO"]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
+  # the value of xIE; xIE is set to 0; and xPP is set to y.
+  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+    coverpoint: [""]

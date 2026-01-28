@@ -11,6 +11,8 @@ import importlib.resources
 from pathlib import Path
 from typing import TypedDict
 
+import pyjson5
+
 from act.config import Config
 from act.parse_test_constraints import TestMetadata
 
@@ -21,15 +23,57 @@ MAKEFILE_HEADER = """
 .PHONY: compile
 """
 
+OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
+
+
+def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:
+    """Get the path to the internal Sail config file for the given XLEN.
+
+    This config is used for generating signatures for common tests and has
+    all extensions enabled.
+    """
+
+    # Extract memory map from user's Sail config
+    user_sail_config_data = pyjson5.decode(user_sail_config.read_text())
+    memory_map = user_sail_config_data["memory"]["regions"]
+
+    # Load internal Sail config template
+    internal_sail_config_file = (
+        Path(str(importlib.resources.files("act"))) / "data" / f"sail-rv{xlen}{'e' if e_ext else 'i'}.json"
+    )
+    internal_sail_config = pyjson5.decode(internal_sail_config_file.read_text())
+
+    # Replace memory map
+    internal_sail_config["memory"]["regions"] = memory_map
+
+    # Write out modified Sail config to temporary file
+    common_sail_config_path = common_wkdir / f"sail-rv{xlen}{'e' if e_ext else 'i'}-common.json"
+    common_sail_config_path.parent.mkdir(parents=True, exist_ok=True)
+    common_sail_config_path.write_text(pyjson5.encode(internal_sail_config))
+
+    return common_sail_config_path
+
 
 def gen_compile_targets(
     test_name: Path,
     test_metadata: TestMetadata,
     base_dir: Path,
     xlen: int,
-    mabi: str,
     config: Config,
+    sail_config_path: Path,
+    debug: bool = False,
 ) -> str:
+    """Generate Makefile targets for compiling a test.
+
+    Args:
+        test_name: Name of the test.
+        test_metadata: Metadata for the test.
+        base_dir: Base directory for the build.
+        xlen: XLEN (32 or 64).
+        config: Configuration object.
+        sail_config_path: Path to a Sail config file for signature generation.
+        debug: Whether to generate debug output (signature objdump and trace files).
+    """
     # Define paths
     build_dir = base_dir / "build"
     elf_dir = base_dir / "elfs"
@@ -45,6 +89,7 @@ def gen_compile_targets(
     flen = test_metadata.flen
     test_path = test_metadata.test_path
     ref_model_sig_flags = config.ref_model_type.signature_flags.format(sig_file=sig_file, granularity=int(xlen / 8))
+    mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
 
     # Generate Makefile targets
     return (
@@ -56,17 +101,17 @@ def gen_compile_targets(
         f"\t\t-march={march} -mabi={mabi} -DSIGNATURE -DXLEN={xlen} -DFLEN={flen} \\\n"
         f"\t\t{test_path}\n"
         f"\n"
-        # Objdump
+        # Objdump (only if debug and objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Stsxd -M no-aliases,numeric \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
-            if config.objdump_exe is not None
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{sig_elf} \\\n\t\t> {sig_elf}.objdump\n'
+            if debug and config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
         "# Generate signature file\n"
         f"{sig_file}: {sig_elf}\n"
-        f"\t{config.ref_model_exe} --trace-all \\\n"
-        f"\t\t--trace-output {sig_trace_file} \\\n"
-        f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
+        f"\t{config.ref_model_exe} {'--trace-all' if debug else ''} \\\n"
+        f"{f'\t\t--trace-output {sig_trace_file} \\\n' if debug else ''}"
+        f"\t\t--config {sail_config_path} \\\n"
         f"\t\t{ref_model_sig_flags} \\\n"
         f"\t\t{sig_elf} \\\n"
         f"\t\t> {sig_log_file} 2>&1\n"
@@ -82,9 +127,9 @@ def gen_compile_targets(
         f"\t\t-march={march} -mabi={mabi} -DSELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
         f'\t\t-DSIGNATURE_FILE=\\"{result_file}\\" \\\n'
         f"\t\t{test_path}\n"
-        # Objdump
+        # Objdump (objdump_exe is set)
         f"{
-            f'\n\t{config.objdump_exe} -Stsxd -M no-aliases,numeric \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
+            f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
             if config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
@@ -96,18 +141,21 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
     coverage_dir = base_dir / "coverage"
     elf_dir = base_dir / "elfs"
     elf = elf_dir / test_name.with_suffix(".elf")
+    objdump_link = coverage_dir / test_name.with_suffix(".elf.objdump")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
+    sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
 
     # Generate Makefile targets
     return (
         "# Run test on Sail to generate log\n"
         f"{sail_trace}: {elf}\n"
+        f"\tln -sf {elf}.objdump {objdump_link} # Create symlink to objdump in coverage directory for easier debugging\n"
         f"\t{config.ref_model_exe} --trace-all \\\n"
         f"\t\t--config {config.dut_include_dir}/sail.json \\\n"  # TODO: don't hardcode sail config file
         f"\t\t{elf} \\\n"
         f"\t\t--trace-output {sail_trace} \\\n"
-        f"\t\t> {sail_trace}.log 2>&1\n"
+        f"\t\t> {sail_log} 2>&1\n"
         f"\n"
         "# Generate RVVI trace\n"
         f"{rvvi_trace}: {sail_trace}\n"
@@ -144,20 +192,37 @@ def generate_common_makefile(
     tests_dir: Path,
     wkdir: Path,
     xlen: int,
-    mabi: str,
+    e_ext: bool,
+    debug: bool,
 ) -> None:
-    """Generate a Makefile to compile the common tests."""
+    """Generate a Makefile to compile the common tests.
+
+    Common tests use an internal Sail config with all extensions enabled for
+    signature generation, rather than the user's config file.
+
+    Args:
+        config: Configuration object.
+        common_test_list: Dictionary of common tests.
+        tests_dir: Path to tests directory.
+        wkdir: Working directory.
+        xlen: XLEN (32 or 64).
+        e_ext: Whether the 'E' extension is enabled.
+        debug: Whether to generate debug output (signature objdump and trace files).
+    """
     # Define paths
     common_wkdir = wkdir / "common"
     common_elf_dir = common_wkdir / "elfs"
     common_build_dir = common_wkdir / "build"
+
+    # Generate maximal Sail config with all extensions enabled and memory map from user's config
+    common_sail_config = generate_sail_config(xlen, e_ext, config.dut_include_dir / "sail.json", common_wkdir)
 
     # Makefile targets
     directory_set: set[str] = set()
     test_targets: list[Path] = []
     makefile_lines = [
         MAKEFILE_HEADER,
-        f"CFLAGS += -O0 -g -mcmodel=medany -nostartfiles -I{tests_dir}/env -I{tests_dir}/priv/headers",
+        f"CFLAGS += -O0 -g -mcmodel=medany -nostdlib -I{tests_dir}/env -I{tests_dir}/priv/headers",
         f"XLEN := {xlen}",
     ]
 
@@ -168,10 +233,12 @@ def generate_common_makefile(
         final_elf = common_elf_dir / elf_name
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
-        makefile_lines.append(gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, mabi, config))
+        makefile_lines.append(
+            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, common_sail_config, debug)
+        )
 
     # Write out Makefile
-    makefile_path = common_wkdir / f"Makefile-rv{xlen}.mk"
+    makefile_path = common_wkdir / f"Makefile-rv{xlen}{'e' if e_ext else 'i'}.mk"
     write_makefile(makefile_path, [("ELFS", test_targets, "compile")], directory_set, makefile_lines)
 
 
@@ -184,10 +251,23 @@ def generate_config_makefile(
     wkdir: Path,
     config_name: str,
     xlen: int,
-    mabi: str,
     coverage_enabled: bool,
+    debug: bool = False,
 ) -> None:
-    """Generate a Makefile to compile the config-specific tests."""
+    """Generate a Makefile to compile the config-specific tests.
+
+    Args:
+        config: Configuration object.
+        config_test_list: Dictionary of config-specific tests.
+        common_test_list: Dictionary of common tests.
+        tests_dir: Path to tests directory.
+        coverpoint_dir: Path to coverpoint directory.
+        wkdir: Working directory.
+        config_name: Name of the configuration.
+        xlen: XLEN (32 or 64).
+        coverage_enabled: Whether coverage generation is enabled.
+        debug: Whether to generate debug output (signature objdump and trace files).
+    """
     # Define paths
     config_wkdir = wkdir / config_name
     config_elf_dir = config_wkdir / "elfs"
@@ -203,7 +283,7 @@ def generate_config_makefile(
     coverage_targets: dict[Path, list[Path]] = {}
     makefile_lines = [
         MAKEFILE_HEADER,
-        f"CFLAGS += -O0 -g -mcmodel=medany -nostartfiles -I{tests_dir}/env -I{tests_dir}/priv/headers",
+        f"CFLAGS += -O0 -g -mcmodel=medany -nostdlib -I{tests_dir}/env -I{tests_dir}/priv/headers",
         f"XLEN := {xlen}",
     ]
 
@@ -215,6 +295,7 @@ def generate_config_makefile(
         final_elf = config_elf_dir / elf_name
         trace_name = test_name.with_suffix(".rvvi")
         trace_path = config_coverage_dir / trace_name
+        sail_config_path = config.dut_include_dir / "sail.json"
 
         # Add test to target lists
         test_targets.append(final_elf)
@@ -228,13 +309,16 @@ def generate_config_makefile(
                 f"{final_elf}: {common_elf} | {final_elf.parent}\n"
                 f"\tln -sf {common_elf} \\\n"
                 f"\t\t{final_elf}\n"
-                f"\tln -sf {common_elf}.objdump \\\n"
-                f"\t\t{final_elf}.objdump\n"
-                if config.objdump_exe is not None
-                else "# skipping objdump\n",
+                f"{
+                    f'\tln -sf {common_elf}.objdump \\\n\t\t{final_elf}.objdump\n'
+                    if config.objdump_exe is not None
+                    else '\t# skipping objdump generation\n'
+                }"
             )
         else:
-            makefile_lines.append(gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, mabi, config))
+            makefile_lines.append(
+                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, config, sail_config_path, debug)
+            )
 
         # Generate coverage trace targets
         if coverage_enabled:
@@ -292,7 +376,7 @@ def gen_coverage_targets(
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
         tracelist_file.write_text(
             f"# Tests for coverage group: {coverage_group}\n"
-            + "# Generated automatically by riscv-arch-test act framework\n"
+            "# Generated automatically by riscv-arch-test act framework\n"
             + "\n".join([str(trace) for trace in sorted(traces)])
         )
 
@@ -311,7 +395,7 @@ def gen_coverage_targets(
                 f"\t\t{fcov_path.absolute()}\\\n"
                 f"\t\t{coverpoint_dir}\\\n"
                 f"\t\t{dut_header_dir}\\\n"
-                f'\t\t{{{coverage_group.stem.upper()}_COVERAGE}}" > {ucdb_file}.log 2>&1\n'
+                f'\t\t{{{coverage_group.stem.upper()}_COVERAGE}}" > {ucdb_file}.log\n'
             )
 
         # Generate coverage report
@@ -332,10 +416,19 @@ def gen_coverage_targets(
         # Use merge_summaries script to properly format the combined output
         summary_files = " ".join([str(s) for s in sorted(coverage_reports)])
 
+        # how to remove all coverage reports after merging
+        makefile_lines.append(
+            f"# Clean up individual coverage summaries after merging\n"
+            f".PHONY: clean-coverage-summaries\n"
+            f"clean-coverage-summaries:\n"
+            f"\trm -f {' '.join([str(s) for s in sorted(coverage_reports) if s != overall_summary])}\n"
+        )
+
         makefile_lines.append(
             f"# Generate overall coverage summary by merging all individual summaries\n"
             f"{overall_summary}: {summary_files}\n"
             f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
+            f"\t$(MAKE) clean-coverage-summaries # remove individual coverage summaries after merging\n"
         )
         coverage_reports.append(overall_summary)
 
@@ -347,21 +440,34 @@ class ConfigData(TypedDict):
 
     config: Config
     xlen: int
+    e_ext: bool
     selected_tests: dict[str, TestMetadata]
 
 
 def generate_makefiles(
     configs: list[ConfigData],
-    rv32_common_tests: dict[str, TestMetadata],
-    rv64_common_tests: dict[str, TestMetadata],
+    common_test_dicts: list[dict[str, TestMetadata]],
     tests_dir: Path,
     coverpoint_dir: Path,
     workdir: Path,
     coverage_enabled: bool,
+    debug: bool = False,
 ) -> None:
-    """Generate Makefiles for multiple configurations with shared common directories."""
-    rv32_common_generated = False
-    rv64_common_generated = False
+    """Generate Makefiles for multiple configurations with shared common directories.
+
+    Args:
+        configs: List of configuration data dictionaries.
+        common_tests: List of dictionaries of common tests (rv32i, rv32e, rv64e, rv64i).
+        tests_dir: Path to tests directory.
+        coverpoint_dir: Path to coverpoint directory.
+        workdir: Working directory.
+        coverage_enabled: Whether coverage generation is enabled.
+        debug: Whether to generate debug output (signature objdump and trace files).
+    """
+    rv32i_common_generated = False
+    rv32e_common_generated = False
+    rv64i_common_generated = False
+    rv64e_common_generated = False
     top_makefile_lines = [MAKEFILE_HEADER]
     compile_targets: list[str] = []
     coverage_targets: list[str] = []
@@ -371,18 +477,25 @@ def generate_makefiles(
         config = config_data["config"]
         config_name = config.name
         xlen = config_data["xlen"]
+        e_ext = config_data["e_ext"]
         selected_tests = config_data["selected_tests"]
 
         # Extract config parameters
-        mabi = f"{'i' if xlen == 32 else ''}lp{xlen}"
-        common_tests = rv32_common_tests if xlen == 32 else rv64_common_tests
+        if xlen == 32 and e_ext:
+            common_tests = common_test_dicts[1]  # rv32e
+        elif xlen == 32 and not e_ext:
+            common_tests = common_test_dicts[0]  # rv32i
+        elif xlen == 64 and e_ext:
+            common_tests = common_test_dicts[3]  # rv64e
+        else:  # xlen == 64 and not e_config
+            common_tests = common_test_dicts[2]  # rv64i
 
         # Update top-level Makefile
         compile_targets.append(f"{config_name}-compile")
         coverage_targets.append(f"{config_name}-coverage")
         top_makefile_lines.extend(
             [
-                f"{config_name}-compile: common-rv{xlen}-compile",
+                f"{config_name}-compile: common-rv{xlen}{'e' if e_ext else 'i'}-compile",
                 f"\t$(MAKE) -C {config_name} compile",
                 "",
             ]
@@ -406,17 +519,22 @@ def generate_makefiles(
             workdir,
             config_name,
             xlen,
-            mabi,
             coverage_enabled,
+            debug,
         )
 
         # Generate architecture-specific common Makefiles using first config of each XLEN
-        if (xlen == 32 and not rv32_common_generated) or (xlen == 64 and not rv64_common_generated):
-            generate_common_makefile(config, common_tests, tests_dir, workdir, xlen, mabi)
+        if (
+            (xlen == 32 and not e_ext and not rv32i_common_generated)
+            or (xlen == 32 and e_ext and not rv32e_common_generated)
+            or (xlen == 64 and not e_ext and not rv64i_common_generated)
+            or (xlen == 64 and e_ext and not rv64e_common_generated)
+        ):
+            generate_common_makefile(config, common_tests, tests_dir, workdir, xlen, e_ext, debug)
             top_makefile_lines.extend(
                 [
-                    f"common-rv{xlen}-compile:",
-                    f"\t$(MAKE) -f common/Makefile-rv{xlen}.mk compile",
+                    f"common-rv{xlen}{'e' if e_ext else 'i'}-compile:",
+                    f"\t$(MAKE) -f common/Makefile-rv{xlen}{'e' if e_ext else 'i'}.mk compile",
                     "",
                 ]
             )

@@ -1,0 +1,17 @@
+normative_rule_definitions:
+  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts. reflects the occurrence of a local counter-overflow overflow
+  # interrupt request resulting from any of the mhpmeventn.OF bits being set.
+  - name: mip_lcofip_op
+    coverpoint: [""]
+
+  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts.
+  - name: mie_lcofie_op
+    coverpoint: [""]
+
+  # The mhpmeventnh CSRs are provided only if the Sscofpmf extension is implemented.
+  - name: mhpmeventh_presence
+    coverpoint: ["TODO, also in Ssstrict"]

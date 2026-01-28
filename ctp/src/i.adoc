@@ -18,14 +18,11 @@ include::{testplansdir}/I.adoc[]
 |cp_uimm_5|32|5-bit unsigned immediate shift amount for {slliw/srliw/sraiw}
 |cp_imm_edges_20bit|27|20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`.
 |cp_imm_edges_jal|23|20-bit positive and negative jump offsets for `jal`.  Note that testing the full 20-bit range takes a large amount of program memory, so tests may cover a subset of this range.
-|cp_gpr_hazard_r|2|RAR and no hazard for instructions that only write a register
-|cp_gpr_hazard_w|3|WAW, WAR and no hazard for instructions that only write a register
-|cp_gpr_hazard_rw|4|RAW, WAW, WAR and no hazard for instructions that read and write registers
 |cp_align_{byte/hword/word}|8/4/2|Alignment of naturally-aligned load/store operand within doubleword in memory
 |cp_custom_fence|3|Test that fence, fence rw,rw, and fence.tso all execute without trapping.
 |===
 
-<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that exercise them.  Privileged coverpoints related to integer instructions are described in the relevant parts of <<Privileged Test Plan>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
+<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that exercise them.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
 
 * Opcodes (cp_asm_count)
 * All Source and Destination Registers (cp_rs1, cp_rs2, cp_rd)
@@ -34,15 +31,8 @@ include::{testplansdir}/I.adoc[]
 
 include::norm/I_norm_rules.adoc[]
 
+Note that standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
+
 include::norm/rv64_norm_rules.adoc[]
 
-[[t-I-normative-reserved]]
-.I Reserved Behavior
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|4.2.1|SLLIW, SRLIW, and SRAIW encodings with
-_imm[5] &#8800; 0_ are reserved.|cp_uimm_5.
-See also Ssstrict in <<Ssstrict>>
-
-|===
+*UDB Parameters:* None.

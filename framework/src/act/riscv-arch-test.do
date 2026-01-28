@@ -10,7 +10,6 @@
 ####################################################################################
 
 onbreak {resume}
-onerror {quit -f}
 
 # Initialize variables
 set TRACEFILELIST ${1}
@@ -20,6 +19,8 @@ set FCOVDIR ${4}
 set COVERPOINTDIR ${5}
 set CONFIGDIR ${6}
 set COVERAGELIST ${7}
+
+onerror {puts stderr "\033\[1;31mERROR collecting coverage. Check ${UCDB}.log for details.\033\[0m"; quit -f -code 1}
 
 # Create library
 if [file exists ${WKDIR}] {

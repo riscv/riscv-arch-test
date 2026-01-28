@@ -1,0 +1,40 @@
+    // Custom coverpoints for compressed standard hints
+    // flavors of compressed instructions
+
+    // c.nop with imm != 0 are hints
+    cp_chint_nop: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b000 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
+        bins imm[] = {[1:63]};  // imm != 0
+    }
+
+    // c.addi with rd != 0, imm = 0 are hints
+    cp_chint_addi: coverpoint {ins.current.insn[11:7]} iff (ins.current.insn[15:12] == 3'b000 & ins.current.insn[6:0] == 7'b0000001) {
+        bins rd[] = {[1:31]}; // rd != 0
+    }
+
+    // c.li with rd = 0 are hints
+    cp_chint_li: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b010 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
+        bins imm[] = {[0:63]}; // imm
+    }
+
+    // c.lui with rd = 0, imm != 0 are hints
+    cp_chint_lui: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b011 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
+        bins imm[] = {[1:63]}; // imm
+    }
+
+    // c.mv with rd = 0, rs2 != 0 are hints
+    cp_chint_mv: coverpoint {ins.current.insn[6:2]} iff (ins.current.insn[15:7] == 9'b1000_00000 & ins.current.insn[1:0] == 2'b10) {
+        bins rs2[] = {[1:31]}; // rs2 != 0
+    }
+
+    // c.add with rd = x0, rs2 != x0 are hints
+    // note that rs2 = x2-x5 are c.ntl hints if Zihintntl is supported
+    cp_chint_add: coverpoint {ins.current.insn[6:2]} iff (ins.current.insn[15:7] == 9'b1001_00000 & ins.current.insn[1:0] == 2'b10) {
+        bins rs2a = {1};
+        bins c_ntl_p1 = {2};
+        bins c_ntl_pall = {3};
+        bins c_ntl_s1 = {4};
+        bins c_ntl_all = {5};
+        bins rs2b[] = {[6:31]}; // rs2 != 0
+    }
+
+    // hints for c.slli,  c.srli, c.srai are designated for custom use and are not certified

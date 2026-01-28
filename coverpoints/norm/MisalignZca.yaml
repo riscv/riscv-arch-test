@@ -1,0 +1,53 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
+    coverpoint: ["{MisalignZca_c_lw_cg,MisalignZca_c_sw_cg}/{cp_misalign}"]
+  - name: c-lw_op
+    # C.LW loads a 32-bit value from memory into register
+    # rd′. It computes an effective address by adding the
+    # zero-extended offset, scaled by 4, to the base address in register
+    # rs1′. It expands to lw rd′, offset(rs1′).
+    coverpoint: ["MisalignZca_c_lw_cg/{cp_misalign}"]
+  - name: c-lwsp_op
+    # C.LWSP loads a 32-bit value from memory into register rd. It computes
+    # an effective address by adding the zero-extended offset, scaled by 4,
+    # to the stack pointer, x2. It expands to lw rd, offset(x2).
+    coverpoint: ["MisalignZca_c_lwsp_cg/{cp_misalign}"]
+  - name: c-ld_op
+    # C.LD is an RV64C-only instruction that loads a 64-bit value from
+    # memory into register rd′. It computes an effective
+    # address by adding the zero-extended offset, scaled by 8, to the base
+    # address in register rs1′. It expands to
+    # ld rd′, offset(rs1′).
+    coverpoint: ["MisalignZca_c_ld_cg/{cp_misalign}"]
+  - name: c-ldsp_op
+    # C.LDSP is an RV64C-only instruction that loads a 64-bit value
+    # from memory into register rd. It computes its effective address by
+    # adding the zero-extended offset, scaled by 8, to the stack pointer,
+    # x2. It expands to ld rd, offset(x2).
+    coverpoint: ["MisalignZca_c_ldsp_cg/{cp_misalign}"]
+  - name: c-sw_op
+    # C.SW stores a 32-bit value in register rs2′ to memory.
+    # It computes an effective address by adding the zero-extended offset,
+    # scaled by 4, to the base address in register rs1′. It
+    # expands to sw rs2′, offset(rs1′).
+    coverpoint: ["MisalignZca_c_sw_cg/{cp_misalign}"]
+  - name: c-swsp_op
+    # C.SWSP stores a 32-bit value in register rs2 to memory. It computes an
+    # effective address by adding the zero-extended offset, scaled by 4, to
+    # the stack pointer, x2. It expands to sw rs2, offset(x2).
+    coverpoint: ["MisalignZca_c_swsp_cg/{cp_misalign}"]
+  - name: c-sd_op
+    # C.SD is an RV64C-only instruction that stores a 64-bit value in
+    # register rs2′ to memory. It computes an effective
+    # address by adding the zero-extended offset, scaled by 8, to the base
+    # address in register rs1′. It expands to
+    # sd rs2′, offset(rs1′).
+    coverpoint: ["MisalignZca_c_sd_cg/{cp_misalign}"]
+  - name: c-sdsp_op
+    # C.SDSP is an RV64C-only instruction that stores a 64-bit value in
+    # register rs2 to memory. It computes an effective address by adding the
+    # zero-extended offset, scaled by 8, to the stack pointer, x2. It
+    # expands to sd rs2, offset(x2).
+    coverpoint: ["MisalignZca_c_sdsp_cg/{cp_misalign}"]

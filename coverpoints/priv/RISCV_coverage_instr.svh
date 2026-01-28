@@ -63,7 +63,9 @@
     // RV64IW shifts with op = 001101, funct3 = 1 or 5
     IWshift : coverpoint {ins.current.insn[14], ins.current.insn[31:25]} iff (ins.current.insn[6:0] == 7'b0011011 & ins.current.insn[13:12] == 2'b01) {
         // exercise all 2 * 128 bins of funct7 for funct3 = 1/5
+        // catches illegal shift types and uimm[5] = 1 for word shifts
     }
+
     // Stores op = 0100011
     store : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b0100011) {
         // Check all 8 types of stores, some illegal in rv32/always
@@ -139,13 +141,20 @@
     cvtmodwd : coverpoint ins.current.insn[26:20] iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b11000 & ins.current.insn[14:12] == 3'b001) {
         // Exhaustive test of 2^2 formats * 2^5 encodings; only rs2 = 00001 is possibly legal
     }
+    cvtmodwdfrm : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:20] == 12'b1100001_01000) {
+        // Exhaustive test of 8 rounding modes; only frm = 001 is possibly legal
+    }
+
     // Branches: op = 1100011
     branch : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1100011) {
-        // Check all 8 types of branches: 2 & 3 illegal
+        // Branch types 2 & 3 are illegal
+        bins badfunct2 = {3'b010};
+        bins badfunct3 = {3'b011};
     }
     // JALRs: op = 1100111
     jalr : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1100111) {
-        // test all 8 funct3 codes; only 000 should be legal
+        // test all 7 illegal funct3 codes; only 000 should be legal
+        ignore_bins okfunct0 = {3'b000};
     }
     // privileged: op = 1110011
     privileged_funct3 : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011 & ins.current.insn[19:15] == 5'b00000 & ins.current.insn[11:7] == 5'b00000) {
@@ -178,3 +187,69 @@
         wildcard bins reserved_rm5_fnmsub = {32'b???????_?????_?????_101_?????_1001111}; // fma with reserved rm
         wildcard bins reserved_rm6_fnmsub = {32'b???????_?????_?????_110_?????_1001111}; // fma with reserved rm
     }
+
+    // Coverpoints for E extension using reserved upper registers x16-x31
+
+    rd_16_31 : coverpoint ins.current.insn[11:7] {
+        bins rd_16_31[] = {[16:31]};
+    }
+
+    rs1_16_31 : coverpoint ins.current.insn[19:15] {
+        bins rs1_16_31[] = {[16:31]};
+    }
+
+    rs2_16_31 : coverpoint ins.current.insn[24:20] {
+        bins rs2_16_31[] = {[16:31]};
+    }
+
+    rd_1_15 : coverpoint ins.current.insn[11:7] {
+        bins rd_1_15 = {[1:15]};
+    }
+
+    rs1_1_15 : coverpoint ins.current.insn[19:15] {
+        bins rs1_1_15 = {[1:15]};
+    }
+
+    rs2_1_15 : coverpoint ins.current.insn[24:20] {
+        bins rs2_1_15 = {[0:15]};
+    }
+
+    imm_0s_1s : coverpoint ins.current.insn[31:20] {
+        bins imm0 = {12'b000000000000};
+        bins imm1 = {12'b111111111111};
+    }
+
+    upper_reg_instrs : coverpoint ins.current.insn {
+        wildcard bins add = {32'b0000000_?????_?????_000_?????_0110011};
+        wildcard bins mul = {32'b0000001_?????_?????_000_?????_0110011};
+        wildcard bins fadd_s = {32'b0000000_?????_?????_000_?????_1010011};
+    }
+
+    upper_reg_addi : coverpoint ins.current.insn {
+        wildcard bins addi = {32'b????????????_?????_000_?????_0010011};
+    }
+
+    upper_reg_fmv : coverpoint ins.current.insn {
+        wildcard bins fmv_x_w = {32'b1110000_00000_?????_000_?????_1010011};
+        wildcard bins fmv_w_x = {32'b1111000_00000_?????_000_?????_1010011};
+    }
+
+    upperreg_rs1 : cross upper_reg_instrs, rs1_16_31, rd_1_15, rs2_1_15;
+    upperreg_rs2 : cross upper_reg_instrs, rs2_16_31, rs1_1_15, rd_1_15;
+    upperreg_rd : cross upper_reg_instrs, rd_16_31, rs1_1_15, rs2_1_15;
+    upperreg_imm_rd : cross upper_reg_addi, imm_0s_1s, rd_16_31, rs1_1_15;
+    upperreg_imm_rs1 : cross upper_reg_addi, imm_0s_1s, rs1_16_31, rd_1_15;
+    upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_16_31, rd_1_15;
+    upperreg_fmv_rd : cross upper_reg_fmv, rd_16_31, rs1_1_15;
+
+    amocas_odd : coverpoint ins.current.insn {
+        wildcard bins amocas_d_odd_rd  = {32'b00101????????????_011_????1_0101111};
+        wildcard bins amocas_q_odd_rd  = {32'b00101????????????_100_????1_0101111};
+        wildcard bins amocas_d_odd_rs1 = {32'b00101???????????1_011_?????_0101111};
+        wildcard bins amocas_q_odd_rs1 = {32'b00101???????????1_100_?????_0101111};
+    }
+
+    // *** TODO add all misa_ext_disable tests to all versions of Ssstrict
+
+    // `ifdef MUTABLE_MISA_A
+    // `end

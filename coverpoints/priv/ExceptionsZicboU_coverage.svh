@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZICBOU
-covergroup ExceptionsZicboU_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -35,12 +35,12 @@ covergroup ExceptionsZicboU_exceptions_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_mu;
-    cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_mu;
-    cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_mu;
+    cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_m_u;
+    cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_m_u;
+    cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_m_u;
 
 endgroup
 
 function void exceptionszicbou_sample(int hart, int issue, ins_t ins);
-    ExceptionsZicboU_exceptions_cg.sample(ins);
+    ExceptionsZicboU_cg.sample(ins);
 endfunction

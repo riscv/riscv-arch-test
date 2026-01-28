@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, S, Zicsr, Ssstrict]
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Ssstrict, Sm]
 # MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
@@ -43,8 +43,8 @@ main:
 li a0, 1
 ecall
 
-# include "ExceptionInstr-Tests.h"
-# include "ExceptionInstrCompressed-Tests.h"
+# include "SsstrictInstr-Tests.h"
+# include "SsstrictInstrCompressed-Tests.h"
 
 finish:
     j done

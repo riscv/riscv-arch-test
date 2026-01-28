@@ -9,7 +9,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`include "coverage/RISCV_decode_pkg.svh"
 `include "coverage/RISCV_disassemble_helpers.svh"
 
 function string disassemble (logic [31:0] instrRaw);
@@ -89,6 +88,17 @@ function string disassemble (logic [31:0] instrRaw);
   casez (instr)
     // Hints
     PAUSE:   $sformat(decoded, "pause");
+    // No need to decode NTL hints for present coverpoints, and they might confuse testing normal instructions
+    // NTL_ALL: $sformat(decoded, "NTL.ALL");
+    // NTL_PALL:$sformat(decoded, "NTL.PALL");
+    // NTL_P1:  $sformat(decoded, "NTL.P1");
+    // NTL_S1:  $sformat(decoded, "NTL.S1");
+    // C_NTL_ALL: $sformat(decoded, "C.NTL.ALL");
+    // C_NTL_PALL: $sformat(decoded, "C.NTL.PALL");
+    // C_NTL_P1: $sformat(decoded, "C.NTL.P1");
+    // C_NTL_S1: $sformat(decoded, "C.NTL.S1");
+    // NOP
+    NOP:     $sformat(decoded, "nop");
     // Base Instructions
     ADD:     $sformat(decoded, "add %s, %s, %s", rd, rs1, rs2);
     SUB:     $sformat(decoded, "sub %s, %s, %s", rd, rs1, rs2);
@@ -218,6 +228,36 @@ function string disassemble (logic [31:0] instrRaw);
     AMOSWAP_D: $sformat(decoded, "amoswap.d %s, %s, (%s)", rd, rs2, rs1);
     AMOXOR_D:  $sformat(decoded, "amoxor.d %s, %s, (%s)", rd, rs2, rs1);
   `endif
+
+    // Zabha Extension
+    AMOADD_B:  $sformat(decoded, "amoadd.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOAND_B:  $sformat(decoded, "amoand.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAX_B:  $sformat(decoded, "amomax.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAXU_B: $sformat(decoded, "amomaxu.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMIN_B:  $sformat(decoded, "amomin.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMINU_B: $sformat(decoded, "amominu.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOOR_B:   $sformat(decoded, "amoor.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOSWAP_B: $sformat(decoded, "amoswap.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOXOR_B:  $sformat(decoded, "amoxor.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOADD_H:  $sformat(decoded, "amoadd.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOAND_H:  $sformat(decoded, "amoand.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAX_H:  $sformat(decoded, "amomax.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAXU_H: $sformat(decoded, "amomaxu.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMIN_H:  $sformat(decoded, "amomin.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMINU_H: $sformat(decoded, "amominu.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOOR_H:   $sformat(decoded, "amoor.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOSWAP_H: $sformat(decoded, "amoswap.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOXOR_H:  $sformat(decoded, "amoxor.h %s, %s, (%s)", rd, rs2, rs1);
+
+    // Zacas Extension
+    AMOCAS_B:  $sformat(decoded, "amocas.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_H:  $sformat(decoded, "amocas.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_W:  $sformat(decoded, "amocas.w %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_D:  $sformat(decoded, "amocas.d %s, %s, (%s)", rd, rs2, rs1);
+  `ifdef XLEN64
+    AMOCAS_Q:  $sformat(decoded, "amocas.q %s, %s, (%s)", rd, rs2, rs1);
+  `endif
+
     // Zalrsc Extension
     LR_W:      $sformat(decoded, "lr.w %s, (%s)", rd, rs1);
     SC_W:      $sformat(decoded, "sc.w %s, %s, (%s)", rd, rs2, rs1);
@@ -525,6 +565,12 @@ function string disassemble (logic [31:0] instrRaw);
     SHA512SUM0: $sformat(decoded, "sha512sum0 %s, %s", rd, rs1);
     SHA512SUM1: $sformat(decoded, "sha512sum1 %s, %s", rd, rs1);
   `endif
+    // Zksed Extension
+    SM4ED:  $sformat(decoded, "sm4ed %s, %s, %s, %0d", rd, rs1, rs2, bs);
+    SM4KS:  $sformat(decoded, "sm4ks %s, %s, %s, %0d", rd, rs1, rs2, bs);
+    // Zksh Extension
+    SM3P0: $sformat(decoded, "sm3p0 %s, %s", rd, rs1);
+    SM3P1: $sformat(decoded, "sm3p1 %s, %s", rd, rs1);
     // Zca Extension
     C_ADDI4SPN: begin
         if (immCIWType != '0) begin

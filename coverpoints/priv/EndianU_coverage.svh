@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ENDIANU
-covergroup EndianU_endian_cg with function sample(ins_t ins);
+covergroup EndianU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests in user mode"
@@ -92,7 +92,7 @@ covergroup EndianU_endian_cg with function sample(ins_t ins);
             wildcard bins sd = {32'b????????????_?????_011_?????_0100011};
         }
         cp_ld: coverpoint ins.current.insn {
-            wildcard bins ld = {32'b????????????_?????_001_?????_0000011};
+            wildcard bins ld = {32'b????????????_?????_011_?????_0000011};
         }
         cp_lwu: coverpoint ins.current.insn {
             wildcard bins lwu = {32'b????????????_?????_110_?????_0000011};
@@ -110,5 +110,5 @@ covergroup EndianU_endian_cg with function sample(ins_t ins);
 endgroup
 
 function void endianu_sample(int hart, int issue, ins_t ins);
-    EndianU_endian_cg.sample(ins);
+    EndianU_cg.sample(ins);
 endfunction

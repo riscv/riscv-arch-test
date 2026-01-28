@@ -1,7 +1,17 @@
     // Custom coverpoints for fence
 
     cp_custom_fence : coverpoint ins.current.insn  {
-        bins fence =  {32'h0ff0000f}; // iowr, iowr
-        bins fence_rw_rw = {32'h0330000f};
-        bins fence_tso_rw_rw = {32'h8330000f}; // fence.tso
+        bins fence            = {32'h0ff0000f}; // iowr, iowr
+        bins fence_rw_rw      = {32'h0330000f}; // rw, rw
+        bins fence_tso_rw_rw  = {32'h8330000f}; // fence.tso
+        bins fence_nonzerors1 = {32'h0331000f}; // nonzero rs should behave as fence
+        bins fence_nonzerord  = {32'h0330008f}; // nonzero rd should behave as fence
+        bins fence_fm         = {32'h1330000f}; // reserved fm should behave as fence
+        bins fence_hint0a     = {32'h0031000f}; // fence with rd = x0, rs1 != x0, fm = 0, pred = 0 is a hint
+        bins fence_hint0b     = {32'h0301000f}; // fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
+        bins fence_hint1a     = {32'h0030008f}; // fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
+        bins fence_hint1b     = {32'h0300008f}; // fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
+        bins fence_hint2      = {32'h0020000f}; // fence with rd = x0, rs1 = x0, fm = 0, pred = 0, succ != 0 is a hint
+        bins fence_hint3      = {32'h0200000f}; // fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint
+        bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
     }

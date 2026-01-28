@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZALRSC
-covergroup ExceptionsZalrsc_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -103,7 +103,7 @@ covergroup ExceptionsZalrsc_exceptions_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionszalrsc_sample(int hart, int issue, ins_t ins);
-    ExceptionsZalrsc_exceptions_cg.sample(ins);
+    ExceptionsZalrsc_cg.sample(ins);
     //  $display("adr_LSBs: %b, op[6:0]: %b, rd_boolean: %b",
     //   ins.current.rs1_val[2:0],
     //   ins.current.insn[6:0],

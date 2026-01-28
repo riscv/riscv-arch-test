@@ -1,0 +1,8 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: diff-rv32e-rv32i
+    coverpoint:
+      [
+        "I_add_cg/{cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1, cmp_rd_rs2, cmp_rs1_rs2, cmp_rd_rs1_rs2}, {SsstrictS_cg,SsstricM_cg}/{cp_upperreg}",
+      ]

@@ -559,7 +559,7 @@
      DBLSHIFT7 x13, x12
 
 #ifdef RVTEST_ENAB_INSTRET_CNT
-     csrr  x14, CSR_MSCRATCH
+     csrr  x14, CSR_XSCRATCH
      csrr  x15, CSR_MINSTRET
      SREG  x15, instret_sav_off(x14)
 
@@ -1943,6 +1943,7 @@ rvtest_\__MODE__\()end:
  .global rvtest_code_begin              //define the label and make it available
 
 rvtest_init:                            //instantiate prologs here
+  XCSR_RENAME M                         // default to M-mode aliases
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG
 rvtest_entrypoint:
 // RVMODEL_BOOT                        // Commenting this one as temporary fix
@@ -1979,8 +1980,9 @@ rvtest_code_end:                // RVMODEL_HALT should get here
     RVTEST_GOTO_MMODE           // if only Mmode used by tests, this has no effect
 cleanup_epilogs:                // jump here to quit, will restore state for each mode
 #ifdef RVTEST_ENAB_INSTRET_CNT
+     XCSR_RENAME M                      // Ensure aliases are available
      csrr  x15, CSR_MINSTRET
-     csrr  x14, CSR_MSCRATCH
+     csrr  x14, CSR_XSCRATCH
      LREG  x13, instret_sav_off(x14)    // initial instret point stored here
      sub   x15, x15, x13                // calc instret delta
      LREG  x12, sig_bgn_off(x14)

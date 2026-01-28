@@ -581,12 +581,12 @@ Mend_PMP:                                    ;\
 #ifdef RVTEST_DEBUG					;\
   .option push						;\
   .option norvc						;\
-  csrrw T1, CSR_MSCRATCH, T1 /*T1=base*/		;\
+  csrrw T1, CSR_XSCRATCH, T1 /*T1=base*/		;\
   SREG  T2, trap_sv_off+2*REGWIDTH(T1)			;\
   SREG  T3, trap_sv_off+3*REGWIDTH(T1)			;\
-  csrr  T2, CSR_MSCRATCH /*T2=origT1*/			;\
+  csrr  T2, CSR_XSCRATCH /*T2=origT1*/			;\
   SREG  T2, trap_sv_off+1*REGWIDTH(T1)			;\
-  csrw  CSR_MSCRATCH, T1					;\
+  csrw  CSR_XSCRATCH, T1					;\
   csrr  T2, CSR_MINSTRET				;\
   LREG  T3, instret_sav_off(T1)				;\
   sub   T3, T2, T3					;\

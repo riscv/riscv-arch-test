@@ -4,32 +4,26 @@ normative_rule_definitions:
   - name: a_aq_rl_bits
     coverpoint: ["TODO add coverpoint cp_custom_aqrl like Zalrsc"]
 
-  # TODO: Add description for amo_release_consistency
   - name: amo_release_consistency
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for a_domain_specific_ordering
   - name: a_domain_specific_ordering
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for a_no_aq_rl
   - name: a_no_aq_rl
     coverpoint: ["OUT-OF-SCOPE for single hart"]
-  # TODO: Add description for a_acquire_semantics
+
   - name: a_acquire_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for a_release_semantics
   - name: a_release_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
-  # TODO: Add description for a_seq_cst_semantics
+
   - name: a_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for amo_operand_size
   - name: amo_operand_size
     coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_rs2_edges"]
 
-  # TODO: Add description for amo_alignment
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]

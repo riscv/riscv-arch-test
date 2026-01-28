@@ -16,7 +16,7 @@ include::{testplansdir}/Zaamo.adoc[]
 include::norm/Zaamo_norm_rules.adoc[]
 
 [NOTE]
-This test suite is unprivileged and does not perform misaligned accesses.The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>).
+This test suite is unprivileged and does not perform misaligned accesses. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>).
 
 ==== Zalrsc Load-Reserved / Store-Conditional Extension
 

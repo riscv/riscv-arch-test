@@ -3,10 +3,8 @@ normative_rule_definitions:
   - name: mcause_exccode_ld_ldrsv
     coverpoint: [""]
 
-  # TODO: Add description for amo_alignment
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
 
-  # TODO: Add description for amo_misaligned_atomicity_granule
   - name: amo_misaligned_atomicity_granule
     coverpoint: [""]

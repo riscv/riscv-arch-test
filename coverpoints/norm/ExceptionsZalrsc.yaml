@@ -3,14 +3,11 @@ normative_rule_definitions:
   - name: mcause_exccode_st_sc_amo
     coverpoint: [""]
 
-  # TODO: Add description for sc_retire_permission
   - name: sc_retire_permission
     coverpoint: [""]
 
-  # TODO: Add description for sc_failed_as_store
   - name: sc_failed_as_store
     coverpoint: [""]
 
-  # TODO: Add description for lr_sc_alignment
   - name: lr_sc_alignment
     coverpoint: [""]

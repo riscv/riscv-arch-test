@@ -1,125 +1,96 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # TODO: Add description for a_aq_rl_bits
   - name: a_aq_rl_bits
     coverpoint: ["Zalrsc_lr_w_cg/cp_custom_aqrl"]
 
-  # TODO: Add description for a_domain_specific_ordering
   - name: a_domain_specific_ordering
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for a_no_aq_rl
   - name: a_no_aq_rl
     coverpoint: ["OUT-OF-SCOPE for single hart"]
-  # TODO: Add description for a_acquire_semantics
+
   - name: a_acquire_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for a_release_semantics
   - name: a_release_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
-  # TODO: Add description for a_seq_cst_semantics
+
   - name: a_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for lr_w_op
   - name: lr_w_op
     coverpoint: ["Zalrsc_lr_w_cg/{cp_rs1_nx0, cp_rd}"]
 
-  # TODO: Add description for sc_w_success
   - name: sc_w_success
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
 
-  # TODO: Add description for sc_w_failure
   - name: sc_w_failure
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
 
-  # TODO: Add description for sc_failed_side_effects
   - name: sc_failed_side_effects
     coverpoint: ["NONE: Behavior is UNSPECIFIED and OUT-OF-SCOPE"]
 
-  # TODO: Add description for sc_reservation_invalidate
   - name: sc_reservation_invalidate
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
-  # TODO: Add description for lr_sc_rv64
   - name: lr_sc_rv64
     coverpoint:
       ["Zalrsc_lr_d_cg/{cp_rs1_nx0, cp_rd}, Zalrsc_sc_d_cg/cp_sc_fail"]
 
-  # TODO: Add description for sc_failure_code
   - name: sc_failure_code
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
 
-  # TODO: Add description for lr_reservation_set_size
   - name: lr_reservation_set_size
-    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
+    coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresseses"]
 
-  # TODO: Add description for sc_pairs_latest_lr
   - name: sc_pairs_latest_lr
     coverpoint: ["TODO"]
 
-  # TODO: Add description for sc_success_conditions
   - name: sc_success_conditions
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc; multihart not tested"]
 
-  # TODO: Add description for sc_device_write_failure
   - name: sc_device_write_failure
     coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
 
-  # TODO: Add description for sc_addr_not_in_reservation_fail
   - name: sc_addr_not_in_reservation_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_sc_fail"]
 
-  # TODO: Add description for sc_other_hart_store_fail
   - name: sc_other_hart_store_fail
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for sc_other_device_write_fail
   - name: sc_other_device_write_fail
     coverpoint: ["OUT-OF-SCOPE: device writes not modeled"]
 
-  # TODO: Add description for sc_intervening_sc_fail
   - name: sc_intervening_sc_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
-  # TODO: Add description for lr_sc_atomicity_axiom
   - name: lr_sc_atomicity_axiom
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for sc_not_observable_before_lr
   - name: sc_not_observable_before_lr
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  # TODO: Add description for lr_sc_aq_rl_software_rule
   - name: lr_sc_aq_rl_software_rule
     coverpoint: ["Nothing to test"]
 
-  # TODO: Add description for constrained_lrsc_loop_size
   - name: constrained_lrsc_loop_size
     coverpoint: ["Untested"]
 
-  # TODO: Add description for constrained_lrsc_instruction_set
   - name: constrained_lrsc_instruction_set
     coverpoint: ["Untested"]
 
-  # TODO: Add description for constrained_lrsc_compressed_allowed
   - name: constrained_lrsc_compressed_allowed
     coverpoint: ["Untested"]
 
-  # TODO: Add description for constrained_lrsc_retry_code
   - name: constrained_lrsc_retry_code
     coverpoint: ["Untested"]
 
-  # TODO: Add description for lrsc_eventuality_region
   - name: lrsc_eventuality_region
     coverpoint: ["Untested"]
 
-  # TODO: Add description for lrsc_same_address_and_size
   - name: lrsc_same_address_and_size
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_addresses"]
 
-  # TODO: Add description for unconstrained_lrsc_no_progress
   - name: unconstrained_lrsc_no_progress
     coverpoint: ["Untested"]

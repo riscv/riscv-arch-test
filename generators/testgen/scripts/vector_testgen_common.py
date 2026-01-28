@@ -1716,9 +1716,10 @@ def writeTest(description, instruction, instruction_data,
 
     ifdef_string = "#if "
 
-    # ifdef_string += getELENIfdef        (instruction)
-    # ifdef_string += getMaxIndexEEWIfdef (instruction)
-    # ifdef_string += getSEWMINIfdef      (instruction)
+    # TODO want to delete once top-of-file params work
+    ifdef_string += getELENIfdef        (instruction)
+    ifdef_string += getMaxIndexEEWIfdef (instruction)
+    ifdef_string += getSEWMINIfdef      (instruction)
 
     if (ifdef_string != "#if "):
       writeLine(ifdef_string[:-3])

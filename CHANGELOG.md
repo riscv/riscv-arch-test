@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [3.12.0] - 2026-01-27
+### Added
+- Root Makefile for robust, pip-independent builds.
+- Support for `DEBUG=1` flag in Makefile to enable fine-grained instruction tracking.
+- `minstret` (Instructions Retired) tracking for traps and interrupts.
+- Debug mode in `RVTEST_SIGUPD` for per-instruction `minstret` delta signatures.
+
+### Fixed
+- Corrected `minstret` tracking implementation in `arch_test.h` to use a dedicated save slot and append deltas correctly to the signature.
+
 ## [3.10.0] - 2024-11-04
 - Add support for Zvk* extensions
 - Split float and double test cases into smaller ones
@@ -686,18 +696,6 @@ Add missing check ISA fields in recently modified div and amo tests
   - updated ci to build and upload pdf for testformatspec
 
 ## [2.4.0] - 2021-03-26
-2021-03-26 Duncan Graham <info@imperas.com>
-	- Added new K Crypto (scalar) (0.8.1) tests from Imperas
-
-## [3.12.0] - 2026-01-27
-### Added
-- Root Makefile for robust, pip-independent builds.
-- Support for `DEBUG=1` flag in Makefile to enable fine-grained instruction tracking.
-- `minstret` (Instructions Retired) tracking for traps and interrupts.
-- Debug mode in `RVTEST_SIGUPD` for per-instruction `minstret` delta signatures.
-
-### Fixed
-- Corrected `minstret` tracking implementation in `arch_test.h` to use a dedicated save slot and append deltas correctly to the signature.
 
 ## [2.3.1] - 2021-03-20
 ### Changed

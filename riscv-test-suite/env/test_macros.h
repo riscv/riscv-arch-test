@@ -608,13 +608,12 @@ Mend_PMP:                                    ;\
   SREG _R,offset(_BR)					;\
   .set offset,offset+REGWIDTH
 
+
 /* RVTEST_SIGUPD_CSR(SIG, TMP, CSR)					*/
 /* This macro reads the provided CSR and stores the value in the	*/
 /* signature referenced by SIG using the help of the temporary register	*/
 /* TMP.									*/
-#define RVTEST_SIGUPD_CSR(_SIG, _TMP, _CSR)				;\
-  csrr _TMP, _CSR							;\
-  RVTEST_SIGUPD(_SIG, _TMP)
+
 
 /* RVTEST_TOOGLE_BITS_IN_CSR(CSR, MASK, TMP1, TMP2)			*/
 /* This macro is used to toogle the set bits of the provided MASK in	*/

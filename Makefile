@@ -19,7 +19,11 @@ ifeq ($(DEBUG),1)
 CPPFLAGS += -DRVTEST_DEBUG
 endif
 
-ASFLAGS += -march=rv$(XLEN)gc -mabi=ilp32
+ifeq ($(XLEN),64)
+    ASFLAGS += -march=rv64gc -mabi=lp64
+else
+    ASFLAGS += -march=rv32gc -mabi=ilp32
+endif
 LDFLAGS += -static -nostdlib -nostartfiles
 
 TEST_SRCS = $(shell find riscv-test-suite -name "*.S")

@@ -33,12 +33,12 @@ normative_rule_definitions:
   # with priority higher than that of a software-check exception with xtval set to
   # "landing pad fault (code=2)" (See &lt;&lt;norm:exc_priority&gt;&gt; of
   # Privileged Specification).
-  - name: Zicflip_forward_traps
+  - name: Zicfilp_forward_traps
     coverpoint: [""]
 
   # The software-check exception caused by Zicfilp has higher priority than an
   # illegal-instruction exception but lower priority than instruction access-fault.
-  - name: Zicflip_exception_priority
+  - name: Zicfilp_exception_priority
     coverpoint: [""]
 
   # The software-check exception due to the instruction not being an LPAD
@@ -56,7 +56,7 @@ normative_rule_definitions:
   # To store the previous ELP state on trap delivery to S/HS-mode, an SPELP bit is
   # provided in the mstatus CSR. The SPELP bit in mstatus can be accessed through
   # the sstatus CSR.
-  - name: Zicflip_forward_traps_s_hs_mode
+  - name: Zicfilp_forward_traps_s_hs_mode
     coverpoint: [""]
 
   # To store the previous ELP state on traps to VS-mode, a SPELP bit is defined in
@@ -70,25 +70,17 @@ normative_rule_definitions:
   # the ELP is set to NO_LP_EXPECTED. When a hart resumes from Debug Mode, if the
   # new privilege mode is y, then ELP is set to the value of pelp if yLPE (see ) is
   # 1; otherwise, it is set to NO_LP_EXPECTED.
-  - name: Zicflip_forward_traps_debug_mode
+  - name: Zicfilp_forward_traps_debug_mode
     coverpoint: [""]
 
   # When a trap is taken into privilege mode x, the xPELP is set to ELP and ELP is
   # set to NO_LP_EXPECTED.
-  - name: Zicflip_pelp_trap
+  - name: Zicfilp_pelp_trap
     coverpoint: [""]
 
   # An MRET or SRET instruction is used to return from a trap in M-mode or S-mode,
   # respectively. When executing an xRET instruction, if the new privilege mode is
   # y, then ELP is set to the value of xPELP if yLPE (see ) is 1; otherwise, it is
   # set to NO_LP_EXPECTED; xPELP is set to NO_LP_EXPECTED.
-  - name: Zicflip_pelp_trap_return
-    coverpoint: [""]
-
-  # If the privilege mode is less than M and menvcfg.SSE is 0, an
-  # illegal-instruction exception is raised. Attempts to access the ssp CSR may
-  # result in either an illegal-instruction exception or a virtual-instruction
-  # exception, contingent upon the state of the x`envcfg.SSE` fields. The conditions
-  # are specified as follows:
-  - name: Zicflip_ssp_below_m_mode
+  - name: Zicfilp_pelp_trap_return
     coverpoint: [""]

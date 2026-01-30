@@ -3,7 +3,15 @@ normative_rule_definitions:
   # to 1, the Zicfiss extension is activated in VU/U-mode. When the SSE field is 0,
   # the Zicfiss extension remains inactive in VU/U-mode, and the following rules
   # apply:
-  - names: [senvcfg-sse_Zicfilp_sz, senvcfg-sse_Zicfilp_op]
+  - names: [senvcfg-sse_Zicfiss]
+    coverpoint: [""]
+
+  # If the privilege mode is less than M and menvcfg.SSE is 0, an
+  # illegal-instruction exception is raised. Attempts to access the ssp CSR may
+  # result in either an illegal-instruction exception or a virtual-instruction
+  # exception, contingent upon the state of the x`envcfg.SSE` fields. The conditions
+  # are specified as follows:
+  - name: Zicfiss_ssp_below_m_mode
     coverpoint: [""]
 
   # Otherwise, if in U-mode and senvcfg.SSE is 0, an illegal-instruction exception

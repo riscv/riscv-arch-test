@@ -181,7 +181,7 @@ normative_rule_definitions:
   # The implementation must provide a facility for scheduling timer interrupts in
   # terms of the real-time counter, time.
   - name: supervisor_timer_scheduling
-    coverpoint: ["In"]
+    coverpoint: ["OUT-OF-SCOPE: too vague"]
 
   # The sscratch CSR is an SXLEN-bit read/write register, dedicated for use by the
   # supervisor. Typically, sscratch is used to hold a pointer to the hart-local
@@ -217,7 +217,7 @@ normative_rule_definitions:
   # explicitly written by software.
   - name: sepc_op_trap_write
     coverpoint:
-      ["ExeptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s"]
+      ["ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s"]
 
   # The scause CSR is an SXLEN-bit read-write register formatted as shown in . When
   # a trap is taken into S-mode, scause is written with a code indicating the event
@@ -226,7 +226,7 @@ normative_rule_definitions:
   - names: [scause_sz, scause_acc, scause_op]
     coverpoint:
       [
-        "S_scsr_cg/cp_scsr_access/scause, ExeptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
+        "S_scsr_cg/cp_scsr_access/scause, ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
       ]
 
   # The Interrupt bit in the scause register is set if the trap was caused by an
@@ -238,7 +238,7 @@ normative_rule_definitions:
   - names: [scause-interrupt_sz, scause-interrupt_op]
     coverpoint:
       [
-        "S_scause_cg/cp_scause_write_{interrupt, exception}, ExeptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
+        "S_scause_cg/cp_scause_write_{interrupt, exception}, ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
       ]
 
   # The Exception Code is a WLRL field.
@@ -259,7 +259,7 @@ normative_rule_definitions:
   # depending on the underlying event that caused the exception.
   - names: [stval_sz, stval_op, stval_mode]
     coverpoint:
-      ["S_stval_cg/cp_stval_write, ExeptionsS_cg/cp_illegal_instruction"]
+      ["S_stval_cg/cp_stval_write, ExceptionsS_cg/cp_illegal_instruction"]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction

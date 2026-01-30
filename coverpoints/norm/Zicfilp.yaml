@@ -8,3 +8,14 @@ normative_rule_definitions:
   # instruction expected. 1 - LP_EXPECTED - a landing pad instruction is expected.
   - names: [mstatus_spelp_enc, mstatus_mpelp_enc]
     coverpoint: [""]
+
+  # Access to the SPELP field, added by Zicfilp, accesses the homonymous fields of
+  # mstatus when V=0, and the homonymous fields of vsstatus when V=1.
+  - names:
+      [
+        sstatus-spelp_sz,
+        sstatus-spelp_acc,
+        sstatus-spelp_op,
+        sstatus-spelp_Zicfilp,
+      ]
+    coverpoint: [""]

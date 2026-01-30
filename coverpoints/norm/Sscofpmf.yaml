@@ -15,3 +15,18 @@ normative_rule_definitions:
   # The mhpmeventnh CSRs are provided only if the Sscofpmf extension is implemented.
   - name: mhpmeventh_presence
     coverpoint: ["TODO, also in Ssstrict"]
+
+  # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts. LCOFIP is read-write in sip and reflects the occurrence of a local
+  # counter-overflow overflow interrupt request resulting from any of the
+  # mhpmeventn.OF bits being set. If the Sscofpmf extension is not implemented,
+  # sip.LCOFIP and sie.LCOFIE are read-only zeros.
+  - names:
+      [
+        sip-lcofip_Sscofpmf_acc,
+        sip-lcofip_Sscofpmf_op,
+        sie-lcofip_Sscofpmf_acc,
+        sie-lcofip_Sscofpmf_op,
+      ]
+    coverpoint: [""]

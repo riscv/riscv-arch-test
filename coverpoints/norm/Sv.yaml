@@ -1,6 +1,23 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The MXR (Make eXecutable Readable) bit modifies the privilege with which loads
+  # access virtual memory. When MXR=0, only loads from pages marked readable (R=1 in
+  # ) will succeed. When MXR=1, loads from pages marked either readable or
+  # executable (R=1 or X=1) will succeed. MXR has no effect when page-based virtual
+  # memory is not in effect.
+  - names: [sstatus-mxr_sz, sstatus-mxr_acc, sstatus-mxr_op]
+    coverpoint: [""]
+
+  # The SUM (permit Supervisor User Memory access) bit modifies the privilege with
+  # which S-mode loads and stores access virtual memory. When SUM=0, S-mode memory
+  # accesses to pages that are accessible by U-mode (U=1 in ) will fault. When
+  # SUM=1, these accesses are permitted. SUM has no effect when page-based virtual
+  # memory is not in effect, nor when executing in U-mode. Note that S-mode can
+  # never execute instructions from user pages, regardless of the state of SUM.
+  - names: [sstatus-sum_sz, sstatus-sum_acc, sstatus-sum_op]
+    coverpoint: [""]
+
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for
   # SXLEN=32 and for SXLEN=64, which controls supervisor-mode address translation
   # and protection. This register holds the physical page number (PPN) of the root

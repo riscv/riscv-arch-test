@@ -31,6 +31,7 @@ tests/rv64i
 tests/rv64e
 ctp/src/norm
 ctp/src/param
+ctp/src/testplans
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters

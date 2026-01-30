@@ -53,7 +53,7 @@ Parameters will eventually all have formal names in UDB when they are all identi
 
 * Profile: A named collection of required and optional extensions, such as RVI20 or RVA23S64.  Profiles may be ratified by RISC-V or developed by the Certification Steering Committee to meet certification market needs, such as a simple microcontroller. A profile is a partial configuration.  The test plan must allow the DUT configuration to indicate which optional extensions and other parameters are used, and fully test all optional profile extensions provided by the DUT.
 
-* UDB: https://github.com/riscv-software-src/riscv-unified-db[Unified Database], a standardized way to describe the configuration and generate config files for various tools from a single point of truth.
+* UDB: https://github.com/riscv/riscv-unified-db[Unified Database], a standardized way to describe the configuration and generate config files for various tools from a single point of truth.
 
 * <<Normative Rule, Normative rule>>: Description of a single certifiable feature, preferably a direct quotation from a ratified specification.
 

@@ -34,16 +34,16 @@ def write_test_file(
     """
     # Extract test configuration
     test_config = test_data.config
-    extension = test_config.extension
+    testsuite = test_config.testsuite
 
     # Construct filename and paths
     try:
-        filename = f"{extension}-{test_data.instr_name}-{file_idx:02d}.S"
-    except ValueError:  # instr_name is None for extension-level tests
-        filename = f"{extension}-{file_idx:02d}.S"
+        filename = f"{testsuite}-{test_data.instr_name}-{file_idx:02d}.S"
+    except ValueError:  # instr_name is None for priv tests
+        filename = f"{testsuite}-{file_idx:02d}.S"
     test_file = output_dir / filename
     arch_dir = f"rv{test_config.xlen}{'e' if test_config.E_ext else 'i'}" if test_config.xlen else ""
-    test_file_relative = Path(arch_dir) / extension / filename if arch_dir else Path(extension) / filename
+    test_file_relative = Path(arch_dir) / testsuite / filename if arch_dir else Path(testsuite) / filename
 
     # Test header
     final_lines = [insert_header_template(test_config, test_file_relative, test_data.sigupd_count, extra_defines)]

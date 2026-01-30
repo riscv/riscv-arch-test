@@ -20,41 +20,44 @@ PrivTestGenerator = Callable[[TestData], list[str]]
 
 
 class MissingPrivGeneratorError(MissingRegistryItemError):
-    """Raised when no priv test generator is registered for a given extension."""
+    """Raised when no priv test generator is registered for a given testsuite."""
 
-    def __init__(self, extension: str, available_extensions: list[str] | None = None) -> None:
+    def __init__(self, testsuite: str, available_extensions: list[str] | None = None) -> None:
         registry_location = Path(__file__).parent / "extensions"
         super().__init__(
-            extension,
+            testsuite,
             available_extensions,
             item_type="privileged test generator",
             registry_location=registry_location,
         )
-        self.extension = extension
+        self.testsuite = testsuite
 
 
-# Registry: dict mapping extension name to (priv_test_generator, extra_defines)
-_PRIV_TEST_GENERATORS: dict[str, tuple[PrivTestGenerator, list[str]]] = {}
+# Registry: dict mapping testsuite name to (priv_test_generator, extra_defines, extensions)
+_PRIV_TEST_GENERATORS: dict[str, tuple[PrivTestGenerator, list[str], list[str] | None]] = {}
 
 
 def add_priv_test_generator(
-    extension: str,
+    testsuite: str,
     *,
     extra_defines: list[str] | None = None,
+    extensions: list[str] | None = None,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
 
     Args:
-        extension: Extension name (e.g., "Sm")
+        testsuite: Testsuite name (e.g., "ExceptionsSm")
         extra_defines: List of extra #define statements for the test header.
                        Trap handlers are added automatically based on extensions.
+        extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
+                    Used for generating the march string and header defines.
     """
     if extra_defines is None:
         extra_defines = []
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
-        _PRIV_TEST_GENERATORS[extension] = (func, extra_defines)
+        _PRIV_TEST_GENERATORS[testsuite] = (func, extra_defines, extensions)
         return func
 
     return decorator
@@ -65,18 +68,25 @@ def get_priv_test_extensions() -> list[str]:
     return list(_PRIV_TEST_GENERATORS.keys())
 
 
-def get_priv_test_generator(extension: str) -> PrivTestGenerator:
-    """Get the priv test generator function for an extension."""
-    if extension not in _PRIV_TEST_GENERATORS:
-        raise MissingPrivGeneratorError(extension, list(_PRIV_TEST_GENERATORS.keys()))
-    return _PRIV_TEST_GENERATORS[extension][0]
+def get_priv_test_generator(testsuite: str) -> PrivTestGenerator:
+    """Get the priv test generator function for an testsuite."""
+    if testsuite not in _PRIV_TEST_GENERATORS:
+        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
+    return _PRIV_TEST_GENERATORS[testsuite][0]
 
 
-def get_priv_test_defines(extension: str) -> list[str]:
-    """Get the extra_defines for a priv extension."""
-    if extension not in _PRIV_TEST_GENERATORS:
-        raise MissingPrivGeneratorError(extension, list(_PRIV_TEST_GENERATORS.keys()))
-    return _PRIV_TEST_GENERATORS[extension][1]
+def get_priv_test_defines(testsuite: str) -> list[str]:
+    """Get the extra_defines for a priv testsuite."""
+    if testsuite not in _PRIV_TEST_GENERATORS:
+        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
+    return _PRIV_TEST_GENERATORS[testsuite][1]
+
+
+def get_priv_test_required_extensions(testsuite: str) -> list[str] | None:
+    """Get the required RISC-V extensions for a priv testsuite."""
+    if testsuite not in _PRIV_TEST_GENERATORS:
+        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
+    return _PRIV_TEST_GENERATORS[testsuite][2]
 
 
 def _discover_and_import_priv_generators() -> None:

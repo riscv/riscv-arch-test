@@ -369,3 +369,9 @@ normative_rule_definitions:
 
   - name: Sv57_PTESIZE
     coverpoint: [""]
+
+  # If stval is written with a nonzero value when a breakpoint, address-misaligned,
+  # access-fault, page-fault, or hardware-error exception occurs on an instruction
+  # fetch, load, or store, then stval will contain the faulting virtual address.
+  - name: stval_op_faulting_addr
+    coverpoint: ["TODO: page faults"]

@@ -267,19 +267,19 @@ normative_rule_definitions:
   - name: stval_op_faulting_addr
     coverpoint:
       [
-        "ExeptionsS_cg/{cp_breakpoint, cp_{load,store,instr}_address_misaligned, cp_{load,store, instr}_access_faultcp_illegal_instruction",
+        "ExceptionsS_cg/{cp_breakpoint, cp_{load,store,instr}_address_misaligned, cp_{load,store, instr}_access_fault,cp_illegal_instruction",
       ]
 
   # On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, stval is
   # written with either zero or the virtual address of the instruction.
   - name: stval_op_breakpoint
-    coverpoint: [""]
+    coverpoint: ["ExceptionsS_cg/cp_breakpoint"]
 
   # If stval is written with a nonzero value when a misaligned load or store causes
   # an access-fault, page-fault, or hardware-error exception, then stval will
   # contain the virtual address of the portion of the access that caused the fault.
   - name: stval_op_load_store_fault
-    coverpoint: [""]
+    coverpoint: ["TODO"]
 
   # If stval is written with a nonzero value when an instruction access-fault,
   # page-fault, or hardware-error exception occurs on a hart with variable-length
@@ -287,7 +287,7 @@ normative_rule_definitions:
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
   - name: stval_faulting_address_variable_instr
-    coverpoint: [""]
+    coverpoint: ["OUT-OF-SCOPE"]
 
   # The stval register can optionally also be used to return the faulting
   # instruction bits on an illegal-instruction exception (sepc points to the
@@ -295,22 +295,25 @@ normative_rule_definitions:
   # an illegal-instruction exception occurs, then stval will contain the shortest
   # of:
   - name: stval_op_illegal_instr
-    coverpoint: [""]
+    coverpoint: ["ExceptionsS_cg/cp_illegal_instruction"]
 
   # The value loaded into stval on an illegal-instruction exception is
   # right-justified and all unused upper bits are cleared to zero.
   - name: stval_op_illegal_instr_format
-    coverpoint: [""]
+    coverpoint:
+      [
+        "ExceptionsZc_cg/cp_illegal_instruction, SsstrictS_comp_instr_cg/cp_compressed00",
+      ]
 
   # On a trap caused by a software-check exception, the stval register holds the
   # cause for the exception. The following encodings are defined:
   - name: stval_exception_info
-    coverpoint: [""]
+    coverpoint: ["TODO"]
 
   # For other traps, stval is set to zero, but a future standard may redefine
   # stval’s setting for other traps.
   - name: stval_op_other_traps
-    coverpoint: [""]
+    coverpoint: ["ExceptionsS_cg/cp_ecall_s, InterruptsS_cg/cp_interrupts_s"]
 
   # stval is a WARL register that must be able to hold all valid virtual addresses
   # and the value 0. It need not be capable of holding all possible invalid
@@ -320,12 +323,12 @@ normative_rule_definitions:
   # be able to hold all values less than 2N, where N is the smaller of SXLEN and
   # ILEN.
   - name: stval_acc
-    coverpoint: [""]
+    coverpoint: ["S_scsr_cg/cp_scsr_access/stval"]
 
   # The senvcfg CSR is an SXLEN-bit read/write register, formatted as shown in ,
   # that controls certain characteristics of the U-mode execution environment.
   - names: [senvcfg_sz, senvcfg_acc, senvcfg_mode]
-    coverpoint: [""]
+    coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]
 
   # If bit FIOM (Fence of I/O implies Memory) is set to one in senvcfg, FENCE
   # instructions executed in U-mode are modified so the requirement to order
@@ -333,86 +336,15 @@ normative_rule_definitions:
   # accesses. details the modified interpretation of FENCE instruction bits PI, PO,
   # SI, and SO in U-mode when FIOM=1.
   - names: [senvcfg-fiom_sz, senvcfg-fiom_op]
-    coverpoint: [""]
+    coverpoint: ["OUT-OF-SCOPE"]
 
   # Similarly, for U-mode when FIOM=1, if an atomic instruction that accesses a
   # region ordered as device I/O has its aq and/or rl bit set, then that instruction
   # is ordered as though it accesses both device I/O and memory.
   - name: senvcfg-fiom_op_atomic
-    coverpoint: [""]
+    coverpoint: ["OUT-OF-SCOPE"]
 
   # If satp.MODE is read-only zero (always Bare), the implementation may make FIOM
   # read-only zero.
   - name: senvcfg-fiom_acc
-    coverpoint: [""]
-
-  # If the Ssnpm extension is implemented, the PMM field enables or disables pointer
-  # masking (see ) for the next-lower privilege mode (U/VU), according to the values
-  # in . If Ssnpm is not implemented, PMM is read-only zero. The PMM field is
-  # read-only zero for RV32.
-  - name: senvcfg-pmm_Ssnpm
-    coverpoint: [""]
-
-  # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set
-  # to 1, the Zicfilp extension is enabled in VU/U-mode. When the LPE field is 0,
-  # the Zicfilp extension is not enabled in VU/U-mode and the following rules apply
-  # to VU/U-mode:
-  - names: [senvcfg-lpe_Zicfilp_acc, senvcfg-lpe_Zicfilp_op]
-    coverpoint: [""]
-
-  # The Zicfiss extension adds the SSE field in senvcfg. When the SSE field is set
-  # to 1, the Zicfiss extension is activated in VU/U-mode. When the SSE field is 0,
-  # the Zicfiss extension remains inactive in VU/U-mode, and the following rules
-  # apply:
-  - names: [senvcfg-sse_Zicfilp_sz, senvcfg-sse_Zicfilp_op]
-    coverpoint: [""]
-
-  # The stimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and
-  # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
-  # while accesses to the stimecmph CSR access the high 32 bits of stimecmp.
-  - name: stimecmp-stimecmph_sz_acc
-    coverpoint: [""]
-
-  # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in
-  # the mip and sip registers whenever time contains a value greater than or equal
-  # to stimecmp, treating the values as unsigned integers. If the result of this
-  # comparison changes, it is guaranteed to be reflected in STIP eventually, but not
-  # necessarily immediately. The interrupt remains posted until stimecmp becomes
-  # greater than time, typically as a result of writing stimecmp. The interrupt will
-  # be taken based on the standard interrupt enable and delegation rules.
-  - names: [mip_stip_op, sip_stip_op]
-    coverpoint: [""]
-
-  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
-  # to senvcfg. The CBZE field controls execution of the cache block zero
-  # instruction (CBO.ZERO) in U-mode. Execution of CBO.ZERO in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBZE is
-  # set to 1; otherwise, an illegal-instruction exception is raised. When the Zicboz
-  # extension is not implemented, CBZE is read-only zero.
-  - name: senvcfg-cbze
-    coverpoint: [""]
-
-  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
-  # Enable) field to senvcfg to control execution of the CBO.CLEAN and CBO.FLUSH
-  # instructions in U-mode. Execution of these instructions in U-mode is enabled
-  # only if execution of these instructions is enabled for use in S-mode and CBCFE
-  # is set to 1; otherwise, an illegal-instruction exception is raised. When the
-  # Zicbom extension is not implemented, CBCFE is read-only zero.
-  - name: senvcfg-cbcfe
-    coverpoint: [""]
-
-  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
-  # WARL field to senvcfg to control execution of the CBO.INVAL instruction in
-  # U-mode. The encoding 10b is reserved. When the Zicbom extension is not
-  # implemented, CBIE is read-only zero. Execution of CBO.INVAL in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBIE is
-  # set to 01b or 11b; otherwise, an illegal-instruction exception is raised.
-  - name: senvcfg-cbie
-    coverpoint: [""]
-
-  # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
-  # instruction is enabled in U-mode it performs a flush operation, even if CBIE is
-  # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
-  # encoding:
-  - name: cbo-inval_s-mode_op
-    coverpoint: [""]
+    coverpoint: ["OUT-OF-SCOPE"]

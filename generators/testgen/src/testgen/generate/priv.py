@@ -13,19 +13,19 @@ from pathlib import Path
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.writer import write_test_file
-from testgen.priv.registry import get_priv_test_defines, get_priv_test_generator
+from testgen.priv.registry import get_priv_test_defines, get_priv_test_generator, get_priv_test_required_extensions
 
 
-def generate_priv_test(extension: str, output_test_dir: Path) -> None:
+def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     """
-    Generate tests for a privileged extension.
+    Generate tests for a privileged testsuite.
 
     Args:
-        extension: Extension name (e.g., "Sm")
+        testsuite: Testsuite name (e.g., "ExceptionsSm")
         output_test_dir: Base directory to output generated tests
     """
-    # Output always goes to priv/<extension>
-    output_path = output_test_dir / "priv" / extension
+    # Output always goes to priv/<testsuite>
+    output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 
     # Create test configuration - privileged tests are config_dependent and don't have a fixed xlen
@@ -33,21 +33,22 @@ def generate_priv_test(extension: str, output_test_dir: Path) -> None:
     test_config = TestConfig(
         xlen=0,  # One test for all XLENs
         flen=0,
-        extension=extension,
+        testsuite=testsuite,
         E_ext=False,
         config_dependent=True,
+        required_extensions=get_priv_test_required_extensions(testsuite),
     )
 
     # Create test data
     test_data = TestData(test_config)
 
     # Generate test body
-    priv_test_generator = get_priv_test_generator(extension)
+    priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
     write_test_file(
         test_data,
         body_lines,
         output_path,
-        extra_defines=get_priv_test_defines(extension),
+        extra_defines=get_priv_test_defines(testsuite),
     )

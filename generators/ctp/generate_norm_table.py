@@ -303,6 +303,10 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
         lines.append('')
 
     lines.extend(['|===', ''])
+    # Append link to corresponding parameters table if base is provided
+    if base:
+        # norm files live in src/norm and parameters in src/param, so use ../param
+        lines.extend([f'include::../param/{base}_parameters.adoc[]', ''])
     outpath.parent.mkdir(parents=True, exist_ok=True)
     outpath.write_text('\n'.join(lines), encoding='utf-8')
 

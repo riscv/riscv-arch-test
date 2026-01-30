@@ -55,7 +55,7 @@ class TestData:
         """Get the immutable test configuration."""
         return self._config
 
-    # Extension and instruction name accessors
+    # Testsuite and instruction name accessors
     @property
     def instr_name(self) -> str:
         """Get the instruction name this test is exercising."""
@@ -99,9 +99,9 @@ class TestData:
 
     # Read-only properties delegated to config
     @property
-    def extension(self) -> str:
-        """Get the RISC-V extension this test is exercising."""
-        return self._config.extension
+    def testsuite(self) -> str:
+        """Get the testsuite name."""
+        return self._config.testsuite
 
     @property
     def xlen(self) -> int:
@@ -171,7 +171,7 @@ class TestData:
         self.increment_test_count()
 
         if covergroup is None:
-            covergroup = f"{self.extension}_{self.instr_name}_cg"
+            covergroup = f"{self.testsuite}_{self.instr_name}_cg"
 
         if bin_name is None:
             bin_name = f"test_{self.test_count}"

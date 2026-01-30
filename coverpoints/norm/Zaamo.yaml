@@ -1,0 +1,29 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: a_aq_rl_bits
+    coverpoint: ["TODO add coverpoint cp_custom_aqrl like Zalrsc"]
+
+  - name: amo_release_consistency
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: a_domain_specific_ordering
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: a_no_aq_rl
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: a_acquire_semantics
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: a_release_semantics
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: a_seq_cst_semantics
+    coverpoint: ["OUT-OF-SCOPE for single hart"]
+
+  - name: amo_operand_size
+    coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_rs2_edges"]
+
+  - name: amo_alignment
+    coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]

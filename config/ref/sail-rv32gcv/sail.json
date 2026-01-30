@@ -1,5 +1,5 @@
 {
-  "$schema": "/home/jcarlin/riscv-projects/sail-riscv/build/sail_riscv_config_schema.json",
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -29,7 +29,7 @@
       "napot_supported": true
     },
     "misaligned": {
-      "supported": false,
+      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0
@@ -284,10 +284,10 @@
       "useed_read_only_zero": false
     },
     "Zksed": {
-      "supported": false
+      "supported": true
     },
     "Zksh": {
-      "supported": false
+      "supported": true
     },
     "Zkt": {
       "supported": true

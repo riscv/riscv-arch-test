@@ -66,7 +66,7 @@ implemented_extensions:
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Sv32, version: "= 1.13.0" }
   # - { name: Svade, version: "= 1.0.0" }
-  # - { name: Svadu, version: "= 1.0.0" } # TODO: Re-enable when https://github.com/riscv-software-src/riscv-unified-db/issues/1217 is fixed
+  # - { name: Svadu, version: "= 1.0.0" } # TODO: Re-enable when https://github.com/riscv/riscv-unified-db/issues/1217 is fixed
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
@@ -94,7 +94,7 @@ params:
   # B params
   MUTABLE_MISA_B: true
   # V params
-  VLEN: 128
+  VLEN: 512
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX

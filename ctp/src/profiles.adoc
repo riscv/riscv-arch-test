@@ -6,13 +6,13 @@ This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification obje
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
-* MC100 Microcontroller Profile (https://github.com/riscv-software-src/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
+* MC100 Microcontroller Profile (https://github.com/riscv/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
 ** Application processor without vector, hypervisor, and other newer extensions
 * https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified): Phase 1.8, stepping stone to phase 2
 ** RVA23 less vector and hypervisor
-* RVA23 Profile (https://riscv-software-src.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
+* RVA23 Profile (https://riscv.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
 
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
 
@@ -220,6 +220,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
+|ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
 |Zicfiss|Shadow Stack|<<t-Zicfiss-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o

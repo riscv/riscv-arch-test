@@ -3,8 +3,6 @@
 
 <<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.
 
-[[t-I-coverpoints]]
-.I Instruction Coverpoints
 include::{testplansdir}/I.adoc[]
 
 [[t-I-modified-coverpoints]]
@@ -34,5 +32,3 @@ include::norm/I_norm_rules.adoc[]
 Note that standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
 
 include::norm/rv64_norm_rules.adoc[]
-
-*UDB Parameters:* None.

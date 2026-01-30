@@ -25,19 +25,17 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     acc_instr: coverpoint ins.current.insn {
-        wildcard bins lw = {32'b????????????_?????_010_?????_0000011};
-        wildcard bins sw = {32'b????????????_?????_010_?????_0100011};
-        wildcard bins hlv_w = {32'b0110100_00000_?????_100_?????_1110011};
-        wildcard bins hsv_w = {32'b0110101_?????_?????_100_00000_1110011};
+        wildcard bins lw = {LW};
+        wildcard bins sw = {SW};
+        wildcard bins hlv_w = {HLV_W};
+        wildcard bins hsv_w = {HSV_W};
     }
 
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
     }
 
-    pte_rsw: coverpoint ins.current.g_pte_i[9:8] {
-        bins all_comb[] = {[2'd0:2'd3]};
-    }
+    pte_rsw: coverpoint ins.current.g_pte_i[9:8];
 
     `ifdef XLEN64
         mode_field_values: coverpoint ins.current.rs1_val[63:60] {
@@ -75,12 +73,8 @@ covergroup SvH_cg with function sample(ins_t ins);
             bins no_support = {1'b0};
         }
 
-        svpbmt_g_pte_i: coverpoint ins.current.g_pte_i[62:61] {
-            bins all_comb[] = {[2'd0:2'd3]};
-        }
-        svpbmt_g_pte_d: coverpoint ins.current.g_pte_d[62:61] {
-            bins all_comb[] = {[2'd0:2'd3]};
-        }
+        svpbmt_g_pte_i: coverpoint ins.current.g_pte_i[62:61];
+        svpbmt_g_pte_d: coverpoint ins.current.g_pte_d[62:61];
 
         reserved_g_pte_i: coverpoint ins.current.g_pte_i[60:54] {
             bins all_zeros      = {7'b0000000};
@@ -111,6 +105,13 @@ covergroup SvH_cg with function sample(ins_t ins);
             bins sv39 = {4'b1000};
         `else
             bins sv32 = {1'b1};
+        `endif
+    }
+    hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "hgatp", "mode") {
+        `ifdef XLEN64
+            bins sv39x4 = {4'b1000};
+        `else
+            bins sv32x4 = {1'b1};
         `endif
     }
 
@@ -194,6 +195,13 @@ covergroup SvH_cg with function sample(ins_t ins);
             wildcard bins all_ones = {32'b?_111111111_??????????????????????};
         `else
             wildcard bins all_ones = {64'b????_1111111111111111_????????????????????????????????????????????};
+        `endif
+    }
+    vmid_field_value: coverpoint ins.current.rs1_val {
+        `ifdef XLEN32
+            wildcard bins all_ones = {32'b???_1111111_??????????????????????};
+        `else
+            wildcard bins all_ones = {64'b??????_11111111111111_????????????????????????????????????????????};
         `endif
     }
 
@@ -280,56 +288,57 @@ covergroup SvH_cg with function sample(ins_t ins);
     }
 
     g_pte_legal_xwr_i: coverpoint ins.current.g_pte_i[7:0] {
-        wildcard bins rwx001 = {8'b???00011};
-        wildcard bins rwx011 = {8'b???00111};
-        wildcard bins rwx100 = {8'b???01001};
+        wildcard bins rwx100 = {8'b???00011};
+        wildcard bins rwx110 = {8'b???00111};
+        wildcard bins rwx001 = {8'b???01001};
         wildcard bins rwx101 = {8'b???01011};
         wildcard bins rwx111 = {8'b???01111};
     }
     g_pte_legal_xwr_d: coverpoint ins.current.g_pte_d[7:0] {
-        wildcard bins rwx001 = {8'b???00011};
-        wildcard bins rwx011 = {8'b???00111};
-        wildcard bins rwx100 = {8'b???01001};
+        wildcard bins rwx100 = {8'b???00011};
+        wildcard bins rwx110 = {8'b???00111};
+        wildcard bins rwx001 = {8'b???01001};
         wildcard bins rwx101 = {8'b???01011};
         wildcard bins rwx111 = {8'b???01111};
     }
 
     `ifdef XLEN64
-        vsatp_mode_field: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, mode_field_values;
-        satp_mode_field:  cross priv_mode_vs, satp_mode, csrrw, satp, mode_field_values;
-        hgatp_mode_field: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, mode_field_values;
+        cp_vsatp_mode_field: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, mode_field_values;
+        cp_satp_mode_field:  cross priv_mode_vs, satp_mode, csrrw, satp, mode_field_values;
+        cp_hgatp_mode_field: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, mode_field_values;
 
-        vsatp_svpbmt_rw: cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_d read_write_acc;
-        vsatp_svpbmt_x:  cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_i exec_acc;
+        cp_vsatp_svpbmt_rw: cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_d, read_write_acc;
+        cp_vsatp_svpbmt_x:  cross priv_mode_vs, vsatp_mode, pbmte_menvcfg, svpbmt_g_pte_i, exec_acc;
 
-        vsatp_reserved_rw: cross priv_mode_vs, vsatp_mode, reserved_g_pte_d, read_write_acc;
-        vsatp_reserved_x : cross priv_mode_vs, vsatp_mode, reserved_g_pte_i, exec_acc;
+        cp_vsatp_reserved_rw: cross priv_mode_vs, vsatp_mode, reserved_g_pte_d, read_write_acc;
+        cp_vsatp_reserved_x : cross priv_mode_vs, vsatp_mode, reserved_g_pte_i, exec_acc;
     `endif
 
-    vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
-    vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
+    cp_vsatp_ppn_field:      cross priv_mode_hs, vsatp_mode, csrrw, vsatp, ppn_field_values;
+    cp_vsatp_asidlen_detect: cross priv_mode_hs, vsatp_mode, csrrw, vsatp, asid_field_value;
+    cp_hgatp_vmidlen_detect: cross priv_mode_hs, hgatp_mode, csrrw, hgatp, vmid_field_value;
 
-    vsatp_mprv_effects_s: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_write_acc;
-    vsatp_mprv_effects_u: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
+    cp_vsatp_mprv_effects_s: cross priv_mode_m, mprv_mstatus, mpp_mstatus_s, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_s_d, read_write_acc;
+    cp_vsatp_mprv_effects_u: cross priv_mode_m, mprv_mstatus, mpp_mstatus_u, vsatp_mode, hgatp_bare, satp_bare, g_pte_xwr100_u_d, read_write_acc;
 
-    vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_write_acc;
-    vsatp_pte_rsw:     cross priv_mode_vs, vsatp_mode, pte_rsw;
-    hgatp_tvm_effects: cross priv_mode_hs, tvm_mstatus, csrrw, hgatp;
+    cp_vsatp_endianess:   cross priv_mode_vs, vsatp_mode, vsbe_hstatus, read_write_acc;
+    cp_vsatp_pte_rsw:     cross priv_mode_vs, vsatp_mode, pte_rsw;
+    cp_hgatp_tvm_effects: cross priv_mode_hs, tvm_mstatus, csrrw, hgatp;
 
-    vsatp_invalid_pte_rw: cross priv_mode_vs, vsatp_mode, g_pte_d_inv, read_write_acc;
-    vsatp_invalid_pte_x:  cross priv_mode_vs, vsatp_mode, g_pte_i_inv, exec_acc;
+    cp_vsatp_invalid_pte_rw: cross priv_mode_vs, vsatp_mode, g_pte_d_inv, read_write_acc;
+    cp_vsatp_invalid_pte_x:  cross priv_mode_vs, vsatp_mode, g_pte_i_inv, exec_acc;
 
-    vsatp_sum_effects_rw: cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, read_write_acc;
-    vsatp_sum_effects_x : cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_i, exec_acc;
+    cp_vsatp_sum_effects_rw: cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_d, read_write_acc;
+    cp_vsatp_sum_effects_x : cross priv_mode_vs, sum_vsstatus, g_pte_xwr111_u_i, exec_acc;
 
-    vsatp_nonleaf_lvl0_rw: cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_d, read_write_acc;
-    vsatp_nonleaf_lvl0_x:  cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_i, exec_acc;
+    cp_vsatp_nonleaf_lvl0_rw: cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_d, read_write_acc;
+    cp_vsatp_nonleaf_lvl0_x:  cross priv_mode_vs, vsatp_mode, pte_nonleaf_lvl0_i, exec_acc;
 
-    vsstatus_vs_mxr_sum_rw: cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_write_acc;
-    vsstatus_vs_mxr_sum_x:  cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
+    cp_vsstatus_vs_mxr_sum_rw: cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_d, read_write_acc;
+    cp_vsstatus_vs_mxr_sum_x:  cross priv_mode_vs_vu, vsatp_mode, sum_vsstatus, mxr_vsstatus, pte_xwr_comb_i, exec_acc;
 
-    vsatp_spages_sum_rw: cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_d, read_write_acc;
-    vsatp_spages_sum_x:  cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_i, exec_acc;
+    cp_vsatp_spages_sum_rw: cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_d, read_write_acc;
+    cp_vsatp_spages_sum_x:  cross priv_mode_vs, vsatp_mode, sum_vsstatus, g_pte_legal_xwr_i, exec_acc;
 
 endgroup
 

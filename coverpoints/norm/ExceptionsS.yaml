@@ -47,4 +47,4 @@ normative_rule_definitions:
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
   - names: [sstatus-spp_sz, sstatus-spp_acc, sstatus-spp_op]
-    coverpoint: ["S_sprivist_cg/cp_sret"]
+    coverpoint: [""]

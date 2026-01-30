@@ -30,3 +30,39 @@ normative_rule_definitions:
         sie-lcofip_Sscofpmf_op,
       ]
     coverpoint: [""]
+
+  - name: mhpmevent-INH_op
+    coverpoint: [""]
+
+  - name: mhpmevent-OF_op
+    coverpoint: [""]
+
+  - name: hpmcounter_overflow
+    coverpoint: [""]
+
+  - name: count_overflow_interrupt
+    coverpoint: [""]
+
+  - name: count_overflow_trigger
+    coverpoint: [""]
+
+  - name: mhpmevent-OF_bit_Set
+    coverpoint: [""]
+
+  - names: [mip-LCOFIP_op, sip-LCOFIP_op]
+    coverpoint: [""]
+
+  - name: scountovf_op
+    coverpoint: [""]
+
+  - name: scountovf_smode_read_access_control
+    coverpoint: [""]
+
+  - name: scountovf_mmode_read_access
+    coverpoint: [""]
+
+  - name: scountovf_smode_read_access
+    coverpoint: [""]
+
+  - name: scountovf_vsmode_read_access
+    coverpoint: [""]

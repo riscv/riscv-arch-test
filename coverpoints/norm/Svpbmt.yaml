@@ -1,0 +1,54 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svpbmt_depends_Sv39
+    coverpoint: [""]
+
+  - name: Svpbmt_impl_may_override_pmas
+    coverpoint: [""]
+
+  - name: Svpbmt_nonleaf_pte_pbmt_must_be_zero
+    coverpoint: [""]
+
+  - name: Svpbmt_leaf_pte_pbmt_reserved_3_fault
+    coverpoint: [""]
+
+  - name: Svpbmt_obeys_mem_ordering
+    coverpoint: [""]
+
+  - name: Svpbmt_io_pma_nc_pbmt_obey_rvwmo
+    coverpoint: [""]
+
+  - name: Svpbmt_io_pma_nc_pbmt_treated_as_io_and_memory
+    coverpoint: [""]
+
+  - name: Svpbmt_memory_pma_io_pbmt_strong_io_ordering
+    coverpoint: [""]
+
+  - name: Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory
+    coverpoint: [""]
+
+  - name: Svpbmt_aliasing_attribute
+    coverpoint: [""]
+
+  - name: Svpbmt_noncacheable_aliasing_no_coherence_loss
+    coverpoint: [""]
+
+  - name: Svpbmt_noncacheable_aliasing_may_weaken_ordering
+    coverpoint: [""]
+
+  # Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
+  - name: Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss
+    coverpoint: [""]
+
+  - name: Svpbmt_cacheable_aliasing_may_cause_coherence_loss
+    coverpoint: [""]
+
+  - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
+    coverpoint: [""]
+
+  - name: Svpbmt_hgatp_stage_override_rule
+    coverpoint: [""]
+
+  - name: Svpbmt_vsatp_stage_override_rule
+    coverpoint: [""]

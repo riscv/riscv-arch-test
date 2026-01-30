@@ -225,3 +225,147 @@ normative_rule_definitions:
   # permissions raises a store page-fault exception.
   - name: store_page_fault_no_w
     coverpoint: [""]
+
+  - name: Sv39_sxlen
+    coverpoint: [""]
+
+  - name: Sv39_va_sz
+    coverpoint: [""]
+
+  - name: Sv39_va_signext
+    coverpoint: [""]
+
+  - name: Sv39_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv39_sz
+    coverpoint: [""]
+
+  - name: Sv39_levels
+    coverpoint: [""]
+
+  - name: Sv39_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv39_pte_count
+    coverpoint: [""]
+
+  - name: Sv39_pte_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_align
+    coverpoint: [""]
+
+  - name: Sv39_pte_svnapot_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_svpbmt_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_future_rsv
+    coverpoint: [""]
+
+  - name: Sv39_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv39_page_sizes
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv39_LEVELS
+    coverpoint: [""]
+
+  - name: Sv39_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv48_sxlen
+    coverpoint: [""]
+
+  - name: Sv48_va_sz
+    coverpoint: [""]
+
+  - name: Sv48_requires_Sv39
+    coverpoint: [""]
+
+  - name: Sv48_va_signext
+    coverpoint: [""]
+
+  - name: Sv48_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv48_sz
+    coverpoint: [""]
+
+  - name: Sv48_levels
+    coverpoint: [""]
+
+  - name: Sv48_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv48_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv48_page_sizes
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv48_LEVELS
+    coverpoint: [""]
+
+  - name: Sv48_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv57_sxlen
+    coverpoint: [""]
+
+  - name: Sv57_va_sz
+    coverpoint: [""]
+
+  - name: Sv57_requires_Sv48
+    coverpoint: [""]
+
+  - name: Sv57_va_signext
+    coverpoint: [""]
+
+  - name: Sv57_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv57_sz
+    coverpoint: [""]
+
+  - name: Sv57_levels
+    coverpoint: [""]
+
+  - name: Sv57_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv57_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv57_page_sizes
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv57_LEVELS
+    coverpoint: [""]
+
+  - name: Sv57_PTESIZE
+    coverpoint: [""]

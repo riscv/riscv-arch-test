@@ -1,0 +1,57 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: smcdeleg_ssccfg_tandem
+    coverpoint: [""]
+
+  - name: smcdeleg_cde_en
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_sireg_cde0
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_sireg3_6
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_sireg4_5_xlen64
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_sireg_not_delegated
+    coverpoint: [""]
+
+  - name: ssccfg_missing_extension_illegal
+    coverpoint: [""]
+
+  - name: ssccfg_hyp_vs_or_vu_access_vsireg_illegal
+    coverpoint: [""]
+
+  - name: ssccfg_hyp_m_s_vsireg_illegal
+    coverpoint: [""]
+
+  - name: ssccfg_hyp_vs_access_sireg_conditional
+    coverpoint: [""]
+
+  - name: ssccfg_scountinhibit_exists
+    coverpoint: [""]
+
+  - name: ssccfg_scountinhibit_delegated_rw
+    coverpoint: [""]
+
+  - name: ssccfg_scountinhibit_nondelegated_ro
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_scountinhibit_cde0
+    coverpoint: [""]
+
+  - name: ssccfg_illegal_scountinhibit_vs_vu
+    coverpoint: [""]
+
+  - name: ssccfg_virtual_scountovf_vs_vu
+    coverpoint: [""]
+
+  - name: ssccfg_lcofi_mvip_mvien
+    coverpoint: [""]
+
+  - name: ssccfg_lcofi_hvip_hvien
+    coverpoint: [""]

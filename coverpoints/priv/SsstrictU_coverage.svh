@@ -131,6 +131,7 @@ covergroup SsstrictU_instr_cg with function sample(ins_t ins);
     cp_upperreg_fmv_rs1 : cross priv_mode_u, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_u, upperreg_fmv_rd;
     cp_amocas_odd :       cross priv_mode_u, amocas_odd;
+    cp_reserved_rm :      cross priv_mode_u, reserved_rm;
 
 endgroup
 

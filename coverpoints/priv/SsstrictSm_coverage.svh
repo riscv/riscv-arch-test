@@ -73,7 +73,7 @@ covergroup SsstrictSm_mcsr_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_csrr:         cross priv_mode_m, csrr,     csr,   nonzerord;   // CSR read of all 4096 registers
-    cp_csrw_edges: cross priv_mode_m, csrrw,    csr,   rs1_edges; // CSR write of all 0s / all 1s to all 4096 registers
+    cp_csrw_edges:   cross priv_mode_m, csrrw,    csr,   rs1_edges;   // CSR write of all 0s / all 1s to all 4096 registers
     cp_csrcs:        cross priv_mode_m, csrop,    csr,   rs1_ones;    // CSR clear and set of all bits of all registers
 endgroup
 
@@ -133,6 +133,7 @@ covergroup SsstrictSm_instr_cg with function sample(ins_t ins);
     cp_upperreg_fmv_rs1 : cross priv_mode_m, upperreg_fmv_rs1;
     cp_upperreg_fmv_rd :  cross priv_mode_m, upperreg_fmv_rd;
     cp_amocas_odd :       cross priv_mode_m, amocas_odd;
+    cp_reserved_rm :      cross priv_mode_m, reserved_rm;
 
 endgroup
 

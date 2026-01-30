@@ -34,7 +34,7 @@ class UnprivTask:
 
     xlen: int
     E_ext: bool
-    extension: str
+    testsuite: str
     testplan_dir: Path
     output_test_dir: Path
 
@@ -43,7 +43,7 @@ class UnprivTask:
 class PrivTask:
     """Task for generating privileged tests."""
 
-    extension: str
+    testsuite: str
     output_test_dir: Path
 
 
@@ -109,13 +109,13 @@ def generate_all_tests(
 
     for xlen in [32, 64]:
         for E_ext in [False, True]:
-            for extension in sorted(unpriv_ext_list):
-                if E_ext and extension not in E_EXTENSION_TESTS:
+            for testsuite in sorted(unpriv_ext_list):
+                if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, extension, testplan_dir, output_test_dir))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
 
-    for extension in sorted(priv_ext_list):
-        tasks.append(PrivTask(extension, output_test_dir))
+    for testsuite in sorted(priv_ext_list):
+        tasks.append(PrivTask(testsuite, output_test_dir))
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
@@ -132,13 +132,13 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
         generate_unpriv_extension_tests(
             xlen=task.xlen,
             E_ext=task.E_ext,
-            extension=task.extension,
+            testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(
-            extension=task.extension,
+            testsuite=task.testsuite,
             output_test_dir=task.output_test_dir,
         )
     else:

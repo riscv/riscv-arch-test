@@ -127,7 +127,7 @@ For more details on the Sail model and alternate installation methods, see the [
 
 #### 5. Container Runtime
 
-The ACTs use [`riscv-unified-db`](https://github.com/riscv-software-src/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
+The ACTs use [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
 
 To install Podman:
 
@@ -188,9 +188,9 @@ See [test_config.yaml](./config/duts/cvw/cvw-rv64gc/test_config.yaml) for an exa
 
 #### UDB Config File
 
-A [UDB](https://github.com/riscv-software-src/riscv-unified-db) configuration file is used to specify all of the implementation details for your DUT. This includes all of the supported extensions and the value of all relevant parameters.
+A [UDB](https://github.com/riscv/riscv-unified-db) configuration file is used to specify all of the implementation details for your DUT. This includes all of the supported extensions and the value of all relevant parameters.
 
-See [cvw-rv64gc.yaml](./config/duts/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv-software-src/riscv-unified-db) for more details.
+See [cvw-rv64gc.yaml](./config/duts/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv/riscv-unified-db) for more details.
 
 #### `model_test.h` Trickbox Macro Implementation
 

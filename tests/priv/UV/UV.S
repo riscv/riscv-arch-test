@@ -10,7 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, U, V, Zicsr]
-# MARCH: rv${XLEN}iv_zicsr
+# MARCH: rv${XLEN}imv_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

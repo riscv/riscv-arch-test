@@ -196,6 +196,16 @@ inst_32:
 // imm_val == 32, 
 // opcode: jalr; op1:x10; dest:x11; immval:0x20; align:0 
 TEST_JALR_OP(x5, x11, x10, 0x20, x3, 48,0)
+
+inst_33:
+// imm_val == 0, 
+// opcode: jalr; op1:x14; dest:x17; immval:0x0; align:1 
+TEST_JALR_OP(x9, x17, x14, 0x0, x3, 0,1)
+
+inst_34:
+// imm_val == 1,
+// opcode: jalr; op1:x21; dest:x6; immval:0x1; align:1 
+TEST_JALR_OP(x9, x6, x21, 0x1, x3, 4,1)
 #endif
 
 

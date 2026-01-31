@@ -135,6 +135,7 @@
     RVMODEL_BOOT
     RVMODEL_IO_INIT(T1, T2, T3)
     jr x1
+    nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
 
   .option pop
 .endm

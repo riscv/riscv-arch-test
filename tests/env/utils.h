@@ -307,6 +307,7 @@
     j 9f            ;\
     .align UNROLLSZ ;\
     .option pop     ;\
+    9:              ;\
   .endif
 
 // CSR Macros

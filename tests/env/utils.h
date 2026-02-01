@@ -167,15 +167,10 @@
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
 //-----------------------------------------------------------------------
 
+/**** fixed length LI macro ****/
 // this generates a constants using the standard addi or lui/addi sequences
 // but also handles cases that are contiguous bit masks in any position,
 // and also constants handled with the addi/lui/addi but are shifted left
-
-#ifndef UNROLLSZ
-  #define UNROLLSZ 5
-#endif
-
-/**** fixed length LI macro ****/
 #if (XLEN<64)
   #define LI(reg, imm)                                                            ;\
     .option push                                                                  ;\
@@ -291,7 +286,17 @@
   .option pop
 #endif
 
+# Alignment size for LA macro. Must be larger than the longest instruction
+# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+# On some rv64 targets, this may need to be increased to 6.
+#ifndef UNROLLSZ
+  #define UNROLLSZ 5
+#endif
+
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
+# GCC emits c.nop instructions for alignment even when rvc is off.
+# To avoid executing compressed instructions, we jump over the second alignment
+# directive after loading the address.
 #define LA(reg,val) ;\
   .ifnc(reg, X0)    ;\
     .option push    ;\
@@ -299,8 +304,10 @@
     .align UNROLLSZ ;\
     .option norvc   ;\
     la reg,val      ;\
+    j 9f            ;\
     .align UNROLLSZ ;\
     .option pop     ;\
+    9:              ;\
   .endif
 
 // CSR Macros

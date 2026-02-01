@@ -179,7 +179,6 @@ It should contain the following fields:
 - `compiler_exe`: GCC or LLVM executable for compiling tests; absolute path or executable name on PATH
 - `objdump_exe`: Optional; absolute path or executable name on PATH; if not provided, objdump will be skipped
 - `ref_model_exe`: RISC-V Sail model executable (`sail_riscv_sim`); absolute path or executable name on PATH
-- `ref_model_type`: Currently only `sail` is supported.
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
 - `dut_include_dir`: Directory containing `model_test.h`; interpreted relative to framework config file (use `.` for same directory as config file)

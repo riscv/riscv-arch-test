@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-rvi20_32
-description: RVI20-32 with all optional extensions
+name: sail-RVI20U64
+description: RVI20U64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -18,7 +18,6 @@ implemented_extensions:
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
-  - { name: Zcf, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
@@ -43,20 +42,20 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # Sm params
-  MXLEN: 32
+  MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x24
+  ARCH_ID_VALUE: 0x1
   MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x100
-  VENDOR_ID_BANK: 0xC
-  VENDOR_ID_OFFSET: 0x2
+  IMP_ID_VALUE: 0x0
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # check
-  MISALIGNED_SPLIT_STRATEGY: custom # We fetch the lower and upper parts with two XLEN-sized fetches and merge them
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
@@ -69,10 +68,10 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 32
+  MTVAL_WIDTH: 64
   CONFIG_PTR_ADDRESS: 0
-  PMA_GRANULARITY: 3 # Not explicit in config
-  PHYS_ADDR_WIDTH: 32
+  PMA_GRANULARITY: 3
+  PHYS_ADDR_WIDTH: 57
   M_MODE_ENDIANNESS: dynamic
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw

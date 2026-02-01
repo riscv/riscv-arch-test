@@ -115,7 +115,7 @@
   },
   "platform": {
     "vendorid": 0,
-    "archid": 0,
+    "archid": 1,
     "impid": 0,
     "hartid": 0,
     "reset_vector": 4096,

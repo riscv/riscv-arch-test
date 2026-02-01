@@ -1,5 +1,5 @@
 {
-  "$schema": "/home/jcarlin/riscv-projects/sail-riscv/build/sail_riscv_config_schema.json",
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     "E": false,

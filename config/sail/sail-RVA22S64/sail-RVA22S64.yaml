@@ -4,7 +4,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: sail-RVA22S64
-description: RVI20S64 with only required extensions
+description: RVA22S64 with only required extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }

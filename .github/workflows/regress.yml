@@ -110,6 +110,20 @@ jobs:
       - name: Compile and run tests on Sail
         run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make spike --jobs $(nproc)
 
+      - name: Upload rv64 logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spike-rv64-logs
+          path: work/spike-rv64-max/logs
+
+      - name: Upload rv32 logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spike-rv32-logs
+          path: work/spike-rv32-max/logs
+
   vector-testgen:
     name: Vector Testgen
     runs-on: ubuntu-latest

@@ -83,7 +83,8 @@ def run_act(
             }
         )
 
-    # TODO: Add a check that all configs use the same header files/compiler/etc. Otherwise error out or don't use common tests
+    # Validate configurations
+    validate_configs(configs)
 
     # Generate Makefiles
     generate_makefiles(
@@ -97,6 +98,75 @@ def run_act(
     )
     print(f"Makefiles generated in {workdir}")
     print(f"Run make -C {workdir} compile to build all tests.")
+
+
+def validate_configs(configs: list[ConfigData]) -> None:
+    """Validate that configurations are consistent."""
+    configs_by_xlen: dict[int, list[ConfigData]] = {}
+
+    # Group configs by XLEN
+    for config_data in configs:
+        xlen = config_data["xlen"]
+        if xlen not in configs_by_xlen:
+            configs_by_xlen[xlen] = []
+        configs_by_xlen[xlen].append(config_data)
+
+    # Validate each XLEN group
+    for xlen, xlen_configs in configs_by_xlen.items():
+        if len(xlen_configs) < 2:
+            continue
+
+        ref_data = xlen_configs[0]
+        ref_config = ref_data["config"]
+        ref_model_header = ref_config.dut_include_dir / "model_test.h"
+        ref_linker_script = ref_config.linker_script
+
+        for config_data in xlen_configs[1:]:
+            config = config_data["config"]
+
+            # Validate compiler_exe
+            if ref_config.compiler_exe != config.compiler_exe:
+                raise ValueError(
+                    f"Inconsistent compiler_exe for XLEN {xlen}: "
+                    f"{ref_config.name} uses {ref_config.compiler_exe}, "
+                    f"{config.name} uses {config.compiler_exe}"
+                )
+
+            # Validate objdump_exe
+            if ref_config.objdump_exe != config.objdump_exe:
+                raise ValueError(
+                    f"Inconsistent objdump_exe for XLEN {xlen}: "
+                    f"{ref_config.name} uses {ref_config.objdump_exe}, "
+                    f"{config.name} uses {config.objdump_exe}"
+                )
+
+            # Validate ref_model_exe
+            if ref_config.ref_model_exe != config.ref_model_exe:
+                raise ValueError(
+                    f"Inconsistent ref_model_exe for XLEN {xlen}: "
+                    f"{ref_config.name} uses {ref_config.ref_model_exe}, "
+                    f"{config.name} uses {config.ref_model_exe}"
+                )
+
+            # Validate linker_script content
+            if ref_linker_script.read_bytes() != config.linker_script.read_bytes():
+                raise ValueError(
+                    f"Inconsistent linker_script content for XLEN {xlen} between "
+                    f"{ref_config.name} and {config.name}"
+                )
+
+            # Validate model_test.h content
+            model_header = config.dut_include_dir / "model_test.h"
+            if not ref_model_header.exists():
+                 # Force read to raise FileNotFoundError if missing, as implied by requirement
+                 ref_model_header.read_bytes()
+            
+            if ref_model_header.read_bytes() != model_header.read_bytes():
+                raise ValueError(
+                    f"Inconsistent model_test.h content for XLEN {xlen} between "
+                    f"{ref_config.name} and {config.name}"
+                )
+
 
 
 def main() -> None:

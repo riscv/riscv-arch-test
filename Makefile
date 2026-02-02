@@ -5,7 +5,7 @@
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
 # REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
-CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
+CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
 REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rv32gc-clang/test_config.yaml config/ref/sail-rv64gc-clang/test_config.yaml
@@ -48,6 +48,26 @@ endif
 
 .DEFAULT_GOAL := elfs
 
+
+##### Spike test targets #####
+.PHONY: spike spike-rv32 spike-rv64
+
+spike: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
+SPIKE_ISA := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+spike: elfs
+	@exit_code=0; \
+	./run_tests.py "spike --misaligned --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "spike --misaligned --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+spike-rv32: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml
+spike-rv32: elfs
+	./run_tests.py "spike --misaligned --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs
+
+spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
+spike-rv64: elfs
+	./run_tests.py "spike --misaligned --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles-dut Makefile
@@ -60,7 +80,10 @@ generate-makefiles-dut: # too many dependencies to track; always regenerate Make
 
 .PHONY: clean
 clean: clean-tests clean-ref
-	rm -rf $(WORKDIR)
+	@if [ -d $(WORKDIR) ]; then \
+		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR) -type d -empty -delete; \
+	fi
 
 ###### Test generation targets ######
 .PHONY: covergroupgen

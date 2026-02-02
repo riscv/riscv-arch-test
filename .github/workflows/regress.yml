@@ -101,6 +101,9 @@ jobs:
           path: ${{ github.workspace }}/spike
           key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
 
+      - name: Add Spike to PATH
+        run: echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
+
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 

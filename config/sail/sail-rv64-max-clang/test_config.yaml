@@ -1,4 +1,4 @@
-name: sail-rv64-max
+name: sail-rv64-max-clang
 compiler_exe: clang # executable name on $PATH or full path to executable
 objdump_exe: llvm-objdump # executable name on $PATH or full path to executable, optional
 ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executable

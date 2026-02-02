@@ -65,11 +65,42 @@ jobs:
           sudo mkdir -p /usr/local
           curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
 
+      - name: Get Latest Spike Commit
+        run: |
+          SPIKE_HASH=$(git ls-remote https://github.com/riscv/riscv-isa-sim.git HEAD | awk '{ print $1}')
+          echo "SPIKE_HASH=$SPIKE_HASH" >> "$GITHUB_ENV"
+
+      - name: Restore cached Spike
+        id: cache-spike-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/spike
+          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
+
+      - name: Install Spike
+        if: steps.cache-spike-restore.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/riscv/riscv-isa-sim.git
+          cd riscv-isa-sim
+          mkdir build
+          cd build
+          ../configure --prefix=$GITHUB_WORKSPACE/spike
+          make -j$(nproc)
+          make install
+
+      - name: Save cached Spike
+        if: steps.cache-spike-restore.outputs.cache-hit != 'true'
+        id: cache-spike-save
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
+
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Compile and run tests on Sail
-        run: DOCKER=1 EXTENSIONS= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make spike --jobs $(nproc)
+        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make spike --jobs $(nproc)
 
   vector-testgen:
     name: Vector Testgen

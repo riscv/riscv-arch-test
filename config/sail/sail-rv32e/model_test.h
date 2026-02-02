@@ -1,1 +1,1 @@
-../sail-rv64gc/model_test.h
+../../../tests/env/sail_test.h

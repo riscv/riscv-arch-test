@@ -35,7 +35,7 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     failed = result.returncode != 0
 
     if failed:
-        print(f"Test {elf_path.name} failed with exit code {result.returncode}. See log: {log_file}")
+        print(f"\tTest {elf_path.name} failed with exit code {result.returncode}. See log: {log_file}")
 
     return failed
 
@@ -65,15 +65,16 @@ def main() -> int:
 
     failed = 0
 
+    print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
     with Pool(args.jobs) as pool:
         for fail_status in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
 
     if failed:
-        print(f"{failed} out of {len(elf_files)} tests failed.")
+        print(f"\t{failed} out of {len(elf_files)} tests failed.")
     else:
-        print(f"All {len(elf_files)} tests passed.")
+        print(f"\tAll {len(elf_files)} tests passed.")
 
     return 1 if failed else 0
 

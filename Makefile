@@ -48,6 +48,17 @@ endif
 
 .DEFAULT_GOAL := elfs
 
+
+##### Spike test targets #####
+.PHONY: spike spike-rv32 spike-rv64
+
+spike: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
+spike: elfs
+	@exit_code=0; \
+	./run_tests.py "spike --misaligned --isa=rv64gc" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "spike --misaligned --isa=rv32gc" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles-dut Makefile

@@ -6,9 +6,9 @@
 // It defines which extensions are enabled for that config.
 
 // Define XLEN, used in covergroups
-`define XLEN64
-`define FLEN64
-`define VLEN512
+`define XLEN32
+`define FLEN128
+`define VLEN1024
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)

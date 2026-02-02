@@ -57,6 +57,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
+
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 

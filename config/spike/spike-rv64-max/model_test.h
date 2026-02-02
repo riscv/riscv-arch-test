@@ -41,26 +41,40 @@
 
 ##### IO #####
 
+# Example UART implementation.
+# Expects a PC16550-compatible UART.
+# Change these addresses to match your memory map
+.EQU UART_BASE_ADDR, 0x10000000
+.EQU UART_THR, (UART_BASE_ADDR + 0)
+.EQU UART_LCR, (UART_BASE_ADDR + 3)
+.EQU UART_LSR, (UART_BASE_ADDR + 5)
+
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+#define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
+  uart_init:                ;\
+    li _R1, UART_LCR         ; /* Load address of UART LCR */    \
+    li _R2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
+    sb _R2, 0(_R1)           ; \
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-# TODO: Not printing successfully
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)               \
 1:                           ;                       \
   lbu _R1, 0(_STR_PTR)        ;/* Load byte */        \
   beqz _R1, 3f                ;/* Exit if null */     \
-2: /* htif_putc */           ;                      \
-  la _R2, tohost       ;   \
-  /* device=1 (terminal), cmd=1 (output) */ \
-  li _R3, 0x0101000000000000 ;\
-  or _R3, _R1, _R3           ;/* Combine char with cmd */ \
-  sw _R3, 0(_R2)             ;/* Write to tohost */  \
+2: /* uart_putc */           ;                      \
+  li _R2, UART_LSR ;\
+  4: /* uart_putc_wait_busy */ \
+    lbu _R3, 0(_R2) ;\
+    andi _R3, _R3, 0x20 ;/* check line status register bit 5 */ \
+    beqz _R3, 4b ;/* wait until Transmit Holding Register Empty is set */ \
+  /* uart_putc_send */ \
+    li _R2, UART_THR ; /* transmit character */ \
+    sb _R1, 0(_R2) ;\
   addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
   j 1b                       ;/* Loop */             \
 3:

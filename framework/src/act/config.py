@@ -11,7 +11,7 @@ import shutil
 import subprocess
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator
 from ruamel.yaml import YAML
@@ -129,7 +129,16 @@ def load_config(config_file: Path) -> Config:
     return config
 
 
-def validate_configs(configs: list[Any]) -> None:
+class ConfigData(TypedDict):
+    """Type definition for configuration data dictionary."""
+
+    config: Config
+    xlen: int
+    e_ext: bool
+    selected_tests: dict[str, Any]
+
+
+def validate_configs(configs: list[ConfigData]) -> None:
     """Validate that configurations are consistent."""
     # Store the reference configuration for each (XLEN, E-ext) pair (first one encountered)
     ref_configs: dict[tuple[int, bool], Config] = {}
@@ -153,31 +162,35 @@ def validate_configs(configs: list[Any]) -> None:
         # Validate compiler_exe
         if ref_config.compiler_exe != config.compiler_exe:
             raise ValueError(
-                f"Inconsistent compiler_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"Inconsistent compiler_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.compiler_exe}, "
-                f"{config.name} uses {config.compiler_exe}"
+                f"{config.name} uses {config.compiler_exe}. "
+                "All configs must have the same compiler_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate objdump_exe
         if ref_config.objdump_exe != config.objdump_exe:
             raise ValueError(
-                f"Inconsistent objdump_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"Inconsistent objdump_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.objdump_exe}, "
-                f"{config.name} uses {config.objdump_exe}"
+                f"{config.name} uses {config.objdump_exe}. "
+                "All configs must have the same objdump_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate ref_model_exe
         if ref_config.ref_model_exe != config.ref_model_exe:
             raise ValueError(
-                f"Inconsistent ref_model_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"Inconsistent ref_model_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.ref_model_exe}, "
-                f"{config.name} uses {config.ref_model_exe}"
+                f"{config.name} uses {config.ref_model_exe}. "
+                "All configs must have the same ref_model_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate linker_script content
         if ref_linker_script.read_bytes() != config.linker_script.read_bytes():
             raise ValueError(
-                f"Inconsistent linker_script content for XLEN {xlen}, E-ext {e_ext} between {ref_config.name} and {config.name}"
+                f"Inconsistent linker_script content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
+                "All configs must have the same linker_script content for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate model_test.h content
@@ -185,5 +198,6 @@ def validate_configs(configs: list[Any]) -> None:
 
         if ref_model_header.read_bytes() != model_header.read_bytes():
             raise ValueError(
-                f"Inconsistent model_test.h content for XLEN {xlen}, E-ext {e_ext} between {ref_config.name} and {config.name}"
+                f"Inconsistent model_test.h content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
+                "All configs must have the same model_test.h content for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )

@@ -9,11 +9,10 @@
 
 import importlib.resources
 from pathlib import Path
-from typing import TypedDict
 
 import pyjson5
 
-from act.config import Config
+from act.config import Config, ConfigData
 from act.parse_test_constraints import TestMetadata
 
 # Makefile templates
@@ -433,15 +432,6 @@ def gen_coverage_targets(
         coverage_reports.append(overall_summary)
 
     return ("\n".join(makefile_lines), coverage_reports)
-
-
-class ConfigData(TypedDict):
-    """Type definition for configuration data dictionary."""
-
-    config: Config
-    xlen: int
-    e_ext: bool
-    selected_tests: dict[str, TestMetadata]
 
 
 def generate_makefiles(

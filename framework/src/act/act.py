@@ -12,8 +12,8 @@ from typing import Annotated
 
 import typer
 
-from act.config import load_config, validate_configs
-from act.makefile_gen import ConfigData, generate_makefiles
+from act.config import ConfigData, load_config, validate_configs
+from act.makefile_gen import generate_makefiles
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import get_common_tests, select_tests
@@ -84,7 +84,9 @@ def run_act(
         )
 
     # Validate configurations
-    validate_configs(configs)
+    # If there are multiple configurations, validate that they are consistent with each other so that the common tests work correctly.
+    if len(configs) > 1:
+        validate_configs(configs)
 
     # Generate Makefiles
     generate_makefiles(

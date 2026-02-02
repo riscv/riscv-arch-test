@@ -38,7 +38,6 @@ implemented_extensions:
   - { name: Za64rs, version: "= 1.0.0" }
   - { name: Zawrs, version: "= 1.0.1" }
   - { name: Zfa, version: "= 1.0.0" }
-  - { name: Zfhmin, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
@@ -63,7 +62,6 @@ implemented_extensions:
   - { name: Smpmp, version: "= 1.13.0" }
   - { name: Smhpm, version: "= 1.13.0" }
 
-    # TODO: Re-enable when https://github.com/riscv/riscv-unified-db/issues/1217 is fixed
 params:
   # A params
   MISALIGNED_AMO: false

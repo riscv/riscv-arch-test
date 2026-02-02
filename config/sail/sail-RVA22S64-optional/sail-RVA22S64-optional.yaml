@@ -64,7 +64,6 @@ implemented_extensions:
   - { name: Zksed, version: "= 1.0.0" }
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkr, version: "= 1.0.0" }
-  - { name: Sha, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
   - { name: Zve64d, version: "= 1.0.0" }
   - { name: Zve64f, version: "= 1.0.0" }
@@ -80,6 +79,7 @@ implemented_extensions:
   - { name: Sv48, version: "= 1.12.0" }
   - { name: Sv57, version: "= 1.12.0" }
   - { name: Svnapot, version: "= 1.0.0" }
+  - { name: Sha, version: "= 1.0.0" }
   - { name: H, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Shcounterenw, version: "= 1.0.0" }

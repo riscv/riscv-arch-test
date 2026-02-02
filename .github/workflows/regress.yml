@@ -27,7 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        config: [rv32gc, rv64gc, rv32imc]
+        config:
+          [
+            sail/sail-RVI20U32,
+            sail/sail-RVI20U64,
+            sail/sail-rv32-max,
+            sail/sail-rv64-max,
+          ]
 
     steps:
       - name: Checkout code
@@ -48,7 +54,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: DOCKER=1 CONFIG_FILES="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
+        run: DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   vector-testgen:
     name: Vector Testgen

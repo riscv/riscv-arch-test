@@ -28,15 +28,16 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 class TestPlanData:
     """Data structure for information on a single instruction parsed from a testplan."""
 
+    instr_name: str
     instr_type: str
     rv32: bool
     rv64: bool
     coverpoints: list[str]
 
 
-def read_testplan(testplan_path: Path) -> dict[str, TestPlanData]:
-    """Read a testplan and return a dictionary of instructions and their associated data (type, coverpoints, etc.)."""
-    instructions: dict[str, TestPlanData] = {}
+def read_testplan(testplan_path: Path) -> list[TestPlanData]:
+    """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
+    instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -62,5 +63,7 @@ def read_testplan(testplan_path: Path) -> dict[str, TestPlanData]:
                     ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
                         key = key + "_" + value
                     coverpoints.append(key)
-            instructions[instr] = TestPlanData(instr_type=instr_type, rv32=rv32, rv64=rv64, coverpoints=coverpoints)
+            instructions.append(
+                TestPlanData(instr_name=instr, instr_type=instr_type, rv32=rv32, rv64=rv64, coverpoints=coverpoints)
+            )
     return instructions

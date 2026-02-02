@@ -1,0 +1,8 @@
+name: sail-rv32-max-clang
+compiler_exe: clang # executable name on $PATH or full path to executable
+objdump_exe: llvm-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executable
+ref_model_type: sail # sail or spike
+udb_config: sail-rv32-max.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific model_test.h header

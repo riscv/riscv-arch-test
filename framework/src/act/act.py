@@ -151,22 +151,19 @@ def validate_configs(configs: list[ConfigData]) -> None:
             # Validate linker_script content
             if ref_linker_script.read_bytes() != config.linker_script.read_bytes():
                 raise ValueError(
-                    f"Inconsistent linker_script content for XLEN {xlen} between "
-                    f"{ref_config.name} and {config.name}"
+                    f"Inconsistent linker_script content for XLEN {xlen} between {ref_config.name} and {config.name}"
                 )
 
             # Validate model_test.h content
             model_header = config.dut_include_dir / "model_test.h"
             if not ref_model_header.exists():
-                 # Force read to raise FileNotFoundError if missing, as implied by requirement
-                 ref_model_header.read_bytes()
-            
+                # Force read to raise FileNotFoundError if missing, as implied by requirement
+                ref_model_header.read_bytes()
+
             if ref_model_header.read_bytes() != model_header.read_bytes():
                 raise ValueError(
-                    f"Inconsistent model_test.h content for XLEN {xlen} between "
-                    f"{ref_config.name} and {config.name}"
+                    f"Inconsistent model_test.h content for XLEN {xlen} between {ref_config.name} and {config.name}"
                 )
-
 
 
 def main() -> None:

@@ -13,7 +13,7 @@ REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64
 
 WORKDIR     ?= work
 WORKDIR_REF ?= work-ref
-EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,Zca,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
@@ -60,7 +60,10 @@ generate-makefiles-dut: # too many dependencies to track; always regenerate Make
 
 .PHONY: clean
 clean: clean-tests clean-ref
-	rm -rf $(WORKDIR)
+	@if [ -d $(WORKDIR) ]; then \
+		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
+		find $(WORKDIR) -type d -empty -delete; \
+	fi
 
 ###### Test generation targets ######
 .PHONY: covergroupgen

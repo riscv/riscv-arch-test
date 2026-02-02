@@ -50,6 +50,27 @@ jobs:
       - name: Compile and run tests on Sail
         run: DOCKER=1 CONFIG_FILES="config/ref/sail-${{ matrix.config }}/test_config.yaml" make --jobs $(nproc)
 
+  spike:
+    name: Spike Regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install sail-riscv model
+        run: |
+          sudo mkdir -p /usr/local
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+
+      - name: Install RISC-V GCC toolchain
+        run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
+
+      - name: Compile and run tests on Sail
+        run: DOCKER=1 EXTENSIONS= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make spike --jobs $(nproc)
+
   vector-testgen:
     name: Vector Testgen
     runs-on: ubuntu-latest

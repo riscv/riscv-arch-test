@@ -16,7 +16,7 @@ Usage:
 
 Defaults:
     json: coverpoints/norm/norm-rules.json
-    yaml: coverpoints/norm/yaml
+    yaml: coverpoints/norm
     out:  ctp/src/norm/
 
 The script writes an .adoc file containing a table with columns:
@@ -303,6 +303,10 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
         lines.append('')
 
     lines.extend(['|===', ''])
+    # Append link to corresponding parameters table if base is provided
+    if base:
+        # norm files live in src/norm and parameters in src/param, so use ../param
+        lines.extend([f'include::../param/{base}_parameters.adoc[]', ''])
     outpath.parent.mkdir(parents=True, exist_ok=True)
     outpath.write_text('\n'.join(lines), encoding='utf-8')
 
@@ -486,7 +490,7 @@ def main() -> None:
     # --always-fetch is requested
     canonical_json_url = 'https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
     p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
-    p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
+    p.add_argument('--yaml', default='coverpoints/norm', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)')
     p.add_argument('--out', default='ctp/src/norm/', help='Output directory for ASCIIDoc files (default: ctp/src/norm/)')
     p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
     p.add_argument('--always-fetch', action='store_true', help='Always fetch the canonical remote JSON and update local cache even when --json is a local path')

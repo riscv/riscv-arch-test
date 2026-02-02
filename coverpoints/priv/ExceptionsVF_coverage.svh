@@ -12,7 +12,7 @@
 
 `define COVER_EXCEPTIONSVF
 
-covergroup ExceptionsVF_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsVF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
@@ -60,5 +60,5 @@ endgroup
 
 
 function void exceptionsvf_sample(int hart, int issue, ins_t ins);
-    ExceptionsVF_exceptions_cg.sample(ins);
+    ExceptionsVF_cg.sample(ins);
 endfunction

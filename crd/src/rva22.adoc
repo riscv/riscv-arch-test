@@ -1,0 +1,31 @@
+
+== RVA22 Certificate
+
+The RVA22 Certificate covers 64-bit basic applications-class processors with supervisor and user mode compatible with the https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64] profile.
+
+=== Extensions
+
+[[t-RVA22-extensions]]
+.RVA22 Extensions
+[cols="1, 1, 1, 5" options=header]
+|===
+|Extension|Version|Required|Definition
+|I|2.1|Mandatory|I Base Integer ISA (RV64I)
+|...TODO|||
+|===
+
+
+=== Parameters
+
+[[t-RVA22-parameters]]
+.RVA22 Parameters
+[cols="2, 1, 1, 4" options=header]
+|===
+|Parameters|Dependency|Supported Values|Definition
+|MXLEN|n/a|64|Integer register width (privilege mode not specified).
+|M_MODE_ENDIANNESS|n/a|little|Endianness.  Applies to all tests (privilege mode not specified).
+|MISALIGNED_LDST|n/a|True|True: test non-atomic misaligned loads and stores to main memory; False: do not test misaligned loads and stores.
+|...TODO|||
+|===
+
+All other parameters are OUT-OF-SCOPE for RVA22 certification.

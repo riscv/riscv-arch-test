@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSF
-covergroup ExceptionsF_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsF_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -25,11 +25,6 @@ covergroup ExceptionsF_exceptions_cg with function sample(ins_t ins);
         bins fs_initial = {2'b01};
         bins fs_clean   = {2'b10};
         bins fs_dirty   = {2'b11};
-    }
-    frm_illegal: coverpoint ins.prev.csr[12'h003][7:5] {
-        bins reserved_5 = {3'b101};
-        bins reserved_6 = {3'b110};
-        bins reserved_7 = {3'b111};
     }
     frm_legal: coverpoint ins.prev.csr[12'h003][7:5] {
         bins legal_frm = {3'b000, 3'b001, 3'b010, 3'b011, 3'b100};
@@ -69,18 +64,6 @@ covergroup ExceptionsF_exceptions_cg with function sample(ins_t ins);
         `endif
     }
 
-    instrs_dynrm: coverpoint ins.current.insn {
-        wildcard bins fadd         = {32'b00000_??_?????_?????_111_?????_1010011};
-        wildcard bins fsub         = {32'b00001_??_?????_?????_111_?????_1010011};
-        wildcard bins fmul         = {32'b00010_??_?????_?????_111_?????_1010011};
-        wildcard bins fdiv         = {32'b00011_??_?????_?????_111_?????_1010011};
-        wildcard bins fcvt_x_f     = {32'b11000_??_?????_?????_111_?????_1010011};
-        wildcard bins fcvt_f_x     = {32'b11010_??_?????_?????_111_?????_1010011};
-        wildcard bins fcvt_f_f     = {32'b01000_??_?????_?????_111_?????_1010011};
-        wildcard bins fmadd        = {32'b?????_??_?????_?????_111_?????_1000011};
-        wildcard bins fsqrt        = {32'b01011_??_00000_?????_111_?????_1010011};
-        wildcard bins fround       = {32'b01000_??_00100_?????_111_?????_1010011};
-    }
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
     // cp_mstatus_fs_csr_write:  redundant, covered by cp_mstatus_fs_illegal_instr
@@ -90,7 +73,7 @@ endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);
     //$display("Mstatus FS: %b, frmIllegal: %b, op: %b, fmrBits: %b, imm: %b", ins.current.csr[12'h300][14:13], ins.current.csr[12'h003][7:5],  ins.current.insn[6:0], ins.current.insn[14:12], ins.current.insn[31:27]);
-    ExceptionsF_exceptions_cg.sample(ins);
+    ExceptionsF_cg.sample(ins);
 
 
 endfunction

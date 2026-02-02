@@ -20,7 +20,7 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - run: git submodule update --init ctp/docs-resources
+      - run: git submodule update --init ctp/docs-resources crd/docs-resources external/riscv-unified-db
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
@@ -68,7 +68,7 @@ jobs:
 
       - name: Get current date
         run: |
-          echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Create Release
@@ -80,8 +80,7 @@ jobs:
           # generate_release_notes: true
           tag_name: ctp-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
           name: "CTP Release ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
-          body: |
-            This release was created by: ${{ github.event.sender.login }}
+          body: "Automated release of the CTP built on ${{ env.CURRENT_DATE }} from commit ${{ env.SHORT_SHA }}."
           files: |
             ctp.pdf
             ctp.html

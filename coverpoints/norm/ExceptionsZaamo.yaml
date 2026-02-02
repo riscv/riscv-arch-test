@@ -1,0 +1,10 @@
+normative_rule_definitions:
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: [""]
+
+  - name: amo_alignment
+    coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
+
+  - name: amo_misaligned_atomicity_granule
+    coverpoint: [""]

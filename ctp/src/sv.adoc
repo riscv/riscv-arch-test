@@ -5,9 +5,9 @@
 
 [[t-Svbare-coverpoints]]
 .Svbare Coverpoints
-,===
-//include::{testplansdir}/Svbare.adoc[]
-,===
+//,===
+//include::{testplansdir}/Svbare
+//,===
 
 ==== Sv
 
@@ -16,8 +16,15 @@
 [[t-Sv-coverpoints]]
 .Sv Coverpoints
 ,===
-//include::{testplansdir}/Sv32.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1688601426#gid=1688601426[Google Sheet Testplan]
 ,===
+
+include::norm/Sv_norm_rules.adoc[]
+
+*UDB Parameters:*
+
+* REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
+* TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
 
 ==== SvPMP VirtMem + PMP
@@ -25,7 +32,7 @@
 [[t-SvPMP-coverpoints]]
 .SvPMP Coverpoints
 ,===
-//include::{testplansdir}/SvPMP.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=726223656#gid=726223656[Google Sheet Testplan]
 ,===
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
@@ -35,7 +42,7 @@
 [[t-SvZicbo-coverpoints]]
 .SvZicbo Coverpoints
 ,===
-//include::{testplansdir}/SvZicbo.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429[Google Sheet Testplan]
 ,===
 
 ==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
@@ -45,7 +52,7 @@
 [[t-SvPMPZicbo-coverpoints]]
 .SvPMPZicbo Coverpoints
 ,===
-//include::{testplansdir}/SvPMPZicbo.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846[Google Sheet Testplan]
 ,===
 
 
@@ -57,16 +64,15 @@ The Svinval extension defines instructions to update memory management tables fo
 [[t-Svinval-coverpoints]]
 .Svinval Coverpoints
 ,===
-//include::{testplansdir}/Svinval.adoc[]
-,===
 https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lXH5g/edit?gid=1987812700#gid=1987812700[Google Sheet Testplan]
+,===
 
 ==== Svade A/D Bit Page Fault Exception
 
 [[t-Svade-coverpoints]]
 .Svade Coverpoints
 ,===
-//include::{testplansdir}/Svade.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1346750896#gid=1346750896[Google Sheet Testplan]
 ,===
 
 ==== Svadu A/D Bit Hardware Update
@@ -74,7 +80,7 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 [[t-Svadu-coverpoints]]
 .Svadu Coverpoints
 ,===
-//include::{testplansdir}/Svadu.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1484908158#gid=1484908158[Google Sheet Testplan]
 ,===
 
 ==== Svadu A/D Bit Hardware Update + PMP
@@ -82,7 +88,7 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 [[t-SvaduPMP-coverpoints]]
 .SvaduPMP Coverpoints
 ,===
-//include::{testplansdir}/SvaduPMP.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1568813008#gid=1568813008[Google Sheet Testplan]
 ,===
 
 ==== Svpbmt Page-Based Memory Types
@@ -90,7 +96,7 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 [[t-Svpbmt-coverpoints]]
 .Svpbmt Coverpoints
 ,===
-//include::{testplansdir}/Svpbmt.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes
@@ -98,5 +104,5 @@ https://docs.google.com/spreadsheets/d/1M78FrWvnva08vg-_5ejIkTZBhW1z5mW7NkYjl5lX
 [[t-Svnapot-coverpoints]]
 .Svnapot Coverpoints
 ,===
-//include::{testplansdir}/Svnapot.adoc[]
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=375458051#gid=375458051[Google Sheet Testplan]
 ,===

@@ -115,9 +115,9 @@ TESTPLANS := $(wildcard ../testplans/*)
 testplans: $(TESTPLANS)
 	@echo "Copying test plans..."
 	@if [ -d ../testplans ]; then \
-		mkdir -p $(BUILD_DIR); \
-		rm -rf $(BUILD_DIR)/testplans; \
-		../generators/ctp/transpose_csv.py ../testplans $(BUILD_DIR)/testplans 10; \
+		rm -rf src/testplans; \
+        mkdir -p build; \
+		../generators/ctp/transpose_csv.py ../testplans src/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi
@@ -125,7 +125,9 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/yaml --out $(SRC_DIR)/norm --report mismatch_report.txt
+	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/ --out $(SRC_DIR)/norm --report mismatch_report.txt
+	@echo "Generating parameter rule tables...."
+	../generators/ctp/generate_param_table.py --yaml ../coverpoints/param --udb ../external/riscv-unified-db/spec/std/isa/param --out $(SRC_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

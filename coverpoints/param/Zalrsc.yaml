@@ -1,0 +1,13 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: LRSC_RESERVATION_STRATEGY
+    coverpoint: ["sc_w/cp_custom_sc_addresses"]
+    effect: ["Expected results"]
+  - name: LRSC_FAIL_ON_NON_EXACT_LRSC
+    coverpoint: ["sc_d/cg_cp_custom_sc_lrsc, sc_w/cp_custom_sc_addresses"]
+    effect: ["Expected results"]
+  - name: LRSC_FAIL_ON_VA_SYNONYM
+    coverpoint:
+      ["Not tested because spec does not require any specific behavior"]
+    effect: [""]

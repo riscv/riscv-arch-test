@@ -2,16 +2,8 @@
 === A Atomic Extension
 
 The A extension is subdivided into Zaamo and Zalrsc.
- <<t-A-normative-rules>> lists the normative rules in the RV{32/64}A specification applicable to all instructions, and the unprivileged coverpoints that exercise them.
 
-[[t-A-normative-rules]]
-.A Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|Unpriv Section|Normative Rule|Coverpoints
-|===
-
-<<t-A-priv-normative-rules>> summarizes normative rules relating to atomic instructions affecting privileged behavior.
+This section exercises unprivileged tests that will not trap.  Privileged tests are in other sections, such as ExceptionsZaamo.
 
 ==== Zaamo Atomic Memory Operations Extension
 
@@ -21,14 +13,10 @@ The A extension is subdivided into Zaamo and Zalrsc.
 .Zaamo Instruction Coverpoints
 include::{testplansdir}/Zaamo.adoc[]
 
-[[t-Zaamo-normative-rules]]
-.Zaamo Normative Rules
-[cols="1, 4, 2" options=header]
-|===
+include::norm/Zaamo_norm_rules.adoc[]
 
-|===
-
-*UDB Parameters:* None. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>), but not Zaamo.
+[NOTE]
+This test suite is unprivileged and does not perform misaligned accesses. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>).
 
 ==== Zalrsc Load-Reserved / Store-Conditional Extension
 
@@ -52,24 +40,11 @@ include::{testplansdir}/Zalrsc.adoc[]
 |cp_custom_sc_after_store|4|store followed by sc
 |cp_custom_sc_after_load|6|load followed by sc
 |cp_custom_sc_lrsc|2|lr followed by sc that fails and passes
-|cp_custom_sc_address|16|lr followed by sc at address of 0, 4, 8, ..., 60 offset from lr address
+|cp_custom_sc_address|32*2|lr followed by sc at address of 0, 4, 8, ..., 120 offset from lr address.  For RV64, exercise both lr.d and lr.w
 |===
 
-
-[[t-Zalrsc-normative-rules]]
-.Zalrsc Normative Rules
-[cols="1, 4, 2" options=header]
-|===
-|===
-
+include::norm/Zalrsc_norm_rules.adoc[]
 
 TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as
 described in <<sec:lrscseq>>, are also permitted.
-
-*UDB Parameters:*
-
-* LRSC_RESERVATION_STRATEGY affects the expected results of sc_w/cp_custom_sc_address.
-* LRSC_FAIL_ON_NON_EXACT_LRSC affects the expected results of sc_d/cg_cp_custom_sc_lrsc and sc_w/cp_custom_sc_address.
-* The LRSC_MISALIGNED_BEHAVIOR parameter affects the expected results of ExceptionsZalrsc/cp_{load/store}_address_misaligned (<<t-ExceptionsZalrsc-coverpoints>>).
-* LRSC_FAIL_ON_VA_SYNONYM is not tested.

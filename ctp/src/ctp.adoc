@@ -40,7 +40,7 @@ endif::[]
 :ne: &#8800;
 :approx: &#8776;
 :inf: &#8734;
-:testplansdir: ../testplans
+:testplansdir: testplans
 
 // :autofit-option:
 // :base-font-size-min: 0
@@ -63,12 +63,14 @@ include::cert.adoc[]
 include::profiles.adoc[]
 include::strategy.adoc[]
 include::req.adoc[]
-include::unpriv.adoc[]
-include::priv.adoc[]
-include::nonisa.adoc[]
 include::trickbox.adoc[]
 include::coverage.adoc[]
 include::ref.adoc[]
 include::framework.adoc[]
 include::todo.adoc[]
+
+include::unpriv.adoc[]
+include::priv.adoc[]
+include::nonisa.adoc[]
+include::params.adoc[]
 include::examples.adoc[]

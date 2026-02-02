@@ -3,8 +3,6 @@
 
 <<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.
 
-[[t-I-coverpoints]]
-.I Instruction Coverpoints
 include::{testplansdir}/I.adoc[]
 
 [[t-I-modified-coverpoints]]
@@ -22,7 +20,7 @@ include::{testplansdir}/I.adoc[]
 |cp_custom_fence|3|Test that fence, fence rw,rw, and fence.tso all execute without trapping.
 |===
 
-<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that exercise them.  Privileged coverpoints related to integer instructions are described in the relevant parts of <<Privileged Test Plan>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
+<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that exercise them.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
 
 * Opcodes (cp_asm_count)
 * All Source and Destination Registers (cp_rs1, cp_rs2, cp_rd)
@@ -34,5 +32,3 @@ include::norm/I_norm_rules.adoc[]
 Note that standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
 
 include::norm/rv64_norm_rules.adoc[]
-
-*UDB Parameters:* None.

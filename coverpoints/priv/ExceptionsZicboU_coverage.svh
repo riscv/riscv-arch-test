@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZICBOU
-covergroup ExceptionsZicboU_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -42,5 +42,5 @@ covergroup ExceptionsZicboU_exceptions_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionszicbou_sample(int hart, int issue, ins_t ins);
-    ExceptionsZicboU_exceptions_cg.sample(ins);
+    ExceptionsZicboU_cg.sample(ins);
 endfunction

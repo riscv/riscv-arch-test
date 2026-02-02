@@ -1,0 +1,18 @@
+normative_rule_definitions:
+  # When MPRV=0, explicit memory accesses behave as normal, using the translation
+  # and protection mechanisms of the current privilege mode. When MPRV=1, load and
+  # store memory addresses are translated and protected, and endianness is applied,
+  # as though the current privilege mode were set to MPP.
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["EndianU/cp_mstatus_mprv_ube_endianness"]
+
+  # If U-mode is not supported, UBE is read-only 0. Otherwise, UBE controls whether
+  # explicit load and store memory accesses made from U-mode are little-endian
+  # (UBE=0) or big-endian (UBE=1).
+  - name: mstatus_ube_op
+    coverpoint: [""]
+
+  # If U-mode is supported, an implementation may make UBE be a read-only copy of
+  # either MBE or SBE.
+  - name: mstatus_ube_rocopy
+    coverpoint: [""]

@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ENDIANS
-covergroup EndianS_endian_cg with function sample(ins_t ins);
+covergroup EndianS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     // "Endianness tests in machine mode"
@@ -128,5 +128,5 @@ covergroup EndianS_endian_cg with function sample(ins_t ins);
 endgroup
 
 function void endians_sample(int hart, int issue, ins_t ins);
-    EndianS_endian_cg.sample(ins);
+    EndianS_cg.sample(ins);
 endfunction

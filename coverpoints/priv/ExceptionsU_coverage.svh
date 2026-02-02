@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSU
-covergroup ExceptionsU_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -91,9 +91,6 @@ covergroup ExceptionsU_exceptions_cg with function sample(ins_t ins);
     seed: coverpoint ins.current.insn[31:20] {
         bins seed = {12'h015};
     }
-    csr_0x000: coverpoint ins.current.insn[31:20] {
-        bins zero = {12'h000};
-    }
     mstatus_MIE: coverpoint ins.prev.csr[12'h300][3] {
         // auto fills 1 and 0
     }
@@ -122,7 +119,6 @@ covergroup ExceptionsU_exceptions_cg with function sample(ins_t ins);
     cp_instr_access_fault:                   cross jalr, illegal_address, priv_mode_u;
     cp_illegal_instruction:                  cross illegalops, priv_mode_u;
     cp_illegal_instruction_seed:             cross csrops, rs1_zero, seed, priv_mode_u;
-    cp_illegal_instruction_csr:              cross csrops, csr_0x000, priv_mode_u;
     cp_breakpoint:                           cross ebreak, priv_mode_u;
     cp_load_address_misaligned:              cross loadops, adr_LSBs, priv_mode_u;
     cp_load_access_fault:                    cross loadops, illegal_address, priv_mode_u;
@@ -136,7 +132,7 @@ covergroup ExceptionsU_exceptions_cg with function sample(ins_t ins);
 endgroup
 
 function void exceptionsu_sample(int hart, int issue, ins_t ins);
-    ExceptionsU_exceptions_cg.sample(ins);
+    ExceptionsU_cg.sample(ins);
 
     //$display("Instruction is: PC %h: %h = %s (rd = %h rs1 = %h rs2 = %h) trap = %b mode = %b (old mode %b) mstatus %h (old mstatus %h).  Retired: %d",ins.current.pc_rdata, ins.current.insn, ins.current.disass, ins.current.rd_val, ins.current.rs1_val, ins.current.rs2_val, ins.current.trap, ins.current.mode, ins.prev.mode, ins.current.csr[12'h300], ins.prev.csr[12'h300], ins.current.csr[12'hB02]);
 

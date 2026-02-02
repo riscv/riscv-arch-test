@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP
+from testgen.constants import EXTENSION_PARAM_MAP, PRIV_TEST_EXCLUDE_COMPONENTS
 from testgen.data.config import TestConfig
 
 
@@ -26,13 +26,21 @@ def load_template(template_name: str) -> str:
 def insert_header_template(
     test_config: TestConfig, test_file: Path, sigupd_count: int, extra_defines: list[str] | None = None
 ) -> str:
-    """Load testgen header template file and replace placeholders."""
+    """Load testgen header template file and replace placeholders.
+
+    Args:
+        test_config: Test configuration containing xlen, testsuite, E_ext, etc.
+        test_file: Path to the test file (for header comments).
+        sigupd_count: Number of signature updates in the test.
+        extra_defines: (optional) Additional #define statements for the test.
+    """
     template = load_template("testgen_header.S")
     # Extract extension components
     xlen = test_config.xlen
-    extension = test_config.extension
+    testsuite = test_config.testsuite
     E_ext = test_config.E_ext
-    ext_components, params = canonicalize_extensions(extension, xlen, E_ext)
+    required_extensions = test_config.required_extensions
+    ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions)
     march = generate_march_string(ext_components, xlen)
     if extra_defines is None:
         extra_defines = []
@@ -59,9 +67,19 @@ def insert_footer_template(test_data_section: str, test_string_section: str) -> 
     return template
 
 
-def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[list[str], list[str]]:
-    """Canonicalize extension string."""
-    ext_components = re.findall(r"[A-Z][a-z]*", extension)
+def canonicalize_extensions(
+    testsuite: str, xlen: int, E_ext: bool, required_extensions: list[str] | None = None
+) -> tuple[list[str], list[str]]:
+    """Canonicalize extension string.
+
+    Args:
+        testsuite: Test suite name from test config.
+        xlen: XLEN value.
+        E_ext: Whether the E extension is enabled.
+        required_extensions: If provided, use these extensions instead of parsing from testsuite.
+    """
+    # Use required_extensions if provided, otherwise parse from testsuite name
+    ext_components = required_extensions.copy() if required_extensions else re.findall(r"[A-Z][a-z]*", testsuite)
 
     # Extract parameters
     params: list[str] = []
@@ -71,37 +89,46 @@ def canonicalize_extensions(extension: str, xlen: int, E_ext: bool) -> tuple[lis
         if ext in EXTENSION_PARAM_MAP:
             params.append(EXTENSION_PARAM_MAP[ext])
             ext_components.remove(ext)
+        # Remove priv test exclude extensions
+        if ext in PRIV_TEST_EXCLUDE_COMPONENTS:
+            ext_components.remove(ext)
 
     # Canonicize extensions
     if "I" not in ext_components and "E" not in ext_components:
-        # Always include base integer extension
-        if E_ext:
-            ext_components.insert(0, "E")
-        else:
-            ext_components.insert(0, "I")
-    if "Zcd" in ext_components and "D" not in ext_components:
+        ext_components.insert(0, "E" if E_ext else "I")  # Always include base integer extension
+    if "Zcd" in ext_components:
         ext_components.append("D")  # Add D if Zcd is present
-    if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa"]) and "F" not in ext_components:
+    if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin"]):
         ext_components.append("F")  # Add F if any floating point extension is present
-    if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]) and "F" not in ext_components:
-        ext_components.append("Zicsr")  # Add Zicsr is any priv extension is present
+    if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]):
+        ext_components.append("Zicsr")  # Add Zicsr if any priv extension is present
+    if any(ext in ext_components for ext in ["V", "Zvfh"]):
+        ext_components.append("M")  # Add M if V is present (required for gcc 15)
+
+    ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order
 
     return ext_components, params
 
 
 def generate_march_string(ext_components: list[str], xlen: int) -> str:
     """Generate march string from extension components."""
-    # Construct march string
-    ext_str = ""
+    # Separate single-letter and multi-letter extensions
+    single_letter = []
+    multi_letter = []
     for ext in ext_components:
         if ext in ["Sm", "S", "U"]:
             continue  # Skip privilege modes in march string
-        if len(ext_str) > 0:
-            ext_str += "_"
-        ext_str += ext
+        if len(ext) == 1:
+            single_letter.append(ext)
+        else:
+            multi_letter.append(ext)
+
+    # Construct march string: single-letter extensions first (no separator), then multi-letter (underscore separated)
+    ext_str = "".join(single_letter)
+    if multi_letter:
+        ext_str += "_".join(multi_letter)
     ext_str = ext_str.lower()
     march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
-    march = march.replace("zaamo", "a").replace("zalrsc", "a")  # gcc 14 does not accept Zaamo/Zalrsc
 
     return march
 

@@ -11,7 +11,7 @@ behavior of *WARL* fields in CSRs.
 
 === Configuration
 
-The DUT is described with a https://github.com/riscv-software-src/riscv-unified-db[Unified Database] (UDB) YAML file.
+The DUT is described with a https://github.com/riscv/riscv-unified-db[Unified Database] (UDB) YAML file.
 This file lists:
 
 * all of the supported extensions
@@ -37,8 +37,8 @@ It uses UDB to produce supplementary configuration files including:
 
 The UDB parameters for each extension are defined in:
 
-https://github.com/riscv-software-src/riscv-unified-db/tree/main/spec/std/isa/ext
-https://riscv-software-src.github.io/riscv-unified-db/index.html
+https://github.com/riscv/riscv-unified-db/tree/main/spec/std/isa/ext
+https://riscv.github.io/riscv-unified-db/index.html
 
 *** The CSC Tests and Models working group developed the following list of configuration parameters.
 Need to check if they match the parameters in UDB extensions.
@@ -47,12 +47,12 @@ https://docs.google.com/spreadsheets/d/1tFGLbocTp1YNn11aN8JTmvxL_23e7x8SlBNJfOPR
 
 A partially-configured UDB description of each profile is given in:
 
-* https://riscv-software-src.github.io/riscv-unified-db/resolved_arch/profile/RVI20U32.yaml[RVI20U32]
-* https://riscv-software-src.github.io/riscv-unified-db/resolved_arch/profile/RVI20U64.yaml[RVI20U64]
-* https://github.com/riscv-software-src/riscv-unified-db/blob/main/cfgs/mc100-32-full-example.yaml[MC100]
-* https://riscv-software-src.github.io/riscv-unified-db/resolved_arch/profile/RVA22S64.yaml[RVA22S64]
-* https://riscv-software-src.github.io/riscv-unified-db/resolved_arch/profile/RVB23S64.yaml[RVB23S64]
-* https://riscv-software-src.github.io/riscv-unified-db/resolved_arch/profile/RVA23S64.yaml[RVA23S64]
+* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVI20U32.yaml[RVI20U32]
+* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVI20U64.yaml[RVI20U64]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/mc100-32-full-example.yaml[MC100]
+* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVA22S64.yaml[RVA22S64]
+* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVB23S64.yaml[RVB23S64]
+* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVA23S64.yaml[RVA23S64]
 
 *** add minimal and maximal fully configured flavors of these profiles in riscv-arch-test, with no and all optional features, and suitable parameters.
 
@@ -87,7 +87,7 @@ TODO: reconcile this with CRD that illegal values are not supported for WARL fie
 Parameters are needed to specify the illegal values for a DUT.  The reference model
 could read these parameters, and then the tests could exercise all values and match
 the reference model.  Should there be discretion about what to do?
-riscv-software-src.github.io/riscv-unified-db/pdfs/RVI20-32-CRD.pdf
+riscv.github.io/riscv-unified-db/pdfs/RVI20-32-CRD.pdf
 
 <<t-bitfield-normative-rules>> summarizes the normative rules regarding CSR bitfields.
 

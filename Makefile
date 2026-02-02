@@ -5,7 +5,7 @@
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
 # REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
-CONFIG_FILES ?= config/duts/cvw/cvw-rv32gc/test_config.yaml config/duts/cvw/cvw-rv64gc/test_config.yaml
+CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
 REF_CONFIG_FILES ?= config/ref/sail-rv32gc/test_config.yaml config/ref/sail-rv64gc/test_config.yaml
 # REF_CONFIG_FILES ?= config/ref/sail-rv32gc-clang/test_config.yaml config/ref/sail-rv64gc-clang/test_config.yaml

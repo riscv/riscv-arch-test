@@ -60,6 +60,14 @@ spike: elfs
 	./run_tests.py "spike --misaligned --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
 	exit $$exit_code
 
+spike-rv32: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml
+spike-rv32: elfs
+	./run_tests.py "spike --misaligned --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs
+
+spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
+spike-rv64: elfs
+	./run_tests.py "spike --misaligned --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles-dut Makefile

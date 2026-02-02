@@ -11,6 +11,7 @@ import shutil
 import subprocess
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator
 from ruamel.yaml import YAML
@@ -126,3 +127,63 @@ def load_config(config_file: Path) -> Config:
     config = Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
     check_ref_model_version(config)
     return config
+
+
+def validate_configs(configs: list[Any]) -> None:
+    """Validate that configurations are consistent."""
+    # Store the reference configuration for each (XLEN, E-ext) pair (first one encountered)
+    ref_configs: dict[tuple[int, bool], Config] = {}
+
+    for config_data in configs:
+        xlen = config_data["xlen"]
+        e_ext = config_data["e_ext"]
+        config: Config = config_data["config"]
+        key = (xlen, e_ext)
+
+        # First time seeing this (XLEN, E-ext) pair? Set it as reference.
+        if key not in ref_configs:
+            ref_configs[key] = config
+            continue
+
+        # Otherwise, compare against the reference
+        ref_config = ref_configs[key]
+        ref_model_header = ref_config.dut_include_dir / "model_test.h"
+        ref_linker_script = ref_config.linker_script
+
+        # Validate compiler_exe
+        if ref_config.compiler_exe != config.compiler_exe:
+            raise ValueError(
+                f"Inconsistent compiler_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"{ref_config.name} uses {ref_config.compiler_exe}, "
+                f"{config.name} uses {config.compiler_exe}"
+            )
+
+        # Validate objdump_exe
+        if ref_config.objdump_exe != config.objdump_exe:
+            raise ValueError(
+                f"Inconsistent objdump_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"{ref_config.name} uses {ref_config.objdump_exe}, "
+                f"{config.name} uses {config.objdump_exe}"
+            )
+
+        # Validate ref_model_exe
+        if ref_config.ref_model_exe != config.ref_model_exe:
+            raise ValueError(
+                f"Inconsistent ref_model_exe for XLEN {xlen}, E-ext {e_ext}: "
+                f"{ref_config.name} uses {ref_config.ref_model_exe}, "
+                f"{config.name} uses {config.ref_model_exe}"
+            )
+
+        # Validate linker_script content
+        if ref_linker_script.read_bytes() != config.linker_script.read_bytes():
+            raise ValueError(
+                f"Inconsistent linker_script content for XLEN {xlen}, E-ext {e_ext} between {ref_config.name} and {config.name}"
+            )
+
+        # Validate model_test.h content
+        model_header = config.dut_include_dir / "model_test.h"
+
+        if ref_model_header.read_bytes() != model_header.read_bytes():
+            raise ValueError(
+                f"Inconsistent model_test.h content for XLEN {xlen}, E-ext {e_ext} between {ref_config.name} and {config.name}"
+            )

@@ -24,7 +24,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
     elif coverpoint.endswith("_nx0"):
         regs = range(1, test_data.int_regs.reg_count)  # Exclude x0
     elif coverpoint.endswith("_c"):
-        regs = range(8, 16)  # x8-x15 for compressed instructions"):
+        regs = range(8, 16)  # x8-x15 for compressed instructions
     elif coverpoint.endswith("_nx0_pair"):
         regs = range(2, test_data.int_regs.reg_count, 2)  # Even registers for pair instructions, exclude x0
         is_pair = True

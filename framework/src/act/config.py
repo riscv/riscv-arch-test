@@ -11,10 +11,12 @@ import shutil
 import subprocess
 from enum import Enum
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator
 from ruamel.yaml import YAML
+
+from act.parse_test_constraints import TestMetadata
 
 
 class RefModelType(str, Enum):
@@ -135,11 +137,31 @@ class ConfigData(TypedDict):
     config: Config
     xlen: int
     e_ext: bool
-    selected_tests: dict[str, Any]
+    selected_tests: dict[str, TestMetadata]
 
 
-def validate_configs(configs: list[ConfigData]) -> None:
-    """Validate that configurations are consistent."""
+def check_config_consistency(configs: list[ConfigData]) -> None:
+    """Validate that multiple configurations are mutually consistent.
+
+    Configurations are grouped by their (XLEN, E-extension) pair, using the
+    ``xlen`` and ``e_ext`` fields in each :class:`ConfigData` entry. Within each
+    group, the first configuration encountered is treated as the reference, and
+    all subsequent configurations in that group are compared against it.
+
+    The following fields and artifacts of the underlying :class:`Config` objects
+    must match for all configurations that share the same (XLEN, E-ext) pair:
+    * ``compiler_exe``
+    * ``objdump_exe``
+    * ``ref_model_type``
+    * ``ref_model_exe``
+    * The contents of ``linker_script``
+    * The contents of ``model_test.h`` located in ``dut_include_dir``
+    * The contents of ``sail.json`` located in ``dut_include_dir`` (if present)
+
+    If any of these values or file contents differ between configurations with
+    the same (XLEN, E-ext) pair, a :class:`ValueError` is raised describing the
+    inconsistency and identifying the conflicting configurations.
+    """
     # Store the reference configuration for each (XLEN, E-ext) pair (first one encountered)
     ref_configs: dict[tuple[int, bool], Config] = {}
 
@@ -165,7 +187,7 @@ def validate_configs(configs: list[ConfigData]) -> None:
                 f"Inconsistent compiler_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.compiler_exe}, "
                 f"{config.name} uses {config.compiler_exe}. "
-                "All configs must have the same compiler_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same compiler_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate objdump_exe
@@ -174,7 +196,16 @@ def validate_configs(configs: list[ConfigData]) -> None:
                 f"Inconsistent objdump_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.objdump_exe}, "
                 f"{config.name} uses {config.objdump_exe}. "
-                "All configs must have the same objdump_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same objdump_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+            )
+
+        # Validate ref_model_type
+        if ref_config.ref_model_type != config.ref_model_type:
+            raise ValueError(
+                f"Inconsistent ref_model_type for XLEN={xlen}, E-ext={e_ext}: "
+                f"{ref_config.name} uses {ref_config.ref_model_type}, "
+                f"{config.name} uses {config.ref_model_type}. "
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same ref_model_type for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate ref_model_exe
@@ -183,21 +214,63 @@ def validate_configs(configs: list[ConfigData]) -> None:
                 f"Inconsistent ref_model_exe for XLEN={xlen}, E-ext={e_ext}: "
                 f"{ref_config.name} uses {ref_config.ref_model_exe}, "
                 f"{config.name} uses {config.ref_model_exe}. "
-                "All configs must have the same ref_model_exe for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same ref_model_exe for common compilation. "
+                "Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate linker_script content
-        if ref_linker_script.read_bytes() != config.linker_script.read_bytes():
+        try:
+            ref_linker_content = ref_linker_script.read_bytes()
+            config_linker_content = config.linker_script.read_bytes()
+        except (FileNotFoundError, OSError) as e:
+            raise ValueError(f"Error reading linker script: {e}") from e
+
+        if ref_linker_content != config_linker_content:
             raise ValueError(
                 f"Inconsistent linker_script content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
-                "All configs must have the same linker_script content for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same linker_script contents for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
         # Validate model_test.h content
         model_header = config.dut_include_dir / "model_test.h"
 
-        if ref_model_header.read_bytes() != model_header.read_bytes():
+        if not ref_model_header.is_file():
+            raise ValueError(
+                f"Missing model_test.h in dut_include_dir for reference config '{ref_config.name}' "
+                f"(XLEN={xlen}, E-ext={e_ext}): expected at {ref_model_header}."
+            )
+        if not model_header.is_file():
+            raise ValueError(
+                f"Missing model_test.h in dut_include_dir for config '{config.name}' "
+                f"(XLEN={xlen}, E-ext={e_ext}): expected at {model_header}."
+            )
+
+        try:
+            ref_header_content = ref_model_header.read_bytes()
+            header_content = model_header.read_bytes()
+        except (FileNotFoundError, OSError) as e:
+            raise ValueError(f"Error reading model_test.h: {e}") from e
+
+        if ref_header_content != header_content:
             raise ValueError(
                 f"Inconsistent model_test.h content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
-                "All configs must have the same model_test.h content for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
+                f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same model_test.h contents for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
+
+        # Validate sail.json content (including memory map) if defined
+        ref_sail_path = ref_config.dut_include_dir / "sail.json"
+        sail_path = config.dut_include_dir / "sail.json"
+
+        if ref_sail_path.exists() and sail_path.exists():
+            try:
+                ref_sail_content = ref_sail_path.read_bytes()
+                sail_content = sail_path.read_bytes()
+            except (FileNotFoundError, OSError) as e:
+                raise ValueError(f"Error reading sail.json: {e}") from e
+
+            if ref_sail_content != sail_content:
+                raise ValueError(
+                    f"Inconsistent sail.json content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
+                    f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same sail.json content (including the memory map section) for common compilation. "
+                    "Update the configs to have a consistent memory map, or pass the configs to separate runs of the ACT framework."
+                )

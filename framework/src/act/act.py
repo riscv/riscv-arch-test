@@ -12,7 +12,7 @@ from typing import Annotated
 
 import typer
 
-from act.config import ConfigData, load_config, validate_configs
+from act.config import ConfigData, check_config_consistency, load_config
 from act.makefile_gen import generate_makefiles
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
@@ -85,8 +85,9 @@ def run_act(
 
     # Validate configurations
     # If there are multiple configurations, validate that they are consistent with each other so that the common tests work correctly.
+    # Validation is performed per (XLEN, E-extension) group, so configs for different XLEN/E combinations do not conflict.
     if len(configs) > 1:
-        validate_configs(configs)
+        check_config_consistency(configs)
 
     # Generate Makefiles
     generate_makefiles(

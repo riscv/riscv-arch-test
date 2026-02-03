@@ -57,8 +57,11 @@ jobs:
         run: DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
-    name: Spike Regression
+    name: Spike Regression (${{ matrix.target }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [spike-rv64, spike-rv32]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -114,21 +117,14 @@ jobs:
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Compile and run tests on Sail
-        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make spike --jobs $(nproc)
+        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make ${{ matrix.target }} --jobs $(nproc)
 
-      - name: Upload rv64 logs
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: spike-rv64-logs
-          path: work/spike-rv64-max/logs
-
-      - name: Upload rv32 logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: spike-rv32-logs
-          path: work/spike-rv32-max/logs
+          name: ${{ matrix.target }}-logs
+          path: work/${{ matrix.target }}-max/logs
 
   vector-testgen:
     name: Vector Testgen
@@ -177,7 +173,7 @@ jobs:
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [lint, regress, vector-testgen, ctp-build]
+    needs: [lint, regress, spike, vector-testgen, ctp-build]
     steps:
       - name: Dummy
         run: echo 'Jobs need at least one step.'

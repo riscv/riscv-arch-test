@@ -1,1 +1,0 @@
-../sail-rv64gc/link.ld

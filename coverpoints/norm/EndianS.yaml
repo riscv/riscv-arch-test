@@ -1,4 +1,16 @@
 normative_rule_definitions:
+  # The UBE bit is a WARL field that controls the endianness of explicit memory
+  # accesses made from U-mode, which may differ from the endianness of memory
+  # accesses in S-mode. An implementation may make UBE be a read-only field that
+  # always specifies the same endianness as for S-mode.
+  - names: [sstatus-ube_sz, sstatus-ube_acc, sstatus-ube_op]
+    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+
+  # UBE has no effect on instruction fetches, which are implicit memory accesses
+  # that are always little-endian.
+  - name: sstatus-ube_implicit
+    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+
   # The EEI will define whether the memory system is little-endian or big-endian.
   - name: ENDIANNESS_LITTLE_OR_BIG
     coverpoint: [""]

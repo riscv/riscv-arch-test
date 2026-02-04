@@ -2,8 +2,3 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: Zabha_rd_sign_extension
-    coverpoint: [""]
-
-  - name: Zabha_rs1_align_addr
-    coverpoint: [""]

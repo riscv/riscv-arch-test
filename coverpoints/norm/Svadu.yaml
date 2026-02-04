@@ -1,0 +1,11 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svadu_hw_update_a_d_bits
+    coverpoint: [""]
+
+  - name: Svadu_hypervisor_adue_writable
+    coverpoint: [""]
+
+  - name: Svadu_disabled_hw_update_falls_back_to_svade
+    coverpoint: [""]

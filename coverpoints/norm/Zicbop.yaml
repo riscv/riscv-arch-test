@@ -1,5 +1,3 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: Zabha_amocas-BH_ignore_bits
-    coverpoint: [""]

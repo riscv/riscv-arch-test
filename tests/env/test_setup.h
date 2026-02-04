@@ -17,16 +17,15 @@
   .global rvtest_entry_point
   rvtest_entry_point:
 
-  // Include model specific boot code
-  RVMODEL_BOOT
-  RVMODEL_IO_INIT(T1, T2, T3)
-
   // Disable assembler/linker optimizations
   .option push
   .option rvc
   .align UNROLLSZ
   .option norvc
   .section .text.init
+
+  // Include model specific boot code
+  jal x1, rvmodel_boot
 
   // Test initialization
   .global rvtest_init
@@ -130,6 +129,14 @@
     LA(T4, successstr)
     RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
     RVMODEL_HALT_PASS
+
+  // Model specific boot code
+  rvmodel_boot:
+    RVMODEL_BOOT
+    RVMODEL_IO_INIT(T1, T2, T3)
+    jr x1
+    nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
+
   .option pop
 .endm
 /******************************** end of RVTEST_CODE_END ***********************************/

@@ -22,15 +22,16 @@ from act.parse_test_constraints import TestMetadata
 class RefModelType(str, Enum):
     """Reference model types with their associated flags."""
 
+    # TODO: Add support for additional reference models (Spike, Whisper, etc.)
     SAIL = "sail"
-    SPIKE = "spike"
+    # SPIKE = "spike"
 
     @property
     def signature_flags(self) -> str:
         """Get the flags for this reference model."""
         flags_map = {
             RefModelType.SAIL: "--test-signature={sig_file} --signature-granularity {granularity}",
-            RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
+            # RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
         }
         return flags_map[self]
 
@@ -44,7 +45,7 @@ class Config(BaseModel):
     dut_include_dir: DirectoryPath
     compiler_exe: Path
     objdump_exe: Path | None = None
-    ref_model_type: RefModelType
+    ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
 
     model_config = {"frozen": True}

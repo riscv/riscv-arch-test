@@ -1,1 +1,0 @@
-../sail-rv32gc/rvtest_config.h

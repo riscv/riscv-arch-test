@@ -13,7 +13,7 @@ with the RVI TSC (Technical Steering Committee) organization who creates RISC-V 
 The CRDs refer to information provided in existing
 https://riscv.org/specifications/ratified/[ratified RVI standards].
 The standards include many options, which are formally named as parameters in
-https://github.com/riscv-software-src/riscv-unified-db/tree/main/spec/std/isa/param[Unified Database] (UDB).
+https://github.com/riscv/riscv-unified-db/tree/main/spec/std/isa/param[Unified Database] (UDB).
 The relevant UDB parameters and their legal values are given for each certificate.
 
 At the time of this writing, certificates are defined for standalone RISC-V cores.

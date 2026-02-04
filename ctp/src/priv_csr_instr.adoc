@@ -27,8 +27,6 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 
 include::norm/Sm_norm_rules.adoc[]
 
-include::param/Sm_parameters.adoc[]
-
 ==== S Supervisor-Mode CSRs and Instructions
 
 These test additional CSRs that exist in supervisor mode, and privileged instructions in supervisor mode.
@@ -38,6 +36,8 @@ These test additional CSRs that exist in supervisor mode, and privileged instruc
 ,===
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=335048477#gid=335048477[Google Sheet Testplan]
 ,===
+
+include::norm/S_norm_rules.adoc[]
 
 ==== U User-Mode CSRs and Instructions
 

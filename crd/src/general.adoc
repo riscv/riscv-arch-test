@@ -20,13 +20,16 @@ If Ssstrict is tested as a required or optional behavior in a certificate, it wi
 and all lower privilege modes.  In Machine mode, the trap will take place to the machine-mode handler rather
 than the supervisor-mode handler.
 
-=== Required Parameters
+=== Required UDB Parameters
 
 For DUTs with privileged support (Sm, ExceptionsSm, etc.), MTVEC_ACCESS must be "rw".  If it is "ro", the privileged tests cannot set a trap vector to record activity.
 
+The MTVEC_BASE_ALIGNMENT_DIRECT and MTVEC_BASE_ALIGNMENT_VECTORED UDB parameters define the minimum alignment for the trap handler. The trap handler by default is aligned to a 64-byte boundary in arch_test.h.  If the DUT requires a coarser alignment, the model_test.h in the DUT's config directory must set it (e.g. #define RVMODEL_MTVEC_ALIGN 8 for 256-byte alignment).  Note that the UDB parameters are in units of bytes and RVMODEL_MTVEC_ALIGN is in units of log2(bytes).
+
+MTVEC_MODES must support both Direct and Vectored (0 and 1) to get full coverage.  If one of these modes is unsupported, some interrupt coverage could be waived.
+
 === Unsupported Parameters
 
-MTVEC_BASE_ALIGNMENT_DIRECT and MTVEC_BASE_ALIGNMENT_VECTORED values > 4 are not yet supported, but could be supported with a .align before the trap handler if desired.
 
 === UDB Description
 

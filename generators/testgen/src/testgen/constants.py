@@ -51,14 +51,6 @@ EXTENSION_PARAM_MAP = {
     "Misalign": "MISALIGNED_LDST: true",
 }
 
-# Priv test name components to exclude from extension list
-PRIV_TEST_EXCLUDE_COMPONENTS = frozenset(
-    {
-        "Exceptions",
-        "Interrupts",
-    }
-)
-
 # =============================================================================
 # FLEN Mapping
 # =============================================================================

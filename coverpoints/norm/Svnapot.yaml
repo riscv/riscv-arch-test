@@ -1,0 +1,26 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svnapot_depends_Sv39
+    coverpoint: [""]
+
+  - name: Svnapot_pte_N
+    coverpoint: [""]
+
+  - name: Svnapot_range_napot
+    coverpoint: [""]
+
+  - name: Svnapot_valid_encoding
+    coverpoint: [""]
+
+  - name: Svnapot_reserved_encoding_fault
+    coverpoint: [""]
+
+  - name: Svnapot_implicit_read_ppn_subst
+    coverpoint: [""]
+
+  - name: Svnapot_cache_entries
+    coverpoint: [""]
+
+  - name: Svnapot_hyp_gstage
+    coverpoint: [""]

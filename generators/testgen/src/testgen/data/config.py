@@ -22,16 +22,20 @@ class TestConfig:
     Attributes:
         xlen: Register width (32 or 64 bits)
         flen: Floating-point register width (32, 64, or 128 bits)
-        extension: RISC-V extension being tested
+        testsuite: Name of the testsuite (e.g., "I", "M", "ZcbM", "MisalignD", "ExceptionsSm")
         E_ext: Whether to use RV32E/RV64E (16 registers instead of 32)
         config_dependent: Whether this test is config dependent
+        required_extensions: List of RISC-V extensions required for the test.
+                             Used for march string and header defines generation.
+                             If None, extensions are parsed from testsuite name.
     """
 
     xlen: int
     flen: int
-    extension: str
+    testsuite: str
     E_ext: bool = False
     config_dependent: bool = False
+    required_extensions: list[str] | None = None
 
     @property
     def xlen_format_str(self) -> str:

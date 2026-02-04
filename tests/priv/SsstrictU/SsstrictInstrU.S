@@ -10,7 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, U, Zicsr, Ssstrict, Sm]
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv${XLEN}if_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -45,6 +45,27 @@ ecall
 
 # include "SsstrictInstr-Tests.h"
 # include "SsstrictInstrCompressed-Tests.h"
+
+/////////////////////////////////
+// cp_reserved_frm
+/////////////////////////////////
+
+csrwi frm, 0
+fadd.s f0, f1, f2
+csrwi frm, 1
+fadd.s f0, f1, f2
+csrwi frm, 2
+fadd.s f0, f1, f2
+csrwi frm, 3
+fadd.s f0, f1, f2
+csrwi frm, 4
+fadd.s f0, f1, f2
+csrwi frm, 5
+fadd.s f0, f1, f2
+csrwi frm, 6
+fadd.s f0, f1, f2
+csrwi frm, 7
+fadd.s f0, f1, f2
 
 finish:
     j done

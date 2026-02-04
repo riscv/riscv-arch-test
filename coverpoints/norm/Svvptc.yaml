@@ -1,0 +1,5 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svvptc_explicit_stores_update_valid_bit
+    coverpoint: [""]

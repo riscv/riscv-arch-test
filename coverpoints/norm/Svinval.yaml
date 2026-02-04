@@ -1,0 +1,47 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svinval_split_fine_grained
+    coverpoint: [""]
+
+  - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
+    coverpoint: [""]
+
+  - name: Svinval_sfence_w_inval_orders_before_sinval_vma
+    coverpoint: [""]
+
+  - name: Svinval_sequence_rs1_rs2
+    coverpoint: [""]
+
+  - name: Svinval_sequence_reads_writes_before
+    coverpoint: [""]
+
+  - name: Svinval_sequence_reads_writes_after
+    coverpoint: [""]
+
+  - name: Svinval_hinval_vvma_gvma
+    coverpoint: [""]
+
+  - name: Svinval_hinval_gvma_uses_vmid
+    coverpoint: [""]
+
+  - name: Svinval_illegal_instruction_u_mode
+    coverpoint: [""]
+
+  - name: Svinval_illegal_instruction_tvm
+    coverpoint: [""]
+
+  - name: Svinval_virtual_instruction_vu_vs
+    coverpoint: [""]
+
+  - name: Svinval_virtual_instruction_vtvms
+    coverpoint: [""]
+
+  - name: Svinval_sfence_w_inval_inval_u_mode
+    coverpoint: [""]
+
+  - name: Svinval_sfence_w_inval_inval_vu_mode
+    coverpoint: [""]
+
+  - name: Svinval_sfence_w_inval_inval_s_vs_mode
+    coverpoint: [""]

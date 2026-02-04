@@ -60,7 +60,7 @@ def split_columns_with_blanks(transposed, max_columns):
     return chunks
 
 
-def write_asciidoc(filepath, tables):
+def write_asciidoc(filepath, tables, suite_name):
     """Write all tables directly into .adoc file."""
     with open(filepath, "w", encoding="utf-8") as f:
         # Add auto-generation header comment with absolute paths
@@ -72,6 +72,10 @@ def write_asciidoc(filepath, tables):
         f.write('// Generation command: ' + command_line + '\n')
         f.write('// Generation date: ' + gen_date + '\n')
         f.write('\n')
+
+        # Add table label and caption
+        f.write(f'[[t-{suite_name}-coverpoints]]\n')
+        f.write(f'.{suite_name} Instruction Coverpoints\n')
 
         for table in tables:
             f.write("[options=header]\n")
@@ -94,7 +98,7 @@ def process_csv_file_to_adoc(source_path, dest_dir, max_columns):
     chunks = split_columns_with_blanks(transposed, max_columns)
 
     adoc_path = os.path.join(dest_dir, f"{base_name}.adoc")
-    write_asciidoc(adoc_path, chunks)
+    write_asciidoc(adoc_path, chunks, base_name)
 
 
 def main():

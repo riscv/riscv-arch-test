@@ -1269,33 +1269,6 @@ spcl_\__MODE__\()chk4ecall:
                                                 // fall thru to chk for selftest fail or rtn2mmode
 //****FIXME: what is the correct parameter register? x3=0?
 
-/******************************************************************************************************/
-/**** spcl case handling for mmode ECALL or alt to classify normal, GOTO_MMODE mode & fail cases   ****/
-/****  x3=0 indicates go2mmode; if mem(EPC-4)== SKP_IF_EQ, its a miscompare, else GOTO_MMODE       ****/
-/****  note that if both prev_op is SKP_IF_EQ and x3=0, a1 is ignored ??                           ****/
-/******************************************************************************************************/
-#ifdef RVTEST_SELFCHECK                         // now known to be an ecall: skip if not selfchk mode
-  #define SKP_IF_EQ       0x263                 // BEQ opcode + offset 4 (
-  #define RS1RS2_MSK  ((1<<25)-(1<<15)+(1<<12)) // mask of RS1, RS2 and BEQ vs. BNE bit
-
-  .ifc \__MODE__ ,  M                           // if in mmode only, handle mprv
-        LI(   T2, MSTATUS_MPRV)
-        csrs  T4, CSR_MSTATUS, T2               // make sure the correct address mode is used, set MPRV
-  .endif
-        csrr  T3, XEPC
-        lw    T3, -4(T3)                        // load instruction previous to ECALL
-
-  .ifc \__MODE__ ,  M //
-        csrc X0, CSR_MSTATUS, T4,               // restore MPRV
-  .endif
-// now check if previous instruction was a B** x, xy, .+4
-        LI(   T2, ~RS1RS2_MSK)                  // mask of RS1, RS2 fields of B** op
-        and   T3, T3, T2                        // clr rs1,rs2 & eq/ne fields of previous instruction
-        LI(   T2, SKP_IF_EQ)                    // encoding of " beq/bne X0,X0, +4 offset"
-        bne   T3,T2, \__MODE__\()goto_mchk:     // if prev op != SKP_IF_EQ, then not failure; chk if rtn2mode
-        jal   T2, \__MODE__\()test_failure      // T5(cause)/sp(ptr)/T2(rtnaddr)/T6(vector) are live, T1/T3/T4, are dead
-        j  \__MODE__\()trapsig_ptr_upd:         // didn't end test, but miscompared, treat as normall ecall
-#endif
 .ifc \__MODE__ ,  M                             // If ecall is delegated, can't go to Mmode
 \__MODE__\()goto_mchk:                          // is ECALL, but not failure type; see if its goto_m_mode
         beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature

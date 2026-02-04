@@ -50,7 +50,17 @@
     or _PAR, _PAR, _PR                                            ;\
     SREG _PAR, 0(_TR1);
 
-#define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)    ;\
+#define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
+    LI(  t0, VA)                                                ;\
+    LA(  t1, PA_LBL)                                            ;\
+    srli t0, t0, 12                                             ;\
+    slli t0, t0, 12                                             ;\
+    LI(  t2, 0xFFF)                                             ;\
+    and  t2, t1, t2                                             ;\
+    or   t2, t0, t2                                             ;\
+    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;
+
+#define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)        ;\
     srli _PAR, _PAR, 12                                         ;\
     slli _PAR, _PAR, 10                                         ;\
     or _PAR, _PAR, _PR                                          ;\
@@ -59,28 +69,11 @@
         LI(_TR0, ((VA>>22)&0x3FF)<<2)                           ;\
     .endif                                                      ;\
     .if (level==0)                                              ;\
-        LA(_TR1, rvtest_slvl1_pg_tbl)                           ;\
+        LA(_TR1, rvtest_slvl0_pg_tbl)                           ;\
         LI(_TR0, ((VA>>12)&0x3FF)<<2)                           ;\
     .endif                                                      ;\
     add _TR1, _TR1, _TR0                                        ;\
-    SREG _PAR, 0(_TR1);
-
-// More Robust version of PTE_SETUP_32 to setup a PTE for a PA using Va
-// in a single line.
-//args: PA: Label of Physical Address, PERMS: permissions in hex
-//args: VA: Virtual Address in hex, level: Level to store at
-#define PTE_SETUP_RV32_New(PA_LBL, PERMS, VA, level)           ;\
-    LA(a0, PA_LBL)                                             ;\
-    LI(a1, PERMS)                                              ;\
-  PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                  ;\
-
-#define SAVE_AREA_SETUP(VA, PA_LBL, _REG_NAME)                  ;\
-  LI (t0, VA)                                                 ;\
-  LA (t1, PA_LBL)                                             ;\
-  sub t0, t0, t1                                              ;\
-  LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
-  add t2, t1, t0                                              ;\
-  SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
+    SREG _PAR, 0(_TR1)                                          ;
 
 #define PTE_SETUP_RV64(_PAR, _PR, _TR0, _TR1, VA, level, mode)  ;\
     srli _PAR, _PAR, 12                                         ;\
@@ -96,7 +89,7 @@
             .set vpn, ((VA >> 21) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 0)                                        ;\
-            LA(_TR1, rvtest_slvl2_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl0_pg_tbl)                       ;\
             .set vpn, ((VA >> 12) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
     .endif                                                      ;\
@@ -106,15 +99,15 @@
             .set vpn, ((VA >> 39) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 2)                                        ;\
-            LA(_TR1, rvtest_slvl1_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl2_pg_tbl)                       ;\
             .set vpn, ((VA >> 30) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 1)                                        ;\
-            LA(_TR1, rvtest_slvl2_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl1_pg_tbl)                       ;\
             .set vpn, ((VA >> 21) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 0)                                        ;\
-            LA(_TR1, rvtest_slvl3_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl0_pg_tbl)                       ;\
             .set vpn, ((VA >> 12) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
     .endif                                                      ;\
@@ -124,7 +117,7 @@
             .set vpn, ((VA >> 48) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 3)                                        ;\
-            LA(_TR1, rvtest_slvl1_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl3_pg_tbl)                       ;\
             .set vpn, ((VA >> 39) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 2)                                        ;\
@@ -132,17 +125,68 @@
             .set vpn, ((VA >> 30) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 1)                                        ;\
-            LA(_TR1, rvtest_slvl3_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl1_pg_tbl)                       ;\
             .set vpn, ((VA >> 21) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
         .if (level == 0)                                        ;\
-            LA(_TR1, rvtest_slvl3_pg_tbl)                       ;\
+            LA(_TR1, rvtest_slvl0_pg_tbl)                       ;\
             .set vpn, ((VA >> 12) & 0x1FF) << 3                 ;\
         .endif                                                  ;\
     .endif                                                      ;\
     LI(_TR0, vpn)                                               ;\
     add _TR1, _TR1, _TR0                                        ;\
     SREG _PAR, 0(_TR1)                                          ;
+
+#define PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)                ;\
+    LA(a0, PA_LBL)                                              ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                   ;
+
+#define SUPERPAGE_PTE_SETUP_SV32(PA_LBL, PERMS, VA, level)      ;\
+    LA(a0, (PA_LBL))                                            ;\
+    srli a0, a0, 22                                             ;\
+    slli a0, a0, 22                                             ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                   ;
+
+#define PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)                ;\
+    LA(a0, PA_LBL)                                              ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv39)             ;
+
+#define SUPERPAGE_PTE_SETUP_SV39(PA_LBL, PERMS, VA, level)      ;\
+    .set PA_SHIFT, (level*9)+12                                 ;\
+    LA(a0, (PA_LBL))                                            ;\
+    srli a0, a0, PA_SHIFT                                       ;\
+    slli a0, a0, PA_SHIFT                                       ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv39)             ;
+
+#define PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)                ;\
+    LA(a0, PA_LBL)                                              ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv48)             ;
+
+#define SUPERPAGE_PTE_SETUP_SV48(PA_LBL, PERMS, VA, level)      ;\
+    .set PA_SHIFT, (level*9)+12                                 ;\
+    LA(a0, (PA_LBL))                                            ;\
+    srli a0, a0, PA_SHIFT                                       ;\
+    slli a0, a0, PA_SHIFT                                       ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv48)             ;
+
+#define PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)                ;\
+    LA(a0, PA_LBL)                                              ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv57)             ;
+
+#define SUPERPAGE_PTE_SETUP_SV57(PA_LBL, PERMS, VA, level)      ;\
+    .set PA_SHIFT, (level*9)+12                                 ;\
+    LA(a0, (PA_LBL))                                            ;\
+    srli a0, a0, PA_SHIFT                                       ;\
+    slli a0, a0, PA_SHIFT                                       ;\
+    LI(a1, PERMS)                                               ;\
+    PTE_SETUP_RV64(a0, a1, t0, t1, VA, level, sv57)             ;
 
 #define PTE_PERMUPD_RV32(_PR, _TR0, _TR1, VA, level)            ;\
     .if (level==1)                                              ;\

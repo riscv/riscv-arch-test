@@ -77,6 +77,11 @@
   `define FLEN 32
 `endif
 
+///////////////////////////////////////////////////
+// VECTOR-RELATED MACROS
+// TODO: refactor to be generated based on config
+///////////////////////////////////////////////////
+
 // VLEN as usable numbers, ifdef contents should be defined in config
 `ifdef VLEN65536
   `define VLEN 65536

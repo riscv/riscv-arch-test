@@ -181,7 +181,10 @@ normative_rule_definitions:
   # The implementation must provide a facility for scheduling timer interrupts in
   # terms of the real-time counter, time.
   - name: supervisor_timer_scheduling
-    coverpoint: ["OUT-OF-SCOPE: too vague"]
+    coverpoint:
+      [
+        "OUT-OF-SCOPE: too vague if handled by software setting STIP. Tested by InterruptsSstc_cg/cp_supervisor_sti when Sstc implemented",
+      ]
 
   # The sscratch CSR is an SXLEN-bit read/write register, dedicated for use by the
   # supervisor. Typically, sscratch is used to hold a pointer to the hart-local
@@ -279,7 +282,10 @@ normative_rule_definitions:
   # an access-fault, page-fault, or hardware-error exception, then stval will
   # contain the virtual address of the portion of the access that caused the fault.
   - name: stval_op_load_store_fault
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: write coverpoints for misaligned loads that wrap PMA/PMP/page boundaries to cause faults on upper part of access",
+      ]
 
   # If stval is written with a nonzero value when an instruction access-fault,
   # page-fault, or hardware-error exception occurs on a hart with variable-length
@@ -287,7 +293,7 @@ normative_rule_definitions:
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
   - name: stval_faulting_address_variable_instr
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint: ["OUT-OF-SCOPE variable-length instructions"]
 
   # The stval register can optionally also be used to return the faulting
   # instruction bits on an illegal-instruction exception (sepc points to the
@@ -304,11 +310,6 @@ normative_rule_definitions:
       [
         "ExceptionsZc_cg/cp_illegal_instruction, SsstrictS_comp_instr_cg/cp_compressed00",
       ]
-
-  # On a trap caused by a software-check exception, the stval register holds the
-  # cause for the exception. The following encodings are defined:
-  - name: stval_exception_info
-    coverpoint: ["TODO"]
 
   # For other traps, stval is set to zero, but a future standard may redefine
   # stval’s setting for other traps.
@@ -335,7 +336,7 @@ normative_rule_definitions:
   # accesses to device I/O implies also the requirement to order main memory
   # accesses. details the modified interpretation of FENCE instruction bits PI, PO,
   # SI, and SO in U-mode when FIOM=1.
-  - names: [senvcfg-fiom_sz, senvcfg-fiom_op]
+  - name: senvcfg-fiom_op
     coverpoint: ["OUT-OF-SCOPE"]
 
   # Similarly, for U-mode when FIOM=1, if an atomic instruction that accesses a
@@ -344,7 +345,10 @@ normative_rule_definitions:
   - name: senvcfg-fiom_op_atomic
     coverpoint: ["OUT-OF-SCOPE"]
 
+  - name: senvcfg-fiom_sz
+    coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]
+
   # If satp.MODE is read-only zero (always Bare), the implementation may make FIOM
   # read-only zero.
   - name: senvcfg-fiom_acc
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]

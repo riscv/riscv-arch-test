@@ -1,0 +1,164 @@
+// --------------------------------------------------------------------------------------------------------------------------------
+// Test cases are as follows:
+// --------------------------------------------------------------------------------------------------------------------------------
+// 1. Perform Load & Store at virtual address 0xffffffff (last byte)
+// 2. Perform Execute at virtual address 0xfffffffc (last word)
+//
+// Total Expected Faults :: 0
+// --------------------------------------------------------------------------------------------------------------------------------
+
+
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, Sv32]
+# MARCH: rv32i_zicsr
+# CONFIG_DEPENDENT: true
+##### END_TEST_CONFIG #####
+
+#define TEST_FILE "sv32_VA_all_ones_Smode.S"
+#define SIGUPD_COUNT 50
+#define rvtest_mtrap_routine
+#define rvtest_strap_routine
+#define SKIP_MEPC
+#define SKIP_MTVAL
+
+#include "riscv_arch_test.h"
+
+RVTEST_BEGIN
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Test RW Permissions
+.macro TEST_CASES_RUNNER_RW LOWER_MODE, VA, level, STR_PTR
+
+  RVTEST_GOTO_LOWER_MODE \LOWER_MODE
+
+  LI(a5, \VA)
+
+  // Test store permission
+  sb  a2, 0(a5)
+  nop
+
+  // Test load permission
+  lbu  a4, 0(a5)
+  nop
+
+  RVTEST_GOTO_MMODE
+
+  // Signature Update
+  RVTEST_SIGUPD(x2, x5, x4, a2, \STR_PTR)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \STR_PTR)
+.endm
+
+// Test X Permission
+.macro TEST_CASES_RUNNER_X LOWER_MODE, VA, level, STR_PTR
+
+  RVTEST_GOTO_LOWER_MODE \LOWER_MODE
+
+  LI(  a5, \VA)
+  LI(  x4, 0xACCE)          // Store a value which is to be checked in trap handler
+  jalr ra, a5, 0
+  nop
+
+  RVTEST_GOTO_MMODE
+.endm
+
+
+main:
+  li a2, 0x800                // Test signature initialization
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//                                   Virtual addresses definition for code and test regions
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Virtual Address of Test section (rvtest_data_1)
+  .set va_data_rw,            0xffffffff                                 // Store & Load will be performed at this VA
+  .set va_data_x,             0xfffffffc                                 // Execute will be performed at this VA
+
+  // Virtual Address for code region
+  .set va_rvtest_code_begin,  0x30000000
+
+
+  // PTE setup for Code Region
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
+  sfence.vma
+
+  // Save area setup for code region
+  csrr a0, mscratch
+  SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code)
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//                                               Test Cases Start from here
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  SATP_SETUP_SV32                                                        // Set SATP for virtualization
+  sfence.vma                                                             // Flush TLB
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
+//                                                    TESTS AT LEVEL 0
+//---------------------------------------------------------------------------------------------------------------------------------
+//                    4KB PAGE    Region 1 under test at level 0 -- RW permissions given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 1: Test in S-Mode | RW bit set | expected = successful page access
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data_rw, LEVEL1)
+  PTE_SETUP_SV32(rvtest_data_1_l0_rw, (PTE_D | PTE_A | PTE_W | PTE_R | PTE_V), va_data_rw, LEVEL0)
+  sfence.vma
+
+  TEST_CASES_RUNNER_RW Smode, va_data_rw, LEVEL0, "test_1"
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//                    4KB PAGE    Region 1 under test at level 0 -- X permission given to the region
+//---------------------------------------------------------------------------------------------------------------------------------
+
+  // Test case 2: Test in S-Mode | X bit set | expected = successful page access
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data_x, LEVEL1)
+  PTE_SETUP_SV32(rvtest_data_1_l0_x, (PTE_D | PTE_A | PTE_X | PTE_V), va_data_x, LEVEL0)
+  sfence.vma
+
+  TEST_CASES_RUNNER_X Smode, va_data_x, LEVEL0, "test_2"
+
+
+//---------------------------------------------------------------------------------------------------------------------------------
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+
+//---------------------------------------------------------------------------------------------------------------------------------
+//                                            PHYSICAL ADDRESS REGIONS FOR TESTING
+//---------------------------------------------------------------------------------------------------------------------------------
+// This region will be used to Store and then Load from the last byte
+.align 12
+rvtest_data_1_l0_rw:
+  nop
+  addi ra, ra, REGWIDTH
+  jr ra
+  nop
+  .word 0xbeefcaf1          // Random word
+  .word 0xbeefcaf2          // Random word
+  .skip ((1 << 10) - 7)*4
+  .word 0xbeefcaf3
+
+// This region will be used to execute the last instruction at (4KB - 4)
+.align 12
+rvtest_data_1_l0_x:
+  nop
+  addi ra, ra, REGWIDTH
+  jr ra
+  nop
+  .word 0xbeefcaf1          // Random word
+  .word 0xbeefcaf2          // Random word
+  .skip ((1 << 10) - 7)*4
+  jr ra
+
+//---------------------------------------------------------------------------------------------------------------------------------
+
+// Page Table
+.align 12
+rvtest_slvl0_pg_tbl:
+    .skip(4096)
+
+canary_mismatch: .string "Testcase signature canary mismatch!"
+test_1: .string "\"Mismatch in Test Case 1!\""
+test_2: .string "\"Mismatch in Test Case 2!\""
+
+RVTEST_DATA_END
+RVTEST_SIG_SETUP

@@ -1,0 +1,3 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs2_edges,cmp_rs1_rs2,cmp_rd_rs1,cmp_rd_rs2,cmp_rd_rs1_rs2,cp_align
+amocas.h,A,x,x,x,nx0,x,x,x,nx0,nx0,x,nx0,hword
+amocas.b,A,x,x,x,nx0,x,x,x,nx0,nx0,x,nx0,byte

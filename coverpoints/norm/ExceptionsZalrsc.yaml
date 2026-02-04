@@ -2,3 +2,12 @@ normative_rule_definitions:
   # store, store-conditional, and AMO instructions generate store/AMO exceptions.
   - name: mcause_exccode_st_sc_amo
     coverpoint: [""]
+
+  - name: sc_retire_permission
+    coverpoint: [""]
+
+  - name: sc_failed_as_store
+    coverpoint: [""]
+
+  - name: lr_sc_alignment
+    coverpoint: [""]

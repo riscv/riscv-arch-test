@@ -18,16 +18,14 @@ parameter_definitions:
     effect: ["If 'ro', tests cannot set `mtvec` and generate a trap signature"]
   - name: MTVEC_BASE_ALIGNMENT_DIRECT
     coverpoint: ["all exception coverpoints"]
-    effect: ["Values > 4 not yet supported"]
-  - name: MTVEC_BASE_ALIGNMENT_VECTORED
-    coverpoint: ["all"]
-    effect: ["Values > 4 not yet supported"]
+    effect:
+      [
+        "DUT config/model_test.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
+      ]
   - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
-    coverpoint: ["TODO"]
-    effect: [""]
-  - name: MTVEC_MODES
-    coverpoint: ["TODO"]
-    effect: [""]
+    coverpoint: ["all exception coverpoints"]
+    effect:
+      ["If `mtvec` cannot be written with trap handler, tests will not operate"]
   - name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
     coverpoint: ["cp_illegal_instruction"]
     effect: ["Affects value written to `mtval`"]

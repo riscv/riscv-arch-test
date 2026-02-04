@@ -1,0 +1,521 @@
+# yaml-language-server: $schema=../../../external/riscv-unified-db/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: spike-rv32-max
+description: rv32 with all non-conflicting extensions enabled
+implemented_extensions:
+  - { name: A, version: "= 2.1.0" }
+  - { name: B, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: H, version: "= 1.0.0" }
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Q, version: "= 1.0.0" }
+  - { name: S, version: "= 1.13.0" }
+  - { name: Sdext, version: "= 1.0.0" }
+  - { name: Sdtrig, version: "= 1.0.0" }
+  - { name: Sha, version: "= 1.0.0" }
+  - { name: Shcounterenw, version: "= 1.0.0" }
+  - { name: Shgatpa, version: "= 1.0.0" }
+  - { name: Shtvala, version: "= 1.0.0" }
+  - { name: Shvsatpa, version: "= 1.0.0" }
+  - { name: Shvstvala, version: "= 1.0.0" }
+  - { name: Shvstvecd, version: "= 1.0.0" }
+  - { name: Sm, version: "= 1.13.0" }
+  - { name: Smaia, version: "= 1.0.0" }
+  - { name: Smcdeleg, version: "= 1.0.0" }
+  - { name: Smcntrpmf, version: "= 1.0.0" }
+  - { name: Smcsrind, version: "= 1.0.0" }
+  - { name: Smctr, version: "= 1.0.0" }
+  - { name: Smdbltrp, version: "= 1.0.0" }
+  - { name: Smepmp, version: "= 1.0.0" }
+  - { name: Smhpm, version: "= 1.13.0" }
+  - { name: Smpmp, version: "= 1.13.0" }
+  - { name: Smrnmi, version: "= 1.0.0" }
+  - { name: Smstateen, version: "= 1.0.0" }
+  - { name: Ssaia, version: "= 1.0.0" }
+  - { name: Ssccfg, version: "= 1.0.0" }
+  - { name: Ssccptr, version: "= 1.0.0" }
+  - { name: Sscofpmf, version: "= 1.0.0" }
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  - { name: Sscsrind, version: "= 1.0.0" }
+  - { name: Ssctr, version: "= 1.0.0" }
+  - { name: Ssdbltrp, version: "= 1.0.0" }
+  - { name: Ssqosid, version: "= 1.0.0" }
+  - { name: Ssstateen, version: "= 1.0.0" }
+  - { name: Ssstrict, version: "= 1.0.0" }
+  - { name: Sstc, version: "= 1.0.0" }
+  - { name: Sstvala, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  - { name: Sstvecv, version: "= 1.0.0" }
+  - { name: Ssu32xl, version: "= 1.0.0" }
+  - { name: Ssube, version: "= 1.0.0" }
+  - { name: Sv32, version: "= 1.13.0" }
+  - { name: Svade, version: "= 1.0.0" }
+  # - { name: Svadu, version: "= 1.0.0" } # TODO: Re-enable when https://github.com/riscv/riscv-unified-db/issues/1217 is fixed
+  - { name: Svbare, version: "= 1.0.0" }
+  - { name: Svinval, version: "= 1.0.0" }
+  - { name: Svvptc, version: "= 1.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: V, version: "= 1.0.0" }
+  - { name: Za128rs, version: "= 1.0.0" }
+  - { name: Za64rs, version: "= 1.0.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
+  - { name: Zacas, version: "= 1.0.0" }
+  - { name: Zalasr, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: Zama16b, version: "= 1.0.0" }
+  - { name: Zawrs, version: "= 1.0.1" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zcmop, version: "= 1.0.0" }
+  - { name: Zfa, version: "= 1.0.0" }
+  - { name: Zfbfmin, version: "= 1.0.0" }
+  - { name: Zfh, version: "= 1.0.0" }
+  - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zic64b, version: "= 1.0.0" }
+  - { name: Zicbom, version: "= 1.0.0" }
+  - { name: Zicbop, version: "= 1.0.0" }
+  - { name: Zicboz, version: "= 1.0.0" }
+  - { name: Ziccamoa, version: "= 1.0.0" }
+  - { name: Ziccamoc, version: "= 1.0.0" }
+  - { name: Ziccif, version: "= 1.0.0" }
+  - { name: Zicclsm, version: "= 1.0.0" }
+  - { name: Ziccrse, version: "= 1.0.0" }
+  - { name: Zicfilp, version: "= 1.0.0" }
+  - { name: Zicfiss, version: "= 1.0.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Zicond, version: "= 1.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zilsd, version: "= 1.0.0" }
+  - { name: Zimop, version: "= 1.0.0" }
+  - { name: Zk, version: "= 1.0.0" }
+  - { name: Zkn, version: "= 1.0.0" }
+  - { name: Zknd, version: "= 1.0.0" }
+  - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zknh, version: "= 1.0.0" }
+  - { name: Zkr, version: "= 1.0.0" }
+  - { name: Zks, version: "= 1.0.0" }
+  - { name: Zksed, version: "= 1.0.0" }
+  - { name: Zksh, version: "= 1.0.0" }
+  - { name: Zkt, version: "= 1.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: Zvbb, version: "= 1.0.0" }
+  - { name: Zvbc, version: "= 1.0.0" }
+  - { name: Zve32f, version: "= 1.0.0" }
+  - { name: Zve32x, version: "= 1.0.0" }
+  - { name: Zve64d, version: "= 1.0.0" }
+  - { name: Zve64f, version: "= 1.0.0" }
+  - { name: Zve64x, version: "= 1.0.0" }
+  - { name: Zvfbfmin, version: "= 1.0.0" }
+  - { name: Zvfbfwma, version: "= 1.0.0" }
+  - { name: Zvfh, version: "= 1.0.0" }
+  - { name: Zvfhmin, version: "= 1.0.0" }
+  - { name: Zvkb, version: "= 1.0.0" }
+  - { name: Zvkg, version: "= 1.0.0" }
+  - { name: Zvkn, version: "= 1.0.0" }
+  - { name: Zvknc, version: "= 1.0.0" }
+  - { name: Zvkned, version: "= 1.0.0" }
+  - { name: Zvkng, version: "= 1.0.0" }
+  - { name: Zvknha, version: "= 1.0.0" }
+  - { name: Zvknhb, version: "= 1.0.0" }
+  - { name: Zvks, version: "= 1.0.0" }
+  - { name: Zvksc, version: "= 1.0.0" }
+  - { name: Zvksed, version: "= 1.0.0" }
+  - { name: Zvksg, version: "= 1.0.0" }
+  - { name: Zvksh, version: "= 1.0.0" }
+  - { name: Zvkt, version: "= 1.0.0" }
+  - { name: Zvl32b, version: "= 1.0.0" }
+  - { name: Zvl64b, version: "= 1.0.0" }
+  - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
+  - { name: Zvl512b, version: "= 1.0.0" }
+  - { name: Zvl1024b, version: "= 1.0.0" }
+
+params:
+  # A params
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  MUTABLE_MISA_A: false
+  # M params
+  MUTABLE_MISA_M: false
+  # F params
+  MUTABLE_MISA_F: false
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  # D params
+  MUTABLE_MISA_D: false
+  # Q params
+  MUTABLE_MISA_Q: false
+  # C params
+  MUTABLE_MISA_C: false
+  # B params
+  MUTABLE_MISA_B: true
+  # V params
+  #MUTABLE_MISA_V: false
+  #HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  # CBO params
+  CACHE_BLOCK_SIZE: 64
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: true
+  # U params
+  MUTABLE_MISA_U: false
+  U_MODE_ENDIANNESS: dynamic
+  UXLEN: [32]
+  TRAP_ON_ECALL_FROM_U: true
+  # S params
+  MUTABLE_MISA_S: false
+  ASID_WIDTH: 9
+  S_MODE_ENDIANNESS: dynamic
+  SXLEN: [32]
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 32
+  SCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  STVEC_MODE_DIRECT: true
+  STVEC_MODE_VECTORED: true
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: true
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_TVM_IMPLEMENTED: true
+  # Sm params
+  MXLEN: 32
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x24
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x100
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+  CONFIG_PTR_ADDRESS: 0
+  PMA_GRANULARITY: 3
+  PHYS_ADDR_WIDTH: 34
+  M_MODE_ENDIANNESS: dynamic
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  # Smpmp params
+  NUM_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 4
+  # Smhpm params
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  HPM_EVENTS: [0]
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # Vector params
+  MUTABLE_MISA_V: false
+  VLEN: 1024
+  ELEN: 64
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
+  # H params
+  MUTABLE_MISA_H: false
+  VSXLEN: [32]
+  VUXLEN: [32]
+  VMID_WIDTH: 7
+  VS_MODE_ENDIANNESS: little
+  VU_MODE_ENDIANNESS: little
+  GSTAGE_MODE_BARE: true
+  VSSTAGE_MODE_BARE: true
+  VSTVEC_MODE_DIRECT: true
+  VSTVEC_MODE_VECTORED: true
+  HSTATEEN_ENVCFG_TYPE: rw
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  SV32_VSMODE_TRANSLATION: true
+  SV32X4_TRANSLATION: true
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  TRAP_ON_ECALL_FROM_VS: true
+  HCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # Zicfilp params
+  REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
+  REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
+  REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
+  # Zicfiss params
+  REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
+  REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
+  REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
+  # Sdtrig params
+  DBG_HCONTEXT_WIDTH: 14
+  DBG_SCONTEXT_WIDTH: 32
+  DCSR_MPRVEN_TYPE: rw
+  DCSR_STEPIE_TYPE: rw
+  DCSR_STOPCOUNT_TYPE: rw
+  DCSR_STOPTIME_TYPE: rw
+  HCONTEXT_AVAILABLE: true
+  HSTATEEN_CONTEXT_TYPE: rw
+  MCONTEXT_AVAILABLE: true
+  # Ssqosid params
+  MCID_WIDTH: 12
+  RCID_WIDTH: 12
+  # Smstateen params
+  MSTATEEN_ENVCFG_TYPE: rw
+  MSTATEEN_CONTEXT_TYPE: rw
+  # Csrind params
+  HSTATEEN_CSRIND_TYPE: rw
+  MSTATEEN_CSRIND_TYPE: rw
+  # AIA params
+  HSTATEEN_AIA_TYPE: rw
+  MSTATEEN_AIA_TYPE: rw
+  MSTATEEN_IMSIC_TYPE: rw
+  HSTATEEN_IMSIC_TYPE: rw

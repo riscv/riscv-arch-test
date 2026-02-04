@@ -452,7 +452,6 @@ def main() -> None:
 
     # Process each input YAML file
     for yaml_file in yaml_files:
-        print(f'Processing: {yaml_file.name}')
         entries = parse_input_yaml(yaml_file)
 
         if not entries:
@@ -462,7 +461,64 @@ def main() -> None:
         base = yaml_file.stem
         outpath = out_path / f'{base}_parameters.adoc'
         make_param_table(entries, udb_params, outpath, base)
-        print(f'  Generated: {outpath}')
+
+    # Also produce a placeholder .adoc for any extension that has a norm adoc
+    # but lacks a corresponding input YAML in the provided yaml source directory.
+    # We treat files named "<base>_norm_rules.adoc" in ctp/src/norm as extensions.
+
+    # Resolve norm directory relative to repository layout
+    script_dir = Path(__file__).resolve().parent
+    # Prefer top-level ctp/src/norm relative to the repo (sibling of generators)
+    repo_root_candidate = script_dir.parent.parent  # .../riscv-arch-test-dh
+    norm_dir_candidates = [
+        repo_root_candidate / 'ctp' / 'src' / 'norm',
+        (Path.cwd() / 'src' / 'norm'),
+    ]
+    norm_dir = None
+    for cand in norm_dir_candidates:
+        if cand.exists():
+            norm_dir = cand
+            break
+
+    if norm_dir is None:
+        print('Warning: norm directory not found; skipping placeholder generation', file=sys.stderr)
+    else:
+        # Collect base names from norm files
+        norm_bases: set[str] = set()
+        for f in norm_dir.glob('*_norm_rules.adoc'):
+            name = f.name
+            if name.endswith('_norm_rules.adoc'):
+                base = name[: -len('_norm_rules.adoc')]
+                if base:
+                    norm_bases.add(base)
+
+        # Collect bases that already have YAML inputs
+        yaml_bases: set[str] = set()
+        for yf in yaml_files:
+            yaml_bases.add(yf.stem)
+
+        # Determine which bases are missing YAML
+        missing_bases = sorted(b for b in norm_bases if b not in yaml_bases)
+
+        # Common header
+        argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
+        command_line = ' '.join(argv_abs)
+        gen_date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+
+        for base in missing_bases:
+            outpath = out_path / f'{base}_parameters.adoc'
+            lines = [
+                '// WARNING: This file was automatically generated.',
+                '// Do not modify by hand.',
+                f'// Generation command: {command_line}',
+                f'// Generation date: {gen_date}',
+                f'// Note: No corresponding input YAML found in "{yaml_path}"; generating placeholder.',
+                '',
+                '*UDB Parameters:* None.',
+                '',
+            ]
+            outpath.parent.mkdir(parents=True, exist_ok=True)
+            outpath.write_text('\n'.join(lines), encoding='utf-8')
 
     # Generate summary
     summary_path = out_path / 'summary.adoc'

@@ -21,7 +21,7 @@ The trick box is implemented with DUT-specific macros in given in <<t-trickbox>>
 |===
 |Macro|Description
 |RVMODEL_DATA_SECTION|Model-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.
-|RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state
+|RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state. Cannot clobber `x1`/`ra`, but any other registers may be trashed.
 |RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.
 |RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro.

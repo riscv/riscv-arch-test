@@ -242,6 +242,18 @@
     upperreg_fmv_rs1 : cross upper_reg_fmv, rs1_16_31, rd_1_15;
     upperreg_fmv_rd : cross upper_reg_fmv, rd_16_31, rs1_1_15;
 
+    amocas_odd : coverpoint ins.current.insn {
+        wildcard bins amocas_d_odd_rd  = {32'b00101????????????_011_????1_0101111};
+        wildcard bins amocas_q_odd_rd  = {32'b00101????????????_100_????1_0101111};
+        wildcard bins amocas_d_odd_rs1 = {32'b00101???????????1_011_?????_0101111};
+        wildcard bins amocas_q_odd_rs1 = {32'b00101???????????1_100_?????_0101111};
+    }
+
+    // fadd with dynamic rounding mode is reserved for frm = 5, 6, 7
+    reserved_rm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "frm", "frm")[2:0]
+                    iff (ins.current.insn[6:0] == 7'b1010011 & ins.current.insn[31:27] == 5'b00000 & ins.current.insn[14:12] == 3'b111) {
+        // check all bins
+    }
 
     // *** TODO add all misa_ext_disable tests to all versions of Ssstrict
 

@@ -114,12 +114,13 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
 ]
 
 def writeLine(argument: str, comment = ""):
-  tab_over_distance = 50
+  comment_distance = 50
+  tab_size = 4
 
-  argument = str(argument)
+  argument = (" " * tab_size * common.tab_count) + str(argument)
 
   if comment != "":
-    padding = max(0, tab_over_distance - len(argument))
+    padding = max(0, comment_distance - len(argument))
     comment = " " * padding + str(comment)
 
   f.write(argument + comment +"\n")

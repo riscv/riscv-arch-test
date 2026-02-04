@@ -23,32 +23,32 @@ from testgen.io.writer import write_test_file
 
 
 def generate_unpriv_extension_tests(
-    xlen: int, E_ext: bool, extension: str, testplan_dir: Path, output_test_dir: Path
+    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path
 ) -> None:
     """
-    Generate tests for all instructions in a given unprivileged extension.
+    Generate tests for all instructions in a given unprivileged testsuite.
 
     Args:
         xlen: Target XLEN (32 or 64)
         E_ext: Whether to generate RV32E tests
-        extension: Extension to generate tests for (e.g., 'I', 'M', 'Zmmul')
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
     """
-    # Read testplan for this extension
-    instructions = read_testplan(testplan_dir / f"{extension}.csv")
-    if extension == "I" and E_ext:
-        extension = "E"
+    # Read testplan for this testsuite
+    instructions = read_testplan(testplan_dir / f"{testsuite}.csv")
+    if testsuite == "I" and E_ext:
+        testsuite = "E"
 
-    # Create extension-wide test configuration
-    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{extension}"
+    # Create testsuite-wide test configuration
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    flen = get_flen_for_extension(extension)
-    config_dependent = extension in CONFIG_DEPENDENT_EXTENSIONS
-    test_config = TestConfig(xlen=xlen, flen=flen, extension=extension, E_ext=E_ext, config_dependent=config_dependent)
+    flen = get_flen_for_extension(testsuite)
+    config_dependent = testsuite in CONFIG_DEPENDENT_EXTENSIONS
+    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, config_dependent=config_dependent)
 
-    # Iterate through each instruction in the extension; generate separate test files for each
+    # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_name, instr_data in sorted(instructions.items()):
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):

@@ -1,0 +1,168 @@
+# SPMP (S-mode Physical Memory Protection) Coverage Configuration
+# Extension: Sspmp (requires Sscsrind for indirect CSR access)
+#
+# SPMP provides physical memory protection for S-mode and U-mode software,
+# configured via indirect CSR access mechanism.
+#
+# Register Layout (each spmpcfg is SXLEN bits):
+#   Bit 0: R (read permission)
+#   Bit 1: W (write permission)
+#   Bit 2: X (execute permission)
+#   Bits [4:3]: A (address matching mode)
+#     00 = OFF (disabled)
+#     01 = TOR (Top of Range)
+#     10 = NA4 (Naturally aligned 4-byte)
+#     11 = NAPOT (Naturally aligned power-of-2)
+#   Bits [6:5]: Reserved (WPRI)
+#   Bit 7: L (lock)
+#   Bit 8: U (user mode access)
+#   Bit 9: S (shared region)
+#   Bits [SXLEN-1:10]: Reserved (WPRI)
+
+# SPMP Configuration Permission Combinations
+SPMP_CFG_R:     0x01    # Read only
+SPMP_CFG_W:     0x02    # Write only (invalid without R in most cases)
+SPMP_CFG_X:     0x04    # Execute only
+SPMP_CFG_RW:    0x03    # Read + Write
+SPMP_CFG_RX:    0x05    # Read + Execute
+SPMP_CFG_WX:    0x06    # Write + Execute (invalid without R in most cases)
+SPMP_CFG_RWX:   0x07    # Read + Write + Execute
+
+# SPMP Address Matching Modes
+SPMP_CFG_OFF:   0x00    # Disabled
+SPMP_CFG_TOR:   0x08    # Top of Range
+SPMP_CFG_NA4:   0x10    # Naturally aligned 4-byte
+SPMP_CFG_NAPOT: 0x18    # Naturally aligned power-of-2
+
+# SPMP Special Bits
+SPMP_CFG_L:     0x80    # Lock bit
+SPMP_CFG_U:     0x100   # User mode access
+SPMP_CFG_S:     0x200   # Shared region
+
+# Combined configurations
+SPMP_CFG_LRWX:  0x87    # Locked + RWX
+SPMP_CFG_LRX:   0x85    # Locked + RX
+SPMP_CFG_LRW:   0x83    # Locked + RW
+SPMP_CFG_LR:    0x81    # Locked + R
+SPMP_CFG_LX:    0x84    # Locked + X
+
+# ============================================================================
+# SPMP Configuration Register Access Tests
+# ============================================================================
+SPMP_CFG_access:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci}" : 0
+  csr_comb:
+    # Verify siselect can be set to SPMP range (0x100-0x13F)
+    (siselect >= 0x100) and (siselect <= 0x13F): 0
+    # Verify sireg2 access for spmpcfg
+    (siselect >= 0x100) and (siselect <= 0x13F) and (sireg2 != old_csr_val("sireg2")): 0
+
+# ============================================================================
+# SPMP Address Matching Mode Tests
+# ============================================================================
+SPMP_CFG_A_modes:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Test all address matching modes via sireg2
+    # OFF mode (A=00)
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_OFF}): 0
+    # TOR mode (A=01)
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_TOR}): 0
+    # NA4 mode (A=10)
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_NA4}): 0
+    # NAPOT mode (A=11)
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_NAPOT}): 0
+
+# ============================================================================
+# SPMP Permission Combinations
+# ============================================================================
+SPMP_CFG_permissions:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Test permission combinations
+    # R only
+    (siselect >= 0x100) and ((sireg2 & 0x07) == ${SPMP_CFG_R}): 0
+    # R+W
+    (siselect >= 0x100) and ((sireg2 & 0x07) == ${SPMP_CFG_RW}): 0
+    # R+X
+    (siselect >= 0x100) and ((sireg2 & 0x07) == ${SPMP_CFG_RX}): 0
+    # R+W+X
+    (siselect >= 0x100) and ((sireg2 & 0x07) == ${SPMP_CFG_RWX}): 0
+    # X only
+    (siselect >= 0x100) and ((sireg2 & 0x07) == ${SPMP_CFG_X}): 0
+
+# ============================================================================
+# SPMP Special Bits Tests
+# ============================================================================
+SPMP_CFG_special_bits:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Test U (user mode) bit
+    (siselect >= 0x100) and ((sireg2 & ${SPMP_CFG_U}) != 0): 0
+    # Test S (shared) bit
+    (siselect >= 0x100) and ((sireg2 & ${SPMP_CFG_S}) != 0): 0
+    # Test L (lock) bit
+    (siselect >= 0x100) and ((sireg2 & ${SPMP_CFG_L}) != 0): 0
+    # Test U + S combination
+    (siselect >= 0x100) and ((sireg2 & 0x300) == 0x300): 0
+
+# ============================================================================
+# SPMP Address Register Access Tests
+# ============================================================================
+SPMP_ADDR_access:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Verify sireg access for spmpaddr
+    (siselect >= 0x100) and (siselect <= 0x13F) and (sireg != old_csr_val("sireg")): 0
+    # Test writing all ones (for granularity detection)
+    (siselect >= 0x100) and (sireg == -1): 0
+    # Test writing zeros
+    (siselect >= 0x100) and (sireg == 0): 0
+
+# ============================================================================
+# SPMP Multiple Entry Tests
+# ============================================================================
+SPMP_multiple_entries:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Test entry 0
+    (siselect == 0x100): 0
+    # Test entry 1
+    (siselect == 0x101): 0
+    # Test entry 63 (max)
+    (siselect == 0x13F): 0
+    # Test siselect transitions
+    (old_csr_val("siselect") != siselect) and (siselect >= 0x100) and (siselect <= 0x13F): 0
+
+# ============================================================================
+# SPMP Granularity Detection
+# ============================================================================
+SPMP_granularity:
+  config:
+    - check ISA:=regex(.*64.*); check ISA:=regex(.*I.*S.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; verify (Sspmp['implemented']); verify (Sscsrind['implemented']);
+  mnemonics:
+    "{csrrw, csrrs, csrrc}" : 0
+  csr_comb:
+    # Granularity detection: write -1 to spmpaddr with spmpcfg.A=OFF, read back
+    (siselect >= 0x100) and ((sireg2 & 0x18) == 0) and (sireg == -1): 0
+    # Check address bits behavior in NAPOT mode vs OFF mode
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_NAPOT}): 0
+    (siselect >= 0x100) and ((sireg2 & 0x18) == ${SPMP_CFG_OFF}): 0

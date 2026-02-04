@@ -325,6 +325,26 @@
 #define PMP_NA4   0x10
 #define PMP_NAPOT 0x18
 
+/* SPMP (S-mode Physical Memory Protection) Configuration Fields */
+/* Each spmpcfg register is SXLEN bits (one per entry, not packed like PMP) */
+/* Access via indirect CSR mechanism: siselect = 0x100 + i, sireg2 = spmpcfg[i] */
+#define SPMP_R          0x01    /* Read permission */
+#define SPMP_W          0x02    /* Write permission */
+#define SPMP_X          0x04    /* Execute permission */
+#define SPMP_A          0x18    /* Address matching mode mask */
+#define SPMP_A_OFF      0x00    /* Address matching: OFF (disabled) */
+#define SPMP_A_TOR      0x08    /* Address matching: TOR (Top of Range) */
+#define SPMP_A_NA4      0x10    /* Address matching: NA4 (Naturally aligned 4-byte) */
+#define SPMP_A_NAPOT    0x18    /* Address matching: NAPOT (Naturally aligned power-of-2) */
+#define SPMP_L          0x80    /* Lock bit */
+#define SPMP_U          0x100   /* User mode access */
+#define SPMP_S          0x200   /* Shared region (SHARED bit) */
+#define SPMP_SHIFT      2       /* Address shift for granularity */
+
+/* SPMP siselect base value for indirect access */
+#define SPMP_SELECT_BASE    0x100   /* siselect = 0x100 + entry_index (0..63) */
+#define SPMP_SELECT_END     0x13F   /* Last valid siselect for SPMP */
+
 #define IRQ_U_SOFT   0
 /* Define PMP Configuration Fields */
 #define PMP0_CFG_SHIFT  0

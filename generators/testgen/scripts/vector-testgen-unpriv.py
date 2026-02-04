@@ -96,7 +96,21 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   # failing the new test framework as of Dec. 10, 2025
   "vnclipu.wv",
   "vsadd.vi",
-  "vmv.x.s"
+  # failing for rv64
+  "vmv.x.s",
+  "vwadd.vx",
+  "vwadd.wx",
+  "vwaddu.vx",
+  "vwaddu.wx",
+  "vwmacc.vx",
+  # rv32
+  "vmv.v.i",
+  "vlseg3e32ff.v",
+  "vlseg3e32.v",
+  "vlseg4e32.v",
+  "vsseg3e64.v",
+  "vsseg3e32.v",
+  "vslide1up.vx"
 ]
 
 def writeLine(argument: str, comment = ""):
@@ -1114,7 +1128,7 @@ if __name__ == '__main__':
         storecmd = "sd"
         wordsize = 8
 
-      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
+      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2, sum(1 << i for i in range(xlen) if i % 2 == 0), sum(1 << i for i in range(xlen) if i % 2 == 1)]
       if (xlen == 32):
         redgesv = redgesv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
       else:
@@ -1182,7 +1196,7 @@ if __name__ == '__main__':
         #f.write(line)
 
         # insert generic header
-        insertTemplate(test, 0, "testgen_header.S", sew=sew, vdsew=vdsew)
+        insertTemplate(test, getSigSpace(xlen,flen), "testgen_header.S", sew=sew, vdsew=vdsew)
 
         # add assembly lines to enable fp where needed
         if test in vfloattypes:

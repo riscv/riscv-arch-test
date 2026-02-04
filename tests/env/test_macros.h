@@ -100,21 +100,6 @@
     SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
     addi a0, a0, -2*sv_area_sz                                  ;
 
-#define SAVE_AREA_SETUP_V(VA, PA_LBL, _REG_NAME)                ;\
-    LI(  t0, VA)                                                ;\
-    srli t0, t0, 12                                             ;\
-    slli t0, t0, 12                                             ;\
-    LREG t1, _REG_NAME##_bgn_off+0*sv_area_sz(sp)               ;\
-    LI(  t2, 0xFFF)                                             ;\
-    and  t2, t1, t2                                             ;\
-    or   t0, t0, t2                                             ;\
-    LA(  t2, PA_LBL)                                            ;\
-    sub  t0, t0, t2                                             ;\
-    add  t2, t1, t0                                             ;\
-    addi sp, sp, 2*sv_area_sz                                   ;\
-    SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(sp)               ;\
-    addi sp, sp, -2*sv_area_sz                                  ;
-
 #define PTE_SETUP_RV64(_PAR, _PR, _TR0, _TR1, VA, level, mode)  ;\
     srli _PAR, _PAR, 12                                         ;\
     slli _PAR, _PAR, 10                                         ;\

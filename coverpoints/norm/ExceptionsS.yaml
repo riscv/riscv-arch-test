@@ -39,3 +39,12 @@ normative_rule_definitions:
   # the value of xIE; xIE is set to 0; and xPP is set to y.
   - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
     coverpoint: [""]
+
+  # The SPP bit indicates the privilege level at which a hart was executing before
+  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
+  # originated from user mode, or 1 otherwise. When an SRET instruction (see ) is
+  # executed to return from the trap handler, the privilege level is set to user
+  # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
+  # set to 0.
+  - names: [sstatus-spp_sz, sstatus-spp_acc, sstatus-spp_op]
+    coverpoint: [""]

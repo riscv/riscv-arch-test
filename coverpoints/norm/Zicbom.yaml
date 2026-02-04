@@ -1,0 +1,27 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
+  # Enable) field to senvcfg to control execution of the CBO.CLEAN and CBO.FLUSH
+  # instructions in U-mode. Execution of these instructions in U-mode is enabled
+  # only if execution of these instructions is enabled for use in S-mode and CBCFE
+  # is set to 1; otherwise, an illegal-instruction exception is raised. When the
+  # Zicbom extension is not implemented, CBCFE is read-only zero.
+  - name: senvcfg-cbcfe
+    coverpoint: [""]
+
+  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
+  # WARL field to senvcfg to control execution of the CBO.INVAL instruction in
+  # U-mode. The encoding 10b is reserved. When the Zicbom extension is not
+  # implemented, CBIE is read-only zero. Execution of CBO.INVAL in U-mode is enabled
+  # only if execution of the instruction is enabled for use in S-mode and CBIE is
+  # set to 01b or 11b; otherwise, an illegal-instruction exception is raised.
+  - name: senvcfg-cbie
+    coverpoint: [""]
+
+  # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
+  # instruction is enabled in U-mode it performs a flush operation, even if CBIE is
+  # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
+  # encoding:
+  - name: cbo-inval_s-mode_op
+    coverpoint: [""]

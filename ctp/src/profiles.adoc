@@ -320,6 +320,8 @@ A hart with these features can still be certified if it meets all other requirem
 
 Certification places basic requirements on the DUT.
 
+TODO: These should move to the CRD when it is ready.
+
 ==== Conforming M-Mode
 
 The privileged testplan relies on a machine mode conforming to Sm1p12 machine architecture or later.  (See also, the privileged spec, link:https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm:m-mode-mandatory["All hardware implementations must provide M-mode"].)  The tests need to configure machine-mode CSRs that affect the behavior of lower privilege modes. This is done most easily by directly writing such registers using standard instructions in machine mode.  It is theoretically possible to write tests that only operate in S and U-mode, and use some sort of generalized SBI interface to request machine mode configurations even from non-conforming machine-mode implementations, but no such SBI interface exists at this time and the complexity seems to exceed the benefit.  Therefore, privileged tests rely on machine-mode, and also contain coverpoints and tests to check that privileged behaviors work correctly in machine mode.

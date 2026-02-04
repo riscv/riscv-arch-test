@@ -44,7 +44,6 @@ covergroup UV_cg with function sample(ins_t ins);
 
     cp_uvcsr_access:           cross priv_mode_u, csrname, csraccesses;
     cp_uvcsrwalk:              cross priv_mode_u, csrname, csrop, walking_ones;
-    cp_ucsr_from_m:            cross priv_mode_m, csrname, csraccesses;
 endgroup
 
 function void uv_sample(int hart, int issue, ins_t ins);

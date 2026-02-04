@@ -1219,7 +1219,7 @@ if __name__ == '__main__':
         # Set up vl = 1 for base suite
         f.write("\n")
         f.write("// Initial set vl = 1\n")
-        f.write("li x2, 1\n")
+        f.write("li x31, 1\n")
         f.write(f"vsetvli x0, x2, e{sew}, m1, tu, mu\n")
 
         # include ifdefs for widening/narrowing instr, which doesn't exist in the ELEN suite

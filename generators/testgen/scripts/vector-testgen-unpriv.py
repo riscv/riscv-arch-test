@@ -570,19 +570,34 @@ def make_custom_gprWriting_vstart_eq_vl(instruction, sew):
   incrementLengthtestCount()
   vsAddressCount("length")
 
-def make_custom_vext_overlapping_vd_vs2(instruction, sew, vext):
+def make_custom_vext_overlapping_vd_vs2(instruction, sew, vext_ins):
   # vext is the suffix of the extension, e.g. "f2" of vsext.vf2
-  lmul = int(vext[1])                                   # "2" of "f2"
-  vd = randint(0, math.floor((vreg_count-1)/lmul)) * lmul   # ensure that vd is on group with the given lmul
-  vs2 = vd + (lmul - 1)                                 # force vs2 to overlap with the top of vd
-  vs1 = randomizeOngroupVectorRegister(instruction, vs2, vd, lmul=lmul)
+  # Generate tests for multiple LMUL values depending on the suffix:
+  #  - "f2" -> LMULs 2, 4, 8
+  #  - "f4" -> LMULs 4, 8
+  #  - "f8" -> LMUL 8
+  if vext_ins == "f2":
+    lmul_list = [2, 4, 8]
+  elif vext_ins == "f4":
+    lmul_list = [4, 8]
+  elif vext_ins == "f8":
+    lmul_list = [8]
+  else:
+    lmul_list = [int(vext_ins[1])]
 
-  description = f"cp_custom_vext{lmul}_overlapping_vd_vs2"
-  instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = vs1, suite="base", lmul = lmul)
+  vext = int(vext_ins[1])
 
-  writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul)
-  incrementBasetestCount()
-  vsAddressCount()
+  for lmul in lmul_list:
+    vd = randint(0, math.floor((vreg_count-1)/lmul)) * lmul   # ensure that vd is on group with the given lmul
+    vs2 = vd + (lmul - int(lmul/vext))                                 # force vs2 to overlap with the top of vd
+    vs1 = randomizeOngroupVectorRegister(instruction, vs2, vd, lmul=lmul)
+
+    description = f"cp_custom_vext{vext}_overlapping_vd_vs2 (lmul = {lmul})"
+    instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = vs1, suite="base", lmul = lmul)
+
+    writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul)
+    incrementBasetestCount()
+    vsAddressCount()
 
 def make_custom_vdOverlapTopVs1_vd_vs1(instruction, sew, lmul):
   emul = 2 * lmul

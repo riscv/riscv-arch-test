@@ -17,8 +17,6 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-# command prefix (elf path will be appended)
-
 
 def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     """Run a single ELF and return (elf_path, passed, exit_code)."""
@@ -30,7 +28,7 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     full_cmd = [*cmd, str(elf_path)]
 
     with log_file.open("w") as f:
-        result = subprocess.run(full_cmd, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60)
+        result = subprocess.run(full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60)
 
     failed = result.returncode != 0
 

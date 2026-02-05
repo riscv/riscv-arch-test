@@ -179,7 +179,7 @@ As with other unprivileged testplans, an x in the spreadsheet indicates to use t
 * ls_e{8/16/32/64}: load/store edges with EEW=8,...,64.  Used to convert strided loads from elements to bytes.
 * ls: load/store edges instead of integer edges: vs2={0, random < 2*VLMAX}.  rs2= {1, 2, -1, -2, 0}
 * f: floating-point edges instead of integer edges: ***
-* cp_custom_*: custom coverpoint defined in the coverage file.  See definitions for https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=389766666#gid=389766666[CustomVx], https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158[CustomVf], https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158[CustomVls].
+* cp_custom_*: custom coverpoint defined in the coverage file.  See definitions for link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=389766666#gid=389766666]["CustomVx"], link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158]["CustomVf"], link:pass:[https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=704208158#gid=704208158]["CustomVls"].
 
 The coverpoints for each vector instruction are given in the following sections.
 

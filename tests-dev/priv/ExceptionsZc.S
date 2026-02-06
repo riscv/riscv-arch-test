@@ -148,8 +148,8 @@ misaligned_loop:
 /////////////////////////////////
 
     // Load the illegal address into registers
-    li      a2, ACCESS_FAULT_ADDRESS
-    la      sp, ACCESS_FAULT_ADDRESS
+    li      a2, RVMODEL_ACCESS_FAULT_ADDRESS
+    la      sp, RVMODEL_ACCESS_FAULT_ADDRESS
 
     c.lw  a3, 0(a2)
 
@@ -198,8 +198,8 @@ misaligned_loop:
 /////////////////////////////////
 
     // Load the illegal address into registers
-    li      a2, ACCESS_FAULT_ADDRESS
-    la      sp, ACCESS_FAULT_ADDRESS
+    li      a2, RVMODEL_ACCESS_FAULT_ADDRESS
+    la      sp, RVMODEL_ACCESS_FAULT_ADDRESS
 
     // Test compressed integer load instructions:
     c.sw    a3, 0(a2)     # compressed store word

@@ -43,8 +43,8 @@ include::norm/S_norm_rules.adoc[]
 [NOTE]
 ====
 sie_sip_strap_time_constraint is not tested yet.  How to handle timing constraints in certification?
-How to handle interrupts that don't get evaluated immediately after the trickbox sets them? The
-trickbox could spin until they fire, but needs to know if they should fire (e.g. not blocked by xstatus.xIE).
+How to handle interrupts that don't get evaluated immediately after the macro sets them? The
+macro could spin until they fire, but needs to know if they should fire (e.g. not blocked by xstatus.xIE).
 ====
 
 

@@ -32,7 +32,7 @@ The configuration includes
 
 * Memory map and linker with main memory starting at 0x80000000
 * Reset vector at 0x80000000, or at 0x1000 with a jump to 0x80000000 before any tests are run
-* Trick box including:
+* RVMODEL DUT-Specific Macros including:
 ** CLINT configured at 0x***
 ** *** TBD how to trigger external interrupts & HGEI
 ** RVMODEL_HALT using HTIF write_tohost followed by a infinite loop jump to self

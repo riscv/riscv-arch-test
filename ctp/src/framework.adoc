@@ -1,6 +1,8 @@
 
 == Framework
 
+DELETE this chapter and point to ACT4 documentation when ready.
+
 TODO: This section needs a complete rewrite.  riscof no longer used.  Support tests that have expected values built in without needing a reference model.
 
 The Certification Framework is the tool to:
@@ -46,7 +48,7 @@ cd riscv-arch-test
 *** directions to configuration options
 *** where to put it
 
-4) Implement the trick box macros for your DUT
+4) Implement the  btrickox macros for your DUT
 
 *** See framework/examples/wally_rv64gc/model_test.h for a trick box
 See <<Custom Trick Box Hints>> for hints about customizing the trick box to your DUT.

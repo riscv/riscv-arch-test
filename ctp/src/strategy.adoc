@@ -18,13 +18,13 @@ This file lists:
 * all of the supported extensions
 * all of the parameters required to describe the behavior of the extensions
 
-The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are described by a <<Trick Box, Trick Box>>, which is an assembly-language library implementing an API using DUT-specific hardware.
+The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are defined by a <<RVMODEL DUT-Specific Macros, RVMODEL DUT-Specific Macros>>, which are an assembly-language library implementing an API using DUT-specific hardware.
 
 === Unified Database
 
 Unified Database allows _partially-_ and _fully-configured descriptions_.  A profile is an example of a partially configured description because it has a mix of required and optional extensions, and does not specify parameter values for most of the extensions.  A DUT needs to have a fully configured description including precisely which versions of which extensions are supported and what parameter values are implemented, so that a simulator can exactly match its behavior.
 
-The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and a trick box for the DUT.
+The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and RVMODEL macros for the DUT.
 It uses UDB to produce supplementary configuration files including:
 
 * Sail JSON file configuring reference model to match DUT

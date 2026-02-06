@@ -34,8 +34,6 @@ Coverpoints are organized into .svh SystemVerilog coverage files, each of which 
 
 Tests are written in assembly language .S files. Tests are organized into directories for each extension, and into a privileged directory.  The coverpoints are hit by running all of the applicable tests in a directory.  For example, RV32I coverage involves running add.S, addi.S, sub.S, etc.  RV64I coverage also involves running addw.S, which is unique to RV64.
 
-The tests need to perform basic system-level functions, such as booting the DUT, sending interrupts, and logging results.  These functions are performed by a "trick box" that is implemented in DUT-specific macros.  The trick box is described in <<Trick Box>>.
-
 === Glossary
 
 The following terms are used in this test plan:
@@ -71,7 +69,7 @@ PMP region.
 
 * Test Suite: A collection of coverage and test files to test a particular extension, combination of extensions, or group of extensions.  For example, the RV32I test suite contains the I_coverage.svh coverage file and the rv32/I/add.S, addi.S, sub.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RV64ZfaD test suite contains the ZfaD_coverage.svh coverage file and the rv64/ZfaD/fround.d.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RVA23S64 test suite contains all of the required and selected optional test suites for the profile, incluidng RV64I, RV64ZfaD, ExceptionsS, etc.
 
-* Trick Box: A set of DUT-specific macros that perform non-ISA functions such as booting the DUT, sending interrupts, and logging results. The trick box is defined in <<Trick Box>>.
+* RVMODEL DUT-Specific Macros: A set of macros that perform _semihosting_/_trick box_ functions such as booting the DUT, sending interrupts, and logging results. The macros is defined in <<RVMODEL DUT-Specific Macros>>.
 
 [NOTE]
 ====

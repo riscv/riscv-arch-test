@@ -75,7 +75,7 @@ params:
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MTVEC_BASE_ALIGNMENT_VECTORED: 256
-  #MTVEC_BASE_ALIGNMENT_DIRECT: 256       
+  #MTVEC_BASE_ALIGNMENT_DIRECT: 256
   #Parameter is not defined by this config: 'MTVEC_BASE_ALIGNMENT_DIRECT'.
   #  Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && !`(MTVEC_ACCESS=="ro")`{false} && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `Sm>=0`{true} && `(MTVEC_ACCESS=="rw")`{true} && `$array_includes?(MTVEC_MODES, 0)`{false})
 

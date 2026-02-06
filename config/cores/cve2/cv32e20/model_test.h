@@ -80,7 +80,7 @@
 
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
-# Prints a null-terminated string by writting each byte in the string
+# Prints a null-terminated string by writing each byte in the string
 # to the address of the 'virtual printer'.
 # A pointer to the string is passed in _STR_PTR.
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
@@ -96,5 +96,5 @@
   j 1b                       ; /* Loop */             \
 3:
 
-#endif 
+#endif
 

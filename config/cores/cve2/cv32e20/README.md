@@ -18,7 +18,7 @@ It may make sense to keep using it locally to review the generated coverage file
 but can be omitted for generating the tests themselves.
 
 TODO: are these two statements true?
-Similarily EXTENSIONS can be omitted.
+Similarly EXTENSIONS can be omitted.
 If you leave EXTENSIONS blank it will only compile the tests relevant to your DUT based on your config.
 
 ```

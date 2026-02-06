@@ -48,9 +48,9 @@ cd riscv-arch-test
 *** directions to configuration options
 *** where to put it
 
-4) Implement the  btrickox macros for your DUT
+4) Implement the  RVMODEL macros for your DUT
 
-*** See framework/examples/wally_rv64gc/model_test.h for a trick box
+*** See framework/examples/wally_rv64gc/rvmodel_macros.h for a trick box
 See <<Custom Trick Box Hints>> for hints about customizing the trick box to your DUT.
 
 5) Run the framework to produce ELFs for your DUT

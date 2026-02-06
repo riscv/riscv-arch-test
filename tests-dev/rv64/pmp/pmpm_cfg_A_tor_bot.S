@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macroscroscros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -26,11 +26,11 @@
 //              Test case 2: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101,
 //               pmpcfg0.L = 1, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
 //
-// Dependencies: model_test.h, arch_test.h
+// Dependencies: rvmodel_macroscroscros.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
-#include "model_test.h"
+#include "rvmodel_macroscroscros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
 # Test code region

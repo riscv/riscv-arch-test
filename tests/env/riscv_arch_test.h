@@ -7,7 +7,7 @@
 #include "encoding.h"
 #include "utils.h"
 #ifdef SELFCHECK
-  #include "model_test.h"
+  #include "rvmodel_macros.h"
 #else
   #include "sail_test.h"
 #endif

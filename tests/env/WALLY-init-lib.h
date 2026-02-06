@@ -18,7 +18,7 @@
 // and limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "model_test.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 
 // load code to initialize stack, handle interrupts, terminate

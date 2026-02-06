@@ -41,7 +41,7 @@
 //   6: Change to supervisor mode (mret to address in sepc)
 //   8: Change to machine mode    (mret to address in sepc)
 //Macros
-//#define ACCESS_FAULT_ADDRESS 0  //defined again in rvtest_config.h
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0  //defined again in rvtest_config.h
 #define CLINT_BASE_ADDR 0x02000000
 #define PLIC_BASE_ADDR 0x0C000000
 #define GPIO_BASE_ADDR 0x10060000

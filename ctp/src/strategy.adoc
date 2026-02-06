@@ -2,8 +2,9 @@
 == General Test Plan Strategy
 
 This CTP describes tests for all supported RISC-V profiles, but the tests run on a specific DUT.
+The DUT memory map is defined by a <<Linker Script, Linker Script>>.
 The DUT configuration is described with RISC-V Unified Database, and supplementary files such as
-simulator configuration files are automatically generated from the UDB so there is a single
+simulator configuration files are (TODO) automatically generated from the UDB so there is a single
 configuration file to maintain.  The UDB describes the supported extensions, and also has parameters
 defining optional behaviors of those extensions.  If a behavior is UNSPECIFIED in the specification,
 it is not tested because there are no wrong answers.  A common purpose of parameters is to define the
@@ -18,8 +19,6 @@ This file lists:
 * all of the parameters required to describe the behavior of the extensions
 
 The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are described by a <<Trick Box, Trick Box>>, which is an assembly-language library implementing an API using DUT-specific hardware.
-
-*** is a linker script really needed?  For PMP?
 
 === Unified Database
 

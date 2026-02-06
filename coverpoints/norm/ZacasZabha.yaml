@@ -2,4 +2,5 @@
 
 normative_rule_definitions:
   - name: Zabha_amocas-BH_ignore_bits
-    coverpoint: [""]
+    coverpoint:
+      ["{ZacasZabha_amocas_b_cg, ZacasZabha_amocas_h_cg}/cp_rs2_edges"]

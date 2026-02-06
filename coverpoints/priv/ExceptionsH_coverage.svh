@@ -87,11 +87,11 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
    // ============================================================================
 
    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-       bins illegal = {`ACCESS_FAULT_ADDRESS};
+       bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
    }
 
 
-   address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
+   address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
         bins legal = {0};
         bins illegal = {1};
     }
@@ -130,7 +130,7 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
 
     // Illegal address for HLV/HSV instructions (rs1 only, no immediate)
     hlv_illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
 
 

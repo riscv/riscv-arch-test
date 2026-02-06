@@ -1,5 +1,6 @@
 # Ignore editor backup files
 *~
+*.swp
 
 #ignore Mac file system artifacts
 *.DS_Store

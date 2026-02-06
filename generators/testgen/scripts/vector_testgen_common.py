@@ -50,8 +50,7 @@ basetest_count          = 0
 lengthtest_count        = 0
 
 sigTotal                = 0 # total number of bytes in signature
-sigReg                  = 3 # start with x4 for signatures ->marina changed it to x3 because that what riscv-arch-test uses TO DO
-
+sigReg                  = 2 # DEFAULT_SIG_REG = x2 in test_setup.h
 base_suite_test_count   = 0
 length_suite_test_count = 0
 
@@ -186,7 +185,7 @@ def writeLine(argument: str, comment = ""):
 
 def newInstruction():
   global sigReg, lengthtest_count, basetest_count, base_suite_test_count, length_suite_test_count, sigupd_count
-  sigReg                    = 3
+  sigReg                    = 2
   lengthtest_count          = 0
   basetest_count            = 0
   base_suite_test_count     = 0
@@ -1212,9 +1211,9 @@ def writeSIGUPD(rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count)
-    linkReg = 4
-    linkOptions = [4, 7, 12]
-    while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == rd or linkReg + 1 == rd:
+    linkReg = 5
+    linkOptions = [5, 8, 13]
+    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == rd or linkReg - 1 == rd:
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
     tempReg = linkReg + 1

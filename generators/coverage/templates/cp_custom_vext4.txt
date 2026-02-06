@@ -28,7 +28,7 @@
     }
 
     vs2_mod4_3: coverpoint ins.current.insn[21:20] {
-        bins odd = {2'b11};
+        bins mod4_3 = {2'b11};
     }
 
     vs2_vd_overlap_lmul8: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
@@ -36,7 +36,7 @@
     }
 
     vs2_mod8_6: coverpoint ins.current.insn[22:20] {
-        bins odd = {3'b110};
+        bins mod8_6 = {3'b110};
     }
 
     cp_custom_vext4_overlapping_vd_vs2_lmul4:    cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vs2_mod4_3;

@@ -208,7 +208,7 @@ main:
     //cp_instr_access_fault
     /////////////////////////////////
 
-    li    t1, ACCESS_FAULT_ADDRESS       // Load the fault address into t0
+    li    t1, RVMODEL_ACCESS_FAULT_ADDRESS       // Load the fault address into t0
     jalr  ra, t1, 0                      // Jump to the fault address (return address must be in t2)
     nop
 
@@ -293,7 +293,7 @@ load_loop:
     /////////////////////////////////
 
     //load the illegal address into a register
-    li    t0, ACCESS_FAULT_ADDRESS
+    li    t0, RVMODEL_ACCESS_FAULT_ADDRESS
 
     // Attempt to load byte (signed)
     lb t1, 0(t0)
@@ -353,7 +353,7 @@ store_loop:
     /////////////////////////////////
 
     # Load the illegal address into a register
-    la t0, ACCESS_FAULT_ADDRESS
+    la t0, RVMODEL_ACCESS_FAULT_ADDRESS
 
     # Attempt to store byte
     li t1, 0xAB
@@ -390,7 +390,7 @@ store_loop:
     //Test misaligned priority for load instructions
 
   # Get a pointer to an access fault address and deliberately misalign it by adding 1
-    la      t4, ACCESS_FAULT_ADDRESS
+    la      t4, RVMODEL_ACCESS_FAULT_ADDRESS
 
     # Initialize loop counter (offset) from 0 to 7
     li      t0, 0         # t0 = loop index (offset)
@@ -433,7 +433,7 @@ load_loop_priority:
     //Test misaligned priority for store instructions
 
         # Get a pointer to scratch data and deliberately misalign it by adding 1.
-    la      t4, ACCESS_FAULT_ADDRESS
+    la      t4, RVMODEL_ACCESS_FAULT_ADDRESS
 
     # Initialize loop counter (offset) from 0 to 7.
     li      t0, 0         # t0 = loop index (offset)

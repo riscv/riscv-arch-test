@@ -1,6 +1,9 @@
 # Ignore editor backup files
 *~
 
+# Log files
+*.log
+
 #ignore Mac file system artifacts
 *.DS_Store
 
@@ -19,7 +22,6 @@ __pycache__
 
 # Work directories
 work/
-work-ref/
 
 # Don't check in generated files for now
 coverpoints/unpriv

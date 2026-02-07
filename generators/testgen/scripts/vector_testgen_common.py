@@ -1216,7 +1216,7 @@ def writeSIGUPD(rd):
     while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == rd or linkReg - 1 == rd:
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
-    tempReg = linkReg + 1
+    tempReg = linkReg - 1
     writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {str_ptr})", f"# store x{rd} in signature")
 
 def writeSIGUPD_F(fd):

@@ -86,31 +86,31 @@ from vector_testgen_common import (
 )
 
 unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed below
-  "vnclip.wi",      # Sail issue 1071
-  "vnclipu.wi",     # Sail issue 1071
-  "vnsra.wi",       # Sail issue 1071
-  "vnsrl.wi",       # Sail issue 1071
-  "vslideup.vi",    # Sail issue 1071
-  "vslidedown.vi",  # Sail issue 1071
-  "vrgather.vi",    # Sail issue 1071
+  # "vnclip.wi",      # Sail issue 1071
+  # "vnclipu.wi",     # Sail issue 1071
+  # "vnsra.wi",       # Sail issue 1071
+  # "vnsrl.wi",       # Sail issue 1071
+  # "vslideup.vi",    # Sail issue 1071
+  # "vslidedown.vi",  # Sail issue 1071
+  # "vrgather.vi",    # Sail issue 1071
   # failing the new test framework as of Dec. 10, 2025
-  "vnclipu.wv",
-  "vsadd.vi",
-  # failing for rv64
-  "vmv.x.s",
-  "vwadd.vx",
-  "vwadd.wx",
-  "vwaddu.vx",
-  "vwaddu.wx",
-  "vwmacc.vx",
-  # rv32
-  "vmv.v.i",
+  # "vnclipu.wv",
+  # "vsadd.vi",
+  # # failing for rv64
+  # "vmv.x.s",
+  # "vwadd.vx",
+  # "vwadd.wx",
+  # "vwaddu.vx",
+  # "vwaddu.wx",
+  # "vwmacc.vx",
+  # "vmv.v.i",
+  # "vslide1up.vx",
   "vlseg3e32ff.v",
   "vlseg3e32.v",
   "vlseg4e32.v",
   "vsseg3e64.v",
-  "vsseg3e32.v",
-  "vslide1up.vx"
+  "vsseg3e32.v"
+
 ]
 
 def writeLine(argument: str, comment = ""):

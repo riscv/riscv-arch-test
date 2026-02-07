@@ -204,7 +204,7 @@ main:
     /////////////////////////////////
 
     li    t1, RVMODEL_ACCESS_FAULT_ADDRESS       // Load the fault address
-    jalr  ra, t1, 0                      // Jump to the fault address (return address must be in t2)
+    jalr  ra, t1, 0                      // Jump to the fault address (return address must be in ra)
     nop
     /////////////////////////////////
     //cp_illegal_instruction

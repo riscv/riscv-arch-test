@@ -38,7 +38,7 @@ Tests are written in assembly language .S files. Tests are organized into direct
 
 The following terms are used in this test plan:
 
-* Extensions: named and ratified RISC-V extensions, such as RV32I, M, Zbb, Zicsr, or Svadu.  Many extensions define instructions or CSRs, but some only define parameters (e.g. Svadu requires that the *** parameter )
+* Extensions: named and ratified RISC-V extensions, such as RV32I, M, Zbb, Zicsr, or Svadu.  Many extensions define instructions or CSRs, but some only define parameters (e.g. Sstvecd requires that the STVEC_MODE_DIRECT=True).
 
 * Parameters: options describing the behavior of extensions.  All parameters will be named by the Parameters Working Group (started February 2026) and will appear in UDB. For example, the PMP_GRANULARITY parameter defines the minimum size of a
 PMP region.

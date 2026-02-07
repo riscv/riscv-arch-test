@@ -83,5 +83,5 @@ If you have a complex DUT, you presumably have a team of sophisticated verificat
 [[linker-script]]
 === Linker Script
 
-Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It ust contain `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 c

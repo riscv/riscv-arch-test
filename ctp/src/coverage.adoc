@@ -18,9 +18,6 @@ _Functional coverage_ also differs from _code coverage_, which measures whether 
 
 Architectural functional coverage requires a way to measure the architectural state of the machine after each instruction.  The https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI) provides a standard way to observe this state in the DUT.  This document defines Extended RVVI with additional signals to facilitate testing virtual memory.
 
-*** links to unpriv and priv specs
-
-
 === Extended RVVI
 
 As compared to the base RVVI, Extended RVVI adds the following signals:
@@ -103,7 +100,6 @@ The available fields are given in fcov/coverage/RISCV_coverage_rvvi.svh.  Most c
 |===
 
 *** exact meaning of trap, importance in writing test
-*** do we need pending interrupts, or can this be part of mip?
 
 [NOTE]
 ====
@@ -117,6 +113,8 @@ Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disasse
 
 
 === Writing Coverpoints with riscvISACOV
+
+Move this and the remainder to ACT repo
 
 *** example of coverpoint
 *** organization of files

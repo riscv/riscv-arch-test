@@ -13,6 +13,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TypedDict
 
+import pyjson5
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator
 from ruamel.yaml import YAML
 
@@ -258,20 +259,28 @@ def check_config_consistency(configs: list[ConfigData]) -> None:
                 f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same model_test.h contents for common compilation. Update the configs to match or pass the configs to separate runs of the ACT framework."
             )
 
-        # Validate sail.json content (including memory map) if defined
+        # Validate sail.json memory map if defined
         ref_sail_path = ref_config.dut_include_dir / "sail.json"
         sail_path = config.dut_include_dir / "sail.json"
 
         if ref_sail_path.exists() and sail_path.exists():
             try:
-                ref_sail_content = ref_sail_path.read_bytes()
-                sail_content = sail_path.read_bytes()
+                ref_sail_data = pyjson5.decode(ref_sail_path.read_text())
+                sail_data = pyjson5.decode(sail_path.read_text())
             except (FileNotFoundError, OSError) as e:
                 raise ValueError(f"Error reading sail.json: {e}") from e
+            except Exception as e:
+                raise ValueError(f"Error parsing sail.json: {e}") from e
 
-            if ref_sail_content != sail_content:
+            try:
+                ref_memory_map = ref_sail_data["memory"]["regions"]
+                memory_map = sail_data["memory"]["regions"]
+            except KeyError as e:
+                raise ValueError(f"Invalid sail.json structure (missing memory regions): {e}") from e
+
+            if ref_memory_map != memory_map:
                 raise ValueError(
-                    f"Inconsistent sail.json content for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
-                    f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same sail.json content (including the memory map section) for common compilation. "
+                    f"Inconsistent sail.json memory map for XLEN={xlen}, E-ext={e_ext} between {ref_config.name} and {config.name}. "
+                    f"All configs with XLEN={xlen} and E-ext={e_ext} must have the same memory map for common compilation. "
                     "Update the configs to have a consistent memory map, or pass the configs to separate runs of the ACT framework."
                 )

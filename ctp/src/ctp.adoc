@@ -69,7 +69,6 @@ include::req.adoc[]
 include::rvmodel.adoc[]
 include::coverage.adoc[]
 include::ref.adoc[]
-include::framework.adoc[]
 include::todo.adoc[]
 
 include::unpriv.adoc[]

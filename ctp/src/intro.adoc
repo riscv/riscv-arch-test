@@ -69,7 +69,7 @@ PMP region.
 
 * Test Suite: A collection of coverage and test files to test a particular extension, combination of extensions, or group of extensions.  For example, the RV32I test suite contains the I_coverage.svh coverage file and the rv32/I/add.S, addi.S, sub.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RV64ZfaD test suite contains the ZfaD_coverage.svh coverage file and the rv64/ZfaD/fround.d.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RVA23S64 test suite contains all of the required and selected optional test suites for the profile, incluidng RV64I, RV64ZfaD, ExceptionsS, etc.
 
-* RVMODEL DUT-Specific Macros: A set of macros that perform _semihosting_/_trick box_ functions such as booting the DUT, sending interrupts, and logging results. The macros is defined in <<RVMODEL DUT-Specific Macros>>.
+* RVMODEL DUT-Specific Macros: A set of macros that perform _semihosting_/_trick box_ functions such as booting the DUT, sending interrupts, and logging results. The macros are defined in <<rvmodel-macros, RVMODEL DUT-Specific Macros>>.
 
 [NOTE]
 ====

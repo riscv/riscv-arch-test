@@ -3,7 +3,7 @@
 
 normative_rule_definitions:
   - name: Zabha_rd_sign_extension
-    coverpoint: ["{Zabha_amoswap_b_cg, abha_amoswap_h_cg}/cp_rs2_edges"]
+    coverpoint: ["{Zabha_amoswap_b_cg, Zabha_amoswap_h_cg}/cp_rs2_edges"]
 
   - name: Zabha_rs1_align_addr
     coverpoint:

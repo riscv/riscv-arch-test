@@ -2,7 +2,7 @@
 == General Test Plan Strategy
 
 This CTP describes tests for all supported RISC-V profiles, but the tests run on a specific DUT.
-The DUT memory map is defined by a <<Linker Script, Linker Script>>.
+The DUT memory map is defined by a <<linker-script, Linker Script>>.
 The DUT configuration is described with RISC-V Unified Database, and supplementary files such as
 simulator configuration files are (TODO) automatically generated from the UDB so there is a single
 configuration file to maintain.  The UDB describes the supported extensions, and also has parameters
@@ -18,7 +18,7 @@ This file lists:
 * all of the supported extensions
 * all of the parameters required to describe the behavior of the extensions
 
-The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are defined by a <<RVMODEL DUT-Specific Macros, RVMODEL DUT-Specific Macros>>, which are an assembly-language library implementing an API using DUT-specific hardware.
+The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are defined by a <<rvmodel-macros, RVMODEL DUT-Specific Macros>>, which are an assembly-language library implementing an API using DUT-specific hardware.
 
 === Unified Database
 

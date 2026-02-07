@@ -1,4 +1,5 @@
 
+[[rvmodel-macros]]
 == RVMODEL DUT-Specific Macros
 
 Each DUT requires implementing a set of macros to perform the following non-ISA functions:
@@ -79,6 +80,7 @@ If you have a simple DUT designed to match the behavior of Sail and Spike, you m
 
 If you have a complex DUT, you presumably have a team of sophisticated verification engineers who can adapt the example macros to your DUT's requirements.
 
+[[linker-script]]
 === Linker Script
 
 Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It ust contain `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.

@@ -208,7 +208,7 @@ main:
     //cp_instr_access_fault
     /////////////////////////////////
 
-    li    t1, RVMODEL_ACCESS_FAULT_ADDRESS       // Load the fault address into t0
+    li    t1, RVMODEL_ACCESS_FAULT_ADDRESS       // Load the fault address
     jalr  ra, t1, 0                      // Jump to the fault address (return address must be in t2)
     nop
 

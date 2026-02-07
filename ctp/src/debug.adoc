@@ -12,4 +12,3 @@ A suggested approach is to require all of DM, DTM, and Sdext supported together 
 ==== DTM Debug Transport Module
 
 ==== Sdext Debug Extension
-s

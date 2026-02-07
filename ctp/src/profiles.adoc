@@ -282,7 +282,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 === Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -309,6 +309,7 @@ TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each typ
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet
+* Reset behavior - no way for a program to reset itself
 * Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make thse interrupts delegatable from M-mode to S-mode"
 * Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested. TODO: coming later.
 * Custom extensions

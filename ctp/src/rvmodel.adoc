@@ -60,6 +60,14 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The Mode column indi
 
 Note that if a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_GOTO_M_MODE.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
 
+=== RVMODEL_BOOT Requirements
+
+The RVMODEL_BOOT macro may be empty for a simple DUT.
+
+For a complex SoC, the macro may need to perform initialization steps such as turning on a phase-locked loop or DRAM controller or initializing custom state.  It must not clobber `x1`/`ra`, but any other registers may be trashed.
+
+At the end of RVMODEL_BOOT, the system should be in conforming machine mode, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE).
+
 === RVMODEL Macros for Spike and SAIL
 
 RVMODEL macros for Spike are implemented in https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts

@@ -4,7 +4,7 @@
 
 # Directories and files
 # CONFIG_FILES is used as the input configs when just running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
-# COVERAGE_CONFIG_FILES is used as the input configs when just running `make coverage` and will coverage reports in addition to the elfs.
+# COVERAGE_CONFIG_FILES is used as the input configs when just running `make coverage` and will generate coverage reports in addition to the elfs.
 CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 

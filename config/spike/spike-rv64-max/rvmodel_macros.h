@@ -1,5 +1,5 @@
-# model_test.h
-# Trickbox macro definitions for Spike
+# rvmodel_macros.h
+# DUT-specific macro definitions for Spike
 # Jordan Carlin jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: BSD-3-Clause
 

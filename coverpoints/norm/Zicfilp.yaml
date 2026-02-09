@@ -84,3 +84,9 @@ normative_rule_definitions:
   # set to NO_LP_EXPECTED; xPELP is set to NO_LP_EXPECTED.
   - name: Zicfilp_pelp_trap_return
     coverpoint: [""]
+
+  # On a trap caused by a software-check exception, the stval register holds the
+  # cause for the exception. The following encodings are defined:
+  - name: stval_exception_info
+    coverpoint:
+      ["TODO: Zicfilp and Zicfiss should both cause exceptions and read xtval"]

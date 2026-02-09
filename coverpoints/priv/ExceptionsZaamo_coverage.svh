@@ -38,7 +38,7 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
         `endif
     }
     illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
     adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
         // auto fills 000 through 111

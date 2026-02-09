@@ -49,10 +49,10 @@ covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
     `endif
 
     illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
     illegal_address_misaligned: coverpoint ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS + 1};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
     }
     adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
         // auto fills 000 through 111

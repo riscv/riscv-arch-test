@@ -46,7 +46,7 @@ endif
 ##### Spike test targets #####
 
 SPIKE_ISA_MAX := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
-SPIKE_ISA_I20 := imafdc_zicsr_zifencei_zicntr_zca_zcf_zcd_zaamo_zalrsc
+SPIKE_ISA_I20 := imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
 
 .PHONY: spike spike_max spike_i20 spike-rv32-max spike-rv64-max spike-RVI20U32 spike-RVI20U64
 

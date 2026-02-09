@@ -62,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        target:  [spike-rv64, spike-rv32, spike-RVI20U32, spike-RVI20U64]
+        target:   [spike-rv64-max, spike-rv32-max, spike-RVI20U32, spike-RVI20U64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -80,8 +80,7 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz \
-            | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Get Latest Spike Commit
         run: |
@@ -108,31 +107,27 @@ jobs:
 
       - name: Save cached Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
+        id: cache-spike-save
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/spike
           key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
 
       - name: Add Spike to PATH
-        run: echo "$GITHUB_WORKSPACE/spike/bin" >> $GITHUB_PATH
+        run: echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
 
       - name: Install RISC-V GCC toolchain
-        run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
-            | sudo tar xvJ --directory=/usr/local --strip-components=1
+        run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 
-      - name: Compile and run tests on Spike
-        run: |
-          DOCKER=1 \
-          EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei \
-          make ${{ matrix.target }} --jobs $(nproc)
+      - name: Compile and run tests on Sail
+        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make ${{ matrix.target }} --jobs $(nproc)
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}-logs
-          path: work/${{ matrix.target }}/logs
+          path: work/${{ matrix.target }}-max/logs
 
   vector-testgen:
     name: Vector Testgen

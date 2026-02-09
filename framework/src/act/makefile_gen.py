@@ -31,7 +31,7 @@ OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
 def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     """Compute a hash of the config options that affect common test compilation.
 
-    Includes the linker script, `model_test.h`, the paths to the compiler, reference model,
+    Includes the linker script, `rvmodel_macros.h`, the paths to the compiler, reference model,
     and objdump executables, xlen, and e_ext.
     """
     hasher = hashlib.sha256()
@@ -43,8 +43,8 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     # Hash the linker script contents
     hasher.update(config.linker_script.read_bytes())
 
-    # Hash model_test.h contents
-    model_test_h = config.dut_include_dir / "model_test.h"
+    # Hash rvmodel_macros.h contents
+    model_test_h = config.dut_include_dir / "rvmodel_macros.h"
     hasher.update(model_test_h.read_bytes())
 
     # Hash executable paths (resolved paths to detect different binaries)

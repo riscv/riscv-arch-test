@@ -57,8 +57,9 @@ jobs:
         run: DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
-    name: Spike Regression (${{ matrix.target }})
+    name: Spike Regression (${{ matrix.spike.target }})
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         spike:
@@ -66,6 +67,7 @@ jobs:
           - { xlen: 64, profile: max, target: spike-rv64-max }
           - { xlen: 32, profile: i20, target: spike-rv32-i20 }
           - { xlen: 64, profile: i20, target: spike-rv64-i20 }
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -73,7 +75,9 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
+          sudo apt-get install -y device-tree-compiler \
+                                  libboost-regex-dev \
+                                  libboost-system-dev
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
@@ -81,7 +85,8 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz \
+            | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Get Latest Spike Commit
         run: |
@@ -93,7 +98,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/spike
-          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
+          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.spike.xlen }}
 
       - name: Install Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
@@ -108,27 +113,31 @@ jobs:
 
       - name: Save cached Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
-        id: cache-spike-save
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/spike
           key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
 
       - name: Add Spike to PATH
-        run: echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/spike/bin" >> $GITHUB_PATH
 
       - name: Install RISC-V GCC toolchain
-        run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
+        run: |
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+            | sudo tar xvJ --directory=/usr/local --strip-components=1
 
-      - name: Compile and run tests on Sail
-        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make ${{ matrix.target }} --jobs $(nproc)
+      - name: Compile and run tests on Spike
+        run: |
+          DOCKER=1 \
+          EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei \
+          make ${{ matrix.spike.target }} --jobs $(nproc)
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target }}-logs
-          path: work/${{ matrix.target }}-max/logs
+          name: ${{ matrix.spike.target }}-logs
+          path: work/${{ matrix.spike.target }}/logs
 
   vector-testgen:
     name: Vector Testgen

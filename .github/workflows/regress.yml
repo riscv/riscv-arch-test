@@ -57,17 +57,12 @@ jobs:
         run: DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
-    name: Spike Regression (${{ matrix.spike.target }})
+    name: Spike Regression (${{ matrix.target }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        spike:
-          - { xlen: 32, profile: max, target: spike-rv32-max }
-          - { xlen: 64, profile: max, target: spike-rv64-max }
-          - { xlen: 32, profile: i20, target: spike-rv32-i20 }
-          - { xlen: 64, profile: i20, target: spike-rv64-i20 }
-
+        target:  [spike-rv64, spike-rv32, spike-RVI20U32, spike-RVI20U64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -98,7 +93,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/spike
-          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.spike.xlen }}
+          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
 
       - name: Install Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
@@ -130,14 +125,14 @@ jobs:
         run: |
           DOCKER=1 \
           EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei \
-          make ${{ matrix.spike.target }} --jobs $(nproc)
+          make ${{ matrix.target }} --jobs $(nproc)
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.spike.target }}-logs
-          path: work/${{ matrix.spike.target }}/logs
+          name: ${{ matrix.target }}-logs
+          path: work/${{ matrix.target }}/logs
 
   vector-testgen:
     name: Vector Testgen

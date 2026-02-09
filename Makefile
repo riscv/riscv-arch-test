@@ -3,17 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Directories and files
-# CONFIG_FILES is used as the input configs when just running `make` and will produce els in the `work` directory
-# REF_CONFIG_FILES is used as the input configs when running `make coverage` and will produce elfs and coverage reports in the `work-ref` directory
+# CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
+# COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
 CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
-# REF_CONFIG_FILES ?= config/ref/sail-rvi20_32/test_config.yaml config/ref/sail-rvi20_64/test_config.yaml
-REF_CONFIG_FILES ?= config/sail/sail-rv32-max/test_config.yaml config/sail/sail-rv64-max/test_config.yaml
-# REF_CONFIG_FILES ?= config/ref/sail-rv32gc-clang/test_config.yaml config/ref/sail-rv64gc-clang/test_config.yaml
-# REF_CONFIG_FILES ?= config/ref/sail-rv32e/test_config.yaml
+COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-WORKDIR_REF ?= work-ref
-EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
@@ -24,8 +20,6 @@ SRCDIR32       := $(TESTDIR)/rv32i
 SRCDIR32E      := $(TESTDIR)/rv32e
 PRIVDIR        := $(TESTDIR)/priv
 PRIVHEADERSDIR := $(PRIVDIR)/headers
-PRIVDIR64      := $(PRIVDIR)/rv64
-PRIVDIR32      := $(PRIVDIR)/rv32
 
 TEMPLATEDIR := templates
 TESTGEN_SRC_DIR := generators/testgen
@@ -70,16 +64,22 @@ spike-rv64: elfs
 
 ###### Test compilation targets ######
 .PHONY: elfs
-elfs: generate-makefiles-dut Makefile
+elfs: generate-makefiles Makefile
 	$(MAKE) -C $(WORKDIR) compile
 
-.PHONY: generate-makefiles-dut
-generate-makefiles-dut: # too many dependencies to track; always regenerate Makefile
+.PHONY: generate-makefiles
+generate-makefiles: # too many dependencies to track; always regenerate Makefile
 	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) --workdir $(WORKDIR) --test-dir $(TESTDIR) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
+	$(UV_RUN) act $(CONFIG_FILES) \
+		--workdir $(WORKDIR) \
+		--test-dir $(TESTDIR) \
+		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
+		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
+		$(if $(DEBUG),--debug) \
+		$(if $(COVERAGE),--coverage)
 
 .PHONY: clean
-clean: clean-tests clean-ref
+clean: clean-tests
 	@if [ -d $(WORKDIR) ]; then \
 		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
@@ -120,7 +120,7 @@ tests: covergroupgen testgen privheaders
 
 .PHONY: clean-tests
 clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR) $(PRIVDIR64) $(PRIVDIR32)
+	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR)
 	rm -rf fcov/unpriv/*
 	rm -rf $(STAMP_DIR)
 
@@ -128,23 +128,13 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 	mkdir -p $@
 
 ###### Coverage targets ######
-.PHONY: generate-makefiles-ref
-generate-makefiles-ref: # too many dependencies to track; always regenerate Makefile
-	$(MAKE) tests
-	$(UV_RUN) act $(REF_CONFIG_FILES) --workdir $(WORKDIR_REF) --test-dir $(TESTDIR) --coverage $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) $(if $(DEBUG),--debug)
-
 .PHONY: coverage
-coverage: generate-makefiles-ref Makefile
-	$(MAKE) -C $(WORKDIR_REF) coverage
+coverage: COVERAGE := True
+coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
+coverage: generate-makefiles Makefile
+	$(MAKE) -C $(WORKDIR) coverage
 
-.PHONY: clean-ref
-clean-ref:
-	@if [ -d $(WORKDIR_REF) ]; then \
-		find $(WORKDIR_REF) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
-		find $(WORKDIR_REF) -type d -empty -delete; \
-	fi
-
-# Dev targets
+##### Dev targets #####
 .PHONY: lint
 lint:
 	$(UV_RUN) ruff check

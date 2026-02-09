@@ -1,5 +1,5 @@
 # rvmodel_macros_check.h
-# Ensures all trickbox macros are defined
+# Ensures all RVMODEL macros are defined
 # Jordan Carlin jcarlin@hmc.edu December 2025
 # SPDX-License-Identifier: BSD-3-Clause
 

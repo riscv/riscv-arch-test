@@ -28,7 +28,7 @@
 // Total Expected Faults :: 0
 //-------------------------------------------------------------------------------------------------------------------
 
-#include "rvmodel_macroscroscros.h"
+#include "rvmodel_macros.h"
 
 #include "arch_test.h"
 

@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macroscroscros.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -22,11 +22,11 @@
 //               attempt to lw and sw to each standard region. Read should succeed and
 //               write should fail, proving all PMP entries are usable.
 //
-// Dependencies: rvmodel_macroscroscros.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
-#include "rvmodel_macroscroscros.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
 # Test code region

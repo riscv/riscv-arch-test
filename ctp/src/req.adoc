@@ -27,14 +27,14 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 
 * Each test runs on Sail and Spike for at least one choice of parameters
 
-* Tests are for certification, not verfication
+* Tests are for certification, not verification
 ** Every normative rule is addressed by at least one coverpoint, defined in the CTP
 ** Every test is directed to a specific coverpoint bin, not fuzzing in the hopes of randomly hitting a coverpoint
 ** Tests emphasize RISC-V architectural behavior, not microarchitectural behavior such as complex pipeline hazards or timing
 ** Runtime is important
 
 * All tests have SystemVerilog coverpoints
-** Use standard syntax compatible Questa, VCS and Xcelium (regression on at least Questa)
+** Use standard syntax compatible with Questa, VCS and Xcelium (regression on at least Questa)
 
 * Don't let the perfect be the enemy of the good
 ** If necessary to meet schedule, tests can be released addressing most of the normative rules and coverpoints for a feature, and improved over time

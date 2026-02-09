@@ -20,7 +20,7 @@
 #define SKIP_MEPC
 #define SKIP_MTVAL
 
-#include "rvmodel_macroscroscros.h"
+#include "rvmodel_macros.h"
 
 #include "arch_test.h"
 

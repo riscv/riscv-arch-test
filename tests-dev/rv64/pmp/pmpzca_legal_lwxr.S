@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macroscroscros.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -21,11 +21,11 @@
 //         pmpcfg_i.L=1, all legal pmpcfg_i.XWR. Observe proper access
 //         faults for restricted read/write regions
 //
-// Dependencies: rvmodel_macroscroscros.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // ---------------------------------------------------------------------------
 
 #define SKIP_MEPC
-#include "rvmodel_macroscroscros.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64IC_Zicsr_Zca")
 # Test code region

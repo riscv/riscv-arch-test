@@ -60,9 +60,9 @@ params:
 
   # Misaligned load/store support (!VERIFIED)
   MISALIGNED_LDST: true
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low         # LSU documentation says: “If an error response is received for the first transaction, the second transaction will still be issued and ignored.” means that Misalignment does not cause an exception
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096     # unable to verify from documentation (but 4kb sounds reasonable)
-  MISALIGNED_SPLIT_STRATEGY: custom               # from LSU docs
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # LSU documentation says: “If an error response is received for the first transaction, the second transaction will still be issued and ignored.” means that Misalignment does not cause an exception
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # unable to verify from documentation (but 4kb sounds reasonable)
+  MISALIGNED_SPLIT_STRATEGY: custom # from LSU docs
 
   # CSR / implementation IDs (VERIFIED)
   ARCH_ID_VALUE: 0x23
@@ -90,19 +90,73 @@ params:
 
   # HPM (VERIFIED)
   HPM_EVENTS: [0]
-  HPM_COUNTER_EN:
-    [
-      false, false, false,  # indexes 0..2 (MCYCLE, MINSTRET, MHPM2)
-      true,  true,  true,  true,  true, # 3..7
-      true,  true,  true,  true,  true,  false, false, false, #  8..15
-      false, false, false, false, false, false, false, false, # 16..23
-      false, false, false, false, false, false, false, false  # 24..31
+  HPM_COUNTER_EN: [
+      false,
+      false,
+      false, # indexes 0..2 (MCYCLE, MINSTRET, MHPM2)
+      true,
+      true,
+      true,
+      true,
+      true, # 3..7
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false, #  8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
     ]
   COUNTINHIBIT_EN:
     [
-      true, false, true, true, true, true, true, true,
-      true, true,  true, true, true, true, true, true,
-      true, true,  true, true, true, true, true, true,
-      true, true,  true, true, true, true, true, true
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
     ]
 # end

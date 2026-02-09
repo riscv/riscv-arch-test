@@ -16,4 +16,3 @@ SECTIONS
   .text : { *(.text.main) }
   _end = .;
 }
-

@@ -3,26 +3,12 @@
 
 This section describes ISA and non-ISA debug-related extensions not required in RVA23.
 
-==== DM Debug Module
+External debug needs to be able to perform register I/O to the debug module, such as halting and resuming the core, sending abstract commands such as Access Register or Access Memory, or running code from the Program Buffer.  This cannot be done from software running on the core because a program cannot halt and single step itself, so these tests will need additional testbench support.  External debug is not in RVA23 but may be added in a future phase.
 
-[[t-DM-coverpoints]]
-.DM Coverpoints
-//,===
-//include::{testplansdir}/DM.adoc[]
-//,===
+A suggested approach is to require all of DM, DTM, and Sdext supported together for systems with External Debug, and to have a testbench send JTAG commands via DTM to the DTM to exercise Debug Mode.
+
+==== DM Debug Module
 
 ==== DTM Debug Transport Module
 
-[[t-DTM-coverpoints]]
-.DTM Coverpoints
-//,===
-//include::{testplansdir}/DTM.adoc[]
-//,===
-
 ==== Sdext Debug Extension
-
-[[t-Sdext-coverpoints]]
-.Sdext Coverpoints
-//,===
-//include::{testplansdir}/Sdext.adoc[]
-//,===

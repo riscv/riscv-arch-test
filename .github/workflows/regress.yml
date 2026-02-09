@@ -61,7 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [spike-rv64, spike-rv32]
+        spike:
+          - { xlen: 32, profile: max, target: spike-rv32-max }
+          - { xlen: 64, profile: max, target: spike-rv64-max }
+          - { xlen: 32, profile: i20, target: spike-rv32-i20 }
+          - { xlen: 64, profile: i20, target: spike-rv64-i20 }
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

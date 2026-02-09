@@ -44,23 +44,47 @@ endif
 
 
 ##### Spike test targets #####
-.PHONY: spike spike-rv32 spike-rv64
 
-spike: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
-SPIKE_ISA := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
-spike: elfs
+SPIKE_ISA_MAX := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+SPIKE_ISA_I20 := imafdc_zicsr_zifencei_zicntr_zca_zcf_zcd_zaamo_zalrsc
+
+.PHONY: spike spike_max spike_i20 spike-rv32-max spike-rv64-max spike-rv32-i20 spike-rv64-i20
+
+spike: spike_max
+
+spike_max: CONFIG_FILES = \
+  config/spike/spike-rv32-max/test_config.yaml \
+  config/spike/spike-rv64-max/test_config.yaml
+spike_max: elfs
 	@exit_code=0; \
-	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
-	./run_tests.py "spike --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
+	./run_tests.py "spike --isa=rv64$(SPIKE_ISA_MAX)" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "spike --isa=rv32$(SPIKE_ISA_MAX)" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
 	exit $$exit_code
 
-spike-rv32: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml
-spike-rv32: elfs
-	./run_tests.py "spike --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs
+spike_i20: CONFIG_FILES = \
+  config/spike/spike-rv32-i20/test_config.yaml \
+  config/spike/spike-rv64-i20/test_config.yaml
+spike_i20: elfs
+	@exit_code=0; \
+	./run_tests.py "spike --isa=rv64$(SPIKE_ISA_I20)" $(WORKDIR)/spike-rv64-i20/elfs || exit_code=1; \
+	./run_tests.py "spike --isa=rv32$(SPIKE_ISA_I20)" $(WORKDIR)/spike-rv32-i20/elfs || exit_code=1; \
+	exit $$exit_code
 
-spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
-spike-rv64: elfs
-	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
+spike-rv32-max: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml
+spike-rv32-max: elfs
+	./run_tests.py "spike --isa=rv32$(SPIKE_ISA_MAX)" $(WORKDIR)/spike-rv32-max/elfs
+
+spike-rv64-max: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
+spike-rv64-max: elfs
+	./run_tests.py "spike --isa=rv64$(SPIKE_ISA_MAX)" $(WORKDIR)/spike-rv64-max/elfs
+
+spike-rv32-i20: CONFIG_FILES = config/spike/spike-rv32-i20/test_config.yaml
+spike-rv32-i20: elfs
+	./run_tests.py "spike --isa=rv32$(SPIKE_ISA_I20)" $(WORKDIR)/spike-rv32-i20/elfs
+
+spike-rv64-i20: CONFIG_FILES = config/spike/spike-rv64-i20/test_config.yaml
+spike-rv64-i20: elfs
+	./run_tests.py "spike --isa=rv64$(SPIKE_ISA_I20)" $(WORKDIR)/spike-rv64-i20/elfs
 
 ###### Test compilation targets ######
 .PHONY: elfs

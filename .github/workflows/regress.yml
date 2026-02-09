@@ -59,10 +59,9 @@ jobs:
   spike:
     name: Spike Regression (${{ matrix.target }})
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        target:   [spike-rv64-max, spike-rv32-max, spike-RVI20U32, spike-RVI20U64]
+        target: [spike-rv64-max, spike-rv32-max, spike-RVI20U32, spike-RVI20U64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

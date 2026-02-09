@@ -198,7 +198,7 @@
   .global rvtest_data_end
   rvtest_data_end:
 
-  // Model specific data region (tohost/fromhost, etc). Defined in model_test.h
+  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h
   RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_DATA_END ********************************/

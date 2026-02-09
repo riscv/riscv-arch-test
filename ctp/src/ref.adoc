@@ -3,7 +3,7 @@
 
 Certification may rely on a reference model (simulator) to compute the expected results of a test, such as sum of two numbers in an `add` instruction or the answer for a `fsqrt.d` instruction.  Self-checking tests compare the result from the DUT against the expected result that was precomputed by the reference model and flag mismatches.  Alternatively, the test may be generated with a set of one or more expected results for each test case (without a reference model), and the test can check that the DUT produces one of the expected results.
 
-RISC-V International has blessed https://github.com/riscv/sail-riscv[Sail] as the golden RISC-V model, so Sail is used as the reference model.
+TODO: Discuss one vs. many reference models. RISC-V International has blessed https://github.com/riscv/sail-riscv[Sail] as the golden RISC-V model, so Sail is used as the reference model.
 
 === Deterministic, Nondeterministic, and Unspecified Behaviors
 
@@ -17,35 +17,6 @@ This is harder than it seems because RISC-V has many features whose behaviors ar
 
 Nevertheless, Sail is making rapid progress and is aiming to fully implement the ratified RVA23 profile, read a UDB configuration, and support at least the most reasonable behaviors in time for certification.
 
-=== Test Qualification
-
-For each supported profile, the certification tests will be qualified on at least one DUT configuration.  This configuration should be one supported by Spike and as many other simulators as possible.  Qualification involves running the same compiled tests on many RISC-V simulators and having them all pass.  Preferred simulators include:
-
-* Sail (required, golden reference)
-* Spike
-* ImperasFPM (license required)
-* QEMU
-* Whisper
-* IDL (if available)
-
-The configuration includes
-
-* Memory map and linker with main memory starting at 0x80000000
-* Reset vector at 0x80000000, or at 0x1000 with a jump to 0x80000000 before any tests are run
-* Trick box including:
-** CLINT configured at 0x***
-** *** TBD how to trigger external interrupts & HGEI
-** RVMODEL_HALT using HTIF write_tohost followed by a infinite loop jump to self
-** Empty RVMODEL_BOOT macro (no boot code required)
-
-*** will describe such UDB configurations for each certification profile.
-
-Tests can receive a qualification waiver if they fail in certain simulators for the following reasons:
-
-* The simulator does not yet support the relevant extension
-* The simulator has a known bug with an issue filed
-* The simulator cannot be configured for a feature in a way compatible with the set of configurations supported by Sail and Spike
-
 === List of Fundamentally Nondeterministic Behaviors
 
 * Mask- and tail-agnostic vector operations
@@ -54,9 +25,9 @@ Tests can receive a qualification waiver if they fail in certain simulators for 
 ** If mtval is written with a nonzero value, it can be any address within the access***
 ** When it also causes access fault / misaligned store, Allen has list of 7ish possible outcomes.
 
-*** need to identify all coverpoints whose behavior is nondeterministic, and list all acceptable test outcomes as part of the test spec.
+If nondeterministic behaviors are tested, the test must accept all legal outcomes.  This is costly, so some nondeterministic behaviors may be untested.  Nevertheless, agnostic vector operations will definitely be tested and accept all legal results.
 
-*** sometimes these might be controlled by a parameter that allows them to become deterministic.  Even though tail-agnostic has two outcomes allowed in the spec, a DUT might only produce one of the outcomes, and the test could be simplified to check for only that outcome.
+When possible, the behavior should be made deterministic by a parameter such that the reference model can match the DUT with that parameter setting.
 
 === List of Theoretically Nondeterministic Behaviors with Configurable Deterministic Implementations
 

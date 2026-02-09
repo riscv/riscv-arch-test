@@ -80,7 +80,7 @@ Zaamo_Instructions:
     // load the Access Fault address to the base address
     li t1, 1
     bne a1, t1, skipIAF
-    li    t0, ACCESS_FAULT_ADDRESS
+    li    t0, RVMODEL_ACCESS_FAULT_ADDRESS
 
  skipIAF:
 

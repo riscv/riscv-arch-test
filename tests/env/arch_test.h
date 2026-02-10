@@ -680,11 +680,11 @@
 #endif
 #ifndef RVMODEL_MCLR_SSW_INT // M-mode interrupt handler for S-mode SW Ints
         //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
+        #define  RVMODEL_MCLR_SSW_INT     RVMODEL_CLR_SSW_INT
 #endif
 #ifndef RVMODEL_SCLR_SSW_INT // S-mode interrupt handler for S-mode SW Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
+        //.warning "RVMODEL_CLR_SSW_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
+        #define  RVMODEL_SCLR_SSW_INT     RVMODEL_CLR_SSW_INT
 #endif
 #ifndef RVMODEL_CLR_STIMER_INT
         //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
@@ -692,11 +692,11 @@
 #endif
 #ifndef RVMODEL_MCLR_STIMER_INT // M-mode interrupt handler for S-mode Timer Ints
         //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
+        #define  RVMODEL_MCLR_STIMER_INT  RVMODEL_CLR_STIMER_INT
 #endif
 #ifndef RVMODEL_SCLR_STIMER_INT // S-mode interrupt handler for S-mode Timer Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_STIMER_INT     RVTEST_DFLT_INT_HNDLR
+        //.warning "RVMODEL_CLR_STIMER_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
+        #define  RVMODEL_SCLR_STIMER_INT     RVMODEL_CLR_STIMER_INT
 #endif
 #ifndef RVMODEL_CLR_SEXT_INT
         //.warning "RVMODEL_CLR_SEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
@@ -1369,7 +1369,7 @@ clrint_\__MODE__\()tbl:                 //this code should only touch T2..T6
         .dword  \__MODE__\()clr_Vext_int                // int cause  A  Vmode Ext int
         .dword  \__MODE__\()clr_Mext_int                // int cause  B  Mmode Ext int
 //****************************************************************
-#elif defined(rvtest_strap_routine)  // M/S/U only
+#else  // M/S/U only
         .dword  0                       // int cause  0 is reserved, error
         .dword  \__MODE__\()clr_Ssw_int         // int cause  1  Smode SW int
         .dword  1                       // int cause  2  no Vmode
@@ -1385,22 +1385,7 @@ clrint_\__MODE__\()tbl:                 //this code should only touch T2..T6
         .dword  1                       // int cause  A no vmode
         .dword  \__MODE__\()clr_Mext_int                // int cause  B  Mmode Ext int
 //****************************************************************
-#else  // M(/U)mode only
-        .dword  0                       // int cause  0 is reserved, error
-        .dword  1                       // int cause  1  no Smode
-        .dword  1                       // int cause  2  no Vmode
-        .dword  \__MODE__\()clr_Msw_int         // int cause  3  Mmode SW int
-//****************************************************************
-        .dword  0                       // int cause  4 is reserved, error
-        .dword  1                       // int cause  5 no Smode
-        .dword  1                       // int cause  6 no vmode
-        .dword  \__MODE__\()clr_Mtmr_int                // int cause  7  Mmode Tmr int
-//****************************************************************
-        .dword  0                       // int cause  8 is reserved, error
-        .dword  1                       // int cause  9 no Smode
-        .dword  1                       // int cause  A no vmode
-        .dword  \__MODE__\()clr_Mext_int                // int cause  B  Mmode Ext int
-//****************************************************************
+
 #endif
  .rept NUM_SPECD_INTCAUSES-0xC
         .dword  1                       // int cause c..NUM_SPECD_INTCAUSES is reserved, just return

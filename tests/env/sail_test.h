@@ -1,10 +1,26 @@
 # sail_test.h
-# RVMODEL macro definitions for Sail reference model
+# Trickbox macro definitions for Sail reference model
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
+
+#define CLINT_BASE_ADDR 0x02000000
+#define PLIC_BASE_ADDR 0x0C000000
+#define GPIO_BASE_ADDR 0x10060000
+#define MTIME           (CLINT_BASE_ADDR + 0xBFF8)
+#define MSIP            (CLINT_BASE_ADDR)
+#define MTIMECMP        (CLINT_BASE_ADDR + 0x4000)
+#define MTIMECMPH       (CLINT_BASE_ADDR + 0x4004)
+#define THRESHOLD_0     (PLIC_BASE_ADDR + 0x200000)
+#define THRESHOLD_1     (PLIC_BASE_ADDR + 0x201000)
+#define INT_PRIORITY_3  (PLIC_BASE_ADDR + 0x00000C)
+#define INT_EN_00       (PLIC_BASE_ADDR + 0x002000)
+#define INT_EN_10       (PLIC_BASE_ADDR + 0x002080)
+#define GPIO_OUTPUT_EN  (GPIO_BASE_ADDR + 0x08)
+#define GPIO_OUTPUT_VAL (GPIO_BASE_ADDR + 0x0C)
+
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -85,15 +101,65 @@
 
 #define RVMODEL_CLR_MEXT_INT
 
-#define RVMODEL_SET_MTIMER_INT
+#define RVMODEL_SET_MTIMER_INT \
+  la t0, MTIME;                \
+  la t1, MTIMECMP;             \
+  LREG t2, 0(t0);              \
+  SREG t2, 0(t1);              \
+  nop;                         \
+#ifdef __riscv_xlen \
+  #if __riscv_xlen == 32 \
+      lw t2, 4(t0);            \
+      sw t2, 4(t1);            \
+      nop;                     \
+  #endif \
+#else \
+  ERROR: __riscv_xlen not defined; \
+#endif
 
-#define RVMODEL_CLR_MTIMER_INT
+#define RVMODEL_CLR_MTIMER_INT \
+  li t0, -1;                    \
+  la t2, MTIMECMP;              \
+  SREG t0, 0(t2);               \
+#ifdef __riscv_xlen \
+  #if __riscv_xlen == 32 \
+      sw t0, 4(t2);             \
+  #endif \
+#else \
+  ERROR: __riscv_xlen not defined; \
+#endif
 
 #define RVMODEL_SET_MTIMER_INT_SOON
+la t0, MTIME; \
+la t4, MTIMECMP; \
+#ifdef __riscv_xlen \
+  #if __riscv_xlen == 64 \
+      ld t0, 0(t0); \
+      addi t0, t0, 0x100; \
+      sd t0, 0(t4); \
+  #elif __riscv_xlen == 32 \
+      lw t1, 0(t0); \
+      lw t2, 4(t0); \
+      addi t3, t1, 0x100; \
+      bgtu t1, t3, 1f; \
+      j 2f; \
+  1: addi t2, t2, 1; \
+  2: sw t3, 0(t4); \
+      sw t2, 4(t4); \
+  #endif \
+#else \
+  ERROR: __riscv_xlen not defined; \
+#endif
 
-#define RVMODEL_SET_MSW_INT
+#define RVMODEL_SET_MSW_INT \
+  li t1, 1;                 \
+  li t2, MSIP;              \
+  sw t1, 0(t2);
 
-#define RVMODEL_CLR_MSW_INT
+
+#define RVMODEL_CLR_MSW_INT \
+  li t2, MSIP;              \
+  sw zero, 0(t2);
 
 ##### Supervisor Interrupts #####
 

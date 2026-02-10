@@ -57,7 +57,6 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
         except Exception:
             pass
 
-
     # Hash executable paths (resolved paths to detect different binaries)
     hasher.update(str(config.compiler_exe.resolve()).encode())
     hasher.update(str(config.ref_model_exe.resolve()).encode())

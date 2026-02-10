@@ -1,5 +1,5 @@
 # sail_test.h
-# Trickbox macro definitions for Sail reference model
+# RVMODEL macro definitions for Sail reference model
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: BSD-3-Clause
 

@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -21,11 +21,11 @@
 //         (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
 //         start and end of the second regions. Attempt jalr to each ret.
 //
-// Dependencies: model_test.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // ---------------------------------------------------------------------------
 
 #define SKIP_MEPC
-#include "model_test.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64IC_Zicsr")
 # Test code region

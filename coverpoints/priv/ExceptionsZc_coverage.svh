@@ -67,7 +67,7 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
         // auto fills 000 through 111
     }
     illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
 
     // main coverpoints

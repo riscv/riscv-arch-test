@@ -20,7 +20,7 @@ parameter_definitions:
     coverpoint: ["all exception coverpoints"]
     effect:
       [
-        "DUT config/model_test.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
+        "DUT config/rvmodel_macros.h must set RVMODEL_MTVEC_ALIGN if alignment > 64 bytes",
       ]
   - name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
     coverpoint: ["all exception coverpoints"]

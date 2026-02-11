@@ -4,4 +4,4 @@ objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path
 ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executable
 udb_config: sail-RVA23S64-optional.yaml
 linker_script: link.ld
-dut_include_dir: . # Directory containing DUT specific model_test.h header
+dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header

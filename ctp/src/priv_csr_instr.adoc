@@ -22,10 +22,11 @@ These test CSRs and privileged instructions in machine mode.
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604[Google Sheet Testplan]
 ,===
 
-*** find all WPRI and WLRL fields.  Don't look at WPRI results.  Only test legal values of WLRL.
-  TODO check WARL, WLRL, WPRI behaviors
+TODO: Plan how to check WARL, WPRI, WLRL fields.  It seems every CSR needs parameters, either to tell the reference model how they should behave (to generate expected values), or to tell the tests and coverpoints which values are legal to test.
 
 include::norm/Sm_norm_rules.adoc[]
+
+TODO: Many new normative rules have been added since this was written.  Update Sm.yaml.
 
 ==== S Supervisor-Mode CSRs and Instructions
 
@@ -39,6 +40,15 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 
 include::norm/S_norm_rules.adoc[]
 
+[NOTE]
+====
+sie_sip_strap_time_constraint is not tested yet.  How to handle timing constraints in certification?
+How to handle interrupts that don't get evaluated immediately after the macro sets them? The
+macro could spin until they fire, but needs to know if they should fire (e.g. not blocked by xstatus.xIE).
+====
+
+
+
 ==== U User-Mode CSRs and Instructions
 
 These test additional CSRs that exist in user mode, and privileged instructions in user mode.
@@ -48,6 +58,8 @@ These test additional CSRs that exist in user mode, and privileged instructions 
 ,===
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356[Google Sheet Testplan]
 ,===
+
+TODO: Incorporate normative rules now that Sm is fully tagged.
 
 ==== SmF Floating-Point CSRs
 

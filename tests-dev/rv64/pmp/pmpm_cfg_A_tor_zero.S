@@ -8,7 +8,7 @@
 //               systems. It checks that region 0 extends from 0 to pmpaddr0
 //               in TOR mode.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -19,12 +19,12 @@
 //         pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0,
 //         pmpaddr0-4, pmpaddr0}.
 //
-// Dependencies: model_test.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
 #define SKIP_MTVAL
-#include "model_test.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
 # Test code region

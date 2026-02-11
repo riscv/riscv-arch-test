@@ -5,7 +5,7 @@
 This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
+** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).  TODO: Update to point to CRD when ready.
 * MC100 Microcontroller Profile (https://github.com/riscv/riscv-unified-db/releases/tag/v0.1.0[MC100-32-CRD.pdf]): Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
@@ -15,9 +15,10 @@ This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification obje
 * RVA23 Profile (https://riscv.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
 
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
+TODO: Update links when CRDs are finalized.
 
 This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
-* All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate.
+* All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate. TODO: Relax this.
 * Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported indepenent of the Zicntr or F instructions, so there
 is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
 * Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.  TODO: Add multi-master test plan.
@@ -281,7 +282,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 
 === Out-of-Scope Extensions
 
-<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
+<<t-untested>> lists certain extensions whose behavior is presently outside the scope of certification.  An x in the table means the extension is required for that profile. Some of these behaviors are not readily visible at the architectural level of observed program behavior, such as constant-time instructions.  PMA properties are implicitly tested by executing instructions that depend on the property, but not tested comprehensively across the entire memory map. Entropy generation requires statistical analysis beyond the present scope of certification. These extensions might be added to scope in the future.
 
 [[t-untested]]
 .Extensions Lacking Architectural Visibility for Certification Testing
@@ -303,16 +304,20 @@ All privileged suites require at least version 1.12 of the privileged specificat
 Furthermore, the following features are not supported in this version of the certification test plan:
 
 * sfence.vma, sinval, and hypervisor fences are lightly tested because it is hard to prove they don't work
-* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities
+* Physical Memory Attributes (PMA): no standard representation yet; tests assume programs run in main memory with full capabilities.
+TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each type of access (load/store/execute, misaligned, at start/middle/end/partially wrapping) to each region.
 * Testing privilege modes whose XLEN differs from MXLEN; low ROI
-* Testing extensions that have been disabled with `misa` fields; low ROI
+* Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet
+* Reset behavior - no way for a program to reset itself
 * Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make thse interrupts delegatable from M-mode to S-mode"
-* Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested
+* Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested. TODO: coming later.
 * Custom extensions
+
 
 A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.
 
+TODO:
 *** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)
 *** which of the Zicc extensions are tested by regular instructions?
 
@@ -328,4 +333,4 @@ The privileged testplan relies on a machine mode conforming to Sm1p12 machine ar
 
 ==== Consistent XLEN and Endianness
 
-The test plan requires that after the boot process, XLEN and endianness are the same in all privilege modes.  Specifically, MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE.  If this is not the reset state of the DUT, the <<t-trickbox, `RVMODEL_BOOT` trick box macro>> may be able to place it in that state before testing.  If the DUT cannot be placed in this state, it cannot be certified because the tests assume XLEN and endianness do not change with privilege mode unless specifcially modified by a test. For example, a machine hardwired to 64-bit machine mode and 32-bit user mode is not certifiable. (Presently, only endian changes are tested; certifying multiple XLEN is not a priority.)
+The test plan requires that after the boot process, XLEN and endianness are the same in all privilege modes.  Specifically, MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE.  If this is not the reset state of the DUT, the <<t-rvmodel, `RVMODEL_BOOT` macro>> may be able to place it in that state before testing.  If the DUT cannot be placed in this state, it cannot be certified because the tests assume XLEN and endianness do not change with privilege mode unless specifcially modified by a test. For example, a machine hardwired to 64-bit machine mode and 32-bit user mode is not certifiable. (Presently, only endian changes are tested; certifying multiple XLEN is not a priority.)

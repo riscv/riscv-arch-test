@@ -9,6 +9,7 @@
 
 import hashlib
 import importlib.resources
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
@@ -50,12 +51,9 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     # Hash sail.json memory map (if present)
     sail_config = config.dut_include_dir / "sail.json"
     if sail_config.exists():
-        try:
-            sail_data = pyjson5.decode(sail_config.read_text())
-            if "memory" in sail_data and "regions" in sail_data["memory"]:
-                hasher.update(str(sail_data["memory"]["regions"]).encode())
-        except Exception:
-            pass
+        sail_data = pyjson5.decode(sail_config.read_text())
+        if "memory" in sail_data and "regions" in sail_data["memory"]:
+            hasher.update(json.dumps(sail_data["memory"]["regions"], sort_keys=True).encode())
 
     # Hash executable paths (resolved paths to detect different binaries)
     hasher.update(str(config.compiler_exe.resolve()).encode())

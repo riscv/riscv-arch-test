@@ -1,5 +1,6 @@
 # Ignore editor backup files
 *~
+*.swp
 
 # Log files
 *.log

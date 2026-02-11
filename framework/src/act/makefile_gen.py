@@ -9,6 +9,7 @@
 
 import hashlib
 import importlib.resources
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
@@ -32,7 +33,7 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     """Compute a hash of the config options that affect common test compilation.
 
     Includes the linker script, `rvmodel_macros.h`, the paths to the compiler, reference model,
-    and objdump executables, xlen, and e_ext.
+    and objdump executables, xlen, e_ext, and the memory map from `sail.json` (if present).
     """
     hasher = hashlib.sha256()
 
@@ -46,6 +47,13 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     # Hash rvmodel_macros.h contents
     model_test_h = config.dut_include_dir / "rvmodel_macros.h"
     hasher.update(model_test_h.read_bytes())
+
+    # Hash sail.json memory map (if present)
+    sail_config = config.dut_include_dir / "sail.json"
+    if sail_config.exists():
+        sail_data = pyjson5.decode(sail_config.read_text())
+        if "memory" in sail_data and "regions" in sail_data["memory"]:
+            hasher.update(json.dumps(sail_data["memory"]["regions"], sort_keys=True).encode())
 
     # Hash executable paths (resolved paths to detect different binaries)
     hasher.update(str(config.compiler_exe.resolve()).encode())

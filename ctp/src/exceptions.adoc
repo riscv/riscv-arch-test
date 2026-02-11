@@ -98,6 +98,9 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2143559149#gid=2143559149[Google Sheet Testplan]
 ,===
 
+[NOTE]
+ExceptionsZaamo also covers Zama16b.
+
 ==== ExceptionsZc Compressed Instruction Exceptions
 
 These additional exception tests are run on configurations with compressed instructions (C, Zca, Zcb, etc.).  They attempt to test all compressed loads and stores, but may throw an illegal instruction fault on compressed subword load/store if Zcb is not supported.

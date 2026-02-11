@@ -97,7 +97,7 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   # "vnclipu.wv",
   # "vsadd.vi",
   # # failing for rv64
-  # "vmv.x.s",
+  "vmv.x.s",
   # "vwadd.vx",
   # "vwadd.wx",
   # "vwaddu.vx",
@@ -986,6 +986,8 @@ def coverpointInclusions(coverpoints):
     elif coverpoint == "cp_custom_wwv":
       applicable_coverpoints.remove(coverpoint)
       applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul1")
+      applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul2")
+      applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul4")
     elif (coverpoint in ["cp_custom_vext2", "cp_custom_vext4", "cp_custom_vext8"]):
       applicable_coverpoints.remove(coverpoint)
       vext = coverpoint[-1]

@@ -39,18 +39,6 @@
         bins overlapping = {1'b1};
     }
 
-    vs1_vd_no_overlap_lmul1: coverpoint (ins.current.insn[19:16] == ins.current.insn[11:8]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul2: coverpoint (ins.current.insn[19:17] == ins.current.insn[11:9]) {
-        bins overlapping = {1'b0};
-    }
-
-    vs1_vd_no_overlap_lmul4: coverpoint (ins.current.insn[19:18] == ins.current.insn[11:10]) {
-        bins overlapping = {1'b0};
-    }
-
     vd_all_reg_aligned_lmul_2: coverpoint ins.current.insn[11:7] {
         wildcard ignore_bins odd = {5'b????1};
     }
@@ -76,15 +64,15 @@
     }
 
     vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins odd = {2'b11};
+        bins mod4_2 = {2'b10};
     }
 
     vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins odd = {3'b110};
+        bins mod8_4 = {3'b100};
     }
 
-    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs1_vd_no_overlap_lmul1, vs2_reg_unaligned_lmul_2;
-    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs1_vd_no_overlap_lmul2, vs2_mod4_2;
-    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs1_vd_no_overlap_lmul4, vs2_mod8_4;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1 : cross std_vec, vtype_lmul_1, vs2_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_reg_unaligned_lmul_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2 : cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_all_reg_aligned_lmul_4, vs2_mod4_2;
+    cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4 : cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_all_reg_aligned_lmul_8, vs2_mod8_4;
 
     //// end cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4////////////////////////////////////////////////

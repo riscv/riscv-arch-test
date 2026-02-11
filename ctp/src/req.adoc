@@ -36,6 +36,9 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 * All tests have SystemVerilog coverpoints
 ** Use standard syntax compatible with Questa, VCS and Xcelium (regression on at least Questa)
 
+* All testing collateral (tests, test generators, coverpoints, frameworks, documentation, etc.) owned by RVI and distributed under an open-source license
+** Hosted on the riscv-arch-test GitHub under the stewardship of Architectural Compatibility Test (ACT) SIG
+
 * Don't let the perfect be the enemy of the good
 ** If necessary to meet schedule, tests can be released addressing most of the normative rules and coverpoints for a feature, and improved over time
 ** Initial test development prioritizes the common parameter choices (such as XLEN=MXLEN, Endian=Little), and other parameter choices can be added over time

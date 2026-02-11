@@ -1607,20 +1607,20 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX) ? 1 : 0")
   elif (maskval == "vlmaxm1_ones"):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine(f"addi x{tempReg}, x{tempReg}, -1",             f"# x{tempReg} = VLMAX - 1")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX-1) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX-1) ? 1 : 0")
   elif (maskval == "vlmaxd2p1_ones"):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine(f"srli x{tempReg}, x{tempReg}, 1",              f"# x{tempReg} = VLMAX / 2")
     writeLine(f"addi x{tempReg}, x{tempReg}, 1",              f"# x{tempReg} = VLMAX / 2 + 1")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
   else: # random mask
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
     writeLine(f"la x{tempReg}, {maskval}")

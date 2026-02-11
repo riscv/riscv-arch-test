@@ -35,7 +35,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_rd|32|The rd register number used in the instruction.
 |cp_rs1_edges|16|Edge values for rs1 (see <<t-integer-edge-definitions>>).
 |cp_rs2_edges|16|Edge values for rs2 (see <<t-integer-edge-definitions>>).
-|cp_imm_edges|16|Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
+|cp_imm_edges|20|Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
 |cr_rs1_imm_edges|16*20|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
 |cr_rs1_rs2_edges|16*16|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
 |cmp_rs1_rs2|32|The rs1 and rs2 registers have the same register number.

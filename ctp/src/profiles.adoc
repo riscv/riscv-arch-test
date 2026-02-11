@@ -222,6 +222,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
+|Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-ExceptionsZaamo-coverpoints>>|||||x
 |Zicfilp|Landing Pads|<<t-Zicfilp-coverpoints>>||||o|o
 |Zicfiss|Shadow Stack|<<t-Zicfiss-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o
@@ -295,7 +296,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ziccrse|Main memory PMA supports RsrvEventual|||x|x|x
 |Ziccamoa|Main memory PMA supports atomics |||x|x|x
 |Ziccamoc|Main memory PMA supports AMOCASQ ||||x|x
-|Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|||||x
 |Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
@@ -318,8 +318,7 @@ TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each typ
 A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.
 
 TODO:
-*** move Zama16b to tested when misaligned atomics are added (ExceptionsZaamo)
-*** which of the Zicc extensions are tested by regular instructions?
+**** which of the Zicc extensions are tested by regular instructions?
 
 === Certification Requirements
 

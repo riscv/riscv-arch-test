@@ -46,7 +46,7 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The Mode column indi
 |===
 
 [NOTE]
-RISC-V has standardized generating timer interrupts using memory-mapped MTIME and MTIMECMP, so no RVMODEL macros are needed for DUT-specific timer interrupt generation.  Similarly, no RVMODEL macros are needed to set or read MTIME, or set or clear interrupts using standard CSR accesses.
+RVMODEL interrupt macros are only required for interrupts controlled in a platform-specific fashion. RISC-V has standardized generating timer interrupts using memory-mapped MTIME and MTIMECMP, so no RVMODEL macros are needed for DUT-specific timer interrupt generation.  Similarly, no RVMODEL macros are needed to set or read MTIME, or set or clear interrupts using standard CSR accesses.
 
 [NOTE]
 If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_GOTO_M_MODE.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.

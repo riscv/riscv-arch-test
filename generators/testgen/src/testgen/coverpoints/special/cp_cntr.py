@@ -17,48 +17,45 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     """Generate tests for counter coverpoints."""
     test_lines: list[str] = []
 
-    # Allocate some registers for testing.
-    r1, r2, r3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
-
     if coverpoint == "cp_cntr":
         test_lines.extend(
             [
-                gen_cntr_test(instr_name, "cycle", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "cycle", test_data),
                 "#if TIME_CSR_IMPLEMENTED\n",
-                gen_cntr_test(instr_name, "time", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "time", test_data),
                 "#endif\n",
-                gen_cntr_test(instr_name, "instret", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "instret", test_data),
                 "#if __riscv_xlen == 32\n",
-                gen_cntr_test(instr_name, "cycleh", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "cycleh", test_data),
                 "#if TIME_CSR_IMPLEMENTED\n",
-                gen_cntr_test(instr_name, "timeh", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "timeh", test_data),
                 "#endif\n",
-                gen_cntr_test(instr_name, "instreth", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "instreth", test_data),
                 "#endif\n",
             ]
         )
     elif coverpoint == "cp_cntr_hpm":
         for hpm in range(3, 32):  # hpmcounter3 through hpmcounter31
-            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data))
+            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", test_data))
         test_lines.append("#if __riscv_xlen == 32\n")
         for hpm in range(3, 32):  # hpmcounter3h through hpmcounter31h
-            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data))
+            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", test_data))
         test_lines.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_data.int_regs.return_registers([r1, r2, r3])
-
     return test_lines
 
 
-def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_data: TestData) -> str:
+def gen_cntr_test(instr_name: str, cntr: str, test_data: TestData) -> str:
     """Generate counter test snippet."""
-    mindiff = 1 if cntr in ["instret", "cycle", "time"] else 0  # h registers unlikely to increment
+    # Allocate some registers for testing.
+    r1, r2, r3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
+
     if cntr != "instret" and not cntr.endswith("h"):
-        slt = f"slti x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}"
+        slt = f"slti x{r1}, x{r1}, 1 # set fail code if difference < 1"
     else:
-        slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
+        slt = ""  # for instret, the difference should be exact.  High counters should be exactly zero.
     lines = [
         test_data.add_testcase("cp_cntr"),
         f"# Testcase: cp_cntr ({cntr})",
@@ -99,4 +96,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
             "",
         ]
     )
+
+    test_data.int_regs.return_registers([r1, r2, r3])
+
     return "\n".join(lines)

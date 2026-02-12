@@ -93,18 +93,6 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   # "vslideup.vi",    # Sail issue 1071
   # "vslidedown.vi",  # Sail issue 1071
   # "vrgather.vi",    # Sail issue 1071
-  # failing the new test framework as of Dec. 10, 2025
-  # "vnclipu.wv",
-  # "vsadd.vi",
-  # # failing for rv64
-  "vmv.x.s",
-  # "vwadd.vx",
-  # "vwadd.wx",
-  # "vwaddu.vx",
-  # "vwaddu.wx",
-  # "vwmacc.vx",
-  # "vmv.v.i",
-  # "vslide1up.vx",
   "vlseg3e32ff.v",
   "vlseg3e32.v",
   "vlseg4e32.v",
@@ -1237,7 +1225,7 @@ if __name__ == '__main__':
         f.write("\n")
         f.write("// Initial set vl = 1\n")
         f.write("li x31, 1\n")
-        f.write(f"vsetvli x0, x2, e{sew}, m1, tu, mu\n")
+        # f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n")
 
         # include ifdefs for widening/narrowing instr, which doesn't exist in the ELEN suite
         if (test in vd_widen_ins) or (test in vs2_widen_ins):

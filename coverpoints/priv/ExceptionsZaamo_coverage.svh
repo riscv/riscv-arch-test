@@ -40,8 +40,9 @@ covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
     illegal_address: coverpoint ins.current.rs1_val {
         bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
-    adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
-        // auto fills 000 through 111
+    // TODO: adjust number of lsbs based on MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+    adr_LSBs: coverpoint ins.current.rs1_val[4:0]  {
+        // auto fills 00000 through 11111
     }
     // main coverpoints
     cp_amo_address_misaligned:  cross amo_instrs, adr_LSBs;

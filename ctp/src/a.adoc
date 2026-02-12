@@ -40,7 +40,7 @@ include::{testplansdir}/Zalrsc.adoc[]
 |cp_custom_sc_after_store|4|store followed by sc
 |cp_custom_sc_after_load|6|load followed by sc
 |cp_custom_sc_lrsc|2|lr followed by sc that fails and passes
-|cp_custom_sc_address|16*2|lr followed by sc at address of 0, 8, ..., 120 offset from lr address.  For RV64, exercise both lr.d and lr.w
+|cp_custom_sc_address|16*2|lr followed by sc at address of 0, 8, ..., 248 offset from lr address.  For RV64, exercise both lr.d and lr.w
 |===
 
 include::norm/Zalrsc_norm_rules.adoc[]

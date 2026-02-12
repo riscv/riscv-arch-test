@@ -73,29 +73,25 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 
 *** this should move to F, which requires CSRs fcsr, frm, fflags
 
-==== V Vector CSRs and Instructions
+==== SmV Vector CSRs and Instructions
 
 These test additional CSRs and vset* instructions that exist when vector is supported.
 
-[[t-V-coverpoints]]
-.V Coverpoints
+[[t-SmV-coverpoints]]
+.SmV Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800[Google Sheet Testplan]
 ,===
 
-*** reorganize
-
-==== V Vector Floating-Point CSRs
+==== SmVF Vector Floating-Point CSRs
 
 These test additional CSRs that exist when vector floating-point is supported.
 
-[[t-VF-coverpoints]]
-.VF Coverpoints
+[[t-SmVF-coverpoints]]
+.SmVF Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886[Google Sheet Testplan]
 ,===
-
-*** reorganize
 
 ==== UF User-Mode Floating-Point CSRs
 

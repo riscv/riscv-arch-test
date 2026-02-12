@@ -153,7 +153,7 @@
   .section .bss
   .align 4
   scratch:
-    .space 136 // Reserve 136 bytes of uninitialized memory
+    .space 264 // Reserve some uninitialized memory
 
   // Start of data region
   .data

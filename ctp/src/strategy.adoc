@@ -2,8 +2,9 @@
 == General Test Plan Strategy
 
 This CTP describes tests for all supported RISC-V profiles, but the tests run on a specific DUT.
+The DUT memory map is defined by a <<linker-script, Linker Script>>.
 The DUT configuration is described with RISC-V Unified Database, and supplementary files such as
-simulator configuration files are automatically generated from the UDB so there is a single
+simulator configuration files are (TODO) automatically generated from the UDB so there is a single
 configuration file to maintain.  The UDB describes the supported extensions, and also has parameters
 defining optional behaviors of those extensions.  If a behavior is UNSPECIFIED in the specification,
 it is not tested because there are no wrong answers.  A common purpose of parameters is to define the
@@ -17,15 +18,13 @@ This file lists:
 * all of the supported extensions
 * all of the parameters required to describe the behavior of the extensions
 
-The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are described by a <<Trick Box, Trick Box>>, which is an assembly-language library implementing an API using DUT-specific hardware.
-
-*** is a linker script really needed?  For PMP?
+The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are defined by <<rvmodel-macros, RVMODEL DUT-Specific Macros>>, which are an assembly-language library implementing an API using DUT-specific hardware.
 
 === Unified Database
 
 Unified Database allows _partially-_ and _fully-configured descriptions_.  A profile is an example of a partially configured description because it has a mix of required and optional extensions, and does not specify parameter values for most of the extensions.  A DUT needs to have a fully configured description including precisely which versions of which extensions are supported and what parameter values are implemented, so that a simulator can exactly match its behavior.
 
-The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and a trick box for the DUT.
+The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and RVMODEL macros for the DUT.
 It uses UDB to produce supplementary configuration files including:
 
 * Sail JSON file configuring reference model to match DUT
@@ -60,7 +59,10 @@ A partially-configured UDB description of each profile is given in:
 
 Some RISC-V behaviors are UNSPECIFIED, which means an implementation can do anything. These behaviors are not tested because there is no wrong answer. <<t-behavior-normative-rules>> summarizes the normative rules regarding reserved behaviors.
 
-Unimplemented opcodes (except in the custom space) and instructions accessing non-existent CSRs are reserved.  The behavior of reserved instructions is UNSPECIFIED, so they should not be tested by most testplans.  However, when the Ssstrict extension is enabled, reserved instructions raise an illegal instruction exception that results in a contained trap to the supervisor-mode trap handler.  This is tested by the Ssstrict test plan.
+Unimplemented opcodes (except in the custom space) and instructions accessing non-existent CSRs are reserved.  The behavior of reserved instructions is UNSPECIFIED, so they should not be tested by most testplans.  However, when the Ssstrict extension is enabled, reserved instructions raise an illegal instruction exception.  This is tested by the <<SsstrictS, SsstrictS>> test plan.
+
+[NOTE]
+Ssstrict states that the illegal instruction is contained in the supervisor-mode trap handler.  Certification tests do not exercise the execution environment, so the illegal instruction traps to machine mode.
 
 [[t-behavior-normative-rules]]
 .I Normative Rules Regarding Behaviors
@@ -75,7 +77,7 @@ categories: standard, reserved, and custom. ... Reserved encodings are currently
 |https://github.com/riscv/riscv-profiles/blob/main/src/rva23-profile.adoc#rva23s64-profile[rva23-profile]|Ssstrict No non-conforming extensions are present. Attempts to execute unimplemented opcodes or access unimplemented CSRs in the standard or reserved encoding spaces raises an illegal instruction exception that results in a contained trap to the supervisor-mode trap handler.
 |===
 
-TODO: These rules are not yet named and tagged in the spec.  Suggest adding them as normative rules.
+TODO: Generate this table from norm rules via YAML when Ssstrict is tagged.
 
 === CSR Bitfields
 

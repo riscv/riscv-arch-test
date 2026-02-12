@@ -34,12 +34,14 @@
     RVTEST_INIT_REGS // 0xF0E1D2C3B4A59687
 
     #ifdef rvtest_mtrap_routine
-      // set up PMP so user and supervisor mode can access full address space
-      // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
-      CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
-      li t0, -1
-      CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-      sfence.vma
+      #if RVMODEL_NUM_PMPS > 0
+        // set up PMP so user and supervisor mode can access full address space
+        // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+        li t0, -1
+        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        sfence.vma
+      #endif
     #endif
 
   // Start of test
@@ -207,7 +209,7 @@
   .global rvtest_data_end
   rvtest_data_end:
 
-  // Model specific data region (tohost/fromhost, etc). Defined in model_test.h
+  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h
   RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_DATA_END ********************************/
@@ -231,9 +233,6 @@
       CANARY
 
     // Main signature region
-    #ifdef RVTEST_VECTOR
-      .align 3
-    #endif
     signature_base:
       #ifdef RVTEST_SELFCHECK
         // Preload signature region with correct values for self-checking

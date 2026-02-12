@@ -77,8 +77,8 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
 
     // main coverpoints
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
-    cp_mcause_write_exception: cross csrrw, mcause, priv_mode_m, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
-    cp_mcause_write_interrupt: cross csrrw, mcause, priv_mode_m, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+    cp_mcause_write_exception: cross priv_mode_m, csrrw, mcause, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
+    cp_mcause_write_interrupt: cross priv_mode_m, csrrw, mcause, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
 endgroup
 
 
@@ -137,9 +137,9 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
     }
 
-    cp_mprivinst: cross privinstrs, priv_mode_m;
-    cp_mret: cross mret, priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret: cross sret, priv_mode_m, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+    cp_mprivinst: cross priv_mode_m, privinstrs;
+    cp_mret:      cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
+    cp_sret:      cross priv_mode_m, sret, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
 endgroup
 
 covergroup Sm_mcsr_cg with function sample(ins_t ins);

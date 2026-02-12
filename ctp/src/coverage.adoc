@@ -18,9 +18,6 @@ _Functional coverage_ also differs from _code coverage_, which measures whether 
 
 Architectural functional coverage requires a way to measure the architectural state of the machine after each instruction.  The https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI) provides a standard way to observe this state in the DUT.  This document defines Extended RVVI with additional signals to facilitate testing virtual memory.
 
-*** links to unpriv and priv specs
-
-
 === Extended RVVI
 
 As compared to the base RVVI, Extended RVVI adds the following signals:
@@ -76,7 +73,7 @@ The framework collects data coming across the RVVI interface and presents it wit
 Most coverpoints use `ins.current`, to measure architectural state at the end of the instruction.  However, some privileged coverpoints need to know the privilege mode or values of CSRs at the start of the instruction and thus use `ins.prev`.
 ====
 
-The available fields are given in fcov/coverage/RISCV_coverage_rvvi.svh.  Most commonly used fields are summarized in <<t-riscvISACOV>>. Other fields include floating-point and vector register IDs and values, MMU extended RVVI signals, vector type information, and pending interrupts.
+The available fields are given in framework/src/act/fcov/coverage/RISCV_coverage_rvvi.svh.  Most commonly used fields are summarized in <<t-riscvISACOV>>. Other fields include floating-point and vector register IDs and values, MMU extended RVVI signals, vector type information, and pending interrupts. TODO: handling register pairs.
 
 [[t-riscvISACOV]]
 .riscvISACOV Signals for Coverpoints
@@ -103,7 +100,6 @@ The available fields are given in fcov/coverage/RISCV_coverage_rvvi.svh.  Most c
 |===
 
 *** exact meaning of trap, importance in writing test
-*** do we need pending interrupts, or can this be part of mip?
 
 [NOTE]
 ====
@@ -117,6 +113,8 @@ Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disasse
 
 
 === Writing Coverpoints with riscvISACOV
+
+Move this and the remainder to ACT repo
 
 *** example of coverpoint
 *** organization of files

@@ -38,7 +38,7 @@
 // Total Expected Faults :: 12
 //-------------------------------------------------------------------------------------------------------------------
 
-#include "model_test.h"
+#include "rvmodel_macros.h"
 
 #include "arch_test.h"
 

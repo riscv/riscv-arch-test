@@ -24,7 +24,7 @@
 
 //TODO: instead of using two different tests, use a single test for hart/software update.
 
-#include "model_test.h"
+#include "rvmodel_macros.h"
 
 #include "arch_test.h"
 

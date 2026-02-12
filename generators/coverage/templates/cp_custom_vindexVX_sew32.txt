@@ -3,7 +3,7 @@
     //////////////////////////////////////////////////////////////////////////////////
 
 
-    `ifdef XLEN_64
+    `ifdef XLEN64
 
     std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -18,7 +18,7 @@
         wildcard bins sew32     = {[32'b11111111_11111111_11111111_11111111:32'b00000000_00000000_00000000_00000001]};
     }
 
-    rs1_target_value : coverpoint ins.current.rs1_val == 16'h8000000000000001 {
+    rs1_target_value : coverpoint ins.current.rs1_val == 64'h8000000000000001 {
         bins target = {1};
     }
 

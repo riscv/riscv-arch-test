@@ -22,6 +22,8 @@ Architectural functional coverage requires a way to measure the architectural st
 
 As compared to the base RVVI, Extended RVVI adds the following signals:
 
+
+
 [[t-extendedrvvi]]
 .Extended RVVI Signals
 [options=header]
@@ -43,6 +45,10 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |page_type_d|3|Data page type (VS-stage when hypervisor is active))
 |g_page_type_i|3|Instruction page type (G-stage when hypervisor is inactive, 0 when inactive)
 |g_page_type_d|3|Data page type (G-stage when hypervisor is inactive, 0 when inactive)
+|tdata1[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 1 for each debug trigger
+|tdata2[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 2 for each debug trigger
+|tdata3[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 3 for each debug trigger
+|tinfo[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Info for each debug trigger
 |===
 
 [[t-pagetypes]]
@@ -61,6 +67,8 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |===
 
 Some accesses touch more than one physical page.  Examples include misaligned accesses wrapping a page boundary, and some vector accesses.  Extended RVVI provides the signals corresponding to the base address of the access. For vector, they correspond to the base address of the initial element access.
+
+NTRIGGERS is a new debugger parameter similar to FLEN defining the number of debug triggers supported by the platform.
 
 === riscvISACOV Signals
 

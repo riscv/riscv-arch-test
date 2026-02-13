@@ -115,7 +115,7 @@ implemented_extensions:
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.13.0" }
   - { name: Sv57, version: "= 1.13.0" }
-  # - { name: Svadu, version: "= 1.0.0" } # TODO: Re-enable when https://github.com/riscv/riscv-unified-db/issues/1217 is fixed
+  - { name: Svadu, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
 

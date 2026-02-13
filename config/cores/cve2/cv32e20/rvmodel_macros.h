@@ -16,6 +16,9 @@
 # Perform boot operations. Can be empty.
 #define RVMODEL_BOOT
 
+# Address to use for load/store fault tests that should cause an access fault on the DUT.
+#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
@@ -40,11 +43,35 @@
   self_loop_fail:         ;\
     j self_loop_fail      ;\
 
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+##### IO #####
 
-#define RVMODEL_MTIME_ADDRESS
+# Initialization steps needed prior to writing to the console
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
+#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
-#define RVMODEL_MTIMECMP_ADDRESS
+# Prints a null-terminated string using a DUT specific mechanism.
+# A pointer to the string is passed in _STR_PTR.
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
+#define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
+1:                           ;                        \
+  lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
+  beqz _R1, 3f               ; /* Exit if null */     \
+2:                           ;                        \
+  la   _R2, 0x10000000       ; /* virtual printer */  \
+  sw   _R1, 0(_R2)           ;                        \
+  addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
+  j 1b                       ; /* Loop */             \
+3:
+
+##### Machine Timer #####
+
+#define RVMODEL_MTIME_ADDR  /* Unimplemented */
+
+#define RVMODEL_MTIMECMP_ADDR  /* Unimplemented */
+
+##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT
 
@@ -54,6 +81,8 @@
 
 #define RVMODEL_CLR_MSW_INT
 
+##### Supervisor Interrupts #####
+
 #define RVMODEL_SET_SEXT_INT
 
 #define RVMODEL_CLR_SEXT_INT
@@ -61,7 +90,5 @@
 #define RVMODEL_SET_SSW_INT
 
 #define RVMODEL_CLR_SSW_INT
-
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 #endif // _COMPLIANCE_MODEL_H

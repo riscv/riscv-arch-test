@@ -211,7 +211,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_BOOT`
 - `RVMODEL_ACCESS_FAULT_ADDRESS`
 
-**Timer Macros**: Can be left blank if `mtime` is not supported..
+**Timer Macros**: Can be left blank if machine mode is not supported.
 
 - `RVMODEL_MTIME_ADDRESS`
 - `RVMODEL_MTIMECMP_ADDRESS`

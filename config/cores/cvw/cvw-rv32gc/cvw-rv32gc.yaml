@@ -44,8 +44,6 @@ implemented_extensions:
   - { name: Zknh, version: "= 1.0.0" }
   - { name: Zknd, version: "= 1.0.0" }
   - { name: Zkne, version: "= 1.0.0" }
-  - { name: Zksed, version: "= 1.0.0" }
-  - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }

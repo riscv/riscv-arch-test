@@ -1,3 +1,7 @@
+# rvmodel_macros.h
+# RVMODEL macro definitions for OpenHW CV32E20 core
+# SPDX-License-Identifier: Apache-2.0
+
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
@@ -7,9 +11,15 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
 
+##### STARTUP #####
+
+# Perform boot operations. Can be empty.
 #define RVMODEL_BOOT
 
+##### TERMINATION #####
+
 # Terminate test with a pass indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
   li x1, 123456789                ;\
   la t0, 0x20000000       ;\
@@ -20,6 +30,7 @@
     j self_loop_pass      ;\
 
 # Terminate test with a fail indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
   la t0, 0x20000000       ;\
@@ -53,20 +64,4 @@
 
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
-# Prints a null-terminated string by writing each byte in the string
-# to the address of the 'virtual printer'.
-# A pointer to the string is passed in _STR_PTR.
-# _R1, _R2, and _R3 can be used as temporary registers if needed.
-# Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
-1:                           ;                        \
-  lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
-  beqz _R1, 3f               ; /* Exit if null */     \
-2:                           ;                        \
-  la   _R2, 0x10000000       ; /* virtual printer */  \
-  sw   _R1, 0(_R2)           ;                        \
-  addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
-  j 1b                       ; /* Loop */             \
-3:
-
-#endif
+#endif // _COMPLIANCE_MODEL_H

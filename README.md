@@ -209,26 +209,21 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT`
+- `RVMODEL_ACCESS_FAULT_ADDRESS`
 
 **Timer Macros**: Can be left blank if `mtime` is not supported..
 
-- `RVMODEL_SET_MTIME`
-- `RVMODEL_SET_MTIMEH` (RV32 only)
+- `RVMODEL_MTIME_ADDRESS`
+- `RVMODEL_MTIMECMP_ADDRESS`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
 - `RVMODEL_SET_MEXT_INT`
 - `RVMODEL_CLR_MEXT_INT`
-- `RVMODEL_SET_MTIMER_INT`
-- `RVMODEL_CLR_MTIMER_INT`
-- `RVMODEL_SET_MTIMER_INT_SOON`
 - `RVMODEL_SET_MSW_INT`
 - `RVMODEL_CLR_MSW_INT`
 - `RVMODEL_SET_SEXT_INT`
 - `RVMODEL_CLR_SEXT_INT`
-- `RVMODEL_SET_STIMER_INT`
-- `RVMODEL_CLR_STIMER_INT`
-- `RVMODEL_SET_STIMER_INT_SOON`
 - `RVMODEL_SET_SSW_INT`
 - `RVMODEL_CLR_SSW_INT`
 

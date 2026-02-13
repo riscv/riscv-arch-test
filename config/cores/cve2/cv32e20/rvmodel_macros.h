@@ -16,6 +16,9 @@
 # Perform boot operations. Can be empty.
 #define RVMODEL_BOOT
 
+# Address to use for load/store fault tests that should cause an access fault on the DUT.
+#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
@@ -63,14 +66,10 @@
 3:
 
 ##### Machine Timer #####
-# TODO: These MTIME macros need to be implemented for CV32E20
-# Set the machine timer (mtime) to the value in the register _R1.
-# _R2 can be used as a temporary register (e.g. address of mtime).
-# For RV32, only write the lower 32 bits of mtime and RVMODEL_SET_MTIMEH for upper 32 bits.
-#define RVMODEL_MTIME_ADDR  /* Address of mtime CSR */
-#define RVMODEL_MTIMECMP_ADDR
-#define RVMODEL_SET_MTIME(_R1, _R2)
-#define RVMODEL_SET_MTIMEH(_R1, _R2)
+
+#define RVMODEL_MTIME_ADDR  /* Unimplemented */
+
+#define RVMODEL_MTIMECMP_ADDR  /* Unimplemented */
 
 ##### Machine Interrupts #####
 
@@ -91,9 +90,5 @@
 #define RVMODEL_SET_SSW_INT
 
 #define RVMODEL_CLR_SSW_INT
-
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 #endif // _COMPLIANCE_MODEL_H

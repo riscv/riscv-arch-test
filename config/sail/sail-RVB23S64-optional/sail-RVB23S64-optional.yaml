@@ -118,7 +118,6 @@ implemented_extensions:
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.13.0" }
   - { name: Sv57, version: "= 1.13.0" }
-  - { name: Svade, version: "= 1.0.0" }
   - { name: Svadu, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: Sha, version: "= 1.0.0" }

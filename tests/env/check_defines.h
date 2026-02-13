@@ -59,16 +59,6 @@
   #error "RVMODEL_MTIMECMP_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_SET_MTIME
-  #error "RVMODEL_SET_MTIME not defined. Make sure to define it in rvmodel_macros.h."
-#endif
-
-#ifndef RVMODEL_SET_MTIMEH
-  #if __riscv_xlen == 32
-    #error "RVMODEL_SET_MTIMEH not defined. Make sure to define it in rvmodel_macros.h for RV32."
-  #endif
-#endif
-
 ##### Machine Interrupts #####
 
 #ifndef RVMODEL_SET_MEXT_INT

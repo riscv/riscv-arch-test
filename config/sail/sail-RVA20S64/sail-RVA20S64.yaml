@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-RVA202S64
+name: sail-RVA20S64
 description: RVA20S64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }

@@ -22,8 +22,6 @@ Architectural functional coverage requires a way to measure the architectural st
 
 As compared to the base RVVI, Extended RVVI adds the following signals:
 
-
-
 [[t-extendedrvvi]]
 .Extended RVVI Signals
 [options=header]
@@ -119,15 +117,12 @@ RVVI and riscvISACOV support the notion of multiple harts that retire multiple i
 Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disassemble.svh, replacing a proprietary disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
 ====
 
-
 === Writing Coverpoints with riscvISACOV
 
 Move this and the remainder to ACT repo
 
 *** example of coverpoint
 *** organization of files
-
-
 
 === Sail Trace Coverage Flow
 

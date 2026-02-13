@@ -25,7 +25,7 @@
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
   li x1, 123456789                ;\
-  la t0, 0x20000000       ;\
+  li t0, 0x20000000       ;\
   write_tohost_pass:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
@@ -36,7 +36,7 @@
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
-  la t0, 0x20000000       ;\
+  li t0, 0x20000000       ;\
   write_tohost_fail:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
@@ -59,7 +59,7 @@
   lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
   beqz _R1, 3f               ; /* Exit if null */     \
 2:                           ;                        \
-  la   _R2, 0x10000000       ; /* virtual printer */  \
+  li   _R2, 0x10000000       ; /* virtual printer */  \
   sw   _R1, 0(_R2)           ;                        \
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \

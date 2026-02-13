@@ -155,7 +155,7 @@
   .section .bss
   .align 4
   scratch:
-    .space 264 // Reserve some uninitialized memory
+    .space 264 // Reserve enough scratch space (needed for atomic reservation tests with offsets up to 256 bytes)
 
   // Start of data region
   .data

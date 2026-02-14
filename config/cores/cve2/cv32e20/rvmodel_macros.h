@@ -67,9 +67,9 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_MTIME_ADDR  /* Unimplemented */
+#define RVMODEL_MTIME_ADDRESS /* unimplemented */
 
-#define RVMODEL_MTIMECMP_ADDR  /* Unimplemented */
+#define RVMODEL_MTIMECMP_ADDRESS /* unimplemented */
 
 ##### Machine Interrupts #####
 

@@ -42,10 +42,17 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Create test data
     test_data = TestData(test_config)
 
+    # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
+    test_data.int_regs.consume_registers([1])
+
     # Generate test body
     priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
+    # Return x1/ra
+    test_data.int_regs.return_register(1)
+
+    # Produce actual test file
     write_test_file(
         test_data,
         body_lines,

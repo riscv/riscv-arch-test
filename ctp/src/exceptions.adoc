@@ -56,31 +56,30 @@ These additional exception tests are run on configurations with vector (V extens
 [[t-ExceptionsVx-coverpoints]]
 .ExceptionsVx Coverpoints
 ,===
-
-,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1139310135#gid=1139310135[Google Sheet Testplan]
+,===
 
-[[t-ExceptionsVf-coverpoints]]
-.ExceptionsVf Coverpoints
+==== ExceptionsVf Vector Floating-Point Exceptions
 
 These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector floating-point instructions.
 
-
-,===
-
+[[t-ExceptionsVf-coverpoints]]
+.ExceptionsVf Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1839120623#gid=1839120623[Google Sheet Testplan]
+,===
 
+==== ExceptionsVls Vector Load/Store Exceptions
+
+These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions.
 
 [[t-ExceptionsVls-coverpoints]]
 .ExceptionsVls Coverpoints
 
-These additional exception tests are run on configurations with vector (V extension or subsets thereof that rely on mstatus.VS) related to vector load/store instructions.
-
-,===
-
 ,===
 https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1814229778#gid=1814229778[Google Sheet Testplan]
+
+,===
 
 ==== ExceptionsZalrsc Atomic LR/SC Exceptions
 
@@ -97,6 +96,9 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=2143559149#gid=2143559149[Google Sheet Testplan]
 ,===
+
+[NOTE]
+ExceptionsZaamo also covers Zama16b.
 
 ==== ExceptionsZc Compressed Instruction Exceptions
 

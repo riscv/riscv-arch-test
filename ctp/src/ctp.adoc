@@ -1,6 +1,5 @@
-[[manual:ctp,RISC-V Certification Test Plan Draft Proposal]]
-= RISC-V Certification Test Plan Draft Proposal
-// These attributes have been copied over from riscv-isa-manual and are not yet all tested
+[[manual:ctp,RISC-V Certification Test Plan]]
+= RISC-V Certification Test Plan
 include::../docs-resources/global-config.adoc[]
 :description: Certification Test Plan
 :colophon:
@@ -47,27 +46,29 @@ endif::[]
 
 _Contributors to all versions of the spec in alphabetical order_
 
+* Allen Baum
 * Jordan Carlin
 * James Kaden Cassidy
 * David Harris
 * Georgia Tai
+* Mike Thompson
 
 _This document is released under a Creative Commons Attribution 4.0 International License._
 
-This is a draft Certification Test Plan.  It reflects the coverpoints and tests
-presently being developed in the https://github.com/riscv-non-isa/riscv-arch-test[riscv-arch-test] repository
-act4 branch.  It is intended for discussion as a possible format of test plan for RISC-V Certification.
+This Certification Test Plan (CTP) is a work in progress.  It describes the coverpoints and tests
+being developed by the RISC-V Certification Steering Committee.  It is intended to be read in
+conjunction with the Certification Requirements Documents (CRDs) defining the features in each
+certificate, and the https://github.com/riscv-non-isa/riscv-arch-test[riscv-arch-test] repository
+that contains information about how to use and contribute to the tests.
 
 include::intro.adoc[]
 include::cert.adoc[]
 include::profiles.adoc[]
 include::strategy.adoc[]
 include::req.adoc[]
-include::trickbox.adoc[]
+include::rvmodel.adoc[]
 include::coverage.adoc[]
 include::ref.adoc[]
-include::framework.adoc[]
-include::todo.adoc[]
 
 include::unpriv.adoc[]
 include::priv.adoc[]

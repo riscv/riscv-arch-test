@@ -78,8 +78,8 @@ covergroup S_scause_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_scause_write_exception: cross csrrw, scause, priv_mode_s, scause_exception_values, scause_exception; // CSR write of scause in S mode with interesting values
-    cp_scause_write_interrupt: cross csrrw, scause, priv_mode_s, scause_interrupt_values, scause_interrupt; // CSR write of scause in S mode with interesting values
+    cp_scause_write_exception: cross priv_mode_s, csrrw, scause, scause_exception_values, scause_exception; // CSR write of scause in S mode with interesting values
+    cp_scause_write_interrupt: cross priv_mode_s, csrrw, scause, scause_interrupt_values, scause_interrupt; // CSR write of scause in S mode with interesting values
 endgroup
 
 
@@ -148,11 +148,11 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
     }
     // main coverpoints
-    cp_sprivinst: cross privinstrs, priv_mode_s;
-    cp_mret_s:    cross mret,       priv_mode_s;
-    cp_sret_s:    cross sret,       priv_mode_s, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
-    cp_mret_m:    cross mret,       priv_mode_m, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret_m:    cross sret,       priv_mode_m, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+    cp_sprivinst: cross priv_mode_s, privinstrs;
+    cp_mret_s:    cross priv_mode_s, mret;
+    cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+    cp_mret_m:    cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
+    cp_sret_m:    cross priv_mode_m, sret, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
 endgroup
 
 covergroup S_scsr_cg with function sample(ins_t ins);

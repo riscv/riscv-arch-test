@@ -4,7 +4,7 @@ The RISC-V Architectural Certification Tests (ACTs) are a set of assembly langua
 
 The Architectural Certification Tests are used with the ACT4 Framework, a Makefile and Python based tool that replaces the deprecated riscof tool. The ACT4 Framework generates and compiles self-checking tests in Executable Linkable Format (ELF) for a device under test (DUT) and optionally collects coverage showing that the tests hit the coverpoints that check the normative rules. The user is then responsible for running all of the ELF files on the DUT with the user's own testbench. Each test reports success or failure, and if possible prints error messages to a console.
 
-The ACT4 Framework requires a UDB configuration file specifying the extensions and parameters supported by the DUT; a Trick Box macro file defining DUT-specific operations such as printing to a console, terminating a test with a success/failure code, and generating interrupts; and a linker script describing the DUT memory map.
+The ACT4 Framework requires a UDB configuration file specifying the extensions and parameters supported by the DUT; an rvmodel_macros.h file defining DUT-specific operations such as printing to a console, terminating a test with a success/failure code, and generating interrupts; and a linker script describing the DUT memory map.
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
@@ -163,7 +163,7 @@ Your configuration directory should contain the following files:
 
 1. `test_config.yaml` - ACT Framework configuration
 2. `<dut-name>.yaml` - UDB configuration file
-3. `model_test.h` - Trickbox macro implementations
+3. `rvmodel_macros.h` - DUT-specific macro implementations
 4. `link.ld` - Linker script
 5. `sail.json`, `rvtest_config.svh`, `rvtest_config.h` - Additional configs (will be auto-generated in the future)
 
@@ -181,7 +181,7 @@ It should contain the following fields:
 - `ref_model_exe`: RISC-V Sail model executable (`sail_riscv_sim`); absolute path or executable name on PATH
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
-- `dut_include_dir`: Directory containing `model_test.h`; interpreted relative to framework config file (use `.` for same directory as config file)
+- `dut_include_dir`: Directory containing `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file)
 
 See [test_config.yaml](./config/cores/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
 
@@ -191,9 +191,9 @@ A [UDB](https://github.com/riscv/riscv-unified-db) configuration file is used to
 
 See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an example and [the riscv-unified-db repo](https://github.com/riscv/riscv-unified-db) for more details.
 
-#### `model_test.h` Trickbox Macro Implementation
+#### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
-The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv-non-isa.github.io/riscv-arch-test/#_trick_box_macros).
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv-non-isa.github.io/riscv-arch-test/#_Macros).
 
 **Required Macros**:
 
@@ -209,30 +209,25 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT`
+- `RVMODEL_ACCESS_FAULT_ADDRESS`
 
-**Timer Macros**: Can be left blank if `mtime` is not supported..
+**Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_SET_MTIME`
-- `RVMODEL_SET_MTIMEH` (RV32 only)
+- `RVMODEL_MTIME_ADDRESS`
+- `RVMODEL_MTIMECMP_ADDRESS`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
 - `RVMODEL_SET_MEXT_INT`
 - `RVMODEL_CLR_MEXT_INT`
-- `RVMODEL_SET_MTIMER_INT`
-- `RVMODEL_CLR_MTIMER_INT`
-- `RVMODEL_SET_MTIMER_INT_SOON`
 - `RVMODEL_SET_MSW_INT`
 - `RVMODEL_CLR_MSW_INT`
 - `RVMODEL_SET_SEXT_INT`
 - `RVMODEL_CLR_SEXT_INT`
-- `RVMODEL_SET_STIMER_INT`
-- `RVMODEL_CLR_STIMER_INT`
-- `RVMODEL_SET_STIMER_INT_SOON`
 - `RVMODEL_SET_SSW_INT`
 - `RVMODEL_CLR_SSW_INT`
 
-Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/model_test.h](./config/cores/cvw/cvw-rv64gc/model_test.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/model_test.h](./config/sail/sail-RVA23S64/model_test.h)).
+Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
 #### Linker Script
 
@@ -308,7 +303,7 @@ A common source of errors is configuration mismatches, so ensure that:
 
 - Your UDB config file accurately reflects your DUT's capabilities
 - The Sail config file matches your UDB configuration and DUT
-- Your `model_test.h` macros correctly implement the required functionality
+- Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
 
 ## Contributing

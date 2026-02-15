@@ -76,11 +76,11 @@
     }
 
     vs1_mod4_2: coverpoint ins.current.insn[16:15] {
-        bins odd = {2'b11};
+        bins mod4_2 = {2'b10};
     }
 
     vs1_mod8_4: coverpoint ins.current.insn[17:15] {
-        bins odd = {3'b110};
+        bins mod8_4 = {3'b100};
     }
 
     cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1 : cross std_vec, vtype_lmul_1, vs1_vd_overlap_lmul1, vd_all_reg_aligned_lmul_2, vs2_vd_no_overlap_lmul1, vs1_reg_unaligned_lmul_2;

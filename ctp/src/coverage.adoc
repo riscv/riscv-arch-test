@@ -18,9 +18,6 @@ _Functional coverage_ also differs from _code coverage_, which measures whether 
 
 Architectural functional coverage requires a way to measure the architectural state of the machine after each instruction.  The https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI) provides a standard way to observe this state in the DUT.  This document defines Extended RVVI with additional signals to facilitate testing virtual memory.
 
-*** links to unpriv and priv specs
-
-
 === Extended RVVI
 
 As compared to the base RVVI, Extended RVVI adds the following signals:
@@ -46,6 +43,10 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 |page_type_d|3|Data page type (VS-stage when hypervisor is active))
 |g_page_type_i|3|Instruction page type (G-stage when hypervisor is inactive, 0 when inactive)
 |g_page_type_d|3|Data page type (G-stage when hypervisor is inactive, 0 when inactive)
+|tdata1[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 1 for each debug trigger
+|tdata2[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 2 for each debug trigger
+|tdata3[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Data 3 for each debug trigger
+|tinfo[NTRIGGERS]|XLEN*NTRIGGERS|Sdtrig Trigger Info for each debug trigger
 |===
 
 [[t-pagetypes]]
@@ -65,6 +66,8 @@ As compared to the base RVVI, Extended RVVI adds the following signals:
 
 Some accesses touch more than one physical page.  Examples include misaligned accesses wrapping a page boundary, and some vector accesses.  Extended RVVI provides the signals corresponding to the base address of the access. For vector, they correspond to the base address of the initial element access.
 
+NTRIGGERS is a new parameter similar to FLEN defining the number of Sdtrig debug triggers supported by the platform.
+
 === riscvISACOV Signals
 
 Coverpoints are described using the open https://github.com/riscv-verification/riscvISACOV[riscvISACOV] framework.
@@ -76,7 +79,7 @@ The framework collects data coming across the RVVI interface and presents it wit
 Most coverpoints use `ins.current`, to measure architectural state at the end of the instruction.  However, some privileged coverpoints need to know the privilege mode or values of CSRs at the start of the instruction and thus use `ins.prev`.
 ====
 
-The available fields are given in fcov/coverage/RISCV_coverage_rvvi.svh.  Most commonly used fields are summarized in <<t-riscvISACOV>>. Other fields include floating-point and vector register IDs and values, MMU extended RVVI signals, vector type information, and pending interrupts.
+The available fields are given in framework/src/act/fcov/coverage/RISCV_coverage_rvvi.svh.  Most commonly used fields are summarized in <<t-riscvISACOV>>. Other fields include floating-point and vector register IDs and values, MMU extended RVVI signals, vector type information, and pending interrupts. TODO: handling register pairs.
 
 [[t-riscvISACOV]]
 .riscvISACOV Signals for Coverpoints
@@ -103,7 +106,6 @@ The available fields are given in fcov/coverage/RISCV_coverage_rvvi.svh.  Most c
 |===
 
 *** exact meaning of trap, importance in writing test
-*** do we need pending interrupts, or can this be part of mip?
 
 [NOTE]
 ====
@@ -115,13 +117,12 @@ RVVI and riscvISACOV support the notion of multiple harts that retire multiple i
 Our riscvISACOV implementation uses a SystemVerilog disassembler in fcov/disassemble.svh, replacing a proprietary disassembler from Imperas.  When adding new extensions, update the disassembler accordingly.
 ====
 
-
 === Writing Coverpoints with riscvISACOV
+
+Move this and the remainder to ACT repo
 
 *** example of coverpoint
 *** organization of files
-
-
 
 === Sail Trace Coverage Flow
 

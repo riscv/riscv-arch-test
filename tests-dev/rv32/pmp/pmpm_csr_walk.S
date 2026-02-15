@@ -11,7 +11,7 @@
 //               Specification v1.12 and includes:
 //               - Comprehensive RWX checks for multiple PMP regions.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -24,10 +24,10 @@
 //               writing 0 to pmpcfg 1, 3. If 64 CSRs are supported, doing same
 //               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15.
 //
-// Dependencies: model_test.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // --------------------------------------------------------------------------------
 
-#include "model_test.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV32I_Zicsr")
 # Test code region

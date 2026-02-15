@@ -116,10 +116,10 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
     illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
     illegal_address_misaligned: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal_misaligned = {`ACCESS_FAULT_ADDRESS + 1}; // One more than the illegal address is both misaligned and illegal
+        bins illegal_misaligned = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1}; // One more than the illegal address is both misaligned and illegal
     }
     medeleg_instraccessfault_enabled: coverpoint ins.current.csr[12'h302][1] {
         bins enabled = {1};

@@ -84,6 +84,15 @@
   #define RVTEST_WORD_PTR .word
 #endif
 
+// PMP macros
+#define PMP0_CFG_SHIFT  0
+#define PMP1_CFG_SHIFT  8
+#define PMP2_CFG_SHIFT  16
+#define PMP3_CFG_SHIFT  24
+#define PMP4_CFG_SHIFT  32
+#define PMP5_CFG_SHIFT  40
+#define PMP6_CFG_SHIFT  48
+#define PMP7_CFG_SHIFT  56
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.

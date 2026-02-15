@@ -11,7 +11,7 @@
         bins pass = {0};
         bins fail = {[1:$]};
     }
-    cp_address_difference : coverpoint {ins.current.rs1_val - ins.prev.rs1_val}[6:3] iff (ins.current.rs1_val[31:7] == ins.prev.rs1_val[31:7]) {
+    cp_address_difference : coverpoint {ins.current.rs1_val - ins.prev.rs1_val}[7:3] iff (ins.current.rs1_val[31:8] == ins.prev.rs1_val[31:8]) {
         // difference between lr and sc address may or may not fall in reservation set size
     }
     cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {

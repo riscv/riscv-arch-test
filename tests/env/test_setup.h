@@ -34,12 +34,14 @@
     RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
 
     #ifdef rvtest_mtrap_routine
-      # set up PMP so user and supervisor mode can access full address space
-      # gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
-      CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
-      li t0, -1
-      CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-      sfence.vma
+      #if RVMODEL_NUM_PMPS > 0
+        # set up PMP so user and supervisor mode can access full address space
+        # gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+        CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
+        li t0, -1
+        CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        sfence.vma
+      #endif
     #endif
 
   // Start of test
@@ -62,10 +64,12 @@
     // Initialize test data pointer
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
+    // Enable floating-point with mstatus.FS if applicable
     #ifdef RVTEST_FP
       RVTEST_FP_ENABLE(T1)
     #endif
 
+    // Enable vector extension with mstatus.VS if applicable
     #ifdef RVTEST_VECTOR
       RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
     #endif
@@ -153,7 +157,7 @@
   .section .bss
   .align 4
   scratch:
-    .space 136 // Reserve 136 bytes of uninitialized memory
+    .space 264 // Reserve enough scratch space (needed for atomic reservation tests with offsets up to 256 bytes)
 
   // Start of data region
   .data
@@ -222,9 +226,6 @@
       CANARY
 
     // Main signature region
-    #ifdef RVTEST_VECTOR
-      .align 3
-    #endif
     signature_base:
       #ifdef SELFCHECK
         // Preload signature region with correct values for self-checking

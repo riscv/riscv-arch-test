@@ -49,7 +49,7 @@
         },
         "size": {
           "len": 64,
-          "value": "0x40000"
+          "value": "0x80000000"
         },
         "attributes": {
           "cacheable": true,
@@ -62,52 +62,6 @@
           "misaligned_fault": "NoFault",
           "reservability": "RsrvNone",
           "supports_cbo_zero": false
-        },
-        "include_in_device_tree": true
-      },
-      {
-        "base": {
-          "len": 64,
-          "value": "0x2000000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x2000000"
-        },
-        "attributes": {
-          "cacheable": false,
-          "coherent": true,
-          "executable": false,
-          "readable": true,
-          "writable": true,
-          "read_idempotent": false,
-          "write_idempotent": false,
-          "misaligned_fault": "AlignmentFault",
-          "reservability": "RsrvNone",
-          "supports_cbo_zero": false
-        },
-        "include_in_device_tree": false
-      },
-      {
-        "base": {
-          "len": 64,
-          "value": "0x80000000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x80000000"
-        },
-        "attributes": {
-          "cacheable": true,
-          "coherent": true,
-          "executable": true,
-          "readable": true,
-          "writable": true,
-          "read_idempotent": true,
-          "write_idempotent": true,
-          "misaligned_fault": "NoFault",
-          "reservability": "RsrvEventual",
-          "supports_cbo_zero": true
         },
         "include_in_device_tree": true
       }

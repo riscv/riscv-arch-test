@@ -187,7 +187,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
 |ExceptionsVls|Vector Load/Store Exceptions|<<t-ExceptionsVls-coverpoints>>|||o|o|x
 |SmV|Vector CSRs|<<t-SmV-coverpoints>>|||o|o|x
-|VF|Vector FP CSRs|<<t-VF-coverpoints>>|||o|o|x
+|SmVF|Vector FP CSRs|<<t-SmVF-coverpoints>>|||o|o|x
 |UV|User Vector CSRs|<<t-UV-coverpoints>>|||o|o|x
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor

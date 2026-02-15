@@ -64,10 +64,12 @@
     // Initialize test data pointer
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
+    // Enable floating-point with mstatus.FS if applicable
     #ifdef RVTEST_FP
       RVTEST_FP_ENABLE(T1)
     #endif
 
+    // Enable vector extension with mstatus.VS if applicable
     #ifdef RVTEST_VECTOR
       RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
     #endif
@@ -156,7 +158,7 @@
   .section .bss
   .align 4
   scratch:
-    .space 136 // Reserve 136 bytes of uninitialized memory
+    .space 264 // Reserve enough scratch space (needed for atomic reservation tests with offsets up to 256 bytes)
 
   // Start of data region
   .data

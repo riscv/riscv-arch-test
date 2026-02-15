@@ -209,7 +209,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d", "lr.w"]
 
     for lr_insn in lr_insns:
-        for addr_diff in range(8, 128, 8):
+        for addr_diff in range(8, 256, 8):
             params = generate_random_params(test_data, instr_type, exclude_regs=[0])
             assert (
                 params.rs1 is not None

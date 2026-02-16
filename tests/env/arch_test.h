@@ -111,33 +111,27 @@
         RVMODEL_CLR_[M/H/S/V][SW/TIMTER/EXT]_INT
         rvtest_[M/H/S/V]trap_routine
         GOTO_[M/H/S/U]MODE, INSTANTIATE_MODE_MACRO (prolog/handler/epilog/savearea)
-   The following are custom macros for selfchk mode
-        RVMODEL_SELFCHECK
-        RVMODEL_WR_STR  optional for status writes
-        RVMODEL_WR_BIN  optional for status writes
    The following are general parameter initialization
         RVMODEL_MTVEC_ALIGN
         RVMODEL_CBZ_BLOCKSIZE
         RVMODEL_CMO_BLOCKSIZE
         RVMODEL_CLEAN_SIG
-   The following macro is optional, and defaults to fence.i if not defined
-        RVMODEL.FENCEI
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
-         NUM_SPECD_INTCAUSES
+        NUM_SPECD_INTCAUSES
    The following variables are optional if exception tests are enabled (defaulted if not defined):
-         SET_REL_TVAL_MSK     OPT_ZERO_TVAL_MSK
+        SET_REL_TVAL_MSK     OPT_ZERO_TVAL_MSK
    The following variables are optional:
-         rvtest_gpr_save: if defined, stores GPR contents into signature at test end (for debug)
+        rvtest_gpr_save: if defined, stores GPR contents into signature at test end (for debug)
    The following labels are required and defined by required macros:
-          rvtest_code_begin:   defined by RVTEST_CODE_BEGIN  macro (boot code called here, but located in code_end)
-          rvtest_code_end:     defined by RVTEST_CODE_END    macro (trap handlers follow this)
-          rvtest_data_begin:   defined by RVTEST_DATA_BEGIN  macro
-          rvtest_data_end:     defined by RVTEST_DATA_END    macro
-          rvtest_sig_begin:    defined by RVTEST_SIG_BEGIN   macro (after  RVMODEL_DATA_BEGIN) defines signature begin
-          rvtest_sig_end:      defined by RVTEST_SIG_END     macro (before RVMODEL_DATA_END)   defines signature end
-          rvtest_Sroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if  Smode implemented
-          rvtest_Vroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if VSmode implemented
-          mtrap_sigptr:        defined by test if traps are possible, else is defaulted
+        rvtest_code_begin:   defined by RVTEST_CODE_BEGIN  macro (boot code called here, but located in code_end)
+        rvtest_code_end:     defined by RVTEST_CODE_END    macro (trap handlers follow this)
+        rvtest_data_begin:   defined by RVTEST_DATA_BEGIN  macro
+        rvtest_data_end:     defined by RVTEST_DATA_END    macro
+        rvtest_sig_begin:    defined by RVTEST_SIG_BEGIN   macro (after  RVMODEL_DATA_BEGIN) defines signature begin
+        rvtest_sig_end:      defined by RVTEST_SIG_END     macro (before RVMODEL_DATA_END)   defines signature end
+        rvtest_Sroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if  Smode implemented
+        rvtest_Vroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if VSmode implemented
+        mtrap_sigptr:        defined by test if traps are possible, else is defaulted
 */
 //****WARNING****don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
 
@@ -194,24 +188,6 @@
 // This only gets executed if xTVEC is not writable to point to the trap trampoline,
 // and if it isn't writable, the model better have the zifencei extension implemented.
 //==========================================================================================
-// RVMODEL_XX macros that are more than 4bytes (if not defaulted) are defined in the RVMODEL_BOOT macro
-// as a JAL sp, rvmodel_xx, and the rvmodel_xx routine is responsible for saving  up to 8 registers
-// at offset rvmodel_off from the address in xSCRATCH csr, and restoring those before returning..
-// Example code for this is
-//       csrrw   sp, CSR_XSCRATCH, sp
-//       SREG    T6, rvmodel_sv_off+6*REGWIDTH(sp)
-//       SREG    T5, rvmodel_sv_off+5*REGWIDTH(sp)
-//       SREG    T4, rvmodel_sv_off+4*REGWIDTH(sp)
-//       SREG    T3, rvmodel_sv_off+3*REGWIDTH(sp)
-//       SREG    T2, rvmodel_sv_off+2*REGWIDTH(sp)
-//       SREG    T1, rvmodel_sv_off+1*REGWIDTH(sp)
-//       csrrw   sp, CSR_XSCRATCH, sp
-// at return, the same code is performed in reverse, with LREG instead of SREG, followed by a jr sp op.
-// Note that sp must not be live in any test that calls the these rvmodel_xx routines,
-// so it must be explicitly saved and restored in all tests where it is live.
-// The trap handler general holds the contents of xscratch in sp, so saving isn't neccessary (but restoring is)
-//**** FIXME: ensure that all instances of RVMODEL MACROs in the handlers restore sp. May not be necessary in prolog/epilog code
-//==========================================================================================
 
 #ifndef   RVMODEL_FENCEI        /**** if not defaulted must be a single op or a JAL to a rvmodel_fencei routine in rvmodel_boot ****/
   #ifndef ZIFENCE
@@ -259,24 +235,24 @@
 // where VADDR_SZ is derived from SATP.mode at reset
 #ifndef _ADDR_SZ_
   #if XLEN==32
-    #define _ADDR_SZ_ 32
+    #define _ADDR_SZ_ 34
   #else
     #define _ADDR_SZ_ 57
   #endif
 #endif
 
 // this is the position of the last level PPN in each root page table PTE
-  #define ROOT_PPN_LSB 10
-    #if XLEN==32
-      #define PPN_SZ   10
-      #define LVLS     2
-    #else
-      #define PPN_SZ   9
-      #define LVLS   ((_ADDR_SZ_-4)/PPN_SZ)
-    #endif
+#define ROOT_PPN_LSB 10
+#if XLEN==32
+  #define PPN_SZ   10
+  #define LVLS     2
+#else
+  #define PPN_SZ   9
+  #define LVLS   ((_ADDR_SZ_-12)/PPN_SZ)
+#endif
 
 // this defines a page of PTEs at top level (depending on _ADDR_SZ_) with named permissions
-// for the largest size page and a common base (which is set to zero for identify mapping)
+// for the largest size page and a common base (which is set to zero for identity mapping)
 #define RVTEST_PTE_IDENT_MAP(PGBASE,LVLS,PERMS)                                 ;\
     .set ppn, 0                                                                 ;\
     .rept (4096 >> REGWIDTH)                                                    ;\
@@ -424,13 +400,12 @@
 /* init regs, to ensure you catch any errors */
 .macro RVTEST_INIT_REGS
     #ifdef rvtest_mtrap_routine
-     LI  (x1, 0)
      // Initialising CSR registers (mpec, mtval, mstatus, mip)
-     csrw  CSR_MSTATUS,    x1
-     csrw  CSR_MEPC,       x1
-     csrw  CSR_MIP,        x1
-     csrw  CSR_MTVAL,      x1
-     csrw  CSR_MCAUSE,     x1
+     csrw  CSR_MSTATUS,    x0
+     csrw  CSR_MEPC,       x0
+     csrw  CSR_MIP,        x0
+     csrw  CSR_MTVAL,      x0
+     csrw  CSR_MCAUSE,     x0
     #endif
    #ifndef RVTEST_E
      LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
@@ -494,16 +469,15 @@
 /******************************************************************************/
 .macro INSTANTIATE_MODE_MACRO MACRO_NAME
   #ifdef rvtest_mtrap_routine
-    \MACRO_NAME M         // actual m-mode prolog/epilog/handler code
+    \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
   #endif
   #ifdef rvtest_strap_routine
+    \MACRO_NAME S       // actual s-mode prolog/epilog/handler code
     #ifdef rvtest_htrap_routine
-      \MACRO_NAME H     // actual s-mode prolog/epilog/handler code
+      \MACRO_NAME H     // actual hs-mode prolog/epilog/handler code
     #endif
-    \MACRO_NAME S // actual v-mode prolog/epilog/handler code
-    /****FIXME - do we need separate rvtest_vtrap_routine variable? It must be present of rvtests_htrap_routine is present ****/
     #ifdef rvtest_vtrap_routine
-      \MACRO_NAME V // actual v-mode prolog/epilog/handler code
+      \MACRO_NAME V     // actual v-mode prolog/epilog/handler code
     #endif
   #endif
 .endm
@@ -546,7 +520,7 @@
 //| ExcepPC   | mepc      |         sepc        | vsepc    |    HS/S shared
 //| TrapCause | mcause    |         scause      | vscause  |    HS/S shared
 //+-----------+-----------+-----------+---------+----------+
-//| Timecmp   | mtimecmp  |     x     |mtimecmp |vstimecmp |    new for H
+//| Timecmp   | mtimecmp  |     x     |stimecmp |vstimecmp |    new for H
 //| TimeDelta |    x      | htimedelta|   x     |    x     |    new for H
 //| GExtIntEn |    x      | hgeie     |   x     |    x     |    new for H
 //| GExtIntPnd|    x      | hgeip     |   x     |    x     |    new for H
@@ -765,12 +739,12 @@
 
 /***********************************************************************************/
 /**** This must be used before using RVTEST_GOTO_LOWER_MODE and at CODE_END.    ****/
-/**** It sets a1 to 0 to signal that this is not an explict ECALL, and that it  ****/
-/**** return normally. The handler will check that trap cause==ecallx, & divert ****/
+/**** It sets x3 to 0 to signal that this is not an explict ECALL, and that it  ****/
+/**** returns normally. The handler will check that trap cause==ecall, & divert ****/
 /**** to a spcl rtn_fm_mmode: handler if x3=0. That code translates MEPC from   ****/
 /**** caller's mode to Mmodes BARE mode, restore regs & branches to relocated   ****/
 /****  EPC+4, the op immediately following the ECALL, but upgraded to Mmode     ****/
-/**** **NOTE**: this destroys T2 and clears x3 (param register)                 ****/
+/**** **NOTE**: this destroys T2 and clears t0 (param register)                 ****/
 /**** **NOTE**:  MUST not be used if medeleg[<GOTO_M_OP_cause>]==1 to prevent   ****/
 /**** infinite delegation loops.                                                ****/
 /**** **NOTE: tests that set medeleg[GOTO_M_OP_cause] must replace  GOTO_M_OP   ****/
@@ -783,21 +757,20 @@
 
 #ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
     #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
-    #define ALT_GOTO_M_OP    .word 0
+    #define ALT_GOTO_M_OP    .insn 0
 #endif
 
 .macro  RVTEST_GOTO_MMODE
 .option push
 .option norvc
-#ifdef  rvtest_mtrap_routine    /**** this can be empty if no Umode ****/
-    mv   t0, x3                 /* FIXME: Hacky way to preserve x3 by trashing t0 instead */
-    li   x3, 0                  /* Ecall w/x3=0 is handled specially to rtn here */
-// Note that if ecalls are delegated , this may infinite loop
-// The solution is either for test to disable delegation, or to redefine GOTO_M_OP
-// to be an op that will trap to mmode (e.g. jump to odd address, or .word 0)
+#ifdef  rvtest_mtrap_routine
+    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+    // Note that if ecalls are delegated, this may infinite loop
+    // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
 
-    GOTO_M_OP                   /* ECALL: traps always, but returns immediately to */
-                                /* the next op if x3=0, else handles trap normally */
+    GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
+                                   the next op if x3=0, else handles trap normally */
     mv   x3, t0
 #endif
 .option pop
@@ -806,20 +779,23 @@
 .macro  RVTEST_GOTO_DELEGATED_MMODE
 .option push
 .option norvc
-#ifdef  rvtest_mtrap_routine    /**** this can be empty if no Umode ****/
+#ifdef  rvtest_mtrap_routine
 // Note that this must be called with ecall traps delegated, else it could infinite loop
 
-    li   a1, 0                  /* Ecall w/a1=0 is handled specially to rtn here */
-    ALT_GOTO_M_OP               /* will trap and if ecalls are delegated, will simply return */
-                                /* to op after illegal op else handles trap normally */
+    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+
+    ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
+                                   return to op after illegal op, else handles trap normally */
+    mv   x3, t0
 #endif
 .option pop
 .endm
 
-/**** This is a helper macro that causes transition harts from M-mode       ****/
+/**** This is a helper macro that causes harts to transition from M-mode    ****/
 /**** to the following instruction, at lower priv mode. Legal params are    ****/
-/**** VSmode,HSmode,VUmode, HUmode,Smode & Umode. The H,U variations leave  ****/
-/**** V unchanged. This modifies T1,T2&T4.                                  ****/
+/**** HSmode, VSmode, VUmode, Smode & Umode. The H,U variations leave       ****/
+/**** V unchanged. This modifies T1,T2 & T4.                                ****/
 /**** If requested lower mode doesn't exist, is stays in Mmode,             ****/
 /**** NOTE: this MUST be executed in M-mode. Precede with GOTO_MMODE        ****/
 /**** FIXME - SATP & VSATP must point to the identity map page table        ****/
@@ -1797,7 +1773,7 @@ clrint_\__MODE__\()tbl:                              //this code should only tou
         .dword  \__MODE__\()clr_Mext_int // int cause  B  Mmode Ext int
  //****************************************************************
 #else
-  #if defined(rvtest_htrap_routine)   // M/H/S/U only
+  #if defined(rvtest_htrap_routine) || defined(rvtest_strap_routine)   // M/H/S/U only
         .dword  0                        // int cause  0 is rsvd, error
         .dword  \__MODE__\()clr_Ssw_int  // int cause  1  Smode SW int
         .dword  1                        // int cause  2  no Vmode
@@ -1813,24 +1789,7 @@ clrint_\__MODE__\()tbl:                              //this code should only tou
         .dword  1                        // int cause  A no vmode
         .dword  \__MODE__\()clr_Mext_int // int cause  B  Mmode Ext int
  //****************************************************************
-  #else
-    #if defined(rvtest_strap_routine)   // M/S/U only
-        .dword  0                        // int cause  0 is rsvd, error
-        .dword  \__MODE__\()clr_Ssw_int  // int cause  1  Smode SW int
-        .dword  1                        // int cause  2  no Vmode
-        .dword  \__MODE__\()clr_Msw_int  // int cause  3  Mmode SW int
- //****************************************************************
-        .dword  0                        // int cause  4 is rsvd, error
-        .dword  \__MODE__\()clr_Stmr_int // int cause  5  Smode Tmr int
-        .dword  1                        // int cause  6 no vmode
-        .dword  \__MODE__\()clr_Mtmr_int // int cause  7  Mmode Tmr int
- //****************************************************************
-        .dword  0                        // int cause  8 is reserved, error
-        .dword  \__MODE__\()clr_Sext_int // int cause  9  Smode Ext int
-        .dword  1                        // int cause  A no vmode
-        .dword  \__MODE__\()clr_Mext_int // int cause  B  Mmode Ext int
- //****************************************************************
-    #else   // M(/U)mode only
+  #else   // M(/U)mode only
         .dword  0                        // int cause  0 is rsvd, error
         .dword  1                        // int cause  1  no Smode
         .dword  1                        // int cause  2  no Vmode
@@ -1846,12 +1805,11 @@ clrint_\__MODE__\()tbl:                              //this code should only tou
         .dword  1                        // int cause  A no vmode
         .dword  \__MODE__\()clr_Mext_int // int cause  B  Mmode Ext int
 //****************************************************************
-    #endif
   #endif
 #endif
 
  .rept NUM_SPECD_INTCAUSES-0xC
-        .dword  1                       // int cause c..NUM_SPECD_INTCAUSES is rsvd, just rrtn
+        .dword  1                       // int cause c..NUM_SPECD_INTCAUSES is reserved, just return
  .endr
  .rept XLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
@@ -1892,7 +1850,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mext_int:               // int11 default to just return after saving IntID in T3
         RVMODEL_CLR_MEXT_INT
-        TRAP_SIGUPD(T4, 3)              // save 4rd sig value, (intID)
+        TRAP_SIGUPD(T4, 3)              // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
 //------------- [H]SMode----------------
@@ -1925,7 +1883,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Sext_int:               // int 9 default to just return after saving IntID in T3
         RVMODEL_CLR_SEXT_INT
-        TRAP_SIGUPD(T4, 3)              // save 4rd sig value, (intID)
+        TRAP_SIGUPD(T4, 3)              // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
 //------------- VSmode----------------
@@ -1939,7 +1897,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Vext_int:               // int 10 default to just return after saving IntID in T3
         RVMODEL_CLR_VEXT_INT
-        TRAP_SIGUPD(T4, 3)              // save 4rd sig value, (intID)
+        TRAP_SIGUPD(T4, 3)              // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
 .ifc \__MODE__ , M

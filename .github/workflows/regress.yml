@@ -55,6 +55,7 @@ jobs:
 
       - name: Compile and run tests on Sail
         run: |
+          # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
           if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
               DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
           else

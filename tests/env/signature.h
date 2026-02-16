@@ -56,6 +56,7 @@
 // In Self Check mode, compare reference and DUT signatures and jump to
 // test_failure in case of a mismatch.
 // If not in Self Check mode, just store the signatures to the signature region
+// **TODO: This requires some further changes for proper error reporting
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _OFF)                         \
     LREG       _TMPREG, _OFF*REGWIDTH(T1)                   ;\

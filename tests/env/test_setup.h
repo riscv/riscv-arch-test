@@ -24,8 +24,8 @@
   .option norvc
   .section .text.init
 
-  // rvtest_entry_pt has model specific code
-  j rvtest_entry_pt
+  // Include model specific boot code
+  j rvmodel_boot
 
   // Test initialization
   .global rvtest_init
@@ -71,7 +71,7 @@
 
     // Enable vector extension with mstatus.VS if applicable
     #ifdef RVTEST_VECTOR
-      RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
+      RVTEST_V_ENABLE(T1, T2) // TODO: These registers might need to change
     #endif
   .option pop
 .endm
@@ -134,10 +134,9 @@
     SREG    T1, -4(T4)            // save into last signature canary
     j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
-  // When the test starts, it jumps here (to the end of the test)
-  // Here we can place model specific macros, so that the code size remains constant
-  rvtest_entry_pt:
-    RVMODEL_BOOT                  // Boot code that is of unknown length
+  // Model specific boot code
+  rvmodel_boot:
+    RVMODEL_BOOT
     RVMODEL_IO_INIT(T1, T2, T3)
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
@@ -182,27 +181,25 @@
 /*******************************************************************************************/
 .macro RVTEST_DATA_END
   // Create identity mapped page tables here if mmu is present
-  // TODO: Is this still needed?
   .align 12
   #ifndef RVTEST_NO_IDENTY_MAP
-  #ifdef rvtest_strap_routine
-  // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
-    rvtest_Sroot_pg_tbl:
-    RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-
-    #ifdef rvtest_htrap_routine
-      .align 14
-      rvtest_Hroot_pg_tbl:
+    #ifdef rvtest_strap_routine
+      // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
+      rvtest_Sroot_pg_tbl:
       RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-      .align 14
-    #endif
-    #ifdef rvtest_vtrap_routine
-      .align 12
-      rvtest_Vroot_pg_tbl:
-      RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+      #ifdef rvtest_htrap_routine
+        .align 14
+        rvtest_Hroot_pg_tbl:
+        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+        .align 14
+      #endif
+      #ifdef rvtest_vtrap_routine
+        .align 12
+        rvtest_Vroot_pg_tbl:
+        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+      #endif
     #endif
   #endif
-#endif
 
   // Failure detection data (strings and scratch space)
   RVTEST_FAILURE_DATA

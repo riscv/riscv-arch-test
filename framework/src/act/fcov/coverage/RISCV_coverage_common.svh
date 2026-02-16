@@ -170,33 +170,33 @@
 `define SEW64_SUPPORTED
 
 // ELEN (max SEW) definition
-`ifdef VX64_COVERAGE
-  `define ELEN64
-`else
-  `ifdef VX32_COVERAGE
-    `define ELEN32
-  `else
-    `ifdef VX16_COVERAGE
-      `define ELEN16
-    `else
-      `define ELEN8
-    `endif
-  `endif
-`endif
+// `ifdef VX64_COVERAGE
+//   `define ELEN64
+// `else
+//   `ifdef VX32_COVERAGE
+//     `define ELEN32
+//   `else
+//     `ifdef VX16_COVERAGE
+//       `define ELEN16
+//     `else
+//       `define ELEN8
+//     `endif
+//   `endif
+// `endif
 
-`ifdef VLS64_COVERAGE
-  `define ELEN64
-`else
-  `ifdef VLS32_COVERAGE
-    `define ELEN32
-  `else
-    `ifdef VLS16_COVERAGE
-      `define ELEN16
-    `else
-      `define ELEN8
-    `endif
-  `endif
-`endif
+// `ifdef VLS64_COVERAGE
+//   `define ELEN64
+// `else
+//   `ifdef VLS32_COVERAGE
+//     `define ELEN32
+//   `else
+//     `ifdef VLS16_COVERAGE
+//       `define ELEN16
+//     `else
+//       `define ELEN8
+//     `endif
+//   `endif
+// `endif
 
 // edge cases
 `ifdef VLEN64

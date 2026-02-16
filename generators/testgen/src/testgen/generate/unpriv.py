@@ -49,13 +49,13 @@ def generate_unpriv_extension_tests(
     test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, config_dependent=config_dependent)
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
-    for instr_name, instr_data in sorted(instructions.items()):
+    for instr_data in instructions:
         # Skip instructions not valid for this xlen
         if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
             continue
 
         _generate_unpriv_tests_for_instruction(
-            instr_name,
+            instr_data.instr_name,
             instr_data.instr_type,
             instr_data.coverpoints,
             test_config,

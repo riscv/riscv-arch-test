@@ -1,3 +1,7 @@
+# rvmodel_macros.h
+# RVMODEL macro definitions for OpenHW CV32E20 core
+# SPDX-License-Identifier: Apache-2.0
+
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
@@ -7,12 +11,21 @@
         .align 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
 
+##### STARTUP #####
+
+# Perform boot operations. Can be empty.
 #define RVMODEL_BOOT
 
+# Address to use for load/store fault tests that should cause an access fault on the DUT.
+#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+
+##### TERMINATION #####
+
 # Terminate test with a pass indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
   li x1, 123456789                ;\
-  la t0, 0x20000000       ;\
+  li t0, 0x20000000       ;\
   write_tohost_pass:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
@@ -20,68 +33,24 @@
     j self_loop_pass      ;\
 
 # Terminate test with a fail indication.
+# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
-  la t0, 0x20000000       ;\
+  li t0, 0x20000000       ;\
   write_tohost_fail:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_fail:         ;\
     j self_loop_fail      ;\
 
-#define RVMODEL_SET_MEXT_INT
+##### IO #####
 
-#define RVMODEL_CLR_MEXT_INT
-
-#define RVMODEL_SET_MTIMER_INT
-
-#define RVMODEL_CLR_MTIMER_INT
-
-#define RVMODEL_SET_MTIMER_INT_SOON
-
-#define RVMODEL_SET_MSW_INT
-
-#define RVMODEL_CLR_MSW_INT
-
-#define RVMODEL_SET_MTIME
-
-#define RVMODEL_SET_MTIMEH
-
-#define RVMODEL_SET_VEXT_INT
-
-#define RVMODEL_CLR_VEXT_INT
-
-#define RVMODEL_SET_VTIMER_INT
-
-#define RVMODEL_CLR_VTIMER_INT
-
-#define RVMODEL_SET_VTIMER_INT_SOON
-
-#define RVMODEL_SET_VSW_INT
-
-#define RVMODEL_CLR_VSW_INT
-
-#define RVMODEL_SET_SEXT_INT
-
-#define RVMODEL_CLR_SEXT_INT
-
-#define RVMODEL_SET_STIMER_INT
-
-#define RVMODEL_CLR_STIMER_INT
-
-#define RVMODEL_SET_STIMER_INT_SOON
-
-#define RVMODEL_SET_SSW_INT
-
-#define RVMODEL_CLR_SSW_INT
-
-
-#define RVMODEL_WRITE_GEIP
-
+# Initialization steps needed prior to writing to the console
+# _R1, _R2, and _R3 can be used as temporary registers if needed.
+# Do not modify any other registers (or make sure to restore them).
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
-# Prints a null-terminated string by writing each byte in the string
-# to the address of the 'virtual printer'.
+# Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
@@ -90,10 +59,36 @@
   lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
   beqz _R1, 3f               ; /* Exit if null */     \
 2:                           ;                        \
-  la   _R2, 0x10000000       ; /* virtual printer */  \
+  li   _R2, 0x10000000       ; /* virtual printer */  \
   sw   _R1, 0(_R2)           ;                        \
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
 
-#endif
+##### Machine Timer #####
+
+#define RVMODEL_MTIME_ADDRESS /* unimplemented */
+
+#define RVMODEL_MTIMECMP_ADDRESS /* unimplemented */
+
+##### Machine Interrupts #####
+
+#define RVMODEL_SET_MEXT_INT
+
+#define RVMODEL_CLR_MEXT_INT
+
+#define RVMODEL_SET_MSW_INT
+
+#define RVMODEL_CLR_MSW_INT
+
+##### Supervisor Interrupts #####
+
+#define RVMODEL_SET_SEXT_INT
+
+#define RVMODEL_CLR_SEXT_INT
+
+#define RVMODEL_SET_SSW_INT
+
+#define RVMODEL_CLR_SSW_INT
+
+#endif // _COMPLIANCE_MODEL_H

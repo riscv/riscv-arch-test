@@ -74,6 +74,7 @@ def generate_random_params(
         raise ValueError(
             f"Unknown params for instruction type '{instr_type}'. Please add it to the instruction formatter decorator."
         )
+    pair_regs = instr_type_config.pair_regs or set()  # Registers that need pairs
 
     # Determine the register range to use (extracted from formatters)
     reg_range_raw = instr_type_config.reg_range if instr_type_config.reg_range is not None else range(0, 32)
@@ -82,23 +83,58 @@ def generate_random_params(
         exclude_regs = []
 
     # Fill in missing integer register parameters (only if required)
-    if "rd" in required_params and params.rd is None:
-        params.rd = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+    # Use get_register_pair for registers that need pairs
+    if "rd" in required_params:
+        if params.rd is None:
+            if "rd" in pair_regs:
+                params.rd = test_data.int_regs.get_register_pair(exclude_regs=exclude_regs, reg_range=reg_range)
+            else:
+                params.rd = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+        # Set the pair flag based on instruction type, regardless of whether the register was provided
+        if "rd" in pair_regs:
+            params.rd_is_pair = True
 
     if "rdval" in required_params and params.rdval is None:
         params.rdval = random_int(bits=test_data.xlen)
 
-    if "rs1" in required_params and params.rs1 is None:
-        params.rs1 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+    if "rs1" in required_params:
+        if params.rs1 is None:
+            if "rs1" in pair_regs:
+                params.rs1 = test_data.int_regs.get_register_pair(exclude_regs=exclude_regs, reg_range=reg_range)
+            else:
+                params.rs1 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+        # Set the pair flag based on instruction type, regardless of whether the register was provided
+        if "rs1" in pair_regs:
+            params.rs1_is_pair = True
 
     if "rs1val" in required_params and params.rs1val is None:
         params.rs1val = random_int(bits=test_data.xlen)
 
-    if "rs2" in required_params and params.rs2 is None:
-        params.rs2 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+    if "rs2" in required_params:
+        if params.rs2 is None:
+            if "rs2" in pair_regs:
+                params.rs2 = test_data.int_regs.get_register_pair(exclude_regs=exclude_regs, reg_range=reg_range)
+            else:
+                params.rs2 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+        # Set the pair flag based on instruction type, regardless of whether the register was provided
+        if "rs2" in pair_regs:
+            params.rs2_is_pair = True
 
     if "rs2val" in required_params and params.rs2val is None:
         params.rs2val = random_int(bits=test_data.xlen)
+
+    if "rs3" in required_params:
+        if params.rs3 is None:
+            if "rs3" in pair_regs:
+                params.rs3 = test_data.int_regs.get_register_pair(exclude_regs=exclude_regs, reg_range=reg_range)
+            else:
+                params.rs3 = test_data.int_regs.get_register(exclude_regs=exclude_regs, reg_range=reg_range)
+        # Set the pair flag based on instruction type, regardless of whether the register was provided
+        if "rs3" in pair_regs:
+            params.rs3_is_pair = True
+
+    if "rs3val" in required_params and params.rs3val is None:
+        params.rs3val = random_int(bits=test_data.xlen)
 
     if "temp_reg" in required_params and params.temp_reg is None:
         params.temp_reg = test_data.int_regs.get_register(exclude_regs=[*exclude_regs, 0, 2], reg_range=reg_range)

@@ -86,31 +86,19 @@ from vector_testgen_common import (
 )
 
 unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed below
-  "vnclip.wi",      # Sail issue 1071
-  "vnclipu.wi",     # Sail issue 1071
-  "vnsra.wi",       # Sail issue 1071
-  "vnsrl.wi",       # Sail issue 1071
-  "vslideup.vi",    # Sail issue 1071
-  "vslidedown.vi",  # Sail issue 1071
-  "vrgather.vi",    # Sail issue 1071
-  # failing the new test framework as of Dec. 10, 2025
-  "vnclipu.wv",
-  "vsadd.vi",
-  # failing for rv64
-  "vmv.x.s",
-  "vwadd.vx",
-  "vwadd.wx",
-  "vwaddu.vx",
-  "vwaddu.wx",
-  "vwmacc.vx",
-  # rv32
-  "vmv.v.i",
+  # "vnclip.wi",      # Sail issue 1071
+  # "vnclipu.wi",     # Sail issue 1071
+  # "vnsra.wi",       # Sail issue 1071
+  # "vnsrl.wi",       # Sail issue 1071
+  # "vslideup.vi",    # Sail issue 1071
+  # "vslidedown.vi",  # Sail issue 1071
+  # "vrgather.vi",    # Sail issue 1071
   "vlseg3e32ff.v",
   "vlseg3e32.v",
   "vlseg4e32.v",
   "vsseg3e64.v",
-  "vsseg3e32.v",
-  "vslide1up.vx"
+  "vsseg3e32.v"
+
 ]
 
 def writeLine(argument: str, comment = ""):
@@ -986,6 +974,8 @@ def coverpointInclusions(coverpoints):
     elif coverpoint == "cp_custom_wwv":
       applicable_coverpoints.remove(coverpoint)
       applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul1")
+      applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul2")
+      applicable_coverpoints.append("cp_custom_vdOverlapTopVs1_vd_vs1_lmul4")
     elif (coverpoint in ["cp_custom_vext2", "cp_custom_vext4", "cp_custom_vext8"]):
       applicable_coverpoints.remove(coverpoint)
       vext = coverpoint[-1]
@@ -1230,12 +1220,6 @@ if __name__ == '__main__':
         setFlen(32)
 
         legalvlmuls = getLegalVlmul(maxELEN, minSEW_MIN, sew)
-
-        # Set up vl = 1 for base suite
-        f.write("\n")
-        f.write("// Initial set vl = 1\n")
-        f.write("li x31, 1\n")
-        f.write(f"vsetvli x0, x2, e{sew}, m1, tu, mu\n")
 
         # include ifdefs for widening/narrowing instr, which doesn't exist in the ELEN suite
         if (test in vd_widen_ins) or (test in vs2_widen_ins):

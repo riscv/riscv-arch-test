@@ -6,7 +6,7 @@
         bins target = {1};
     }
 
-    vfsqrt_flag_set : coverpoint (ins.current.insn == "vfrsqrt7.v" & ins.current.vs2_val == 0) {
+    vfp_state_vfsqrt_flag_set : coverpoint (ins.current.insn == "vfrsqrt7.v" & ins.current.vs2_val == 0) {
         bins target = {1};
     }
 
@@ -19,6 +19,6 @@
     }
 
     cp_custom_vfp_register_state_mstatus_dirty   : cross std_vec, fd_changed_value, mstatus_prev_clean;
-    cp_custom_vfp_csr_state_mstatus_dirty        : cross std_vec, vfsqrt_flag_set, mstatus_prev_clean, fp_flags_clear;
+    cp_custom_vfp_csr_state_mstatus_dirty        : cross std_vec, vfp_state_vfsqrt_flag_set, mstatus_prev_clean, fp_flags_clear;
 
     //// end cp_custom_vfp_state////////////////////////////////////////////////

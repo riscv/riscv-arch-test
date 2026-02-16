@@ -16,7 +16,11 @@
         wildcard bins NX1  = (5'b????1 => 5'b????1);
     }
 
-    fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
+    mask_enabled: coverpoint ins.current.insn[25] {
+        bins unmasked = {1'b0};
+    }
+
+    vfp_flags_fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
         bins clear = {0};
     }
 
@@ -35,6 +39,6 @@
 
     cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun;
 
-    cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, fp_flags_clear;
+    cp_custom_vfp_flags_inactive_not_set : cross std_vec, vl_one, mask_enabled, v0_element_1_active, vfsqrt_flag_set, vfp_flags_fp_flags_clear;
 
     //// end cp_custom_vfp_flags////////////////////////////////////////////////

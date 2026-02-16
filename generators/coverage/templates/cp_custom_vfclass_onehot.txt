@@ -2,7 +2,7 @@
     // cp_custom_vfclass_onehot
     //////////////////////////////////////////////////////////////////////////////////
 
-    vfclass_64onehot: coverpoint coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1) {
+    vfclass_64onehot: coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1) {
         bins bit_0_1  = {64'b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001};
         bins bit_1_1  = {64'b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010};
         bins bit_2_1  = {64'b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100};

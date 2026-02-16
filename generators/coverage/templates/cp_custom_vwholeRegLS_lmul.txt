@@ -4,7 +4,6 @@
 
     // Custom coverpoints for Vector whole register load and store operations
 
-    cp_custom_vwholeRegLS_vill:     cross vl_nonzero, vstart_zero, vtype_prev_vill_set, no_trap;
     cp_custom_vwholeRegLS_lmul:     cross std_vec, vl_max, vtype_all_lmulge1;
 
     //// end cp_custom_vwholeRegLS_lmul////////////////////////////////////////////////

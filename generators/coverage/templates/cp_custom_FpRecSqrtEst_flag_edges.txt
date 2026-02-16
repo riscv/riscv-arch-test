@@ -7,7 +7,7 @@
 
     vs1_0_reciprocal_sqrt_edges : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1) {
         // -∞ ≤ x < -0.0   (representative negative finite: -1.0)
-        `ifdef SEW16_SUPPORTED
+        `ifdef COVER_VFCUSTOM16
             // -1.0h = 0xBC00
             bins vs1_0_neg_finite = {64'h0000_0000_0000_BC00};
             // -Inf_h = 0xFC00
@@ -28,7 +28,7 @@
             bins vs1_0_sNaN       = {64'h0000_0000_0000_7D00};
         `endif
 
-        `ifdef SEW32_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
             // -1.0f = 0xBF800000
             bins vs1_0_neg_finite = {64'h0000_0000_BF80_0000};
             // -Inf_f = 0xFF800000
@@ -49,7 +49,7 @@
             bins vs1_0_sNaN       = {64'h0000_0000_7FA0_0000};
         `endif
 
-        `ifdef SEW64_SUPPORTED
+        `ifdef COVER_VFCUSTOM64
             // -1.0d = 0xBFF0000000000000
             bins vs1_0_neg_finite = {64'hBFF0_0000_0000_0000};
             // -Inf_d = 0xFFF0000000000000

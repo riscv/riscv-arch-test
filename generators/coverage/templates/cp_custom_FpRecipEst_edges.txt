@@ -2,21 +2,20 @@
     // cp_custom_FpRecipEst_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    FpRecEst_all_inputs_vs2_0 : coverpoint
-    `ifdef SEW16_SUPPORTED
+    FpRecEst_sig_in : coverpoint
+    `ifdef COVER_VFCUSTOM16
     get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[9:3]
     `endif
-    `ifdef SEW32_SUPPORTED
+    `ifdef COVER_VFCUSTOM32
     get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[22:16]
     `endif
-    `ifdef SEW64_SUPPORTED
+    `ifdef COVER_VFCUSTOM64
     get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[51:45]
     `endif
     {
         // all bins
     }
 
-
-    cp_custom_FpRecipEst_edges: cross std_vec, FpRecSqrt_all_inputs_vs2_0;
+    cp_custom_FpRecipEst_edges: cross std_vec, FpRecEst_sig_in;
 
     //// end cp_custom_FpRecipEst_edges////////////////////////////////////////////////

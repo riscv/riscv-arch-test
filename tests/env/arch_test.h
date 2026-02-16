@@ -230,14 +230,13 @@
 //this is pte entry permision bits for no permissions.
 #define RVTEST_NOACC    ( PTE_G | PTE_U )
 
-// _ADDR_SZ_ is a global variable extracted from YAML; set a default if it isn't defined
-// This should be the MAX(phy_addr_size, VADDR_SZ) from YAML,
+// _ADDR_SZ_ should be MAX(phy_addr_size, VADDR_SZ)
 // where VADDR_SZ is derived from SATP.mode at reset
 #ifndef _ADDR_SZ_
   #if XLEN==32
     #define _ADDR_SZ_ 34
   #else
-    #define _ADDR_SZ_ 57
+    #define _ADDR_SZ_ 64
   #endif
 #endif
 
@@ -1569,8 +1568,8 @@ sv_\__MODE__\()epc:
 
 #ifdef SKIP_MEPC                                //**** spcl case so fetch faults don't rtn to EPC+4
                                                 //**** checks if gp=spcl_value & cause=fetch-xx-fault
-        LI(     T6, 0xACCE)                     // this is spcl value to compare to a3, set only if SKIP_MEPC defined
-        bne     a3, T6, adj_\__MODE__\()epc_rtn // If not called from macro, then skip force of EPC
+        LI(     T6, 0xACCE)                     // this is spcl value to compare to x4, set only if SKIP_MEPC defined
+        bne     x4, T6, adj_\__MODE__\()epc_rtn // If not called from macro, then skip force of EPC
         csrr    T2, CSR_XCAUSE                  // Read xcause to check trap type
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)     // if CAUSE = FETCH_PAGE_FAULT (0xC) force EPC
         beq     T2, T6, 1f

@@ -62,6 +62,7 @@ spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
 spike-rv64: elfs
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
 
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles Makefile

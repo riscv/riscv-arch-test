@@ -437,13 +437,6 @@
      DBLSHIFTR x11, x10, x15, 7
      DBLSHIFTR x12, x11, x15, 7
      DBLSHIFTR x13, x12, x15, 7
-
-#ifdef RVTEST_ENAB_INSTRET_CNT
-     csrr  x14, CSR_MSCRATCH
-     csrr  x15, CSR_MINSTRET
-     LREG  x14, sig_bgn_off(x14)        // pointer to sig begin
-     SREG  x15, -8(x14)                 // this replaces initial canary val w/ instret counter val
-#endif
      DBLSHIFTR x14, x13, x15, 7
      LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
 .endm
@@ -760,35 +753,35 @@
 #endif
 
 .macro  RVTEST_GOTO_MMODE
-.option push
-.option norvc
-#ifdef  rvtest_mtrap_routine
+  .option push
+  .option norvc
+  #ifdef  rvtest_mtrap_routine
     mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
     li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
     // Note that if ecalls are delegated, this may infinite loop
     // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
 
     GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
-                                   the next op if x3=0, else handles trap normally */
+                                  the next op if x3=0, else handles trap normally */
     mv   x3, t0
-#endif
-.option pop
+  #endif
+  .option pop
 .endm
 
 .macro  RVTEST_GOTO_DELEGATED_MMODE
-.option push
-.option norvc
-#ifdef  rvtest_mtrap_routine
-// Note that this must be called with ecall traps delegated, else it could infinite loop
+  .option push
+  .option norvc
+  #ifdef  rvtest_mtrap_routine
+    // Note that this must be called with ecall traps delegated, else it could infinite loop
 
     mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
     li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
 
     ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
-                                   return to op after illegal op, else handles trap normally */
+                                  return to op after illegal op, else handles trap normally */
     mv   x3, t0
-#endif
-.option pop
+  #endif
+  .option pop
 .endm
 
 /**** This is a helper macro that causes harts to transition from M-mode    ****/

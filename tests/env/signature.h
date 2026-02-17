@@ -51,21 +51,21 @@
     nop
 #endif
 
-// TRAP_SIGUPD(tempreg, offset)
+// TRAP_SIGUPD(tempreg, sigreg, offset)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
 // test_failure in case of a mismatch.
 // If not in Self Check mode, just store the signatures to the signature region
 // **TODO: This requires some further changes for proper error reporting
 #ifdef RVTEST_SELFCHECK
-  #define TRAP_SIGUPD(_TMPREG, _OFF)                         \
-    LREG       _TMPREG, _OFF*REGWIDTH(T1)                   ;\
-    beq        _TMPREG, T3, 2f                              ;\
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF)                     \
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                         ;\
+    beq  _TMPREG, _R, 2f                                    ;\
     jal  T2, failedtest_x5_x4                               ;\
     2:                                                      ;
 #else
-  #define TRAP_SIGUPD(_TMPREG, _OFF)                         \
-    SREG       _TMPREG,   _OFF*REGWIDTH(T1)                 ;\
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF)                     \
+    SREG _R, _OFF*REGWIDTH(T1)                              ;\
     nop                                                     ;\
     nop                                                     ;
 #endif

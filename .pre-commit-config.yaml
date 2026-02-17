@@ -25,7 +25,7 @@ repos:
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
-      - id: check-json
+      # - id: check-json # Doesn't support JSON with comments
       - id: check-toml
       - id: check-yaml
 

@@ -285,6 +285,8 @@
         .string "RVCP: Bad Value: "
     expvalstr:
         .string "RVCP: Expected Value: "
+    instret_delta_mismatch:
+        .string "RVCP: Instret Delta Mismatch\n"
     endstr:
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
 .endm

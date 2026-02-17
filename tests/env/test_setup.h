@@ -31,6 +31,7 @@
   .global rvtest_init
   rvtest_init:
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
+    XCSR_RENAME M // Ensures CSR_XSCRATCH is defined for RVTEST_INIT_GPRS
     RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
 
     #ifdef rvtest_mtrap_routine
@@ -97,6 +98,17 @@
   // Switch to M-mode
   rvtest_code_end:
     RVTEST_GOTO_MMODE // If only M-mode used by tests, this has no effect
+
+    // Calculate minstret delta and update signature (now in M-mode)
+    #ifdef RVTEST_ENAB_INSTRET_CNT
+      #ifdef rvtest_mtrap_routine
+        csrr T1, CSR_MSCRATCH
+        LREG T2, instret_sav_off(T1)
+        csrr T3, CSR_MINSTRET
+        sub T3, T3, T2
+        RVTEST_SIGUPD(x2, x5, x4, T3, "instret_delta_mismatch")
+      #endif
+    #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
   cleanup_epilogs:

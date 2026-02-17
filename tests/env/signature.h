@@ -3,6 +3,30 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
 
+#ifdef RVTEST_DEBUG
+  #define RVTEST_DEBUG_SIGUPD(_BR)                  \
+    .option push                                   ;\
+    .option norvc                                  ;\
+    csrrw x6, CSR_XSCRATCH, x6                     ;\
+    SREG x7, trap_sv_off+2*REGWIDTH(x6)            ;\
+    SREG x8, trap_sv_off+3*REGWIDTH(x6)            ;\
+    csrr x7, CSR_XSCRATCH                          ;\
+    SREG x7, trap_sv_off+1*REGWIDTH(x6)            ;\
+    csrw CSR_XSCRATCH, x6                          ;\
+    csrr x7, CSR_MINSTRET                          ;\
+    LREG x8, instret_sav_off(x6)                   ;\
+    sub x8, x7, x8                                 ;\
+    SREG x8, 0(_BR)                                ;\
+    addi _BR, _BR, SIG_STRIDE                      ;\
+    SREG x7, instret_sav_off(x6)                   ;\
+    LREG x8, trap_sv_off+3*REGWIDTH(x6)            ;\
+    LREG x7, trap_sv_off+2*REGWIDTH(x6)            ;\
+    LREG x6, trap_sv_off+1*REGWIDTH(x6)            ;\
+    .option pop
+#else
+  #define RVTEST_DEBUG_SIGUPD(_BR)
+#endif
+
 // RVTEST_SIGUPD(sigptr, linkreg, tempreg, sigreg, strptr)
 // compares the value in sigreg with the value in memory at 0(sigptr).
 // If they are different, it jumps to a failure handler whose label is formed
@@ -17,6 +41,7 @@
 //  _STR_PTR - label to string describing the test
 #ifdef SELFCHECK
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
+    RVTEST_DEBUG_SIGUPD(_SIG_PTR)                          ;\
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
@@ -25,6 +50,7 @@
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _STR_PTR)  \
+    RVTEST_DEBUG_SIGUPD(_SIG_PTR)                          ;\
     SREG _R, 0(_SIG_PTR)                                   ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [3.11.0] - 2026-02-11
+
+- Added mode-aware `minstret` tracking.
+  - Implemented `RVTEST_DEBUG_SIGUPD` in `signature.h` for fine-grained instruction retirement tracking.
+  - Updated `arch_test.h` and `test_setup.h` to save initial `minstret` and calculate delta in `RVTEST_CODE_END`.
+  - Added support for `CSR_XSCRATCH` to ensure compatibility across privilege modes (M, S, V).
+  - Updated `act` framework to pass `RVTEST_ENAB_INSTRET_CNT` and `RVTEST_DEBUG` flags.
+
 ## [3.10.0] - 2024-11-04
 
 - Add support for Zvk\* extensions

@@ -243,7 +243,8 @@
 #define xtvec_new_off        (tramp_sz+13*8)  //  (tvec_new       -Mtrapreg_sv)
 #define xtvec_sav_off        (tramp_sz+14*8)  //  (tvec_save      -Mtrapreg_sv)
 #define xscr_save_off        (tramp_sz+15*8)  //  (scratch_save   -Mtrapreg_sv)
-#define trap_sv_off          (tramp_sz+16*8)  //  (trapreg_sv     -Mtrapreg_sv) 8 registers long
+#define instret_sav_off      (tramp_sz+16*8)  //  (instret_save   -Mtrapreg_sv)
+#define trap_sv_off          (tramp_sz+17*8)  //  (trapreg_sv     -Mtrapreg_sv) 8 registers long
 
 //==============================================================================
 // this section has  general test helper macros, required,  optional, or just useful
@@ -299,9 +300,11 @@
      DBLSHIFT7 x13, x12
 
 #ifdef RVTEST_ENAB_INSTRET_CNT
-     csrr  x14, CSR_MSCRATCH
+  #ifdef rvtest_mtrap_routine
+     csrr  x14, CSR_XSCRATCH
      csrr  x15, CSR_MINSTRET
-     SREG  x15, tramp_sz+4*8(x14)               // this replaces initial canary val w/ instret counter val
+     SREG  x15, instret_sav_off(x14)            // save initial minstret count
+  #endif
 
      DBLSHIFT7 x14, x13
      LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
@@ -1671,8 +1674,10 @@ rvtest_\__MODE__\()end:
         .dword  0               // save area for incoming mtvec                       trampsvend+14*8
 \__MODE__\()scratch_save:
         .dword  0               // save area for incoming mscratch                    trampsvend+15*8
+\__MODE__\()instret_save:
+        .dword  0               // save area for initial minstret                     trampsvend+16*8
                                 //****GLOBAL:*****  onlyMMode version used
-\__MODE__\()trapreg_sv:         // hndler regsave area, T1..T6,sp+spare keep dbl algn trampsvend+16*8
+\__MODE__\()trapreg_sv:         // hndler regsave area, T1..T6,sp+spare keep dbl algn trampsvend+17*8
         .fill   8, REGWIDTH, 0xdeadbeef
 
 \__MODE__\()sv_area_end:        // used to calc size, which is used to avoid CSR read trampsvend+24/32+8

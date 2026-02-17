@@ -61,6 +61,9 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     if config.objdump_exe is not None:
         hasher.update(str(config.objdump_exe.resolve()).encode())
 
+    # Hash the DUT include directory location
+    hasher.update(str(config.dut_include_dir.resolve()).encode())
+
     return hasher.hexdigest()
 
 
@@ -136,7 +139,7 @@ def gen_compile_targets(
         f"{sig_elf}: {test_path} | {sig_elf.parent}\n"
         f"\t{config.compiler_string} $(CFLAGS) \\\n"
         f"\t\t-o {sig_elf} \\\n"
-        f"\t\t-march={march} -mabi={mabi} -DSIGNATURE -DXLEN={xlen} -DFLEN={flen} \\\n"
+        f"\t\t-march={march} -mabi={mabi} -DSIGNATURE -DXLEN={xlen} -DFLEN={flen} -DRVTEST_ENAB_INSTRET_CNT {'-DRVTEST_DEBUG' if debug else ''} \\\n"
         f"\t\t{test_path}\n"
         f"\n"
         # Objdump (only if debug and objdump_exe is set)
@@ -162,7 +165,7 @@ def gen_compile_targets(
         f"{final_elf}: {sig_elf} {result_file} | {final_elf.parent}\n"
         f"\t{config.compiler_string} $(CFLAGS) \\\n"
         f"\t\t-o {final_elf} \\\n"
-        f"\t\t-march={march} -mabi={mabi} -DSELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
+        f"\t\t-march={march} -mabi={mabi} -DSELFCHECK -DXLEN={xlen} -DFLEN={flen} -DRVTEST_ENAB_INSTRET_CNT {'-DRVTEST_DEBUG' if debug else ''} \\\n"
         f'\t\t-DSIGNATURE_FILE=\\"{result_file}\\" \\\n'
         f"\t\t{test_path}\n"
         # Objdump (objdump_exe is set)

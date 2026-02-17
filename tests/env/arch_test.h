@@ -230,13 +230,11 @@
 //this is pte entry permision bits for no permissions.
 #define RVTEST_NOACC    ( PTE_G | PTE_U )
 
-// _ADDR_SZ_ should be MAX(phy_addr_size, VADDR_SZ)
-// where VADDR_SZ is derived from SATP.mode at reset
-#ifndef _ADDR_SZ_
+#ifndef _VA_SZ_
   #if XLEN==32
-    #define _ADDR_SZ_ 34
+    #define _VA_SZ_ 32
   #else
-    #define _ADDR_SZ_ 64
+    #define _VA_SZ_ 57
   #endif
 #endif
 
@@ -247,10 +245,10 @@
   #define LVLS     2
 #else
   #define PPN_SZ   9
-  #define LVLS   ((_ADDR_SZ_-12)/PPN_SZ)
+  #define LVLS   ((_VA_SZ_-12)/PPN_SZ)
 #endif
 
-// this defines a page of PTEs at top level (depending on _ADDR_SZ_) with named permissions
+// this defines a page of PTEs at top level (depending on _VA_SZ_) with named permissions
 // for the largest size page and a common base (which is set to zero for identity mapping)
 #define RVTEST_PTE_IDENT_MAP(PGBASE,LVLS,PERMS)                                 ;\
     .set ppn, 0                                                                 ;\
@@ -1042,11 +1040,11 @@ init_\__MODE__\()satp:
         srli T4, T4, 12
       #if (XLEN==32)
         LI(T3, SATP32_MODE)             //enables  SV32 mode
-      #elseif (_ADDR_SZ_ == 39)
+      #elseif (_VA_SZ_ == 39)
         LI(T3, (SATP64_MODE) & (SATP_MODE_SV39 << 60))
-      #elseif (_ADDR_SZ_ == 48)
+      #elseif (_VA_SZ_ == 48)
         LI(T3, (SATP64_MODE) & (SATP_MODE_SV48 << 60))
-      #elseif (_ADDR_SZ_ == 57)
+      #elseif (_VA_SZ_ == 57)
         LI(T3, (SATP64_MODE) & (SATP_MODE_SV57 << 60))
       #endif
         or      T4, T4, T3

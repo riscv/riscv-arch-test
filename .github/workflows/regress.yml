@@ -22,18 +22,30 @@ jobs:
       - name: Ensure pre-commit checks pass
         run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
 
+  discover-sail-configs:
+    name: Discover Sail Configs
+    runs-on: ubuntu-latest
+    outputs:
+      configs: ${{ steps.find.outputs.configs }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Find all sail configs
+        id: find
+        env:
+          EXCLUDE: "sail-rv32e sail-rv32-max-clang sail-rv64-max-clang" # TODO: UDB does not support E yet, not all tests work with clang
+        run: |
+          configs=$(ls -d config/sail/*/ | xargs -n1 basename | grep -vxFf <(tr ' ' '\n' <<< "$EXCLUDE") | sort | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("sail/" + .)')
+          echo "configs=$configs" >> "$GITHUB_OUTPUT"
+
   regress:
-    name: ACT Regression (${{ matrix.config }})
+    name: Sail Regression (${{ matrix.config }})
+    needs: discover-sail-configs
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        config:
-          [
-            sail/sail-RVI20U32,
-            sail/sail-RVI20U64,
-            sail/sail-rv32-max,
-            sail/sail-rv64-max,
-          ]
+        config: ${{ fromJson(needs.discover-sail-configs.outputs.configs) }}
 
     steps:
       - name: Checkout code

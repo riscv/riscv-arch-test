@@ -91,7 +91,7 @@ class Config(BaseModel):
 def check_ref_model_version(config: Config) -> None:
     """Check that the reference model version is compatible."""
     if config.ref_model_type == RefModelType.SAIL:
-        required_version = "0.9"
+        required_version = "0.10"
         try:
             result = subprocess.run(
                 [str(config.ref_model_exe), "--version"],

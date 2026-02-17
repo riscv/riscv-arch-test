@@ -45,7 +45,7 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
@@ -100,7 +100,7 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Get Latest Spike Commit

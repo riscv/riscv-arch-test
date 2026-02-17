@@ -1,0 +1,13 @@
+//////////////////////////////////////////////////////////////////////////////////
+    // cp_vstart_vl_noop
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Test vd not updated when vstart >= vl
+    cp_vstart_vl_noop : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
+                                    ins.trap == 0) {
+        bins true = {1'b1};
+    }
+
+    //// end cp_vstart_vl_noop////////////////////////////////////////////////

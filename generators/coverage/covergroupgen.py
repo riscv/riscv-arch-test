@@ -68,24 +68,18 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
             if arch == "I":  # duplicate I testplan for E
                 testplans["E"] = tp
                 arch_sources["E"] = source
-            if arch == "Vx":
+            if "Vx" in arch or "Vls" in arch:
                 for effew in ["8", "16", "32", "64"]:
-                    testplans[f"Vx{effew}"] = tp
-                    arch_sources[f"Vx{effew}"] = source
-                del testplans["Vx"]
-                del arch_sources["Vx"]
-            if arch == "Vls":
-                for effew in ["8", "16", "32", "64"]:
-                    testplans[f"Vls{effew}"] = tp
-                    arch_sources[f"Vls{effew}"] = source
-                del testplans["Vls"]
-                del arch_sources["Vls"]
-            if arch == "Vf":
+                    testplans[f"{arch}{effew}"] = tp
+                    arch_sources[f"{arch}{effew}"] = source
+                del testplans[arch]
+                del arch_sources[arch]
+            if "Vf" in arch:
                 for effew in ["16", "32", "64"]:  # SEW of 8 is not supported for vector floating point
-                    testplans[f"Vf{effew}"] = tp
-                    arch_sources[f"Vf{effew}"] = source
-                del testplans["Vf"]
-                del arch_sources["Vf"]
+                    testplans[f"{arch}{effew}"] = tp
+                    arch_sources[f"{arch}{effew}"] = source
+                del testplans[arch]
+                del arch_sources[arch]
     return testplans, arch_sources
 
 

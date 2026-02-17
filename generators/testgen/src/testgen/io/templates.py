@@ -41,10 +41,18 @@ def insert_header_template(
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions)
-    march = generate_march_string(ext_components, xlen)
+    march_extensions = test_config.march_extensions
+    if march_extensions is not None:
+        march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions)
+        march = generate_march_string(march_ext_components, xlen)
+        # combine required_extensions and march_extensions for extra_defines
+        all_extensions = list(dict.fromkeys(ext_components + march_ext_components))
+    else:
+        march = generate_march_string(ext_components, xlen)
+        all_extensions = ext_components
     if extra_defines is None:
         extra_defines = []
-    extra_defines.extend(generate_defines_from_extensions(ext_components))
+    extra_defines.extend(generate_defines_from_extensions(all_extensions))
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")

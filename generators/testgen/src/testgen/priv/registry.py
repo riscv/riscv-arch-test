@@ -33,15 +33,16 @@ class MissingPrivGeneratorError(MissingRegistryItemError):
         self.testsuite = testsuite
 
 
-# Registry: dict mapping testsuite name to (priv_test_generator, extra_defines, extensions)
-_PRIV_TEST_GENERATORS: dict[str, tuple[PrivTestGenerator, list[str], list[str] | None]] = {}
+# Registry: dict mapping testsuite name to (priv_test_generator, extra_defines, required_extensions, march_extensions)
+_PRIV_TEST_GENERATORS: dict[str, tuple[PrivTestGenerator, list[str], list[str] | None, list[str] | None]] = {}
 
 
 def add_priv_test_generator(
     testsuite: str,
     *,
     extra_defines: list[str] | None = None,
-    extensions: list[str] | None = None,
+    required_extensions: list[str] | None = None,
+    march_extensions: list[str] | None = None,
 ) -> Callable[[PrivTestGenerator], PrivTestGenerator]:
     """
     Decorator to register a privileged test generator.
@@ -50,14 +51,16 @@ def add_priv_test_generator(
         testsuite: Testsuite name (e.g., "ExceptionsSm")
         extra_defines: List of extra #define statements for the test header.
                        Trap handlers are added automatically based on extensions.
-        extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
-                    Used for generating the march string and header defines.
+        required_extensions: List of RISC-V extensions required for the test (e.g., ["Sm", "Zicsr"]).
+                             Used for generating the march string and header defines.
+        march_extensions: Optional list of extensions to use for the march string.
+                          If None, march is built from required_extensions.
     """
     if extra_defines is None:
         extra_defines = []
 
     def decorator(func: PrivTestGenerator) -> PrivTestGenerator:
-        _PRIV_TEST_GENERATORS[testsuite] = (func, extra_defines, extensions)
+        _PRIV_TEST_GENERATORS[testsuite] = (func, extra_defines, required_extensions, march_extensions)
         return func
 
     return decorator
@@ -87,6 +90,13 @@ def get_priv_test_required_extensions(testsuite: str) -> list[str] | None:
     if testsuite not in _PRIV_TEST_GENERATORS:
         raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
     return _PRIV_TEST_GENERATORS[testsuite][2]
+
+
+def get_priv_test_march_extensions(testsuite: str) -> list[str] | None:
+    """Get the march extensions for a priv testsuite, if explicitly set."""
+    if testsuite not in _PRIV_TEST_GENERATORS:
+        raise MissingPrivGeneratorError(testsuite, list(_PRIV_TEST_GENERATORS.keys()))
+    return _PRIV_TEST_GENERATORS[testsuite][3]
 
 
 def _discover_and_import_priv_generators() -> None:

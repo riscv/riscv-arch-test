@@ -602,7 +602,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sm", extensions=["Sm", "Zicsr"])
+@add_priv_test_generator("Sm", required_extensions=["Sm", "Zicsr"])
 def make_sm(test_data: TestData) -> list[str]:
     """Generate tests for Sm machine-mode testsuite."""
     lines: list[str] = []

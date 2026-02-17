@@ -32,7 +32,7 @@ implemented_extensions:
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
   - { name: Sv39, version: "= 1.12.0" }
-  # - { name: Svade, version: "= 1.0.0" } # TODO: Re-enable when https://github.com/riscv/riscv-unified-db/issues/1217 is fixed
+  - { name: Svade, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.12.0" }

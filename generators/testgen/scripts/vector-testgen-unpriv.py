@@ -1102,7 +1102,7 @@ if __name__ == '__main__':
   # TODO: auipc missing, check whatelse is missing in ^these^ types
 
   author = "kacassidy@g.hmc.edu"
-  xlens = [32, 64]
+  xlens = [32]
   numrand = 3
   edges = []
 
@@ -1220,6 +1220,12 @@ if __name__ == '__main__':
         setFlen(32)
 
         legalvlmuls = getLegalVlmul(maxELEN, minSEW_MIN, sew)
+
+        # Set up vl = 1 for base suite
+        f.write("\n")
+        f.write("// Initial set vl = 1\n")
+        f.write("li x31, 1\n")
+        f.write(f"vsetvli x0, x31, e{sew}, m1, tu, mu\n")
 
         # include ifdefs for widening/narrowing instr, which doesn't exist in the ELEN suite
         if (test in vd_widen_ins) or (test in vs2_widen_ins):

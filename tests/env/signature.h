@@ -169,12 +169,86 @@
 //   SEW       - Element width in bits (8, 16, 32, or 64)
 //   VREG      - Vector register containing data
 // TODO: implement SELFCHECK version
-#define RVTEST_SIGUPD_V(_SIG_PTR, _TEMP_REG, SEW, OFFSET, VREG)      \
-  vse ## SEW ##.v VREG, (_SIG_PTR)                           ;\
-  nop                                                         ;\
-  nop                                                         ;\
-  addi _SIG_PTR, _SIG_PTR, OFFSET
+// RVTEST_SIGUPD_V(sigptr, linkreg, tempreg, vtmp, mtmp, offset, vreg, strptr)
 
+// #ifdef SELFCHECK
+//   #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+//       vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
+//       vmsne.vv _MTMP, _VREG, _VTMP                                  ;\
+//       vfirst.m _TEMP_REG, _MTMP                                     ;\
+//       bltz _TEMP_REG, 1f                                             ;\
+//       jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
+//       RVTEST_WORD_PTR _STR_PTR                                       ;\
+//       1:                                                             ;\
+//       addi _SIG_PTR, _SIG_PTR, _OFFSET
+// #else
+//   #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+//       vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
+//       nop                                                               ;\
+//       nop                                                               ;\
+//       beq x0, x0, 1f                                                    ;\
+//       jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
+//       RVTEST_WORD_PTR _STR_PTR                                          ;\
+//       1:                                                             ;\
+//       addi _SIG_PTR, _SIG_PTR, _OFFSET
+// #endif
+
+
+#ifdef SELFCHECK
+  #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
+    vmsne.vv _MTMP, _VREG, _VTMP                                  ;\
+    vfirst.m _TEMP_REG, _MTMP                                     ;\
+    blt _TEMP_REG, x0, 2f                                             ;\
+    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
+    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
+    1:                                                             ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
+    RVTEST_WORD_PTR _STR_PTR                                       ;\
+    2:                                                             ;\
+    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#else
+  #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
+    nop                                                               ;\
+    nop                                                               ;\
+    beq x0, x0, 2f                                                    ;\
+    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
+    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
+    1:                                                             ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
+    RVTEST_WORD_PTR _STR_PTR                                          ;\
+    2:                                                             ;\
+    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#endif
+
+#ifdef SELFCHECK
+  #define RVTEST_SIGUPD_V_MASK(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
+    vmxor.mm _MTMP, _VREG, _VTMP                                  ;\
+    vfirst.m _TEMP_REG, _MTMP                                     ;\
+    blt _TEMP_REG, x0, 2f                                             ;\
+    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
+    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
+    1:                                                             ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
+    RVTEST_WORD_PTR _STR_PTR                                       ;\
+    2:                                                             ;\
+    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#else
+  #define RVTEST_SIGUPD_V_MASK(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
+    nop                                                               ;\
+    nop                                                               ;\
+    beq x0, x0, 2f                                                    ;\
+    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
+    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
+    1:                                                             ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
+    RVTEST_WORD_PTR _STR_PTR                                          ;\
+    2:                                                             ;\
+    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#endif
 
 // Canary value to indicate bounds of signature region
 #if SIG_STRIDE==8

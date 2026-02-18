@@ -25,21 +25,23 @@
   .section .text.init
 
   // Include model specific boot code
-  jal x1, rvmodel_boot
+  j rvmodel_boot
 
   // Test initialization
   .global rvtest_init
   rvtest_init:
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
-    RVTEST_INIT_GPRS // 0xF0E1D2C3B4A59687
+    RVTEST_INIT_REGS // 0xF0E1D2C3B4A59687
 
     #ifdef rvtest_mtrap_routine
-      # set up PMP so user and supervisor mode can access full address space
-      # gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
-      CSRW(pmpcfg0, 0xF)   # configure PMP0 to TOR RWX
-      li t0, -1
-      CSRW(pmpaddr0, t0)   # configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-      sfence.vma
+      #if RVMODEL_NUM_PMPS > 0
+        // set up PMP so user and supervisor mode can access full address space
+        // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+        li t0, -1
+        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        sfence.vma
+      #endif
     #endif
 
   // Start of test
@@ -51,7 +53,7 @@
 
     // Initial signature check to confirm self-checking is working
     LI(T1, CANARY_VALUE)
-    #ifdef SELFCHECK
+    #ifdef RVTEST_SELFCHECK
       // Can't use DEFAULT_*_REG macros here because of macro expansion order
       // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
       RVTEST_SIGUPD(x2, x5, x4, T1, "canary_mismatch") # sig_begin_canary
@@ -62,12 +64,14 @@
     // Initialize test data pointer
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
+    // Enable floating-point with mstatus.FS if applicable
     #ifdef RVTEST_FP
       RVTEST_FP_ENABLE(T1)
     #endif
 
+    // Enable vector extension with mstatus.VS if applicable
     #ifdef RVTEST_VECTOR
-      RVTEST_V_ENABLE(T1, T2) # TODO: These registers might need to change
+      RVTEST_V_ENABLE(T1, T2) // TODO: These registers might need to change
     #endif
   .option pop
 .endm
@@ -99,17 +103,29 @@
     #ifdef rvtest_mtrap_routine
       #ifdef rvtest_strap_routine
         #ifdef rvtest_vtrap_routine
-          RVTEST_TRAP_EPILOG V  // actual v-mode prolog/epilog/handler code
+          RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
         #endif
-        RVTEST_TRAP_EPILOG S    // actual s-mode prolog/epilog/handler code
+        #ifdef rvtest_htrap_routine
+          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
+        #endif
+        RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
-      RVTEST_TRAP_EPILOG M      // actual m-mode prolog/epilog/handler code
+      RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-  // Skip around trap handlers, go to RVMODEL_HALT
-  j exit_cleanup
+  // Terminate test
+  exit_cleanup:
+    LA(T4, successstr)
+    RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
+    RVMODEL_HALT_PASS
 
-  # TODO: This should be removed once priv tests are self-checking
+  // Instantiate trap handlers for each priv mode
+  INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
+
+  // Include test failure handling code
+  RVTEST_FAILURE_CODE
+
+  // TODO: This should be removed once priv tests are self-checking
   abort_tests:
     LREG    T4, sig_bgn_off(sp)   // calculate Mmode sig_end addr in handler's mode
     LREG    T1, sig_seg_siz(sp)
@@ -118,24 +134,12 @@
     SREG    T1, -4(T4)            // save into last signature canary
     j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
-  // Instantiate trap handlers for each priv mode
-  INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
-
-  // Include test failure handling code
-  RVTEST_FAILURE_CODE
-
-  // Terminate test
-  exit_cleanup:
-    LA(T4, successstr)
-    RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
-    RVMODEL_HALT_PASS
-
   // Model specific boot code
   rvmodel_boot:
     RVMODEL_BOOT
     RVMODEL_IO_INIT(T1, T2, T3)
-    jr x1
-    nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
+    LA (T1, rvtest_init)
+    jr T1                         // Jump back to the start of the test
 
   .option pop
 .endm
@@ -153,7 +157,7 @@
   .section .bss
   .align 4
   scratch:
-    .space 136 // Reserve 136 bytes of uninitialized memory
+    .space 264 // Reserve enough scratch space (needed for atomic reservation tests with offsets up to 256 bytes)
 
   // Start of data region
   .data
@@ -177,14 +181,20 @@
 /*******************************************************************************************/
 .macro RVTEST_DATA_END
   // Create identity mapped page tables here if mmu is present
-  // TODO: Is this still needed?
   .align 12
   #ifndef RVTEST_NO_IDENTY_MAP
     #ifdef rvtest_strap_routine
       // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
       rvtest_Sroot_pg_tbl:
+      RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+      #ifdef rvtest_htrap_routine
+        .align 14
+        rvtest_Hroot_pg_tbl:
         RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
+        .align 14
+      #endif
       #ifdef rvtest_vtrap_routine
+        .align 12
         rvtest_Vroot_pg_tbl:
         RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
       #endif
@@ -223,7 +233,7 @@
 
     // Main signature region
     signature_base:
-      #ifdef SELFCHECK
+      #ifdef RVTEST_SELFCHECK
         // Preload signature region with correct values for self-checking
         #include SIGNATURE_FILE
       #else

@@ -198,6 +198,9 @@ include::{testplansdir}/Vls.adoc[]
 ==== Vf
 include::{testplansdir}/Vf.adoc[]
 
+[NOTE]
+vfredusum.vs is difficult to test because the results depend on the ordering.  It is not presently tested for multi-element vectors.
+
 ==== Zvfh Vector Half-Precision Floating-Point Extension
 
 Half-precision vector floating-point is part of the Zvfh and Zvfhmin extensions, not the base V extension.  Nevertheless, Zvfh tests are in the same directory structure as V, under Vf16. Zvfh uses Vf16 <<t-Vf-coverpoints>> to exercise all floating-point instructions with SEW=16.

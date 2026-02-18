@@ -1,0 +1,35 @@
+//////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_masked_v0_operand
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Verify instructions run correctly when masked (vm=0) and a source register is v0
+
+
+
+    // Masking enabled (vm=0, bit 25 = 0)
+    custom_masked_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    // vs2 is v0 (bits 24:20 = 0)
+    custom_masked_vs2_v0: coverpoint ins.current.insn[24:20] {
+        bins v0 = {5'b00000};
+    }
+
+    // vs1 is v0 (bits 19:15 = 0)
+    custom_masked_vs1_v0: coverpoint ins.current.insn[19:15] {
+        bins v0 = {5'b00000};
+    }
+
+    // vd is NOT v0 (required for most instructions when masked)
+    custom_masked_vd_not_v0: coverpoint ins.current.insn[11:7] {
+        bins not_v0[] = {[1:31]};
+    }
+
+    // Cross: masked with vs2=v0 (v0 serves as both mask and source operand)
+    cp_custom_masked_vs2_v0: cross std_vec, custom_masked_mask_enabled, custom_masked_vs2_v0, custom_masked_vd_not_v0;
+
+    // Cross: masked with vs1=v0 (v0 serves as both mask and source operand)
+    cp_custom_masked_vs1_v0: cross std_vec, custom_masked_mask_enabled, custom_masked_vs1_v0, custom_masked_vd_not_v0;
+
+    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////

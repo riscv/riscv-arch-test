@@ -22,18 +22,30 @@ jobs:
       - name: Ensure pre-commit checks pass
         run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
 
+  discover-sail-configs:
+    name: Discover Sail Configs
+    runs-on: ubuntu-latest
+    outputs:
+      configs: ${{ steps.find.outputs.configs }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Find all sail configs
+        id: find
+        env:
+          EXCLUDE: "sail-rv32e sail-rv32-max-clang sail-rv64-max-clang" # TODO: UDB does not support E yet, not all tests work with clang
+        run: |
+          configs=$(ls -d config/sail/*/ | xargs -n1 basename | grep -vxFf <(tr ' ' '\n' <<< "$EXCLUDE") | sort | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("sail/" + .)')
+          echo "configs=$configs" >> "$GITHUB_OUTPUT"
+
   regress:
-    name: ACT Regression (${{ matrix.config }})
+    name: Sail Regression (${{ matrix.config }})
+    needs: discover-sail-configs
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        config:
-          [
-            sail/sail-RVI20U32,
-            sail/sail-RVI20U64,
-            sail/sail-rv32-max,
-            sail/sail-rv64-max,
-          ]
+        config: ${{ fromJson(needs.discover-sail-configs.outputs.configs) }}
 
     steps:
       - name: Checkout code
@@ -45,7 +57,7 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
@@ -54,14 +66,41 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
+        run: |
+          # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
+          if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
+              DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
+          else
+              DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
+          fi
 
   spike:
-    name: Spike Regression (${{ matrix.target }})
+    name: Spike Regression (${{ matrix.name }})
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        target: [spike-rv64, spike-rv32]
+        include:
+          - name: rv64-max
+            config_file: config/spike/spike-rv64-max/test_config.yaml
+            config_name: spike-rv64-max
+            run_cmd: spike --isa=rv64imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+
+          - name: rv32-max
+            config_file: config/spike/spike-rv32-max/test_config.yaml
+            config_name: spike-rv32-max
+            run_cmd: spike --isa=rv32imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+
+          - name: RVI20U64
+            config_file: config/spike/spike-RVI20U64/test_config.yaml
+            config_name: spike-RVI20U64
+            run_cmd: spike --isa=rv64imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+
+          - name: RVI20U32
+            config_file: config/spike/spike-RVI20U32/test_config.yaml
+            config_name: spike-RVI20U32
+            run_cmd: spike --isa=rv32imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -69,7 +108,9 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
+          sudo apt-get install -y device-tree-compiler \
+                                  libboost-regex-dev \
+                                  libboost-system-dev
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
@@ -77,7 +118,8 @@ jobs:
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/usr/local --strip-components=1
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
+          | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Get Latest Spike Commit
         run: |
@@ -89,7 +131,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/spike
-          key: spike-${{ env.SPIKE_HASH }}-RV${{ matrix.xlen }}
+          key: spike-${{ env.SPIKE_HASH }}
 
       - name: Install Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
@@ -104,27 +146,37 @@ jobs:
 
       - name: Save cached Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
-        id: cache-spike-save
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/spike
-          key: ${{ steps.cache-spike-restore.outputs.cache-primary-key }}
+          key: spike-${{ env.SPIKE_HASH }}
 
       - name: Add Spike to PATH
-        run: echo $GITHUB_WORKSPACE/spike/bin >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/spike/bin" >> $GITHUB_PATH
 
       - name: Install RISC-V GCC toolchain
-        run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
+        run: |
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+          | sudo tar xvJ --directory=/usr/local --strip-components=1
 
-      - name: Compile and run tests on Sail
-        run: DOCKER=1 EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei make ${{ matrix.target }} --jobs $(nproc)
+      - name: Build ELFs
+        run: |
+          DOCKER=1 \
+          EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei \
+          CONFIG_FILES=${{ matrix.config_file }} \
+          make elfs --jobs $(nproc)
+
+      - name: Run Spike Tests
+        run: |
+          ./run_tests.py "${{ matrix.run_cmd }}" \
+          work/${{ matrix.config_name }}/elfs
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target }}-logs
-          path: work/${{ matrix.target }}-max/logs
+          name: ${{ matrix.name }}-logs
+          path: work/${{ matrix.config_name }}/logs
 
   vector-testgen:
     name: Vector Testgen

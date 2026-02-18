@@ -192,6 +192,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
+                "nop",  # Test fails on spike without this nop; nop is a temp fix; TODO: Link to issue after opening it
                 f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
                 f"{load_insn} x{params.temp_reg}, {offset}(x{params.rs1}) # intervening load",
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
@@ -208,7 +209,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     lr_insns = ["lr.w"] if test_data.xlen == 32 else ["lr.d", "lr.w"]
 
     for lr_insn in lr_insns:
-        for addr_diff in range(8, 128, 8):
+        for addr_diff in range(8, 256, 8):
             params = generate_random_params(test_data, instr_type, exclude_regs=[0])
             assert (
                 params.rs1 is not None

@@ -107,12 +107,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.9 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.10 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.9/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
@@ -209,26 +209,21 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_DATA_SECTION`
 - `RVMODEL_BOOT`
+- `RVMODEL_ACCESS_FAULT_ADDRESS`
 
-**Timer Macros**: Can be left blank if `mtime` is not supported..
+**Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_SET_MTIME`
-- `RVMODEL_SET_MTIMEH` (RV32 only)
+- `RVMODEL_MTIME_ADDRESS`
+- `RVMODEL_MTIMECMP_ADDRESS`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
 - `RVMODEL_SET_MEXT_INT`
 - `RVMODEL_CLR_MEXT_INT`
-- `RVMODEL_SET_MTIMER_INT`
-- `RVMODEL_CLR_MTIMER_INT`
-- `RVMODEL_SET_MTIMER_INT_SOON`
 - `RVMODEL_SET_MSW_INT`
 - `RVMODEL_CLR_MSW_INT`
 - `RVMODEL_SET_SEXT_INT`
 - `RVMODEL_CLR_SEXT_INT`
-- `RVMODEL_SET_STIMER_INT`
-- `RVMODEL_CLR_STIMER_INT`
-- `RVMODEL_SET_STIMER_INT_SOON`
 - `RVMODEL_SET_SSW_INT`
 - `RVMODEL_CLR_SSW_INT`
 

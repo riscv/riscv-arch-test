@@ -65,7 +65,7 @@ def format_cs_type(
     check = [
         f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        "#ifdef SELFCHECK",
+        "#ifdef RVTEST_SELFCHECK",
         f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),
         "#else",

@@ -26,8 +26,10 @@ class TestConfig:
         E_ext: Whether to use RV32E/RV64E (16 registers instead of 32)
         config_dependent: Whether this test is config dependent
         required_extensions: List of RISC-V extensions required for the test.
-                             Used for march string and header defines generation.
+                             Used for generating the march string and header defines.
                              If None, extensions are parsed from testsuite name.
+        march_extensions: Optional list of extensions to use for building the march string.
+                          If None, march is built from required_extensions.
     """
 
     xlen: int
@@ -36,6 +38,7 @@ class TestConfig:
     E_ext: bool = False
     config_dependent: bool = False
     required_extensions: list[str] | None = None
+    march_extensions: list[str] | None = None
 
     @property
     def xlen_format_str(self) -> str:

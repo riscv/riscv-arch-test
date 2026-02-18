@@ -466,7 +466,7 @@
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": true,
+      "supported": false,
       "rcid_length": 12,
       "mcid_length": 12
     }

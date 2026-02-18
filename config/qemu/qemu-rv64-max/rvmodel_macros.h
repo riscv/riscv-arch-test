@@ -33,40 +33,52 @@
   # Terminate test with a pass indication.
   # When the test is run in simulation, this should end the simulation.
   #define RVMODEL_HALT_PASS     \
+    .option push               ;\
+    .option norvc              ;\
     la a1, _semihost_exit_pass ;\
     li a0, 0x18                ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
-    srai x0, x0, 7
+    srai x0, x0, 7             ;\
+    .option pop
 
   # Terminate test with a fail indication.
   # When the test is run in simulation, this should end the simulation.
   #define RVMODEL_HALT_FAIL     \
+    .option push               ;\
+    .option norvc              ;\
     la a1, _semihost_exit_fail ;\
     li a0, 0x18                ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
-    srai x0, x0, 7
+    srai x0, x0, 7             ;\
+    .option pop
 
 #else /* RV32 */
 
   # Terminate test with a pass indication.
   # When the test is run in simulation, this should end the simulation.
   #define RVMODEL_HALT_PASS     \
+    .option push               ;\
+    .option norvc              ;\
     li a1, 0x20026             ;\
     li a0, 0x18                ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
-    srai x0, x0, 7
+    srai x0, x0, 7             ;\
+    .option pop
 
   # Terminate test with a fail indication.
   # When the test is run in simulation, this should end the simulation.
   #define RVMODEL_HALT_FAIL     \
+    .option push               ;\
+    .option norvc              ;\
     li a1, 0x20023             ;\
     li a0, 0x18                ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
-    srai x0, x0, 7
+    srai x0, x0, 7             ;\
+    .option pop
 
 #endif
 

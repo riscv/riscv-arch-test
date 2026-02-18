@@ -38,7 +38,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("ExceptionsZc", required_extensions=["I", "Zicsr", "Sm", "Zca"], march_extensions=["I", "Zicsr", "Zca", "Zcb", "Zcd", "F", "D"])
+@add_priv_test_generator("ExceptionsZc", required_extensions=["I", "Zicsr", "Zca", "Zcb", "Zcd", "Zcf", "F", "D", "Sm"])
 def make_exceptionszc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZc machine-mode extension."""
     lines: list[str] = []

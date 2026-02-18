@@ -5,11 +5,11 @@
 # Directories and files
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
-CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
+CONFIG_FILES ?= config/qemu/qemu-rv64-max/test_config.yaml config/qemu/qemu-rv32-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 
@@ -61,6 +61,28 @@ spike-rv32: elfs
 spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
 spike-rv64: elfs
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
+
+
+##### QEMU test targets #####
+.PHONY: qemu qemu-rv32 qemu-rv64
+
+QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -machine virt -cpu max -bios
+QEMU_RV32_CMD := qemu-system-riscv64 -nographic -semihosting -machine virt -cpu max32 -bios
+
+qemu: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml config/qemu/qemu-rv64-max/test_config.yaml
+qemu: elfs
+	@exit_code=0; \
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+qemu-rv32: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml
+qemu-rv32: elfs
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs
+
+qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
+qemu-rv64: elfs
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
 
 ###### Test compilation targets ######

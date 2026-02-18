@@ -67,7 +67,6 @@
       "usable_count": 16,
       "tor_supported": true,
       "na4_supported": false,
-      "na4_supported": false,
       "napot_supported": true
     },
     // This controls global support for misaligned access so it is

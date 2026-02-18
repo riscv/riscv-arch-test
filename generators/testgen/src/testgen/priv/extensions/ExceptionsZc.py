@@ -27,11 +27,11 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
         ),
         "",
         test_data.add_testcase(coverpoint, "bin_zeros", covergroup),
-        ".instr 0x0000       # illegal instruction",
+        ".insn 0x0000       # illegal instruction",
         "nop",  # exception handler skips following instruction
         test_data.add_testcase(coverpoint, "bin_ones", covergroup),
-        ".instr 0xFFFF       # illegal instruction",
-        ".instr 0xFFFF       # fill upper bits",
+        ".insn 0xFFFF       # illegal instruction",
+        ".insn 0xFFFF       # fill upper bits",
         "nop",  # exception handler skips following instruction
     ]
 

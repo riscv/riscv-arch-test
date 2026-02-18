@@ -24,6 +24,9 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     elif coverpoint.endswith("_H"):
         edges1 = FLOAT_EDGES.half
         edges2 = FLOAT_EDGES.half
+    elif coverpoint.endswith("_BF16"):
+        edges1 = FLOAT_EDGES.bf16
+        edges2 = FLOAT_EDGES.bf16
     else:
         edges1 = FLOAT_EDGES.single
         edges2 = FLOAT_EDGES.single
@@ -66,6 +69,9 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     elif coverpoint.endswith("_H"):
         edges1 = FLOAT_EDGES.half
         edges2 = FLOAT_EDGES.half
+    elif coverpoint.endswith("_BF16"):
+        edges1 = FLOAT_EDGES.bf16
+        edges2 = FLOAT_EDGES.bf16
     else:
         edges1 = FLOAT_EDGES.single
         edges2 = FLOAT_EDGES.single

@@ -62,6 +62,7 @@ spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
 spike-rv64: elfs
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
 
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles Makefile
@@ -100,7 +101,7 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
-$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py Makefile | $(STAMP_DIR)
+$(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
 	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
 	touch $@
 

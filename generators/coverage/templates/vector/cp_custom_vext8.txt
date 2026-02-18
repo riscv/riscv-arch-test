@@ -1,0 +1,25 @@
+//////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vext8_overlapping_vd_vs2_lmul8
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector zext and sext operations (f8)
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+
+
+    vtype_lmul_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {3};
+    }
+
+    vs2_vd_overlap_lmul8: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
+        bins overlapping = {1'b1};
+    }
+
+    vs2_mod8_7: coverpoint ins.current.insn[22:20] {
+        bins odd = {3'b111};
+    }
+
+    cp_custom_vext8_overlapping_vd_vs2_lmul8:    cross std_vec, vtype_lmul_8, vs2_vd_overlap_lmul8, vs2_mod8_7;
+
+    //// end cp_custom_vext8_overlapping_vd_vs2_lmul8////////////////////////////////////////////////

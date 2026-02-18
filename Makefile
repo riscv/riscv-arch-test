@@ -9,8 +9,7 @@ CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-WORKDIR_REF ?= work-ref
-EXTENSIONS  ?= I,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,pmp # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
@@ -180,41 +179,3 @@ format:
 ###### Vector coverage targets ######
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
-
-###### PMP Convenience Targets #########
-
-.PHONY: pmp
-pmp:
-	CONFIG_FILES=config/cores/cvw/cvw-rv32gc/test_config.yaml $(MAKE) --jobs $$(nproc)
-
-# Directory where PMP ELFs are generated
-PMP_ELF_DIR := $(WORKDIR)/cvw-rv32gc/elfs/priv/pmp
-
-.PHONY: get_pmp
-get_pmp:
-	@echo "Generating pmp_tests.sh from ELFs in $(PMP_ELF_DIR)"
-	@echo "#!/bin/bash" > pmp_tests.sh
-	@echo "mkdir -p logs" >> pmp_tests.sh
-	@for elf in $(PMP_ELF_DIR)/*.elf; do \
-		name=$$(basename $$elf .elf); \
-		echo "wsim rv32gc $$elf --lockstepverbose > logs/$${name}_log.txt" >> pmp_tests.sh; \
-	done
-	@chmod +x pmp_tests.sh
-	@echo "pmp_tests.sh created."
-
-.PHONY: logs
-logs:
-	@echo "Running PMP tests and generating logs..."
-	@mkdir -p logs
-	@./pmp_tests.sh
-	@echo "Logs stored in ./logs/"
-
-.PHONY: clean_pmp
-clean_pmp:
-	@echo "Cleaning PMP logs..."
-	@if [ -d logs ]; then \
-		rm -f logs/*.txt; \
-		echo "All log files removed from ./logs/"; \
-	else \
-		echo "No logs directory found."; \
-	fi

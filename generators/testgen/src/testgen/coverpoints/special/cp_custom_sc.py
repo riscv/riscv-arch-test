@@ -192,6 +192,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
+                "nop",  # Test fails on spike without this nop; nop is a temp fix; TODO: Link to issue after opening it
                 f"{lr_insn} x0, (x{params.rs1}) # establish reservation",
                 f"{load_insn} x{params.temp_reg}, {offset}(x{params.rs1}) # intervening load",
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",

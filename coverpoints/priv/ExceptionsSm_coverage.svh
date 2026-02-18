@@ -109,6 +109,19 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
         bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
+    i_phys_adr_misaligned: coverpoint ins.current.phys_adr_i[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
+        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            // auto fill 1/0 for the physical address being valid
+        }
+    `else
+        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            // auto fill 1/0 for the physical address being valid
+        }
+    `endif
 
     // main coverpoints
     cp_instr_adr_misaligned_branch:          cross priv_mode_m, branch, branches_taken, pc_bit_1, imm_bit_1;
@@ -124,6 +137,7 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     cp_store_address_misaligned:             cross priv_mode_m, storeops, adr_LSBs;
     cp_store_access_fault:                   cross priv_mode_m, storeops, illegal_address;
     cp_ecall_m:                              cross priv_mode_m, ecall;
+    cp_misaligned_priority_fetch:            cross priv_mode_m, i_phys_adr_misaligned, i_phys_address_nonexistent, jalr;
     cp_misaligned_priority_load:             cross priv_mode_m, loadops, adr_LSBs, illegal_address_priority;
     cp_misaligned_priority_store:            cross priv_mode_m, storeops, adr_LSBs, illegal_address_priority;
     cp_mstatus_ie:                           cross priv_mode_m, ecall, mstatus_MIE;

@@ -1,6 +1,6 @@
 Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rd,cp_rs1_edges,cp_imm_edges,cp_fs1,cp_fs2,cp_fd,cp_fs1_edges,cp_fs2_edges,cmp_fd_fs1,cp_frm,cp_csr_fflags,cp_csr_frm,cp_NaNBox,cp_fs1_badNB,cp_fs2_badNB
 fcvt.bf16.s,FI,x,x,x,,,,,x,,x,x,,x,2,vn,x,S_H,,
-fcvt.s.bf16,FI,x,x,x,,,,,x,,x,H,,x,,v,,,S_H,
+fcvt.s.bf16,FI,x,x,x,,,,,x,,x,BF16,,x,,v,,,S_H,
 flh,FL,x,x,x,nx0,,,x,,,x,,,,,,,S_H,,
 fmv.h.x,X2F,x,x,x,x,,x,,,,x,,,,,,,S_H,,
 fmv.x.h,F2X,x,x,x,,x,,,x,,,H,,,,,,,S_H,

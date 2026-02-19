@@ -133,7 +133,7 @@ jobs:
 
       - name: Restore cached Spike
         id: cache-spike-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/spike
           key: spike-${{ env.SPIKE_HASH }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Save cached Spike
         if: steps.cache-spike-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/spike
           key: spike-${{ env.SPIKE_HASH }}
@@ -216,7 +216,7 @@ jobs:
 
       - name: Restore cached QEMU
         id: cache-qemu-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/qemu
           key: qemu-${{ env.QEMU_VERSION }}
@@ -232,7 +232,7 @@ jobs:
 
       - name: Save cached QEMU
         if: steps.cache-qemu-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/qemu
           key: qemu-${{ env.QEMU_VERSION }}

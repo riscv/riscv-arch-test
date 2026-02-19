@@ -99,12 +99,12 @@ jobs:
           - name: RVI20U64
             config_file: config/spike/spike-RVI20U64/test_config.yaml
             config_name: spike-RVI20U64
-            run_cmd: spike --isa=rv64imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+            run_cmd: spike --isa=rv64imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
 
           - name: RVI20U32
             config_file: config/spike/spike-RVI20U32/test_config.yaml
             config_name: spike-RVI20U32
-            run_cmd: spike --isa=rv32imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+            run_cmd: spike --isa=rv32imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
 
     steps:
       - name: Checkout code

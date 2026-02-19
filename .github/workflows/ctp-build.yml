@@ -34,13 +34,13 @@ jobs:
           cp ctp/build/ctp.html github-pages/index.html
 
       - name: Upload PDF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
           path: ctp/build/ctp.pdf
 
       - name: Upload HTML
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.html
           path: ctp/build/ctp.html

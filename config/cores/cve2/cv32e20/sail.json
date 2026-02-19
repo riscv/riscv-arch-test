@@ -380,7 +380,7 @@
     // Enabling Sstvala requires that the exceptions specified in the extension
     // have their appropriate settings under `base.xtval_nonzero`.
     "Sstvala": {
-      "supported": true
+      "supported": false
     },
     "Svinval": {
       "supported": false

@@ -48,7 +48,11 @@ def run_act(
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
+    fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
 ) -> None:
+    if debug and fast:
+        raise typer.BadParameter("--debug and --fast cannot be used together")
+
     if workdir is None:
         workdir = Path.cwd() / "work"
 
@@ -87,6 +91,7 @@ def run_act(
         workdir.absolute(),
         coverage,
         debug,
+        fast,
     )
     print(f"Makefiles generated in {workdir}")
     print(f"Run make -C {workdir} compile to build all tests.")

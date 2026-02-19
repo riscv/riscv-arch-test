@@ -66,8 +66,11 @@ spike-rv64: elfs
 ##### QEMU test targets #####
 .PHONY: qemu qemu-rv32 qemu-rv64
 
-QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -machine virt -cpu max -bios
-QEMU_RV32_CMD := qemu-system-riscv64 -nographic -semihosting -machine virt -cpu max32 -bios
+# -semihosting is needed for test termination
+# -icount shift=1 ensures accurate values for instret
+# pmu-mask sets the number of hpmcounters
+QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+QEMU_RV32_CMD := qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
 
 qemu: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml config/qemu/qemu-rv64-max/test_config.yaml
 qemu: elfs

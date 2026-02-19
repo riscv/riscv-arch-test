@@ -275,9 +275,6 @@
 #endif
 
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
-# GCC emits c.nop instructions for alignment even when rvc is off.
-# To avoid executing compressed instructions, we jump over the second alignment
-# directive after loading the address.
 #define LA(reg,val) ;\
   .ifnc(reg, X0)    ;\
     .option push    ;\
@@ -285,10 +282,8 @@
     .align UNROLLSZ ;\
     .option norvc   ;\
     la reg,val      ;\
-    j 9f            ;\
     .align UNROLLSZ ;\
     .option pop     ;\
-    9:              ;\
   .endif
 
 // CSR Macros

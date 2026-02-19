@@ -182,6 +182,9 @@ jobs:
     name: QEMU Regression (${{ matrix.name }})
     runs-on: ubuntu-latest
 
+    env:
+      QEMU_VERSION: "10.2.0"
+
     strategy:
       matrix:
         include:
@@ -202,7 +205,33 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-misc
+          sudo apt-get install -y libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build
+
+      - name: Restore cached QEMU
+        id: cache-qemu-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/qemu
+          key: qemu-${{ env.QEMU_VERSION }}
+
+      - name: Build QEMU from source
+        if: steps.cache-qemu-restore.outputs.cache-hit != 'true'
+        run: |
+          curl --location https://download.qemu.org/qemu-${QEMU_VERSION}.tar.xz | tar xvJ
+          cd qemu-${QEMU_VERSION}
+          ./configure --prefix=$GITHUB_WORKSPACE/qemu --target-list=riscv32-softmmu,riscv64-softmmu
+          make -j$(nproc)
+          make install
+
+      - name: Save cached QEMU
+        if: steps.cache-qemu-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/qemu
+          key: qemu-${{ env.QEMU_VERSION }}
+
+      - name: Add QEMU to PATH
+        run: echo "$GITHUB_WORKSPACE/qemu/bin" >> $GITHUB_PATH
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7

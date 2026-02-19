@@ -409,6 +409,9 @@ function string disassemble (logic [31:0] instrRaw);
     // Zfh + Q Extensions
     FCVT_H_Q: $sformat(decoded,"fcvt.h.q %s, %s, %s", fd, fs1, get_frm_string(frm));
     FCVT_Q_H: $sformat(decoded,"fcvt.q.h %s, %s, %s", fd, fs1, get_frm_string(frm));
+    // Zfbfmin Extension
+    FCVT_BF16_S:  $sformat(decoded,"fcvt.bf16.s %s, %s, %s", fd, fs1, get_frm_string(frm));
+    FCVT_S_BF16:  $sformat(decoded,"fcvt.s.bf16 %s, %s, %s", fd, fs1, get_frm_string(frm));
     // Zfa Extension
     FLEQ_S:     $sformat(decoded, "fleq.s %s, %s, %s", rd, fs1, fs2);
     FLI_S:      $sformat(decoded, "fli.s %s, %s", fd, rs1);

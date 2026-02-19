@@ -1,3 +1,6 @@
+# ⚠️ **Important**: The default branch is now `act4`.  Please make sure you're working on `act4` for all new contributions.
+ACT 3 is now deprecated, new contributions to act 3 will not be accepted.
+this branch will be renamed to `old-framework-3.x`
 
 # RISC-V Architecture Test SIG
 

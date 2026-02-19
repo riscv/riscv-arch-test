@@ -17,7 +17,11 @@
   .global rvtest_entry_point
   rvtest_entry_point:
 
-  // Disable assembler/linker optimizations
+  // Globally disable linker relaxation
+  .option push
+  .option norelax
+
+  // Disable assembler/linker optimizations for RVTEST_BEGIN
   .option push
   .option rvc
   .align UNROLLSZ
@@ -87,7 +91,7 @@
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
 .macro RVTEST_CODE_END
-  // Disable assembler/linker optimizations
+  // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
   .option norvc
   .global rvtest_code_end       // define the label and make it available
@@ -141,6 +145,9 @@
     jr x1
     nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
 
+  .option pop
+
+  // Pop the .option norelax from RVTEST_BEGIN
   .option pop
 .endm
 /******************************** end of RVTEST_CODE_END ***********************************/

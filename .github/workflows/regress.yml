@@ -89,22 +89,22 @@ jobs:
           - name: rv64-max
             config_file: config/spike/spike-rv64-max/test_config.yaml
             config_name: spike-rv64-max
-            run_cmd: spike --isa=rv64imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+            run_cmd: spike --isa=rv64imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicntr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
 
           - name: rv32-max
             config_file: config/spike/spike-rv32-max/test_config.yaml
             config_name: spike-rv32-max
-            run_cmd: spike --isa=rv32imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+            run_cmd: spike --isa=rv32imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicntr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
 
           - name: RVI20U64
             config_file: config/spike/spike-RVI20U64/test_config.yaml
             config_name: spike-RVI20U64
-            run_cmd: spike --isa=rv64imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+            run_cmd: spike --isa=rv64imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
 
           - name: RVI20U32
             config_file: config/spike/spike-RVI20U32/test_config.yaml
             config_name: spike-RVI20U32
-            run_cmd: spike --isa=rv32imafdc_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
+            run_cmd: spike --isa=rv32imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcd_zaamo_zalrsc
 
     steps:
       - name: Checkout code
@@ -167,7 +167,9 @@ jobs:
       - name: Build ELFs
         run: |
           DOCKER=1 \
-          EXTENSIONS=I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei \
+          FAST=True \
+          EXTENSIONS="" \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 

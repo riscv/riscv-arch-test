@@ -46,7 +46,7 @@ jobs:
           path: ctp/build/ctp.html
 
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: github-pages
 

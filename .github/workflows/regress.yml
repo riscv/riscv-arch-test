@@ -34,7 +34,7 @@ jobs:
       - name: Find all sail configs
         id: find
         env:
-          EXCLUDE: "sail-rv32e sail-rv32-max-clang sail-rv64-max-clang" # TODO: UDB does not support E yet, not all tests work with clang
+          EXCLUDE: "sail-rv32e" # TODO: UDB does not support E yet
         run: |
           configs=$(ls -d config/sail/*/ | xargs -n1 basename | grep -vxFf <(tr ' ' '\n' <<< "$EXCLUDE") | sort | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("sail/" + .)')
           echo "configs=$configs" >> "$GITHUB_OUTPUT"
@@ -61,6 +61,11 @@ jobs:
 
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
+
+      - name: Install Clang
+        run: |
+          sudo apt update
+          sudo apt install clang lld
 
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)

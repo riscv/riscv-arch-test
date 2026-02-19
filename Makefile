@@ -5,11 +5,11 @@
 # Directories and files
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
-CONFIG_FILES ?= config/qemu/qemu-rv64-max/test_config.yaml config/qemu/qemu-rv32-max/test_config.yaml
+CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-EXTENSIONS  ?= I,M # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 

@@ -64,6 +64,31 @@ spike-rv64: elfs
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
 
 
+##### QEMU test targets #####
+.PHONY: qemu qemu-rv32 qemu-rv64
+
+# -semihosting is needed for test termination
+# -icount shift=1 ensures accurate values for instret
+# pmu-mask sets the number of hpmcounters
+QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+QEMU_RV32_CMD := qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+
+qemu: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml config/qemu/qemu-rv64-max/test_config.yaml
+qemu: elfs
+	@exit_code=0; \
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+qemu-rv32: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml
+qemu-rv32: elfs
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs
+
+qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
+qemu-rv64: elfs
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
+
+
 ###### Test compilation targets ######
 .PHONY: elfs
 elfs: generate-makefiles Makefile

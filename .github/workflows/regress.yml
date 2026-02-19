@@ -183,6 +183,96 @@ jobs:
           name: ${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
 
+  qemu:
+    name: QEMU Regression (${{ matrix.name }})
+    runs-on: ubuntu-latest
+
+    env:
+      QEMU_VERSION: "10.2.0"
+
+    strategy:
+      matrix:
+        include:
+          - name: rv64-max
+            config_file: config/qemu/qemu-rv64-max/test_config.yaml
+            config_name: qemu-rv64-max
+            run_cmd: qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+
+          - name: rv32-max
+            config_file: config/qemu/qemu-rv32-max/test_config.yaml
+            config_name: qemu-rv32-max
+            run_cmd: qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build
+
+      - name: Restore cached QEMU
+        id: cache-qemu-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/qemu
+          key: qemu-${{ env.QEMU_VERSION }}
+
+      - name: Build QEMU from source
+        if: steps.cache-qemu-restore.outputs.cache-hit != 'true'
+        run: |
+          curl --location https://download.qemu.org/qemu-${QEMU_VERSION}.tar.xz | tar xvJ
+          cd qemu-${QEMU_VERSION}
+          ./configure --prefix=$GITHUB_WORKSPACE/qemu --target-list=riscv32-softmmu,riscv64-softmmu
+          make -j$(nproc)
+          make install
+
+      - name: Save cached QEMU
+        if: steps.cache-qemu-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/qemu
+          key: qemu-${{ env.QEMU_VERSION }}
+
+      - name: Add QEMU to PATH
+        run: echo "$GITHUB_WORKSPACE/qemu/bin" >> $GITHUB_PATH
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install sail-riscv model
+        run: |
+          sudo mkdir -p /usr/local
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
+          | sudo tar xvz --directory=/usr/local --strip-components=1
+
+      - name: Install RISC-V GCC toolchain
+        run: |
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+          | sudo tar xvJ --directory=/usr/local --strip-components=1
+
+      - name: Build ELFs
+        run: |
+          DOCKER=1 \
+          FAST=True \
+          EXTENSIONS= \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,Zaamo,Zalrsc,Zabha,Zacas,ZacasZabha \
+          CONFIG_FILES=${{ matrix.config_file }} \
+          make elfs --jobs $(nproc)
+
+      - name: Run QEMU Tests
+        run: |
+          ./run_tests.py "${{ matrix.run_cmd }}" \
+          work/${{ matrix.config_name }}/elfs
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qemu-${{ matrix.name }}-logs
+          path: work/${{ matrix.config_name }}/logs
+
   vector-testgen:
     name: Vector Testgen
     runs-on: ubuntu-latest
@@ -230,7 +320,7 @@ jobs:
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [lint, regress, spike, vector-testgen, ctp-build]
+    needs: [lint, regress, spike, qemu, vector-testgen, ctp-build]
     steps:
       - name: Dummy
         run: echo 'Jobs need at least one step.'

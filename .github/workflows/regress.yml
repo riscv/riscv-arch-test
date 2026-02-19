@@ -70,7 +70,7 @@ jobs:
       - name: Install Clang
         run: |
           sudo apt update
-          sudo apt install clang lld
+          sudo apt install clang lld llvm
 
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)

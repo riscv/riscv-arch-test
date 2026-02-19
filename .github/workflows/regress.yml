@@ -180,7 +180,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
@@ -270,7 +270,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: qemu-${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
@@ -306,13 +306,13 @@ jobs:
         run: cd ctp && make -j2
 
       - name: Upload PDF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
           path: ctp/build/ctp.pdf
 
       - name: Upload HTML
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.html
           path: ctp/build/ctp.html

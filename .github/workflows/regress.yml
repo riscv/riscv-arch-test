@@ -162,6 +162,7 @@ jobs:
       - name: Build ELFs
         run: |
           DOCKER=1 \
+          EXTENSIONS="" \
           EXCLUDE_EXTENSIONS=Sm \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)

@@ -22,12 +22,16 @@
 
 ##### TERMINATION #####
 
-# Semihosting exit codes:
+# QEMU uses semihosting to terminate the simulation.
+# Semihosting triggers commands by using a special sequence of three instructions.
+# See https://docs.riscv.org/reference/platform-software/semihosting/_attachments/riscv-semihosting.pdf
+# for details. Note: QEMU semihosting sequences cannot cross page boundaries.
+# The semihosting codes used here are described below. The subsequent link has more details on all semihosting codes.
 # On RV64, SYS_EXIT expects a1 = pointer to {reason, subcode} parameter block.
 # On RV32, SYS_EXIT expects a1 = reason value directly.
 # 0x20026 = ADP_Stopped_ApplicationExit (exit code 0)
 # 0x20023 = ADP_Stopped_InternalError (exit code 1)
-# Note: QEMU semihosting cannot cross page boundaries
+# https://github.com/ARM-software/abi-aa/blob/main/semihosting/semihosting.rst
 
 #if __riscv_xlen == 64
 
@@ -36,9 +40,12 @@
   #define RVMODEL_HALT_PASS     \
     .option push               ;\
     .option norvc              ;\
+    /* load exit code (see above) */ \
     la a1, _semihost_exit_pass ;\
     li a0, 0x18                ;\
+    /* align to ensure semihosting instructions don't cross a page boundary */ \
     .balign 16                 ;\
+    /* semihosting special sequence */ \
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -49,9 +56,12 @@
   #define RVMODEL_HALT_FAIL     \
     .option push               ;\
     .option norvc              ;\
+    /* load exit code (see above) */ \
     la a1, _semihost_exit_fail ;\
     li a0, 0x18                ;\
+    /* align to ensure semihosting instructions don't cross a page boundary */ \
     .balign 16                 ;\
+    /* semihosting special sequence */ \
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -64,9 +74,12 @@
   #define RVMODEL_HALT_PASS     \
     .option push               ;\
     .option norvc              ;\
+    /* load exit code (see above) */ \
     li a1, 0x20026             ;\
     li a0, 0x18                ;\
+    /* align to ensure semihosting instructions don't cross a page boundary */ \
     .balign 16                 ;\
+    /* semihosting special sequence */ \
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -77,9 +90,12 @@
   #define RVMODEL_HALT_FAIL     \
     .option push               ;\
     .option norvc              ;\
+    /* load exit code (see above) */ \
     li a1, 0x20023             ;\
     li a0, 0x18                ;\
+    /* align to ensure semihosting instructions don't cross a page boundary */ \
     .balign 16                 ;\
+    /* semihosting special sequence */ \
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\

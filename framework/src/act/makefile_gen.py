@@ -100,6 +100,7 @@ def gen_compile_targets(
     config: Config,
     sail_config_path: Path,
     debug: bool = False,
+    fast: bool = False,
 ) -> str:
     """Generate Makefile targets for compiling a test.
 
@@ -111,6 +112,7 @@ def gen_compile_targets(
         config: Configuration object.
         sail_config_path: Path to a Sail config file for signature generation.
         debug: Whether to generate debug output (signature objdump and trace files).
+        fast: Whether to disable objdump generation for faster builds.
     """
     # Define paths
     build_dir = base_dir / "build"
@@ -165,10 +167,10 @@ def gen_compile_targets(
         f"\t\t-march={march} -mabi={mabi} -DRVTEST_SELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
         f'\t\t-DSIGNATURE_FILE=\\"{result_file}\\" \\\n'
         f"\t\t{test_path}\n"
-        # Objdump (objdump_exe is set)
+        # Objdump (only if objdump_exe is set and fast mode is disabled)
         f"{
             f'\n\t{config.objdump_exe} {OBJDUMP_FLAGS} \\\n\t\t{final_elf} \\\n\t\t> {final_elf}.objdump\n'
-            if config.objdump_exe is not None
+            if not fast and config.objdump_exe is not None
             else '# skipping objdump generation\n'
         }"
     )
@@ -232,6 +234,7 @@ def generate_common_makefile(
     xlen: int,
     e_ext: bool,
     debug: bool,
+    fast: bool = False,
 ) -> None:
     """Generate a Makefile to compile the common tests.
 
@@ -246,6 +249,7 @@ def generate_common_makefile(
         xlen: XLEN (32 or 64).
         e_ext: Whether the 'E' extension is enabled.
         debug: Whether to generate debug output (signature objdump and trace files).
+        fast: Whether to disable objdump generation for faster builds.
     """
     # Define paths
     common_elf_dir = common_wkdir / "elfs"
@@ -271,7 +275,7 @@ def generate_common_makefile(
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
         makefile_lines.append(
-            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, common_sail_config, debug)
+            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, common_sail_config, debug, fast)
         )
 
     # Write out Makefile
@@ -291,6 +295,7 @@ def generate_config_makefile(
     common_dir: str,
     coverage_enabled: bool,
     debug: bool = False,
+    fast: bool = False,
 ) -> None:
     """Generate a Makefile to compile the config-specific tests.
 
@@ -306,6 +311,7 @@ def generate_config_makefile(
         common_dir: directory to generate common tests in. Hash specific.
         coverage_enabled: Whether coverage generation is enabled.
         debug: Whether to generate debug output (signature objdump and trace files).
+        fast: Whether to disable objdump generation for faster builds.
     """
     # Define paths
     config_wkdir = wkdir / config_name
@@ -350,13 +356,13 @@ def generate_config_makefile(
                 f"\t\t{final_elf}\n"
                 f"{
                     f'\tln -sf {common_elf}.objdump \\\n\t\t{final_elf}.objdump\n'
-                    if config.objdump_exe is not None
+                    if not fast and config.objdump_exe is not None
                     else '\t# skipping objdump generation\n'
                 }"
             )
         else:
             makefile_lines.append(
-                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, config, sail_config_path, debug)
+                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, config, sail_config_path, debug, fast)
             )
 
         # Generate coverage trace targets
@@ -501,6 +507,7 @@ def generate_makefiles(
     workdir: Path,
     coverage_enabled: bool,
     debug: bool = False,
+    fast: bool = False,
 ) -> None:
     """Generate Makefiles for multiple configurations with shared common directories.
 
@@ -514,6 +521,7 @@ def generate_makefiles(
         workdir: Working directory.
         coverage_enabled: Whether coverage generation is enabled.
         debug: Whether to generate debug output (signature objdump and trace files).
+        fast: Whether to disable objdump generation for faster builds.
 
     """
     # Pass 1: Group configs by hash and compute union of needed common tests
@@ -560,6 +568,7 @@ def generate_makefiles(
             common_group.xlen,
             common_group.e_ext,
             debug,
+            fast,
         )
         top_makefile_lines.extend(
             [
@@ -602,6 +611,7 @@ def generate_makefiles(
                 common_dir,
                 coverage_enabled,
                 debug,
+                fast,
             )
 
     top_makefile_lines.append(f"compile: {' '.join(compile_targets)}")

@@ -17,7 +17,16 @@
   .global rvtest_entry_point
   rvtest_entry_point:
 
-  // Disable assembler/linker optimizations
+  // Globally disable linker relaxation
+  // The linker tries to simplify some code sequences (auipc + addi, jumps, etc.) by default.
+  // This disables that behavior to ensure tests match the desired assembly. The unusual structure
+  // of the ACT tests (compared to standard production code) also has a tendency to hit bugs in the
+  // relaxation process (including incorrect addresses being loaded and c.nops being inserted when
+  // they shouldn't be), so just disable it since we don't care about optimizations.
+  .option push
+  .option norelax
+
+  // Disable assembler/linker optimizations for RVTEST_BEGIN
   .option push
   .option rvc
   .align UNROLLSZ
@@ -87,7 +96,7 @@
 /**** - Terminate test with call to RVMODEL_HALT                                        ****/
 /*******************************************************************************************/
 .macro RVTEST_CODE_END
-  // Disable assembler/linker optimizations
+  // Disable assembler/linker optimizations for RVTEST_CODE_END
   .option push
   .option norvc
   .global rvtest_code_end       // define the label and make it available
@@ -141,6 +150,9 @@
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
 
+  .option pop
+
+  // Pop the .option norelax from RVTEST_BEGIN
   .option pop
 .endm
 /******************************** end of RVTEST_CODE_END ***********************************/

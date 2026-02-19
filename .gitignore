@@ -40,4 +40,5 @@ coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters
 ctp/mismatch_report.txt
 tests/priv/Sm/Sm-00.S
+tests/priv/ExceptionsZc/ExceptionsZc-00.S
 crd/build

@@ -27,6 +27,7 @@
 # On RV32, SYS_EXIT expects a1 = reason value directly.
 # 0x20026 = ADP_Stopped_ApplicationExit (exit code 0)
 # 0x20023 = ADP_Stopped_InternalError (exit code 1)
+# Note: QEMU semihosting cannot cross page boundaries
 
 #if __riscv_xlen == 64
 
@@ -37,6 +38,7 @@
     .option norvc              ;\
     la a1, _semihost_exit_pass ;\
     li a0, 0x18                ;\
+    .balign 16                 ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -49,6 +51,7 @@
     .option norvc              ;\
     la a1, _semihost_exit_fail ;\
     li a0, 0x18                ;\
+    .balign 16                 ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -63,6 +66,7 @@
     .option norvc              ;\
     li a1, 0x20026             ;\
     li a0, 0x18                ;\
+    .balign 16                 ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\
@@ -75,6 +79,7 @@
     .option norvc              ;\
     li a1, 0x20023             ;\
     li a0, 0x18                ;\
+    .balign 16                 ;\
     slli x0, x0, 0x1f          ;\
     ebreak                     ;\
     srai x0, x0, 7             ;\

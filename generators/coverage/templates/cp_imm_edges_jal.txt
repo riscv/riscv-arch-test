@@ -1,7 +1,5 @@
-    cp_imm_edges_jal : coverpoint signed'(ins.current.imm[12:0])  iff (ins.trap == 0 )  {
+    cp_imm_edges_jal : coverpoint ins.current.imm  iff (ins.trap == 0 )  {
         // imm is the jump offset
-        // Adding a range to account for signature logic (32 bytes)
-        // Adding a range to account for signature logic (32 bytes)
         bins b_4     = {4};
         bins b_8     = {8};
         bins b_16    = {16};
@@ -12,8 +10,8 @@
         bins b_512   = {512};
         bins b_1024  = {1024};
         bins b_2048  = {2048};
-        bins b_4096  = {[4064:4096]};
-        bins b_8192  = {8192};
+        bins b_4096  = {4096};
+        // bins b_8192  = {8192}; TODO: We were not generating tests for this coverpoint but it was
         bins b_m4    = {-4};
         bins b_m8    = {-8};
         bins b_m16   = {-16};

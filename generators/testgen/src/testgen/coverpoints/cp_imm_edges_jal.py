@@ -35,8 +35,8 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
     if coverpoint == "cp_imm_edges_jal":
         instr_size = 4
         # jal has 20-bit signed offset, but we only test up to 4096
-        max_fwd_align = 12  # 2^12 = 4096
-        max_bwd_align = 12  # 2^12 = 4096
+        max_fwd_align = 13  # 2^13 = 8192
+        max_bwd_align = 13  # 2^13 = 8192
         min_align = 2
         li_instr = "li"
     elif coverpoint == "cp_imm_edges_c_jal":

@@ -18,6 +18,11 @@
   rvtest_entry_point:
 
   // Globally disable linker relaxation
+  // The linker tries to simplify some code sequences (auipc + addi, jumps, etc.) by default.
+  // This disables that behavior to ensure tests match the desired assembly. The unusual structure
+  // of the ACT tests (compared to standard production code) also has a tendency to hit bugs in the
+  // relaxation process (including incorrect addresses being loaded and c.nops being inserted when
+  // they shouldn't be), so just disable it since we don't care about optimizations.
   .option push
   .option norelax
 

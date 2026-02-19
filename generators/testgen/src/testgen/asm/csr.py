@@ -50,8 +50,8 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     """
     test_data.sigupd_count += 1
     return (
-        f"# Write x{check_reg} to {csr_name}, read back and check against expected.\n"
-        f"RVTEST_SIGUPD_CSR_WRITE({csr_name}, x{check_reg}, test_{test_data.test_count}) "
+        f"\t# Write x{check_reg} to {csr_name}, read back and check against expected.\n"
+        f"\tRVTEST_SIGUPD_CSR_WRITE({csr_name}, x{check_reg}, test_{test_data.test_count}) "
     )
 
 

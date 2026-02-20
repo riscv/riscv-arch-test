@@ -61,25 +61,6 @@ https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88Mtc
 
 TODO: Incorporate normative rules now that Sm is fully tagged.
 
-==== ZicsrF Floating-Point CSRs
-
-These test additional CSRs that exist when floating-point is supported.
-Although these tests are listed in the priv section and are generated from
-a spreadsheet and manual coverpoints rather than a CSV, they do not assume
-any privileged capabilities, including the existence of machine mode. Hence
-they are compatible with RVI20 and simple cores that lack privileged modes.
-
-Note that this suite also test that the underflow flag is set only if the
-result is tiny after rounding, per the RISC-V spec.
-
-[[t-ZicsrF-coverpoints]]
-.ZicsrF Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1673314448#gid=1673314448[Google Sheet Testplan]
-,===
-
-include::norm/ZicsrF_norm_rules.adoc[]
-
 ==== SmF Floating-Point CSRs
 
 These test additional CSRs that exist when floating-point is supported.

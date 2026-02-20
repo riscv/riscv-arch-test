@@ -174,15 +174,16 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             (ins.current.fs1_val[31:0] == 32'h387FF000 & ins.current.insn[14:12] == 3'b000) {
                 wildcard bins fcvt = {FCVT_H_S};
             }
-    `endif
-    `ifdef ZFHMIN_SUPPORTED
-        // same test case, repeated if only Zfhmin is supported
-        cp_underflow_after_rounding_fcvt_h_s_rne_zfhmin: coverpoint ins.current.insn iff
-            (ins.current.fs1_val[31:0] == 32'h387FF000 & ins.current.insn[14:12] == 3'b000) {
-                wildcard bins fcvt = {FCVT_H_S};
-            }
-    `endif
-endgroup
+    `else
+        `ifdef ZFHMIN_SUPPORTED
+            // same test case, repeated if only Zfhmin is supported
+            cp_underflow_after_rounding_fcvt_h_s_rne: coverpoint ins.current.insn iff
+                (ins.current.fs1_val[31:0] == 32'h387FF000 & ins.current.insn[14:12] == 3'b000) {
+                    wildcard bins fcvt = {FCVT_H_S};
+                }
+        `endif
+   `endif
+ endgroup
 
 function void zicsrf_sample(int hart, int issue, ins_t ins);
     ZicsrF_cg.sample(ins);

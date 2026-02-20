@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,9 +14,9 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints :  cp_misaligned_napot for PMPM is fully covered in this test file. 
+// Coverpoints :  cp_misaligned_napot for PMPM is fully covered in this test file.
 //
-// Test Cases  :  Checking that misaligned read/write that crosses a NAPOT PMP 
+// Test Cases  :  Checking that misaligned read/write that crosses a NAPOT PMP
 //                boundary fails. We Set up standard NAPOT region with L = {0/1},
 //                XWR=111 and attempt misaligned {lw, lh, lhu, sw, sh} stradding
 //                each offset partially in start and end of region.
@@ -46,11 +46,11 @@
 RVTEST_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+    #define RVMODEL_PMP_GRAIN 4
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+    #define RVMODEL_NUM_PMPS 16
 #endif
 
 #if RVMODEL_PMP_GRAIN != 0
@@ -59,138 +59,138 @@ RVTEST_BEGIN
   #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
 #endif
 
-#define NOP 			0x13
+#define NOP             0x13
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
-    LI(a4, NOP)                  							// Value to write (NOP)
+    LI(a4, NOP)                                             // Value to write (NOP)
     // Store Access Check straddling start
-    LA(a5, (\ADDRESS-1))             						// Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS-1))                                    // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     nop
-    sh a4, 0(a5)                 							// Half-word store test
+    sh a4, 0(a5)                                            // Half-word store test
     nop
     nop
 
     // Store Access Check straddling end
-    LA(a5, (\ADDRESS+g-1))             						// Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS+g-1))                                  // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     nop
-    sh a4, 0(a5)                 							// Half-word store test
+    sh a4, 0(a5)                                            // Half-word store test
     nop
     nop
 
     // Load Access Check straddling start
-    LA(a5, (\ADDRESS-1))             						// Address to be verified
-	  lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    LA(a5, (\ADDRESS-1))                                    // Address to be verified
+      lh a4, 0(a5)                                          // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)       							// Signature update
-	  lhu a4, 0(a5)                 							// Half-word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                   // Signature update
+      lhu a4, 0(a5)                                             // Half-word load test
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                   // Signature update
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)       							// Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)                                   // Signature update
 
     // Load Access Check straddling end
-    LA(a5, (\ADDRESS+g-1))             						// Address to be verified
-	  lh a4, 0(a5)                 							// Half-word load test
-    nop                                                    
+    LA(a5, (\ADDRESS+g-1))                                  // Address to be verified
+      lh a4, 0(a5)                                          // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)       							// Signature update
-	  lhu a4, 0(a5)                 							// Half-word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)                                   // Signature update
+      lhu a4, 0(a5)                                             // Half-word load test
     nop
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)                                   // Signature update
-    lw a4, 0(a5)                 							// Word load test
+    lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)      							// Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)                               // Signature update
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept RVMODEL_NUM_PMPS/4
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+1
+    .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
-		
+    // Loop to SET ALL pmpaddr REGs to zero
+    .set pmpaddri, CSR_PMPADDR0
+    .rept RVMODEL_NUM_PMPS
+    csrw pmpaddri, x0
+    .set pmpaddri, pmpaddri+1
+    .endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+
+#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_MASK			~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-#define PMP_REGION_SIZE 	(1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
+#define REGIONSTART         0x80002000      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+#define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 
 #if RVMODEL_PMP_GRAIN != 0
   #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
 #else
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
-	
+
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+    csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
-	    
-	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
+    csrw    pmpaddr15, x4
 
-	LA(x4, STANDARD_REGION)
-    csrw 	pmpaddr0, x4
+    //Lock the Background region.
+    LI(x4, PMP_REGION_GLOBAL)
+    csrw pmpcfg3, x4
 
-//											Verification Section
+    LA(x4, STANDARD_REGION)
+    csrw    pmpaddr0, x4
+
+//                                          Verification Section
 // Test Case: 1 -- XWR Permissions given to the PMP Region.
 
-	LI(x4, PMPREGION_XWR)
-	csrw pmpcfg0, x4
+    LI(x4, PMPREGION_XWR)
+    csrw pmpcfg0, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION
 
 // Test Case: 2 -- LXWR Permissions given to the PMP Region.
 
-	LI(x4, PMPREGION_LXWR)
-	csrw pmpcfg0, x4
+    LI(x4, PMPREGION_LXWR)
+    csrw pmpcfg0, x4
 
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION
 
-	RVTEST_GOTO_MMODE
+    RVTEST_GOTO_MMODE
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-  RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)       								// Signature update
-	j exit														// Verification Complete, exit the test
+    li a4, 0xbeefcafe                                           // Clean Test exit verification signature.
+  RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)                                     // Signature update
+    j exit                                                      // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-	.rept (1<<(RVMODEL_PMP_GRAIN+2))
-	nop
-	.endr
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+    nop
+    nop
+    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 

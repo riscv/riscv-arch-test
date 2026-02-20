@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
 //               systems. It specifically tests the Read, Write, and Execute
@@ -16,9 +16,9 @@
 // Coverpoints : cp_misaligned_na4 for PMPZca is partially covered
 //               in this test file.
 //
-// Test Cases  :  Setting up 3 standard consecutive NA4 PMP regions with L=1, XWR=111 
+// Test Cases  :  Setting up 3 standard consecutive NA4 PMP regions with L=1, XWR=111
 //               (XWR = 000 for region 3).Place an uncompressed ret = jalr ra inside
-//               first region and inside second region. Attempt jalr to each ret.  
+//               first region and inside second region. Attempt jalr to each ret.
 //
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ RVTEST_BEGIN
 #define NOP             0x13
 #define REGION_SIZE     (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
     LA(x15, \ADDRESS)               // Address to be verified
     c.jalr x15
     nop
@@ -101,7 +101,7 @@ main:
     csrw pmpcfg3, x4
 
     // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
-    
+
     LA(x5, PMP_ADDRESS_0)
     csrw pmpaddr0, x5
 
@@ -122,14 +122,14 @@ main:
 
     // Test Case 1: Execute in first region (should succeed)
     VERIFICATION_RWX TEST_FOR_EXECUTION_1
-    
+
     // Update signature for test case 1
     li a4, 0xdeadbeef
     RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
-    
-    // Test Case 2: Execute in second region (should succeed)  
+
+    // Test Case 2: Execute in second region (should succeed)
     VERIFICATION_RWX TEST_FOR_EXECUTION_2
-    
+
     // Update signature for test case 2
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
 
@@ -137,7 +137,7 @@ main:
 
 .align 13
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
-    jalr x0, x1, 0 
+    jalr x0, x1, 0
 
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                  // Uncompressed return inside the second region

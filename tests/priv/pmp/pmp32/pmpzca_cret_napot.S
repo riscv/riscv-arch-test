@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -17,11 +17,11 @@
 // Coverpoints : cp_cret_napot for PMPZca is fully covered in this test file.
 //
 // Test Cases  : Check that 16-bit fetches adjacent to a NAPOT PMP boundary succeed.
-//				 Set up a standard NAPOT PMP region with L=1, XWR = 111. Place four
-//				 c.ret = c.jr ra statements just below, at bottom, at top, and just
-//				 above PMP region, half of which are on 16-bit boundaries.  
-//				 Attempt jalr to each c.ret.  
-//				 
+//               Set up a standard NAPOT PMP region with L=1, XWR = 111. Place four
+//               c.ret = c.jr ra statements just below, at bottom, at top, and just
+//               above PMP region, half of which are on 16-bit boundaries.
+//               Attempt jalr to each c.ret.
+//
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
@@ -47,44 +47,44 @@
 RVTEST_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+    #define RVMODEL_PMP_GRAIN 4
 #endif
 
 #ifndef NUM_PMP_ENTRIES
-	#define NUM_PMP_ENTRIES 16
+    #define NUM_PMP_ENTRIES 16
 #endif
 
-.macro VERIFICATION_RWX ADDRESS  
+.macro VERIFICATION_RWX ADDRESS
 
-    LA(x15, \ADDRESS)             							// Address to be verified
-	c.jalr x15
+    LA(x15, \ADDRESS)                                       // Address to be verified
+    c.jalr x15
     nop
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept NUM_PMP_ENTRIES/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept NUM_PMP_ENTRIES/4
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+1
+    .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept NUM_PMP_ENTRIES
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+    // Loop to SET ALL pmpaddr REGs to zero
+    .set pmpaddri, CSR_PMPADDR0
+    .rept NUM_PMP_ENTRIES
+    csrw pmpaddri, x0
+    .set pmpaddri, pmpaddri+1
+    .endr
 
-#define PMP_REGION_GLOBAL	((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMP0CFG 			((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
-#define REGIONSTART			0x80002000
+#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
+#define REGIONSTART         0x80002000
 
-#define PMP_MASK			~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-#define PMP_REGION_SIZE 	((1 << (RVMODEL_PMP_GRAIN - 1))-1) 
+#define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+#define PMP_REGION_SIZE     ((1 << (RVMODEL_PMP_GRAIN - 1))-1)
 
 #if RVMODEL_PMP_GRAIN != 0
   #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
@@ -93,34 +93,34 @@ main:
 #endif
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+    csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
+    csrw    pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+    //Lock the Background region.
+    LI(x4, PMP_REGION_GLOBAL)
+    csrw pmpcfg3, x4
 
-//											Verification Section
+//                                          Verification Section
 // Test Case: NAPOT Region with L->1 and XWR->111
 
-	LA(x5, STANDARD_REGION)
-	csrw pmpaddr0, x5
+    LA(x5, STANDARD_REGION)
+    csrw pmpaddr0, x5
 
-	LA(x4, PMP0CFG)
-	csrw pmpcfg0, x4
+    LA(x4, PMP0CFG)
+    csrw pmpcfg0, x4
 
     //Test case1
-	VERIFICATION_RWX TEST_FOR_EXECUTION_0
+    VERIFICATION_RWX TEST_FOR_EXECUTION_0
 
      // Update signature for test case 1
     li a4, 0xdeadbeef
     RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
 
     //Test case2
-	VERIFICATION_RWX TEST_FOR_EXECUTION_1
+    VERIFICATION_RWX TEST_FOR_EXECUTION_1
     // Update signature for test case 1
     li a4, 0xdeadbeef
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
@@ -133,37 +133,37 @@ main:
     RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)
 
     //Test case4
-	VERIFICATION_RWX TEST_FOR_EXECUTION_3
+    VERIFICATION_RWX TEST_FOR_EXECUTION_3
 
      // Update signature for test case 1
     li a4, 0xdeadbeef
     RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)
 
-	j exit														// Verification Complete, exit the test
+    j exit                                                      // Verification Complete, exit the test
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 .skip (0x1000 -2)
 TEST_FOR_EXECUTION_0:
-	ret															// Comrpessed return just before the start of region
+    ret                                                         // Compressed return just before the start of region
 
 TEST_FOR_EXECUTION_1:
     ret                                                         // Compressed return inside the region
-	.rept (((1<<(RVMODEL_PMP_GRAIN+2)) -4 ) /2)						// (size of region - size of 2 returns) / size of nop
-	nop
+    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) -4 ) /2)                     // (size of region - size of 2 returns) / size of nop
+    nop
     .endr
 
 TEST_FOR_EXECUTION_2:
-    ret                       									// Compressed return at the top of the region                                  
+    ret                                                         // Compressed return at the top of the region
 
 TEST_FOR_EXECUTION_3:
-    ret                                             			// Comrpessed return just above the region          
-	nop
+    ret                                                         // Compressed return just above the region
+    nop
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+    nop
+    nop
+    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 

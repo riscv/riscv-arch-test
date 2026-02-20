@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -15,13 +15,13 @@
 //               - Adjust PMP configurations for specific hardware if required.
 //
 // Coverpoints : cp_misaligned_tor for PMPZca is partially covered
-//				 in this test file.
+//               in this test file.
 //
 // Test Cases  : Check that misaligned 32-bit fetches that cross a TOR PMP boundary fail.
-//				 Setting up 3 standard consecutive TOR PMP regions with L=1, XWR=111 
-//				 (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
-//				 start and end of the second regions. Attempt jalr to each ret. 
-//				 
+//               Setting up 3 standard consecutive TOR PMP regions with L=1, XWR=111
+//               (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
+//               start and end of the second regions. Attempt jalr to each ret.
+//
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 
@@ -48,87 +48,87 @@
 RVTEST_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+    #define RVMODEL_PMP_GRAIN 4
 #endif
 
 #ifndef NUM_PMP_ENTRIES
-	#define NUM_PMP_ENTRIES 16
+    #define NUM_PMP_ENTRIES 16
 #endif
-  
-#define REGION_SIZE	(1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS  
+#define REGION_SIZE (1<<(RVMODEL_PMP_GRAIN+2))
 
-    LA(x15, \ADDRESS)             							// Address to be verified
-	c.jalr x15
+.macro VERIFICATION_RWX ADDRESS
+
+    LA(x15, \ADDRESS)                                       // Address to be verified
+    c.jalr x15
     nop
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept NUM_PMP_ENTRIES/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept NUM_PMP_ENTRIES/4
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+1
+    .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept NUM_PMP_ENTRIES
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
+    // Loop to SET ALL pmpaddr REGs to zero
+    .set pmpaddri, CSR_PMPADDR0
+    .rept NUM_PMP_ENTRIES
+    csrw pmpaddri, x0
+    .set pmpaddri, pmpaddri+1
+    .endr
 
-#define PMP_REGION_GLOBAL	            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMP1CFG 			            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
-#define PMP2CFG 			            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP2_CFG_SHIFT))
-#define PMP3CFG 			            ((((PMP_L|                  PMP_TOR)   &0xFF)   << PMP3_CFG_SHIFT))
+#define PMP_REGION_GLOBAL               ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP1CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
+#define PMP2CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP2_CFG_SHIFT))
+#define PMP3CFG                         ((((PMP_L|                  PMP_TOR)   &0xFF)   << PMP3_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL		    -1					// All memory region
+#define PMPADDRESS_TOP_GLOBAL           -1                  // All memory region
 
-#define REGIONSTART					    0x80002000	// RAM_BASE_ADDR + PROGRAM_SIZE		
+#define REGIONSTART                     0x80002000  // RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS_0                   ((REGIONSTART)       >> PMP_SHIFT)
 #define PMP_ADDRESS_1                   ((REGIONSTART+REGION_SIZE)     >> PMP_SHIFT)
 #define PMP_ADDRESS_2                   ((REGIONSTART+(2*REGION_SIZE)) >> PMP_SHIFT)
 #define PMP_ADDRESS_3                   ((REGIONSTART+(3*REGION_SIZE)) >> PMP_SHIFT)
-	
+
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+    csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
+    csrw    pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+    //Lock the Background region.
+    LI(x4, PMP_REGION_GLOBAL)
+    csrw pmpcfg3, x4
 
-//											Verification Section
+//                                          Verification Section
 // Test Case: Setting up three TOR regions with L = 1, and XWR = 111 and XWR = 000 for third region
 
-	LA(x5, PMP_ADDRESS_0)
-	csrw pmpaddr0, x5
+    LA(x5, PMP_ADDRESS_0)
+    csrw pmpaddr0, x5
 
     LA(x5, PMP_ADDRESS_1)
-	csrw pmpaddr1, x5
+    csrw pmpaddr1, x5
 
-	LA(x4, PMP1CFG)
-	csrw pmpcfg0, x4
+    LA(x4, PMP1CFG)
+    csrw pmpcfg0, x4
 
     LA(x5, PMP_ADDRESS_2)
-	csrw pmpaddr2, x5
+    csrw pmpaddr2, x5
 
-	LA(x4, PMP2CFG)
-	csrw pmpcfg0, x4
+    LA(x4, PMP2CFG)
+    csrw pmpcfg0, x4
 
     LA(x5, PMP_ADDRESS_3)
-	csrw pmpaddr3, x5
+    csrw pmpaddr3, x5
 
-	LA(x4, PMP3CFG)
-	csrw pmpcfg0, x4
+    LA(x4, PMP3CFG)
+    csrw pmpcfg0, x4
 
-	// Test Case 1
+    // Test Case 1
     VERIFICATION_RWX TEST_FOR_EXECUTION_2
 
     // Update signature for test case 1
@@ -137,38 +137,38 @@ main:
 
     // Test Case 2
     VERIFICATION_RWX TEST_FOR_EXECUTION_4
-    
+
     // Update signature for test case 2
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
-    
-    j exit														// Verification Complete, exit the test
+
+    j exit                                                      // Verification Complete, exit the test
 
 .align 13
 TEST_FOR_EXECUTION_1:
-	.rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2)	-1)
-	nop
-	.endr
+    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
+    nop
+    .endr
 
 TEST_FOR_EXECUTION_2:
-    jalr x0, x1, 0                                            // Uncompressed return straddling the start 
+    jalr x0, x1, 0                                            // Uncompressed return straddling the start
 
-TEST_FOR_EXECUTION_3:                                          
-	.rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2)	-2)
-	nop
-	.endr
+TEST_FOR_EXECUTION_3:
+    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -2)
+    nop
+    .endr
 
 TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                             // Uncompressed return straddling the end
 
-TEST_FOR_EXECUTION_5:                                          
-	.rept (1<<(RVMODEL_PMP_GRAIN+2))
-	nop
-	.endr
+TEST_FOR_EXECUTION_5:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+    nop
+    nop
+    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 

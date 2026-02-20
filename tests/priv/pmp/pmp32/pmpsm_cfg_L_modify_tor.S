@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -19,7 +19,7 @@
 // Test Cases  : Checking that pmpcfg and pmpaddr are unwritable when L = 1.
 //               With pmpcfg_i.L ={0/1}, pmpcfg_i.A = TOR, pmpcfg_i.XWR = 111,
 //               pmpaddr_i = 0x100, trying to change pmpcfg_i to 000000000,
-//               and to change pmpaddr_i to 0s, and reading these back. 
+//               and to change pmpaddr_i to 0s, and reading these back.
 //               When L = 1, should be unchanged because of lock.
 //               When L = 0, changeable.
 //
@@ -28,7 +28,7 @@
 //               pmpaddr_i = 0x100, pmpcfg_i-1.L=0 trying to change pmpcfg_i-1 to
 //               00000111, and to change pmpaddr_i-1 to 1s and reading these back.
 //               pmpaddr_i-1 should be unchanged because of lock iff pmpcfg_i.A = TOR,
-//               otherwise change. pmpcfg_i-1 is changable independent of pmpcfg_i.A.
+//               otherwise change. pmpcfg_i-1 is changeable independent of pmpcfg_i.A.
 //
 // Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
@@ -56,43 +56,43 @@
 RVTEST_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+    #define RVMODEL_PMP_GRAIN 4
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+    #define RVMODEL_NUM_PMPS 16
 #endif
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept RVMODEL_NUM_PMPS/4
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+1
+    .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
-		
-#define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
-#define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
+    // Loop to SET ALL pmpaddr REGs to zero
+    .set pmpaddri, CSR_PMPADDR0
+    .rept RVMODEL_NUM_PMPS
+    csrw pmpaddri, x0
+    .set pmpaddri, pmpaddri+1
+    .endr
+
+#define PMP_REGION_GLOBAL   ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
+#define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero                // Disable address translation.
+    csrw satp, zero                // Disable address translation.
 #endif
 
-	LA(x4, PMPADDRESS_TOP_GLOBAL)
-	csrw 	pmpaddr15, x4
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
+    csrw    pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
-	csrw pmpcfg3, x4
+    //Lock the Background region.
+    LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
+    csrw pmpcfg3, x4
 
-//											Verification Section
+//                                          Verification Section
 // Test Case 1 : Setting region 1 to be TOR with L->0, XWR->111 and pmpaddr->0x100
 
     addi x4, x0, 0x100
@@ -140,9 +140,9 @@ main:
 
 // --------------------------------------------------------------------------------
 
-	li a4, 0xbeefcafe											// Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)       								// Signature update
-	j exit														// Verification Complete, exit the test
+    li a4, 0xbeefcafe                                           // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                       // Signature update
+    j exit                                                      // Verification Complete, exit the test
 
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)

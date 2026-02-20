@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------
-// Title       	: Comprehensive PMP (Physical Memory Protection) Verification
-// Authors     	: Umer Shahid, Allen Baum, David Harris
-//				  Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title        : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors      : Umer Shahid, Allen Baum, David Harris
+//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description  :This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -14,16 +14,16 @@
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
-// Coverpoints : cp_cfg_A_tor_bot for PMPM is fully covered in this test file. 
+// Coverpoints : cp_cfg_A_tor_bot for PMPM is fully covered in this test file.
 //
 // Test cases  : In this test, we check that region 1 extends from pmpaddr0 to
-//				pmpaddr1. We set up a default TOR region, then make accesses
-//				{lw,sw,jalr} at addresses {pmpadr0-4, pmpadr0, pmpadr1-4, pmpadr1}.
+//              pmpaddr1. We set up a default TOR region, then make accesses
+//              {lw,sw,jalr} at addresses {pmpadr0-4, pmpadr0, pmpadr1-4, pmpadr1}.
 //
-//				Test case 1: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, 
-//               pmpcfg0.L = 0, pmpcfg0.A = OFF, pmpcfg0.XWR = 000 
+//              Test case 1: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101,
+//               pmpcfg0.L = 0, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
 //
-//              Test case 2: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101, 
+//              Test case 2: pmpcfg1.L=1, pmpcfg1.A = TOR, pmpcfg1.XWR=101,
 //               pmpcfg0.L = 1, pmpcfg0.A = OFF, pmpcfg0.XWR = 000
 //
 // Dependencies: model_test.h, arch_test.h
@@ -52,163 +52,163 @@
 RVTEST_BEGIN
 
 #ifndef RVMODEL_PMP_GRAIN
-	#define RVMODEL_PMP_GRAIN 4
+    #define RVMODEL_PMP_GRAIN 4
 #endif
 
 #ifndef RVMODEL_NUM_PMPS
-	#define RVMODEL_NUM_PMPS 16
+    #define RVMODEL_NUM_PMPS 16
 #endif
 
-#define NOP 			0x13
-#define g 		(1<<(RVMODEL_PMP_GRAIN+2))
+#define NOP             0x13
+#define g       (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS    
+.macro VERIFICATION_RWX ADDRESS
 
-    LI(a4, NOP)                  							// Value to write (NOP)
+    LI(a4, NOP)                                             // Value to write (NOP)
 
-    LA(a5, (\ADDRESS-4))             						// Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
 
-    LA(a5, (\ADDRESS))             						    // Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS))                                      // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
 
-    LA(a5, ((\ADDRESS+g)-4))             				    // Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, ((\ADDRESS+g)-4))                                // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)
 
-    LA(a5, (\ADDRESS+g))             				        // Address to be verified
-    sw a4, 0(a5)                 							// word-level store test
+    LA(a5, (\ADDRESS+g))                                    // Address to be verified
+    sw a4, 0(a5)                                            // word-level store test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)
 
-    LA(a5, (\ADDRESS-4))             						// Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+    LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    lw a4, 0(a5)                                            // Word load test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)
-  
-    LA(a5, (\ADDRESS))             						    // Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+
+    LA(a5, (\ADDRESS))                                      // Address to be verified
+    lw a4, 0(a5)                                            // Word load test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)
-    
-    LA(a5, ((\ADDRESS+g)-4))             						// Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+
+    LA(a5, ((\ADDRESS+g)-4))                                    // Address to be verified
+    lw a4, 0(a5)                                            // Word load test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)
 
-    LA(a5, (\ADDRESS+g))             						// Address to be verified
-    lw a4, 0(a5)                 							// Word load test
+    LA(a5, (\ADDRESS+g))                                    // Address to be verified
+    lw a4, 0(a5)                                            // Word load test
     nop
     RVTEST_SIGUPD(x2, x5, x4, a4, test_8_str)
 
     LA (a4, (\ADDRESS-4))
-	LI(x3, 0xACCE)						                    // Store a value which is to be checked in trap handler
-	LA(x4, 1f)							                    // Store the return Address in x4
-	jalr ra, 0(a4)
-	nop
+    LI(x3, 0xACCE)                                          // Store a value which is to be checked in trap handler
+    LA(x4, 1f)                                              // Store the return Address in x4
+    jalr ra, 0(a4)
+    nop
 1:
-	nop
+    nop
 
     LA (a4, (\ADDRESS))
-	LA(x4, 2f)							// Store the return Address in x4
-	jalr ra, 0(a4)
-	nop
+    LA(x4, 2f)                          // Store the return Address in x4
+    jalr ra, 0(a4)
+    nop
 2:
-	nop
+    nop
 
     LA (a4, ((\ADDRESS+g)-4))
-	LA(x4, 3f)							// Store the return Address in x4
-	jalr ra, 0(a4)
-	nop
+    LA(x4, 3f)                          // Store the return Address in x4
+    jalr ra, 0(a4)
+    nop
 3:
-	nop
+    nop
 
     LA (a4, (\ADDRESS+g))
-	LA(x4, 4f)							// Store the return Address in x4
-	jalr ra, 0(a4)
-	nop
+    LA(x4, 4f)                          // Store the return Address in x4
+    jalr ra, 0(a4)
+    nop
 4:
-	nop
+    nop
 
 .endm
 
 main:
-	// Loop to SET ALL pmpcfg REGs to zero
-	.set pmpcfgi, CSR_PMPCFG0
-	.rept RVMODEL_NUM_PMPS/4
-	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+1
-	.endr
+    // Loop to SET ALL pmpcfg REGs to zero
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept RVMODEL_NUM_PMPS/4
+    csrw pmpcfgi , x0
+    .set pmpcfgi, pmpcfgi+1
+    .endr
 
-	// Loop to SET ALL pmpaddr REGs to zero
-	.set pmpaddri, CSR_PMPADDR0
-	.rept RVMODEL_NUM_PMPS
-	csrw pmpaddri, x0
-	.set pmpaddri, pmpaddri+1
-	.endr
-		
+    // Loop to SET ALL pmpaddr REGs to zero
+    .set pmpaddri, CSR_PMPADDR0
+    .rept RVMODEL_NUM_PMPS
+    csrw pmpaddri, x0
+    .set pmpaddri, pmpaddri+1
+    .endr
 
-#define PMP_REGION_GLOBAL			((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_UPPER_BOUND      	((((PMP_L|PMP_R		 |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
-#define PMPREGION_LOWER_BOUND       ((((PMP_L)      					  &0xFF) << PMP0_CFG_SHIFT))
+
+#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMPREGION_UPPER_BOUND       ((((PMP_L|PMP_R      |PMP_X|PMP_TOR)  &0xFF) << PMP1_CFG_SHIFT))
+#define PMPREGION_LOWER_BOUND       ((((PMP_L)                            &0xFF) << PMP0_CFG_SHIFT))
 
 #ifdef rvtest_strap_routine
-	csrw satp, zero             // Disable address translation.
+    csrw satp, zero             // Disable address translation.
 #endif
 
-	LA(x4, -1)		   			// All memory region
-	csrw 	pmpaddr15, x4
+    LA(x4, -1)                  // All memory region
+    csrw    pmpaddr15, x4
 
-	//Lock the Background region.
-	LI(x4, PMP_REGION_GLOBAL)
-	csrw pmpcfg3, x4
+    //Lock the Background region.
+    LI(x4, PMP_REGION_GLOBAL)
+    csrw pmpcfg3, x4
 
     LA(x4, TEST_FOR_EXECUTION)
-	addi    x5, x4, g
+    addi    x5, x4, g
     srl x4, x4, PMP_SHIFT
     srl x5, x5, PMP_SHIFT
-    
-    csrw 	pmpaddr0, x4
-    csrw 	pmpaddr1, x5
 
-//											Verification Section
+    csrw    pmpaddr0, x4
+    csrw    pmpaddr1, x5
+
+//                                          Verification Section
 // Test Case: 1
 
-	LI(x4, PMPREGION_UPPER_BOUND)
-	csrw pmpcfg0, x4
-    
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+    LI(x4, PMPREGION_UPPER_BOUND)
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION
 
 // Test Case: 2
 
-	LI(x4, PMPREGION_UPPER_BOUND)
-	csrw pmpcfg0, x4
+    LI(x4, PMPREGION_UPPER_BOUND)
+    csrw pmpcfg0, x4
     LI(x4, PMPREGION_LOWER_BOUND)
-	csrw pmpcfg0, x4
-    
-	VERIFICATION_RWX	TEST_FOR_EXECUTION
+    csrw pmpcfg0, x4
 
-	RVTEST_GOTO_MMODE
+    VERIFICATION_RWX    TEST_FOR_EXECUTION
 
-    j exit														// Verification Complete, exit the test
+    RVTEST_GOTO_MMODE
+
+    j exit                                                      // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-	.rept (1<<(RVMODEL_PMP_GRAIN+2))
-	nop
-	.endr
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
 
 
 RETURN_INSTRUCTION:
-	nop
-	nop
-	jr ra														// Get back to the point from where TEST_FOR_EXECUTION was called.
+    nop
+    nop
+    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 

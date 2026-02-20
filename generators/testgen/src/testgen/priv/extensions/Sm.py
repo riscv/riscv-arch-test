@@ -1,7 +1,7 @@
 ##################################
-# priv/extensions/sm.py
+# Sm.py
 #
-# Sm privileged extension test generator.
+# Sm machine mode privileged extension test generator.
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################

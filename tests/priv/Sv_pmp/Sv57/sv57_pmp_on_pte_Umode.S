@@ -43,7 +43,6 @@
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define SKIP_MEPC
-#define SKIP_MTVAL
 
 #include "riscv_arch_test.h"
 

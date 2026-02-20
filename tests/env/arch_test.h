@@ -118,8 +118,6 @@
         RVMODEL_CLEAN_SIG
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
         NUM_SPECD_INTCAUSES
-   The following variables are optional if exception tests are enabled (defaulted if not defined):
-        SET_REL_TVAL_MSK     OPT_ZERO_TVAL_MSK
    The following variables are optional:
         rvtest_gpr_save: if defined, stores GPR contents into signature at test end (for debug)
    The following labels are required and defined by required macros:
@@ -129,8 +127,9 @@
         rvtest_data_end:     defined by RVTEST_DATA_END    macro
         rvtest_sig_begin:    defined by RVTEST_SIG_BEGIN   macro (after  RVMODEL_DATA_BEGIN) defines signature begin
         rvtest_sig_end:      defined by RVTEST_SIG_END     macro (before RVMODEL_DATA_END)   defines signature end
-        rvtest_Sroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if  Smode implemented
-        rvtest_Vroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if VSmode implemented
+        rvtest_Sroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if Smode implemented
+        rvtest_Hroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if HSmode implemented
+        rvtest_Vroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if VSmode implemented
         mtrap_sigptr:        defined by test if traps are possible, else is defaulted
 */
 //****WARNING****don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
@@ -201,35 +200,6 @@
   #define RVMODEL_CLEAN_SIG  RVMODEL_FENCEI
 #endif
 
-// **Note** that this is different that previous DATA_REL_TVAL_MASK! This is the OR of Code_Rel+Data_Rel
-// if xTVAL is set to zero for some cause, then the corresponding bit in SET_REL_TVAL_MSK should be cleared
-
-#ifndef SET_REL_TVAL_MSK
-        // For each cause, this bit mask defines whether the TVAL contents are
-        // addresses that may need relocation to match reference model values.
-        // Mask bits should be cleared for implementation options that store zero, or for
-        // exceptions that are not addresses, e.g. opcodes/cause values/implentation defined.
-        // Separately, the SET_ZERO_TVAL_MASK must be set for exceptions that always set TVAL to zero
-        // These must be an input to the sail configuration
-    #define SET_REL_TVAL_MSK (( \
-         1<<CAUSE_MISALIGNED_FETCH | 1<<CAUSE_FETCH_ACCESS     /* illegal op -no rel */            | 1<<CAUSE_BREAKPOINT           | \
-         1<<CAUSE_MISALIGNED_LOAD  | 1<<CAUSE_LOAD_ACCESS      | 1<<CAUSE_MISALIGNED_STORE         | 1<<CAUSE_STORE_ACCESS         | \
-         1<<CAUSE_USER_ECALL       | 1<<CAUSE_SUPERVISOR_ECALL | 1<<CAUSE_VIRTUAL_SUPERVISOR_ECALL | 1<<CAUSE_MACHINE_ECALL        | \
-         1<<CAUSE_FETCH_PAGE_FAULT | 1<<CAUSE_LOAD_PAGE_FAULT  /* RSVD */                          | 1<<CAUSE_STORE_PAGE_FAULT     | \
-         /* no tval for DOUBLE_TRAP    * RSVD *                SW_FAULT -cause:no reloc:*/           1<<CAUSE_HARDWARE_ERROR_FAULT | \
-         1<<CAUSE_FETCH_GUEST_PAGE_FAULT | 1<<CAUSE_LOAD_GUEST_PAGE_FAULT | /*virt illop*/           1<<CAUSE_STORE_GUEST_PAGE_FAULT \
-        ) & 0xFFFFFFFF)
-    #endif
-
-#ifndef OPT_ZERO_TVAL_MSK       // 1's will allow optional clring of TVAL on an exception by exception basis
-    #define OPT_ZERO_TVAL_MSK ((1<<14) | (1<<16) | (1<<17) ) // typically used for EBREAK TVAL option; defaults are RSVD+dbltrap
-#endif
-
-//this is pte entry permision bits for all permissions.
-#define RVTEST_ALLPERMS ( PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-//this is pte entry permision bits for no permissions.
-#define RVTEST_NOACC    ( PTE_G | PTE_U )
-
 #ifndef _VA_SZ_
   #if XLEN==32
     #define _VA_SZ_ 32
@@ -238,24 +208,6 @@
   #endif
 #endif
 
-// this is the position of the last level PPN in each root page table PTE
-#define ROOT_PPN_LSB 10
-#if XLEN==32
-  #define PPN_SZ   10
-  #define LVLS     2
-#else
-  #define PPN_SZ   9
-  #define LVLS   ((_VA_SZ_-12)/PPN_SZ)
-#endif
-
-// this defines a page of PTEs at top level (depending on _VA_SZ_) with named permissions
-// for the largest size page and a common base (which is set to zero for identity mapping)
-#define RVTEST_PTE_IDENT_MAP(PGBASE,LVLS,PERMS)                                 ;\
-    .set ppn, 0                                                                 ;\
-    .rept (4096 >> REGWIDTH)                                                    ;\
-      .fill   1,   REGWIDTH, (PGBASE | (ppn<<(10+(LVLS-1)*PPN_SZ)) | PERMS)     ;\
-      .set ppn, (ppn+1)                                                         ;\
-    .endr                                                                       ;\
 
 //---------------------------mode encoding definitions-----------------------------
 .set MMODE_SIG, 3
@@ -1579,61 +1531,8 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
         csrw    CSR_XEPC, T3            // restore adjusted value, w/ 2,4 or 6B of padding
 
 skp_adj_\__MODE__\()epc:
-  /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
-        for 64b insts,  2B or 4B of padding   ****/
-
-  /******************************************************************************/
-  /* Relocate mtval if it's an addr (by sig, data or code regions) else by zero */
-  /* error if exception address isn't inside code, data or signature segments   */
-  /* Enter with rvtest_code_begin (which is start of actual test) in T3         */
-  /* FUTURE FIXME: this may need to be updated to handle 48 or 64b opcodes      */
-  /* This uses offset sp in T4 from epc relocation                              */
-  /******************************************************************************/
 
         csrr    T3, CSR_XTVAL
-
-#ifdef SKIP_MTVAL
-        li      T2, 0           // No translation required on tval if virtualisation is enabled
-        j       adj_\__MODE__\()tval
-#endif
-
-chk_\__MODE__\()tval:
-        andi    T5, T5, EXCPT_CAUSE_MSK // T5 is mcause; ensures in range when used as  shift amt
-        LI(     T2, (SET_REL_TVAL_MSK & ~ OPT_ZERO_TVAL_MSK)) // mask of causes that have addrs in tval
-        srl     T2, T2, T5              // test if mcause[T5] (mask of addresses)=0, skip adjusting
-        slli    T2, T2, XLEN-1
-        bgez    T2, sv_\__MODE__\()tval // if MSB=0, no adj, sv to ensure tval was cleared
-
-vmem_adj_\__MODE__\()tval:                        // T4 still points to sv area of trapping mode
-        LREG    T2, vmem_bgn_off(T4)              // fetch sig_begin addr
-        LREG    T6, vmem_seg_siz(T4)
-        add     T6, T6, T2                        // construct vmem seg end
-        bgeu    T3, T6,  sig_adj_\__MODE__\()tval // tval > rvtest_sig_end, chk code seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_sig_begin, adj & save
-
-sig_adj_\__MODE__\()tval:
-        LREG    T2, sig_bgn_off(T4)               // fetch sig_begin addr
-        LREG    T6, sig_seg_siz(T4)
-        add     T6, T6, T2                        // construct sig seg end
-        bgeu    T3, T6, code_adj_\__MODE__\()tval // tval > rvtest_sig_end, chk code seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_sig_begin, adj & save
-
-code_adj_\__MODE__\()tval:
-        LREG    T2, code_bgn_off(T4)              // fetch code_begin addr
-        LREG    T6, code_seg_siz(T4)
-        add     T6, T6, T2                        // construct code seg end
-        bgeu    T3, T6, data_adj_\__MODE__\()tval // tval > rvtest_code_end, chk data seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_code_begin, adj & save
-
-data_adj_\__MODE__\()tval:
-        LREG    T2, data_bgn_off(T4)              // fetch data_begin addr
-        LREG    T6, data_seg_siz(T4)
-        add     T6, T6, T2                        // construct data seg end
-        bgeu    T3, T6, cleanup_epilogs           // tval > rvtest_data_end,  (outside data seg), abort
-        bltu    T3, T2, cleanup_epilogs           // tval < rvtest_data_begin (outside data seg), abort
-
-adj_\__MODE__\()tval:
-        sub     T3, T3, T2              // perform mtval adjust by either code, data, or sig position in T3
 
 sv_\__MODE__\()tval:
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (rel tval)
@@ -1921,7 +1820,11 @@ from_vs:
         addi    sp, sp, -sv_area_sz
         j       1f
 from_hs_u:
+  #ifdef rvtest_strap_routine
         LREG    T6, code_bgn_off+0*sv_area_sz(sp) /* V=0& H=1, HS;  *1 offset   */
+  #else
+        LREG    T6, code_bgn_off-1*sv_area_sz(sp) /* Use M-mode save area       */
+  #endif
 //calc callerEPC-callerBgn
 1:
         csrr    T2, CSR_MEPC            /* get rtn addr in orig mode's VM */

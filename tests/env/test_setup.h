@@ -188,28 +188,25 @@
 
 /************************************* RVTEST_DATA_END *************************************/
 /**** RVTEST_DATA_END appears after test data                                           ****/
-/**** - MMU identity mapped page tables                                                 ****/
+/**** - MMU page tables                                                                 ****/
 /**** - End of data region label (rvtest_data_end)                                      ****/
 /*******************************************************************************************/
 .macro RVTEST_DATA_END
-  // Create identity mapped page tables here if mmu is present
-  .align 12
-  #ifndef RVTEST_NO_IDENTY_MAP
-    #ifdef rvtest_strap_routine
-      // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
-      rvtest_Sroot_pg_tbl:
-      RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-      #ifdef rvtest_htrap_routine
-        .align 14
-        rvtest_Hroot_pg_tbl:
-        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-        .align 14
-      #endif
-      #ifdef rvtest_vtrap_routine
-        .align 12
-        rvtest_Vroot_pg_tbl:
-        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-      #endif
+
+  // Root page tables
+  #ifdef rvtest_strap_routine
+    .align 12
+    rvtest_Sroot_pg_tbl:
+      .skip(4096)       // 4KB page table
+    #ifdef rvtest_htrap_routine
+      .align 14
+      rvtest_Hroot_pg_tbl:
+        .skip(16276)    // 16KB page table
+    #endif
+    #ifdef rvtest_vtrap_routine
+      .align 12
+      rvtest_Vroot_pg_tbl:
+        .skip(4096)     // 4KB page table
     #endif
   #endif
 

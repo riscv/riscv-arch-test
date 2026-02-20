@@ -98,7 +98,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
 
     // main coverpoints
     cp_fcsr_access:           cross fcsrname, csraccesses;
-    cp_fcsr_walk:              cross csrop, fcsrname,     walking_ones;
+    cp_fcsr_walk:             cross csrop, fcsrname,     walking_ones;
     cp_fcsr_frm_write:        cross csrrw, fcsr,         fcsr_frm_edges;
     cp_fcsr_fflags_write:     cross csrrw, fcsr,         fflags_edges;
     cp_frm_write:             cross csrrw, frm,          frm_edges;

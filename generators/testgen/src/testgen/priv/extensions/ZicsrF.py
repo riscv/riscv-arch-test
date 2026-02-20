@@ -249,7 +249,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfcvt.s.d f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\n# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
+            "\t# increment data pointer to skip over these tests"
+            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {6 * test_data.flen}",
             "#endif",
             # Quads are not yet supported by Sail.  load_float_reg is only writing out 8 bytes
             # (without Q supported).  Comment out until support is ready.
@@ -273,7 +274,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             # f"\tfcvt.s.q f13, f10, rup",
             # write_sigupd(13, test_data, "float"),
             # f"#else",
-            # f"\t# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
+            # "\t# increment data pointer to skip over these tests"
+            # f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {6*test_data.flen}",
             # f"#endif",
             "\n#ifdef ZFH_SUPPORTED",
             test_data.add_testcase("cp_underflow_after_rounding_fma_h_rne", "fmadd", covergroup),
@@ -295,7 +297,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfcvt.h.s f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
+            "\t# increment data pointer to skip over these tests"
+            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {6 * test_data.flen}",
             "#endif",
             "\n#ifdef ZFHMIN_SUPPORTED",
             test_data.add_testcase("cp_underflow_after_rounding_fcvt_h_s_rne_zfhmin", "fcvt", covergroup),
@@ -304,7 +307,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfcvt.h.s f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# should add 8 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
+            "\t# increment data pointer to skip over these tests"
+            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {1 * test_data.flen}",
             "#endif",
         ]
     )

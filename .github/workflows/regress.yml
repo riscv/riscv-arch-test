@@ -68,12 +68,14 @@ jobs:
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
+        env:
+          LLVM_VERSION: 21
         run: |
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
-          sudo apt-get install -y clang-21 lld-21 llvm-21
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
-          sudo update-alternatives --install /usr/bin/lld lld /usr/bin/lld-21 100
-          sudo update-alternatives --install /usr/bin/llvm-objdump llvm-objdump /usr/bin/llvm-objdump-21 100
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
+          sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+          for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
+            sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
+          done
 
       - name: test clang
         run: |

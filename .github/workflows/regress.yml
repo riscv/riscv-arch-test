@@ -69,8 +69,8 @@ jobs:
 
       - name: Install Clang
         run: |
-          sudo apt update
-          sudo apt install clang lld llvm
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y clang lld llvm
 
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)

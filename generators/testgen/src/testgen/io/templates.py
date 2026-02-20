@@ -115,7 +115,7 @@ def canonicalize_extensions(
     return ext_components, params
 
 
-# Canonical order for per RISC-V ISA spec
+# Canonical order from RISC-V ISA spec
 _EXTENSION_CANONICAL_ORDER = "iemafdqlcbkjtpvh"
 
 

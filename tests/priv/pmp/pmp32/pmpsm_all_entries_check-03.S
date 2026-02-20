@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_all_entries_check-04.S"
+#define TEST_FILE "pmpm_all_entries_check-03.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
@@ -70,7 +70,7 @@ RVTEST_BEGIN
     nop
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)        							// Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str) 
 
 .endm
 
@@ -79,7 +79,7 @@ main:
 	.set pmpcfgi, CSR_PMPCFG0
 	.rept RVMODEL_NUM_PMPS/4
 	csrw pmpcfgi , x0
-	.set pmpcfgi, pmpcfgi+2
+	.set pmpcfgi, pmpcfgi+1
 	.endr
 
 	// Loop to SET ALL pmpaddr REGs to zero
@@ -90,22 +90,22 @@ main:
 	.endr
 
 #define PMP_REGION_GLOBAL	((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT // Background region with RWX enable.
-#define PMP_REGION_15       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
-#define PMP_REGION_14       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
-#define PMP_REGION_13       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
-#define PMP_REGION_12       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
-#define PMP_REGION_11       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
-#define PMP_REGION_10       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
-#define PMP_REGION_9        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
-#define PMP_REGION_8        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
-#define PMP_REGION_7        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
-#define PMP_REGION_6        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
-#define PMP_REGION_5        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
-#define PMP_REGION_4        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
-#define PMP_REGION_3        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
-#define PMP_REGION_2        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
-#define PMP_REGION_1        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
-#define PMP_REGION_0        ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
+#define PMP_REGION_31       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
+#define PMP_REGION_30       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
+#define PMP_REGION_29       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
+#define PMP_REGION_28       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
+#define PMP_REGION_27       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
+#define PMP_REGION_26       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
+#define PMP_REGION_25       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
+#define PMP_REGION_24       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
+#define PMP_REGION_23       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
+#define PMP_REGION_22       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
+#define PMP_REGION_21       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT 
+#define PMP_REGION_20       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT 
+#define PMP_REGION_19       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT 
+#define PMP_REGION_18       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT 
+#define PMP_REGION_17       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP1_CFG_SHIFT
+#define PMP_REGION_16       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 #define PMPADDRESS_TOP_GLOBAL		-1												// All memory region
 #define	REGIONSTART			0x80002000		// RAM_BASE_ADDR + PROGRAM_SIZE
@@ -130,163 +130,163 @@ main:
 	csrw pmpcfg15, x4
 
 //											Verification Section
-// Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 15
+// Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 31
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr15, x5
+	csrw pmpaddr31, x5
 
-    LI(x4, PMP_REGION_15)
-	csrw pmpcfg3, x4
+    LI(x4, PMP_REGION_31)
+	csrw pmpcfg7, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 14
+// Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 30
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr14, x5
+	csrw pmpaddr30, x5
 
-    LI(x4, PMP_REGION_14)
-	csrw pmpcfg3, x4
+    LI(x4, PMP_REGION_30)
+	csrw pmpcfg7, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 13
+// Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 29
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr13, x5
+	csrw pmpaddr29, x5
 
-    LI(x4, PMP_REGION_13)
-	csrw pmpcfg3, x4
+    LI(x4, PMP_REGION_29)
+	csrw pmpcfg7, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 12
+// Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 28
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr12, x5
+	csrw pmpaddr28, x5
 
-    LI(x4, PMP_REGION_12)
-	csrw pmpcfg3, x4
+    LI(x4, PMP_REGION_28)
+	csrw pmpcfg7, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 11
+// Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 27
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr11, x5
+	csrw pmpaddr27, x5
 
-    LI(x4, PMP_REGION_11)
-	csrw pmpcfg2, x4
+    LI(x4, PMP_REGION_27)
+	csrw pmpcfg6, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 10
+// Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 26
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr10, x5
+	csrw pmpaddr26, x5
 
-    LI(x4, PMP_REGION_10)
-	csrw pmpcfg2, x4
+    LI(x4, PMP_REGION_26)
+	csrw pmpcfg6, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 9
+// Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 25
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr9, x5
+	csrw pmpaddr25, x5
 
-    LI(x4, PMP_REGION_9)
-	csrw pmpcfg2, x4
+    LI(x4, PMP_REGION_25)
+	csrw pmpcfg6, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 8
+// Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 24
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr8, x5
+	csrw pmpaddr24, x5
 
-    LI(x4, PMP_REGION_8)
-	csrw pmpcfg2, x4
+    LI(x4, PMP_REGION_24)
+	csrw pmpcfg6, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 7
+// Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 23
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr7, x5
+	csrw pmpaddr23, x5
 
-    LI(x4, PMP_REGION_7)
-	csrw pmpcfg1, x4
+    LI(x4, PMP_REGION_23)
+	csrw pmpcfg5, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 6
+// Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 22
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr6, x5
+	csrw pmpaddr22, x5
 
-    LI(x4, PMP_REGION_6)
-	csrw pmpcfg1, x4
+    LI(x4, PMP_REGION_22)
+	csrw pmpcfg5, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 5
+// Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 21
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr5, x5
+	csrw pmpaddr21, x5
 
-    LI(x4, PMP_REGION_5)
-	csrw pmpcfg1, x4
+    LI(x4, PMP_REGION_21)
+	csrw pmpcfg5, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 4
+// Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 20
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr4, x5
+	csrw pmpaddr20, x5
 
-    LI(x4, PMP_REGION_4)
-	csrw pmpcfg1, x4
+    LI(x4, PMP_REGION_20)
+	csrw pmpcfg5, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 3
+// Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 19
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr3, x5
+	csrw pmpaddr19, x5
 
-    LI(x4, PMP_REGION_3)
-	csrw pmpcfg0, x4
+    LI(x4, PMP_REGION_19)
+	csrw pmpcfg4, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 2
+// Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 18
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr2, x5
+	csrw pmpaddr18, x5
 
-    LI(x4, PMP_REGION_2)
-	csrw pmpcfg0, x4
+    LI(x4, PMP_REGION_18)
+	csrw pmpcfg4, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 1
+// Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 17
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr1, x5
+	csrw pmpaddr17, x5
 
-    LI(x4, PMP_REGION_1)
-	csrw pmpcfg0, x4
+    LI(x4, PMP_REGION_17)
+	csrw pmpcfg4, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 
-// Test Case: 16 : L -> 1 and XR Permissions given to the PMP Region 0
+// Test Case: 16 : L -> 1 and XR Permissions given to the PMP Region 16
 
 	LA(x5, STANDARD_REGION)
-	csrw pmpaddr0, x5
+	csrw pmpaddr16, x5
 
-    LI(x4, PMP_REGION_0)
-	csrw pmpcfg0, x4
+    LI(x4, PMP_REGION_16)
+	csrw pmpcfg4, x4
 
 	VERIFICATION_RWX	TEST_FOR_EXECUTION
 

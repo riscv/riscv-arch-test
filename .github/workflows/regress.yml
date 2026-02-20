@@ -69,8 +69,11 @@ jobs:
 
       - name: Install Clang
         run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y clang lld llvm
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
+          sudo apt-get install -y lld-21 llvm-21
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
+          sudo update-alternatives --install /usr/bin/lld lld /usr/bin/lld-21 100
+          sudo update-alternatives --install /usr/bin/llvm-objdump llvm-objdump /usr/bin/llvm-objdump-21 100
 
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)

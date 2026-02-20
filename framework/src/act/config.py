@@ -78,7 +78,8 @@ class Config(BaseModel):
     def compiler_string(self) -> str:
         """Get the compiler executable as a string with relevant flags."""
         compiler_is_clang = "clang" in self.compiler_exe.name
-        return f"{self.compiler_exe} {'--target=riscv${XLEN}' if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
+        clang_flags = "--target=riscv${XLEN} -fuse-ld=lld"
+        return f"{self.compiler_exe} {clang_flags if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
 
     def __str__(self) -> str:
         """Pretty print configuration."""

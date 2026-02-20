@@ -117,24 +117,24 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             wildcard bins fmadd = {FMADD_S};
         }
 
-    cp_underflow_fmul_s_rup: coverpoint ins.current.insn iff
+    cp_underflow_after_rounding_fmul_s_rup: coverpoint ins.current.insn iff
         (ins.current.fs1_val[31:0] == 32'h00800001 & ins.current.fs2_val[31:0] == 32'h3F7FFFFE & ins.current.insn[14:12] == 3'b011) {
             wildcard bins fmul = {FMUL_S};
         }
 
     `ifdef D_SUPPORTED
     // double-precision (D) cases
-        cp_underflow_fma_d_rup: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fma_d_rup: coverpoint ins.current.insn iff
             (ins.current.fs1_val[63:0] == 64'h802FFFFFFFBFFEFF & ins.current.fs2_val[63:0] == 64'h000FFFFFFFFFFFFE & ins.current.fs3_val[63:0] == 64'h0010000000000000  & ins.current.insn[14:12] == 3'b011) {
                 wildcard bins fmadd = {FMADD_D};
             }
 
-        cp_underflow_fmul_d_rdn: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fmul_d_rdn: coverpoint ins.current.insn iff
             (ins.current.fs1_val[63:0] == 64'h0010000000000001 & ins.current.fs2_val[63:0] == 64'hBFEFFFFFFFFFFFFE & ins.current.insn[14:12] == 3'b010) {
                 wildcard bins fmul = {FMUL_D};
             }
 
-        cp_underflow_fcvt_s_d_rne: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fcvt_s_d_rne: coverpoint ins.current.insn iff
             (ins.current.fs1_val[63:0] == 64'hB80FFFFFFFFDFEFF & ins.current.insn[14:12] == 3'b000) {
                 wildcard bins fcvt = {FCVT_S_D};
             }
@@ -142,17 +142,17 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
 
     `ifdef Q_SUPPORTED
     // quad-precision (Q) cases
-        cp_underflow_fma_q_rdn: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fma_q_rdn: coverpoint ins.current.insn iff
             (ins.current.fs1_val == 128'h3F9800000000000001FFFFFFFF7FFFFE & ins.current.fs2_val == 128'h00000000000000000000000000000001 & ins.current.fs3_val == 128'h80010000000000000000000000000000 & ins.current.insn[14:12] == 3'b010) {
                 wildcard bins fmadd = {FMADD_Q};
             }
 
-        cp_underflow_fmul_q_rne: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fmul_q_rne: coverpoint ins.current.insn iff
             (ins.current.fs1_val == 128'h0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF & ins.current.fs2_val == 128'h3FFF0000000000000000000000000001 & ins.current.insn[14:12] == 3'b000) {
                 wildcard bins fmul = {FMUL_Q};
             }
 
-        cp_underflow_fcvt_s_q_rup: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fcvt_s_q_rup: coverpoint ins.current.insn iff
             (ins.current.fs1_val == 128'h3F80FFFFFFFE0000000000FFFFFFFFFF & ins.current.insn[14:12] == 3'b011) {
                 wildcard bins fcvt = {FCVT_S_Q};
             }
@@ -160,17 +160,24 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
 
     `ifdef ZFH_SUPPORTED
     // half-precision (H) cases
-        cp_underflow_fma_h_rne: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fma_h_rne: coverpoint ins.current.insn iff
             (ins.current.fs1_val[15:0] == 16'h0BC7 & ins.current.fs2_val[15:0] == 16'h03FF & ins.current.fs3_val[15:0] == 16'h8400 & ins.current.insn[14:12] == 3'b000) {
                 wildcard bins fmadd = {FMADD_H};
             }
 
-        cp_underflow_fmul_h_rup: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fmul_h_rup: coverpoint ins.current.insn iff
             (ins.current.fs1_val[15:0] == 16'h0401 & ins.current.fs2_val[15:0] == 16'h3BF8 & ins.current.insn[14:12] == 3'b011) {
                 wildcard bins fmul = {FMUL_H};
             }
 
-        cp_underflow_fcvt_h_s_rne: coverpoint ins.current.insn iff
+        cp_underflow_after_rounding_fcvt_h_s_rne: coverpoint ins.current.insn iff
+            (ins.current.fs1_val[31:0] == 32'h387FF000 & ins.current.insn[14:12] == 3'b000) {
+                wildcard bins fcvt = {FCVT_H_S};
+            }
+    `endif
+    `ifdef ZFHMIN_SUPPORTED
+        // same test case, repeated if only Zfhmin is supported
+        cp_underflow_after_rounding_fcvt_h_s_rne_zfhmin: coverpoint ins.current.insn iff
             (ins.current.fs1_val[31:0] == 32'h387FF000 & ins.current.insn[14:12] == 3'b000) {
                 wildcard bins fcvt = {FCVT_H_S};
             }

@@ -78,7 +78,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(coverpoint, f"b_{i}", covergroup),
-                f"    LI(x{r1}, {i * 32})           # write value {i * 32}",
+                f"    LI(x{r1}, {i << 5})           # write value {i << 5}",
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
                 gen_csr_read_sigupd(r1, "frm", test_data),
             ]
@@ -153,7 +153,6 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
 
 def make_op(
     mnemonic: str,
-    r1: int,
     fs1: int,
     fs2: int,
     test_data: TestData,
@@ -198,17 +197,11 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             load_float_reg("max", 15, 0x7F7FFFFF, test_data, "single"),
         ]
     )
-    lines.extend(make_op("fsub.s", r1, 13, 13, test_data, coverpoint, covergroup, "NV", "inf - inf sets invalid flag"))
-    lines.extend(make_op("fdiv.s", r1, 11, 10, test_data, coverpoint, covergroup, "DZ", "1 / 0  sets divide by zero"))
-    lines.extend(
-        make_op("fadd.s", r1, 15, 15, test_data, coverpoint, covergroup, "OV", "largest + largest sets overflow flag")
-    )
-    lines.extend(
-        make_op(
-            "fmul.s", r1, 14, 14, test_data, coverpoint, covergroup, "UF", "smallest * smallest sets underflow flag"
-        )
-    )
-    lines.extend(make_op("fdiv.s", r1, 11, 12, test_data, coverpoint, covergroup, "NX", "1 / 3 sets inexact flag"))
+    lines.extend(make_op("fsub.s", 13, 13, test_data, coverpoint, covergroup, "NV", "inf - inf sets invalid flag"))
+    lines.extend(make_op("fdiv.s", 11, 10, test_data, coverpoint, covergroup, "DZ", "1 / 0  sets divide by zero"))
+    lines.extend(make_op("fadd.s", 15, 15, test_data, coverpoint, covergroup, "OF", "big + big sets overflow flag"))
+    lines.extend(make_op("fmul.s", 14, 14, test_data, coverpoint, covergroup, "UF", "tiny * tiny sets underflow flag"))
+    lines.extend(make_op("fdiv.s", 11, 12, test_data, coverpoint, covergroup, "NX", "1 / 3 sets inexact flag"))
 
     ######################################
     coverpoint = "cp_underflow_after_rounding"
@@ -223,86 +216,95 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            test_data.add_testcase(coverpoint, "fma_s_rdn", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fma_s_rdn", "fmadd", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x3F00FBFF, test_data, "single"),
             load_float_reg("b", 11, 0x80000001, test_data, "single"),
             load_float_reg("c", 12, 0x807FFFFF, test_data, "single"),
             "\tfmadd.s f13, f10, f11, f12, rdn",
             write_sigupd(13, test_data, "float"),
-            test_data.add_testcase(coverpoint, "fmul_s_rup", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fmul_s_rup", "fmul", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x00800001, test_data, "single"),
             load_float_reg("b", 11, 0x3F7FFFFE, test_data, "single"),
             "\tfmul.s f13, f10, f11, rup",
             write_sigupd(13, test_data, "float"),
             "\n#ifdef D_SUPPORTED",
-            test_data.add_testcase(coverpoint, "fma_d_rup", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fma_d_rup", "fmadd", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x802FFFFFFFBFFEFF, test_data, "double"),
             load_float_reg("b", 11, 0x000FFFFFFFFFFFFE, test_data, "double"),
             load_float_reg("c", 12, 0x0010000000000000, test_data, "double"),
             "\tfmadd.d f13, f10, f11, f12, rup",
             write_sigupd(13, test_data, "float"),
-            test_data.add_testcase(coverpoint, "fmul_d_rdn", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fmul_d_rdn", "fmul", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x0010000000000001, test_data, "double"),
             load_float_reg("b", 11, 0xBFEFFFFFFFFFFFFE, test_data, "double"),
             "\tfmul.d f13, f10, f11, rdn",
             write_sigupd(13, test_data, "float"),
-            test_data.add_testcase(coverpoint, "fcvt_s_d_rne", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fcvt_s_d_rne", "fcvt", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0xB80FFFFFFFFDFEFF, test_data, "double"),
             "\tfcvt.s.d f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\n# should add 48 to the signature pointer to skip over these tests.  Unsure of register name to use for this.",
+            "\n# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
             "#endif",
             # Quads are not yet supported by Sail.  load_float_reg is only writing out 8 bytes
             # (without Q supported).  Comment out until support is ready.
             # f"\n#ifdef Q_SUPPORTED",
-            # test_data.add_testcase(coverpoint, "fma_q_rdn", covergroup),
+            # test_data.add_testcase("cp_underflow_after_rounding_fma_q_rdn", "fmadd", covergroup),
             # f"\tcsrwi fflags, 0 # reset flags",
             # load_float_reg("a", 10, 0x3F9800000000000001FFFFFFFF7FFFFE, test_data, "quad"),
             # load_float_reg("b", 11, 0x00000000000000000000000000000001, test_data, "quad"),
             # load_float_reg("c", 12, 0x80010000000000000000000000000000, test_data, "quad"),
             # f"\tfmadd.q f13, f10, f11, f12, rdn",
             # write_sigupd(13, test_data, "float"),
-            # test_data.add_testcase(coverpoint, "fmul_q_rne", covergroup),
+            # test_data.add_testcase("cp_underflow_after_rounding_fmul_q_rne", "fmul", covergroup),
             # f"\tcsrwi fflags, 0 # reset flags",
             # load_float_reg("a", 10, 0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF, test_data, "quad"),
             # load_float_reg("b", 11, 0x3FFF0000000000000000000000000001, test_data, "quad"),
             # f"\tfmul.q f13, f10, f11, rne",
             # write_sigupd(13, test_data, "float"),
-            # test_data.add_testcase(coverpoint, "fcvt_s_q_rup", covergroup),
+            # test_data.add_testcase("cp_underflow_after_rounding_fcvt_s_q_rup", "fcvt", covergroup),
             # f"\tcsrwi fflags, 0 # reset flags",
             # load_float_reg("a", 10, 0x3F80FFFFFFFE0000000000FFFFFFFFFF, test_data, "quad"),
             # f"\tfcvt.s.q f13, f10, rup",
             # write_sigupd(13, test_data, "float"),
             # f"#else",
-            # f"\t# should add 48 to the signature pointer to skip over these tests.  Unsure of register name to use for this.",
+            # f"\t# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
             # f"#endif",
             "\n#ifdef ZFH_SUPPORTED",
-            test_data.add_testcase(coverpoint, "fma_h_rne", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fma_h_rne", "fmadd", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x0BC7, test_data, "half"),
             load_float_reg("b", 11, 0x03FF, test_data, "half"),
             load_float_reg("c", 12, 0x8400, test_data, "half"),
             "\tfmadd.h f13, f10, f11, f12, rne",
             write_sigupd(13, test_data, "float"),
-            test_data.add_testcase(coverpoint, "fmul_h_rup", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fmul_h_rup", "fmul", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x0401, test_data, "half"),
             load_float_reg("b", 11, 0x3BF8, test_data, "half"),
             "\tfmul.h f13, f10, f11, rup",
             write_sigupd(13, test_data, "float"),
-            test_data.add_testcase(coverpoint, "fcvt_h_s_rne", covergroup),
+            test_data.add_testcase("cp_underflow_after_rounding_fcvt_h_s_rne", "fcvt", covergroup),
             "\tcsrwi fflags, 0 # reset flags",
             load_float_reg("a", 10, 0x387FF000, test_data, "single"),
             "\tfcvt.h.s f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# should add 48 to the signature pointer to skip over these tests.  Unsure of register name to use for this.",
+            "\t# should add 48 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
+            "#endif",
+            "\n#ifdef ZFHMIN_SUPPORTED",
+            test_data.add_testcase("cp_underflow_after_rounding_fcvt_h_s_rne_zfhmin", "fcvt", covergroup),
+            "\tcsrwi fflags, 0 # reset flags",
+            load_float_reg("a", 10, 0x387FF000, test_data, "single"),
+            "\tfcvt.h.s f13, f10, rne",
+            write_sigupd(13, test_data, "float"),
+            "#else",
+            "\t# should add 8 to the data pointer to skip over these tests.  Unsure of register name to use for this.",
             "#endif",
         ]
     )

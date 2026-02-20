@@ -51,7 +51,7 @@ covergroup SmF_cg with function sample(ins_t ins);
             wildcard bins fli          = {FLI.S};
             wildcard bins fround       = {FROUND.S};
         `endif
-        wildcard bins add          = {32'b0000000_?????_?????_000_?????_0110011};
+        wildcard bins add          = {ADD}};
         wildcard bins csrr_fcsr    = {32'b000000000011_00000_010_?????_1110011};
         wildcard bins csrr_frm     = {32'b000000000010_00000_010_?????_1110011};
         wildcard bins csrr_fflags  = {32'b000000000001_00000_010_?????_1110011};
@@ -66,8 +66,8 @@ covergroup SmF_cg with function sample(ins_t ins);
         wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
         `ifdef XLEN32
             `ifdef D_SUPPORTED
-                wildcard bins fmvh         = {32'b1110001_00001_?????_000_?????_1010011};
-                wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
+                wildcard bins fmvh         = {FMVH.X.D};
+                wildcard bins fmvp         = {FMVP.D.X};
             `endif
         `endif
     }

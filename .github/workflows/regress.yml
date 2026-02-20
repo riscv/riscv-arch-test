@@ -77,13 +77,6 @@ jobs:
             sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
           done
 
-      - name: test clang
-        run: |
-          clang --version
-          llvm-as --version
-          lld --version
-          llvm-objdump --version
-
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 

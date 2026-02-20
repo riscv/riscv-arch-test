@@ -1499,8 +1499,8 @@ data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)            // see if epc is in the data area
         LREG    T6, data_seg_siz(T4)
         add     T6, T6, T2                      // construct data seg end
-        bgeu    T3, T6, cleanup_epilogs         // mepc > rvtest_code_end,  (outside data seg), abort
-        bltu    T3, T2, cleanup_epilogs         // mepc < rvtest_code_begin (outside data seg), abort
+        bgeu    T3, T6, abort_test              // mepc > rvtest_code_end,  (outside data seg), abort
+        bltu    T3, T2, abort_test              // mepc < rvtest_code_begin (outside data seg), abort
 
 adj_\__MODE__\()epc:
         sub     T3, T3, T2                      // Offset adjustment
@@ -1564,7 +1564,7 @@ chk_\__MODE__\()trapsig_overrun:        // sv_area_off is defined above at Xtrap
 
 // now see if the pointer has overrun sig_end
         add     T1, T1, T2                      // construct segment end address
-        bgtu    T4, T1, cleanup_epilogs         // abort test if pre-incremented value overruns
+        bgtu    T4, T1, abort_test              // abort test if pre-incremented value overruns
 
   /**** vector to exception special handling routines ****/
         li      T2, int_hndlr_tblsz             // offset of exception dispatch table base
@@ -1628,7 +1628,7 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T3, T3,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T3, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
-        j       abort_tests             //FIXME: this needs to report an error somehow
+        j       abort_test
 
 spcl_\__MODE__\()dispatch:
         jr      T3                      // not a default, jump to handler
@@ -1910,8 +1910,8 @@ resto_\__MODE__\()satp:
 
 //----------------------
 resto_\__MODE__\()scratch:
-        LREG    T5, xscr_save_off(T1)           // restore saved xscratch
-        csrw    CSR_XSCRATCH, T5
+        LREG    T4, xscr_save_off(T1)           // restore saved xscratch
+        csrw    CSR_XSCRATCH, T4
 
 //----------------------
 resto_\__MODE__\()xtvec:

@@ -122,26 +122,29 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
+    // Check if the test has fully executed
+    LI(     T4, 0xBAD0DEAD)           // T5 = 0xBAD0DEAD when the test is exiting early
+    bne     T4, T5, exit_cleanup      // Not an early exit, exit with a success code
+    jal     T3, failedtest_x8_x7
+    RVTEST_WORD_PTR "early_exit"
+    early_exit: .string "\"The test encountered an early exit!\"";
+
   // Terminate test
   exit_cleanup:
     LA(T4, successstr)
     RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
     RVMODEL_HALT_PASS
 
+  // Terminate test with a failure message
+  abort_test:
+    LI(     T5, 0xBAD0DEAD)
+    j       cleanup_epilogs
+
   // Instantiate trap handlers for each priv mode
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
 
   // Include test failure handling code
   RVTEST_FAILURE_CODE
-
-  // TODO: This should be removed once priv tests are self-checking
-  abort_tests:
-    LREG    T4, sig_bgn_off(sp)   // calculate Mmode sig_end addr in handler's mode
-    LREG    T1, sig_seg_siz(sp)
-    add     T1, T1, T4            // construct sig seg end
-    LI(     T1, 0xBAD0DAD0)       // early abort signature value at sig_end, independent of mtrap_sigptr
-    SREG    T1, -4(T4)            // save into last signature canary
-    j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
   // Model specific boot code
   rvmodel_boot:

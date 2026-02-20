@@ -1,3 +1,4 @@
+
 == Test Suite Requirements
 
 The test suites may be provided by multiple suppliers, but must meet a common set of requirements to interoperate transparently for the user:
@@ -17,6 +18,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 *** PC at failure point
 *** Expected and actual values of mismatching registers
 *** Name of coverpoint and bin that failed, if practical
+** Tests should not contain loops over multiple bins.  Each bin of each coverpoint should be tested by a unique instruction so that a failing bin can be uniquely identified from the program counter.  Loops should go in the test generator instead of the test itself.
 
 * All tests contain test configuration information (YAML comments) so the framework can identify which ones to run on a DUT
 ** List of required extensions and parameter values that the DUT must support to run the test

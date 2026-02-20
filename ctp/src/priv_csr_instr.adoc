@@ -71,8 +71,6 @@ These test additional CSRs that exist when floating-point is supported.
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079[Google Sheet Testplan]
 ,===
 
-*** this should move to F, which requires CSRs fcsr, frm, fflags
-
 ==== SmV Vector CSRs and Instructions
 
 These test additional CSRs and vset* instructions that exist when vector is supported.

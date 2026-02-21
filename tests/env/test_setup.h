@@ -191,7 +191,7 @@
 
 /************************************* RVTEST_DATA_END *************************************/
 /**** RVTEST_DATA_END appears after test data                                           ****/
-/**** - MMU page tables                                                                 ****/
+/**** - MMU page tables (filled with invalid PTEs)                                      ****/
 /**** - End of data region label (rvtest_data_end)                                      ****/
 /*******************************************************************************************/
 .macro RVTEST_DATA_END
@@ -200,16 +200,16 @@
   #ifdef rvtest_strap_routine
     .align 12
     rvtest_Sroot_pg_tbl:
-      .skip(4096)       // 4KB page table
+      .fill (4096/REGWIDTH), REGWIDTH, 0      // 4KB page table
     #ifdef rvtest_htrap_routine
       .align 14
       rvtest_Hroot_pg_tbl:
-        .skip(16276)    // 16KB page table
+        .fill (16384/REGWIDTH), REGWIDTH, 0   // 16KB page table
     #endif
     #ifdef rvtest_vtrap_routine
       .align 12
       rvtest_Vroot_pg_tbl:
-        .skip(4096)     // 4KB page table
+        .fill (4096/REGWIDTH), REGWIDTH, 0    // 4KB page table
     #endif
   #endif
 

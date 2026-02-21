@@ -24,21 +24,24 @@ __pycache__
 # Work directories
 work/
 
-# Don't check in generated files for now
+### Don't check in generated files for now
+# coverpoints
 coverpoints/unpriv
 coverpoints/coverage
+# tests
 tests/priv/headers
 tests/rv32i
 tests/rv32e
 tests/rv64i
 tests/rv64e
+tests/priv/Sm/Sm-00.S
+tests/priv/ExceptionsZc/ExceptionsZc-00.S
+# docs
 docs/ctp/src/norm
 docs/ctp/src/param
 docs/ctp/src/testplans
 docs/ctp/mismatch_report.txt
+docs/crd/build
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters
-tests/priv/Sm/Sm-00.S
-tests/priv/ExceptionsZc/ExceptionsZc-00.S
-crd/build

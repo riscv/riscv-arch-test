@@ -2,6 +2,6 @@
   path = external/riscv-unified-db
   url = https://github.com/riscv/riscv-unified-db
   ignore = dirty
-[submodule "docs/ctp/docs-resources"]
-  path = docs/ctp/docs-resources
+[submodule "docs/docs-resources"]
+  path = docs/docs-resources
   url = https://github.com/riscv/docs-resources

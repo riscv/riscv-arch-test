@@ -44,7 +44,7 @@ ifneq ($(SKIP_DOCKER),true)
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/build:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/build/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/docs-resources:/build/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/../docs-resources:/build/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
 						${DOCKER_USER_ARG} \
             ${DOCKER_IMG} \
@@ -86,7 +86,7 @@ REQUIRES := --require=asciidoctor-diagram \
 all: build
 
 # Check if the docs-resources/global-config.adoc file exists. If not, the user forgot to check out submodules.
-ifeq ("$(wildcard docs-resources/global-config.adoc)","")
+ifeq ("$(wildcard ../docs-resources/global-config.adoc)","")
   $(warning You must clone with --recurse-submodules to automatically populate the submodule 'docs-resources'.")
   $(warning Checking out submodules for you via 'git submodule update --init --recurse'...)
   $(shell git submodule update --init --recursive)

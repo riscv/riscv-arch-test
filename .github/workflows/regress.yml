@@ -307,25 +307,25 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - run: git submodule update --init ctp/docs-resources crd/docs-resources external/riscv-unified-db
+      - run: git submodule update --init docs/ctp/docs-resources docs/crd/docs-resources external/riscv-unified-db
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       - name: Build
-        run: cd ctp && make -j2
+        run: cd docs/ctp && make -j2
 
       - name: Upload PDF
         uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
-          path: ctp/build/ctp.pdf
+          path: docs/ctp/build/ctp.pdf
 
       - name: Upload HTML
         uses: actions/upload-artifact@v6
         with:
           name: ctp.html
-          path: ctp/build/ctp.html
+          path: docs/ctp/build/ctp.html
 
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem

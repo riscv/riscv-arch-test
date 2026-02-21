@@ -32,13 +32,13 @@ tests/rv32i
 tests/rv32e
 tests/rv64i
 tests/rv64e
-ctp/src/norm
-ctp/src/param
-ctp/src/testplans
+docs/ctp/src/norm
+docs/ctp/src/param
+docs/ctp/src/testplans
+docs/ctp/mismatch_report.txt
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters
-ctp/mismatch_report.txt
 tests/priv/Sm/Sm-00.S
 tests/priv/ExceptionsZc/ExceptionsZc-00.S
 crd/build

@@ -122,11 +122,10 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_tests was executed
+    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
     jal     T3, failedtest_x8_x7
     RVTEST_WORD_PTR "abort_str"
-    abort_str: .string "\"The trap handler aborted the test before normal completion!\"";
 
   // Terminate test
   exit_cleanup:

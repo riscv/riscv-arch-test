@@ -12,6 +12,7 @@
 # This Makefile is designed to automate the process of building and packaging
 # the Doc Template for RISC-V Extensions.
 
+REPO_ROOT := $(shell git rev-parse --show-toplevel)
 DOCS := ctp
 
 DATE ?= $(shell date +%Y-%m-%d)
@@ -43,7 +44,7 @@ ifneq ($(SKIP_DOCKER),true)
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/build:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/build/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/docs-resources:/build/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/../docs-resources:/build/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
 						${DOCKER_USER_ARG} \
             ${DOCKER_IMG} \
@@ -85,7 +86,7 @@ REQUIRES := --require=asciidoctor-diagram \
 all: build
 
 # Check if the docs-resources/global-config.adoc file exists. If not, the user forgot to check out submodules.
-ifeq ("$(wildcard docs-resources/global-config.adoc)","")
+ifeq ("$(wildcard ../docs-resources/global-config.adoc)","")
   $(warning You must clone with --recurse-submodules to automatically populate the submodule 'docs-resources'.")
   $(warning Checking out submodules for you via 'git submodule update --init --recurse'...)
   $(shell git submodule update --init --recursive)
@@ -111,13 +112,13 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) testplans normrules
 # transposing them to one instruction per column, separating
 # into at most 10 instructions per page, and trimming unused
 # coverpoints
-TESTPLANS := $(wildcard ../testplans/*)
+TESTPLANS := $(wildcard $(REPO_ROOT)/testplans/*)
 testplans: $(TESTPLANS)
 	@echo "Copying test plans..."
-	@if [ -d ../testplans ]; then \
+	@if [ -d $(REPO_ROOT)/testplans ]; then \
 		rm -rf src/testplans; \
         mkdir -p build; \
-		../generators/ctp/transpose_csv.py ../testplans src/testplans 10; \
+		$(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans src/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi
@@ -125,9 +126,9 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	../generators/ctp/generate_norm_table.py --yaml ../coverpoints/norm/ --out $(SRC_DIR)/norm --report mismatch_report.txt
+	$(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(SRC_DIR)/norm --report mismatch_report.txt
 	@echo "Generating parameter rule tables...."
-	../generators/ctp/generate_param_table.py --yaml ../coverpoints/param --udb ../external/riscv-unified-db/spec/std/isa/param --out $(SRC_DIR)/param/
+	$(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --udb $(REPO_ROOT)/external/riscv-unified-db/spec/std/isa/param --out $(SRC_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

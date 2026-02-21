@@ -1,5 +1,5 @@
 ##################################
-# priv/extensions/ExceptionsZc.py
+# ExceptionsZc.py
 #
 # ExceptionsZc privileged extension test generator.
 # jcarlin@hmc.edu Jan 2026

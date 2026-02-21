@@ -290,7 +290,7 @@
  *
  ***************************************************************************************************/
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)
-#define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
+#define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep alignment for sv area alloc
 #define ptr_sv_sz       (16*8)
 #define reg_sv_sz       ( 8*REGWIDTH)
 #define model_sv_sz     ( 8*REGWIDTH)
@@ -681,7 +681,7 @@
 
 /***********************************************************************************/
 /**** This must be used before using RVTEST_GOTO_LOWER_MODE and at CODE_END.    ****/
-/**** It sets x3 to 0 to signal that this is not an explict ECALL, and that it  ****/
+/**** It sets x3 to 0 to signal that this is not an explicit ECALL, and that it  ****/
 /**** returns normally. The handler will check that trap cause==ecall, & divert ****/
 /**** to a spcl rtn_fm_mmode: handler if x3=0. That code translates MEPC from   ****/
 /**** caller's mode to Mmodes BARE mode, restore regs & branches to relocated   ****/
@@ -1045,7 +1045,7 @@ overwt_tt_\__MODE__\()loop:                     // now build new tramp table w/ 
 #ifdef HANDLER_TESTCODE_ONLY
         csrr    T5, CSR_XSCRATCH                // load trapreg_sv from scratch
         addi    T5, T5,256                      // calculate some offset into the save area
-        bgt     T5, T1, endcopy_\__MODE__\()tramp // and pretend if couldnt be written
+        bgt     T5, T1, endcopy_\__MODE__\()tramp // and pretend if couldn't be written
 #endif
         addi    T2, T2, WDBYTSZ                 // next tvec  inst. index
         addi    T1, T1, WDBYTSZ                 // next save  inst. index
@@ -1084,9 +1084,9 @@ rvtest_\__MODE__\()prolog_done:
   /**********************************************************************/
   /**** This is the entry point for all x-modetraps, vectored or not.****/
   /**** xtvec should either point here, or trampoline code does and  ****/
-  /**** trampoline code was copied to whereever xtvec pointed to.    ****/
+  /**** trampoline code was copied to wherever xtvec pointed to.     ****/
   /**** At entry, xscratch will contain a pointer to a scratch area. ****/
-  /**** This is an array of branches at 4B intevals that spreads out ****/
+  /**** This is an array of branches at 4B intervals that spreads out****/
   /**** to an array of 12B xhandler stubs for specd int causes, and  ****/
   /**** to a return for anything above that (which causes a mismatch)****/
   /**********************************************************************/
@@ -1192,14 +1192,14 @@ spcl_\__MODE__\()chk4ecall:
         beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature
 .endif
 //------normal trap rtn; pre-update trap_sig pointer so handlers can themselves trap-----
-\__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. excpt, int type, and h mode
+\__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. exception, interrupt type, and h mode
         li      T2, 4*REGWIDTH                  // standard entry length
         bgez    T5, \__MODE__\()xcpt_sig_sv     // Keep std length if cause is an exception for now (MSB==0)
 \__MODE__\()int_sig_sv:
         slli    T3, T5, 1                       // remove MSB, cause<<1
-        addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an extint or larger? ( (cause<<1) > (8<<1) )?
+        addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an external interrupt or larger? ( (cause<<1) > (8<<1) )?
         bgez    T3, \__MODE__\()trap_sig_sv     // yes, keep std length
-        li      T2, 3*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 3*regsz
+        li      T2, 3*REGWIDTH                  // no,  its a timer or swint, override preinc to 3*regsz
         j       \__MODE__\()trap_sig_sv
 
   /**********************************************************************/
@@ -1413,7 +1413,7 @@ common_\__MODE__\()excpt_handler:
         csrr    T6, CSR_MISA           // select effective xATP based on misa[7] (H)
         slli    T6, T6, XLEN-7-1
         bgez    T6, 1f                 // keep  SATP      if no hypervisor
-        csrr    T2, CSR_HGATP          // subsitute HGATP if    hypervisor
+        csrr    T2, CSR_HGATP          // substitute HGATP if    hypervisor
 1:      srli    T2, T2, MODE_LSB
         addi    T4, sp, 1*sv_area_sz   // T4 points to HS/S mode sv_area
         bnez    T2, sv_\__MODE__\()epc // skip reloc if not bare mode
@@ -1568,7 +1568,7 @@ chk_\__MODE__\()trapsig_overrun:        // sv_area_off is defined above at Xtrap
 
   /**** vector to exception special handling routines ****/
         li      T2, int_hndlr_tblsz             // offset of exception dispatch table base
-        j       spcl_\__MODE__\()handler        // jump to shared int/excpt spcl handling dispatcher
+        j       spcl_\__MODE__\()handler        // jump to shared interrupt/exception spcl handling dispatcher
 
  /**** common return code for both interrupts and exceptions ****/
 resto_\__MODE__\()rtn:                  // restore and return
@@ -1589,7 +1589,7 @@ resto_\__MODE__\()rtn:                  // restore and return
  /**************************************************************/
  /**** This is the interrupt specific code. It attempts     ****/
  /**** to clear the int and saves int-specific CSRS         ****/
- /**** NOTE! also clrs IE in case clring ip bit doesnt work ****/
+ /**** NOTE! also clrs IE in case clring ip bit doesn't work****/
  /**************************************************************/
 common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has save area
         li      T3, 1
@@ -1605,8 +1605,8 @@ sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
 
 /**************************************************************/
 /**** spcl int/excp dispatcher. T5 has mcause, T2 holds    ****/
-/**** int table (0) or excpt tbl (int_tbl_sz) offset       ****/
-/**** This loads an entry @(table_base+table_off+mcause*8 ****/
+/**** int table (0) or exception tbl (int_tbl_sz) offset   ****/
+/**** This loads an entry @(table_base+table_off+mcause*8  ****/
 /**** if entry=0, it should never be taken, error return   ****/
 /**** if entry is odd, it has cause<<1,  skip disptaching  ****/
 /**** otherwise if even & >0, it is the handler address    ****/
@@ -1616,7 +1616,7 @@ sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
 spcl_\__MODE__\()handler:               // case table branch to special handler code, depending on mcause
         auipc   T3, 0                   // shortcut for LA(clrint_\__MODE__\()tbl) (might be 4 too large)
         addi    T3, T3, 15*4            // shortcut to avoid LA clrint_xtbl - this is might be 4 too large
-        add     T3, T3, T2              // offset into the correct int/excpt dispatch table
+        add     T3, T3, T2              // offset into the correct interrupt/exception dispatch table
         slli    T2, T5, 3               // index into 8b aligned dispatch entry and jump through it
         add     T3, T3, T2
         andi    T3, T3, -8              // make sure this is dblwd aligned, correct if it is 4 too large
@@ -1954,7 +1954,7 @@ rvtest_\__MODE__\()end:
 /*******************************************************************************/
 /**** This macro defines per/mode save areas for mmode for each mode        ****/
 /**** note that it is the code area, not the data area, and                 ****/
-/**** must be mulitple of 8B, so multiple instantiations stay aligned       ****/
+/**** must be multiple of 8B, so multiple instantiations stay aligned       ****/
 /**** This is preceded by the current signature pointer, (@Mtrpreg_sv -64?  ****/
 /*******************************************************************************/
 .macro RVTEST_TRAP_SAVEAREA __MODE__

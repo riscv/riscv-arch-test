@@ -19,7 +19,7 @@ TODO: Update links when CRDs are finalized.
 
 This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
 * All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate. TODO: Relax this.
-* Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported indepenent of the Zicntr or F instructions, so there
+* Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported independent of the Zicntr or F instructions, so there
 is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
 * Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.  TODO: Add multi-master test plan.
 
@@ -54,6 +54,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
+|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |Misalign|Misaligned Load/Store|<<t-Misalign-coverpoints>>|o|o|o|o|o
 |MisalignZca|Misaligned Compressed|<<t-MisalignZca-coverpoints>>|o|o|o|o|o
 |MisalignF|Misaligned Float|<<t-MisalignF-coverpoints>>|o||o|o|o
@@ -310,7 +311,7 @@ TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each typ
 * Testing extensions that have been disabled with `misa` fields; behavior is unspecified.
 * Non-Maskable Interrupts (NMI) - no standard way to generate them yet
 * Reset behavior - no way for a program to reset itself
-* Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make thse interrupts delegatable from M-mode to S-mode"
+* Delegation of MEI/MTI/MSI to S-mode - "most platforms will choose not to make these interrupts delegatable from M-mode to S-mode"
 * Multicore or multi-master systems; current tests only run on one core and atomics and memory consistency are only lightly tested. TODO: coming later.
 * Custom extensions
 

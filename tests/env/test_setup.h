@@ -122,12 +122,11 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-    // Check if the test has fully executed
-    LI(     T4, 0xBAD0DEAD)           // T5 = 0xBAD0DEAD when the test is exiting early
-    bne     T4, T5, exit_cleanup      // Not an early exit, exit with a success code
+    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_tests was executed
+    bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
     jal     T3, failedtest_x8_x7
-    RVTEST_WORD_PTR "early_exit"
-    early_exit: .string "\"The test encountered an early exit!\"";
+    RVTEST_WORD_PTR "abort_str"
+    abort_str: .string "\"The trap handler aborted the test before normal completion!\"";
 
   // Terminate test
   exit_cleanup:

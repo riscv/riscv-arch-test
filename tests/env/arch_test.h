@@ -1889,11 +1889,11 @@ resto_\__MODE__\()edeleg:
 .ifnc \__MODE__ , S
   .ifnc \__MODE__ , V
         csrw    CSR_XEDELEG,  T2
-// TODO: Commenting this code only because CSR_M/S/HEDELEGH is not defined in reference + spike
-// Writing this CSR is causing infinite traps of illegal access
-// #if (XLEN==32)
-//         csrw    CSR_XEDELEGH, T4
-// #endif
+    .ifc \_MODE__ , M   // TODO: Remove this .ifc when sail supports hedelegh (if Smstateen is supported, set mstateen0.P1P13)
+      #if (XLEN==32)
+        csrw    CSR_XEDELEGH, T4
+      #endif
+    .endif
   .endif
 .endif
 

@@ -31,7 +31,7 @@ include::{testplansdir}/Zbkb.adoc[]
 
 include::norm/Zbkb_norm_rules.adoc[]
 
-See also normative rules from <<t-Zbb-normative-rules,Zbb>.
+See also normative rules from <<t-Zbb-normative-rules,Zbb>>.
 
 ==== Zbkc Carry-less Multiplication for Cryptography
 

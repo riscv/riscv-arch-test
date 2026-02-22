@@ -13,16 +13,16 @@ normative_rule_definitions:
     coverpoint: ["Zbc_clmul_cg/cr_rs1_rs2_edges"]
 
   - name: clmul_op
-    coverpoint: ["Zbc_clmul_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbc_clmul_cg/cr_rs1_rs2_edges"]
 
   - name: clmulh_enc
     coverpoint: ["Zbc_clmulh_cg/cr_rs1_rs2_edges"]
 
   - name: clmulh_op
-    coverpoint: ["Zbc_clmulh_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbc_clmulh_cg/cr_rs1_rs2_edges"]
 
   - name: clmulr_enc
     coverpoint: ["Zbc_clmulr_cg/cr_rs1_rs2_edges"]
 
   - name: clmulr_op
-    coverpoint: ["Zbc_clmulr_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbc_clmulr_cg/cr_rs1_rs2_edges"]

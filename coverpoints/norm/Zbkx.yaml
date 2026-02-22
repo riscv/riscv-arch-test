@@ -3,19 +3,19 @@
 
 normative_rule_definitions:
   - name: zbkx_lookup_table_model
-    coverpoint: ["Zbkb_xperm4_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm4_cg/cr_rs1_rs2_edges"]
 
   - name: zbkx_indexing_behavior
-    coverpoint: ["Zbkb_xperm4_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm4_cg/cr_rs1_rs2_edges"]
 
   - name: xperm8_enc
-    coverpoint: ["Zbkb_xperm8_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm8_cg/cr_rs1_rs2_edges"]
 
   - name: xperm8_op
-    coverpoint: ["Zbkb_xperm8_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm8_cg/cr_rs1_rs2_edges"]
 
   - name: xperm4_enc
-    coverpoint: ["Zbkb_xperm4_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm4_cg/cr_rs1_rs2_edges"]
 
   - name: xperm4_op
-    coverpoint: ["Zbkb_xperm4_cg/cr_rs1_rs2_edges"]
+    coverpoint: ["Zbkx_xperm4_cg/cr_rs1_rs2_edges"]

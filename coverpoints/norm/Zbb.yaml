@@ -3,7 +3,7 @@
 
 normative_rule_definitions:
   - name: bitmanip_w_suffix_semantics
-    coverpoint: ["Zbb_rorw_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_rorw_cg/cr_rs1_rs2_edges"]
 
   - name: bitmanip_bhw_suffix_semantics
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
@@ -67,25 +67,25 @@ normative_rule_definitions:
     coverpoint: ["Zbb_max_cg/cr_rs1_rs2_edges"]
 
   - name: max_op
-    coverpoint: ["Zbb_max_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_max_cg/cr_rs1_rs2_edges"]
 
   - name: maxu_enc
     coverpoint: ["Zbb_maxu_cg/cr_rs1_rs2_edges"]
 
   - name: maxu_op
-    coverpoint: ["Zbb_maxu_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_maxu_cg/cr_rs1_rs2_edges"]
 
   - name: min_enc
     coverpoint: ["Zbb_min_cg/cr_rs1_rs2_edges"]
 
   - name: min_op
-    coverpoint: ["Zbb_min_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_min_cg/cr_rs1_rs2_edges"]
 
   - name: minu_enc
     coverpoint: ["Zbb_minu_cg/cr_rs1_rs2_edges"]
 
   - name: minu_op
-    coverpoint: ["Zbb_minu_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_minu_cg/cr_rs1_rs2_edges"]
 
   - name: orc_b_enc
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
@@ -94,10 +94,10 @@ normative_rule_definitions:
     coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
 
   - name: orn_enc
-    coverpoint: ["Zbb_orn_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_orn_cg/cr_rs1_rs2_edges"]
 
   - name: orn_op
-    coverpoint: ["Zbb_orn_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_orn_cg/cr_rs1_rs2_edges"]
 
   - name: rev8_enc
     coverpoint: ["Zbb_rev8_cg/cr_rs1_edges"]
@@ -127,13 +127,13 @@ normative_rule_definitions:
     coverpoint: ["Zbb_rori_cg/cr_rs1_imm_edges_uimm"]
 
   - name: rori_op
-    coverpoint: ["Zbb_rori_cg/cp_rs1_imm_edges_uimm"]
+    coverpoint: ["Zbb_rori_cg/cr_rs1_imm_edges_uimm"]
 
   - name: roriw_enc
     coverpoint: ["Zbb_roriw_cg/cr_rs1_imm_edges_uimmw"]
 
   - name: roriw_op
-    coverpoint: ["Zbb_roriw_cg/cp_rs1_imm_edges_uimmw"]
+    coverpoint: ["Zbb_roriw_cg/cr_rs1_imm_edges_uimmw"]
 
   - name: rorw_enc
     coverpoint: ["Zbb_rorw_cg/cr_rs1_rs2_edges"]
@@ -157,7 +157,7 @@ normative_rule_definitions:
     coverpoint: ["Zbb_xnor_cg/cr_rs1_rs2_edges"]
 
   - name: xnor_op
-    coverpoint: ["Zbb_xnor_cg/cp_rs1_rs2_edges"]
+    coverpoint: ["Zbb_xnor_cg/cr_rs1_rs2_edges"]
 
   - name: zext_h_enc
     coverpoint: ["Zbb_zext_h_cg/cr_rs1_edges"]

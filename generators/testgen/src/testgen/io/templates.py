@@ -115,11 +115,50 @@ def canonicalize_extensions(
     return ext_components, params
 
 
+# Canonical order from RISC-V ISA spec
+_EXTENSION_CANONICAL_ORDER = "iemafdqlcbkjtpvh"
+
+
+def _single_letter_sort_key(ext: str) -> int:
+    """Return the canonical sort position for a single-letter extension."""
+    ext = ext.lower()
+    if ext in _EXTENSION_CANONICAL_ORDER:
+        return _EXTENSION_CANONICAL_ORDER.index(ext)
+    return len(_EXTENSION_CANONICAL_ORDER)
+
+
+def _multi_letter_sort_key(ext: str) -> tuple[int, int, str]:
+    """Return sort key for multi-letter extensions in canonical order.
+
+    Sort order: Z extensions first, then S extensions, then others.
+    Z extensions are sub-sorted by their second letter in canonical
+    single-letter order (e.g. Zi* < Zm* < Za* < Zf* < Zb* < Zv*),
+    then alphabetically within the same sub-group.
+    """
+    ext = ext.lower()
+    if ext.startswith("z"):
+        group = 0
+        # Sub-group by second letter in canonical single-letter order
+        second_letter = ext[1] if len(ext) > 1 else ""
+        subgroup = (
+            _EXTENSION_CANONICAL_ORDER.index(second_letter)
+            if second_letter in _EXTENSION_CANONICAL_ORDER
+            else len(_EXTENSION_CANONICAL_ORDER)
+        )
+    elif ext.startswith("s"):
+        group = 1
+        subgroup = 0
+    else:
+        group = 2
+        subgroup = 0
+    return (group, subgroup, ext)
+
+
 def generate_march_string(ext_components: list[str], xlen: int) -> str:
     """Generate march string from extension components."""
     # Separate single-letter and multi-letter extensions
-    single_letter = []
-    multi_letter = []
+    single_letter: list[str] = []
+    multi_letter: list[str] = []
     for ext in ext_components:
         if ext in ["Sm", "S", "U"]:
             continue  # Skip privilege modes in march string
@@ -128,10 +167,15 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
         else:
             multi_letter.append(ext)
 
+    # Sort single-letter extensions in canonical order (I/E, M, A, F, D, Q, C, B, V, H)
+    single_letter.sort(key=_single_letter_sort_key)
+    # Sort multi-letter extensions in canonical order (Z by subgroup then alpha, S alpha, others alpha)
+    multi_letter.sort(key=_multi_letter_sort_key)
+
     # Construct march string: single-letter extensions first (no separator), then multi-letter (underscore separated)
     ext_str = "".join(single_letter)
     if multi_letter:
-        ext_str += "_".join(multi_letter)
+        ext_str += "_" + "_".join(multi_letter)
     ext_str = ext_str.lower()
     march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
 

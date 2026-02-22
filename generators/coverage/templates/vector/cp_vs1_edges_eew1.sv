@@ -13,7 +13,7 @@
         bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
         bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
         bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
-        bins walkodd    = {vs_walkeodd  };   //  = {(`SEW/2){2'b10}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
         bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
         bins random     = {vs_random    };   //  = {(SEW){random}}
     }

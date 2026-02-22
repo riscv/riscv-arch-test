@@ -107,8 +107,8 @@ Python generator to generate tests for that coverpoint.
 
 All coverpoints (and coverpoint variants) need a template file in
 [`generators/coverage/templates`](../generators/coverage/templates).
-These templates should be named `<coverpoint_name>.txt` or
-`<coverpoint_name>_<variant>.txt`.
+These templates should be named `<coverpoint_name>.sv` or
+`<coverpoint_name>_<variant>.sv`.
 The coverpoint templates are directly included in a larger covergroup,
 so they must contain a complete and valid SystemVerilog coverpoint.
 See the [`generators/coverage/templates`](../generators/coverage/templates)
@@ -244,7 +244,7 @@ Python instruction formatter.
 
 All instruction formats need a template file in
 [`generators/coverage/templates`](../generators/coverage/templates).
-These templates should be named `sample_<INSTRUCTION_TYPE>.txt`.
+These templates should be named `sample_<INSTRUCTION_TYPE>.sv`.
 The instruction format templates are directly included in a SystemVerilog
 case statement.
 

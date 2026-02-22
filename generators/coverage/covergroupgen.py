@@ -86,7 +86,7 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
 def read_covergroup_templates(template_dir: Path) -> dict[str, str]:
     """Read the covergroup templates from the templates directory."""
     covergroupTemplates: dict[str, str] = {}
-    for file in template_dir.rglob("*.txt"):
+    for file in template_dir.rglob("*.sv"):
         cg = file.stem
         covergroupTemplates[cg] = file.read_text()
     return covergroupTemplates

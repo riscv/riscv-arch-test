@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run
-# ruff: noqa: ANN401
+# SPDX-License-Identifier: Apache-2.0
 #
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "pyyaml",
+#     "ruamel-yaml>=0.18.16",
 # ]
 # ///
 
@@ -39,10 +39,10 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote, urlparse
 
-import yaml
+from ruamel.yaml import YAML, YAMLError
 
 
-def load_json(path: Path | str, cache_path: Path | str | None = None) -> Any:
+def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[str, Any] | list[Any]:
     """Load JSON from a local file path or an HTTP/HTTPS URL."""
     path_str = str(path)
     parsed = urlparse(path_str)
@@ -67,12 +67,13 @@ def load_json(path: Path | str, cache_path: Path | str | None = None) -> Any:
     return json.loads(text)
 
 
-def load_yaml(path: Path | str) -> Any:
+def load_yaml(path: Path | str) -> dict[str, Any] | list[dict[str, Any]]:
     """Load YAML with fallback parsing if standard parsing fails."""
     text = Path(path).read_text(encoding="utf-8")
+    yaml_parser = YAML(typ="safe", pure=True)
     try:
-        return yaml.safe_load(text)
-    except yaml.YAMLError:
+        return yaml_parser.load(text)
+    except YAMLError:
         return parse_coverpoints_fallback(text)
 
 
@@ -153,7 +154,7 @@ def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
     return groups
 
 
-def find_normative_rules(data: Any) -> list[dict[str, Any]]:
+def find_normative_rules(data: dict[str, Any] | list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Extract normative rules list from JSON data."""
     if isinstance(data, dict):
         if "normative_rules" in data:
@@ -167,7 +168,7 @@ def find_normative_rules(data: Any) -> list[dict[str, Any]]:
     raise ValueError("Could not locate normative rules list in JSON")
 
 
-def extract_rule_text(tags: Any) -> str:
+def extract_rule_text(tags: dict[str, Any] | list[Any] | None) -> str:
     """Extract text from tags structure (dict, list, or mixed)."""
     if not tags:
         return ""
@@ -188,7 +189,7 @@ def extract_rule_text(tags: Any) -> str:
     return " ".join(texts)
 
 
-def split_name_list(val: Any) -> list[str]:
+def split_name_list(val: str | list[str] | None) -> list[str]:
     """Split name(s) into a list, handling various formats."""
     if not val:
         return []
@@ -228,7 +229,7 @@ def process_items_to_groups(items: Iterable[dict[str, Any]]) -> list[dict[str, A
     return groups
 
 
-def build_coverpoint_groups(yaml_data: Any) -> list[dict[str, Any]]:
+def build_coverpoint_groups(yaml_data: dict[str, Any] | list[dict[str, Any]] | None) -> list[dict[str, Any]]:
     """Extract groups from YAML data in various formats."""
     if isinstance(yaml_data, list):
         return process_items_to_groups(yaml_data)
@@ -263,7 +264,7 @@ def build_coverpoint_groups(yaml_data: Any) -> list[dict[str, Any]]:
     return groups
 
 
-def normalize_coverpoint(cp: Any) -> str:
+def normalize_coverpoint(cp: str | list[Any] | None) -> str:
     """Normalize coverpoint value for AsciiDoc output."""
     c = ", ".join(str(x) for x in cp) if isinstance(cp, list) else str(cp).strip() if cp else ""
 
@@ -316,7 +317,7 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
     outpath.write_text("\n".join(lines), encoding="utf-8")
 
 
-def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
+def pick_cover_for_name(coverpoint: str | list[str] | None, names: list[str], idx: int) -> str | list[str] | None:
     """If `coverpoint` contains a brace-delimited list (e.g. "{A, B, C}..."),
     attempt to select the item corresponding to position `idx` in `names`.
     Otherwise return the original coverpoint.
@@ -434,7 +435,7 @@ def build_rows_from_groups(
 
         # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
         chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
-        for n, c in zip(names, chosen_cps):
+        for n, c in zip(names, chosen_cps, strict=False):
             cover_map[n] = c
 
         if len(names) == 1:
@@ -476,7 +477,7 @@ def build_rows_from_groups(
             cp_cell = unique_cps[0]
         else:
             cp_bits = []
-            for n, c in zip(names, chosen_cps):
+            for n, c in zip(names, chosen_cps, strict=False):
                 val = "" if c is None else str(c)
                 cp_bits.append(f"{n}: {val}")
             cp_cell = "; ".join(cp_bits)
@@ -712,7 +713,7 @@ def main() -> None:
             groups = build_coverpoint_groups(ydata)
 
             # Build rows and mappings; keep grouped names on a single row.
-            rows, cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
+            rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
             missing_in_json = sorted(list(yaml_names - json_names))
@@ -786,7 +787,7 @@ def main() -> None:
     groups = build_coverpoint_groups(ydata)
 
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
-    rows, cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
+    rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
     missing_in_json = sorted(list(yaml_names - json_names))
     missing_in_yaml = sorted(list(json_names - yaml_names))

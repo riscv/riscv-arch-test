@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.uv.workspace]
-members = ["framework", "generators/testgen", "generators/ctp"]
+members = ["framework", "generators/testgen"]
 
 [dependency-groups]
 dev = ["pyright==1.1.408", "ruff==0.14.10"]
@@ -14,8 +14,6 @@ dev = ["pyright==1.1.408", "ruff==0.14.10"]
 line-length = 120
 extend-exclude = [
   "external",
-  "ctp",
-  "generators/coverage",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
@@ -61,8 +59,6 @@ ignore = [
 [tool.ty.src]
 exclude = [
   "external",
-  "generators/ctp",
-  "generators/coverage",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
@@ -74,9 +70,6 @@ exclude = [
   "**/.*",
   ".venv",
   "external",
-  "ctp",
-  "generators/ctp",
-  "generators/coverage",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"

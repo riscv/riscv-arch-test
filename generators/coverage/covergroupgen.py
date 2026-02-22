@@ -319,11 +319,11 @@ def write_covergroups(
             print("***** Writing " + file)
 
             vector = arch.startswith("Vx") or arch.startswith("Zv") or arch.startswith("Vls") or arch.startswith("Vf")
+            effew = get_effew(arch) if vector else ""
 
             with (covergroup_out_dir / file).open("w") as f:
                 finit = (covergroup_out_dir / initfile).open("w")
                 if vector:
-                    effew = get_effew(arch)
                     f.write(customize_template(covergroup_templates, "header_vector", arch, "", effew=effew))
                 else:
                     f.write(customize_template(covergroup_templates, "header", arch, ""))

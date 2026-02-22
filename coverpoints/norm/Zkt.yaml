@@ -2,10 +2,8 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # TODO: Add description for zkt_optional_instr
   - name: zkt_optional_instr
     coverpoint: ["Definition, not tested"]
 
-  # TODO: Add description for zkt_impl_must_constant_latency
   - name: zkt_impl_must_constant_latency
     coverpoint: ["TODO"]

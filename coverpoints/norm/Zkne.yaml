@@ -10,58 +10,44 @@ normative_rule_definitions:
   - name: zk_impl_all
     coverpoint: ["Definition, checked through UDB"]
 
-  # TODO: Add description for zkne_shared_instr
   - name: zkne_shared_instr
     coverpoint: ["Definition, checked through UDB"]
 
-  # TODO: Add description for zk_scalar_xreg_op
   - name: zk_scalar_xreg_op
     coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]
 
-  # TODO: Add description for aes32esi_enc
   - name: aes32esi_enc
     coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]
 
-  # TODO: Add description for aes32esi_op
   - name: aes32esi_op
     coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for aes32esmi_enc
   - name: aes32esmi_enc
     coverpoint: ["Zkne_aes32esmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for aes32esmi_op
   - name: aes32esmi_op
     coverpoint: ["Zkne_aes32esmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for aes64es_enc
   - name: aes64es_enc
     coverpoint: ["Zkne_aes64es_cg/{cr_rs1_rs2_edges, cp_sbox}"]
 
-  # TODO: Add description for aes64es_op
   - name: aes64es_op
     coverpoint: ["Zkne_aes64es_cg/{cr_rs1_rs2_edges, cp_sbox}"]
 
-  # TODO: Add description for aes64esm_enc
   - name: aes64esm_enc
     coverpoint: ["Zkne_aes64esm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
 
-  # TODO: Add description for aes64esm_op
   - name: aes64esm_op
     coverpoint: ["Zkne_aes64esm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
 
-  # TODO: Add description for aes64ks1i_enc
   - name: aes64ks1i_enc
     coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
 
-  # TODO: Add description for aes64ks1i_op
   - name: aes64ks1i_op
     coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
 
-  # TODO: Add description for aes64ks2_enc
   - name: aes64ks2_enc
     coverpoint: ["Zkne_aes64ks2_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for aes64ks2_op
   - name: aes64ks2_op
     coverpoint: ["Zkne_aes64ks2_cg/cr_rs1_rs2_edges"]

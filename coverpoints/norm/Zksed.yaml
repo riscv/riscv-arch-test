@@ -6,18 +6,14 @@ normative_rule_definitions:
   - name: zks_impl_all
     coverpoint: ["Definition, checked through UDB"]
 
-  # TODO: Add description for sm4ed_enc
   - name: sm4ed_enc
     coverpoint: ["Zksed_sm4ed_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for sm4ed_op
   - name: sm4ed_op
     coverpoint: ["Zksed_sm4ed_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for sm4ks_enc
   - name: sm4ks_enc
     coverpoint: ["Zksed_sm4ks_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
 
-  # TODO: Add description for sm4ks_op
   - name: sm4ks_op
     coverpoint: ["Zksed_sm4ks_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]

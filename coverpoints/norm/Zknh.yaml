@@ -2,114 +2,86 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # TODO: Add description for sha256sig0_enc
   - name: sha256sig0_enc
     coverpoint: ["Zknh_sha256sig0_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sig0_op
   - name: sha256sig0_op
     coverpoint: ["Zknh_sha256sig0_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sig1_enc
   - name: sha256sig1_enc
     coverpoint: ["Zknh_sha256sig1_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sig1_op
   - name: sha256sig1_op
     coverpoint: ["Zknh_sha256sig1_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sum0_enc
   - name: sha256sum0_enc
     coverpoint: ["Zknh_sha256sum0_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sum0_op
   - name: sha256sum0_op
     coverpoint: ["Zknh_sha256sum0_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sum1_enc
   - name: sha256sum1_enc
     coverpoint: ["Zknh_sha256sum1_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha256sum1_op
   - name: sha256sum1_op
     coverpoint: ["Zknh_sha256sum1_cg/cp_rs1_edges"]
 
-  # TODO: Add description for sha512sig0h_enc
   - name: sha512sig0h_enc
     coverpoint: ["Zknh_sha512sig0h_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig0h_op
   - name: sha512sig0h_op
     coverpoint: ["Zknh_sha512sig0h_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig0l_enc
   - name: sha512sig0l_enc
     coverpoint: ["Zknh_sha512sig0l_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig0l_op
   - name: sha512sig0l_op
     coverpoint: ["Zknh_sha512sig0l_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1h_enc
   - name: sha512sig1h_enc
     coverpoint: ["Zknh_sha512sig1h_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1h_op
   - name: sha512sig1h_op
     coverpoint: ["Zknh_sha512sig1h_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1l_enc
   - name: sha512sig1l_enc
     coverpoint: ["Zknh_sha512sig1l_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1l_op
   - name: sha512sig1l_op
     coverpoint: ["Zknh_sha512sig1l_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum0r_enc
   - name: sha512sum0r_enc
     coverpoint: ["Zknh_sha512sum0r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum0r_op
   - name: sha512sum0r_op
     coverpoint: ["Zknh_sha512sum0r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum1r_enc
   - name: sha512sum1r_enc
     coverpoint: ["Zknh_sha512sum1r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum1r_op
   - name: sha512sum1r_op
     coverpoint: ["Zknh_sha512sum1r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig0_enc
   - name: sha512sig0_enc
     coverpoint: ["Zknh_sha512sig0_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig0_op
   - name: sha512sig0_op
     coverpoint: ["Zknh_sha512sig0_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1_enc
   - name: sha512sig1_enc
     coverpoint: ["Zknh_sha512sig1_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sig1_op
   - name: sha512sig1_op
     coverpoint: ["Zknh_sha512sig1_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum0_enc
   - name: sha512sum0_enc
     coverpoint: ["Zknh_sha512sum0r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum0_op
   - name: sha512sum0_op
     coverpoint: ["Zknh_sha512sum0r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum1_enc
   - name: sha512sum1_enc
     coverpoint: ["Zknh_sha512sum1r_cg/cr_rs1_rs2_edges"]
 
-  # TODO: Add description for sha512sum1_op
   - name: sha512sum1_op
     coverpoint: ["Zknh_sha512sum1r_cg/cr_rs1_rs2_edges"]

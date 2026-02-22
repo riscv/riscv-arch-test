@@ -120,4 +120,5 @@ These test CSRs when the Zkr entropy extension is supported.
 ,===
 
 ,===
-*** reorganize to Zkr section
+
+include::norm/Zkr_norm_rules.adoc[]

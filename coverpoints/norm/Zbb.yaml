@@ -1,0 +1,166 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: bitmanip_w_suffix_semantics
+    coverpoint: ["Zbb_rorw_cg/cp_rs1_rs2_edges"]
+
+  - name: bitmanip_bhw_suffix_semantics
+    coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
+
+  - name: b_extension_composition
+    coverpoint:
+      ["Inherent in UDB configuration validation, does not require testing"]
+
+  - name: zbb_sign_zero_extension_function
+    coverpoint: ["Zbb_sext_b_cg/cp_rs1_edges"]
+
+  - name: zbb_rotate_semantics
+    coverpoint: ["Zbb_ror_cg/cr_rs1_rs2_edges"]
+
+  - name: zbb_orc_b_semantics
+    coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
+
+  - name: andn_enc
+    coverpoint: ["Zbb_andn_cg/cr_rs1_rs2_edges"]
+
+  - name: andn_op
+    coverpoint: ["Zbb_andn_cg/cr_rs1_rs2_edges"]
+
+  - name: clz_enc
+    coverpoint: ["Zbb_clz_cg/cr_rs1_edges"]
+
+  - name: clz_op
+    coverpoint: ["Zbb_clz_cg/cr_rs1_edges"]
+
+  - name: clzw_enc
+    coverpoint: ["Zbb_clzw_cg/cr_rs1_edges"]
+
+  - name: clzw_op
+    coverpoint: ["Zbb_clzw_cg/cr_rs1_edges"]
+
+  - name: cpop_enc
+    coverpoint: ["Zbb_cpop_cg/cr_rs1_edges"]
+
+  - name: cpop_op
+    coverpoint: ["Zbb_cpop_cg/cr_rs1_edges"]
+
+  - name: cpopw_enc
+    coverpoint: ["Zbb_cpopw_cg/cr_rs1_edges"]
+
+  - name: cpopw_op
+    coverpoint: ["Zbb_cpopw_cg/cr_rs1_edges"]
+
+  - name: ctz_enc
+    coverpoint: ["Zbb_ctz_cg/cr_rs1_edges"]
+
+  - name: ctz_op
+    coverpoint: ["Zbb_ctz_cg/cr_rs1_edges"]
+
+  - name: ctzw_enc
+    coverpoint: ["Zbb_ctzw_cg/cr_rs1_edges"]
+
+  - name: ctzw_op
+    coverpoint: ["Zbb_ctzw_cg/cr_rs1_edges"]
+
+  - name: max_enc
+    coverpoint: ["Zbb_max_cg/cr_rs1_rs2_edges"]
+
+  - name: max_op
+    coverpoint: ["Zbb_max_cg/cp_rs1_rs2_edges"]
+
+  - name: maxu_enc
+    coverpoint: ["Zbb_maxu_cg/cr_rs1_rs2_edges"]
+
+  - name: maxu_op
+    coverpoint: ["Zbb_maxu_cg/cp_rs1_rs2_edges"]
+
+  - name: min_enc
+    coverpoint: ["Zbb_min_cg/cr_rs1_rs2_edges"]
+
+  - name: min_op
+    coverpoint: ["Zbb_min_cg/cp_rs1_rs2_edges"]
+
+  - name: minu_enc
+    coverpoint: ["Zbb_minu_cg/cr_rs1_rs2_edges"]
+
+  - name: minu_op
+    coverpoint: ["Zbb_minu_cg/cp_rs1_rs2_edges"]
+
+  - name: orc_b_enc
+    coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
+
+  - name: orc_b_op
+    coverpoint: ["Zbb_orc_b_cg/cp_rs1_edges_orcb"]
+
+  - name: orn_enc
+    coverpoint: ["Zbb_orn_cg/cp_rs1_rs2_edges"]
+
+  - name: orn_op
+    coverpoint: ["Zbb_orn_cg/cp_rs1_rs2_edges"]
+
+  - name: rev8_enc
+    coverpoint: ["Zbb_rev8_cg/cr_rs1_edges"]
+
+  - name: rev8_op
+    coverpoint: ["Zbb_rev8_cg/cr_rs1_edges"]
+
+  - name: rol_enc
+    coverpoint: ["Zbb_rol_cg/cr_rs1_rs2_edges"]
+
+  - name: rol_op
+    coverpoint: ["Zbb_rol_cg/cr_rs1_rs2_edges"]
+
+  - name: rolw_enc
+    coverpoint: ["Zbb_rolw_cg/cr_rs1_rs2_edges"]
+
+  - name: rolw_op
+    coverpoint: ["Zbb_rolw_cg/cr_rs1_rs2_edges"]
+
+  - name: ror_enc
+    coverpoint: ["Zbb_ror_cg/cr_rs1_rs2_edges"]
+
+  - name: ror_op
+    coverpoint: ["Zbb_ror_cg/cr_rs1_rs2_edges"]
+
+  - name: rori_enc
+    coverpoint: ["Zbb_rori_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: rori_op
+    coverpoint: ["Zbb_rori_cg/cp_rs1_imm_edges_uimm"]
+
+  - name: roriw_enc
+    coverpoint: ["Zbb_roriw_cg/cr_rs1_imm_edges_uimmw"]
+
+  - name: roriw_op
+    coverpoint: ["Zbb_roriw_cg/cp_rs1_imm_edges_uimmw"]
+
+  - name: rorw_enc
+    coverpoint: ["Zbb_rorw_cg/cr_rs1_rs2_edges"]
+
+  - name: rorw_op
+    coverpoint: ["Zbb_rorw_cg/cr_rs1_rs2_edges"]
+
+  - name: sext_b_enc
+    coverpoint: ["Zbb_sext_b_cg/cr_rs1_edges"]
+
+  - name: sext_b_op
+    coverpoint: ["Zbb_sext_b_cg/cp_rs1_edges"]
+
+  - name: sext_h_enc
+    coverpoint: ["Zbb_sext_h_cg/cr_rs1_edges"]
+
+  - name: sext_h_op
+    coverpoint: ["Zbb_sext_h_cg/cp_rs1_edges"]
+
+  - name: xnor_enc
+    coverpoint: ["Zbb_xnor_cg/cr_rs1_rs2_edges"]
+
+  - name: xnor_op
+    coverpoint: ["Zbb_xnor_cg/cp_rs1_rs2_edges"]
+
+  - name: zext_h_enc
+    coverpoint: ["Zbb_zext_h_cg/cr_rs1_edges"]
+
+  - name: zext_h_op
+    coverpoint: ["Zbb_zext_h_cg/cp_rs1_edges"]

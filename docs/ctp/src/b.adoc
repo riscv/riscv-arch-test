@@ -5,30 +5,42 @@
 
 include::{testplansdir}/Zba.adoc[]
 
+include::norm/Zba_norm_rules.adoc[]
+
 ==== Zbb Basic Bit-Manipulation
 
 include::{testplansdir}/Zbb.adoc[]
+
+include::norm/Zbb_norm_rules.adoc[]
 
 ==== Zbc Carry-less Multiplication
 
 include::{testplansdir}/Zbc.adoc[]
 
+include::norm/Zbc_norm_rules.adoc[]
+
 ==== Zbs Single-Bit Manipulation
 
 include::{testplansdir}/Zbs.adoc[]
 
+include::norm/Zbs_norm_rules.adoc[]
 
 ==== Zbkb Bit-Manipulation for Cryptography
 
 include::{testplansdir}/Zbkb.adoc[]
 
+include::norm/Zbkb_norm_rules.adoc[]
+
+See also normative rules from <<t-Zbb-normative-rules,Zbb>.
 
 ==== Zbkc Carry-less Multiplication for Cryptography
 
 include::{testplansdir}/Zbkc.adoc[]
 
-
+See normative rules from <<t-Zbc-normative-rules,Zbc>>.
 
 ==== Zbkx Permutation
 
 include::{testplansdir}/Zbkx.adoc[]
+
+include::norm/Zbkx_norm_rules.adoc[]

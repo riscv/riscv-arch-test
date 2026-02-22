@@ -1,0 +1,60 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: bitmanip_rv32_rv64
+    coverpoint: ["Zba_sh1add_cg/cr_rs1_rs2_edges"]
+
+  - name: bitmanip_uw_suffix_semantics
+    coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: zba_slli_uw_function
+    coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: sh1add_enc
+    coverpoint: ["Zba_sh1_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh1add_op
+    coverpoint: ["Zba_sh1_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh1add_uw_enc
+    coverpoint: ["Zba_sh1_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: sh1add_uw_op
+    coverpoint: ["Zba_sh1_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: sh2add_enc
+    coverpoint: ["Zba_sh2_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh2add_op
+    coverpoint: ["Zba_sh2_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh2add_uw_enc
+    coverpoint: ["Zba_sh2_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: sh2add_uw_op
+    coverpoint: ["Zba_sh2_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: sh3add_enc
+    coverpoint: ["Zba_sh3_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh3add_op
+    coverpoint: ["Zba_sh3_add_cg/cr_rs1_rs2_edges"]
+
+  - name: sh3add_uw_enc
+    coverpoint: ["Zba_sh3_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: sh3add_uw_op
+    coverpoint: ["Zba_sh3_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: add_uw_enc
+    coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: add_uw_op
+    coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
+
+  - name: slli_uw_enc
+    coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: slli_uw_op
+    coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]

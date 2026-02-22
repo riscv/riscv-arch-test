@@ -1,0 +1,49 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The entropy source extension defines the seed CSR at address 0x015. This CSR
+  # provides up to 16 physical entropy bits that can be used to seed cryptographic
+  # random bit generators.
+  - name: zkr_seed_addr
+    coverpoint: [""]
+
+  # TODO: Add description for seed_ro_illegal
+  - name: seed_ro_illegal
+    coverpoint: [""]
+
+  # TODO: Add description for seed_write_ignore
+  - name: seed_write_ignore
+    coverpoint: [""]
+
+  # TODO: Add description for seed_csr_unpriv
+  - name: seed_csr_unpriv
+    coverpoint: [""]
+
+  # TODO: Add description for seed_exec_mode_control
+  - name: seed_exec_mode_control
+    coverpoint: [""]
+
+  # TODO: Add description for seed_entropy_unique
+  - name: seed_entropy_unique
+    coverpoint: [""]
+
+  # TODO: Add description for seed_entropy_zero_non_es16
+  - name: seed_entropy_zero_non_es16
+    coverpoint: [""]
+
+  # TODO: Add description for seed_wipe_on_read
+  - name: seed_wipe_on_read
+    coverpoint: [""]
+
+  # TODO: Add description for seed_bist_latch
+  - name: seed_bist_latch
+    coverpoint: [""]
+
+  # TODO: Add description for seed_min_security_256
+  - name: seed_min_security_256
+    coverpoint: [""]
+
+  # TODO: Add description for seed_disable_if_weak
+  - name: seed_disable_if_weak
+    coverpoint: [""]

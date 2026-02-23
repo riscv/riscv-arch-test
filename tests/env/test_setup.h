@@ -125,7 +125,7 @@
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
     jal     T3, failedtest_x8_x7
-    RVTEST_WORD_PTR "abort_str"
+    RVTEST_WORD_PTR "abortstr"
 
   // Terminate test
   exit_cleanup:

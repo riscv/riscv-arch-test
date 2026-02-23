@@ -253,8 +253,6 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     ascii_buffer:
         .fill 20, 1, 0          # Buffer for hex string conversion (max "0x" + 16 hex digits + "\n" + null)
-    abort_str:
-        .string "\"The trap handler aborted the test before normal completion!\"";
     end_failure_scratch:
 
     successstr:
@@ -273,6 +271,8 @@
         .ascii "\nRVCP-SUMMARY: Test File \""
         .ascii TEST_FILE
         .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+    abortstr:
+        .string "\"The trap handler aborted the test before normal completion!\"";
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

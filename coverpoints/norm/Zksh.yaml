@@ -1,0 +1,15 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: sm3p0_enc
+    coverpoint: ["Zksh_sm3p0_cg/{cp_rs1_edges}"]
+
+  - name: sm3p0_op
+    coverpoint: ["Zksh_sm3p0_cg/{cp_rs1_edges}"]
+
+  - name: sm3p1_enc
+    coverpoint: ["Zksh_sm3p1_cg/{cp_rs1_edges}"]
+
+  - name: sm3p1_op
+    coverpoint: ["Zksh_sm3p1_cg/{cp_rs1_edges}"]

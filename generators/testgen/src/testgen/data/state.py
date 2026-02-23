@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
@@ -176,13 +177,19 @@ class TestData:
         # Construct full coverpoint name
         full_name = f"{covergroup}_{coverpoint}_{bin_name}"
 
-        # Add testcase string to test data strings
+        # Normalize full_name to a valid assembly label
+        label = full_name.replace("-", "m")
+        label = re.sub(r"[^a-zA-Z0-9_]", "_", label)
+        label = re.sub(r"_+", "_", label)  # Collapse consecutive underscores
+        label = label.strip("_")
+
+        # Add testcase string to test data strings (keep original names for debugging)
         self._test_data_strings.append(
             f'test_{self.test_count}: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
 
         # Return label
-        return f"\n{full_name}:"
+        return f"\n{label}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

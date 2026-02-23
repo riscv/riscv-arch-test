@@ -187,8 +187,8 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                test_data.add_testcase(load_insn, "cp_custom_sc_after_load"),
-                f"# Testcase: cp_custom_sc_after_load ({load_insn})",
+                test_data.add_testcase(f"{load_insn}_offset_{offset}", "cp_custom_sc_after_load"),
+                f"# Testcase: cp_custom_sc_after_load ({load_insn}, offset = {offset})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",

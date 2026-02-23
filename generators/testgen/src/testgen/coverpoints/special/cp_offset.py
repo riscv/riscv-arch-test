@@ -25,7 +25,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         params = generate_random_params(test_data, instr_type)
 
-    test_lines.append(test_data.add_testcase(coverpoint))
+    test_lines.append(test_data.add_testcase("neg", coverpoint))
 
     if instr_type in ["B", "CB"]:
         assert params.rs1 is not None and params.temp_reg is not None and params.temp_val is not None
@@ -120,7 +120,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     and params.temp_val is not None
                 )
                 label = f"jalrlsb_{rs1_lsb}{imm_lsb}"
-                test_lines.append(test_data.add_testcase("cp_offset_lsbs"))
+                test_lines.append(test_data.add_testcase(f"{rs1_lsb}_{imm_lsb}", "cp_offset_lsbs"))
                 imm_val = -1 if (rs1_lsb == 1 and imm_lsb == 1) else imm_lsb
                 test_lines.extend(
                     [
@@ -154,7 +154,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                 and params.temp_val is not None
             )
             label = f"jalrlsb_{rs1_lsbs}"
-            test_lines.append(test_data.add_testcase("cp_offset_lsbs"))
+            test_lines.append(test_data.add_testcase(f"{rs1_lsbs:02b}", "cp_offset_lsbs"))
             test_lines.extend(
                 [
                     "",

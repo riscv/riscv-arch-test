@@ -36,7 +36,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_aqrl"),
+                test_data.add_testcase(suffix, "cp_custom_aqrl"),
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
@@ -65,7 +65,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_sc_lrsc"),
+                test_data.add_testcase(f"prev_lr_{lr_insn}", "cp_custom_sc_lrsc"),
                 "# Testcase: cp_custom_sc_lrsc",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 f"LA(x{params.rs1}, scratch) # rs1 = base address",
@@ -92,7 +92,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
     )
     test_lines.extend(
         [
-            test_data.add_testcase("cp_custom_sc_after_sc"),
+            test_data.add_testcase("true", "cp_custom_sc_after_sc"),
             "# Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)",
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
             load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -134,7 +134,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_sc_after_store"),
+                test_data.add_testcase(store_insn, "cp_custom_sc_after_store"),
                 f"# Testcase: cp_custom_sc_after_store ({store_insn})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -187,7 +187,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_sc_after_load"),
+                test_data.add_testcase(load_insn, "cp_custom_sc_after_load"),
                 f"# Testcase: cp_custom_sc_after_load ({load_insn})",
                 load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                 load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
@@ -220,7 +220,9 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             )
             test_lines.extend(
                 [
-                    test_data.add_testcase("cp_custom_sc_addresses"),
+                    test_data.add_testcase(
+                        f"prev_lr_{lr_insn} & address_difference_{addr_diff}", "cp_custom_sc_addresses"
+                    ),
                     f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     f"LA(x{params.temp_reg}, scratch) # rs1 = base address",

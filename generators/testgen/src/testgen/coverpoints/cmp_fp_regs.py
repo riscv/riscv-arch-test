@@ -34,7 +34,7 @@ def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs1 = f{reg})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{reg}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -63,7 +63,7 @@ def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs2 = f{reg})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{reg}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -92,7 +92,7 @@ def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs3 = f{reg})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{reg}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -121,7 +121,7 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         desc = f"{coverpoint} (Test fs1 = fs2 = f{reg})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{reg}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -150,7 +150,7 @@ def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_
         desc = f"{coverpoint} (Test fd = fs1 = fs2 = f{reg})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{reg}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )

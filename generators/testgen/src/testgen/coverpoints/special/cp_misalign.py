@@ -43,7 +43,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         )
 
     for alignment in alignments:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"{alignment}", coverpoint))
         if instr_type == "L":
             test_lines.extend(
                 [

@@ -56,7 +56,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b_{align}", coverpoint),
                 f"# {coverpoint}: forward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
@@ -85,7 +85,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b_{align}", coverpoint),
                 f"# {coverpoint}: backward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check

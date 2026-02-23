@@ -43,7 +43,7 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
 
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_fencei"),
+                test_data.add_testcase(desc, "cp_custom_fencei"),
                 f"# Testcase: {desc}",
                 f"LI(x{reg1}, 3)",
                 f"LA(x{reg3}, {label})",

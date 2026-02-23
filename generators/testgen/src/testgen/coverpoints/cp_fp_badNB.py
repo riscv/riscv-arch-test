@@ -32,7 +32,7 @@ def make_fs1_badNB(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(
             test_data, instr_type, exclude_regs=[0], fs1val=edge_val, fp_load_type=load_size
         )
@@ -60,7 +60,7 @@ def make_fs2_badNB(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(
             test_data, instr_type, exclude_regs=[0], fs2val=edge_val, fp_load_type=load_size
         )
@@ -88,7 +88,7 @@ def make_fs3_badNB(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(
             test_data, instr_type, exclude_regs=[0], fs3val=edge_val, fp_load_type=load_size
         )

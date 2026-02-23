@@ -74,16 +74,16 @@ def csr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpo
         f"\n# CSR Access Tests for {csr_name}",
         f"\tCSRR(x{save_reg}, {csr_name})    # Save CSR",
         f"\tli x{temp_reg}, -1           # x{temp_reg} = all 1s",
-        test_data.add_testcase(coverpoint, f"{csr_name}_writeall1s", covergroup),
+        test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint, covergroup),
         f"\tCSRW({csr_name}, x{temp_reg})    # Write all 1s to CSR",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        test_data.add_testcase(coverpoint, f"{csr_name}_writeall0s", covergroup),
+        test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
         f"\tCSRW({csr_name}, zero)   # Write all 0s to CSR",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        test_data.add_testcase(coverpoint, f"{csr_name}_setall", covergroup),
+        test_data.add_testcase(f"{csr_name}_csrs_all", coverpoint, covergroup),
         f"\tCSRS({csr_name}, x{temp_reg})    # Set all CSR bits",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
-        test_data.add_testcase(coverpoint, f"{csr_name}_clearall", covergroup),
+        test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint, covergroup),
         f"\tCSRC({csr_name}, x{temp_reg})    # Clear all CSR bits",
         gen_csr_read_sigupd(check_reg, csr_name, test_data),
         f"\tCSRW({csr_name}, x{save_reg})       # Restore CSR",
@@ -119,7 +119,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
             [
                 f"    CSRW({csr_name}, zero)    # clear all bits",
                 f"    CSRS({csr_name}, x{walk_reg})      # set walking 1 in column {i}",
-                test_data.add_testcase(coverpoint, f"{csr_name}_set_bit_{i}", covergroup),
+                test_data.add_testcase(f"{csr_name}_set_bit_{i}", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, csr_name, test_data),
                 f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
             ]
@@ -132,7 +132,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
             [
                 f"    CSRW({csr_name}, zero)    # clear all bits",
                 f"    CSRS({csr_name}, x{walk_reg})      # set walking 1 in column {i}",
-                test_data.add_testcase(coverpoint, f"{csr_name}_set_bit_{i}", covergroup),
+                test_data.add_testcase(f"{csr_name}_set_bit_{i}", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, csr_name, test_data),
                 f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
             ]
@@ -146,7 +146,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
             [
                 f"    CSRW({csr_name}, x{temp_reg})      # set all bits",
                 f"    CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
-                test_data.add_testcase(coverpoint, f"{csr_name}_clr_bit_{i}", covergroup),
+                test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, csr_name, test_data),
                 f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
             ]
@@ -159,7 +159,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
             [
                 f"    CSRW({csr_name}, x{temp_reg})    # set all bits",
                 f"    CSRC({csr_name}, x{walk_reg})    # clear walking 1 in column {i}",
-                test_data.add_testcase(coverpoint, f"{csr_name}_clr_bit_{i}", covergroup),
+                test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, csr_name, test_data),
                 f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
             ]

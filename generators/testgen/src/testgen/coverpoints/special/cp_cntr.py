@@ -60,7 +60,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
     else:
         slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
     lines = [
-        test_data.add_testcase("cp_cntr"),
+        test_data.add_testcase(cntr, "cp_cntr"),
         f"# Testcase: cp_cntr ({cntr})",
     ]
     if cntr == "time":

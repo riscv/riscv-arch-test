@@ -16,7 +16,7 @@ def make_asm_count(instr_name: str, instr_type: str, coverpoint: str, test_data:
     Used for counting instruction execution in simulation.
     """
     test_lines = [
-        test_data.add_testcase(coverpoint),
+        test_data.add_testcase("count", coverpoint),
         "# Testcase cp_asm_count",
         f"{instr_name}",
     ]

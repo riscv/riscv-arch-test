@@ -16,7 +16,7 @@ Each is described below.
   - [Creating New Spreadsheet Testplans](#creating-new-spreadsheet-testplans)
   - [Adding New Privileged Coverpoints](#adding-new-privileged-coverpoints)
   - [Adding New Privileged Tests](#adding-new-privileged-tests)
-  - [Debugging Coverage](#debugging-coverage)
+- [Debugging Coverage](#debugging-coverage)
 
 ## Certification Test Plan
 
@@ -153,7 +153,7 @@ Special generators include all of the test code inline and are used for coverpoi
 that apply to only a small set of instructions. Examples include `cp_custom_fence`
 and `cp_align`.
 
-##### _Standard Generators_
+##### Standard Generators
 
 Standard coverpoint generators are used for many instructions and make up the majority
 of the coverpoint generators. A good example to get familiar with the structure of a
@@ -221,7 +221,7 @@ Additional documentation for all of these functions (and many other helper funct
 available as docstrings in the Python files where they are defined. Other standard
 coverpoint generators can also be used as examples.
 
-##### _Special Generators_
+##### Special Generators
 
 Special coverpoint generators should only be used when the coverpoint being tested requires
 a more complex sequence of instructions or requires a different pattern than most other
@@ -353,15 +353,15 @@ can also be used as examples.
 
 Privileged tests are much less structured than unprivileged instruction tests. Therefore, their testsplans are expressed in English on spreadsheets. They are described with hand-written SystemVerilog coverpoints using RVVI to access architectural state. The tests are generated with Python scripts that insert the necessary signature handling to be self-checking.
 
-Although most unprivileged tests involve instructions that are easiest to automatically test through CSV tables described above, unstructured privileged tests can be generated with the privileged test approach. See ZicsrF for an unprivileged example.
+Although most unprivileged tests involve instructions that are easiest to automatically test through CSV tables described above, unstructured unprivileged tests can be generated with the privileged test approach. See ZicsrF for an unprivileged example.
 
-Privileged tests should be partitioned into suites that generally can run for a certain combination of extensions (e.g. ExceptionsZc requires Sm for general exception capability + Zc for compressed instructions). Putting exceptions for compressed instructions in ExceptionsSm would not be a good organization because one would attempt to run them on all systems with machine mode, even if compressed instructions did not exist, and the behavior of running a compressed instruction on a machine without Zc is Unspecified.
+Privileged tests should be partitioned into suites that generally can run for a certain combination of extensions (e.g. ExceptionsZc requires Sm for general exception capability + Zca for compressed instructions). Putting exceptions for compressed instructions in ExceptionsSm would not be a good organization because one would attempt to run them on all systems with machine mode, even if compressed instructions did not exist, and the behavior of running a compressed instruction on a machine without Zca is Unspecified.
 
 Privileged tests should work for both RV32 and RV64 so there is not a need for separate suites based on XLEN. The testplan, coverpoints, and tests can call out portions of a test that differ based on XLEN.
 
 ### Creating New Spreadsheet Testplans
 
-Unprivileged tests are described with Google Sheets spreadsheets hosted in [CSC/WorkGroups/TestPlan](https://drive.google.com/drive/u/0/folders/1Xr7oKLSGBmO78lVZIFQl62xrQ1xHT6R3) accessible to RVI CSC members. There should be one spreadsheet for each category of test suites (e.g. Exceptions, Interrupts), with one tab per test suite (e.g. ExceptionsS, [ExceptionsZc](https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067), ExceptionsZaamo).
+Privileged tests are described with Google Sheets spreadsheets hosted in [CSC/WorkGroups/TestPlan](https://drive.google.com/drive/u/0/folders/1Xr7oKLSGBmO78lVZIFQl62xrQ1xHT6R3) accessible to RVI CSC members. There should be one spreadsheet for each category of test suites (e.g. Exceptions, Interrupts), with one tab per test suite (e.g. ExceptionsS, [ExceptionsZc](https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=538759067#gid=538759067), ExceptionsZaamo).
 
 Each tab should have the following columns:
 
@@ -382,17 +382,17 @@ The coverpoints use architectural state conveyed over Extended RVVI (see Certifi
 
 As with unprivileged tests, add a YAML file with the [Normative Rule - Coverpoint Mapping](#normative-rule---coverpoint-mapping).
 
-##### Standard Coverpoints
+#### Standard Coverpoints
 
-The \_coverage.svh file can include
+The `<suite>_coverage.svh` file can include
 
-```
+```SystemVerilog
 `include "general/RISCV_coverage_standard_coverpoints.svh"
 ```
 
 that defines useful standard coverpoints such as `priv_mode_m` applicable to many suites.
 
-##### Instructions and Fields
+#### Instructions and Fields
 
 The preferred idiom to check the current instruction or instruction field is
 
@@ -405,9 +405,9 @@ The preferred idiom to check the current instruction or instruction field is
     }
 ```
 
-There is a complete listing of instruction and CSR names in `framework/src/fcov/coverage/RISCV_imported_decode_pkg.svh`. Do not modify that file by hand; add new instructions or CSRs with \*\*\*TODO-Jordan.
+There is a complete listing of instruction and CSR names in `framework/src/fcov/coverage/RISCV_imported_decode_pkg.svh`. Do not modify that file by hand. It is generated using [`riscv-opcodes`](https://github.com/riscv/riscv-opcodes). To add new instructions or CSRs, add them to `riscv-opcodes` and then regenerate the file.
 
-An alternate idiom is to specify bitfields directly. For example, this is necessary for compressed instructions that are not in RISCV_imported_decode_pkg.svh. Observe how the coverpoint uses `insn[15:0]` and `wildcard bins` with `?` for don't care in some bitfields of the instruction. Also observe how the coverpoint uses `ifdef to define bins that only apply to a certain XLEN or if a certain extension or parameter is supported.
+An alternate idiom is to specify bitfields directly. For example, this is necessary for compressed instructions that are not in `RISCV_imported_decode_pkg.svh`. Observe how the coverpoint uses `insn[15:0]` and `wildcard bins` with `?` for don't care in some bitfields of the instruction. Also observe how the coverpoint uses `` `ifdef `` to define bins that only apply to a certain XLEN or if a certain extension or parameter is supported. <!-- TODO: compressed instructions should be using the named version as well. -->
 
 ```SystemVerilog
     storeops: coverpoint ins.current.insn[15:0] {
@@ -425,19 +425,20 @@ An alternate idiom is to specify bitfields directly. For example, this is necess
     }
 ```
 
-##### CSR Values
+#### CSR Values
 
-The preferred idiom to check the value of a CSR bitfield is to use the get_csr_val function, specifying the CSR name and bitfield (`mstatus` and `tsr`). `` `SAMPLE_BEFORE`` means to get the value before the instruction retires, while `` `SAMPLE_AFTER`` means to get the value after the instruction retires. The CSR names and fields match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
+The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_val` function, specifying the CSR name and bitfield (`mstatus` and `tsr`). `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The CSR names and fields match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
 
 ```SystemVerilog
     old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
     }
 ```
 
-TODO: Is [0] necessary?
-TODO: How to handle csrs with no bitfields
+`get_csr_val` returns an XLEN bit vector with the relevant value in the least significant bits. If you are planning to use implicit bins, make sure to extract the relevant bits so that it doesn't try to fill in bins for all XLEN bits.
 
-An alternate idiom is to refer to the RVVI structure, which holds the value of the CSR TODO\*\*\*before or after: the instruction
+CSRs with no bitfields can be accessed by passing the CSR name again as the field name.
+
+An alternate idiom is to refer to the RVVI structure, which holds the value of the CSR before (`ins.prev`) or after (`ins.current`) the instruction.
 
 ```SystemVerilog
     mtvec_stvec_ne: coverpoint {ins.current.csr[CSR_MTVEC] != ins.current.csr[CSR_STVEC]} {
@@ -445,7 +446,7 @@ An alternate idiom is to refer to the RVVI structure, which holds the value of t
     }
 ```
 
-##### Cross-Products
+#### Cross-Products
 
 The coverpoints given in the spreadsheet are usually cross-products of simpler coverpoints. The following example shows how to define coverpoints for the three lsbs of the address, and for whether an address is illegal, and then cross them with the storeops defined above to create up to 6 bins of store ops \* 8 bins of address lsbs for cp_store_address_misaligned, for a total of 48 bins.
 
@@ -462,21 +463,66 @@ The coverpoints given in the spreadsheet are usually cross-products of simpler c
     cp_store_access_fault:                   cross storeops, illegal_address;
 ```
 
-##### Extending RVVI
+#### Extending RVVI
 
-If additional state is absolutely necessary, it could be added to the Extended RVVI specification. This involves changing the spec and tools that read and write it, so should not be done if there is any other reasonable way to write a "good enough" coverpoint.
+If additional state is absolutely necessary, it could be added to the Extended RVVI specification. This involves changing the spec and tools that read and write it, so should not be done if there is any other reasonable way to write a "good enough" coverpoint. Open an issue to discuss other potential options before proceeding down this route.
 
 ### Adding New Privileged Tests
 
-TODO Jordan
-extensions and parameters yaml
-no loops
-labels
-things to make self-checking work
-trap handler returns 4 bytes later, so every instruction that could trap must be followed by nop (or two c.nops if compressed is supported)
-helper functions & macros
+Each privileged test needs a Python generator that produces an assembly language test
+that exercises the relevant behaviors. Privileged test generators use similar methods to [Special Generators](#special-generators), so make sure to read that portion of this guide first.
 
-### Debugging Coverage
+The following applies to all privileged test generators:
+
+- All privileged test generators must go in [`generators/testgen/src/testgen/priv/extensions`](../generators/testgen/src/testgen/priv/extensions/). All Python files in that directory are automatically discovered and imported.
+- All privileged generator functions must be decorated with the `@add_priv_test_generator("<test_name>", required_extensions=["<extension_name>", "<extension_name>"])` decorator. This tells the framework what to name the test and which extensions are required to run it on a target. Optionally, `march_extensions=["<extension_name>", "<extension_name>"]` can also be specified to indicate which extensions should be passed in the `march` string to the compiler. If not specified, this defaults to the list from `required_extensions`.
+- All privileged generator functions must use the following signature:
+
+  ```py
+  def make_name(test_data: TestData) -> list[str]:
+
+  ```
+
+  - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, debug strings, etc.
+  - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
+
+The body of most privileged test generator functions is a series of calls to other functions that generate the code for each coverpoint. For example, the main generator from [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) is included below:
+
+```py
+# All priv test generators use the @add_priv_test_generator decorator to specify the
+# name and required extensions.
+@add_priv_test_generator("Sm", required_extensions=["Sm", "Zicsr"])
+# All priv test generators must use the standard function signature.
+def make_sm(test_data: TestData) -> list[str]:
+    """Generate tests for Sm machine-mode testsuite."""
+    lines: list[str] = []
+    # Priv test generators call other internal functions to build up the test
+    lines.extend(_generate_mcause_tests(test_data))
+    lines.extend(_generate_mstatus_sd_tests(test_data))
+    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(_generate_mret_tests(test_data))
+    lines.extend(_generate_sret_tests(test_data))
+    lines.extend(_generate_mcsr_tests(test_data))
+    lines.extend(_generate_mcsr_cntr_tests(test_data))
+    # A list of assembly strings is returned. These strings will be joined together
+    # with newlines in the final output file.
+    return lines
+```
+
+There are a few important gotchas to keep in mind when writing privileged tests:
+
+- There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
+- The trap handler skips 4 bytes when returning to the test. This means that every instruction that could trap must be followed by a `nop` (or two `c.nop` if compressed instructions are supported). Alternatively, this skipped instruction can be used to change a counter/indicator of some kind to detect if a trap was taken. This is generally not necessary because the total number of traps is always checked at the end of a test.
+- Different implementations may trap on different CSRs, so always assume a CSR access could trap. The `CSRRW`, `CSRRS`, `CSRR`, etc. macros include a `nop` after the CSR access and should always be used in place of raw CSR instructions.
+
+For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
+
+- Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
+- Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
+- Include a call to `test_data.add_testcase` before each testcase within a coverpoint. This creates the appropriate labels and debug strings.
+- To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
+
+## Debugging Coverage
 
 After writing initial drafts of coverpoints and tests, run them with `make coverage EXTENSIONS=ExceptionsZc`. Omit the `--jobs` flag so they run in order and it is easier to localize which one failed. By giving the name of the test suite (e.g. ExceptionsZc), you only run the new suite of interest, saving runtime.
 
@@ -484,7 +530,7 @@ You can expect syntax errors in the tests that are easy to locate based on the c
 
 Once those are resolved, you may have bugs that cause an infinite loop. If the test is taking a long time to run, halt it. Look at the log file in (e.g.) `work/sail-rv64-max/build/priv/ExceptionsZc/ExceptionsZc.sig.trace`. Scroll through until you find the misbehavior that put the system into an infinite loop.
 
-You can expect syntax errors in the coverpoints that are easy to locate based on the filename and line number reported by the HDL simulator. Look in `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` for messages. TODO: Jordan improve:
+You can expect syntax errors in the coverpoints that are easy to locate based on the filename and line number reported by the HDL simulator. Look in `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` for messages.
 
 Once these are resolved, look in a coverage report directory such as `work/sail-rv64-max/reports/_overall_summary.txt`. Expect to have less than 100% coverage on the new coverpoints on the first try. Look in the same directory at `<suite>_report.txt` and `<suite>_uncovered.txt` for details about the coverpoint bins being hit and missed.
 
@@ -500,4 +546,4 @@ $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
      ins.current.imm[1:0]);
 ```
 
-Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.sig.trace` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values.
+Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/ExceptionsZc`.

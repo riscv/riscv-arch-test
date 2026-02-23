@@ -793,6 +793,7 @@
 #define HSmode  0x9
 #define VSmode  0x5
 #define VUmode  0x4
+#define Mmode   0x3
 #define Smode   0x1
 #define Umode   0x0
 

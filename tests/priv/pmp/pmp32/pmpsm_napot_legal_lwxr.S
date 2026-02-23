@@ -67,7 +67,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS
 
-    LI(x3, 0xACCE)                      // Store a value which is to be checked in trap handler
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x4, 1f)                          // Store the return Address in x4
@@ -243,7 +243,7 @@ main:
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
@@ -253,7 +253,7 @@ main:
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
@@ -263,7 +263,7 @@ main:
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
@@ -273,7 +273,7 @@ main:
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr2, x5
 
     LI(x4, PMPREGION_LXWR_1100)
@@ -283,7 +283,7 @@ main:
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 1
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr1, x5
 
     LI(x4, PMPREGION_LXWR_1101)
@@ -293,7 +293,7 @@ main:
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)

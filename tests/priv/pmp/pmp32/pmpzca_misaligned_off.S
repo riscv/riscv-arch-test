@@ -26,7 +26,7 @@
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
-# MARCH: rv${XLEN}ic_zicsr
+# MARCH: rv32ic_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

@@ -27,12 +27,12 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_XWR_all-02.S"
+#define TEST_FILE "pmpm_cfg_XWR_all-03.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
@@ -60,7 +60,7 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS      // {jalr, sb, sh, sw, lb, lbu, lh, lhu, lw} at start of region 0x80002000
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x3, 0xACCE)                      // Store a value which is to be checked in trap handler
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA(x4, 1f)                          // Store the return Address in x4
     jalr ra, 0(a4)
     nop

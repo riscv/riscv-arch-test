@@ -26,7 +26,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
-# MARCH: rv${XLEN}ic_zicsr
+# MARCH: rv32ic_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -105,10 +105,6 @@ main:
 
     LA(x5, PMP_ADDRESS_0)
     csrw pmpaddr0, x5
-
-    li x6, 0xffffffff
-    csrw pmpaddr5, x6
-    csrr x7, pmpaddr5
 
     LA(x5, PMP_ADDRESS_1)
     csrw pmpaddr1, x5

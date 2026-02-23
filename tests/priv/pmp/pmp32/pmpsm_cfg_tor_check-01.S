@@ -27,7 +27,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -99,7 +99,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)                                   // Signature update
 
     LA (a4, (\ADDRESS-4))
-    LI(x3, 0xACCE)                                          // Store a value which is to be checked in trap handler
+    LI(x4, 0xACCE)                                          // Store a value which is to be checked in trap handler
     LA(x4, 1f)                                              // Store the return Address in x4
     jalr ra, 0(a4)
     nop

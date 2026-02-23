@@ -28,7 +28,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -61,7 +61,7 @@ RVTEST_BEGIN
 .macro VERIFICATION_RWX ADDRESS      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LI(x3, 0xACCE)                      // Store a value which is to be checked in trap handler
+    LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
     LA(x4, 1f)                          // Store the return Address in x4
     jalr ra, 0(a4)
     nop
@@ -71,17 +71,17 @@ RVTEST_BEGIN
     nop
 
     // Store Access Check
-    LA(a5, \ADDRESS)                        // Address to be verified
-    LI(a4, NOP)                             // Value to write (NOP)
-    sw a4, 0(a5)                            // Word store test
+    LA(a5, \ADDRESS)                            // Address to be verified
+    LI(a4, NOP)                                 // Value to write (NOP)
+    sw a4, 0(a5)                                // Word store test
     nop
     nop
 
     // Load Access Check
-    lw a4, 0(a5)                            // Word load test
+    lw a4, 0(a5)                                // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)   // Signature update
 
 .endm
 
@@ -134,7 +134,7 @@ main:
 //                                          Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 14
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr14, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -144,7 +144,7 @@ main:
 
 // Test Case: 2 : L -> 0 and No Permissions given to the PMP Region 13
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr13, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -154,7 +154,7 @@ main:
 
 // Test Case: 3 : L -> 0 and No Permissions given to the PMP Region 12
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr12, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
@@ -164,7 +164,7 @@ main:
 
 // Test Case: 4 : L -> 0 and No Permissions given to the PMP Region 11
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr11, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
@@ -174,7 +174,7 @@ main:
 
 // Test Case: 5 : L -> 0 and No Permissions given to the PMP Region 10
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr10, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -184,7 +184,7 @@ main:
 
 // Test Case: 6 : L -> 0 and No Permissions given to the PMP Region 9
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr9, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -195,7 +195,7 @@ main:
 
 // Test Case: 7 : L -> 0 and No Permissions given to the PMP Region 8
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr8, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
@@ -205,7 +205,7 @@ main:
 
 // Test Case: 8 : L -> 0 and No Permissions given to the PMP Region 7
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr7, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
@@ -215,7 +215,7 @@ main:
 
 // Test Case: 9 : L -> 0 and No Permissions given to the PMP Region 6
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr6, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -225,7 +225,7 @@ main:
 
 // Test Case: 10 : L -> 0 and No Permissions given to the PMP Region 5
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr5, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -235,7 +235,7 @@ main:
 
 // Test Case: 11 : L -> 0 and No Permissions given to the PMP Region 4
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr4, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
@@ -245,7 +245,7 @@ main:
 
 // Test Case: 12 : L -> 0 and No Permissions given to the PMP Region 3
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr3, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
@@ -255,7 +255,7 @@ main:
 
 // Test Case: 13 : L -> 0 and No Permissions given to the PMP Region 2
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr2, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -265,7 +265,7 @@ main:
 
 // Test Case: 14 : L -> 0 and No Permissions given to the PMP Region 1
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr1, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -275,7 +275,7 @@ main:
 
 // Test Case: 15 : L -> 0 and No Permissions given to the PMP Region 0
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr0, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))

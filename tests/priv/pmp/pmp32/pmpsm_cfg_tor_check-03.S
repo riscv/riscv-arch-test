@@ -27,7 +27,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -54,7 +54,6 @@ RVTEST_BEGIN
 #ifndef RVMODEL_NUM_PMPS
     #define RVMODEL_NUM_PMPS 16
 #endif
-
 
 #define NOP             0x13
 #define g       (1<<(RVMODEL_PMP_GRAIN+2))
@@ -100,7 +99,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)                               // Signature update
 
     LA (a4, (\ADDRESS-4))
-    LI(x3, 0xACCE)                                          // Store a value which is to be checked in trap handler
+    LI(x4, 0xACCE)                                          // Store a value which is to be checked in trap handler
     LA(x4, 1f)                                              // Store the return Address in x4
     jalr ra, 0(a4)
     nop
@@ -206,13 +205,13 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_check1_store_access_at_pmpaddr-4\""
-test_2_str: .string "\"test: 2; cp: pmpm_cfg_tor_check1_store_access_at_pmpaddr\""
-test_3_str: .string "\"test: 3; cp: pmpm_cfg_tor_check1_store_access_at_pmpaddr+4\""
-test_4_str: .string "\"test: 4; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr-4\""
-test_5_str: .string "\"test: 5; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr\""
-test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr+4\""
-test_7_str: .string "\"test: 7; cp: pmpm_cfg_tor_check1\""
+test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_check3_store_access_at_pmpaddr-4\""
+test_2_str: .string "\"test: 2; cp: pmpm_cfg_tor_check3_store_access_at_pmpaddr\""
+test_3_str: .string "\"test: 3; cp: pmpm_cfg_tor_check3_store_access_at_pmpaddr+4\""
+test_4_str: .string "\"test: 4; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr-4\""
+test_5_str: .string "\"test: 5; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr\""
+test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check3_load_access_at_pmpaddr+4\""
+test_7_str: .string "\"test: 7; cp: pmpm_cfg_tor_check3\""
 
 RVTEST_DATA_END
 

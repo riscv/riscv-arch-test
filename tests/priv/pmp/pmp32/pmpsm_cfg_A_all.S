@@ -26,7 +26,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -169,6 +169,8 @@ main:
 
 // ---------------------------------------------------------------------------
 
+    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
+    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
     j exit                                                      // Verification Complete, exit the test
 
 .align 12
@@ -187,6 +189,7 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
+test_1_str: .string "\"test: 1; cp: cp_cfg_A_all\""
 
 RVTEST_DATA_END
 

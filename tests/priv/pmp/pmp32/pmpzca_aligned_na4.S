@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// Title        : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors      : Umer Shahid, Allen Baum, David Harris
-//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title           : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors         : Umer Shahid, Allen Baum, David Harris
+//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
 //               systems. It specifically tests the Read, Write, and Execute
@@ -25,7 +25,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
-# MARCH: rv${XLEN}ic_zicsr
+# MARCH: rv32ic_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -54,7 +54,7 @@ RVTEST_BEGIN
 #endif
 
 #define NOP             0x13
-#define REGION_SIZE     (1<<(RVMODEL_PMP_GRAIN+2))
+#define REGION_SIZE     4
 
 .macro VERIFICATION_RWX ADDRESS
     LA(x15, \ADDRESS)               // Address to be verified
@@ -102,22 +102,22 @@ main:
 
     // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
-    LA(x5, PMP_ADDRESS_0)
+    LI(x5, PMP_ADDRESS_0)
     csrw pmpaddr0, x5
 
-    LA(x4, PMP0CFG)
+    LI(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, PMP_ADDRESS_1)
+    LI(x5, PMP_ADDRESS_1)
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
+    LI(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, PMP_ADDRESS_2)
+    LI(x5, PMP_ADDRESS_2)
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP2CFG)
     csrw pmpcfg0, x4
 
     // Test Case 1: Execute in first region (should succeed)

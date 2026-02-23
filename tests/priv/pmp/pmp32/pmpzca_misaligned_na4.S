@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
-// Title        : Comprehensive PMP (Physical Memory Protection) Verification
-// Authors      : Umer Shahid, Allen Baum, David Harris
-//                Muhammad Abdullah, Hamza Ali, Muhammad Zain
+// Title           : Comprehensive PMP (Physical Memory Protection) Verification
+// Authors         : Umer Shahid, Allen Baum, David Harris
+//                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
 //
 // Description : This test verifies the functionality and enforcement of
 //               Physical Memory Protection (PMP) configurations in RISC-V
@@ -15,12 +15,12 @@
 //               - Adjust PMP configurations for specific hardware if required.
 //
 // Coverpoints : cp_misaligned_na4 for PMPZca is partially covered
-//               in this test file.
+//                 in this test file.
 //
 // Test Cases  : Checking that misaligned 32-bit fetches that cross a NA4 PMP boundary fail.
-//               Setting up 3 standard consecutive NA4 PMP regions with L=1, XWR=111
-//               (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
-//               start and end of the second regions. Attempt jalr to each ret.
+//                 Setting up 3 standard consecutive NA4 PMP regions with L=1, XWR=111
+//                 (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
+//                 start and end of the second regions. Attempt jalr to each ret.
 //
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
@@ -28,7 +28,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
-# MARCH: rv${XLEN}ic_zicsr
+# MARCH: rv32ic_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -58,11 +58,11 @@ RVTEST_BEGIN
 #endif
 
 #define NOP             0x13
-#define REGION_SIZE     (1<<(RVMODEL_PMP_GRAIN+2))
+#define REGION_SIZE     4
 
 .macro VERIFICATION_RWX ADDRESS
 
-    LA(x15, \ADDRESS)                           // Address to be verified
+    LA(x15, \ADDRESS)                             // Address to be verified
     c.jalr x15
     nop
 
@@ -83,52 +83,48 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP_REGION_GLOBAL            ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP0CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)   &0xFF)   << PMP0_CFG_SHIFT))
 #define PMP1CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4)   &0xFF)   << PMP1_CFG_SHIFT))
 #define PMP2CFG                     ((((PMP_L|                  PMP_NA4)   &0xFF)   << PMP2_CFG_SHIFT))
 
-#define PMPADDRESS_TOP_GLOBAL       -1                          // All memory region
+#define PMPADDRESS_TOP_GLOBAL        -1                            // All memory region
 
-#define REGIONSTART                 0x80002000                  // RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_ADDRESS_0               ((REGIONSTART)                  >> PMP_SHIFT)
-#define PMP_ADDRESS_1               ((REGIONSTART+REGION_SIZE)      >> PMP_SHIFT)
-#define PMP_ADDRESS_2               ((REGIONSTART+(2*REGION_SIZE))  >> PMP_SHIFT)
+#define REGIONSTART                    0x80002000                    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define PMP_ADDRESS_0               ((REGIONSTART)                   >> PMP_SHIFT)
+#define PMP_ADDRESS_1               ((REGIONSTART+REGION_SIZE)         >> PMP_SHIFT)
+#define PMP_ADDRESS_2               ((REGIONSTART+(2*REGION_SIZE))     >> PMP_SHIFT)
 
 #ifdef rvtest_strap_routine
     csrw satp, zero                // Disable address translation.
 #endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
-    csrw    pmpaddr15, x4
+    csrw     pmpaddr15, x4
 
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg3, x4
 
-//                                          Verification Section
+//                                            Verification Section
 // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
-    LA(x5, PMP_ADDRESS_0)
+    LI(x5, PMP_ADDRESS_0)
     csrw pmpaddr0, x5
 
-    li x6, 0xffffffff
-    csrw pmpaddr5, x6
-    csrr x7, pmpaddr5
-
-    LA(x4, PMP0CFG)
+    LI(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, PMP_ADDRESS_1)
+    LI(x5, PMP_ADDRESS_1)
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
+    LI(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, PMP_ADDRESS_2)
+    LI(x5, PMP_ADDRESS_2)
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP2CFG)
     csrw pmpcfg0, x4
 
     // Test Case 1: Uncompressed return straddling the start of 2nd region
@@ -144,14 +140,14 @@ main:
     // Update signature for test case 2
     RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
 
-    j exit                                                      // Verification Complete, exit the test
+    j exit                                                        // Verification Complete, exit the test
 
 .align 13
 TEST_FOR_EXECUTION_0:
     nop
 
 TEST_FOR_EXECUTION_1:
-    jalr x0, x1, 0                                              // Uncompressed return straddling the start of 2nd region
+    jalr x0, x1, 0                                                // Uncompressed return straddling the start of 2nd region
 
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of 2nd region
@@ -159,7 +155,7 @@ TEST_FOR_EXECUTION_2:
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 exit:
 

@@ -26,7 +26,7 @@
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
-# MARCH: rv${XLEN}ic_zicsr
+# MARCH: rv32ic_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -106,7 +106,7 @@ main:
 //                                          Verification Section
 // Test Case: NAPOT Region with L->1 and XWR->111
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)

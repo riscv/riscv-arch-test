@@ -27,7 +27,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','S','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -132,7 +132,7 @@ main:
 //                                          Verification Section
 // Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 47
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr47, x5
 
     LI(x4, PMP_REGION_47)
@@ -142,7 +142,7 @@ main:
 
 // Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 46
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr46, x5
 
     LI(x4, PMP_REGION_46)
@@ -152,7 +152,7 @@ main:
 
 // Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 45
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr45, x5
 
     LI(x4, PMP_REGION_45)
@@ -162,7 +162,7 @@ main:
 
 // Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 44
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr44, x5
 
     LI(x4, PMP_REGION_44)
@@ -172,7 +172,7 @@ main:
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 43
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr43, x5
 
     LI(x4, PMP_REGION_43)
@@ -182,7 +182,7 @@ main:
 
 // Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 42
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr42, x5
 
     LI(x4, PMP_REGION_42)
@@ -192,7 +192,7 @@ main:
 
 // Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 41
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr41, x5
 
     LI(x4, PMP_REGION_41)
@@ -202,7 +202,7 @@ main:
 
 // Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 40
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr40, x5
 
     LI(x4, PMP_REGION_40)
@@ -212,7 +212,7 @@ main:
 
 // Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 39
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr39, x5
 
     LI(x4, PMP_REGION_39)
@@ -222,7 +222,7 @@ main:
 
 // Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 38
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr38, x5
 
     LI(x4, PMP_REGION_38)
@@ -232,7 +232,7 @@ main:
 
 // Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 37
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr37, x5
 
     LI(x4, PMP_REGION_37)
@@ -242,7 +242,7 @@ main:
 
 // Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 36
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr36, x5
 
     LI(x4, PMP_REGION_36)
@@ -252,7 +252,7 @@ main:
 
 // Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 35
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr35, x5
 
     LI(x4, PMP_REGION_35)
@@ -262,7 +262,7 @@ main:
 
 // Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 34
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr34, x5
 
     LI(x4, PMP_REGION_34)
@@ -272,7 +272,7 @@ main:
 
 // Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 33
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr33, x5
 
     LI(x4, PMP_REGION_33)
@@ -282,7 +282,7 @@ main:
 
 // Test Case: 16 : L -> 1 and XR Permissions given to the PMP Region 32
 
-    LA(x5, STANDARD_REGION)
+    LI(x5, STANDARD_REGION)
     csrw pmpaddr32, x5
 
     LI(x4, PMP_REGION_32)

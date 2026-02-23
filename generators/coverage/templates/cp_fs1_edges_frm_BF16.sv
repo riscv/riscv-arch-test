@@ -16,8 +16,8 @@
         bins negmax_subnorm   = {32'h807f};
         bins posmid_subnorm   = {32'h0040};
         bins negmid_subnorm   = {32'h8040};
-        bins posmin_subnorm   = {32'h0000};
-        bins negmin_subnorm   = {32'h8000};
+        bins posmin_subnorm   = {32'h0001};
+        bins negmin_subnorm   = {32'h8001};
         bins posinfinity      = {32'h7f80};
         bins neginfinity      = {32'hff80};
         bins posQNaN          = {[32'h7fc0:32'h7fff]};

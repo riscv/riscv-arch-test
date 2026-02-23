@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.2)
+= RVI20 Certification Requirements Document (rev 0.3)
 include::adoc_common.adoc[]
 :description: RVI20 CRD (Certificate Requirements Document)
 
@@ -18,8 +18,19 @@ History of documentation changes that eventually lead to releases.
 |===
 | Date | Revision | Changes
 
-| Feb 23, 2026 | 0.2 a| * Moved from https://github.com/RISC-V-Certification-Steering-Committee/RVCP-docs
-| Feb 5, 2026 | 0.1 a| * Copied from UDB-generated adoc
+| Feb 23, 2026
+| 0.3
+a| * Incorporated feedback from CSC Requirements WG meeting on Feb 20, 2026
+   ** Added column for "Impact on Certificate Scope" in the IN-SCOPE parameters table
+   ** Added note that parameters are preliminary
+
+| Feb 23, 2026
+| 0.2
+a| * Moved from https://github.com/RISC-V-Certification-Steering-Committee/RVCP-docs
+
+| Feb 5, 2026|
+ 0.1
+ a| * Copied from UDB-generated adoc
 |===
 
 include::glossary.adoc[]
@@ -49,20 +60,20 @@ include::crd_common.adoc[]
 |===
 | Requirement ID | Description
 
-| REQ32-BASE | The RVI20-32 certificate requires support of the RV32I base integer ISA.
-| REQ64-BASE | The RVI20-64 certificate requires support of the RV64I base integer ISA.
-| REQ-ENDIANNESS | The RVI20 certificates require little-endian support.
+| REQ32-BASE | Uses the RV32I base integer ISA
+| REQ64-BASE | Uses the RV64I base integer ISA
+| REQ-ENDIANNESS | Only little-endian is supported
 |===
 
 === Exclusions
 
 As per the unprivileged architecture specification, the ecall
 instruction causes a requested trap to the execution environment.
-Since the RVI20 profile family doesn't define any execution environments
+Since the RVI profile family doesn't define any execution environments
 the ecall instruction is OUT-OF-SCOPE for the RVI20 certificate.
 
 Similarly the ebreak and c.ebreak instructions are OUT-OF-SCOPE for the RVI20 certificate
-since they cause a breakpoint exception and the RVI20 profile family doesn't define any
+since they cause a breakpoint exception and the RVI profile family doesn't define any
 execution environments to handle such exceptions.
 
 <<<
@@ -139,6 +150,9 @@ Parameters are implementation-defined options supported by RISC-V standards.
 Many parameters are not named in RISC-V standards but a golden list of parameters
 is maintained separately by RISC-V International and this section uses those names.
 
+NOTE: The golden list of parameters is still under development so the parameters in this document
+are "preliminary parameters" and subject to change as the golden list is finalized.
+
 This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVI20 certificate.
 
 === IN-SCOPE Parameters
@@ -147,21 +161,23 @@ An implementation must abide by the "Allowed Value(s)" of IN-SCOPE parameters to
 If the "Allowed Value(s)" is "Any" then any value allowed by the parameter is acceptable.
 
 .IN-SCOPE Parameters
-[cols="4,2,1,1,2"]
+[cols="3,1,1,1,3,2"]
 |===
-| Parameter | Type | Allowed Value(s) | ISA Feature | Definition
+| Parameter | Type | Allowed Value(s) | ISA Feature | Definition | Impact on Certificate Scope
 
 | MISALIGNED_LDST
 | Boolean
 | Any
 | RV32I/RV64I Base ISA
-a| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
+| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
+| Misaligned load/store instructions are only in-scope if this parameter is true.
 
 | TIME_CSR_IMPLEMENTED
 | Boolean
 | Any
 | Zicntr
-a| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. If true, all unprivileged time-related CSRs are supported. If false, all unprivileged time-related CSRs are not supported. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
+| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
+| Reading time-related CSRs is only in-scope if this parameter is true.
 
 | LRSC_RESERVATION_STRATEGY
 | Enum (Exact, 64B, 128B, Other)
@@ -178,14 +194,16 @@ a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) 
 ! 128B ! Reservation set is naturally-aligned 128-byte region
 ! Other ! Reservation set strategy doesn't fit any of the specified choices
 !===
+| The load-reserved/store-conditional instructions are only in-scope if this parameter is not "Other".
 
 | LRSC_FAIL_ON_NON_EXACT_LRSC
 | Boolean
 | Any
 | Atomic (Zalrsc extension)
-a| Does a Store Conditional instruction fail if its physical address and size do not
+| Does a Store Conditional instruction fail if its physical address and size do not
   exactly match the physical address and size of the last Load Reserved in program order
   (independent of whether or not the Store Conditional is in the current reservation set).
+| None
 
 |===
 

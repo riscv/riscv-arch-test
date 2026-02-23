@@ -1,0 +1,54 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: zbs_single_bit_functionality
+    coverpoint: [""]
+
+  - name: bclr_enc
+    coverpoint: ["Zbs_bclr_cg/cr_rs1_rs2_edges"]
+
+  - name: bclr_op
+    coverpoint: ["Zbs_bclr_cg/cr_rs1_rs2_edges"]
+
+  - name: bclri_enc
+    coverpoint: ["Zbs_bclri_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: bclri_op
+    coverpoint: ["Zbs_bclri_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: bext_enc
+    coverpoint: ["Zbs_bext_cg/cr_rs1_rs2_edges"]
+
+  - name: bext_op
+    coverpoint: ["Zbs_bext_cg/cr_rs1_rs2_edges"]
+
+  - name: bexti_enc
+    coverpoint: ["Zbs_bexti_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: bexti_op
+    coverpoint: ["Zbs_bexti_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: binv_enc
+    coverpoint: ["Zbs_binv_cg/cr_rs1_rs2_edges"]
+
+  - name: binv_op
+    coverpoint: ["Zbs_binv_cg/cr_rs1_rs2_edges"]
+
+  - name: binvi_enc
+    coverpoint: ["Zbs_binvi_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: binvi_op
+    coverpoint: ["Zbs_binvi_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: bset_enc
+    coverpoint: ["Zbs_bset_cg/cr_rs1_rs2_edges"]
+
+  - name: bset_op
+    coverpoint: ["Zbs_bset_cg/cr_rs1_rs2_edges"]
+
+  - name: bseti_enc
+    coverpoint: ["Zbs_bseti_cg/cr_rs1_imm_edges_uimm"]
+
+  - name: bseti_op
+    coverpoint: ["Zbs_bseti_cg/cr_rs1_imm_edges_uimm"]

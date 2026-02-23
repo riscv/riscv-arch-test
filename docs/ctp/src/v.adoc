@@ -292,3 +292,7 @@ There are several Zvk* vector cryptography extensions.
 [[t-Zvksh-coverpoints]]
 .Zvksh Instruction Coverpoints
 // include::{testplansdir}/Zvksh.adoc[]
+
+==== Zvkt Constant-Time Vector Instructions
+
+Not tested yet.

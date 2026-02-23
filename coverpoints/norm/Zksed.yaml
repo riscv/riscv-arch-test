@@ -1,0 +1,19 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # A core which implements Zks must implement all of the above extensions.
+  - name: zks_impl_all
+    coverpoint: ["Definition, checked through UDB"]
+
+  - name: sm4ed_enc
+    coverpoint: ["Zksed_sm4ed_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: sm4ed_op
+    coverpoint: ["Zksed_sm4ed_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: sm4ks_enc
+    coverpoint: ["Zksed_sm4ks_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: sm4ks_op
+    coverpoint: ["Zksed_sm4ks_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]

@@ -1,5 +1,5 @@
-    cp_fs2_edges_BF16 : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
-        // FS2 edges
+    cp_fs1_edges_BF16 : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // FS1 edges
         bins pos0             = {32'h0000};
         bins neg0             = {32'h8000};
         bins pos1             = {32'h3f80};
@@ -16,8 +16,8 @@
         bins negmax_subnorm   = {32'h807f};
         bins posmid_subnorm   = {32'h0040};
         bins negmid_subnorm   = {32'h8040};
-        bins posmin_subnorm   = {32'h0000};
-        bins negmin_subnorm   = {32'h8000};
+        bins posmin_subnorm   = {32'h0001};
+        bins negmin_subnorm   = {32'h8001};
         bins posinfinity      = {32'h7f80};
         bins neginfinity      = {32'hff80};
         bins posQNaN          = {[32'h7fc0:32'h7fff]};
@@ -26,4 +26,8 @@
         bins negSNaN          = {[32'hff81:32'hffbf]};
         bins posrandom        = {32'h7ef8};
         bins negrandom        = {32'h813d};
+    }
+
+    cr_fs1_edges_frm_BF16 : cross cp_fs1_edges_BF16,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1, FRM
     }

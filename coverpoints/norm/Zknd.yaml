@@ -1,0 +1,36 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: zknd_shared_instr
+    coverpoint: ["Definition, checked through UDB"]
+
+  - name: aes32dsi_enc
+    coverpoint: ["Zknd_aes32dsi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes32dsi_op
+    coverpoint: ["Zknd_aes32dsi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes32dsmi_enc
+    coverpoint: ["Zknd_aes32dsmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes32dsmi_op
+    coverpoint: ["Zknd_aes32dsmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes64ds_enc
+    coverpoint: ["Zknd_aes64ds_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64ds_op
+    coverpoint: ["Zknd_aes64ds_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64dsm_enc
+    coverpoint: ["Zknd_aes64dsm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64dsm_op
+    coverpoint: ["Zknd_aes64dsm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64im_enc
+    coverpoint: ["Zknd_aes64im_cg/cp_rs1_edges"]
+
+  - name: aes64im_op
+    coverpoint: ["Zknd_aes64im_cg/cp_rs1_edges"]

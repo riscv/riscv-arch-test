@@ -1,0 +1,39 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: pack_enc
+    coverpoint: ["Zbkb_pack_cg/cr_rs1_rs2_edges"]
+
+  - name: pack_op
+    coverpoint: ["Zbkb_pack_cg/cr_rs1_rs2_edges"]
+
+  - name: packh_enc
+    coverpoint: ["Zbkb_packh_cg/cr_rs1_rs2_edges"]
+
+  - name: packh_op
+    coverpoint: ["Zbkb_packh_cg/cr_rs1_rs2_edges"]
+
+  - name: packw_enc
+    coverpoint: ["Zbkb_packw_cg/cr_rs1_rs2_edges"]
+
+  - name: packw_op
+    coverpoint: ["Zbkb_packw_cg/cr_rs1_rs2_edges"]
+
+  - name: brev8_enc
+    coverpoint: ["Zbkb_brev8_cg/cp_rs1_edges"]
+
+  - name: brev8_op
+    coverpoint: ["Zbkb_brev8_cg/cp_rs1_edges"]
+
+  - name: unzip_enc
+    coverpoint: ["Zbkb_unzip_cg/cp_rs1_edges"]
+
+  - name: unzip_op
+    coverpoint: ["Zbkb_unzip_cg/cp_rs1_edges"]
+
+  - name: zip_enc
+    coverpoint: ["Zbkb_zip_cg/cp_rs1_edges"]
+
+  - name: zip_op
+    coverpoint: ["Zbkb_zip_cg/cp_rs1_edges"]

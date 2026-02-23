@@ -39,7 +39,7 @@ jobs:
       - name: Find all sail configs
         id: find
         env:
-          EXCLUDE: "sail-rv32e sail-rv32-max-clang sail-rv64-max-clang" # TODO: UDB does not support E yet, not all tests work with clang
+          EXCLUDE: "sail-rv32e" # TODO: UDB does not support E yet
         run: |
           configs=$(ls -d config/sail/*/ | xargs -n1 basename | grep -vxFf <(tr ' ' '\n' <<< "$EXCLUDE") | sort | jq -R -s -c 'split("\n") | map(select(length > 0)) | map("sail/" + .)')
           echo "configs=$configs" >> "$GITHUB_OUTPUT"
@@ -67,6 +67,16 @@ jobs:
       - name: Install RISC-V GCC toolchain
         run: curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz | sudo tar xvJ --directory=/usr/local --strip-components=1
 
+      - name: Install Clang
+        env:
+          LLVM_VERSION: 21
+        run: |
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
+          sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+          for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
+            sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
+          done
+
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 
@@ -74,9 +84,9 @@ jobs:
         run: |
           # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
           if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
-              DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
+              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
           else
-              DOCKER=1 CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
+              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
           fi
 
   spike:
@@ -297,25 +307,25 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - run: git submodule update --init ctp/docs-resources crd/docs-resources external/riscv-unified-db
+      - run: git submodule update --init docs/docs-resources external/riscv-unified-db
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       - name: Build
-        run: cd ctp && make -j2
+        run: cd docs/ctp && make -j2
 
       - name: Upload PDF
         uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
-          path: ctp/build/ctp.pdf
+          path: docs/ctp/build/ctp.pdf
 
       - name: Upload HTML
         uses: actions/upload-artifact@v6
         with:
           name: ctp.html
-          path: ctp/build/ctp.html
+          path: docs/ctp/build/ctp.html
 
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem

@@ -271,6 +271,8 @@
         .ascii "\nRVCP-SUMMARY: Test File \""
         .ascii TEST_FILE
         .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+    abortstr:
+        .string "\"The trap handler aborted the test before normal completion!\"";
     testnamestr:
         .string "RVCP: Test Info: "
     newlinestr:

@@ -70,14 +70,6 @@
         SREG x31, 248(DEFAULT_TEMP_REG)
 
     failedtest_saveresults:
-        # failing instruction might be 16 or 32 bits, on a 16-byte boundary.
-        # fetch with halfwords, report all 32 bits, let user figure it out
-        lhu x6, -14(DEFAULT_LINK_REG)     # get upper half of the failing instruction
-        lhu x7, -16(DEFAULT_LINK_REG)     # get lower half
-        slli x6, x6, 16     # reassemble
-        or x6, x6, x7
-        sw x6, 256(DEFAULT_TEMP_REG)      # record 32 bits of failing instruction.  Actual instruction might be top half
-
         # Reconstruct and extract information from the beq
         # branch might be on 16-byte boundary, so fetch with halfword
         lhu x6, -6(DEFAULT_LINK_REG)     # get upper half of the the beq that compared good and bad registers
@@ -121,6 +113,18 @@
         LREG x6, 0(DEFAULT_LINK_REG)      # load the instruction address from memory
         SREG x6, 264(DEFAULT_TEMP_REG)
 
+        # Fetch the failing instruction using INSTR_PTR address
+        # Check bottom 2 bits: if inst[1:0] != 0b11, it's a 16-bit compressed instruction
+        lhu x7, 0(x6)       # get lower half of the failing instruction
+        andi x8, x7, 3
+        li x9, 3
+        bne x8, x9, 1f      # compressed: only lower half needed
+        lhu x8, 2(x6)       # 32-bit: fetch upper half
+        slli x8, x8, 16
+        or x7, x7, x8
+    1:
+        sw x7, 256(DEFAULT_TEMP_REG)      # record failing instruction (16 or 32 bits)
+
         # Get pointer to failure string (loaded from second embedded pointer after jal)
         LREG x6, REGWIDTH(DEFAULT_LINK_REG) # load the string pointer from memory
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
@@ -142,11 +146,16 @@
         LA(x9, newlinestr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
-        # Print failing instruction (32-bit)
+        # Print failing instruction (detect 16-bit compressed vs 32-bit)
         LA(x9, inststr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         lw a0, failing_instruction
-        li a1, 32
+        li a1, 32            # assume 32-bit instruction
+        andi a2, a0, 3
+        li a3, 3
+        beq a2, a3, 2f
+        li a1, 16            # compressed: print as 16-bit
+    2:
         jal failedtest_hex_to_str
         LA(x9, ascii_buffer)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)

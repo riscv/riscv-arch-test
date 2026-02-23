@@ -80,7 +80,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i << 5})           # write value {i << 5}",
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
-                gen_csr_read_sigupd(r1, "frm", test_data, emit_label=False),
+                gen_csr_read_sigupd(r1, "frm", test_data),
             ]
         )
 
@@ -101,7 +101,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
-                gen_csr_read_sigupd(r1, "fflags", test_data, emit_label=False),
+                gen_csr_read_sigupd(r1, "fflags", test_data),
             ]
         )
 
@@ -122,7 +122,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
                 gen_csr_write_sigupd(r1, "frm", test_data),
-                gen_csr_read_sigupd(r1, "fcsr", test_data, emit_label=False),
+                gen_csr_read_sigupd(r1, "fcsr", test_data),
             ]
         )
     ######################################
@@ -142,7 +142,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
                 gen_csr_write_sigupd(r1, "fflags", test_data),
-                gen_csr_read_sigupd(r1, "fcsr", test_data, emit_label=False),
+                gen_csr_read_sigupd(r1, "fcsr", test_data),
             ]
         )
 

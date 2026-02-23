@@ -61,11 +61,12 @@
     LA(DEFAULT_SIG_REG, signature_base)
 
     // Initial signature check to confirm self-checking is working
+    canary_check:
     LI(T1, CANARY_VALUE)
     #ifdef RVTEST_SELFCHECK
       // Can't use DEFAULT_*_REG macros here because of macro expansion order
       // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-      RVTEST_SIGUPD(x2, x5, x4, T1, "canary_mismatch") # sig_begin_canary
+      RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # sig_begin_canary
     #else
       // nops to match selfchecking test length
       RVTEST_SIGUPD_NOPS

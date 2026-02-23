@@ -44,6 +44,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
                     f"SREG x{params.temp_reg}, 0(x{params.rs1}) # store test value to memory",
                     f"SREG x{params.temp_reg}, REGWIDTH(x{params.rs1}) # store test value to memory",
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
                     write_sigupd(params.rd, test_data, "int"),
                     "",
@@ -65,6 +66,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
                     "#ifdef RVTEST_SELFCHECK",
@@ -116,6 +118,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     f"LA(x{params.rs1}, scratch) # load base address into rs1",
                     f"addi x{params.rs1}, x{params.rs1}, {alignment} # adjust for alignment",
                     f"{store_instr} x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
                     write_sigupd(params.rd, test_data, "int"),
                     f"{load_instr} x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",

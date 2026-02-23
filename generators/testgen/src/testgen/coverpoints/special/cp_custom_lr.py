@@ -42,6 +42,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 test_data.add_testcase(suffix, "cp_custom_aqrl"),
                 f"# Testcase: cp_custom_aqrl with suffix '{suffix}'",
                 f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, 0 # copy data_ptr to rs1",
+                f"test_{test_data.test_count}:",
                 f"{instr_name}{suffix} x{params.rd}, (x{params.rs1}) # perform load ({to_hex(params.temp_val, test_data.xlen)})",
                 write_sigupd(params.rd, test_data, "int"),
                 f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, SIG_STRIDE # increment data_ptr",

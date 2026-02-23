@@ -49,6 +49,7 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
                 f"LA(x{reg3}, {label})",
                 load_int_reg(f"addi x{reg1}, x{reg1}, {add_val}", reg2, encoded_instr, test_data),
                 f"sw x{reg2}, 0(x{reg3})",
+                f"test_{test_data.test_count}:",
                 f"{fence_instr} # {desc}",
                 f"{label}:",
                 f"addi x{reg1}, x{reg1}, 1 # original code",

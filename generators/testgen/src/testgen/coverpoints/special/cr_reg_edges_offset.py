@@ -35,6 +35,7 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     "0: # destination for backwards branch that is never taken",
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 3f # forward branch, if taken",
                     "1: # goes here if not taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 0b # backward branch, never taken",

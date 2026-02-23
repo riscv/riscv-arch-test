@@ -114,14 +114,15 @@
         LREG x6, 0(x6)      # load expected value
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
 
-        # Save failing address
-        addi x6, DEFAULT_LINK_REG, -16    # address of the failing instruction (possibly including half of previous instruction)
+        # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
+        # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
+
+        # Save failing address (loaded from embedded instruction pointer after jal)
+        LREG x6, 0(DEFAULT_LINK_REG)      # load the instruction address from memory
         SREG x6, 264(DEFAULT_TEMP_REG)
 
-        # Get pointer to failure string
-        # In SELFCHECK mode, after the jal instruction there is an XLEN-sized pointer to the test name string
-        # The jal returns to DEFAULT_LINK_REG, which points to the instruction after jal (i.e., the pointer itself)
-        LREG x6, 0(DEFAULT_LINK_REG)      # load the string pointer from memory
+        # Get pointer to failure string (loaded from second embedded pointer after jal)
+        LREG x6, REGWIDTH(DEFAULT_LINK_REG) # load the string pointer from memory
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:

@@ -185,7 +185,7 @@ class TestData:
 
         # Add testcase string to test data strings (keep original names for debugging)
         self._test_data_strings.append(
-            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
+            f'test_{self.test_count}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
 
         # Return label

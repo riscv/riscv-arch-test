@@ -139,12 +139,14 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         # ecall test
         test_data.add_testcase("ecall", coverpoint, covergroup),
         f"    li x{check_reg}, 1    # success code",
+        f"test_{test_data.test_count}:",
         "    ecall                 # test ecall instruction",
         f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
         write_sigupd(check_reg, test_data),
         # ebreak test
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         f"    li x{check_reg}, 1    # success code",
+        f"test_{test_data.test_count}:",
         "    ebreak                # test ebreak instruction",
         f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
         write_sigupd(check_reg, test_data),
@@ -191,6 +193,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"    LA(x{reg3}, 1f)             # return address after mret",
                             f"    CSRW(mepc, x{reg3})          # set mepc to return address",
                             f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
+                            f"test_{test_data.test_count}:",
                             "    mret                   # test mret instruction",
                             f"    li x{check_reg}, -1              # should not be executed",
                             "1:                         # mret should return to here",
@@ -247,6 +250,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"    LA(x{reg3}, 1f)             # return address after sret",
                                 f"    CSRW(sepc, x{reg3})          # set sepc to return address. Note that sepc might not exist if S-mode is not implemented, and this test will break if writing it hangs",
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
+                                f"test_{test_data.test_count}:",
                                 "    sret                   # test sret instruction",
                                 f"    li x{check_reg}, -1              # should not be executed",
                                 "1:                         # sret should return to here",
@@ -534,6 +538,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("", coverpoint, covergroup),
+            f"test_{test_data.test_count}:",
             f"\tLI(x{r1}, 0b1)        # inhibit mcycle",
             f"\tCSRW(mcountinhibit, x{r1})        # inhibit mcycle",
             f"\tCSRR(x{r1}, mcycle)        # read mcycle",
@@ -556,6 +561,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("", coverpoint, covergroup),
+            f"test_{test_data.test_count}:",
             f"\tLI(x{r1}, 0b100)        # inhibit minstret",
             f"\tCSRW(mcountinhibit, x{r1})        # inhibit minstret",
             f"\tCSRR(x{r1}, minstret)        # read minstret",
@@ -578,6 +584,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("", coverpoint, covergroup),
+            f"test_{test_data.test_count}:",
             f"\tLI(x{r1}, 42)        # value to write to mtime",
             f"\tLA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"\tSREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
@@ -587,6 +594,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             write_sigupd(r2, test_data),
             "#if __riscv_xlen == 32",
             test_data.add_testcase("h", coverpoint, covergroup),
+            f"test_{test_data.test_count}:",
             f"\tLI(x{r1}, 67)        # value to write to mtimeh",
             f"\tLA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
             f"\tSREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",

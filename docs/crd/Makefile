@@ -17,7 +17,6 @@
 # Install by running:
 #
 #   docker pull riscvintl/riscv-docs-base-container-image:latest
-#
 
 DOCS := rvi20_crd
 

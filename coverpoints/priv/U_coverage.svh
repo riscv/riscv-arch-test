@@ -14,24 +14,16 @@
 covergroup U_uprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    // "U uprivinst"
 
     // building blocks for the main coverpoints
     privinstrs: coverpoint ins.current.insn  {
         bins ecall  = {ECALL};
         bins ebreak = {EBREAK};
-    }
-    mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};
-    }
-    sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-
     // main coverpoints
     cp_uprivinst:  cross priv_mode_u, privinstrs;
-    cp_mret:       cross priv_mode_u, mret; // should trap
-    cp_sret:       cross priv_mode_u, sret; // should trap
 endgroup
 
 covergroup U_ucsr_cg with function sample(ins_t ins);

@@ -86,7 +86,7 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
 def read_covergroup_templates(template_dir: Path) -> dict[str, str]:
     """Read the covergroup templates from the templates directory."""
     covergroupTemplates: dict[str, str] = {}
-    for file in template_dir.rglob("*.txt"):
+    for file in template_dir.rglob("*.sv"):
         cg = file.stem
         covergroupTemplates[cg] = file.read_text()
     return covergroupTemplates
@@ -319,11 +319,11 @@ def write_covergroups(
             print("***** Writing " + file)
 
             vector = arch.startswith("Vx") or arch.startswith("Zv") or arch.startswith("Vls") or arch.startswith("Vf")
+            effew = get_effew(arch) if vector else ""
 
             with (covergroup_out_dir / file).open("w") as f:
                 finit = (covergroup_out_dir / initfile).open("w")
                 if vector:
-                    effew = get_effew(arch)
                     f.write(customize_template(covergroup_templates, "header_vector", arch, "", effew=effew))
                 else:
                     f.write(customize_template(covergroup_templates, "header", arch, ""))

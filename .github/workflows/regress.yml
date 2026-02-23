@@ -205,14 +205,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: rv64-max
-            config_file: config/qemu/qemu-rv64-max/test_config.yaml
-            config_name: qemu-rv64-max
+          - name: rv64-RVI20U64
+            config_file: config/qemu/qemu-RVI20U64/test_config.yaml
+            config_name: qemu-RVI20U64
             run_cmd: qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
 
-          - name: rv32-max
-            config_file: config/qemu/qemu-rv32-max/test_config.yaml
-            config_name: qemu-rv32-max
+          - name: rv32-RVI20U32
+            config_file: config/qemu/qemu-RVI20U32/test_config.yaml
+            config_name: qemu-RVI20U32
             run_cmd: qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
 
     steps:

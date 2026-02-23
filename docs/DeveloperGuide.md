@@ -382,7 +382,7 @@ The coverpoints use architectural state conveyed over Extended RVVI (see Certifi
 
 As with unprivileged tests, add a YAML file with the [Normative Rule - Coverpoint Mapping](#normative-rule---coverpoint-mapping).
 
-##### Standard Coverpoints
+#### Standard Coverpoints
 
 The `<suite>_coverage.svh` file can include
 
@@ -392,7 +392,7 @@ The `<suite>_coverage.svh` file can include
 
 that defines useful standard coverpoints such as `priv_mode_m` applicable to many suites.
 
-##### Instructions and Fields
+#### Instructions and Fields
 
 The preferred idiom to check the current instruction or instruction field is
 
@@ -425,7 +425,7 @@ An alternate idiom is to specify bitfields directly. For example, this is necess
     }
 ```
 
-##### CSR Values
+#### CSR Values
 
 The preferred idiom to check the value of a CSR bitfield is to use the `get_csr_val` function, specifying the CSR name and bitfield (`mstatus` and `tsr`). `` `SAMPLE_BEFORE `` means to get the value before the instruction retires, while `` `SAMPLE_AFTER `` means to get the value after the instruction retires. The CSR names and fields match the ISA manual, and are listed in `framework/src/act/fcov/coverage/RISCV_coverage_csr.svh`.
 
@@ -446,7 +446,7 @@ An alternate idiom is to refer to the RVVI structure, which holds the value of t
     }
 ```
 
-##### Cross-Products
+#### Cross-Products
 
 The coverpoints given in the spreadsheet are usually cross-products of simpler coverpoints. The following example shows how to define coverpoints for the three lsbs of the address, and for whether an address is illegal, and then cross them with the storeops defined above to create up to 6 bins of store ops \* 8 bins of address lsbs for cp_store_address_misaligned, for a total of 48 bins.
 
@@ -463,7 +463,7 @@ The coverpoints given in the spreadsheet are usually cross-products of simpler c
     cp_store_access_fault:                   cross storeops, illegal_address;
 ```
 
-##### Extending RVVI
+#### Extending RVVI
 
 If additional state is absolutely necessary, it could be added to the Extended RVVI specification. This involves changing the spec and tools that read and write it, so should not be done if there is any other reasonable way to write a "good enough" coverpoint. Open an issue to discuss other potential options before proceeding down this route.
 
@@ -515,7 +515,7 @@ There are a few important gotchas to keep in mind when writing privileged tests:
 - The trap handler skips 4 bytes when returning to the test. This means that every instruction that could trap must be followed by a `nop` (or two `c.nop` if compressed instructions are supported). Alternatively, this skipped instruction can be used to change a counter/indicator of some kind to detect if a trap was taken. This is generally not necessary because the total number of traps is always checked at the end of a test.
 - Different implementations may trap on different CSRs, so always assume a CSR access could trap. The `CSRRW`, `CSRRS`, `CSRR`, etc. macros include a `nop` after the CSR access and should always be used in place of raw CSR instructions.
 
-For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few notes other that apply to all privileged test helper functions:
+For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.

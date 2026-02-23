@@ -1,0 +1,23 @@
+[Preface]
+== Glossary
+
+.Glossary
+[%autowidth]
+|===
+| Term | Meaning
+
+| RISC-V | (Reduced Instruction Set Computer) architecture, version 5
+| RVI | RISC-V International (organization that oversees RISC-V)
+| RVCP | RISC-V Certification Program
+| TSC | Technical Steering Committee (branch of RVI that creates standards)
+| CSC | Certification Steering Committee (branch of RVI that oversees the RVCP)
+| CRD | Certification Requirements Document
+| CTP | Certification Test Plan
+| CSR | Control & Status Register (located inside processor, not memory-mapped)
+| TBD | To Be Determined
+| N/A | “Not Applicable”
+| AKA | “Also Known As”
+| Must | Indicates a mandatory requirement
+| Should | Indicates a recommended requirement
+| May | Indicates an optional requirement
+|===

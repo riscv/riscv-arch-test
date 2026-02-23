@@ -1,4 +1,4 @@
-# Makefile for CRDs
+# Makefile for RISC-V Doc Template
 #
 # This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
 # International License. To view a copy of this license, visit
@@ -10,23 +10,22 @@
 # Description:
 #
 # This Makefile is designed to automate the process of building and packaging
-# the documentation for RVCP documentation. It supports multiple build targets
-# for generating documentation in various formats (PDF, HTML).
-#
-# Building with a preinstalled docker container is recommended.
-# Install by running:
-#
-#   docker pull riscvintl/riscv-docs-base-container-image:latest
-#
+# the Doc Template for RISC-V Extensions.
 
-DOCS := rvi20_crd
+DOCS := RVI20-CRD
 
+SRC_DIR := src
+BUILD_DIR := build
+
+
+DATE ?= $(shell date +%Y-%m-%d)
+VERSION ?= v0.0.0
+REVMARK ?= Draft
+DOCKER_IMG := docker.io/riscvintl/riscv-docs-base-container-image:latest
 DOCKER_BIN ?= docker
-SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
-DOCKER_IMG := ghcr.io/riscv/riscv-docs-base-container-image:latest
 ifneq ($(SKIP_DOCKER),true)
     DOCKER_IS_PODMAN = \
-        $(shell ! ${DOCKER_BIN}  -v | grep podman >/dev/null ; echo $$?)
+      $(shell ! ${DOCKER_BIN}  -v | grep podman >/dev/null ; echo $$?)
     ifeq "$(DOCKER_IS_PODMAN)" "1"
         # Modify the SELinux label for the host directory to indicate
         # that it can be shared with multiple containers. This is apparently
@@ -44,86 +43,72 @@ ifneq ($(SKIP_DOCKER),true)
         endif
     endif
 
-    DOCKER_CMD = \
+    DOCKER_CMD := \
+	    mkdir -p $(BUILD_DIR) && \
         ${DOCKER_BIN} run --rm \
-            -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
-            -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/build:/build${DOCKER_VOL_SUFFIX} \
+            -v ${PWD}/src:/build/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/../docs-resources:/build/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
-            $(DOCKER_USER_ARG) \
+						${DOCKER_USER_ARG} \
             ${DOCKER_IMG} \
             /bin/sh -c
     DOCKER_QUOTE := "
 else
     DOCKER_CMD = \
-        cd $@.workdir &&
+        cd build &&
 endif
 
-ifdef UNRELIABLE_BUT_FASTER_INCREMENTAL_BUILDS
-WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../docs-resources $@.workdir/
-WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
-else
-WORKDIR_SETUP = \
-    rm -rf $@.workdir && \
-    mkdir -p $@.workdir && \
-    ln -sfn ../../src ../../docs-resources $@.workdir/
+ARTIFACT_CLEANUP = mv build/$@ $@
 
-WORKDIR_TEARDOWN = \
-    mv $@.workdir/$@ $@ && \
-    rm -rf $@.workdir
-endif
-
-SRC_DIR := src
-BUILD_DIR := build
 
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
 DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 
-ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
-
-ASCIIDOCTOR_PDF := $(ENV) asciidoctor-pdf
-ASCIIDOCTOR_HTML := $(ENV) asciidoctor
-
+ASCIIDOCTOR_PDF := asciidoctor-pdf
+ASCIIDOCTOR_HTML := asciidoctor
 OPTIONS := --trace \
            -a compress \
            -a mathematical-format=svg \
+           -a revnumber=${VERSION} \
+           -a revremark=${REVMARK} \
+           -a revdate=${DATE} \
            -a pdf-fontsdir=docs-resources/fonts \
            -a pdf-theme=docs-resources/themes/riscv-pdf.yml \
-           -a docinfo=shared \
            $(XTRA_ADOC_OPTS) \
-           -D build \
-           --failure-level=WARN
-REQUIRES :=
+		   		 -D build \
+           --failure-level=ERROR
+REQUIRES := --require=asciidoctor-diagram \
+						--require=asciidoctor-lists \
+            --require=asciidoctor-mathematical
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check
+.PHONY: all build clean build-container build-no-container build-docs
 
 all: build
 
 # Check if the docs-resources/global-config.adoc file exists. If not, the user forgot to check out submodules.
 ifeq ("$(wildcard ../docs-resources/global-config.adoc)","")
   $(warning You must clone with --recurse-submodules to automatically populate the submodule 'docs-resources'.")
-  $(warning Checking out submodules for you via 'git submodule update --init --recursive'...)
+  $(warning Checking out submodules for you via 'git submodule update --init --recurse'...)
   $(shell git submodule update --init --recursive)
 endif
 
 build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
-build: build-pdf build-html
 
-ALL_SRCS := $(wildcard src/*.adoc)
+build: build-pdf build-html
+	rm -rf build/build build/docs-resources build/src
+
+ALL_SRCS := $(shell git ls-files $(SRC_DIR))
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
-	$(WORKDIR_SETUP)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
-	$(WORKDIR_TEARDOWN)
-	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
+	$(ARTIFACT_CLEANUP)
 
 $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS)
-	$(WORKDIR_SETUP)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
-	$(WORKDIR_TEARDOWN)
-	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
+	$(ARTIFACT_CLEANUP)
 
 # Update docker image to latest
 docker-pull-latest:

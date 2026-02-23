@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run
-# ruff: noqa: ANN401
+# SPDX-License-Identifier: Apache-2.0
 #
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "pyyaml",
+#     "ruamel-yaml>=0.18.16",
 # ]
 # ///
 
@@ -31,7 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import yaml
+from ruamel.yaml import YAML, YAMLError
 
 
 def parse_malformed_yaml(text: str) -> dict[str, Any]:
@@ -66,15 +66,17 @@ def parse_malformed_yaml(text: str) -> dict[str, Any]:
         elif stripped.startswith("coverpoint:"):
             value = stripped.split(":", 1)[1].strip() if ":" in stripped else ""
             try:
-                current_param["coverpoint"] = yaml.safe_load(value) if value else []
-            except:
+                yaml_parser = YAML(typ="safe", pure=True)
+                current_param["coverpoint"] = yaml_parser.load(value) if value else []
+            except Exception:
                 current_param["coverpoint"] = [value] if value else []
 
         elif stripped.startswith("effect:"):
             value = stripped.split(":", 1)[1].strip() if ":" in stripped else ""
             try:
-                current_param["effect"] = yaml.safe_load(value) if value else []
-            except:
+                yaml_parser = YAML(typ="safe", pure=True)
+                current_param["effect"] = yaml_parser.load(value) if value else []
+            except Exception:
                 current_param["effect"] = [value] if value else []
 
     # Save last parameter
@@ -84,12 +86,13 @@ def parse_malformed_yaml(text: str) -> dict[str, Any]:
     return result
 
 
-def load_yaml(path: Path) -> Any:
+def load_yaml(path: Path) -> dict[str, Any]:
     """Load YAML file with fallback for malformed files."""
     text = path.read_text(encoding="utf-8")
+    yaml_parser = YAML(typ="safe", pure=True)
     try:
-        return yaml.safe_load(text)
-    except yaml.YAMLError:
+        return yaml_parser.load(text)
+    except YAMLError:
         # Try to parse malformed YAML by fixing common issues
         return parse_malformed_yaml(text)
 
@@ -117,7 +120,7 @@ def extract_extensions(defined_by: dict[str, Any]) -> list[str]:
     """Extract extension names from definedBy field, handling allOf/anyOf."""
     extensions = []
 
-    def extract_from_obj(obj: Any) -> None:
+    def extract_from_obj(obj: dict[str, Any] | list[Any] | str) -> None:
         """Recursively extract extensions from nested structures."""
         if isinstance(obj, dict):
             # Direct name field - this is an extension

@@ -152,6 +152,50 @@ Mend_PMP:                                    ;\
     and t0, t0, PTE_V | PTE_U | PTE_R | PTE_W | PTE_X | PTE_A | PTE_D                   ;\
     RVTEST_SIGUPD(x1,t0,offset)
 
+#define TEST_SVRSW60T59B(swreg, PTE_ADDR, VA, offset)                                    \
+    LREG t2, (PTE_ADDR)                                                                 ;\
+    li   t1, ~PTE_RSW                                                                   ;\
+    and  t2, t2, t1                                                                     ;\
+    li   t1, (0x0 << 59)                                                                ;\
+    or   t2, t2, t1                                                                     ;\
+    SREG t2, (PTE_ADDR)                                                                 ;\
+    RVTEST_SIGUPD(x1,t2,offset)                                                         ;\
+    sfence.vma                                                                          ;\
+    la   t0, VA                                                                         ;\
+    LREG x0, (t0)                                                                       ;\
+                                                                                        ;\
+    LREG t2, (PTE_ADDR)                                                                 ;\
+    li   t1, ~PTE_RSW                                                                   ;\
+    and  t2, t2, t1                                                                     ;\
+    li   t1, (0x1 << 59)                                                                ;\
+    or   t2, t2, t1                                                                     ;\
+    SREG t2, (PTE_ADDR)                                                                 ;\
+    RVTEST_SIGUPD(x1,t2,offset)                                                         ;\
+    sfence.vma                                                                          ;\
+    la   t0, VA                                                                         ;\
+    LREG x0, (t0)                                                                       ;\
+                                                                                        ;\
+    LREG t2, (PTE_ADDR)                                                                 ;\
+    li   t1, ~PTE_RSW                                                                   ;\
+    and  t2, t2, t1                                                                     ;\
+    li   t1, (0x2 << 59)                                                                ;\
+    or   t2, t2, t1                                                                     ;\
+    SREG t2, (PTE_ADDR)                                                                 ;\
+    RVTEST_SIGUPD(x1,t2,offset)                                                         ;\
+    sfence.vma                                                                          ;\
+    la   t0, VA                                                                         ;\
+    LREG x0, (t0)                                                                       ;\
+                                                                                        ;\
+    LREG t2, (PTE_ADDR)                                                                 ;\
+    li   t1, ~PTE_RSW                                                                   ;\
+    and  t2, t2, t1                                                                     ;\
+    li   t1, (0x3 << 59)                                                                ;\
+    or   t2, t2, t1                                                                     ;\
+    SREG t2, (PTE_ADDR)                                                                 ;\
+    RVTEST_SIGUPD(x1,t2,offset)                                                         ;\
+    sfence.vma                                                                          ;\
+    la   t0, VA                                                                         ;\
+    LREG x0, (t0)
 
 #define ALL_MEM_PMP                                               ;\
     	li t2, -1                                                 ;\

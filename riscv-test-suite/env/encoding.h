@@ -366,6 +366,9 @@
 #define PTE_N     0x8000000000000000 /* Svnapot: NAPOT translation contiguity */
 #define PTE_ATTR  0xFFC0000000000000 /* All attributes and reserved bits */
 
+#define PTE_RSW   0x1800000000000000 /* Svrsw60t59b: Reserved for software use */
+#define PTE_RSVD  0x07C0000000000000 /* Reserved for future standard use */
+
 #define PTE_PPN_SHIFT 10
 
 #define PTE_TABLE(PTE) (((PTE) & (PTE_V | PTE_R | PTE_W | PTE_X)) == PTE_V)

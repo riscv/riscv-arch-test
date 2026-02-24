@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [3.10.1] - 2025-03-16
+- Add unratified Svrsw60t59b extension
+
 ## [3.10.0] - 2024-11-04
 - Add support for Zvk* extensions
 - Split float and double test cases into smaller ones

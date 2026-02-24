@@ -103,6 +103,9 @@ def _add_store_test(
 
     if is_sp:
         t_lines.append(f" {op} {reg_str}, 0(sp)")
+        t_lines.append("# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
+        t_lines.append("c.nop")
+        t_lines.append("c.nop")
         t_lines.append(f" mv sp, x{base_reg}")  # Restore sp immediately
     else:
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")

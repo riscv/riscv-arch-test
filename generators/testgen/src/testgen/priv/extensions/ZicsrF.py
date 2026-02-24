@@ -79,6 +79,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
             [
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i << 5})           # write value {i << 5}",
+                f"test_{test_data.test_count}:",
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
                 gen_csr_read_sigupd(r1, "frm", test_data),
             ]
@@ -100,6 +101,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
             [
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
+                f"test_{test_data.test_count}:",
                 gen_csr_write_sigupd(r1, "fcsr", test_data),
                 gen_csr_read_sigupd(r1, "fflags", test_data),
             ]
@@ -121,6 +123,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
             [
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
+                f"test_{test_data.test_count}:",
                 gen_csr_write_sigupd(r1, "frm", test_data),
                 gen_csr_read_sigupd(r1, "fcsr", test_data),
             ]
@@ -141,6 +144,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
             [
                 test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{r1}, {i})           # write value {i}",
+                f"test_{test_data.test_count}:",
                 gen_csr_write_sigupd(r1, "fflags", test_data),
                 gen_csr_read_sigupd(r1, "fcsr", test_data),
             ]
@@ -266,17 +270,20 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             # load_float_reg("a", 10, 0x3F9800000000000001FFFFFFFF7FFFFE, test_data, "quad"),
             # load_float_reg("b", 11, 0x00000000000000000000000000000001, test_data, "quad"),
             # load_float_reg("c", 12, 0x80010000000000000000000000000000, test_data, "quad"),
+            # f"test_{test_data.test_count}:",
             # f"\tfmadd.q f13, f10, f11, f12, rdn",
             # write_sigupd(13, test_data, "float"),
             # test_data.add_testcase("fmul", "cp_underflow_after_rounding_fmul_q_rne", covergroup),
             # f"\tcsrwi fflags, 0 # reset flags",
             # load_float_reg("a", 10, 0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF, test_data, "quad"),
             # load_float_reg("b", 11, 0x3FFF0000000000000000000000000001, test_data, "quad"),
+            # f"test_{test_data.test_count}:",
             # f"\tfmul.q f13, f10, f11, rne",
             # write_sigupd(13, test_data, "float"),
             # test_data.add_testcase("fcvt", "cp_underflow_after_rounding_fcvt_s_q_rup", covergroup),
             # f"\tcsrwi fflags, 0 # reset flags",
             # load_float_reg("a", 10, 0x3F80FFFFFFFE0000000000FFFFFFFFFF, test_data, "quad"),
+            # f"test_{test_data.test_count}:",
             # f"\tfcvt.s.q f13, f10, rup",
             # write_sigupd(13, test_data, "float"),
             # f"#else",

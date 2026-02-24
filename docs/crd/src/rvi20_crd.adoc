@@ -28,9 +28,9 @@ a| * Incorporated feedback from CSC Requirements WG meeting on Feb 20, 2026
 | 0.2
 a| * Moved from https://github.com/RISC-V-Certification-Steering-Committee/RVCP-docs
 
-| Feb 5, 2026|
- 0.1
- a| * Copied from UDB-generated adoc
+| Feb 5, 2026
+| 0.1
+a| * Copied from UDB-generated adoc
 |===
 
 include::glossary.adoc[]

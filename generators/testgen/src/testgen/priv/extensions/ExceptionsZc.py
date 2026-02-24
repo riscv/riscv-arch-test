@@ -109,7 +109,6 @@ def _add_store_test(
         t_lines.append(f" mv sp, x{base_reg}")  # Restore sp immediately
     else:
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")
-
         t_lines.append("c.nop")
         t_lines.append("c.nop")
 
@@ -405,7 +404,7 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsZc",
     required_extensions=["Zicsr", "Sm", "Zca"],
-    march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "F", "D"],
+    march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "C", "F", "D"],
 )
 def make_exceptionszc(test_data: TestData) -> list[str]:
     """Main entry point for Zc exception test generation."""

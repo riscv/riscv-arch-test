@@ -109,7 +109,7 @@ typedef enum {
     vs_maxm1, //    = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
     vs_ones, //     = {(`SEW){1'b1}},
     vs_onesm1, //   = {(`SEW-1){1'b1}, {1'b0}},
-    vs_walkeodd, // = {(`SEW/2){2'b10}},
+    vs_walkodd, // = {(`SEW/2){2'b10}},
     vs_walkeven, // = {(`SEW/2){2'b01}},
     vs_random
 } edge_vs_values_t;
@@ -171,7 +171,7 @@ function edge_vs_values_t vs_edges_check_eew_8(`VLEN_BITS val);
     {{(`VLEN-8){1'b?}}, {1'b0}, {(8-2){1'b1}}, {1'b0}}:  return vs_maxm1;
     {{(`VLEN-8){1'b?}},         {(8){1'b1}}}:            return vs_ones;
     {{(`VLEN-8){1'b?}},         {(8-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-8){1'b?}},         {(8/2){2'b10}}}:         return vs_walkeodd;
+    {{(`VLEN-8){1'b?}},         {(8/2){2'b10}}}:         return vs_walkodd;
     {{(`VLEN-8){1'b?}},         {(8/2){2'b01}}}:         return vs_walkeven;
     default:                                             return vs_random;
   endcase
@@ -189,7 +189,7 @@ function edge_vs_values_t vs_edges_check_eew_16(`VLEN_BITS val);
     {{(`VLEN-16){1'b?}}, {1'b0}, {(16-2){1'b1}}, {1'b0}}:  return vs_maxm1;
     {{(`VLEN-16){1'b?}},         {(16){1'b1}}}:            return vs_ones;
     {{(`VLEN-16){1'b?}},         {(16-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-16){1'b?}},         {(16/2){2'b10}}}:         return vs_walkeodd;
+    {{(`VLEN-16){1'b?}},         {(16/2){2'b10}}}:         return vs_walkodd;
     {{(`VLEN-16){1'b?}},         {(16/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase
@@ -207,7 +207,7 @@ function edge_vs_values_t vs_edges_check_eew_32(`VLEN_BITS val);
     {{(`VLEN-32){1'b?}}, {1'b0}, {(32-2){1'b1}}, {1'b0}}:  return vs_maxm1;
     {{(`VLEN-32){1'b?}},         {(32){1'b1}}}:            return vs_ones;
     {{(`VLEN-32){1'b?}},         {(32-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-32){1'b?}},         {(32/2){2'b10}}}:         return vs_walkeodd;
+    {{(`VLEN-32){1'b?}},         {(32/2){2'b10}}}:         return vs_walkodd;
     {{(`VLEN-32){1'b?}},         {(32/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase
@@ -225,7 +225,7 @@ function edge_vs_values_t vs_edges_check_eew_64(`VLEN_BITS val);
     {{(`VLEN-64){1'b?}}, {1'b0}, {(64-2){1'b1}}, {1'b0}}:  return vs_maxm1;
     {{(`VLEN-64){1'b?}},         {(64){1'b1}}}:            return vs_ones;
     {{(`VLEN-64){1'b?}},         {(64-1){1'b1}}, {1'b0}}:  return vs_onesm1;
-    {{(`VLEN-64){1'b?}},         {(64/2){2'b10}}}:         return vs_walkeodd;
+    {{(`VLEN-64){1'b?}},         {(64/2){2'b10}}}:         return vs_walkodd;
     {{(`VLEN-64){1'b?}},         {(64/2){2'b01}}}:         return vs_walkeven;
     default:                                               return vs_random;
   endcase

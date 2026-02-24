@@ -157,7 +157,7 @@ git clone https://github.com/riscv-non-isa/riscv-arch-test -b act4
 
 Several configuration files are needed to tell the ACT framework how to find your tools, what extensions and parameters are supported by your implementation, and how to perform implementation-specific functions.
 
-Create a configuration directory for your DUT. Currently, it is recommended to place it under `config/cores/<vendor>/<dut-config-name>/`. For example: `config/cores/cvw/cvw-rv64gc/`. Out-of-tree config directories are planned, but not yet supported.
+Create a configuration directory for your DUT. If adding the configuration to the `riscv-arch-test` repo, it is recommended to place it under `config/cores/<vendor>/<dut-config-name>/`. For example: `config/cores/cvw/cvw-rv64gc/`. Configs can also be placed outside the repo. See [Generate Tests and Compile ELFs](#generate-tests-and-compile-elfs) for instructions on specifying the desired config file.
 
 Your configuration directory should contain the following files:
 
@@ -256,18 +256,12 @@ The framework currently relies on three other config files. All three of these f
 
 Once all [dependencies](#prerequisites) are installed and the [configuration files](#configuration) for your DUT have been created, you can generate the self-checking test ELFs.
 
-> [!IMPORTANT]
-> Due to current limitations with the ACT framework:
->
-> - The directory with the config files for your DUT must be in the `riscv-arch-test` directory (the `config/cores` subdirectory is recommended).
-> - These commands **must** be run from the `riscv-arch-test` repository root directory.
-
 #### Generate Tests and Compile ELFs
 
 Run the following command to generate test assembly files, compile them, and create self-checking ELFs:
 
 ```bash
-CONFIG_FILES=config/cores/<your_config_here>/test_config.yaml make --jobs $(nproc)
+CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
 ```
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
@@ -275,8 +269,10 @@ This will create all of the ELFs that apply to your DUT (based on the provided U
 `$WORKDIR` defaults to `work` inside of the `riscv-arch-test` directory, but can be overridden by specifying `WORKDIR` when calling `make`:
 
 ```bash
-WORKDIR=/path/to/workdir CONFIG_FILES=config/cores/<your_config_here>/test_config.yaml make --jobs $(nproc)
+WORKDIR=</path/to/workdir> CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
 ```
+
+By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
 Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 

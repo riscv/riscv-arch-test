@@ -20,7 +20,7 @@ Note that not all behaviors allowed in RISC-V standards are supported by a parti
 
 ==== CRD Naming
 
-All components of the RVCP share the following naming scheme:
+All components of the RVCP share they following naming scheme:
 
   Format: <name>[v<version>]
 

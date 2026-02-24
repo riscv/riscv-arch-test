@@ -95,9 +95,9 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
         )
     lines.extend(
         [
-            f"sub x{r2}, x{r2}, x{r1} # compute difference",
+            f"sub x{r1}, x{r2}, x{r1} # compute difference",
             f"{slt}",
-            write_sigupd(r2, test_data, "int"),  # record difference as signature
+            write_sigupd(r1, test_data, "int"),  # record difference as signature
             "",
         ]
     )

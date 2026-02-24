@@ -270,9 +270,15 @@ Run the following command to generate test assembly files, compile them, and cre
 CONFIG_FILES=config/cores/<your_config_here>/test_config.yaml make --jobs $(nproc)
 ```
 
-This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `work/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
+This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
-Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `work/<config_name>/build` or `work/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+`$WORKDIR` defaults to `work` inside of the `riscv-arch-test` directory, but can be overridden by specifying `WORKDIR` when calling `make`:
+
+```bash
+WORKDIR=/path/to/workdir CONFIG_FILES=config/cores/<your_config_here>/test_config.yaml make --jobs $(nproc)
+```
+
+Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]
 >
@@ -280,7 +286,7 @@ Note that the ACT framework first compiles signature-generating versions of the 
 
 ### Running Certification Tests
 
-All ELFs produced in the `work/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
+All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on your DUT for certification. Depending on your DUT, you may need to convert these ELFs into a format that your testbench accepts (hex files are common). It is recommended to use a script or Makefile to run all ELFs in the directory on your DUT. Some examples for this are coming soon.
 
 Each test will print one of the following to the console:
 

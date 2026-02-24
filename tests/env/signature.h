@@ -19,22 +19,28 @@
 //  _STR_PTR - label to string describing the test
 #ifdef RVTEST_SELFCHECK
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _R, 1f                                  ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
     RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
 #else
   #define RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
     SREG _R, 0(_SIG_PTR)                                   ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
     RVTEST_WORD_PTR _STR_PTR                               ;\
     1:                                                     ;\
-    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
 #endif
 
 // RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops
@@ -105,98 +111,112 @@
 #if FLEN > XLEN
   #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
+      .option push                                           ;\
+      .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
       beq _TEMP_REG, _LINK_REG, 1f                           ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
       LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
       beq _TEMP_REG, _LINK_REG, 2f                           ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       2:                                                     ;\
       csrr _LINK_REG, fcsr                                   ;\
       LREG _TEMP_REG, 2*SIG_STRIDE(_SIG_PTR)                 ;\
       beq _TEMP_REG, _LINK_REG, 3f                           ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       3:                                                     ;\
-      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE
+      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE                  ;\
+      .option pop
   #else
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
+      .option push                                           ;\
+      .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
       beq x0, x0, 1f                                         ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
       LA(_LINK_REG, scratch)                                 ;\
+      FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
       beq x0, x0, 2f                                         ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       2:                                                     ;\
       csrr _LINK_REG, fcsr                                   ;\
       SREG _LINK_REG, 2*SIG_STRIDE(_SIG_PTR)                 ;\
       beq x0, x0, 3f                                         ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       3:                                                     ;\
-      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE
+      addi _SIG_PTR, _SIG_PTR, 3*SIG_STRIDE                  ;\
+      .option pop
   #endif
 #else
   #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
+      .option push                                           ;\
+      .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
       beq _TEMP_REG, _LINK_REG, 1f                           ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
       csrr _LINK_REG, fcsr                                   ;\
       LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
       beq _TEMP_REG, _LINK_REG, 3f                           ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       3:                                                     ;\
-      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE
+      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE                  ;\
+      .option pop
   #else
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
+      .option push                                           ;\
+      .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
       beq x0, x0, 1f                                         ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
       csrr _LINK_REG, fcsr                                   ;\
       SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
       beq x0, x0, 3f                                         ;\
-      jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG    ;\
+      jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       3:                                                     ;\
-      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE
+      addi _SIG_PTR, _SIG_PTR, 2*SIG_STRIDE                  ;\
+      .option pop
   #endif
 #endif
 

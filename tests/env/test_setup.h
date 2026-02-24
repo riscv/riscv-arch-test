@@ -123,26 +123,27 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
+    LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+    bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
+    jal     T3, failedtest_x8_x7
+    RVTEST_WORD_PTR "abortstr"
+
   // Terminate test
   exit_cleanup:
     LA(T4, successstr)
     RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
     RVMODEL_HALT_PASS
 
+  // Terminate test with a failure message
+  abort_test:
+    LI(     T5, 0xBAD0DEAD)
+    j       cleanup_epilogs
+
   // Instantiate trap handlers for each priv mode
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
 
   // Include test failure handling code
   RVTEST_FAILURE_CODE
-
-  // TODO: This should be removed once priv tests are self-checking
-  abort_tests:
-    LREG    T4, sig_bgn_off(sp)   // calculate Mmode sig_end addr in handler's mode
-    LREG    T1, sig_seg_siz(sp)
-    add     T1, T1, T4            // construct sig seg end
-    LI(     T1, 0xBAD0DAD0)       // early abort signature value at sig_end, independent of mtrap_sigptr
-    SREG    T1, -4(T4)            // save into last signature canary
-    j       exit_cleanup          // skip around handlers, go to RVMODEL_HALT
 
   // Model specific boot code
   rvmodel_boot:
@@ -189,28 +190,25 @@
 
 /************************************* RVTEST_DATA_END *************************************/
 /**** RVTEST_DATA_END appears after test data                                           ****/
-/**** - MMU identity mapped page tables                                                 ****/
+/**** - MMU page tables (filled with invalid PTEs)                                      ****/
 /**** - End of data region label (rvtest_data_end)                                      ****/
 /*******************************************************************************************/
 .macro RVTEST_DATA_END
-  // Create identity mapped page tables here if mmu is present
-  .align 12
-  #ifndef RVTEST_NO_IDENTY_MAP
-    #ifdef rvtest_strap_routine
-      // This is a valid global pte entry w/ all permissions. If at root level, it forms an identity map.
-      rvtest_Sroot_pg_tbl:
-      RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-      #ifdef rvtest_htrap_routine
-        .align 14
-        rvtest_Hroot_pg_tbl:
-        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-        .align 14
-      #endif
-      #ifdef rvtest_vtrap_routine
-        .align 12
-        rvtest_Vroot_pg_tbl:
-        RVTEST_PTE_IDENT_MAP(0,LVLS,RVTEST_ALLPERMS)
-      #endif
+
+  // Root page tables
+  #ifdef rvtest_strap_routine
+    .align 12
+    rvtest_Sroot_pg_tbl:
+      .zero(4096)                // 4KB page table
+    #ifdef rvtest_htrap_routine
+      .align 14
+      rvtest_Hroot_pg_tbl:
+      .zero(16384)               // 16KB page table
+    #endif
+    #ifdef rvtest_vtrap_routine
+      .align 12
+      rvtest_Vroot_pg_tbl:
+        .zero(4096)              // 4KB page table
     #endif
   #endif
 

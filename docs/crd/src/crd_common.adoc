@@ -62,7 +62,7 @@ Where:
 
 * <class> is MC for Microcontroller Class and AC for Apps-processor Class
 * <model> is 3-digit integer defined as follows:
-** The hundreds's digit indicates the series
+** The hundreds' digit indicates the series
 ** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
 ** The one's digit identifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
 * <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E

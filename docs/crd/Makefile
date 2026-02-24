@@ -15,8 +15,7 @@
 #
 # Building with a preinstalled docker container is recommended.
 # Install by running:
-#
-#   docker pull riscvintl/riscv-docs-base-container-image:latest
+#		make docker-pull-latest
 
 DOCS := rvi20_crd
 

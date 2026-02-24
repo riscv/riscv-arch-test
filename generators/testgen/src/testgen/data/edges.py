@@ -366,14 +366,14 @@ class FLOAT_EDGES:
         0x807F,  # largest negative subnorm
         0x0040,  # positive subnorm with leading 1
         0x8040,  # negative subnorm with leading 1
-        0x0000,  # smallest positive subnorm
-        0x8000,  # smallest negative subnorm
+        0x0001,  # smallest positive subnorm
+        0x8001,  # smallest negative subnorm
         0x7F80,  # positive infinity
         0xFF80,  # negative infinity
         0x7FC0,  # canonical quiet NaN
         0x7FFF,  # noncanonical quiet NaN
         0xFFFF,  # noncanonical quiet NaN with sign bit set
-        0x7F80,  # signaling NaN with lsb set
+        0x7F81,  # signaling NaN with lsb set
         0x7FBF,  # signaling NaN with all mantissa bits set
         0xFFBF,  # signaling Nan with all mantissa bits and sign bit set
         0x7EF8,  # random positive 1.6482427e+38

@@ -20,13 +20,13 @@ Note that not all behaviors allowed in RISC-V standards are supported by a parti
 
 ==== CRD Naming
 
-All components of the RVCP share they following naming scheme:
+All components of the RVCP share the following naming scheme:
 
   Format: <name>[v<version>]
 
 Where:
 
-* Left & right square braces denote optional.
+* Left & right square brackets denote optional.
 * Less-than & greater-than signs just separate fields (i.e., they aren't present in the CRD name).
 * <name> identifies the type of RISC-V standard (processor, non-processor system IP, or platform) along with
   any other information required to identify the variant of that standard.
@@ -35,7 +35,7 @@ Where:
 ** Inspired by semantic versioning scheme (https://semver.org/) but doesn't follow it exactly
 
 The rules for updating <major>, <minor>, and <patch> are defined by the type of RVCP component.
-However, the follow these general guidelines:
+However, they follow these general guidelines:
 
 * A <major> release of 0 is used for pre-release versions and release versions start with 1.
 * The <major> release number is updated when mandatory changes are made.

@@ -269,7 +269,7 @@ jobs:
           DOCKER=1 \
           FAST=True \
           EXTENSIONS= \
-          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,Zaamo,Zalrsc,Zabha,Zacas,ZacasZabha \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,Zaamo,Zalrsc,Zabha,Zacas,ZacasZabha,H \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 

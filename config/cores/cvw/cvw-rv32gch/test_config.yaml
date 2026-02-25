@@ -1,0 +1,9 @@
+name: cvw-rv32gch
+compiler_exe: riscv64-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: riscv64-unknown-elf-objdump # executable name on $PATH or full path to executable, optional
+ref_model_exe: spike # executable name on $PATH or full path to executable
+ref_model_type: spike
+ref_model_args: "--isa=rv32gch_zicntr_zihpm_zicbom_zicboz_sstc_svpbmt_svadu"
+udb_config: cvw-rv32gch.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header

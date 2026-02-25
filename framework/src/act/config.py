@@ -19,16 +19,24 @@ from ruamel.yaml import YAML
 class RefModelType(str, Enum):
     """Reference model types with their associated flags."""
 
-    # TODO: Add support for additional reference models (Spike, Whisper, etc.)
+    # TODO: Add support for additional reference models (Whisper, etc.)
     SAIL = "sail"
-    # SPIKE = "spike"
+    SPIKE = "spike"
 
     @property
     def signature_flags(self) -> str:
         """Get the flags for this reference model."""
         flags_map = {
             RefModelType.SAIL: "--test-signature={sig_file} --signature-granularity {granularity}",
-            # RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
+            RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
+        }
+        return flags_map[self]
+
+    def debug_flags(self) -> str:
+        """Get the debug/trace flags for this reference model."""
+        flags_map = {
+            RefModelType.SAIL: "--trace-all --trace-output {sig_trace_file}",
+            RefModelType.SPIKE: "-l --log={sig_trace_file}",
         }
         return flags_map[self]
 
@@ -44,6 +52,7 @@ class Config(BaseModel):
     objdump_exe: Path | None = None
     ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
+    ref_model_args: str | None = None
 
     model_config = {"frozen": True}
 

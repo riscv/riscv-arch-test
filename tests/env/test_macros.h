@@ -28,13 +28,6 @@
 #define VMEM vmem_bgn_off
 
 
-#define SATP_SETUP(_TR0, _TR1, MODE);\
-    LA(_TR0, rvtest_Sroot_pg_tbl) ;\
-    LI(_TR1, MODE) ;\
-    srli _TR0, _TR0, 12 ;\
-    or _TR0, _TR0, _TR1  ;\
-    csrw satp, _TR0   ;\
-
 //****NOTE: label `rvtest_Sroot_pg_tbl` must be declared after RVTEST_DATA_END
 //          in the test aligned at 4kiB (use .align 12)
 #define PTE_SETUP_COMMON(_PAR, _PR, _TR0, _TR1, _VAR, level)      ;\
@@ -49,30 +42,6 @@
     slli _PAR, _PAR, 10                                           ;\
     or _PAR, _PAR, _PR                                            ;\
     SREG _PAR, 0(_TR1);
-
-#define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)        ;\
-    srli _PAR, _PAR, 12                                         ;\
-    slli _PAR, _PAR, 10                                         ;\
-    or _PAR, _PAR, _PR                                          ;\
-    .if (level==1)                                              ;\
-        LA(_TR1, rvtest_Sroot_pg_tbl)                           ;\
-        LI(_TR0, ((VA>>22)&0x3FF)<<2)                           ;\
-    .endif                                                      ;\
-    .if (level==0)                                              ;\
-        LA(_TR1, rvtest_slvl0_pg_tbl)                           ;\
-        LI(_TR0, ((VA>>12)&0x3FF)<<2)                           ;\
-    .endif                                                      ;\
-    add _TR1, _TR1, _TR0                                        ;\
-    SREG _PAR, 0(_TR1)                                          ;
-
-// More Robust version of PTE_SETUP_32 to setup a PTE for a PA using Va
-// in a single line.
-//args: PA: Label of Physical Address, PERMS: permissions in hex
-//args: VA: Virtual Address in hex, level: Level to store at
-#define PTE_SETUP_RV32_New(PA_LBL, PERMS, VA, level)           ;\
-    LA(a0, PA_LBL)                                             ;\
-    LI(a1, PERMS)                                              ;\
-    PTE_SETUP_RV32(a0, a1, t0, t1, VA, level)                  ;\
 
 // Appends 12-bit page offset from PA to VA, and stores it
 // to S save area; a0 must point to M save area
@@ -99,6 +68,21 @@
     addi a0, a0, 2*sv_area_sz                                   ;\
     SREG t2, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
     addi a0, a0, -2*sv_area_sz                                  ;
+
+#define PTE_SETUP_RV32(_PAR, _PR, _TR0, _TR1, VA, level)        ;\
+    srli _PAR, _PAR, 12                                         ;\
+    slli _PAR, _PAR, 10                                         ;\
+    or _PAR, _PAR, _PR                                          ;\
+    .if (level==1)                                              ;\
+        LA(_TR1, rvtest_Sroot_pg_tbl)                           ;\
+        LI(_TR0, ((VA>>22)&0x3FF)<<2)                           ;\
+    .endif                                                      ;\
+    .if (level==0)                                              ;\
+        LA(_TR1, rvtest_slvl0_pg_tbl)                           ;\
+        LI(_TR0, ((VA>>12)&0x3FF)<<2)                           ;\
+    .endif                                                      ;\
+    add _TR1, _TR1, _TR0                                        ;\
+    SREG _PAR, 0(_TR1)                                          ;
 
 #define PTE_SETUP_RV64(_PAR, _PR, _TR0, _TR1, VA, level, mode)  ;\
     srli _PAR, _PAR, 12                                         ;\
@@ -230,13 +214,12 @@
     or _TR0, _TR0, _PR                                          ;\
     SREG _TR0, 0(_TR1)                                          ;
 
-
-#define SATP_SETUP_SV32 ;\
-    LA(t6, rvtest_Sroot_pg_tbl) ;\
-    LI(t5, SATP32_MODE) ;\
-    srli t6, t6, 12 ;\
-    or t6, t6, t5  ;\
-    csrw satp, t6   ;
+#define SATP_SETUP_SV32                                         ;\
+    LA(t6, rvtest_Sroot_pg_tbl)                                 ;\
+    LI(t5, SATP32_MODE)                                         ;\
+    srli t6, t6, 12                                             ;\
+    or t6, t6, t5                                               ;\
+    csrw satp, t6                                               ;
 
 #define SATP_SETUP_RV64(MODE)                                   ;\
     LA(t6, rvtest_Sroot_pg_tbl)                                 ;\
@@ -248,9 +231,6 @@
     .endif                                                      ;\
     .if (MODE == sv57)                                          ;\
     LI(t5, (SATP64_MODE) & (SATP_MODE_SV57 << 60))              ;\
-    .endif                                                      ;\
-    .if (MODE == sv64)                                          ;\
-    LI(t5, (SATP64_MODE) & (SATP_MODE_SV64 << 60))              ;\
     .endif                                                      ;\
     srli t6, t6, 12                                             ;\
     or t6, t6, t5                                               ;\

@@ -58,7 +58,7 @@ _This document is released under a Creative Commons Attribution 4.0 Internationa
 This Certification Test Plan (CTP) is a work in progress.  It describes the coverpoints and tests
 being developed by the RISC-V Certification Steering Committee.  It is intended to be read in
 conjunction with the Certification Requirements Documents (CRDs) defining the features in each
-certificate, and the https://github.com/riscv-non-isa/riscv-arch-test[riscv-arch-test] repository
+certificate, and the https://github.com/riscv/riscv-arch-test[riscv-arch-test] repository
 that contains information about how to use and contribute to the tests.
 
 include::intro.adoc[]

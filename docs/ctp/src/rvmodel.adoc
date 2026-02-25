@@ -61,9 +61,9 @@ At the end of RVMODEL_BOOT, the system should be in conforming machine mode, wit
 
 === RVMODEL Macros for Spike and SAIL
 
-RVMODEL macros for Spike are implemented in https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
+RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
 
-RVMODEL macros for Sail are implemented in https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
+RVMODEL macros for Sail are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
 
 === Host Target Interface
 

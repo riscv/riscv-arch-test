@@ -97,7 +97,7 @@ Where:
 === CSR Field Types
 
 The RISC-V ISA defines CSR field specifications that require special handling by the certification tests.
-This includes determining the read value after writing an illegal value and whether or not writing
+This includes determining the read value after writing an illegal value, and whether or not writing
 an unsupported value to a specific field creates an illegal instruction exception.
 This special handling is summarized in the table below and detailed in the sub-sections following the table.
 

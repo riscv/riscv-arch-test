@@ -1411,11 +1411,14 @@ common_\__MODE__\()excpt_handler:
 
  // extract and test satp.MODE from trapping mode; if !=bare, VA, skip reloc
         csrr    T2, CSR_SATP
+#ifdef rvtest_htrap_routine
         csrr    T6, CSR_MISA           // select effective xATP based on misa[7] (H)
         slli    T6, T6, XLEN-7-1
         bgez    T6, 1f                 // keep  SATP      if no hypervisor
         csrr    T2, CSR_HGATP          // substitute HGATP if    hypervisor
-1:      srli    T2, T2, MODE_LSB
+1:
+#endif
+        srli    T2, T2, MODE_LSB
         addi    T4, sp, 1*sv_area_sz   // T4 points to HS/S mode sv_area
         bnez    T2, sv_\__MODE__\()epc // skip reloc if not bare mode
 

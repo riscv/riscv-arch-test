@@ -26,6 +26,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','C','Smpmp']
+# params:
 #   MXLEN: 64
 # MARCH: rv64ic_zicsr
 # CONFIG_DEPENDENT: true

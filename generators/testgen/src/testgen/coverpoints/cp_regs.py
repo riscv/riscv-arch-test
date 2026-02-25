@@ -36,7 +36,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     # Generate tests
     for rd in rd_regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{rd}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rd))
         else:
@@ -74,7 +74,7 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for rs1 in rs1_regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{rs1}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rs1))
         else:
@@ -109,7 +109,7 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for rs2 in rs2_regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{rs2}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rs2))
         else:

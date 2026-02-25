@@ -29,7 +29,7 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         desc = f"{coverpoint} (val 'rs1' = {val})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{val}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )

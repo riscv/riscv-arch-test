@@ -17,7 +17,7 @@ from testgen.formatters.params import generate_random_params
 @add_coverpoint_generator("cp_imm_edges_branch")
 def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for branch immediate edge values."""
-    test_lines: list[str] = [test_data.add_testcase(coverpoint), "# Testcase cp_imm_edges_branch"]
+    test_lines: list[str] = [test_data.add_testcase("all", coverpoint), "# Testcase cp_imm_edges_branch"]
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
     test_lines.extend(
@@ -26,6 +26,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             f"LI(x{params.rs1}, 1)",
             f"LI(x{params.rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
             "",
+            f"test_{test_data.test_count}:",
             f"{instr_name} x{params.rs1}, x{params.rs2}, 1f # branch forward by 4",
             "# offset too small to modify counter for checking",
             "1: nop",

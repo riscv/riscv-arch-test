@@ -1,7 +1,7 @@
 ---
 name: Test Framework Bug
 about:
-  Report an issue with the test framework (unable to run  the framework, wrong
+  Report an issue with the test framework (unable to run the framework, wrong
   tests selected, test compilation problems, etc.)
 title: ""
 labels: bug, Test Framework

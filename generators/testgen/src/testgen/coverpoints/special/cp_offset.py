@@ -25,7 +25,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         params = generate_random_params(test_data, instr_type)
 
-    test_lines.append(test_data.add_testcase(coverpoint))
+    test_lines.append(test_data.add_testcase("neg", coverpoint))
 
     if instr_type in ["B", "CB"]:
         assert params.rs1 is not None and params.temp_reg is not None and params.temp_val is not None
@@ -46,6 +46,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 "j 2f # jump past backward branch target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward branch target, increment check value",
                 "j 3f # jump past backward branch",
+                f"test_{test_data.test_count}:",
                 f"2: {instr_name} x{params.rs1}, {f'x{params.rs2},' if params.rs2 is not None else ''} 1b # backward branch",
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # branch not taken, decrement check value",
                 "3:  # done with sequence",
@@ -66,6 +67,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
                 f"2: LA(x{params.rs1}, 1b) # load backward jump target",
+                f"test_{test_data.test_count}:",
                 f"{instr_name} x{params.rd}, x{params.rs1}, 0 # backward jump"
                 if instr_type == "JR"
                 else f"{instr_name} x{params.rs1} # backward jump",
@@ -86,6 +88,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 "j 2f # jump past backward jump target",
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward jump target, increment check value",
                 "j 3f # jump past backward jump",
+                f"test_{test_data.test_count}:",
                 f"2: {instr_name} 1b # backward jump",
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",
@@ -120,7 +123,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     and params.temp_val is not None
                 )
                 label = f"jalrlsb_{rs1_lsb}{imm_lsb}"
-                test_lines.append(test_data.add_testcase("cp_offset_lsbs"))
+                test_lines.append(test_data.add_testcase(f"{rs1_lsb}_{imm_lsb}", "cp_offset_lsbs"))
                 imm_val = -1 if (rs1_lsb == 1 and imm_lsb == 1) else imm_lsb
                 test_lines.extend(
                     [
@@ -129,6 +132,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                         load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                         f"LA(x{params.rs1}, {label}) # load address of label",
                         f"addi x{params.rs1}, x{params.rs1}, {rs1_lsb} # set rs1 LSB to {rs1_lsb}",
+                        f"test_{test_data.test_count}:",
                         f"{instr_name} x{params.rd}, x{params.rs1}, {imm_val} # jump with imm LSB = {imm_lsb}",
                         f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
                         f"{label}: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
@@ -154,7 +158,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                 and params.temp_val is not None
             )
             label = f"jalrlsb_{rs1_lsbs}"
-            test_lines.append(test_data.add_testcase("cp_offset_lsbs"))
+            test_lines.append(test_data.add_testcase(f"{rs1_lsbs:02b}", "cp_offset_lsbs"))
             test_lines.extend(
                 [
                     "",
@@ -162,6 +166,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     load_int_reg("jump check value", params.temp_reg, params.temp_val, test_data),
                     f"LA(x{params.rs1}, {label}) # load address of label",
                     f"addi x{params.rs1}, x{params.rs1}, {rs1_lsbs} # set rs1 LSB to {rs1_lsbs}",
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rs1} # jump",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
                     ".align 2",

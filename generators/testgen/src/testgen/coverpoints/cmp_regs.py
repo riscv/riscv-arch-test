@@ -38,7 +38,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(reg))
         else:
@@ -75,7 +75,7 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(reg))
         else:
@@ -112,7 +112,7 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(reg))
         else:
@@ -147,7 +147,7 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(reg))
         else:

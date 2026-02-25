@@ -27,7 +27,7 @@ Unified Database allows _partially-_ and _fully-configured descriptions_.  A pro
 The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and RVMODEL macros for the DUT.
 It uses UDB to produce supplementary configuration files including:
 
-* Sail JSON file configuring reference model to match DUT
+* JSON file configuring the RISC-V Sail reference model to match the DUT
 * Configuration files for other optional simulators, such as Spike, https://github.com/openhwgroup/cvw/blob/main/config/rv64gc/imperas.ic[ImperasFPM]
 * SystemVerilog coverage.svh file describing which coverage files and parameter values to use for coverage measurement
 * Optional DUT configuration files https://github.com/riscv/riscv-arch-test/blob/cvw/configs/duts/cvw/cvw-rv64gc[(CORE-V Wally Example)] providing parameter values to configurable RTL

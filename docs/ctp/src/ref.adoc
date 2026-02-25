@@ -3,7 +3,7 @@
 
 Certification may rely on a reference model (simulator) to compute the expected results of a test, such as sum of two numbers in an `add` instruction or the answer for a `fsqrt.d` instruction.  Self-checking tests compare the result from the DUT against the expected result that was precomputed by the reference model and flag mismatches.  Alternatively, the test may be generated with a set of one or more expected results for each test case (without a reference model), and the test can check that the DUT produces one of the expected results.
 
-TODO: Discuss one vs. many reference models. RISC-V International has blessed https://github.com/riscv/sail-riscv[Sail] as the golden RISC-V model, so Sail is used as the reference model.
+TODO: Discuss one vs. many reference models. RISC-V International has blessed https://github.com/riscv/sail-riscv[RISC-V Sail] as the golden RISC-V model, so RISC-V Sail is used as the reference model.
 
 === Deterministic, Nondeterministic, and Unspecified Behaviors
 
@@ -15,7 +15,7 @@ Self-checking certification tests must check that the result of deterministic fe
 
 This is harder than it seems because RISC-V has many features whose behaviors are not fully specified.  Many of these features are not yet named, and the set of legal behaviors is not yet enumerated.  https://github.com/riscv/riscv-unified-db[Unified Database] (UDB) is in the process of naming and enumerating all of these features and behaviors to fully describe the behavior of a DUT.  Moreover, no simulator yet is fully configurable to match every feature.  Some simulators, such as Spike, intentionally have a minimal set of configuration options and are hardwired to particular behaviors.
 
-Nevertheless, Sail is making rapid progress and is aiming to fully implement the ratified RVA23 profile, read a UDB configuration, and support at least the most reasonable behaviors in time for certification.
+Nevertheless, the RISC-V Sail model is making rapid progress and is aiming to fully implement the ratified RVA23 profile, read a UDB configuration, and support at least the most reasonable behaviors in time for certification.
 
 === List of Fundamentally Nondeterministic Behaviors
 

@@ -124,16 +124,16 @@ Move this and the remainder to ACT repo
 *** example of coverpoint
 *** organization of files
 
-=== Sail Trace Coverage Flow
+=== Trace Coverage Flow
 
-Coverage is measured by running tests on Sail and generating a RVVI-Trace file, then passing this  file to an RVVI agent in a SystemVerilog testbench that checks coverage.
+Coverage is measured by running tests on the RISC-V Sail model and generating a RVVI-Trace file, then passing this  file to an RVVI agent in a SystemVerilog testbench that checks coverage.
 
 [NOTE]
 ====
 The number of coverpoints and the number of tests both grow with the number of extensions, so the runtime to measure coverage can grow quadratically with the number of extensions, and becomes problematic.  To avoid this, it is recommended to only enable coverpoints for one extension (or small group of extensions) at a time and to only run tests for that extension, and generate a Unified Coverage Database (UDCB) file and report for that extension.  A script will kick off such tests in parallel for all extensions, and merge the coverage reports.
 ====
 
-Sail produces the trace file in a standard RVVI-Trace format (see Section <<RVVI-Trace Format>>).  Any other simulator that implements the same trace format can also be used to cross-check coverage.
+The RISC-V Sail model produces the trace file in a standard RVVI-Trace format (see Section <<RVVI-Trace Format>>).  Any other simulator that implements the same trace format can also be used to cross-check coverage.
 
 *** Jordan add instructions on how to run this
 

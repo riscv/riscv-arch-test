@@ -30,11 +30,12 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             assert params.rs1val is not None and params.rs2val is not None
             test_lines.extend(
                 [
-                    test_data.add_testcase(coverpoint),
+                    test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}", coverpoint),
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     "0: # destination for backwards branch that is never taken",
+                    f"test_{test_data.test_count}:",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 3f # forward branch, if taken",
                     "1: # goes here if not taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 0b # backward branch, never taken",

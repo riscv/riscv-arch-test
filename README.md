@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv-non-isa.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 
@@ -150,7 +150,7 @@ podman --version
 Clone the `riscv-arch-test` repo `act4` branch:
 
 ```bash
-git clone https://github.com/riscv-non-isa/riscv-arch-test -b act4
+git clone https://github.com/riscv/riscv-arch-test -b act4
 ```
 
 ### Configuration
@@ -193,7 +193,7 @@ See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an exam
 
 #### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
-The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv-non-isa.github.io/riscv-arch-test/#_Macros).
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/#_Macros).
 
 **Required Macros**:
 
@@ -299,7 +299,7 @@ For any test that fails, additional debug information will be printed including:
 - Expected value
 - Actual value
 
-Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv-non-isa/riscv-arch-test/issues/new).
+Debugging a failing test typically involves examining the object dump (.elf.objdump) file to understand the failing test. Search for the failing PC and review the test. If the actual value appears to be wrong, it is likely a bug in the DUT. If the expected value appears to be wrong, it is likely due to a configuration mismatch (see below). If it is not a configuration mismatch, then it may be a bug in the ACTs themselves, such as testing a feature whose behavior should be UNSPECIFIED and thus legitimately different between the DUT and reference model. If you believe there is a bug in the ACTs themselves, please [open an issue](https://github.com/riscv/riscv-arch-test/issues/new).
 
 A common source of errors is configuration mismatches, so ensure that:
 
@@ -312,8 +312,8 @@ A common source of errors is configuration mismatches, so ensure that:
 
 Contributors are always welcome. There are several ways to contribute:
 
-- [Open issues](https://github.com/riscv-non-isa/riscv-arch-test/issues/new) with bug reports or feature requests.
-- [Submit PRs](https://github.com/riscv-non-isa/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
+- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

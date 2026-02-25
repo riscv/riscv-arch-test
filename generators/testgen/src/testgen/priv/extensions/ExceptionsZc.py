@@ -28,7 +28,7 @@ def _add_load_test(
     is_float = op.startswith("c.f")
     is_sp = op.endswith("sp")
     t_lines = []
-    t_lines.append(test_data.add_testcase(coverpoint, f"{op.lower()}_off{offset}", covergroup))
+    t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
 
     # Load address and apply offset
     if is_sp:
@@ -44,12 +44,14 @@ def _add_load_test(
     sig_reg = fp_reg if is_float else check_reg
 
     if is_sp:
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(sp)")
         t_lines.append("# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f" mv sp, x{base_reg}")  # Restore sp immediately
     else:
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
             "# Load access may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
@@ -77,7 +79,7 @@ def _add_store_test(
     is_float = op.startswith("c.f")
     is_sp = op.endswith("sp")
     t_lines = []
-    t_lines.append(test_data.add_testcase(coverpoint, f"{op.lower()}_off{offset}", covergroup))
+    t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
 
     # Initialize store register to a known value before setting up address
     if is_float:
@@ -102,12 +104,14 @@ def _add_store_test(
     reg_str = f"f{fp_reg}" if is_float else f"x{check_reg}"
 
     if is_sp:
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(sp)")
         t_lines.append("# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f" mv sp, x{base_reg}")  # Restore sp immediately
     else:
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
@@ -143,13 +147,14 @@ def _add_load_fault(
     t_lines = []
     test_label = f"{op.lower()}_fault"
 
-    t_lines.append(test_data.add_testcase(coverpoint, test_label, covergroup))
+    t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
 
     reg_str = f"f{fp_reg}" if is_float else f"x{check_reg}"
 
     if is_sp:
         t_lines.append(f" mv x{base_reg}, sp")
         t_lines.append(" li sp, RVMODEL_ACCESS_FAULT_ADDRESS")
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(sp)")
         t_lines.append("# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
         t_lines.append("c.nop")
@@ -157,6 +162,7 @@ def _add_load_fault(
         t_lines.append(f" mv sp, x{base_reg}")
     else:
         t_lines.append(f" li x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS")
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
             "# Load access may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
@@ -184,13 +190,14 @@ def _add_store_fault(
     t_lines = []
     test_label = f"{op.lower()}_fault"
 
-    t_lines.append(test_data.add_testcase(coverpoint, test_label, covergroup))
+    t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
 
     reg_str = f"f{fp_reg}" if is_float else f"x{check_reg}"
 
     if is_sp:
         t_lines.append(f" mv x{base_reg}, sp")
         t_lines.append(" li sp, RVMODEL_ACCESS_FAULT_ADDRESS")
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(sp)")
         t_lines.append("# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
         t_lines.append("c.nop")
@@ -198,6 +205,7 @@ def _add_store_fault(
         t_lines.append(f" mv sp, x{base_reg}")
     else:
         t_lines.append(f" li x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS")
+        t_lines.append(f"test_{test_data.test_count}:")
         t_lines.append(f" {op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
             "# Store access may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
@@ -373,7 +381,8 @@ def _generate_breakpoint_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(coverpoint, "Breakpoint"),
-        test_data.add_testcase(coverpoint, "c_ebreak", covergroup),
+        test_data.add_testcase("c_ebreak", coverpoint, covergroup),
+        f"test_{test_data.test_count}:",
         " c.ebreak",
         "# Breakpoint may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",
         "c.nop",
@@ -391,7 +400,8 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint, "Illegal Instruction"),
         # Align to ensure proper instruction fetch and trap handling"
         " .align 2",  # Add alignment
-        test_data.add_testcase(coverpoint, "illegal0", covergroup),
+        test_data.add_testcase("illegal0", coverpoint, covergroup),
+        f"test_{test_data.test_count}:",
         " .insn 0x00",  # use two byte for instruction alignment when trapping
         " # Illegal instruction may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",
         " c.nop",

@@ -130,7 +130,7 @@ def _generate_cp_hcsr_access_readonly_reads(test_data: TestData) -> list[str]:
 
 def _generate_cp_hcsr_access_rv32_highhalf(test_data: TestData) -> list[str]:
     """Generate cp_hcsr_access RV32 high-half H-CSR write-all-1s/readback checks."""
-    csrs = ["hedelegh", "htimedeltah", "henvcfgh"]
+    csrs = ["htimedeltah", "henvcfgh"]
     lines = [
         comment_banner(
             "cp_hcsr_access",

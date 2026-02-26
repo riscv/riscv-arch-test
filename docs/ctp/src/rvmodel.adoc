@@ -63,11 +63,11 @@ At the end of RVMODEL_BOOT, the system should be in conforming machine mode, wit
 
 RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
 
-RVMODEL macros for Sail are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
+RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
 
 === Host Target Interface
 
-The https://github.com/Timmmm/htif_spec/releases/download/v0.0.1/htif-0.0.1.pdf[host target interface] (HTIF) is an unofficial semihosting method that has become widely used by RISC-V simulators (Spike, QEMU, Sail) and test benches.  If your SystemVerilog testbench supports it, you can share the same HTIF code as Spike and Sail for the  RVMODEL_HALT_PASS, RVMODEL_HALT_FAIL, and RVMODEL_IO_WRITE_STR DUT-specific macros.  A drawback is that your testbench needs to parse the ELF labels to find the address of the `tohost` symbol, which is used for HTIF communication.  If your testbench does not support HTIF, you can implement the RVMODEL macros using other methods, such as memory-mapped I/O to a SoC peripheral or an address monitored by the testbench.
+The https://github.com/Timmmm/htif_spec/releases/download/v0.0.1/htif-0.0.1.pdf[host target interface] (HTIF) is an unofficial semihosting method that has become widely used by RISC-V simulators (Spike, QEMU, RISC-V Sail) and test benches.  If your SystemVerilog testbench supports it, you can share the same HTIF code as Spike and RISC-V Sail for the  RVMODEL_HALT_PASS, RVMODEL_HALT_FAIL, and RVMODEL_IO_WRITE_STR DUT-specific macros.  A drawback is that your testbench needs to parse the ELF labels to find the address of the `tohost` symbol, which is used for HTIF communication.  If your testbench does not support HTIF, you can implement the RVMODEL macros using other methods, such as memory-mapped I/O to a SoC peripheral or an address monitored by the testbench.
 
 For example, the testbench might implement the [unofficial HTIF semihosting specification] and print the character `A` by writing the doubleword 0x01010000_00000041 to a label called `tohost` in the .data section of the test program.  The most significant byte is the device (console), the next byte is the command (write), and the least significant 4 bytes are the data (the ASCII code for `A`).  Terminating with a failure code is done by writing the doubleword 0x00000000_00000003 to `tohost`, and terminating with a success code is done by writing the doubleword 0x00000000_00000001 to `tohost`.
 
@@ -75,7 +75,7 @@ Note that writing the upper word of the doubleword to `tohost` with `sd` is only
 
 === RVMODEL Macros for Other DUTs
 
-If you have a simple DUT designed to match the behavior of Sail and Spike, you may be able to implement the RVMODEL macros with the same code used by Sail.  Your RVMODEL_BOOT macro can be empty.  The interrupt macros for unsupported privilege modes can be empty.
+If you have a simple DUT designed to match the behavior of RISC-V Sail and Spike, you may be able to implement the RVMODEL macros with the same code used by RISC-V Sail.  Your RVMODEL_BOOT macro can be empty.  The interrupt macros for unsupported privilege modes can be empty.
 
 If you have a complex DUT, you presumably have a team of sophisticated verification engineers who can adapt the example macros to your DUT's requirements.
 

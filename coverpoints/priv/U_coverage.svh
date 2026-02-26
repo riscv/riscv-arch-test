@@ -29,9 +29,9 @@ covergroup U_uprivinst_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_uprivinst:  cross privinstrs, priv_mode_u;
-    cp_mret:       cross mret, priv_mode_u; // should trap
-    cp_sret:       cross sret, priv_mode_u; // should trap
+    cp_uprivinst:  cross priv_mode_u, privinstrs;
+    cp_mret:       cross priv_mode_u, mret; // should trap
+    cp_sret:       cross priv_mode_u, sret; // should trap
 endgroup
 
 covergroup U_ucsr_cg with function sample(ins_t ins);

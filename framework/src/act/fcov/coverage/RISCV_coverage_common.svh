@@ -77,6 +77,11 @@
   `define FLEN 32
 `endif
 
+///////////////////////////////////////////////////
+// VECTOR-RELATED MACROS
+// TODO: refactor to be generated based on config
+///////////////////////////////////////////////////
+
 // VLEN as usable numbers, ifdef contents should be defined in config
 `ifdef VLEN65536
   `define VLEN 65536
@@ -133,48 +138,65 @@
 
 
 // supported SEWs based on what coverages are enabled
-`ifdef VX64_COVERAGE
-  `define SEW64_SUPPORTED
-`endif
-`ifdef VX32_COVERAGE
-  `define SEW32_SUPPORTED
-`endif
-`ifdef VX16_COVERAGE
-  `define SEW16_SUPPORTED
-`endif
-`ifdef VX8_COVERAGE
-  `define SEW8_SUPPORTED
-`endif
+// `ifdef VX64_COVERAGE
+//   `define SEW64_SUPPORTED
+// `endif
+// `ifdef VX32_COVERAGE
+//   `define SEW32_SUPPORTED
+// `endif
+// `ifdef VX16_COVERAGE
+//   `define SEW16_SUPPORTED
+// `endif
+// `ifdef VX8_COVERAGE
+//   `define SEW8_SUPPORTED
+// `endif
+
+// `ifdef VLS64_COVERAGE
+//   `define SEW64_SUPPORTED
+// `endif
+// `ifdef VLS32_COVERAGE
+//   `define SEW32_SUPPORTED
+// `endif
+// `ifdef VLS16_COVERAGE
+//   `define SEW16_SUPPORTED
+// `endif
+// `ifdef VLS8_COVERAGE
+//   `define SEW8_SUPPORTED
+// `endif
+
+`define SEW8_SUPPORTED
+`define SEW16_SUPPORTED
+`define SEW32_SUPPORTED
+`define SEW64_SUPPORTED
 
 // ELEN (max SEW) definition
-`ifdef VX64_COVERAGE
-  `define ELEN64
-`else
-  `ifdef VX32_COVERAGE
-    `define ELEN32
-  `else
-    `ifdef VX16_COVERAGE
-      `define ELEN16
-    `else
-      `define ELEN8
-    `endif
-  `endif
-`endif
+// `ifdef VX64_COVERAGE
+//   `define ELEN64
+// `else
+//   `ifdef VX32_COVERAGE
+//     `define ELEN32
+//   `else
+//     `ifdef VX16_COVERAGE
+//       `define ELEN16
+//     `else
+//       `define ELEN8
+//     `endif
+//   `endif
+// `endif
 
-// Get load store/floating point coverage
-
-`ifdef VX64_COVERAGE
-  `define VLS64_COVERAGE
-`endif
-`ifdef VX32_COVERAGE
-  `define VLS32_COVERAGE
-`endif
-`ifdef VX16_COVERAGE
-  `define VLS16_COVERAGE
-`endif
-`ifdef VX8_COVERAGE
-  `define VLS8_COVERAGE
-`endif
+// `ifdef VLS64_COVERAGE
+//   `define ELEN64
+// `else
+//   `ifdef VLS32_COVERAGE
+//     `define ELEN32
+//   `else
+//     `ifdef VLS16_COVERAGE
+//       `define ELEN16
+//     `else
+//       `define ELEN8
+//     `endif
+//   `endif
+// `endif
 
 // edge cases
 `ifdef VLEN64
@@ -199,29 +221,30 @@
 `endif
 
 // Minimum supported LMUL
-`ifdef SEW8_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf8_SUPPORTED
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN32
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN16
-    `define LMULf2_SUPPORTED
-  `endif
-`elsif SEW16_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN32
-    `define LMULf2_SUPPORTED
-  `endif
-`elsif SEW32_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf2_SUPPORTED
-  `endif
-`endif
+// `ifdef SEW8_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf8_SUPPORTED
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN32
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN16
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `elsif SEW16_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN32
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `elsif SEW32_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `endif
+
 
 // Set register type length
 `define XLEN_BITS         bit        [`XLEN-1:0]

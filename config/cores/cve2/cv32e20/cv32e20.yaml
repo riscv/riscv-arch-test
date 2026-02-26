@@ -1,0 +1,162 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E20, a configuration of the CVE2 project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e20
+description: CV32E20 (CVE2 small) - RV32IMC configuration DUT
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Sm, version: "= 1.12.0" }
+  - { name: Smhpm, version: "= 1.12.0" }
+
+params:
+  # XLEN parameters (VERIFIED)
+  MXLEN: 32
+  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  PHYS_ADDR_WIDTH: 32
+
+  # MISA (!VERIFIED)
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  #MUTABLE_MISA_U: false
+  # UDB says:Parameter is not defined by this config: 'MUTABLE_MISA_U'.
+  # Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `U=1.0.0`{false} && `U>=0`{false} && `Sm>=0`{true})
+  MISA_CSR_IMPLEMENTED: true
+
+  # endianness (VERIFIED)
+  M_MODE_ENDIANNESS: little
+  #U_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (!VERIFIED)
+  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: false
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # MTVAL reporting (!VERIFIED)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 32
+
+  # Misaligned load/store support (!VERIFIED)
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # LSU documentation says: “If an error response is received for the first transaction, the second transaction will still be issued and ignored.” means that Misalignment does not cause an exception
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # unable to verify from documentation (but 4kb sounds reasonable)
+  MISALIGNED_SPLIT_STRATEGY: custom # from LSU docs
+
+  # CSR / implementation IDs (VERIFIED)
+  ARCH_ID_VALUE: 0x23
+  IMP_ID_VALUE: 0x0
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
+
+  # MTVEC (!VERIFIED)
+  MTVEC_MODES: [1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  #MTVEC_BASE_ALIGNMENT_DIRECT: 256
+  #Parameter is not defined by this config: 'MTVEC_BASE_ALIGNMENT_DIRECT'.
+  #  Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && !`(MTVEC_ACCESS=="ro")`{false} && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `Sm>=0`{true} && `(MTVEC_ACCESS=="rw")`{true} && `$array_includes?(MTVEC_MODES, 0)`{false})
+
+  # Sm params (!VERIFIED)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 3 # Why is this needed?!?
+
+  # CONFIG PTR (!VERIFIED)
+  CONFIG_PTR_ADDRESS: 0x0
+
+  # HPM (VERIFIED)
+  HPM_EVENTS: [0]
+  HPM_COUNTER_EN: [
+      false,
+      false,
+      false, # indexes 0..2 (MCYCLE, MINSTRET, MHPM2)
+      true,
+      true,
+      true,
+      true,
+      true, # 3..7
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false, #  8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+# end

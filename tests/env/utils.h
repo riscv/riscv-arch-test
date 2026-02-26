@@ -46,15 +46,20 @@
 # FLEN specific macros
 #define FREGWIDTH (FLEN>>3)      // in units of #bytes
 
-#if FLEN==32
+#ifdef ZFINX
+  #define FLREG LREG
+  #define FSREG SREG
+#else
+  #if FLEN==32
     #define FLREG flw
     #define FSREG fsw
-#elif FLEN==64
+  #elif FLEN==64
     #define FLREG fld
     #define FSREG fsd
-#elif FLEN==128
+  #elif FLEN==128
     #define FLREG flq
     #define FSREG fsq
+  #endif
 #endif
 
 // Default VDSEW to 0 for non-vector tests
@@ -139,43 +144,14 @@
     csrr VLENB_CACHE, vlenb
 
 
-/* TODO: Add support for Zfinx
-#if ZFINX==1
-    #define FLREG ld
-    #define FSREG sd
-    #define FREGWIDTH 8
-    #define FLEN 64
-    #if XLEN==64
-        #define SIGALIGN 8
-    #else
-        #define SIGALIGN 4
-    #endif
-    #elif ZDINX==1
-        #define FLREG LREG
-        #define FSREG SREG
-        #define FREGWIDTH 8
-        #define FLEN 64
-    #elif ZHINX==1
-        #define FLREG lw
-        #define FSREG sw
-        #define FREGWIDTH 4
-        #define FLEN 32
-#endif
-*/
-
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
 //-----------------------------------------------------------------------
 
+/**** fixed length LI macro ****/
 // this generates a constants using the standard addi or lui/addi sequences
 // but also handles cases that are contiguous bit masks in any position,
 // and also constants handled with the addi/lui/addi but are shifted left
-
-#ifndef UNROLLSZ
-  #define UNROLLSZ 5
-#endif
-
-/**** fixed length LI macro ****/
 #if (XLEN<64)
   #define LI(reg, imm)                                                            ;\
     .option push                                                                  ;\
@@ -218,12 +194,12 @@
     .rept XLEN                                                                    ;\
       .if   (fnd1<0)              /* looking for first edge?              */      ;\
         .if (BIT(imme,pos)==1)    /* look for falling edge[pos]           */      ;\
-          .set  edge1,pos         /* fnd falling edge, don’t chk for more */      ;\
+          .set  edge1,pos         /* fnd falling edge, don't chk for more */      ;\
           .set  fnd1,0                                                            ;\
         .endif                                                                    ;\
       .elseif (fnd2<0)            /* looking for second edge?             */      ;\
         .if (BIT(imme,pos)==0)    /* yes, found rising edge[pos]?         */      ;\
-          .set  edge2, pos        /* fnd rising  edge, don’t chk for more */      ;\
+          .set  edge2, pos        /* fnd rising  edge, don't chk for more */      ;\
           .set  fnd2,0                                                            ;\
         .endif                                                                    ;\
       .endif                                                                      ;\
@@ -289,6 +265,13 @@
       .endif                                                                      ;\
     .endif                                                                        ;\
   .option pop
+#endif
+
+# Alignment size for LA macro. Must be larger than the longest instruction
+# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+# On some rv64 targets, this may need to be increased to 6.
+#ifndef UNROLLSZ
+  #define UNROLLSZ 5
 #endif
 
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/

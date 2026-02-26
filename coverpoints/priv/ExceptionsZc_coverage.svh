@@ -67,7 +67,7 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
         // auto fills 000 through 111
     }
     illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
 
     // main coverpoints
@@ -76,7 +76,7 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
     cp_load_access_fault:                    cross loadops, illegal_address;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
     cp_store_access_fault:                   cross storeops, illegal_address;
-    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; bins illegal1 = {'1}; }
+    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; }
 
 endgroup
 

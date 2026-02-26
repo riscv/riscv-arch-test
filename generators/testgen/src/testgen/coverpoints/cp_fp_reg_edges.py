@@ -22,6 +22,8 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         edges = FLOAT_EDGES.double
     elif coverpoint.endswith("_H"):
         edges = FLOAT_EDGES.half
+    elif coverpoint.endswith("_BF16"):
+        edges = FLOAT_EDGES.bf16
     else:
         edges = FLOAT_EDGES.single
 
@@ -32,7 +34,9 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     test_lines: list[str] = []
     for edge_val in edges:
         for frm_mode in frm_modes:
-            test_lines.append(test_data.add_testcase(coverpoint))
+            test_lines.append(
+                test_data.add_testcase(f"b{edge_val:#x}{f'_{frm_mode}' if frm_mode is not None else ''}", coverpoint)
+            )
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs1val=edge_val, frm=frm_mode)
             desc = f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
             test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
@@ -48,12 +52,14 @@ def make_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         edges = FLOAT_EDGES.double
     elif coverpoint.endswith("_H"):
         edges = FLOAT_EDGES.half
+    elif coverpoint.endswith("_BF16"):
+        edges = FLOAT_EDGES.bf16
     else:
         edges = FLOAT_EDGES.single
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs2val=edge_val)
         desc = f"{coverpoint} (Test source fs2 value = {test_data.flen_format_str.format(edge_val)})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
@@ -69,12 +75,14 @@ def make_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         edges = FLOAT_EDGES.double
     elif coverpoint.endswith("_H"):
         edges = FLOAT_EDGES.half
+    elif coverpoint.endswith("_BF16"):
+        edges = FLOAT_EDGES.bf16
     else:
         edges = FLOAT_EDGES.single
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs3val=edge_val)
         desc = f"{coverpoint} (Test source fs3 value = {test_data.flen_format_str.format(edge_val)})"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

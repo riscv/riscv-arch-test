@@ -104,29 +104,43 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
     illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
     illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
+    i_phys_adr_misaligned: coverpoint ins.current.phys_adr_i[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
+        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            // auto fill 1/0 for the physical address being valid
+        }
+    `else
+        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            // auto fill 1/0 for the physical address being valid
+        }
+    `endif
 
     // main coverpoints
-    cp_instr_adr_misaligned_branch:          cross branch, branches_taken, pc_bit_1, imm_bit_1, priv_mode_m;
-    cp_instr_adr_misaligned_branch_nottaken: cross branch, branches_nottaken, pc_bit_1, imm_bit_1, priv_mode_m;
-    cp_instr_adr_misaligned_jal:             cross jal, pc_bit_1, imm_bit_1, priv_mode_m;
-    cp_instr_adr_misaligned_jalr:            cross jalr, rs1_1_0, offset, priv_mode_m;
-    cp_instr_access_fault:                   cross jalr, illegal_address, priv_mode_m;
-    cp_illegal_instruction:                  cross illegalops, priv_mode_m;
-    cp_illegal_instruction_seed:             cross csrops, rs1_zero, seed, priv_mode_m;
-    cp_breakpoint:                           cross ebreak, priv_mode_m;
-    cp_load_address_misaligned:              cross loadops, adr_LSBs, priv_mode_m;
-    cp_load_access_fault:                    cross loadops, illegal_address, priv_mode_m;
-    cp_store_address_misaligned:             cross storeops, adr_LSBs, priv_mode_m;
-    cp_store_access_fault:                   cross storeops, illegal_address, priv_mode_m;
-    cp_ecall_m:                              cross ecall, priv_mode_m;
-    cp_misaligned_priority_load:             cross loadops, adr_LSBs, illegal_address_priority, priv_mode_m;
-    cp_misaligned_priority_store:            cross storeops, adr_LSBs, illegal_address_priority, priv_mode_m;
-    cp_mstatus_ie:                           cross ecall, mstatus_MIE, priv_mode_m;
+    cp_instr_adr_misaligned_branch:          cross priv_mode_m, branch, branches_taken, pc_bit_1, imm_bit_1;
+    cp_instr_adr_misaligned_branch_nottaken: cross priv_mode_m, branch, branches_nottaken, pc_bit_1, imm_bit_1;
+    cp_instr_adr_misaligned_jal:             cross priv_mode_m, jal, pc_bit_1, imm_bit_1;
+    cp_instr_adr_misaligned_jalr:            cross priv_mode_m, jalr, rs1_1_0, offset;
+    cp_instr_access_fault:                   cross priv_mode_m, jalr, illegal_address;
+    cp_illegal_instruction:                  cross priv_mode_m, illegalops;
+    cp_illegal_instruction_seed:             cross priv_mode_m, csrops, rs1_zero, seed;
+    cp_breakpoint:                           cross priv_mode_m, ebreak;
+    cp_load_address_misaligned:              cross priv_mode_m, loadops, adr_LSBs;
+    cp_load_access_fault:                    cross priv_mode_m, loadops, illegal_address;
+    cp_store_address_misaligned:             cross priv_mode_m, storeops, adr_LSBs;
+    cp_store_access_fault:                   cross priv_mode_m, storeops, illegal_address;
+    cp_ecall_m:                              cross priv_mode_m, ecall;
+    cp_misaligned_priority_fetch:            cross priv_mode_m, i_phys_adr_misaligned, i_phys_address_nonexistent, jalr;
+    cp_misaligned_priority_load:             cross priv_mode_m, loadops, adr_LSBs, illegal_address_priority;
+    cp_misaligned_priority_store:            cross priv_mode_m, storeops, adr_LSBs, illegal_address_priority;
+    cp_mstatus_ie:                           cross priv_mode_m, ecall, mstatus_MIE;
 endgroup
 
 

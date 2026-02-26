@@ -1,0 +1,135 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: smstateen_mmode_rv64_csrs
+    coverpoint: [""]
+
+  - name: smstateen_smode_rv64_csrs
+    coverpoint: [""]
+
+  - name: smstateen_hypervisor_rv64_csrs
+    coverpoint: [""]
+
+  - name: smstateen_rv32_upper_bits_csrs
+    coverpoint: [""]
+
+  - name: stateen_op
+    coverpoint: [""]
+
+  - name: smstateen_illegal_state_access
+    coverpoint: [""]
+
+  - name: smstateen_implicit_state_update
+    coverpoint: [""]
+
+  - name: sstateen_user_access_control
+    coverpoint: [""]
+
+  - name: sstateen_bit_allocation
+    coverpoint: [""]
+
+  - name: sstateen_bit_correspondence
+    coverpoint: [""]
+
+  - name: mstateen_bit_allocation
+    coverpoint: [""]
+
+  - name: mstateen_bit_encroachment
+    coverpoint: [""]
+
+  - name: sstateen_encroachment_bits_roz
+    coverpoint: [""]
+
+  - name: hstateen_encoding
+    coverpoint: [""]
+
+  - name: stateen_warl_access
+    coverpoint: [""]
+
+  - name: stateen_unimplemented_state_roz
+    coverpoint: [""]
+
+  - name: stateen-reserved_roz
+    coverpoint: [""]
+
+  - name: sstateen_vsmode_access_roz
+    coverpoint: [""]
+
+  - name: sstateen_ro1_bits
+    coverpoint: [""]
+
+  - name: hstateen_ro1_bits
+    coverpoint: [""]
+
+  - name: mstateen_zero_initialization
+    coverpoint: [""]
+
+  - name: hstateen_sstateen_zero_initialization
+    coverpoint: [""]
+
+  - name: mstateen-bit-63_op
+    coverpoint: [""]
+
+  - name: hstateen-bit-63_op
+    coverpoint: [""]
+
+  - name: mstateen-bit-63_roz
+    coverpoint: [""]
+
+  - name: hstateen-bit-63_writable
+    coverpoint: [""]
+
+  - name: stateen0-c_op
+    coverpoint: [""]
+
+  - name: stateen0-fcsr_op
+    coverpoint: [""]
+
+  - name: stateen0-fcsr0_misa-f0_illegal_fpu_instr
+    coverpoint: [""]
+
+  - name: stateen0-jvt_op
+    coverpoint: [""]
+
+  - name: mstateen0-se0_op
+    coverpoint: [""]
+
+  - name: hstateen0-se0_op
+    coverpoint: [""]
+
+  - name: mstateen0-envcfg_op
+    coverpoint: [""]
+
+  - name: hstateen0-envcfg_op
+    coverpoint: [""]
+
+  - name: mstateen0-csrind_op
+    coverpoint: [""]
+
+  - name: hstateen0-csrind_op
+    coverpoint: [""]
+
+  - name: mstateen0-imsic_op
+    coverpoint: [""]
+
+  - name: hstateen0-imsic_op
+    coverpoint: [""]
+
+  - name: mstateen0-aia_op
+    coverpoint: [""]
+
+  - name: hstateen0-aia_op
+    coverpoint: [""]
+
+  - name: mstateen0-context_op
+    coverpoint: [""]
+
+  - name: hstateen0-context_op
+    coverpoint: [""]
+
+  - name: mstateen0-p1p13_op
+    coverpoint: [""]
+
+  - name: mstateen0-srmcfg_op
+    coverpoint: [""]

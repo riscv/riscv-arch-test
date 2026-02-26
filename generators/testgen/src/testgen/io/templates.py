@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXTENSION_PARAM_MAP, PRIV_TEST_EXCLUDE_COMPONENTS
+from testgen.constants import EXTENSION_PARAM_MAP
 from testgen.data.config import TestConfig
 
 
@@ -41,10 +41,18 @@ def insert_header_template(
     E_ext = test_config.E_ext
     required_extensions = test_config.required_extensions
     ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions)
-    march = generate_march_string(ext_components, xlen)
+    march_extensions = test_config.march_extensions
+    if march_extensions is not None:
+        march_ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, march_extensions)
+        march = generate_march_string(march_ext_components, xlen)
+        # combine required_extensions and march_extensions for extra_defines
+        all_extensions = list(dict.fromkeys(ext_components + march_ext_components))
+    else:
+        march = generate_march_string(ext_components, xlen)
+        all_extensions = ext_components
     if extra_defines is None:
         extra_defines = []
-    extra_defines.extend(generate_defines_from_extensions(ext_components))
+    extra_defines.extend(generate_defines_from_extensions(all_extensions))
     # Replace placeholders
     template = (
         template.replace("@TEST_PATH@", f"{test_file}")
@@ -89,9 +97,6 @@ def canonicalize_extensions(
         if ext in EXTENSION_PARAM_MAP:
             params.append(EXTENSION_PARAM_MAP[ext])
             ext_components.remove(ext)
-        # Remove priv test exclude extensions
-        if ext in PRIV_TEST_EXCLUDE_COMPONENTS:
-            ext_components.remove(ext)
 
     # Canonicize extensions
     if "I" not in ext_components and "E" not in ext_components:
@@ -110,11 +115,50 @@ def canonicalize_extensions(
     return ext_components, params
 
 
+# Canonical order from RISC-V ISA spec
+_EXTENSION_CANONICAL_ORDER = "iemafdqlcbkjtpvh"
+
+
+def _single_letter_sort_key(ext: str) -> int:
+    """Return the canonical sort position for a single-letter extension."""
+    ext = ext.lower()
+    if ext in _EXTENSION_CANONICAL_ORDER:
+        return _EXTENSION_CANONICAL_ORDER.index(ext)
+    return len(_EXTENSION_CANONICAL_ORDER)
+
+
+def _multi_letter_sort_key(ext: str) -> tuple[int, int, str]:
+    """Return sort key for multi-letter extensions in canonical order.
+
+    Sort order: Z extensions first, then S extensions, then others.
+    Z extensions are sub-sorted by their second letter in canonical
+    single-letter order (e.g. Zi* < Zm* < Za* < Zf* < Zb* < Zv*),
+    then alphabetically within the same sub-group.
+    """
+    ext = ext.lower()
+    if ext.startswith("z"):
+        group = 0
+        # Sub-group by second letter in canonical single-letter order
+        second_letter = ext[1] if len(ext) > 1 else ""
+        subgroup = (
+            _EXTENSION_CANONICAL_ORDER.index(second_letter)
+            if second_letter in _EXTENSION_CANONICAL_ORDER
+            else len(_EXTENSION_CANONICAL_ORDER)
+        )
+    elif ext.startswith("s"):
+        group = 1
+        subgroup = 0
+    else:
+        group = 2
+        subgroup = 0
+    return (group, subgroup, ext)
+
+
 def generate_march_string(ext_components: list[str], xlen: int) -> str:
     """Generate march string from extension components."""
     # Separate single-letter and multi-letter extensions
-    single_letter = []
-    multi_letter = []
+    single_letter: list[str] = []
+    multi_letter: list[str] = []
     for ext in ext_components:
         if ext in ["Sm", "S", "U"]:
             continue  # Skip privilege modes in march string
@@ -123,10 +167,15 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
         else:
             multi_letter.append(ext)
 
+    # Sort single-letter extensions in canonical order (I/E, M, A, F, D, Q, C, B, V, H)
+    single_letter.sort(key=_single_letter_sort_key)
+    # Sort multi-letter extensions in canonical order (Z by subgroup then alpha, S alpha, others alpha)
+    multi_letter.sort(key=_multi_letter_sort_key)
+
     # Construct march string: single-letter extensions first (no separator), then multi-letter (underscore separated)
     ext_str = "".join(single_letter)
     if multi_letter:
-        ext_str += "_".join(multi_letter)
+        ext_str += "_" + "_".join(multi_letter)
     ext_str = ext_str.lower()
     march = f"rv{xlen if xlen != 0 else '${XLEN}'}{ext_str}"
 

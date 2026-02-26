@@ -1,1 +1,0 @@
-../sail-rv32gc/link.ld

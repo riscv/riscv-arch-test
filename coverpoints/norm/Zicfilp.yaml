@@ -8,3 +8,85 @@ normative_rule_definitions:
   # instruction expected. 1 - LP_EXPECTED - a landing pad instruction is expected.
   - names: [mstatus_spelp_enc, mstatus_mpelp_enc]
     coverpoint: [""]
+
+  # Access to the SPELP field, added by Zicfilp, accesses the homonymous fields of
+  # mstatus when V=0, and the homonymous fields of vsstatus when V=1.
+  - names:
+      [
+        sstatus-spelp_sz,
+        sstatus-spelp_acc,
+        sstatus-spelp_op,
+        sstatus-spelp_Zicfilp,
+      ]
+    coverpoint: [""]
+
+  # The Zicfilp extension adds the LPE field in senvcfg. When the LPE field is set
+  # to 1, the Zicfilp extension is enabled in VU/U-mode. When the LPE field is 0,
+  # the Zicfilp extension is not enabled in VU/U-mode and the following rules apply
+  # to VU/U-mode:
+  - names: [senvcfg-lpe_Zicfilp_acc, senvcfg-lpe_Zicfilp_op]
+    coverpoint: [""]
+
+  # A trap may need to be delivered to the same or to a higher privilege mode upon
+  # completion of JALR/C.JALR/C.JR, but before the instruction at the target of
+  # indirect call/jump was decoded Asynchronous interrupts. Synchronous exceptions
+  # with priority higher than that of a software-check exception with xtval set to
+  # "landing pad fault (code=2)" (See &lt;&lt;norm:exc_priority&gt;&gt; of
+  # Privileged Specification).
+  - name: Zicfilp_forward_traps
+    coverpoint: [""]
+
+  # The software-check exception caused by Zicfilp has higher priority than an
+  # illegal-instruction exception but lower priority than instruction access-fault.
+  - name: Zicfilp_exception_priority
+    coverpoint: [""]
+
+  # The software-check exception due to the instruction not being an LPAD
+  # instruction when ELP is LP_EXPECTED or a software-check exception caused by the
+  # LPAD instruction itself leads to a trap being delivered to the same or to a
+  # higher privilege mode.
+  - name: lpad_sw_exception
+    coverpoint: [""]
+
+  # To store the previous ELP state on trap delivery to M-mode, an MPELP bit is
+  # provided in the mstatus CSR.
+  - name: mstatus-mpelp_op
+    coverpoint: [""]
+
+  # To store the previous ELP state on trap delivery to S/HS-mode, an SPELP bit is
+  # provided in the mstatus CSR. The SPELP bit in mstatus can be accessed through
+  # the sstatus CSR.
+  - name: Zicfilp_forward_traps_s_hs_mode
+    coverpoint: [""]
+
+  # To store the previous ELP state on traps to VS-mode, a SPELP bit is defined in
+  # the vsstatus (VS-modes version of sstatus).
+  - name: vsstatus-spelp_op2
+    coverpoint: [""]
+
+  # To store the previous ELP state on transition to Debug Mode, a pelp bit is
+  # defined in the dcsr register. Upon entry into Debug Mode, the pelp bit in dcsr
+  # is updated with the ELP at the privilege level the hart was previously in, and
+  # the ELP is set to NO_LP_EXPECTED. When a hart resumes from Debug Mode, if the
+  # new privilege mode is y, then ELP is set to the value of pelp if yLPE (see ) is
+  # 1; otherwise, it is set to NO_LP_EXPECTED.
+  - name: Zicfilp_forward_traps_debug_mode
+    coverpoint: [""]
+
+  # When a trap is taken into privilege mode x, the xPELP is set to ELP and ELP is
+  # set to NO_LP_EXPECTED.
+  - name: Zicfilp_pelp_trap
+    coverpoint: [""]
+
+  # An MRET or SRET instruction is used to return from a trap in M-mode or S-mode,
+  # respectively. When executing an xRET instruction, if the new privilege mode is
+  # y, then ELP is set to the value of xPELP if yLPE (see ) is 1; otherwise, it is
+  # set to NO_LP_EXPECTED; xPELP is set to NO_LP_EXPECTED.
+  - name: Zicfilp_pelp_trap_return
+    coverpoint: [""]
+
+  # On a trap caused by a software-check exception, the stval register holds the
+  # cause for the exception. The following encodings are defined:
+  - name: stval_exception_info
+    coverpoint:
+      ["TODO: Zicfilp and Zicfiss should both cause exceptions and read xtval"]

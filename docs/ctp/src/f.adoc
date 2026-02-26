@@ -1,0 +1,133 @@
+
+=== Floating-Point Extensions
+
+Supporting floating-point involves enabling at least the F extension.  Other extensions depend on F.  The coverpoints are specified in the following sections. Some tests only apply when multiple extensions are supported.
+
+The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified coverpoints for floating-point instructions are defined in <<t-float-modified-coverpoints>>. D and H suffixes apply to double-precision and half-precision floating-point instructions, respectively.
+
+[[t-unprivileged-coverpoints]]
+
+[[t-float-modified-coverpoints]]
+.Floating-Point Modified Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cp_frm_{2, 3, 4}|6|Rounding modes for instructions with 2/3/4 arguments
+|cr_fs1_edges_frm|26 * 6|Cross product of fs1 edges and rounding modes
+|cp_csr_fflags_{n, v, vn, von, voun, vdoun}|2-10|Set / preserve fflags bits
+|cr_fs1_fs2_edges_frm|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes
+|cr_fs1_fs2_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes for fma
+|cr_fs1_fs3_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs3 edges and rounding modes for fma
+|===
+
+These coverpoints do not yet certify that floating-point operations conform to the IEEE 754 standard.  More robust coverpoints based on the IBM suite are under development.
+
+==== F Single-Precision FP
+
+include::{testplansdir}/F.adoc[]
+
+include::norm/F_norm_rules.adoc[]
+
+
+
+==== D Double-Precision FP
+
+include::{testplansdir}/D.adoc[]
+
+include::norm/D_norm_rules.adoc[]
+
+
+
+==== Zfh Half-Precision FP
+
+include::{testplansdir}/Zfh.adoc[]
+
+include::norm/Zfh_norm_rules.adoc[]
+
+
+
+===== ZfhD
+
+include::norm/ZfhD_norm_rules.adoc[]
+
+
+
+===== Zfhmin
+
+include::{testplansdir}/Zfhmin.adoc[]
+
+include::norm/Zfhmin_norm_rules.adoc[]
+
+
+
+===== ZfhminD
+
+include::{testplansdir}/ZfhminD.adoc[]
+
+include::norm/ZfhminD_norm_rules.adoc[]
+
+
+
+==== Zfa Additional FP
+
+Tests for Zfa for single-precision floating-point are called ZfaF.
+
+include::{testplansdir}/ZfaF.adoc[]
+
+include::norm/ZfaF_norm_rules.adoc[]
+
+
+
+===== ZfaD
+
+include::{testplansdir}/ZfaD.adoc[]
+
+include::norm/ZfaD_norm_rules.adoc[]
+
+
+
+===== ZfaZfh
+
+include::{testplansdir}/ZfaZfh.adoc[]
+
+include::norm/ZfaZfh_norm_rules.adoc[]
+
+
+
+===== ZfaZfhD
+
+When Zfa is supported with both Zfh and D, there are additional
+NAN-Boxing tests for 16-bit values in 64-bit registers.
+
+include::{testplansdir}/ZfaZfhD.adoc[]
+
+include::norm/ZfaZfhD_norm_rules.adoc[]
+
+
+
+===== Zfbfmin Scalar BF16 Converts
+
+include::{testplansdir}/Zfbfmin.adoc[]
+
+include::norm/Zfbfmin_norm_rules.adoc[]
+
+See also <<t-Zfhmin-normative-rules,Zfhmin normative rules>>.
+
+==== ZicsrF Floating-Point CSRs
+
+These test additional CSRs that exist when floating-point is supported.
+Although these tests, like most privileged tests, are generated from
+a spreadsheet and manual coverpoints rather than a CSV, they do not assume
+any privileged capabilities, including the existence of machine mode. Hence
+they are compatible with RVI20 and simple cores that lack privileged modes.
+
+Note that this suite also tests that the underflow flag is set only if the
+result is tiny after rounding, per the RISC-V spec.
+
+[[t-ZicsrF-coverpoints]]
+.ZicsrF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1673314448#gid=1673314448[Google Sheet Testplan]
+,===
+
+include::norm/ZicsrF_norm_rules.adoc[]

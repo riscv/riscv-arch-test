@@ -38,7 +38,21 @@ class MissingInstructionFormatterError(MissingRegistryItemError):
 
 @dataclass
 class InstructionTypeConfig:
-    """Configuration for an instruction type."""
+    """Configuration for an instruction type.
+
+    This dataclass holds metadata about an instruction type needed for parameter
+    generation and validation, such as required parameters, register ranges, and
+    immediate value constraints.
+
+    Attributes:
+        required_params: Set of parameters required for this instruction type (rs1, rdval, immval, etc.).
+        reg_range: Iterable of valid register numbers for this instruction type.
+        imm_bits: Number of bits for immediates. Can also be "xlen", "xlen_log2", "flen", or "flen_log2".
+        imm_range: Explicit (min, max) range for immediate values. Mutually exclusive with imm_bits.
+        imm_signed: Whether the immediate value is signed (default: True).
+        imm_nonzero: Whether the immediate value must be nonzero (default: False).
+        pair_regs: Set of registers that use even register pairs (e.g., {"rd", "rs2"}).
+    """
 
     required_params: set[str] | None = None
     reg_range: Iterable[int] | None = None
@@ -46,6 +60,7 @@ class InstructionTypeConfig:
     imm_range: tuple[int, int] | None = None  # Explicit (min, max) range
     imm_signed: bool = True
     imm_nonzero: bool = False
+    pair_regs: set[str] | None = None  # Registers that use register pairs (e.g., {"rd", "rs2"})
 
 
 # Registry: dict mapping instruction type to (instruction_formatter, instruction_type_config)
@@ -151,6 +166,6 @@ def format_single_test(
 
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    test_lines.extend([setup, test, check])
+    test_lines.extend([setup, f"test_{test_data.test_count}:", test, check])
 
     return "\n".join(test_lines)

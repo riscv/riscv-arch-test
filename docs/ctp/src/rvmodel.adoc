@@ -1,0 +1,85 @@
+
+[[rvmodel-macros]]
+== RVMODEL DUT-Specific Macros
+
+Each DUT requires implementing a set of macros to perform the following non-ISA functions:
+
+* Run DUT-specific boot code
+* Terminate a test with a pass or fail indication
+* Send a character to a terminal
+* Deliver each supported type of interrupt to the core (Machine/Supervisor External/Timer/Software + guest external interrupts)
+
+The macro names begin with RVMODEL, so they are called _RVMODEL DUT-Specific Macros_.  Their functions are sometimes called _semihosting_ or _trick box_.
+
+The RVMODEL DUT-Specific Macros rely on the capabilities of the SoC and/or testbench.  For example, a SoC with a 16550-compatible UART sends a character by writing a byte to the UART's memory-mapped Transmit Holding Register. A SoC without a UART may have a testbench that monitors writes to a specific memory address and prints the byte written to that address.
+
+Most macros are implemented in config/cores/<core>/<version>/rvmodel_macros.h.  RVMODEL_ACCESS_FAULT_ADDRESS is defined in rvtest_config.h and rvtest_config.svh for the test programs and coverpoints, respectively.
+
+=== Macros
+
+The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The Mode column indicates the privilege mode from which the macro is called.
+
+[[t-rvmodel]]
+.RVMODEL DUT-Specific Macros
+[options=header]
+[cols="2, 3, 1", options=header]
+[%AUTOWIDTH]
+|===
+|Macro|Description|Mode
+|RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state. Cannot clobber `x1`/`ra`, but any other registers may be trashed. | Machine
+|RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation. | Any
+|RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation. | Any
+|RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro. | Machine
+|RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string. | Any
+|RVMODEL_SET_MEXT_INT|Sets the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller, if supported| Machine or Supervisor
+|RVMODEL_CLR_MEXT_INT|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller | Machine or Supervisor
+|RVMODEL_SET_MSW_INT|Sets the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register, if supported | Machine or Supervisor
+|RVMODEL_CLR_MSW_INT|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register | Machine or Supervisor
+|RVMODEL_SET_SEXT_INT|Sets the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller, if supported | Machine or Supervisor
+|RVMODEL_CLR_SEXT_INT|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller | Machine or Supervisor
+|RVMODEL_SET_SSW_INT|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported | Machine or Supervisor
+|RVMODEL_CLR_SSW_INT|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, as applicable | Machine or Supervisor
+|RVMODEL_ACCESS_FAULT_ADDRESS|The base address of a region of at least 128 bytes that causes an access fault when any part of the region is read or written. This is used to test exceptions. | n/a
+|RVMODEL_MTIME_ADDRESS|The address of the memory-mapped `mtime` register, used for timer accesses and interrupts. | n/a
+|RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts. | n/a
+|RVMODEL_DATA_SECTION|Model-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  Macro can be empty if not needed. | n/a
+|===
+
+[NOTE]
+RVMODEL interrupt macros are only required for interrupts controlled in a platform-specific fashion. RISC-V has standardized generating timer interrupts using memory-mapped MTIME and MTIMECMP, so no RVMODEL macros are needed for DUT-specific timer interrupt generation.  Similarly, no RVMODEL macros are needed to set or read MTIME, or set or clear interrupts using standard CSR accesses.
+
+[NOTE]
+If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_GOTO_M_MODE.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
+
+=== RVMODEL_BOOT Requirements
+
+The RVMODEL_BOOT macro may be empty for a simple DUT.
+
+For a complex SoC, the macro may need to perform initialization steps such as turning on a phase-locked loop or DRAM controller or initializing custom state.  It must not clobber `x1`/`ra`, but any other registers may be trashed.
+
+At the end of RVMODEL_BOOT, the system should be in conforming machine mode, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE).
+
+=== RVMODEL Macros for Spike and SAIL
+
+RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
+
+RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
+
+=== Host Target Interface
+
+The https://github.com/Timmmm/htif_spec/releases/download/v0.0.1/htif-0.0.1.pdf[host target interface] (HTIF) is an unofficial semihosting method that has become widely used by RISC-V simulators (Spike, QEMU, RISC-V Sail) and test benches.  If your SystemVerilog testbench supports it, you can share the same HTIF code as Spike and RISC-V Sail for the  RVMODEL_HALT_PASS, RVMODEL_HALT_FAIL, and RVMODEL_IO_WRITE_STR DUT-specific macros.  A drawback is that your testbench needs to parse the ELF labels to find the address of the `tohost` symbol, which is used for HTIF communication.  If your testbench does not support HTIF, you can implement the RVMODEL macros using other methods, such as memory-mapped I/O to a SoC peripheral or an address monitored by the testbench.
+
+For example, the testbench might implement the [unofficial HTIF semihosting specification] and print the character `A` by writing the doubleword 0x01010000_00000041 to a label called `tohost` in the .data section of the test program.  The most significant byte is the device (console), the next byte is the command (write), and the least significant 4 bytes are the data (the ASCII code for `A`).  Terminating with a failure code is done by writing the doubleword 0x00000000_00000003 to `tohost`, and terminating with a success code is done by writing the doubleword 0x00000000_00000001 to `tohost`.
+
+Note that writing the upper word of the doubleword to `tohost` with `sd` is only properly defined for RV64.  Therefore, RV32 can use HTIF to terminate with a success or failure code but not necessarily to write to the console.
+
+=== RVMODEL Macros for Other DUTs
+
+If you have a simple DUT designed to match the behavior of RISC-V Sail and Spike, you may be able to implement the RVMODEL macros with the same code used by RISC-V Sail.  Your RVMODEL_BOOT macro can be empty.  The interrupt macros for unsupported privilege modes can be empty.
+
+If you have a complex DUT, you presumably have a team of sophisticated verification engineers who can adapt the example macros to your DUT's requirements.
+
+[[linker-script]]
+=== Linker Script
+
+Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.

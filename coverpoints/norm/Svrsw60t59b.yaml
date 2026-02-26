@@ -1,0 +1,11 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: Svrsw60t59b_reserved_bits_60_59
+    coverpoint: [""]
+
+  - name: Svrsw60t59b_h_g_stage_reserved_bits
+    coverpoint: [""]
+
+  - name: Svrsw60t59b_depends_on_sv39
+    coverpoint: [""]

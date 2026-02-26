@@ -253,5 +253,5 @@ normative_rule_definitions:
   - name: exc_priority
     coverpoint:
       [
-        "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
+        "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
       ]

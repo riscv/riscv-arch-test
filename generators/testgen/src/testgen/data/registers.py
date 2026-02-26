@@ -18,17 +18,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def select_registers(num_regs: int, reg_list: list[int]) -> list[int]:
-    """Select a specified number of unique registers from a list of available registers."""
-    if num_regs > len(reg_list):
-        raise ValueError(
-            f"Not enough registers available to select from. Requested {num_regs}, but only {len(reg_list)} available."
-        )
-
-    selected_regs = random.sample(reg_list, num_regs)
-    return selected_regs
-
-
 class RegisterFile:
     """Class to represent a register file and provide methods to select registers."""
 
@@ -67,7 +56,11 @@ class RegisterFile:
             exclude_regs.extend([reg for reg in self.reg_list if reg not in reg_range])
         available_regs = [reg for reg in self.reg_list if reg not in exclude_regs]
         # Select random registers and remove them from the available list
-        selected_regs = select_registers(num_regs, available_regs)
+        if num_regs > len(available_regs):
+            raise ValueError(
+                f"Not enough registers available to select from. Requested {num_regs}, but only {len(available_regs)} available."
+            )
+        selected_regs = random.sample(available_regs, num_regs)
         for reg in selected_regs:
             self.reg_list.remove(reg)
         logger.debug(
@@ -155,6 +148,60 @@ class IntegerRegisterFile(RegisterFile):
     @property
     def link_reg(self) -> int:
         return self._link_reg
+
+    def get_register_pair(self, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None) -> int:
+        """Get an even register where both it and the following odd register are available.
+
+        For register pair instructions, the even register is specified in the instruction
+        but both registers are used.
+
+        Returns:
+            The even register number of the pair.
+        """
+        if exclude_regs is None:
+            exclude_regs = []
+
+        # Find even registers where both the even and odd register are available
+        available_pairs: list[int] = []
+        for reg in self.reg_list:
+            is_even = reg % 2 == 0
+            odd_available = (reg + 1) in self.reg_list
+            not_excluded = reg not in exclude_regs and (reg + 1) not in exclude_regs
+            in_range = reg_range is None or (reg in reg_range and (reg + 1) in reg_range)
+            if is_even and odd_available and not_excluded and in_range:
+                available_pairs.append(reg)
+
+        if not available_pairs:
+            raise ValueError("No register pairs available")
+
+        even_reg = random.choice(available_pairs)
+        self.reg_list.remove(even_reg)
+        self.reg_list.remove(even_reg + 1)
+        logger.debug(f"Getting register pair: x{even_reg}/x{even_reg + 1}")
+        return even_reg
+
+    def consume_register_pair(self, even_reg: int) -> str:
+        """Mark a register pair as used/unavailable, handling special register conflicts.
+
+        Args:
+            even_reg: The even register number of the pair.
+
+        Returns:
+            Assembly code needed to relocate any conflicting special registers.
+        """
+        if even_reg % 2 != 0:
+            raise ValueError(f"Register {even_reg} is not an even register for a pair")
+        return self.consume_registers([even_reg, even_reg + 1])
+
+    def return_register_pair(self, even_reg: int) -> None:
+        """Mark a register pair as available again.
+
+        Args:
+            even_reg: The even register number of the pair.
+        """
+        if even_reg % 2 != 0:
+            raise ValueError(f"Register {even_reg} is not an even register for a pair")
+        self.return_registers([even_reg, even_reg + 1])
 
     def move_sig_reg(self, new_reg: int) -> str:
         """Move the signature register to a specified register.

@@ -25,13 +25,14 @@ from typing import TextIO
 # the value being a list of covergroups for that instruction
 
 
-def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[str, list[str]]], dict[str, str]]:
+def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str], list[str]]], dict[str, str]]:
     """
     Iterates over all of the CSV testplan files in the provided directory. It populates a dictionary of dictionaries with
-    the top level key being the architecture/extension (e.g. RV64I), the second level key being the instruction mnemonic (e.g. add),
-    and the value being a list of covergroups for that instruction.
+    the top level key being the architecture/extension (e.g. RV64I), the second level key being a tuple of
+    (instruction mnemonic, type) to allow duplicate instructions with different types, and the value being a list
+    of coverpoints for that instruction.
     """
-    testplans: dict[str, dict[str, list[str]]] = {}
+    testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
     arch_sources: dict[str, str] = {}
     coverplan_dirs = [(testplans_dir, "unpriv")]
     for coverplan_dir, source in coverplan_dirs:
@@ -41,13 +42,14 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[str, list[str]]]
             arch = file.stem
             with file.open() as csvfile:
                 reader = csv.DictReader(csvfile)
-                tp: dict[str, list[str]] = {}
+                tp: dict[tuple[str, str], list[str]] = {}
                 for row in reader:
                     if "Instruction" not in row:
                         raise ValueError(
                             f"Error reading testplan {file.name}.  Did you remember to shrink the .csv files after expanding?"
                         )
                     instr = row["Instruction"]
+                    instr_type = row["Type"]
                     cps: list[str] = []
                     del row["Instruction"]
                     for key, value in row.items():
@@ -60,37 +62,31 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[str, list[str]]]
                                 ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)
                                     key = f"{key}_{value}"
                                 cps.append(key)
-                    tp[instr] = cps
+                    tp[(instr, instr_type)] = cps
             testplans[arch] = tp
             arch_sources[arch] = source
             if arch == "I":  # duplicate I testplan for E
                 testplans["E"] = tp
                 arch_sources["E"] = source
-            if arch == "Vx":
+            if "Vx" in arch or "Vls" in arch:
                 for effew in ["8", "16", "32", "64"]:
-                    testplans[f"Vx{effew}"] = tp
-                    arch_sources[f"Vx{effew}"] = source
-                del testplans["Vx"]
-                del arch_sources["Vx"]
-            if arch == "Vls":
-                for effew in ["8", "16", "32", "64"]:
-                    testplans[f"Vls{effew}"] = tp
-                    arch_sources[f"Vls{effew}"] = source
-                del testplans["Vls"]
-                del arch_sources["Vls"]
-            if arch == "Vf":
+                    testplans[f"{arch}{effew}"] = tp
+                    arch_sources[f"{arch}{effew}"] = source
+                del testplans[arch]
+                del arch_sources[arch]
+            if "Vf" in arch:
                 for effew in ["16", "32", "64"]:  # SEW of 8 is not supported for vector floating point
-                    testplans[f"Vf{effew}"] = tp
-                    arch_sources[f"Vf{effew}"] = source
-                del testplans["Vf"]
-                del arch_sources["Vf"]
+                    testplans[f"{arch}{effew}"] = tp
+                    arch_sources[f"{arch}{effew}"] = source
+                del testplans[arch]
+                del arch_sources[arch]
     return testplans, arch_sources
 
 
 def read_covergroup_templates(template_dir: Path) -> dict[str, str]:
     """Read the covergroup templates from the templates directory."""
     covergroupTemplates: dict[str, str] = {}
-    for file in template_dir.rglob("*.txt"):
+    for file in template_dir.rglob("*.sv"):
         cg = file.stem
         covergroupTemplates[cg] = file.read_text()
     return covergroupTemplates
@@ -118,18 +114,18 @@ def customize_template(covergroup_templates: dict[str, str], name: str, arch: st
     return template
 
 
-def any_exclusion(rv: str, instrs: list[str], tp: dict[str, list[str]]) -> bool:
+def any_exclusion(rv: str, instrs: list[tuple[str, str]], tp: dict[tuple[str, str], list[str]]) -> bool:
     """Check if any instruction in this extension is not available in the specified RV32 or RV64."""
-    for instr in instrs:
-        cps = tp[instr]
+    for instr_key in instrs:
+        cps = tp[instr_key]
         if rv not in cps:
             return True
     return False
 
 
-def any_effew_exclusion(effew: str, instrs: list[str], tp: dict[str, list[str]]) -> bool:
-    for instr in instrs:
-        cps = tp[instr]
+def any_effew_exclusion(effew: str, instrs: list[tuple[str, str]], tp: dict[tuple[str, str], list[str]]) -> bool:
+    for instr_key in instrs:
+        cps = tp[instr_key]
         if effew not in cps:
             return True
     return False
@@ -154,16 +150,17 @@ SEW_DEPENDENT_CPS = [
 def write_instrs(
     f: TextIO,
     finit: TextIO,
-    k: list[str],
+    k: list[tuple[str, str]],
     covergroupTemplates: dict[str, str],
-    tp: dict[str, list[str]],
+    tp: dict[tuple[str, str], list[str]],
     arch: str,
     hasRV32: bool,
     hasRV64: bool,
 ) -> None:
     """Write the instructions if they match the RV32/RV64 criteria."""
-    for instr in k:
-        cps = tp[instr]
+    for instr_key in k:
+        instr, _instr_type = instr_key
+        cps = tp[instr_key]
         match32 = ("RV32" in cps) ^ (not hasRV32)
         match64 = ("RV64" in cps) ^ (not hasRV64)
         vectorwiden = (arch.startswith("Vx") or arch.startswith("Vls") or arch.startswith("Vf")) and (
@@ -203,15 +200,16 @@ def write_instrs(
 
 def write_covergroup_sample_functions(
     f: TextIO,
-    k: list[str],
+    k: list[tuple[str, str]],
     covergroupTemplates: dict[str, str],
-    tp: dict[str, list[str]],
+    tp: dict[tuple[str, str], list[str]],
     arch: str,
     hasRV32: bool,
     hasRV64: bool,
 ) -> None:
-    for instr in k:
-        cps = tp[instr]
+    for instr_key in k:
+        instr, _instr_type = instr_key
+        cps = tp[instr_key]
         match32 = ("RV32" in cps) ^ (not hasRV32)
         match64 = ("RV64" in cps) ^ (not hasRV64)
         if match32 and match64:
@@ -231,15 +229,16 @@ def write_covergroup_sample_functions(
 
 def write_instruction_sample_function(
     f: TextIO,
-    k: list[str],
+    k: list[tuple[str, str]],
     covergroupTemplates: dict[str, str],
-    tp: dict[str, list[str]],
+    tp: dict[tuple[str, str], list[str]],
     arch: str,
     hasRV32: bool,
     hasRV64: bool,
 ) -> None:
-    for instr in k:
-        cps = tp[instr]
+    for instr_key in k:
+        instr, _instr_type = instr_key
+        cps = tp[instr_key]
         match32 = ("RV32" in cps) ^ (not hasRV32)
         match64 = ("RV64" in cps) ^ (not hasRV64)
         if match32 and match64:
@@ -252,7 +251,7 @@ def get_effew(arch: str) -> str:
     match = re.search(r"(\d+)$", arch)
     if match:
         effew = match.group(1)
-    elif (arch in ["Zvfhmin", "Zvfbfmin", "Zvfbfwma"]):
+    elif arch in ["Zvfhmin", "Zvfbfmin", "Zvfbfwma"]:
         effew = "16"
     else:
         raise ValueError(f"Arch does not contain an expected integer: '{arch}'")
@@ -260,7 +259,7 @@ def get_effew(arch: str) -> str:
 
 
 def write_coverage_headers(
-    test_plans: dict[str, dict[str, list[str]]],
+    test_plans: dict[str, dict[tuple[str, str], list[str]]],
     arch_sources: dict[str, str],
     covergroup_dir: Path,
     covergroup_templates: dict[str, str],
@@ -299,7 +298,7 @@ def write_coverage_headers(
 # writeCovergroups iterates over the testplans and covergroup templates to generate the covergroups for
 # all instructions in each testplan
 def write_covergroups(
-    test_plans: dict[str, dict[str, list[str]]],
+    test_plans: dict[str, dict[tuple[str, str], list[str]]],
     covergroup_templates: dict[str, str],
     arch_sources: dict[str, str],
     output_dir: Path,
@@ -320,11 +319,11 @@ def write_covergroups(
             print("***** Writing " + file)
 
             vector = arch.startswith("Vx") or arch.startswith("Zv") or arch.startswith("Vls") or arch.startswith("Vf")
+            effew = get_effew(arch) if vector else ""
 
             with (covergroup_out_dir / file).open("w") as f:
                 finit = (covergroup_out_dir / initfile).open("w")
                 if vector:
-                    effew = get_effew(arch)
                     f.write(customize_template(covergroup_templates, "header_vector", arch, "", effew=effew))
                 else:
                     f.write(customize_template(covergroup_templates, "header", arch, ""))
@@ -333,7 +332,7 @@ def write_covergroups(
                 k = list(tp.keys())
                 k.sort()
                 if vector:
-                    k = [instr for instr in k if f"EFFEW{effew}" in tp[instr]]
+                    k = [instr_key for instr_key in k if f"EFFEW{effew}" in tp[instr_key]]
 
                 write_instrs(f, finit, k, covergroup_templates, tp, arch, True, True)
                 if any_exclusion("RV64", k, tp):

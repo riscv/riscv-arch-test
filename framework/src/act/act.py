@@ -16,7 +16,7 @@ from act.config import load_config
 from act.makefile_gen import ConfigData, generate_makefiles
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
-from act.select_tests import get_common_tests, select_tests
+from act.select_tests import select_tests
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -48,16 +48,16 @@ def run_act(
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
+    fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
 ) -> None:
+    if debug and fast:
+        raise typer.BadParameter("--debug and --fast cannot be used together")
+
     if workdir is None:
         workdir = Path.cwd() / "work"
+
     # Generate test list
     full_test_dict = generate_test_dict(test_dir, extensions, exclude)
-    rv32i_common_tests = get_common_tests(full_test_dict, 32, False)
-    rv32e_common_tests = get_common_tests(full_test_dict, 32, False)
-    rv64i_common_tests = get_common_tests(full_test_dict, 64, False)
-    rv64e_common_tests = get_common_tests(full_test_dict, 64, False)
-    common_test_dicts = [rv32i_common_tests, rv32e_common_tests, rv64i_common_tests, rv64e_common_tests]
 
     configs: list[ConfigData] = []
     for config_file in config_files:
@@ -83,17 +83,15 @@ def run_act(
             }
         )
 
-    # TODO: Add a check that all configs use the same header files/compiler/etc. Otherwise error out or don't use common tests
-
     # Generate Makefiles
     generate_makefiles(
         configs,
-        common_test_dicts,
         test_dir.absolute(),
         coverpoint_dir.absolute(),
         workdir.absolute(),
         coverage,
         debug,
+        fast,
     )
     print(f"Makefiles generated in {workdir}")
     print(f"Run make -C {workdir} compile to build all tests.")

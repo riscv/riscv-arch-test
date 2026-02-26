@@ -19,15 +19,16 @@ from ruamel.yaml import YAML
 class RefModelType(str, Enum):
     """Reference model types with their associated flags."""
 
+    # TODO: Add support for additional reference models (Spike, Whisper, etc.)
     SAIL = "sail"
-    SPIKE = "spike"
+    # SPIKE = "spike"
 
     @property
     def signature_flags(self) -> str:
         """Get the flags for this reference model."""
         flags_map = {
             RefModelType.SAIL: "--test-signature={sig_file} --signature-granularity {granularity}",
-            RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
+            # RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
         }
         return flags_map[self]
 
@@ -41,7 +42,7 @@ class Config(BaseModel):
     dut_include_dir: DirectoryPath
     compiler_exe: Path
     objdump_exe: Path | None = None
-    ref_model_type: RefModelType
+    ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
 
     model_config = {"frozen": True}
@@ -77,7 +78,8 @@ class Config(BaseModel):
     def compiler_string(self) -> str:
         """Get the compiler executable as a string with relevant flags."""
         compiler_is_clang = "clang" in self.compiler_exe.name
-        return f"{self.compiler_exe} {'--target=riscv${XLEN}' if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
+        clang_flags = "--target=riscv${XLEN} -fuse-ld=lld"
+        return f"{self.compiler_exe} {clang_flags if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
 
     def __str__(self) -> str:
         """Pretty print configuration."""
@@ -90,7 +92,7 @@ class Config(BaseModel):
 def check_ref_model_version(config: Config) -> None:
     """Check that the reference model version is compatible."""
     if config.ref_model_type == RefModelType.SAIL:
-        required_version = "0.9"
+        required_version = "0.10"
         try:
             result = subprocess.run(
                 [str(config.ref_model_exe), "--version"],
@@ -103,7 +105,7 @@ def check_ref_model_version(config: Config) -> None:
             if version != required_version:
                 raise ValueError(
                     f"Sail reference model version mismatch. ACT4 requires version {required_version}, but {version} was found. "
-                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv-non-isa/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
+                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
                 )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to check Sail version: {e}") from e

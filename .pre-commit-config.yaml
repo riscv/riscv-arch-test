@@ -25,14 +25,14 @@ repos:
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
-      - id: check-json
+      # - id: check-json # Doesn't support JSON with comments
       - id: check-toml
       - id: check-yaml
 
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.10
+    rev: v0.15.2
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -51,20 +51,20 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.18
+    rev: 0.10.4
     hooks:
       - id: uv-lock
 
   # Use spaces, not tabs
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
+    rev: v1.5.6
     hooks:
       - id: forbid-tabs
         exclude: '.*\.(diff|dump|patch|svg|mk)|Makefile*'
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.7.4
+    rev: v3.8.1
     hooks:
       - id: prettier
 

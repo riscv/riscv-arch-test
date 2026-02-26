@@ -13,7 +13,12 @@ from pathlib import Path
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.writer import write_test_file
-from testgen.priv.registry import get_priv_test_defines, get_priv_test_generator, get_priv_test_required_extensions
+from testgen.priv.registry import (
+    get_priv_test_defines,
+    get_priv_test_generator,
+    get_priv_test_march_extensions,
+    get_priv_test_required_extensions,
+)
 
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
@@ -37,15 +42,23 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         E_ext=False,
         config_dependent=True,
         required_extensions=get_priv_test_required_extensions(testsuite),
+        march_extensions=get_priv_test_march_extensions(testsuite),
     )
 
     # Create test data
     test_data = TestData(test_config)
 
+    # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
+    test_data.int_regs.consume_registers([1])
+
     # Generate test body
     priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
+    # Return x1/ra
+    test_data.int_regs.return_register(1)
+
+    # Produce actual test file
     write_test_file(
         test_data,
         body_lines,

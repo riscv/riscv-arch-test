@@ -196,7 +196,7 @@ vmsof.m,VVM,x,x,x,x,x,x,x,x,,x,,,,,,,,,,eew1,,,,,,,,,x,x,x,x,maskwrite_unmasked
 viota.m,VVM,x,x,x,x,x,x,x,x,,x,,,,,,,,,,eew1,,,,,,,,,x,x,x,x,
 vid.v,VM,x,x,x,x,x,x,x,x,,,,,,,,,,,,,,,,,,,,,x,x,x,x,
 vmv.x.s,XV,x,x,x,x,x,x,x,,x,x,,,,,,,,,,x,,,,,,,,,,x,nomask,x,vmv_x_s
-vmv.s.x,VX,x,x,x,x,x,x,x,x,,,,,x,,,,,,,,,,,x,,,,,,x,x,x,vmv_s_x
+vmv.s.x,VX,x,x,x,x,x,x,x,x,,,,,x,,,,,,,,,,,x,,,,,,x,nomask,x,vmv_s_x
 vslideup.vx,VVXM,x,x,x,x,x,x,x,x,,x,,,x,,,,,,,x,,,,x,x,,,,x,x,x,x,
 vslideup.vi,VVIM,x,x,x,x,x,x,x,x,,x,,,,u,,,,,,x,,,,,,,u,,x,x,x,x,
 vslidedown.vx,VVXM,x,x,x,x,x,x,x,x,,x,,,x,,,x,,,,x,,,,x,x,,,,x,x,x,x,vindexVX

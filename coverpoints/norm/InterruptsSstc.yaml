@@ -22,3 +22,19 @@ normative_rule_definitions:
   # hcounteren.
   - name: mcounteren_tm_set
     coverpoint: ["InterruptsSstc_cg/cp_{supervisor,user}_tm, see also SstcH"]
+
+  # The stimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and
+  # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
+  # while accesses to the stimecmph CSR access the high 32 bits of stimecmp.
+  - name: stimecmp-stimecmph_sz_acc
+    coverpoint: [""]
+
+  # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in
+  # the mip and sip registers whenever time contains a value greater than or equal
+  # to stimecmp, treating the values as unsigned integers. If the result of this
+  # comparison changes, it is guaranteed to be reflected in STIP eventually, but not
+  # necessarily immediately. The interrupt remains posted until stimecmp becomes
+  # greater than time, typically as a result of writing stimecmp. The interrupt will
+  # be taken based on the standard interrupt enable and delegation rules.
+  - names: [mip_stip_op, sip_stip_op]
+    coverpoint: [""]

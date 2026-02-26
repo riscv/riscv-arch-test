@@ -25,7 +25,7 @@
 #define SKIP_MTVAL
 #define SKIP_MEPC
 
-#include "model_test.h"
+#include "rvmodel_macros.h"
 
 #include "arch_test.h"
 

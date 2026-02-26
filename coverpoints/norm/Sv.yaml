@@ -1,6 +1,23 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # The MXR (Make eXecutable Readable) bit modifies the privilege with which loads
+  # access virtual memory. When MXR=0, only loads from pages marked readable (R=1 in
+  # ) will succeed. When MXR=1, loads from pages marked either readable or
+  # executable (R=1 or X=1) will succeed. MXR has no effect when page-based virtual
+  # memory is not in effect.
+  - names: [sstatus-mxr_sz, sstatus-mxr_acc, sstatus-mxr_op]
+    coverpoint: [""]
+
+  # The SUM (permit Supervisor User Memory access) bit modifies the privilege with
+  # which S-mode loads and stores access virtual memory. When SUM=0, S-mode memory
+  # accesses to pages that are accessible by U-mode (U=1 in ) will fault. When
+  # SUM=1, these accesses are permitted. SUM has no effect when page-based virtual
+  # memory is not in effect, nor when executing in U-mode. Note that S-mode can
+  # never execute instructions from user pages, regardless of the state of SUM.
+  - names: [sstatus-sum_sz, sstatus-sum_acc, sstatus-sum_op]
+    coverpoint: [""]
+
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for
   # SXLEN=32 and for SXLEN=64, which controls supervisor-mode address translation
   # and protection. This register holds the physical page number (PPN) of the root
@@ -208,3 +225,153 @@ normative_rule_definitions:
   # permissions raises a store page-fault exception.
   - name: store_page_fault_no_w
     coverpoint: [""]
+
+  - name: Sv39_sxlen
+    coverpoint: [""]
+
+  - name: Sv39_va_sz
+    coverpoint: [""]
+
+  - name: Sv39_va_signext
+    coverpoint: [""]
+
+  - name: Sv39_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv39_sz
+    coverpoint: [""]
+
+  - name: Sv39_levels
+    coverpoint: [""]
+
+  - name: Sv39_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv39_pte_count
+    coverpoint: [""]
+
+  - name: Sv39_pte_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_align
+    coverpoint: [""]
+
+  - name: Sv39_pte_svnapot_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_svpbmt_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_future_rsv
+    coverpoint: [""]
+
+  - name: Sv39_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv39_page_sizes
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv39_LEVELS
+    coverpoint: [""]
+
+  - name: Sv39_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv48_sxlen
+    coverpoint: [""]
+
+  - name: Sv48_va_sz
+    coverpoint: [""]
+
+  - name: Sv48_requires_Sv39
+    coverpoint: [""]
+
+  - name: Sv48_va_signext
+    coverpoint: [""]
+
+  - name: Sv48_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv48_sz
+    coverpoint: [""]
+
+  - name: Sv48_levels
+    coverpoint: [""]
+
+  - name: Sv48_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv48_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv48_page_sizes
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv48_LEVELS
+    coverpoint: [""]
+
+  - name: Sv48_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv57_sxlen
+    coverpoint: [""]
+
+  - name: Sv57_va_sz
+    coverpoint: [""]
+
+  - name: Sv57_requires_Sv48
+    coverpoint: [""]
+
+  - name: Sv57_va_signext
+    coverpoint: [""]
+
+  - name: Sv57_vpn_sz
+    coverpoint: [""]
+
+  - name: satp-ppn_sv57_sz
+    coverpoint: [""]
+
+  - name: Sv57_levels
+    coverpoint: [""]
+
+  - name: Sv57_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv57_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv57_page_sizes
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv57_LEVELS
+    coverpoint: [""]
+
+  - name: Sv57_PTESIZE
+    coverpoint: [""]
+
+  # If stval is written with a nonzero value when a breakpoint, address-misaligned,
+  # access-fault, page-fault, or hardware-error exception occurs on an instruction
+  # fetch, load, or store, then stval will contain the faulting virtual address.
+  - name: stval_op_faulting_addr
+    coverpoint: ["TODO: page faults"]

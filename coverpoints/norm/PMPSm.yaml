@@ -5,14 +5,20 @@ normative_rule_definitions:
   # Failed memory operations generate an instruction, load, or store access-fault
   # exception.
   - name: pmp_access_fault_exception
-    coverpoint: ["PMPSM_cg/{cp_misaligned_na4_wrap, cp_misaligned_tor_wrap,cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor, cp_cfg_A_off_all, cp_cfg_A_napot_all, cp_na4_boundary, cp_tor_boundary, cp_tor_doubleregionfail"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_misaligned_na4_wrap, cp_misaligned_tor_wrap,cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor, cp_cfg_A_off_all, cp_cfg_A_napot_all, cp_na4_boundary, cp_tor_boundary, cp_tor_doubleregionfail",
+      ]
 
   # &lt;&lt;pmpcfg&gt;&gt; shows the layout of a PMP configuration register. The R,
   # W, and X bits, when set, indicate that the PMP entry permits read, write, and
   # instruction execution, respectively. When one of these bits is clear, the
   # corresponding access type is denied.
   - name: pmp_cfg_permissions
-    coverpoint: ["PMPSM_cg/{cp_cfg_X1_all,cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all,cp_cfg_RW11_all}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_cfg_X1_all,cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all,cp_cfg_RW11_all}",
+      ]
 
   # In addition to locking the PMP entry, the L bit indicates whether the R, W/X
   # permissions are additionally enforced on M-mode accesses. When the L bit is set,
@@ -20,12 +26,18 @@ normative_rule_definitions:
   # any M-mode access matching the PMP entry will succeed; the R/W/X permissions
   # apply only to S and U modes.
   - name: pmp_l_bit_m_mode_enforcement
-    coverpoint: ["PMPSM_cg/{cp_cfg_X0_all,cp_cfg_X1_all,cp_cfg_L_modify,cp_cfg_L_modify_TOR}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_cfg_X0_all,cp_cfg_X1_all,cp_cfg_L_modify,cp_cfg_L_modify_TOR}",
+      ]
 
   # Attempting to fetch an instruction from a PMP region that does not have execute
   # permissions raises an instruction access-fault exception.
   - name: pmp_exec_fault
-    coverpoint: ["PMPSM_cg/{cp_cfg_X,cp_cfg_X0_all,cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_cfg_X,cp_cfg_X0_all,cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all}",
+      ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
   # bits determine whether the operation succeeds or fails. If the L bit is clear
@@ -34,7 +46,10 @@ normative_rule_definitions:
   # operation succeeds only if the R, W, or X bit corresponding to the access type
   # is set.
   - name: pmp_rwx_check
-    coverpoint: ["PMPSM_cg/{cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all,cp_cfg_RW11_all,cp_cfg_L_access_all}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_cfg_RW,cp_cfg_RW00_all,cp_cfg_RW10_all,cp_cfg_RW11_all,cp_cfg_L_access_all}",
+      ]
 
   # The L bit indicates that the PMP entry is locked, i.e., writes to the
   # configuration register and associated address registers are ignored.
@@ -59,7 +74,8 @@ normative_rule_definitions:
 
   # When A=0, this PMP entry is disabled and matches no addresses.
   - name: pmp_a_field_off
-    coverpoint: ["PMPSM_cg/{cp_misaligned_off,cp_cfg_A_off_all,cp_priority_off}"]
+    coverpoint:
+      ["PMPSM_cg/{cp_misaligned_off,cp_cfg_A_off_all,cp_priority_off}"]
 
   # NAPOT ranges make use of the low-order bits of the associated address register
   # to encode the size of the range, as shown in &lt;&lt;pmpcfg-napot&gt;&gt;.
@@ -78,14 +94,19 @@ normative_rule_definitions:
   # pmpcfg~i-1~). If PMP entry 0's A field is set to TOR, zero is used for the lower
   # bound, and so it matches any address y&lt;pmpaddr~0~.
   - name: pmp_a_field_tor
-    coverpoint: ["PMPSM_cg/{cp_cfg_A tor_all,cp_cfg_A_tor,cp_cfg_A_tor0,cp_cfg_A_tor_bot,cp_cfg_A_tor_nonoverlap}"]
-
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_cfg_A_tor_all,cp_cfg_A_tor,cp_cfg_A_tor0,cp_cfg_A_tor_bot,cp_cfg_A_tor_nonoverlap}",
+      ]
 
   # PMP entries are statically prioritized. The lowest-numbered PMP entry that
   # matches any byte of a memory operation determines whether that operation
   # succeeds or fails.
   - name: pmp_entry_priority
-    coverpoint: ["PMPSM_cg/{cp_misaligned_na4_wrap,cp_misaligned_tor_wrap,cp_misaligned_napot,cp_misaligned_na4,cp_misaligned_tor,cp_priority,cp_priority_off}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_misaligned_na4_wrap,cp_misaligned_tor_wrap,cp_misaligned_napot,cp_misaligned_na4,cp_misaligned_tor,cp_priority,cp_priority_off}",
+      ]
 
   # When G {ge} 2 and pmpcfg~i~.A[1] is set, i.e. the mode is NAPOT, then bits
   # pmpaddr~i~[G-2:0] read as all ones.
@@ -112,7 +133,8 @@ normative_rule_definitions:
   # For RV64, eight even-numbered CSRs, pmpcfg0, pmpcfg2, …, pmpcfg14, hold the
   # configurations for the 64 PMP entries, as shown in &lt;&lt;pmpcfg-rv64&gt;&gt;.
   - name: pmp_cfg_rv64_layout
-    coverpoint: ["PMPSM_cg/{cp_na4_boundary,cp_tor_boundary,cp_tor_doubleregionfail}"]
+    coverpoint:
+      ["PMPSM_cg/{cp_na4_boundary,cp_tor_boundary,cp_tor_doubleregionfail}"]
 
   # For RV64, the odd-numbered configuration registers, pmpcfg1, pmpcfg3, …,
   # pmpcfg15, are illegal.
@@ -127,7 +149,8 @@ normative_rule_definitions:
   # The matching PMP entry must match all bytes of a memory operation, or the
   # operation fails, irrespective of the L, R, W, and X bits.
   - name: pmp_full_match_required
-    coverpoint: ["PMPSM_cg/{cp_na4_boundary,cp_tor_boundary,cp_tor_doubleregionfail}"]
+    coverpoint:
+      ["PMPSM_cg/{cp_na4_boundary,cp_tor_boundary,cp_tor_doubleregionfail}"]
 
   # Up to 64 PMP entries are supported. Implementations may implement zero, 16, or
   # 64 PMP entries; the lowest-numbered PMP entries must be implemented first.
@@ -138,7 +161,7 @@ normative_rule_definitions:
   # instruction which accesses a physical address within a PMP region without read
   # permissions raises a load access-fault exception.
   - name: pmp_load_fault
-    coverpoint: ["cp_pmp64"]
+    coverpoint: ["PMPSM_cg/{cp_pmp64}"]
 
   # Attempting to execute a store, store-conditional, AMO, or cache-block zero
   # instruction which accesses a physical address within a PMP region without write
@@ -151,7 +174,10 @@ normative_rule_definitions:
   # an access-fault exception occurs, as described in the RVWMO specification. PMP
   # checking is performed on each memory operation independently.
   - name: pmp_misaligned_access_behavior
-    coverpoint: ["PMPSM_cg/{cp_misaligned_na4_wrap,cp_misaligned_tor_wrap,cp_misaligned_napot,cp_misaligned_na4,cp_misaligned_tor,cp_misaligned_off}"]
+    coverpoint:
+      [
+        "PMPSM_cg/{cp_misaligned_na4_wrap,cp_misaligned_tor_wrap,cp_misaligned_napot,cp_misaligned_na4,cp_misaligned_tor,cp_misaligned_off}",
+      ]
 
   # If no PMP entry matches an M-mode memory operation, the operation succeeds. If
   # no PMP entry matches an S-mode or U-mode memory operation, but at least one PMP

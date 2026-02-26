@@ -1,7 +1,7 @@
 # Normative rule to coverpoint mappings
 # Generated from riscv-isa-manual normative rule definitions
 
-normative_rule_definitions:   
+normative_rule_definitions:
   # &lt;&lt;pmpcfg&gt;&gt; shows the layout of a PMP configuration register. The R,
   # W, and X bits, when set, indicate that the PMP entry permits read, write, and
   # instruction execution, respectively. When one of these bits is clear, the
@@ -9,12 +9,13 @@ normative_rule_definitions:
   - name: pmp_cfg_permissions
     coverpoint: ["PMPZca_cg/{cp_cfg_RW}"]
 
-
   # Failed memory operations generate an instruction, load, or store access-fault
   # exception.
   - name: pmp_access_fault_exception
-    coverpoint: ["PMPZca_cg/{cp_cfg_RW,cp_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4,cp_misaligned_off}"]
-
+    coverpoint:
+      [
+        "PMPZca_cg/{cp_cfg_RW,cp_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4,cp_misaligned_off}",
+      ]
 
   # In addition to locking the PMP entry, the L bit indicates whether the R/W/X
   # permissions are additionally enforced on M-mode accesses. When the L bit is set,
@@ -24,27 +25,32 @@ normative_rule_definitions:
   - name: pmp_l_bit_m_mode_enforcement
     coverpoint: ["PMPZca_cg/{cp_cfg_RW}"]
 
-
   # PMP entries are statically prioritized. The lowest-numbered PMP entry that
   # matches any byte of a memory operation determines whether that operation
   # succeeds or fails.
   - name: pmp_entry_priority
-    coverpoint: ["PMPZca_cg/{cp_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4}"]
-
+    coverpoint:
+      [
+        "PMPZca_cg/{cp_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4}",
+      ]
 
   # The matching PMP entry must match all bytes of a memory operation, or the
   # operation fails, irrespective of the L, R, W, and X bits.
   - name: pmp_full_match_required
-    coverpoint: ["PMPZca_cg/{p_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4}"]
-
+    coverpoint:
+      [
+        "PMPZca_cg/{p_misaligned_napot,cp_cret_napot,cp_misaligned_tor,cp_cret_tor,cp_misaligned_na4,cp_cret_na4}",
+      ]
 
   # On some implementations, misaligned loads, stores, and instruction fetches may
   # be decomposed into multiple memory operations, some of which may succeed before
   # an access-fault exception occurs, as described in the RVWMO specification. PMP
   # checking is performed on each memory operation independently.
   - name: pmp_misaligned_access_behavior
-    coverpoint: ["PMPZca_cg/{cp_misaligned_napot,cp_misaligned_tor,cp_misaligned_na4,cp_misaligned_off}"]
-
+    coverpoint:
+      [
+        "PMPZca_cg/{cp_misaligned_napot,cp_misaligned_tor,cp_misaligned_na4,cp_misaligned_off}",
+      ]
 
   # When A=0, this PMP entry is disabled and matches no addresses.
   - name: pmp_a_field_off

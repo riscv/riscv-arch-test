@@ -32,7 +32,10 @@ normative_rule_definitions:
   # Failed memory operations generate an instruction, load, or store access-fault
   # exception.
   - name: pmp_access_fault_exception
-    coverpoint: ["PMPU_cg/{cp_cfg_X,cp_cfg_RW,cp_cfg_A_napot,cp_cfg_A_na4,cp_cfg_A_tor,cp_mprv}"]
+    coverpoint:
+      [
+        "PMPU_cg/{cp_cfg_X,cp_cfg_RW,cp_cfg_A_napot,cp_cfg_A_na4,cp_cfg_A_tor,cp_mprv}",
+      ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
   # bits determine whether the operation succeeds or fails. If the L bit is clear

@@ -20,10 +20,11 @@ def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     if coverpoint != "cp_csr_frm":
         raise ValueError(f"Unknown cp_csr_frm coverpoint variant: {coverpoint} for {instr_name}")
 
-    frm_modes = (4, 3, 2, 1, 0)  # csr frm modes 0-4, end at 0 so the rest of the test continues in rne
+    # csr frm modes 0-4, end at 0 so the rest of the test continues in rne
+    frm_modes = (("rmm", 4), ("rup", 3), ("rdn", 2), ("rtz", 1), ("rne", 0))
     test_lines: list[str] = []
-    for frm_mode in frm_modes:
-        test_lines.append(test_data.add_testcase(coverpoint))
+    for frm_name, frm_mode in frm_modes:
+        test_lines.append(test_data.add_testcase(f"{frm_name}", coverpoint))
         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         desc = f"{coverpoint} (Test dynamic frm, fcsr.frm = {frm_mode})"

@@ -34,7 +34,7 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         desc = f"{coverpoint} (Test destination fd = f{fd})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{fd}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -63,7 +63,7 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         desc = f"{coverpoint} (Test source fs1 = f{fs1})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{fs1}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -92,7 +92,7 @@ def make_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         desc = f"{coverpoint} (Test source fs2 = f{fs2})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{fs2}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )
@@ -121,7 +121,7 @@ def make_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         desc = f"{coverpoint} (Test source fs2 = f{fs3})"
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b{fs3}", coverpoint),
                 format_single_test(instr_name, instr_type, test_data, params, desc),
             ]
         )

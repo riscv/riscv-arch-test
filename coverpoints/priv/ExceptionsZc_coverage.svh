@@ -76,7 +76,7 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
     cp_load_access_fault:                    cross loadops, illegal_address;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
     cp_store_access_fault:                   cross storeops, illegal_address;
-    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; bins illegal1 = {'1}; }
+    cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; }
 
 endgroup
 

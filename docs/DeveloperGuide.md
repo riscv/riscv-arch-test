@@ -193,7 +193,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # Each testcase needs to include a call to the test_data.add_testcase function.
         # This adds a label for the test to the generated file and adds the appropriate
         # debugging string.
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(bin_name, coverpoint))
         # Any registers that are explicitly used must be marked as used using the
         # test_data.int_regs.consume_registers function. This will automatically move
         # any reserved registers to ensure the desired register is free.

@@ -10,6 +10,6 @@ Certifying a RISC-V Device-Under-Test (DUT) involves the following steps:
 
 Test developers also need to
 
-* Generate a coverage report confirming that the tests hit all the coverpoints based on a Sail trace
+* Generate a coverage report confirming that the tests hit all the coverpoints based on a trace from the RISC-V Sail model
 
 TODO: Update to point to CSC page when ready.

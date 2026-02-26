@@ -35,7 +35,7 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
     test_lines: list[str] = []
     for imm in imm_mul:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"b{imm:#x}", coverpoint))
         params = generate_random_params(test_data, instr_type, immval=imm, exclude_regs=exclude_regs)
         desc = f"{coverpoint}: imm={imm}"
         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

@@ -10,7 +10,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 
 * All tests are self-checking
 ** Able to run on simulators, RTL, and hardware
-** Expected values may be produced by the Sail reference model or the test code itself, and must account for relevant parameters
+** Expected values may be produced by the RISC-V Sail reference model or the test code itself, and must account for relevant parameters
 ** Only test features whose behavior is specified for the given parameters (e.g. only test unimplemented instructions if Ssstrict is supported)
 ** Calls RVMODEL_BOOT for DUT-specific boot code before starting the test
 ** Terminate with RVMODEL_HALT_PASS or RVMODEL_HALT_FAIL to indicate success
@@ -27,7 +27,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 
 * All tests are written in assembly or C and work with both GCC and Clang
 
-* Each test runs on Sail and Spike for at least one choice of parameters
+* Each test runs on the RISC-V Sail reference model and Spike for at least one choice of parameters
 
 * Tests are for certification, not verification
 ** Every normative rule is addressed by at least one coverpoint, defined in the CTP
@@ -50,7 +50,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 
 === For discussion:
 
-* Should Sail be the only reference model used for results, so RVI only has to maintain one reference model?  Or is support for Whisper also a requirement?
+* Should RISC-V Sail be the only reference model used for results, so RVI only has to maintain one reference model?  Or is support for Whisper also a requirement?
 * Should all coverage be collected via RVVI and SystemVerilog coverpoints, so RVI only has to maintain one coverage flow?
 * Testing of WARL, WLRL, WPRI fields, and the necessary parameters to define what fields should be tested and behaviors should be expected
 * Regression requirements, including multiple parameters

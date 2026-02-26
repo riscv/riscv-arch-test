@@ -56,12 +56,13 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b_{align}", coverpoint),
                 f"# {coverpoint}: forward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
                 else "# offset too small, skipping self-check",
                 f".align {align}",
+                f"test_{test_data.test_count}:",
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_fwd_{bin_name}",
                 f"{li_instr} x{params.temp_reg}, -1 # failure code"
                 if not skip_check
@@ -85,13 +86,14 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
 
         test_lines.extend(
             [
-                test_data.add_testcase(coverpoint),
+                test_data.add_testcase(f"b_m{align}", coverpoint),
                 f"# {coverpoint}: backward jump by {1 << align}",
                 f"{li_instr} x{params.temp_reg}, 1 # success code"
                 if not skip_check
                 else "# offset too small, skipping self-check",
                 f".align {align + 1}",
                 # Jump over the target
+                f"test_{test_data.test_count}:",
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_skip_{bin_name}",
                 # Align target to 2^align boundary
                 f".align {align}",

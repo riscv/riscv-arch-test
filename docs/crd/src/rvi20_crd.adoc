@@ -1,0 +1,239 @@
+= RVI20 Certification Requirements Document (rev 0.3)
+include::adoc_common.adoc[]
+:description: RVI20 CRD (Certificate Requirements Document)
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* James Ball
+* David Harris
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+[Preface]
+== CRD Revision History
+
+History of documentation changes that eventually lead to releases.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+| Feb 23, 2026
+| 0.3
+a| * Incorporated feedback from CSC Requirements WG meeting on Feb 20, 2026
+   ** Added column for "Impact on Certificate Scope" in the IN-SCOPE parameters table
+   ** Added note that parameters are preliminary
+
+| Feb 23, 2026
+| 0.2
+a| * Moved from https://github.com/RISC-V-Certification-Steering-Committee/RVCP-docs
+
+| Feb 5, 2026
+| 0.1
+a| * Copied from UDB-generated adoc
+|===
+
+include::glossary.adoc[]
+
+== Introduction
+
+The RVI20-32 processor certificate is based on the RVI20U32 profile.
+The RVI20-64 processor certificate is based on the RVI20U64 profile.
+
+The RVI certificate class corresponds to the RVI Profile Family.
+This certificate class only includes the RISC-V Unprivileged ISA.
+Certificates for the RVI certificate class are intended for internal
+use by the RVCP (RISC-V Certification Program).
+
+include::crd_common.adoc[]
+
+=== Related Specifications
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
+* https://github.com/riscv/riscv-profiles/blob/main/src/profiles.adoc[RISC-V Profiles Document] - Will be moving to ISA Manual repository soon
+
+<<<
+== Base ISA
+
+.Base ISA Requirements
+[cols="1,4"]
+|===
+| Requirement ID | Description
+
+| REQ32-BASE | Uses the RV32I base integer ISA
+| REQ64-BASE | Uses the RV64I base integer ISA
+| REQ-ENDIANNESS | Only little-endian is supported
+|===
+
+=== Exclusions
+
+As per the unprivileged architecture specification, the ecall
+instruction causes a requested trap to the execution environment.
+Since the RVI profile family doesn't define any execution environments
+the ecall instruction is OUT-OF-SCOPE for the RVI20 certificate.
+
+Similarly the ebreak and c.ebreak instructions are OUT-OF-SCOPE for the RVI20 certificate
+since they cause a breakpoint exception and the RVI profile family doesn't define any
+execution environments to handle such exceptions.
+
+<<<
+== Extensions
+
+Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
+and the RVI20 certificate doesn't cover their behaviors.
+
+=== Mandatory Extensions
+
+None
+
+=== Optional Extensions
+
+.Optional Extensions
+[cols="2,1,1,4,4"]
+|===
+| Requirement ID | Extension | Version | Long Name | Note
+
+| REQ-EXT-A
+| A
+| ~> 2.1
+| Atomic instructions
+| Comprised of instructions from the Zaamo and Zalrsc extensions
+
+| REQ-EXT-C
+| C
+| ~> 2.0
+| Compressed instructions
+| Always includes Zca, includes Zcf if F is present (RV32 only), and includes Zcd if D is present
+
+| REQ-EXT-D
+| D
+| ~> 2.2
+| Double-precision floating-point
+|
+
+| REQ-EXT-F
+| F
+| ~> 2.2
+| Single-precision floating-point
+|
+
+| REQ-EXT-M
+| M
+| ~> 2.0
+| Integer multiply and divide
+|
+
+| REQ-EXT-Zicntr
+| Zicntr
+| ~> 2.0
+| Base Counters and Timers
+|
+
+| REQ-EXT-Zifencei
+| Zifencei
+| ~> 2.0
+| Instruction fence
+|
+
+| REQ-EXT-Zihpm
+| Zihpm
+| ~> 2.0
+| Hardware Performance Counters
+| The number of counters is platform-specific.
+
+|===
+
+<<<
+== Parameters
+
+Parameters are implementation-defined options supported by RISC-V standards.
+Many parameters are not named in RISC-V standards but a golden list of parameters
+is maintained separately by RISC-V International and this section uses those names.
+
+NOTE: The golden list of parameters is still under development so the parameters in this document
+are "preliminary parameters" and subject to change as the golden list is finalized.
+
+This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVI20 certificate.
+
+=== IN-SCOPE Parameters
+
+An implementation must abide by the "Allowed Value(s)" of IN-SCOPE parameters to obtain a certificate.
+If the "Allowed Value(s)" is "Any" then any value allowed by the parameter is acceptable.
+
+.IN-SCOPE Parameters
+[cols="3,1,1,1,3,2"]
+|===
+| Parameter | Type | Allowed Value(s) | ISA Feature | Definition | Impact on Certificate Scope
+
+| MISALIGNED_LDST
+| Boolean
+| Any
+| RV32I/RV64I Base ISA
+| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
+| Misaligned load/store instructions are only in-scope if this parameter is true.
+
+| TIME_CSR_IMPLEMENTED
+| Boolean
+| Any
+| Zicntr
+| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
+| Reading time-related CSRs is only in-scope if this parameter is true.
+
+| LRSC_RESERVATION_STRATEGY
+| Enum (Exact, 64B, 128B, Other)
+| Exact, 64B, 128B
+| Atomic (Zalrsc extension)
+a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
+
+[%autowidth]
+!===
+! Value ! Definition
+
+! Exact ! Reservation set is exactly enough to cover the access and no more
+! 64B ! Reservation set is naturally-aligned 64-byte region
+! 128B ! Reservation set is naturally-aligned 128-byte region
+! Other ! Reservation set strategy doesn't fit any of the specified choices
+!===
+| The load-reserved/store-conditional instructions are only in-scope if this parameter is not "Other".
+
+| LRSC_FAIL_ON_NON_EXACT_LRSC
+| Boolean
+| Any
+| Atomic (Zalrsc extension)
+| Does a Store Conditional instruction fail if its physical address and size do not
+  exactly match the physical address and size of the last Load Reserved in program order
+  (independent of whether or not the Store Conditional is in the current reservation set).
+| None
+
+|===
+
+=== OUT-OF-SCOPE Parameters
+
+There are no restrictions on the values of OUT-OF-SCOPE parameters for certification purposes because the certificate
+doesn't cover the behavior associated with the parameter.
+
+.OUT-OF-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter | Type | ISA Feature | Definition
+
+| HPM_COUNTER_SZ
+| Array[3:31] of Integer 0 to 64
+| Zicntr
+a| Bit width of each implemented unprivileged hardware performance counter.
+A value of 0 indicates the corresponding counter is not implemented.
+
+| MISALIGNED_ATOMIC
+| Boolean
+| Atomic
+a| Implementation supports misaligned atomic instructions (potentially with restrictions expressed by other parameters). Includes all types of RISC-V atomic instructions supported by the implementation.
+
+|===
+
+=== CSR WARL Fields
+
+There are no CSRs in RVI20 with WARL fields.
+
+=== CSR WLRL Fields
+
+There are no CSRs in RVI20 with WLRL fields.

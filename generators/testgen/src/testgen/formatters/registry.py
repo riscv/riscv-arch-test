@@ -166,6 +166,6 @@ def format_single_test(
 
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    test_lines.extend([setup, test, check])
+    test_lines.extend([setup, f"test_{test_data.test_count}:", test, check])
 
     return "\n".join(test_lines)

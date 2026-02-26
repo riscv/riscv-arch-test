@@ -24,7 +24,7 @@ def make_NaNBox(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         raise ValueError(f"Unsupported coverpoint for NaN-Box test: {coverpoint} for instr {instr_name}.")
 
-    test_lines = [test_data.add_testcase(coverpoint)]
+    test_lines = [test_data.add_testcase("NaNBox", coverpoint)]
     params = generate_random_params(test_data, instr_type, exclude_regs=[0], fp_load_type=load_size)
     desc = f"{coverpoint} (Test NaN-Boxed inputs)"
     test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))

@@ -85,6 +85,11 @@ def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_
     all extensions enabled.
     """
 
+    # Reuse generated config across tests in the same common workdir.
+    common_sail_config_path = common_wkdir / f"sail-rv{xlen}{'e' if e_ext else 'i'}-common.json"
+    if common_sail_config_path.exists():
+        return common_sail_config_path
+
     # Extract memory map from user's Sail config
     user_sail_config_data = pyjson5.decode(user_sail_config.read_text())
     memory_map = user_sail_config_data["memory"]["regions"]
@@ -99,7 +104,6 @@ def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_
     internal_sail_config["memory"]["regions"] = memory_map
 
     # Write out modified Sail config to temporary file
-    common_sail_config_path = common_wkdir / f"sail-rv{xlen}{'e' if e_ext else 'i'}-common.json"
     common_sail_config_path.parent.mkdir(parents=True, exist_ok=True)
     common_sail_config_path.write_text(pyjson5.encode(internal_sail_config))
 
@@ -112,7 +116,7 @@ def gen_compile_targets(
     base_dir: Path,
     xlen: int,
     config: Config,
-    sail_config_path: Path,
+    common_e_ext: bool | None = None,
     debug: bool = False,
     fast: bool = False,
 ) -> str:
@@ -124,7 +128,8 @@ def gen_compile_targets(
         base_dir: Base directory for the build.
         xlen: XLEN (32 or 64).
         config: Configuration object.
-        sail_config_path: Path to a Sail config file for signature generation.
+        common_e_ext: If set, compile as a common test and generate an internal
+            Sail config for this XLEN/E mode.
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
     """
@@ -148,9 +153,12 @@ def gen_compile_targets(
     if debug:
         ref_model_debug_flags = config.ref_model_type.debug_flags().format(sig_trace_file=sig_trace_file)
         ref_model_debug_line = f"\t\t{ref_model_debug_flags} \\\n" if ref_model_debug_flags else ""
-    ref_model_config_line = (
-        f"\t\t--config {sail_config_path} \\\n" if config.ref_model_type == RefModelType.SAIL else ""
-    )
+    ref_model_config_line = ""
+    if config.ref_model_type == RefModelType.SAIL:
+        sail_config_path = config.dut_include_dir / "sail.json"
+        if common_e_ext is not None:
+            sail_config_path = generate_sail_config(xlen, common_e_ext, sail_config_path, base_dir)
+        ref_model_config_line = f"\t\t--config {sail_config_path} \\\n"
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
 
     # Generate Makefile targets
@@ -278,11 +286,6 @@ def generate_common_makefile(
     common_elf_dir = common_wkdir / "elfs"
     common_build_dir = common_wkdir / "build"
 
-    # Generate maximal Sail config with all extensions enabled and memory map from user's config
-    common_sail_config = config.dut_include_dir / "sail.json"
-    if config.ref_model_type == RefModelType.SAIL:
-        common_sail_config = generate_sail_config(xlen, e_ext, common_sail_config, common_wkdir)
-
     # Makefile targets
     directory_set: set[str] = set()
     test_targets: list[Path] = []
@@ -300,7 +303,16 @@ def generate_common_makefile(
         test_targets.append(final_elf)
         directory_set.update([str((common_elf_dir / test_name).parent), str((common_build_dir / test_name).parent)])
         makefile_lines.append(
-            gen_compile_targets(test_name, test_metadata, common_wkdir, xlen, config, common_sail_config, debug, fast)
+            gen_compile_targets(
+                test_name,
+                test_metadata,
+                common_wkdir,
+                xlen,
+                config,
+                common_e_ext=e_ext,
+                debug=debug,
+                fast=fast,
+            )
         )
 
     # Write out Makefile
@@ -365,8 +377,6 @@ def generate_config_makefile(
         final_elf = config_elf_dir / elf_name
         trace_name = test_name.with_suffix(".rvvi")
         trace_path = config_coverage_dir / trace_name
-        sail_config_path = config.dut_include_dir / "sail.json"
-
         # Add test to target lists
         test_targets.append(final_elf)
         directory_set.update([str((config_elf_dir / test_name).parent), str((config_build_dir / test_name).parent)])
@@ -387,7 +397,15 @@ def generate_config_makefile(
             )
         else:
             makefile_lines.append(
-                gen_compile_targets(test_name, test_metadata, config_wkdir, xlen, config, sail_config_path, debug, fast)
+                gen_compile_targets(
+                    test_name,
+                    test_metadata,
+                    config_wkdir,
+                    xlen,
+                    config,
+                    debug=debug,
+                    fast=fast,
+                )
             )
 
         # Generate coverage trace targets

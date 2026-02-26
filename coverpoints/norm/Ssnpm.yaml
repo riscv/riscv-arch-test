@@ -5,5 +5,5 @@ normative_rule_definitions:
   # masking (see ) for the next-lower privilege mode (U/VU), according to the values
   # in . If Ssnpm is not implemented, PMM is read-only zero. The PMM field is
   # read-only zero for RV32.
-  - name: senvcfg-pmm_Ssnpm
+  - name: senvcfg_pmm_Ssnpm
     coverpoint: [""]

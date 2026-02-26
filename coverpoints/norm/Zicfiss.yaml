@@ -46,7 +46,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # When S-mode is not implemented, then xSSE is 0 at both M and U privilege modes.
-  - name: Zicfiss_smode-xsse
+  - name: Zicfiss_smode_xsse
     coverpoint: [""]
 
   # The encoding R=0, W=1, and X=0, is defined to represent an SS page.
@@ -54,18 +54,18 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # When menvcfg.SSE=0, this encoding remains reserved.
-  - name: ssmp_menvcfg-sse
+  - name: ssmp_menvcfg_sse
     coverpoint: [""]
 
   # Similarly, when V=1 and henvcfg.SSE=0, this encoding remains reserved at VS and
   # VU levels.
-  - name: ssmp_henvcfg-sse
+  - name: ssmp_henvcfg_sse
     coverpoint: [""]
 
   # If satp.MODE (or vsatp.MODE when V=1) is set to Bare and the effective privilege
   # mode is less than M, shadow stack instructions raise a store/AMO access-fault
   # exception.
-  - name: satp-mode_bare
+  - name: satp_mode_bare
     coverpoint: [""]
 
   # When the effective privilege mode is M, memory access by an SSAMOSWAP.W/D

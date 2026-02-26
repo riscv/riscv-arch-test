@@ -14,6 +14,7 @@
 #define ZCA_SUPPORTED
 #define ZCB_SUPPORTED
 #define ZCD_SUPPORTED
+#define ZCF_SUPPORTED
 
 #define TIME_CSR_IMPLEMENTED 1
 

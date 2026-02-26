@@ -157,17 +157,17 @@ class TestData:
         """Get the list of test data strings to be stored in .data section."""
         return self._test_data_strings
 
-    def add_testcase(self, bin_name: str = "", coverpoint: str = "", covergroup: str | None = None) -> str:
+    def add_testcase(self, bin_name: str, coverpoint: str, covergroup: str | None = None) -> str:
         """
         Add a test data string and return the testcase label line. Also increments test count.
 
         Args:
-            cp: The coverpoint name
-            covergroup: Optional covergroup name. Defaults to '{extension}_{instr_name}_cg'.
             bin_name: Optional bin name to append to the coverpoint name.
+            coverpoint: The coverpoint name
+            covergroup: Optional covergroup name. Defaults to '{extension}_{instr_name}_cg'.
 
         Returns:
-            Label line string in format '{covergroup}_{coverpoint}_{bin_name}}:'
+            Label line string in format '{covergroup}_{coverpoint}_{bin_name}:'
         """
         self.increment_test_count()
 
@@ -185,7 +185,7 @@ class TestData:
 
         # Add testcase string to test data strings (keep original names for debugging)
         self._test_data_strings.append(
-            f'test_{self.test_count}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
+            f'{label}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
 
         # Return label

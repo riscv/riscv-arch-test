@@ -13,7 +13,6 @@ https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1Ohd
 include::norm/PMPSm_norm_rules.adoc[]
 
 
-
 ==== PMPS
 
 [[t-PMPS-coverpoints]]

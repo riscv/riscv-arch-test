@@ -31,7 +31,7 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
     test_lines: list[str] = []
     for val in memvals:
-        test_lines.append(test_data.add_testcase(coverpoint))
+        test_lines.append(test_data.add_testcase(f"{val:#x}", coverpoint))
         if instr_type == "S":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=val)
         elif instr_type == "L":

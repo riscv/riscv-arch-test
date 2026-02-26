@@ -105,7 +105,7 @@ def check_ref_model_version(config: Config) -> None:
             if version != required_version:
                 raise ValueError(
                     f"Sail reference model version mismatch. ACT4 requires version {required_version}, but {version} was found. "
-                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv-non-isa/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
+                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
                 )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to check Sail version: {e}") from e

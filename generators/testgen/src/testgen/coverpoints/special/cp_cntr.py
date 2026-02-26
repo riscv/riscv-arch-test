@@ -60,7 +60,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
     else:
         slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
     lines = [
-        test_data.add_testcase("cp_cntr"),
+        test_data.add_testcase(cntr, "cp_cntr"),
         f"# Testcase: cp_cntr ({cntr})",
     ]
     if cntr == "time":
@@ -69,6 +69,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
                 "# Loop until time increments, or fail if it does not",
                 f"{instr_name} x{r1}, {cntr}, x0 # read {cntr} initial value",
                 f"li x{r3}, 2000 # timeout counter to prevent infinite loop if counter doesn't increment",
+                f"test_{test_data.test_count}:",
                 f"1: {instr_name} x{r2}, {cntr}, x0 # read {cntr} new value",
                 f"addi x{r3}, x{r3}, -1 # decrement timeout counter",
                 f"beqz x{r3}, 2f # if timeout counter reaches zero, fail",
@@ -88,6 +89,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
                 f"addi x{r2}, x{r2}, 1 # delay a bit",
                 f"addi x{r2}, x{r2}, 1 # delay a bit",
                 f"{instr_name} x{r2}, {cntr}, x0",
+                f"test_{test_data.test_count}:",
                 f"{instr_name} x{r2}, {cntr}, x0 # read again to increase delay a bit more",
             ]
         )

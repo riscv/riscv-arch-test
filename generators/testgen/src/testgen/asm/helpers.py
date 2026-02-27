@@ -84,8 +84,8 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
         test_data.sigupd_count += 1
         return (
             f"\t# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
-            + f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            + f"\tRVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            f"\tRVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
         )
     elif sig_type == "float":
         if test_data.flen > test_data.xlen:
@@ -94,9 +94,9 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
             test_data.sigupd_count += 2
         return (
             f"\t# Check if f{check_reg} contains the expected result. Also checks fflags. "
-            + f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
-            + f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
-            + f"\tRVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
+            f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
+            f"\tRVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
         )
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")

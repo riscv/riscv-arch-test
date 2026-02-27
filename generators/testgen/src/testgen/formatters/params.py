@@ -44,7 +44,7 @@ def generate_random_params(
     test_data: TestData,
     instr_type: str,
     exclude_regs: list[int] | None = None,
-    **fixed_params: Any,
+    **fixed_params: Any,  # noqa: ANN401
 ) -> InstructionParams:
     """
     Generate random parameters for an instruction.

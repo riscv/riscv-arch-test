@@ -55,7 +55,7 @@ def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[st
                     cache.parent.mkdir(parents=True, exist_ok=True)
                     cache.write_text(text, encoding="utf-8")
                 return json.loads(text)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             raise RuntimeError(f"Failed to download JSON from {path}: {e}") from e
     # Load from local file
     text = Path(path).read_text(encoding="utf-8")
@@ -555,7 +555,7 @@ def main() -> None:
     if args.always_fetch:
         try:
             jdata = load_json(canonical_json_url, cache_path=cache_path)
-        except Exception as e:
+        except (RuntimeError, OSError, json.JSONDecodeError) as e:
             print(f"Error: failed to fetch canonical JSON ({canonical_json_url}): {e}", file=sys.stderr)
             sys.exit(2)
     else:
@@ -762,8 +762,7 @@ def main() -> None:
 
             for chap in sorted(chapter_map.keys()):
                 report_lines.append(f"Chapter: {chap}")
-                for n in sorted(chapter_map[chap]):
-                    report_lines.append("  " + n)
+                report_lines.extend("  " + n for n in sorted(chapter_map[chap]))
                 report_lines.append("")
         else:
             report_lines.append("  (none)")

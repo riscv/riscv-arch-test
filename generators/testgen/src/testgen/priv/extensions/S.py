@@ -385,12 +385,11 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             "cp_scsrwalk",
-            "Set and clear each bit individually in all writable S-mode CSRs",
+            "Set and clear each bit individually in all writable S-mode CSRs, including non-mode bits of satp",
         ),
     )
 
-    #    for csr in [*csrs, "satp"]:
-    for csr in [*csrs]:
+    for csr in [*csrs, "satp"]:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     ######################################
@@ -506,13 +505,13 @@ def make_s(test_data: TestData) -> list[str]:
     lines: list[str] = []
 
     lines.extend(["\t# Run some tests in machine mode"])
-    #    lines.extend(_generate_mretm_tests(test_data))
-    #    lines.extend(_generate_sretm_tests(test_data))
-    #    lines.extend(_generate_srets_tests(test_data))
+    lines.extend(_generate_mretm_tests(test_data))
+    lines.extend(_generate_sretm_tests(test_data))
+    lines.extend(_generate_srets_tests(test_data))
     lines.extend(["\tRVTEST_GOTO_LOWER_MODE Smode  # Run most tests in supervisor mode"])
-    #    lines.extend(_generate_scause_tests(test_data))
-    #    lines.extend(_generate_sstatus_sd_tests(test_data))
-    #    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(_generate_scause_tests(test_data))
+    lines.extend(_generate_sstatus_sd_tests(test_data))
+    lines.extend(_generate_priv_inst_tests(test_data))
     lines.extend(_generate_scsr_tests(test_data))
 
     return lines

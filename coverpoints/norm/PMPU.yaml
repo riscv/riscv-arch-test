@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # PMP checks are applied to all accesses whose effective privilege mode is S or U,
+  # including instruction fetches and data accesses in S and U mode, and data
+  # accesses in M-mode when the MPRV bit in mstatus is set and the MPP field in
+  # mstatus contains S or U.
+  - name: pmp_check_priv_modes
+    coverpoint: ["PMPU_cg/{cp_mprv},PMPS_cg/{cp_mprv}"]
+
+  # PMP CSRs are only accessible to M-mode.
+  - name: pmp_csr_mode
+    coverpoint:
+      [
+        "PMPU_cg/{cp_pmpaddr_access_u,cp_pmpcfg_access},PMPS_cg/{cp_pmpaddr_access_u,cp_pmpcfg_access}",
+      ]
+
+  # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
+  - name: pmp_addr_registers
+    coverpoint: ["PMPU_cg/{cp_pmpaddr_access_u},PMPS_cg/{cp_pmpaddr_access_u}"]

@@ -171,7 +171,7 @@ class TestData:
         Add a test data string and return the testcase label line. Also increments test count.
 
         Args:
-            bin_name: Optional bin name to append to the coverpoint name.
+            bin_name: Bin name to append to the coverpoint name.
             coverpoint: The coverpoint name
             covergroup: Optional covergroup name. Defaults to '{extension}_{instr_name}_cg'.
 

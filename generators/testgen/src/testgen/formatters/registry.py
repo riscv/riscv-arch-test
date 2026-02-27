@@ -146,8 +146,8 @@ def format_single_test(
     test_data: TestData,
     params: InstructionParams,
     desc: str,
-    bin_name: str = "",
-    coverpoint: str = "",
+    bin_name: str,
+    coverpoint: str,
 ) -> str:
     """
     Generate a complete single-instruction test with setup and signature update.

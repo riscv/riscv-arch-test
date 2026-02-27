@@ -141,7 +141,13 @@ def format_instruction(
 
 
 def format_single_test(
-    instr_name: str, instr_type: str, test_data: TestData, params: InstructionParams, desc: str
+    instr_name: str,
+    instr_type: str,
+    test_data: TestData,
+    params: InstructionParams,
+    desc: str,
+    bin_name: str,
+    coverpoint: str,
 ) -> str:
     """
     Generate a complete single-instruction test with setup and signature update.
@@ -158,14 +164,25 @@ def format_single_test(
         test_data: Test data context
         params: Instruction parameters
         desc: Test description (e.g., "cp_rd (Test destination rd = x5)")
-
+        bin_name: Coverpoint bin covered by this test case
+        coverpoint: Coverpoint name
     Returns:
         Complete test case as a string
     """
     test_lines = [f"# Testcase {desc}"]
 
+    # Register the testcase label first so SIGUPD references the current test's label
+    label_line = test_data.add_testcase(bin_name, coverpoint)
+
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    test_lines.extend([setup, f"test_{test_data.test_count}:", test, check])
+    test_lines.extend(
+        [
+            setup,
+            label_line,
+            test,
+            check,
+        ]
+    )
 
     return "\n".join(test_lines)

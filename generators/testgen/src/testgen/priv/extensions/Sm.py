@@ -246,7 +246,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"    LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
                                 f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"    LA(x{reg3}, 1f)             # return address after sret",
-                                f"    CSRW(sepc, x{reg3})          # set sepc to return address. Note that sepc might not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                f"    CSRW(sepc, x{reg3})          # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"test_{test_data.test_count}:",
                                 "    sret                   # test sret instruction",

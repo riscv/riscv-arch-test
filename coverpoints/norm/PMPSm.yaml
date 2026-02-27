@@ -177,6 +177,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMPSM_cg/{cp_misaligned_na4_wrap,cp_misaligned_tor_wrap,cp_misaligned_napot,cp_misaligned_na4,cp_misaligned_tor,cp_misaligned_off}",
+        "PMPZca_cg/{cp_misaligned_napot,cp_misaligned_tor,cp_misaligned_na4,cp_misaligned_off}",
       ]
 
   # If no PMP entry matches an M-mode memory operation, the operation succeeds. If

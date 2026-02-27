@@ -23,8 +23,6 @@ https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1Ohd
 ,===
 
 
-include::norm/PMPS_norm_rules.adoc[]
-
 ==== PMPU
 
 [[t-PMPU-coverpoints]]
@@ -45,7 +43,6 @@ include::norm/PMPU_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
 ,===
 
-include::norm/PMPF_norm_rules.adoc[]
 
 ==== PMPZca
 
@@ -56,7 +53,7 @@ include::norm/PMPF_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
 ,===
 
-include::norm/PMPZca_norm_rules.adoc[]
+
 
 ==== PMPZicbo
 
@@ -67,7 +64,6 @@ include::norm/PMPZca_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
 ,===
 
-include::norm/PMPZicbo_norm_rules.adoc[]
 
 ==== PMPZaamo
 
@@ -78,7 +74,6 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
 ,===
 
-include::norm/PMPZaamo_norm_rules.adoc[]
 
 ==== PMPZalrsc
 
@@ -88,5 +83,3 @@ include::norm/PMPZaamo_norm_rules.adoc[]
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
 ,===
-
-include::norm/PMPZalrsc_norm_rules.adoc[]

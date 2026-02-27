@@ -109,16 +109,16 @@ covergroup ExceptionsSm_cg with function sample(ins_t ins);
     illegal_address_priority: coverpoint {{ins.current.imm + ins.current.rs1_val}[XLEN-1:3], 3'b000} {
         bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
-    i_phys_adr_misaligned: coverpoint ins.current.phys_adr_i[1:0] {
+    i_phys_adr_misaligned: coverpoint {ins.current.imm + ins.current.rs1_val}[1:0] {
         bins aligned    = {2'b00};
         bins misaligned = {2'b10};
     }
     `ifdef XLEN64 // Number of physical address bits is different by XLEN, either 34 or 56
-        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
             // auto fill 1/0 for the physical address being valid
         }
     `else
-        i_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_i[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        i_phys_address_nonexistent: coverpoint ({{ins.current.imm + ins.current.rs1_val}[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
             // auto fill 1/0 for the physical address being valid
         }
     `endif
@@ -145,5 +145,12 @@ endgroup
 
 
 function void exceptionssm_sample(int hart, int issue, ins_t ins);
+    $display("pc_rdata = %h, pc_wdata = %h, pc_wdata[1:0] = %b, insn = %h, prev_insn = %h, insn_name = %s",
+             ins.current.pc_rdata,
+             {ins.current.imm + ins.current.rs1_val},
+             {ins.current.imm + ins.current.rs1_val}[1:0],
+             ins.current.insn,
+             ins.prev.insn,
+             ins.ins_str);
     ExceptionsSm_cg.sample(ins);
 endfunction

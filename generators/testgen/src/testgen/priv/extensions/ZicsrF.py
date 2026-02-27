@@ -249,8 +249,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfcvt.s.d f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# increment data pointer to skip over these tests"
-            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {6 * test_data.flen}",
+            "\t# increment data pointer to skip over these tests",
+            f"\taddi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {6 * test_data.flen // 8}",
             "#endif",
             # Quads are not yet supported by Sail.  load_float_reg is only writing out 8 bytes
             # (without Q supported).  Comment out until support is ready.
@@ -274,8 +274,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             # f"\tfcvt.s.q f13, f10, rup",
             # write_sigupd(13, test_data, "float"),
             # f"#else",
-            # "\t# increment data pointer to skip over these tests"
-            # f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {6*test_data.flen}",
+            # "\t# increment data pointer to skip over these tests",
+            # f"\taddi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {6 * test_data.flen // 8}",
             # f"#endif",
             "\n#ifdef ZFH_SUPPORTED",
             "\tcsrwi fflags, 0 # reset flags",
@@ -292,8 +292,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfmul.h f13, f10, f11, rup",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# increment data pointer to skip over these tests"
-            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {5 * test_data.flen}",
+            "\t# increment data pointer to skip over these tests",
+            f"\taddi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {5 * test_data.flen // 8}",
             "#endif",
             "\n#if defined(ZFHMIN_SUPPORTED) || defined(ZFH_SUPPORTED)",
             "\tcsrwi fflags, 0 # reset flags",
@@ -302,8 +302,8 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
             "\tfcvt.h.s f13, f10, rne",
             write_sigupd(13, test_data, "float"),
             "#else",
-            "\t# increment data pointer to skip over these tests"
-            f"\taddi {test_data.int_regs.data_reg}, {test_data.int_regs.data_reg}, {1 * test_data.flen}",
+            "\t# increment data pointer to skip over these tests",
+            f"\taddi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {1 * test_data.flen // 8}",
             "#endif",
         ]
     )

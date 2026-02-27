@@ -586,7 +586,7 @@
         .string "RVCP: Instruction: "
 #ifdef RVTEST_PRIV_TEST
     addrstr:
-        .string "RVCP: Address of start of testcase (failure is likely after this): "
+        .string "RVCP: Approximate address (failure may be slightly after this): "
 #else
     addrstr:
         .string "RVCP: Address: "

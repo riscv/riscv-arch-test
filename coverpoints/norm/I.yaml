@@ -4,7 +4,7 @@ normative_rule_definitions:
   - name: rv32i_xreg_sz
     coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: rv32i_other_xregs
-    coverpoint: ["Just descriptive text. All registers are exercised."]
+    coverpoint: ["I_add_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: pcreg_op
     coverpoint: ["I_auipc_cg/cr_rs1_imm_edges"]
   - name: slti_op

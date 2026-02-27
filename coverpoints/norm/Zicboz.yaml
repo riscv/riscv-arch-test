@@ -7,5 +7,5 @@ normative_rule_definitions:
   # only if execution of the instruction is enabled for use in S-mode and CBZE is
   # set to 1; otherwise, an illegal-instruction exception is raised. When the Zicboz
   # extension is not implemented, CBZE is read-only zero.
-  - name: senvcfg-cbze
+  - name: senvcfg_cbze
     coverpoint: [""]

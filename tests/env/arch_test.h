@@ -1482,6 +1482,12 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
+#ifdef SKIP_MEPC
+        LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
+        addi    T2, T2, 2
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+#endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2                      // construct vmem seg end
@@ -1507,7 +1513,7 @@ adj_\__MODE__\()epc:
 
 sv_\__MODE__\()epc:
         TRAP_SIGUPD(T6, T3, 2)                  // save 3rd sig value, (rel mepc) into trap sig area
-        csrr    T3, CSR_XEPC                    // As T3 was overwritten for TRAP_SIGUPD, read XEPC again
+        csrr    T3, CSR_XEPC                    // As T3 was adjusted for TRAP_SIGUPD, read XEPC again
 
 #ifdef SKIP_MEPC                                //**** spcl case so fetch faults don't rtn to EPC+4
                                                 //**** checks if gp=spcl_value & cause=fetch-xx-fault

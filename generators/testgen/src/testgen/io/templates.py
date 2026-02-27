@@ -187,8 +187,7 @@ def format_params(params: list[str]) -> str:
     if not params:
         return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
-    for param in params:
-        param_lines.append(f"#   {param}")
+    param_lines.extend(f"#   {param}" for param in params)
     return "\n".join(param_lines)
 
 

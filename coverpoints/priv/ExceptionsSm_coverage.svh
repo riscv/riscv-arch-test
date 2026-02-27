@@ -145,12 +145,5 @@ endgroup
 
 
 function void exceptionssm_sample(int hart, int issue, ins_t ins);
-    $display("pc_rdata = %h, pc_wdata = %h, pc_wdata[1:0] = %b, insn = %h, prev_insn = %h, insn_name = %s",
-             ins.current.pc_rdata,
-             {ins.current.imm + ins.current.rs1_val},
-             {ins.current.imm + ins.current.rs1_val}[1:0],
-             ins.current.insn,
-             ins.prev.insn,
-             ins.ins_str);
     ExceptionsSm_cg.sample(ins);
 endfunction

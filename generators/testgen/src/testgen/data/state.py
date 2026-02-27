@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
@@ -156,7 +157,7 @@ class TestData:
         """Get the list of test data strings to be stored in .data section."""
         return self._test_data_strings
 
-    def add_testcase(self, coverpoint: str, bin_name: str | None = None, covergroup: str | None = None) -> str:
+    def add_testcase(self, bin_name: str = "", coverpoint: str = "", covergroup: str | None = None) -> str:
         """
         Add a test data string and return the testcase label line. Also increments test count.
 
@@ -173,19 +174,22 @@ class TestData:
         if covergroup is None:
             covergroup = f"{self.testsuite}_{self.instr_name}_cg"
 
-        if bin_name is None:
-            bin_name = f"test_{self.test_count}"
-
         # Construct full coverpoint name
         full_name = f"{covergroup}_{coverpoint}_{bin_name}"
 
-        # Add testcase string to test data strings
+        # Normalize full_name to a valid assembly label
+        label = full_name.replace("-", "m")
+        label = re.sub(r"[^a-zA-Z0-9_]", "_", label)
+        label = re.sub(r"_+", "_", label)  # Collapse consecutive underscores
+        label = label.strip("_")
+
+        # Add testcase string to test data strings (keep original names for debugging)
         self._test_data_strings.append(
-            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {full_name}\\""'
+            f'test_{self.test_count}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
 
         # Return label
-        return f"\n{full_name}:"
+        return f"\n{label}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

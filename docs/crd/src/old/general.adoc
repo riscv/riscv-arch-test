@@ -38,4 +38,4 @@ This UDB configuration defines what parameter values and optional features are t
 specify additional optional features that are OUT-OF-SCOPE for certification testing, so long as they are not
 INCOMPATIBLE with the certificate.
 
-See an https://github.com/riscv-non-isa/riscv-arch-test/blob/act4/config/ref/sail-rvi20_32/sail.json[example] UDB configuration.
+See an https://github.com/riscv/riscv-arch-test/blob/act4/config/ref/sail-rvi20_32/sail.json[example] UDB configuration.

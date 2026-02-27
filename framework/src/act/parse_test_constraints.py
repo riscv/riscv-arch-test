@@ -36,8 +36,19 @@ class TestMetadata(BaseModel):
 
     @property
     def flen(self) -> str:
-        """Get floating-point register length: '64' if D extension present, else '32'."""
-        return "128" if "Q" in self.required_extensions else "64" if "D" in self.required_extensions else "32"
+        """Get floating-point register length from the march string.
+
+        FLEN is determined by the widest FP extension in the march: Q=128, D=64, F=32.
+        Single-letter extensions (including G=IMAFD) appear before the first underscore.
+        """
+        base = self.march.split("_")[0].lower()
+        if "q" in base:
+            return "128"
+        if "d" in base or "g" in base:
+            return "64"
+        if "f" in base:
+            return "32"
+        return "32"
 
     @property
     def e_ext(self) -> bool:

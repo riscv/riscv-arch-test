@@ -37,7 +37,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # The xlen=0 indicates this is a multi-xlen test that uses preprocessor conditionals
     test_config = TestConfig(
         xlen=0,  # One test for all XLENs
-        flen=0,
+        flen=64,
         testsuite=testsuite,
         E_ext=False,
         config_dependent=True,

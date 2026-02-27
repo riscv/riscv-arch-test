@@ -339,7 +339,6 @@
 
 // Interrupt Macros
 // Idle for interrupt latency
-#ifndef RVTEST_IDLE_FOR_INTERRUPT
 #define RVTEST_IDLE_FOR_INTERRUPT \
    .rept RVMODEL_INTERRUPT_LATENCY; \
        nop; \

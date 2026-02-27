@@ -3,31 +3,31 @@
 
 normative_rule_definitions:
   - name: smstateen_mmode_rv64_csrs
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: smstateen_smode_rv64_csrs
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: smstateen_hypervisor_rv64_csrs
     coverpoint: [""]
 
   - name: smstateen_rv32_upper_bits_csrs
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: stateen_op
-    coverpoint: ["cp_csr_illegal_accesses"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}"]
 
   - name: smstateen_illegal_state_access
-    coverpoint: ["cp_csr_illegal_accesses"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}"]
 
   - name: smstateen_implicit_state_update
     coverpoint: ["Not testable"]
 
   - name: sstateen_user_access_control
-    coverpoint: ["cp_jvt_lower"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_jvt_lower}"]
 
   - name: sstateen_bit_correspondence
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: mstateen_bit_encroachment
     coverpoint: ["Not testable"]
@@ -39,37 +39,37 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: STATEEN_WARL_ACCESS
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: stateen_unimplemented_state_roz
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: stateen-reserved_roz
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: sstateen_vsmode_access_roz
     coverpoint: [""]
 
   - name: sstateen_ro1_bits
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: hstateen_ro1_bits
     coverpoint: [""]
 
   - name: mstateen_zero_initialization
-    coverpoint: ["cp_mstateen_reset_val"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_reset_val}"]
 
   - name: hstateen_sstateen_zero_initialization
     coverpoint: [""]
 
   - name: mstateen-bit-63_op
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: hstateen-bit-63_op
     coverpoint: [""]
 
   - name: mstateen-bit-63_roz
-    coverpoint: ["cp_walking_ones"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: hstateen-bit-63_writable
     coverpoint: [""]
@@ -78,61 +78,61 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: stateen0-fcsr_op
-    coverpoint: ["cp_fcsr"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr}"]
 
   - name: mstateen0-fcsr_roz
-    coverpoint: ["cp_fcsr_ro_zero"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_ro_zero}"]
 
   - name: stateen0-fcsr0_misa-f0_illegal_fpu_instr
-    coverpoint: ["cp_fcsr_lower"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_lower}"]
 
   - name: stateen0-jvt_op
-    coverpoint: ["cp_jvt_lower"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_jvt_lower}"]
 
   - name: mstateen0-se0_op
-    coverpoint: ["cp_mstateen_access_control_over_sstateen"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_access_control_over_sstateen}"]
 
   - name: hstateen0-se0_op
     coverpoint: [""]
 
   - name: mstateen0-envcfg_op
-    coverpoint: ["cp_envcfg"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_envcfg}"]
 
   - name: hstateen0-envcfg_op
     coverpoint: [""]
 
   - name: mstateen0-csrind_op
-    coverpoint: ["cp_csrind"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csrind}"]
 
   - name: hstateen0-csrind_op
     coverpoint: [""]
 
   - name: mstateen0-imsic_op
-    coverpoint: ["cp_imsic"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_imsic}"]
 
   - name: hstateen0-imsic_op
     coverpoint: [""]
 
   - name: mstateen0-aia_op
-    coverpoint: ["cp_aia"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_aia}"]
 
   - name: hstateen0-aia_op
     coverpoint: [""]
 
   - name: mstateen0-context_op
-    coverpoint: ["cp_context"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_context}"]
 
   - name: hstateen0-context_op
     coverpoint: [""]
 
   - name: mstateen0-p1p13_op
-    coverpoint: ["cp_p1p13"]
+    coverpoint: ["Smstateen_cg/cp_p1p13"]
 
   - name: mstateen0-srmcfg_op
-    coverpoint: ["cp_srmcfg"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_srmcfg}"]
 
   - name: mstateen_ctr1
-    coverpoint: ["cp_ctr"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_ctr}"]
 
   - name: mstateen_ctr0
-    coverpoint: ["cp_ctr"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_ctr}"]

@@ -331,7 +331,7 @@
   nop
 
 #define CSRS(_CSR, _R1) \
-  srs _CSR, _R1      ;\
+  csrs _CSR, _R1      ;\
   nop
 
 #define CSRC(_CSR, _R1) \

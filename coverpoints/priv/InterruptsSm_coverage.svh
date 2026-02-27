@@ -93,10 +93,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     cp_vectored:         cross priv_mode_m, mstatus_mie_one, mtvec_vectored, mip_walking, mie_ones;
     cp_priority:         cross priv_mode_m, mstatus_mie_one, mie_meie_mtie_msie, mip_meip_mtip_msip;
     cp_wfi:              cross priv_mode_m, wfi, mstatus_mie, mstatus_tw, mie_mtie_one, mip_mtip_one;
-    endgroup
+endgroup
 
 
-    function void interruptssm_sample(int hart, int issue, ins_t ins);
+function void interruptssm_sample(int hart, int issue, ins_t ins);
     InterruptsSm_cg.sample(ins);
 
     //    $display("=== InterruptsSm Debug ===");
@@ -112,4 +112,4 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     //    if (ins.current.trap)
     //        $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
     //    $display("");
-    endfunction
+endfunction

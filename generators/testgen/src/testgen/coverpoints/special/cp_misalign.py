@@ -43,13 +43,12 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         )
 
     for alignment in alignments:
-        test_lines.append(test_data.add_testcase(f"{alignment}", coverpoint))
         if instr_type == "L":
             test_lines.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
-                    f"test_{test_data.test_count}:",
+                    test_data.add_testcase(f"{alignment}", coverpoint),
                     f"{instr_name} x{r2}, {alignment}(x{r1}) # perform load",
                     write_sigupd(r2, test_data, "int"),
                     "",
@@ -60,7 +59,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
-                    f"test_{test_data.test_count}:",
+                    test_data.add_testcase(f"{alignment}", coverpoint),
                     f"{instr_name} f{r2}, {alignment}(x{r1}) # perform load",
                     write_sigupd(r2, test_data, "float"),
                     "",
@@ -72,7 +71,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     f"# Testcase: {coverpoint} (addr[2:0] = {alignment:03b})",
                     f"LA(x{r1}, scratch) # load base address",
                     f"addi x{r1}, x{r1}, {alignment} # adjust for alignment",
-                    f"test_{test_data.test_count}:",
+                    test_data.add_testcase(f"{alignment}", coverpoint),
                     f"{instr_name} x{r2}, 0(x{r1}) # perform load",
                     write_sigupd(r2, test_data, "int"),
                     "",
@@ -85,7 +84,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     test_data.int_regs.consume_registers([2]),
                     "LA(sp, scratch) # load base address",
                     f"addi sp, sp, {alignment} # adjust for alignment",
-                    f"test_{test_data.test_count}:",
+                    test_data.add_testcase(f"{alignment}", coverpoint),
                     f"{instr_name} x{r2}, 0(sp) # perform load",
                     write_sigupd(r2, test_data, "int"),
                     "",
@@ -115,14 +114,14 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             if instr_type == "S":
                 test_lines.extend(
                     [
-                        f"test_{test_data.test_count}:",
+                        test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
                 )
             elif instr_type == "FS":
                 test_lines.extend(
                     [
-                        f"test_{test_data.test_count}:",
+                        test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} f{r2}, {alignment}(x{r1}) # perform store to scratch memory",
                     ]
                 )
@@ -130,7 +129,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 test_lines.extend(
                     [
                         f"addi x{r1}, x{r1}, {alignment} # adjust for alignment",
-                        f"test_{test_data.test_count}:",
+                        test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, 0(x{r1}) # perform store",
                         f"addi x{r1}, x{r1}, {-alignment} # restore base address",
                     ]
@@ -141,7 +140,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                         test_data.int_regs.consume_registers([2]),
                         "LA(sp, scratch) # load base address",
                         f"addi sp, sp, {alignment} # adjust for alignment",
-                        f"test_{test_data.test_count}:",
+                        test_data.add_testcase(f"{alignment}", coverpoint),
                         f"{instr_name} x{r2}, 0(sp) # perform store",
                     ]
                 )

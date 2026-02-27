@@ -27,12 +27,7 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     for val in range(32):
         params = generate_random_params(test_data, instr_type, rs1=val)
         desc = f"{coverpoint} (val 'rs1' = {val})"
-        test_lines.extend(
-            [
-                test_data.add_testcase(f"b{val}", coverpoint),
-                format_single_test(instr_name, instr_type, test_data, params, desc),
-            ]
-        )
+        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{val}", coverpoint)])
         return_test_regs(test_data, params)
 
     return test_lines

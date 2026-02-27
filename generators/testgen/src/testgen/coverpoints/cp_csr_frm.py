@@ -24,11 +24,12 @@ def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     frm_modes = (("rmm", 4), ("rup", 3), ("rdn", 2), ("rtz", 1), ("rne", 0))
     test_lines: list[str] = []
     for frm_name, frm_mode in frm_modes:
-        test_lines.append(test_data.add_testcase(f"{frm_name}", coverpoint))
         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         desc = f"{coverpoint} (Test dynamic frm, fcsr.frm = {frm_mode})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(
+            format_single_test(instr_name, instr_type, test_data, params, desc, f"{frm_name}", coverpoint)
+        )
         return_test_regs(test_data, params)
 
     return test_lines

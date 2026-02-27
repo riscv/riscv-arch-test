@@ -24,10 +24,9 @@ def make_cp_rnum(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     test_lines: list[str] = []
     for rnum in rnum_vals:
-        test_lines.append(test_data.add_testcase(f"b{rnum}", coverpoint))
         params = generate_random_params(test_data, instr_type, immval=rnum)
         desc = f"{coverpoint}: rnum={rnum}"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rnum}", coverpoint))
         return_test_regs(test_data, params)
 
     return test_lines

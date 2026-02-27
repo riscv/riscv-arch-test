@@ -38,11 +38,11 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
             ]
         )
     elif coverpoint == "cp_cntr_hpm":
-        for hpm in range(3, 32):  # hpmcounter3 through hpmcounter31
-            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data))
+        # hpmcounter3 through hpmcounter31
+        test_lines.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data) for hpm in range(3, 32))
         test_lines.append("#if __riscv_xlen == 32\n")
-        for hpm in range(3, 32):  # hpmcounter3h through hpmcounter31h
-            test_lines.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data))
+        # hpmcounter3h through hpmcounter31h
+        test_lines.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data) for hpm in range(3, 32))
         test_lines.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")

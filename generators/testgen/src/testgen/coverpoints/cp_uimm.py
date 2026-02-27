@@ -18,9 +18,9 @@ from testgen.formatters.params import generate_random_params
 def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
     """Generate tests for unsigned immediate values."""
     if coverpoint == "cp_uimm":
-        uimm_vals = range(0, test_data.xlen)
+        uimm_vals = range(test_data.xlen)
     elif coverpoint.endswith("_5"):
-        uimm_vals = range(0, 32)
+        uimm_vals = range(32)
     elif coverpoint.endswith("_n0"):
         uimm_vals = range(1, test_data.xlen)
     else:

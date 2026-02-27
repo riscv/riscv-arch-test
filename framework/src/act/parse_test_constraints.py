@@ -102,13 +102,11 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
 
     extension_list: list[str] = []
     if extensions != "all":
-        for ext in extensions.split(","):
-            extension_list.append(ext.strip())
+        extension_list.extend(ext.strip() for ext in extensions.split(","))
 
     exclude_list: list[str] = []
     if exclude:
-        for ext in exclude.split(","):
-            exclude_list.append(ext.strip())
+        exclude_list.extend(ext.strip() for ext in exclude.split(","))
 
     test_list: dict[str, TestMetadata] = {}
 

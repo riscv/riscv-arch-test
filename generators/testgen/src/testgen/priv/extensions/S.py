@@ -1,0 +1,505 @@
+##################################
+# S.py
+#
+# S supervisor mode privileged extension test generator.
+# jcarlin@hmc.edu Jan 2026
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
+"""S supervisor privileged extension test generator."""
+
+from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.data.state import TestData
+from testgen.priv.registry import add_priv_test_generator
+
+
+def _generate_scause_tests(test_data: TestData) -> list[str]:
+    """Generate tests for scause CSR."""
+    covergroup = "S_scause_cg"
+    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+
+    ######################################
+    coverpoint = "cp_scause_write_exception"
+    ######################################
+    lines = [
+        "",
+        f"CSRR(x{save_reg}, scause)     # save CSR before testing it",
+        comment_banner(
+            coverpoint,
+            "with interrupt = 0: test writing each exception cause",
+        ),
+    ]
+
+    for i in range(24):
+        if i in {14, 17}:  # skip reserved causes
+            continue
+        lines.extend(
+            [
+                test_data.add_testcase(coverpoint, f"b_{i}", covergroup),
+                f"    LI(x{check_reg}, {i})           # exception cause {i}",
+                gen_csr_write_sigupd(check_reg, "scause", test_data),
+            ]
+        )
+
+    ######################################
+    coverpoint = "cp_scause_write_interrupt"
+    ######################################
+
+    lines.extend(
+        [
+            comment_banner(
+                coverpoint,
+                "with interrupt = 1: test writing each interrupt cause",
+            ),
+            f"    SET_MSB(x{temp_reg})  # set x{temp_reg} to have msb = 1 for interrupt tests",
+        ]
+    )
+
+    for i in range(14):
+        if i in {0, 4, 8}:  # skip reserved causes
+            continue
+        lines.extend(
+            [
+                test_data.add_testcase(coverpoint, f"b_{i}", covergroup),
+                f"    LI(x{check_reg}, {i})           # interrupt cause {i}",
+                f"    or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit",
+                gen_csr_write_sigupd(check_reg, "scause", test_data),
+            ]
+        )
+
+    lines.append(f"\n    CSRW(scause, x{save_reg})       # restore CSR")
+
+    test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
+    return lines
+
+
+def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
+    """Generate sstatus SD field write tests."""
+    ######################################
+    covergroup = "S_sstatus_cg"
+    coverpoint = "cp_sstatus_sd_write"
+    ######################################
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Write all combinations of sstatus.SD = {0/1}, FS/XS/VS = {00, 01, 10, 11}\n"
+            "sstatus.SD is read-only, so nothing should happen",
+        ),
+        "",
+        f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
+        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"# set up x{reg3} with sstatus except SD, FS, XS, VS cleared",
+        f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
+        f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
+        f"LI(x{reg2}, 0x1E600)              # x{reg2} has all FS, XS, VS bits set (bits [14:13], [16:15], [10:9], respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but FS, XS, VS bits set",
+        f"and x{reg3}, x{reg3}, x{reg2}     # clear FS, XS, VS bits",
+    ]
+
+    for sd in (0, 1):
+        for fs in range(4):
+            for xs in range(4):
+                for vs in range(4):
+                    binname = f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
+                    fields = fs << 13 | xs << 15 | vs << 9
+                    test_lines = [
+                        test_data.add_testcase(coverpoint, binname, covergroup),
+                        f"    LI(x{check_reg}, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}",
+                    ]
+                    if sd == 1:
+                        test_lines.append(f"    or x{check_reg}, x{check_reg}, x{reg1}      # set SD bit")
+                    test_lines.extend(
+                        [
+                            f"    or x{check_reg}, x{check_reg}, x{reg3}   # value to write to sstatus with SD/FS/XS/VS bits set/clear",
+                            gen_csr_write_sigupd(check_reg, "sstatus", test_data),
+                        ]
+                    )
+                    lines.extend(test_lines)
+
+    lines.append(f"\n    CSRW(sstatus, x{save_reg})    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
+    """Generate ecall and ebreak and mret tests."""
+    ######################################
+    covergroup = "S_sprivinst_cg"
+    coverpoint = "cp_sprivinst"
+    ######################################
+    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            "cp_sprivinst",
+            "Executing ecall and ebreak and mret should cause an exception",
+        ),
+        # ecall test
+        test_data.add_testcase(coverpoint, "ecall", covergroup),
+        f"    li x{check_reg}, 1    # success code",
+        "    ecall                 # test ecall instruction",
+        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
+        write_sigupd(check_reg, test_data),
+        # ebreak test
+        test_data.add_testcase(coverpoint, "ebreak", covergroup),
+        f"    li x{check_reg}, 1    # success code",
+        "    ebreak                # test ebreak instruction",
+        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
+        write_sigupd(check_reg, test_data),
+        # mret test
+        test_data.add_testcase(coverpoint, "mret", covergroup),
+        f"    li x{check_reg}, 1    # success code",
+        "    mret                  # test mret instruction",
+        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
+        write_sigupd(check_reg, test_data),
+    ]
+    test_data.int_regs.return_registers([check_reg])
+
+    return lines
+
+
+def _generate_mretm_tests(test_data: TestData) -> list[str]:
+    """Generate mret from M-mode with mpp, mprv, mpie, mie sweep."""
+    ######################################
+    covergroup = "S_sprivinst_cg"
+    coverpoint = "cp_mret_m"
+    ######################################
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            "cp_mret",
+            "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
+        ),
+        "",
+        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"# set up x{reg1} with mstatus except MPP, MPRV, MPIE, MIE cleared",
+        f"LI(x{reg2}, 0x21888)          # x{reg2} has all MPP, MPRV, MPIE, MIE bits set (bits [12:11], [17], [7], [3], respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but MPP, MPRV, MPIE, MIE bits set",
+        f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPP, MPRV, MPIE, MIE bits",
+    ]
+
+    for mpp in (0, 1, 3):  # all modes
+        for mprv in (0, 1):
+            for mpie in (0, 1):
+                for mie in (0, 1):
+                    binname = f"mpp_{mpp:02b}_mprv_{mprv}_mpie_{mpie}_mie_{mie}"
+                    fields = (mpp << 11) | (mprv << 17) | (mpie << 7) | (mie << 3)
+
+                    lines.extend(
+                        [
+                            # Test the write value
+                            test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                            f"    LI(x{check_reg}, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}",
+                            f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
+                            f"    LA(x{reg3}, 1f)             # return address after mret",
+                            f"    CSRW(mepc, x{reg3})          # set mepc to return address",
+                            f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
+                            "    mret                   # test mret instruction",
+                            f"    li x{check_reg}, -1              # should not be executed",
+                            "1:                         # mret should return to here",
+                            "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
+                            write_sigupd(check_reg, test_data),
+                            # Test the read value
+                            test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                            gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                        ]
+                    )
+
+    lines.append(f"\n    CSRW(mstatus, x{save_reg})    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _generate_sretm_tests(test_data: TestData) -> list[str]:
+    """Generate sret from M-mode with spp, mprv, spie, sie, tsr sweep."""
+    ######################################
+    covergroup = "S_sprivinst_cg"
+    coverpoint = "cp_sret_m"
+    ######################################
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Execute sret while sweeping cross-product of mprv, spp, spie, sie, tsr\n"
+            "Go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
+            "MPRV <- 0. SPP <- 0 (U-mode).  TSR has no effect.",
+        ),
+        "",
+        f"CSRR(x{save_reg}, mstatus)        # read and save mstatus",
+        f"# set up x{reg1} with mstatus except MPRV, SPP, SPIE, SIE, TSR cleared",
+        f"LI(x{reg2}, 0x420122)          # x{reg2} has all MPRV, SPP, SPIE, SIE, TSR bits set (bits [17], [8], [5], [1], [22] respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but MPRV, SPP, SPIE, SIE, TSR bits set",
+        f"and x{reg1}, x{save_reg}, x{reg2}          # clear MPRV, SPP, SPIE, SIE, TSR bits",
+    ]
+
+    for spp in (0, 1):
+        for mprv in (0, 1):
+            for spie in (0, 1):
+                for sie in (0, 1):
+                    for tsr in (0, 1):
+                        binname = f"spp_{spp}_mprv_{mprv}_spie_{spie}_sie_{sie}_tsr_{tsr}"
+                        fields = (mprv << 17) | (spp << 8) | (spie << 5) | (sie << 1) | (tsr << 22)
+
+                        lines.extend(
+                            [
+                                # Test the write value
+                                test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                                f"    LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
+                                f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
+                                f"    LA(x{reg3}, 1f)             # return address after sret",
+                                f"    CSRW(mepc, x{reg3})          # set mepc to return address.",
+                                f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
+                                "    sret                   # test sret instruction",
+                                f"    li x{check_reg}, -1              # should not be executed",
+                                "1:                         # sret should return to here",
+                                write_sigupd(check_reg, test_data),
+                                "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
+                                # Test the read value
+                                test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                                gen_csr_read_sigupd(check_reg, "mstatus", test_data),
+                            ]
+                        )
+
+    lines.append(f"\n    CSRW(mstatus, x{save_reg})    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _generate_srets_tests(test_data: TestData) -> list[str]:
+    """Generate sret from S-mode with spp, mprv, spie, sie, tsr sweep."""
+    ######################################
+    covergroup = "S_sprivinst_cg"
+    coverpoint = "cp_sret_s"
+    ######################################
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Execute sret from S-mode while sweeping cross-product of sstatus.spp, spie, sie; mstatus.tsr\n"
+            "Go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
+            "MPRV <- 0. SPP <- 0 (U-mode).  TSR causes illegal instruction.",
+        ),
+        "",
+        f"CSRR(x{save_reg}, sstatus)        # read and save sstatus",
+        f"# set up x{reg1} with sstatus except SPP, SPIE, SIE cleared",
+        f"LI(x{reg2}, 0x122)          # x{reg2} has all SPP, SPIE, SIE bits set (bits [8], [5], [1] respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but SPP, SPIE, SIE bits set",
+        f"and x{reg1}, x{save_reg}, x{reg2}          # clear SPP, SPIE, SIE bits",
+    ]
+
+    for tsr in (1, 0):
+        lines.extend(
+            [
+                # Set mstatus.TSR from M-mode
+                "\tRVTEST_GOTO_MMODE      # enter machine mode for twiddling mstatus.TSR",
+                f"\tLI(x{check_reg}, {1 << 22})  # mstatus.TSR bit",
+            ]
+        )
+
+        if tsr == 1:
+            lines.append(f"\tCSRS(mstatus, x{check_reg})          # set TSR bit")
+        else:
+            lines.append(f"\tCRRC(mstatus, x{check_reg})          # clear TSR bit")
+        lines.append("\tRVTEST_GOTO_LOWER_MODE Smode # return to supervisor mode to execute sret tests")
+
+        for spp in (0, 1):
+            for spie in (0, 1):
+                for sie in (0, 1):
+                    binname = f"spp_{spp}_spie_{spie}_sie_{sie}_tsr_{tsr}"
+                    fields = (spp << 8) | (spie << 5) | (sie << 1)
+
+                    lines.extend(
+                        [
+                            # Test the write value
+                            test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                            f"    LI(x{check_reg}, 0x{fields:08x}) # spp = {spp} spie = {spie} sie = {sie}",
+                            f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to sstatus with SPP/SPIE/SIE bits set/clear",
+                            f"    LA(x{reg3}, 1f)             # return address after sret",
+                            f"    CSRW(sepc, x{reg3})          # set sepc to return address.",
+                            f"    CSRW(sstatus, x{check_reg})       # write sstatus with SPP/SPIE/SIE bits set/clear",
+                            "    sret                   # test sret instruction",
+                            f"    li x{check_reg}, -1              # should not be executed",
+                            "1:                         # sret should return to here",
+                            write_sigupd(check_reg, test_data),
+                            "    RVTEST_GOTO_SMODE      # make sure we return to supervisor mode",
+                            # Test the read value
+                            test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                            gen_csr_read_sigupd(check_reg, "sstatus", test_data),
+                        ]
+                    )
+
+    lines.append(f"\n    CSRW(sstatus, x{save_reg})    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _generate_scsr_tests(test_data: TestData) -> list[str]:
+    """Generate CSR tests"""
+    covergroup = "S_scsr_cg"
+
+    # Standard S-mode CSRs
+    csrs = ["sstatus", "scause", "sie", "stvec", "scounteren", "senvcfg", "sscratch", "sepc", "stval", "sip"]
+
+    # User-mode CSRs also accessible from S-mode
+    csrsu = csrs
+    # TODO: restore
+    # if test_data.supports_extension("F"):
+    #    csrsu += ["fflags", "frm", "fcsr"]
+    # if test_data.supports_extension("V"):
+    #    csrsu += ["vstart", "vxsat", "vxrm", "vcsr", "vl", "vtype", "vlenb"]
+
+    ######################################
+    coverpoint = "cp_scsr_access"
+    ######################################
+    lines = [
+        comment_banner(
+            f"{coverpoint}",
+            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
+        ),
+    ]
+
+    for csr in csrsu:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    ######################################
+    coverpoint = "cp_scsrwalk"
+    ######################################
+    lines.append(
+        comment_banner(
+            "cp_scsrwalk",
+            "Set and clear each bit individually in all writable S-mode CSRs",
+        ),
+    )
+
+    for csr in [*csrs, "satp"]:
+        lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    ######################################
+    coverpoint = "cp_csr_insufficient_priv"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
+        ),
+    )
+    for csr in (
+        list(range(0x300, 0x400)) + list(range(0x700, 0x800)) + list(range(0xB00, 0xC00)) + list(range(0xF00, 0x1000))
+    ):
+        lines.extend(
+            [
+                # Test the write value
+                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                f"\tCSRR(t0, 0x{csr:03x})    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
+            ]
+        )
+
+    ######################################
+    coverpoint = "cp_csr_ro"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Attempt to write read-only CSRs.  Should throw illegal instruction",
+        ),
+    )
+
+    lines.append("\tLI(t0, -1)          # t0 = all 1s\n")
+    for csr in range(0xC00, 0xF00):
+        lines.extend(
+            [
+                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                f"\tCSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
+            ]
+        )
+
+    ######################################
+    coverpoint = "cp_scsr_from_m"
+    ######################################
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
+        ),
+    )
+
+    lines.append("\tRVTEST_GOTO_MMODE      # enter machine mode for testing S-mode CSRs from M-mode\n")
+    for csr in csrs:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    ######################################
+    coverpoint = "cp_shadow"
+    ######################################
+    lines.append(
+        comment_banner(
+            f"{coverpoint}",
+            "Check that values written to shadowed registers are consistent between machine and supervisor mode",
+        ),
+    )
+    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    lines.extend(
+        [
+            f"\tli x{r1}, -1          # x{r1} = all 1s",
+            "",
+            f"\tcsrw mstatus, x{r1}       # write all 1s to mstatus",
+            f"\tcsrr x{r2}, sstatus       # read sstatus to check shadowing",
+            "\tcsrw mstatus, x0       # write all 0s to mstatus",
+            f"\tcsrr x{r2}, sstatus       # read sstatus to check shadowing",
+            "",
+            f"\tcsrw mie, x{r1}       # write all 1s to mie",
+            f"\tcsrr x{r2}, sie       # read sie to check shadowing",
+            "\tcsrw mie, x0       # write all 0s to mie",
+            f"\tcsrr x{r2}, sie       # read sie to check shadowing",
+            "",
+            f"\tcsrw mip, x{r1}       # write all 1s to mip",
+            f"\tcsrr x{r2}, sip       # read sip to check shadowing",
+            "\tcsrw mip, x0       # write all 0s to mip",
+            f"\tcsrr x{r2}, sip       # read sip to check shadowing",
+            "",
+            f"\tcsrw sstatus, x{r1}       # write all 1s to sstatus",
+            f"\tcsrr x{r2}, mstatus       # read mstatus to check shadowing",
+            "\tcsrw sstatus, x0       # write all 0s to sstatus",
+            f"\tcsrr x{r2}, mstatus       # read mstatus to check shadowing",
+            "",
+            f"\tcsrw sie, x{r1}       # write all 1s to sie",
+            f"\tcsrr x{r2}, mie       # read mie to check shadowing",
+            "\tcsrw sie, x0       # write all 0s to sie",
+            f"\tcsrr x{r2}, mie       # read mie to check shadowing",
+            "",
+            f"\tcsrw sip, x{r1}       # write all 1s to sip",
+            f"\tcsrr x{r2}, mip       # read mip to check shadowing",
+            "\tcsrw sip, x0       # write all 0s to sip",
+            f"\tcsrr x{r2}, mip       # read mip to check shadowing",
+            "",
+            "\tRVTEST_GOTO_LOWER_MODE Smode   # return to S-mode\n",
+        ]
+    )
+    test_data.int_regs.return_registers([r1, r2])
+
+    return lines
+
+
+@add_priv_test_generator("S", required_extensions=["Sm", "S", "Zicsr"])
+def make_s(test_data: TestData) -> list[str]:
+    """Generate tests for S supervisor-mode testsuite."""
+    lines: list[str] = []
+
+    lines.extend("# Run some tests in machine mode")
+    lines.extend(_generate_mretm_tests(test_data))
+    lines.extend(_generate_sretm_tests(test_data))
+    lines.extend(_generate_srets_tests(test_data))
+    lines.extend("\tRVTEST_GOTO_LOWER_MODE Smode  # Run most tests in supervisor mode")
+    lines.extend(_generate_scause_tests(test_data))
+    lines.extend(_generate_sstatus_sd_tests(test_data))
+    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(_generate_scsr_tests(test_data))
+
+    return lines

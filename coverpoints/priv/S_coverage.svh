@@ -113,6 +113,7 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     privinstrs: coverpoint ins.current.insn  {
         bins ecall  = {ECALL};
         bins ebreak = {EBREAK};
+        bins mret   = {MRET};
     }
     mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};
@@ -149,7 +150,6 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     }
     // main coverpoints
     cp_sprivinst: cross priv_mode_s, privinstrs;
-    cp_mret_s:    cross priv_mode_s, mret;
     cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
     cp_mret_m:    cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
     cp_sret_m:    cross priv_mode_m, sret, old_mstatus_spp, old_mstatus_mprv, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
@@ -199,6 +199,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
             bins vtype  = {CSR_VTYPE};
             bins vlenb  = {CSR_VLENB};
         `endif
+        // counters tested in ZicntrS
     }
     satp : coverpoint ins.current.insn[31:20] {
         bins satp          = {CSR_SATP};
@@ -223,8 +224,14 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins machine_2[] = {[12'hB00:12'hBFF]};
         bins machine_3[] = {[12'hF00:12'hFFF]};
     }
+    csr_sro: coverpoint ins.current.insn[31:20]  {
+        bins sro[] = {[12'hC00:12'hEFF]};
+    }
     csrr: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
+    }
+    csrw: coverpoint ins.current.insn  {
+        wildcard bins csrw = {CSRRW};
     }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
@@ -253,6 +260,7 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     cp_shadow :               cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
     cp_csr_satp:              cross priv_mode_s, satp, csrop, walking_ones_nonmode;
     cp_csr_insufficient_priv: cross priv_mode_s, csrr, csr_machine, nonzerord;
+    cp_csr_ro:                cross priv_mode_s, csrw, csr_sro;
 endgroup
 
 function void s_sample(int hart, int issue, ins_t ins);

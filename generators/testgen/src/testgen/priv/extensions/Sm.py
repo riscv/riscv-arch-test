@@ -132,7 +132,6 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mprvinst"
     ######################################
-    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -141,20 +140,15 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         ),
         # ecall test
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        f"    li x{check_reg}, 1    # success code",
         f"test_{test_data.test_count}:",
         "    ecall                 # test ecall instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                   # this is skipped after trap handler returns",
         # ebreak test
         test_data.add_testcase("ebreak", coverpoint, covergroup),
-        f"    li x{check_reg}, 1    # success code",
         f"test_{test_data.test_count}:",
         "    ebreak                # test ebreak instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                   # this is skipped after trap handler returns",
     ]
-    test_data.int_regs.return_registers([check_reg])
 
     return lines
 

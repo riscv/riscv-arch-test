@@ -117,8 +117,16 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
         f"    li x{walk_reg}, 1            # 1 in lsb",
     ]
 
+    # don't test MODE bit of satp
+    if csr_name == "satp":
+        r1 = range(31)
+        r2 = range(31, 60)
+    else:
+        r1 = range(32)
+        r2 = range(32, 64)
+
     # Set each bit 0-31
-    for i in range(32):
+    for i in r1:
         lines.extend(
             [
                 f"    CSRW({csr_name}, zero)    # clear all bits",
@@ -132,7 +140,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     # Set bits 32-63 (RV64 only)
     lines.append("\n#if __riscv_xlen == 64")
-    for i in range(32, 64):
+    for i in r2:
         lines.extend(
             [
                 f"    CSRW({csr_name}, zero)    # clear all bits",
@@ -147,7 +155,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     # Clear each bit 0-31
     lines.append(f"    li x{walk_reg}, 1            # 1 in lsb")
-    for i in range(32):
+    for i in r1:
         lines.extend(
             [
                 f"    CSRW({csr_name}, x{temp_reg})      # set all bits",
@@ -161,7 +169,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     # Clear bits 32-63 (RV64 only)
     lines.append("\n#if __riscv_xlen == 64")
-    for i in range(32, 64):
+    for i in r2:
         lines.extend(
             [
                 f"    CSRW({csr_name}, x{temp_reg})    # set all bits",

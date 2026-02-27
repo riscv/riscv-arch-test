@@ -301,10 +301,15 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
         t = (text or "").replace("|", "&#124;")
         c = normalize_coverpoint(cp)
 
-        # Use multi-paragraph cell only for plain text with newlines
-        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t):
+        # Use multi-paragraph cell only for plain text with newlines.
+        # Avoid 'a|' when the text contains link: macros — asciidoctor
+        # fails to parse multi-line 'a|' cells that contain inline link
+        # macros, producing "dropping cells from incomplete row" errors.
+        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t or "link:" in t):
             lines.append(f"|{n} |a|{t} |{c}")
         else:
+            # Collapse any remaining newlines so the row stays on one line
+            t = t.replace("\n", " ")
             lines.append(f"|{n} |{t} |{c}")
         lines.append("")
 

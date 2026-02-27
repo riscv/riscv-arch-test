@@ -27,5 +27,3 @@
 #define LMULf8_SUPPORTED
 #define LMULf4_SUPPORTED
 #define LMULf2_SUPPORTED
-
-#define SKIP_MEPC

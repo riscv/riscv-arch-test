@@ -27,6 +27,7 @@ def comment_banner(title: str, description: str | None = None) -> str:
     """
     lines = [
         "",
+        "",
         "/////////////////////////////////",
         f"// {title}",
     ]

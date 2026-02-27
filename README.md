@@ -182,6 +182,7 @@ It should contain the following fields:
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
 - `dut_include_dir`: Directory containing `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file)
+- `include_priv_tests`: Optional; defaults to `True`; if set to `False`, all tests that rely on privilege modes will be skipped
 
 See [test_config.yaml](./config/cores/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
 

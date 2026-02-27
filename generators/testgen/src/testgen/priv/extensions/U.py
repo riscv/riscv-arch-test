@@ -14,30 +14,26 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
-    """Generate ecall and ebreak tests."""
+    """Generate ecall, ebreak, mret, sret tests."""
     ######################################
     covergroup = "U_uprivinst_cg"
-    coverpoint = "cp_uprvinst"
+    coverpoint = "cp_uprivinst"
     ######################################
 
     lines = [
         comment_banner(
-            "cp_uprvinst",
+            "cp_uprivinst",
             "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
         ),
-        # ecall test
         test_data.add_testcase(coverpoint, "ecall", covergroup),
         "    ecall                 # test ecall instruction",
         "    nop",
-        # ebreak test
         test_data.add_testcase(coverpoint, "ebreak", covergroup),
         "    ebreak                # test ebreak instruction",
         "    nop",
-        # ebreak test
         test_data.add_testcase(coverpoint, "mret", covergroup),
         "    mret                  # test mret instruction",
         "    nop",
-        # ebreak test
         test_data.add_testcase(coverpoint, "sret", covergroup),
         "    sret                  # test sret instruction",
         "    nop",
@@ -47,7 +43,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_ucsr_tests(test_data: TestData) -> list[str]:
-    """Generate CSR tests"""
+    """Generate CSR tests."""
     covergroup = "U_ucsr_cg"
 
     ######################################
@@ -65,7 +61,6 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
     ):
         lines.extend(
             [
-                # Test the write value
                 test_data.add_testcase(coverpoint, f"{csr}", covergroup),
                 f"\tCSRR(t0, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
             ]

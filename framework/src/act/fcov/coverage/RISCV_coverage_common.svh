@@ -120,7 +120,7 @@
   `ifdef VX32_COVERAGE
     `VX32_COVERAGE_NOT_SUPPORTED_WITH_VLEN16 // this is meant to throw an error letting the user know coverage is not supported in this case
   `endif
-`else
+`elsif VLEN8
   `define VLEN 8
   `ifdef VX64_COVERAGE
     // the missing `define is intentional

@@ -435,8 +435,7 @@ def build_rows_from_groups(
 
         # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
         chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
-        for n, c in zip(names, chosen_cps, strict=False):
-            cover_map[n] = c
+        cover_map.update({n: c for n, c in zip(names, chosen_cps, strict=False)})
 
         if len(names) == 1:
             n = names[0]
@@ -716,7 +715,7 @@ def main() -> None:
             rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
-            missing_in_json = sorted(list(yaml_names - json_names))
+            missing_in_json = sorted(yaml_names - json_names)
             base = yfile.stem
             per_yaml_missing[base] = missing_in_json
 
@@ -731,7 +730,7 @@ def main() -> None:
 
         # After processing all YAMLs, create a single combined mismatch report
         # missing_in_yaml = JSON names that did not appear in any YAML
-        missing_in_yaml = sorted(list(json_names - all_yaml_names))
+        missing_in_yaml = sorted(json_names - all_yaml_names)
 
         report_lines = []
         report_lines.append("Mismatch report")
@@ -789,8 +788,8 @@ def main() -> None:
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
     rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
-    missing_in_json = sorted(list(yaml_names - json_names))
-    missing_in_yaml = sorted(list(json_names - yaml_names))
+    missing_in_json = sorted(yaml_names - json_names)
+    missing_in_yaml = sorted(json_names - yaml_names)
 
     # Always treat --out as a directory
     out_dir = out_path

@@ -32,8 +32,7 @@ def comment_banner(title: str, description: str | None = None) -> str:
         f"// {title}",
     ]
     if description:
-        for line in description.strip().split("\n"):
-            lines.append(f"//   {line}")
+        lines.extend(f"//   {line}" for line in description.strip().split("\n"))
     lines.append("/////////////////////////////////")
     return "\n".join(lines)
 

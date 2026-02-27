@@ -81,13 +81,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: |
-          # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
-          if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
-          else
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
-          fi
+        run: DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
     name: Spike Regression (${{ matrix.name }})
@@ -175,6 +169,7 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \
@@ -265,6 +260,7 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \

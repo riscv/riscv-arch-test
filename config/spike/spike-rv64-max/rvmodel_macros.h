@@ -79,6 +79,10 @@
   j 1b                       ;/* Loop */             \
 3:
 
+#define RVMODEL_INTERRUPT_LATENCY 10
+
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
 ##### Access Fault #####
 
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
@@ -91,22 +95,37 @@
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT
+#define SPIKE_CLINT_BASE 0x02000000
+#define SPIKE_MSIP_ADDRESS (SPIKE_CLINT_BASE + 0x0)
 
-#define RVMODEL_CLR_MEXT_INT
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
-#define RVMODEL_SET_MSW_INT
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
 
-#define RVMODEL_CLR_MSW_INT
+#define RVMODEL_SET_MSW_INT(_R1, _R2) \
+  li _R1, 1; \
+  li _R2, SPIKE_MSIP_ADDRESS; \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2) \
+  li _R2, SPIKE_MSIP_ADDRESS; \
+  sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
 
-#define RVMODEL_SET_SEXT_INT
+#define SPIKE_SSIP_ADDRESS (SPIKE_CLINT_BASE + 0xC000)
 
-#define RVMODEL_CLR_SEXT_INT
+#define RVMODEL_SET_SEXT_INT(_R1, _R2)
 
-#define RVMODEL_SET_SSW_INT
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
 
-#define RVMODEL_CLR_SSW_INT
+#define RVMODEL_SET_SSW_INT(_R1, _R2) \
+  li _R1, 1; \
+  li _R2, SPIKE_SSIP_ADDRESS; \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
+  li _R2, SPIKE_SSIP_ADDRESS; \
+  sw zero, 0(_R2);
 
 #endif // _COMPLIANCE_MODEL_H

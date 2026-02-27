@@ -343,7 +343,6 @@
    .rept RVMODEL_INTERRUPT_LATENCY; \
        nop; \
    .endr
-#endif
 
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.

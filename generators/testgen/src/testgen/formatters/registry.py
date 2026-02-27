@@ -171,12 +171,15 @@ def format_single_test(
     """
     test_lines = [f"# Testcase {desc}"]
 
+    # Register the testcase label first so SIGUPD references the current test's label
+    label_line = test_data.add_testcase(bin_name, coverpoint)
+
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
     test_lines.extend(
         [
             setup,
-            test_data.add_testcase(bin_name, coverpoint),
+            label_line,
             test,
             check,
         ]

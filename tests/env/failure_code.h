@@ -594,7 +594,7 @@
     regstr:
         .string "RVCP: Register: "
     badvalstr:
-        .string "RVCP: Bad Value: "
+        .string "RVCP: Bad Value:      "
     expvalstr:
         .string "RVCP: Expected Value: "
     endstr:

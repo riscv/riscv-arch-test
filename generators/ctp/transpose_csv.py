@@ -132,7 +132,7 @@ def main() -> None:
             print(f"Processing {entry.name}...")
             try:
                 process_csv_file_to_adoc(entry, dest_dir, max_columns)
-            except Exception as e:
+            except (OSError, csv.Error) as e:
                 print(f"Error processing {entry.name}: {e}")
 
     print("Done.")

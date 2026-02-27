@@ -163,9 +163,7 @@ def write_instrs(
         cps = tp[instr_key]
         match32 = ("RV32" in cps) ^ (not hasRV32)
         match64 = ("RV64" in cps) ^ (not hasRV64)
-        vectorwiden = (arch.startswith("Vx") or arch.startswith("Vls") or arch.startswith("Vf")) and (
-            instr.startswith("vw") or instr.startswith("vfw") or (".w" in instr)
-        )
+        vectorwiden = (arch.startswith(("Vx", "Vls", "Vf"))) and (instr.startswith(("vw", "vfw")) or ".w" in instr)
         if match32 and match64:
             if vectorwiden:
                 effew = get_effew(arch)
@@ -175,9 +173,7 @@ def write_instrs(
                 f.write(customize_template(covergroupTemplates, "instruction", arch, instr))
                 finit.write(customize_template(covergroupTemplates, "init", arch, instr))
             for cp in cps:
-                if not (
-                    cp.startswith("sample_") or cp == "RV32" or cp == "RV64" or cp.startswith("EFFEW")
-                ):  # skip these initial columns
+                if not (cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}):  # skip these initial columns
                     if any(substring in cp for substring in SEW_DEPENDENT_CPS):
                         effew = get_effew(arch)
                         cp = cp + "_sew" + effew
@@ -213,8 +209,8 @@ def write_covergroup_sample_functions(
         match32 = ("RV32" in cps) ^ (not hasRV32)
         match64 = ("RV64" in cps) ^ (not hasRV64)
         if match32 and match64:
-            if arch.startswith("Vx") or arch.startswith("Vls") or arch.startswith("Vf"):
-                if instr.startswith("vw") or instr.startswith("vfw") or (".w" in instr):
+            if arch.startswith(("Vx", "Vls", "Vf")):
+                if instr.startswith(("vw", "vfw")) or ".w" in instr:
                     effew = get_effew(arch)
                     f.write(
                         customize_template(
@@ -272,7 +268,7 @@ def write_coverage_headers(
     priv_path = covergroup_dir / "priv"
     if priv_path.exists():
         keys.update(f.stem.split("_")[0] for f in priv_path.iterdir() if f.name.endswith("_coverage.svh"))
-    sorted_keys = sorted(list(keys))
+    sorted_keys = sorted(keys)
 
     # Write RISCV_coverage_config.svh
     with (coverage_dir / "RISCV_coverage_config.svh").open("w") as f:
@@ -318,7 +314,7 @@ def write_covergroups(
             initfile = arch + "_coverage_init.svh"
             print("***** Writing " + file)
 
-            vector = arch.startswith("Vx") or arch.startswith("Zv") or arch.startswith("Vls") or arch.startswith("Vf")
+            vector = arch.startswith(("Vx", "Zv", "Vls", "Vf"))
             effew = get_effew(arch) if vector else ""
 
             with (covergroup_out_dir / file).open("w") as f:

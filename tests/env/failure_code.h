@@ -584,12 +584,17 @@
         .string "\n"
     inststr:
         .string "RVCP: Instruction: "
+#ifdef RVTEST_PRIV_TEST
+    addrstr:
+        .string "RVCP: Approximate address (failure may be slightly after this): "
+#else
     addrstr:
         .string "RVCP: Address: "
+#endif
     regstr:
         .string "RVCP: Register: "
     badvalstr:
-        .string "RVCP: Bad Value: "
+        .string "RVCP: Bad Value:      "
     expvalstr:
         .string "RVCP: Expected Value: "
     endstr:

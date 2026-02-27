@@ -93,7 +93,11 @@ Notes:
 
 * The cmp_* and cp_*_hazard coverpoints occupy the fuzzy land at the edge of certification and verification.  They are included because they are easy.
 
-* The riscvISACOV test plan had cmp_rd_{rs1/rs2}_eqval coverpoints that compare if rd and one of the sources have the same value.  These are generally hit by the cr_rs1_rs2_edges tests, so they don't add interesting additional coverage and were dropped.  riscvISACOV also had cp_{rs1/rs2/rd}_toggle tests that checked if each bit changed from 1 to 0 and vice versa.  This is trivially exercised by providing all 0s followed by all 1s followed by al 0s again, so they were dropped.
+* It would be possible to add more floating-point coverpoints such as cmp_fd_fs1_fs2_fs3 but the value is considered low.
+
+* The riscvISACOV test plan had cmp_rd_{rs1/rs2}_eqval coverpoints that compare if rd and one of the sources have the same value.  These are generally hit by the cr_rs1_rs2_edges tests, so they don't add interesting additional coverage and were dropped.  riscvISACOV also had cp_{rs1/rs2/rd}_toggle tests that checked if each bit changed from 1 to 0 and vice versa.  This is trivially exercised by providing all 0s followed by all 1s followed by all 0s again, so they were dropped.
+
+
 
 [[t-integer-edge-definitions]]
 .Integer Edge Case Definitions

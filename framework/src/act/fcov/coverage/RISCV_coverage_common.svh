@@ -216,29 +216,29 @@
 `endif
 
 // Minimum supported LMUL
-// `ifdef SEW8_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf8_SUPPORTED
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN32
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN16
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `elsif SEW16_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf4_SUPPORTED
-//     `define LMULf2_SUPPORTED
-//   `elsif ELEN32
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `elsif SEW32_SUPPORTED
-//   `ifdef ELEN64
-//     `define LMULf2_SUPPORTED
-//   `endif
-// `endif
+`ifdef SEW8_SUPPORTED
+  `ifdef ELEN64
+    `define LMULf8_SUPPORTED
+    `define LMULf4_SUPPORTED
+    `define LMULf2_SUPPORTED
+  `elsif ELEN32
+    `define LMULf4_SUPPORTED
+    `define LMULf2_SUPPORTED
+  `elsif ELEN16
+    `define LMULf2_SUPPORTED
+  `endif
+`elsif SEW16_SUPPORTED
+  `ifdef ELEN64
+    `define LMULf4_SUPPORTED
+    `define LMULf2_SUPPORTED
+  `elsif ELEN32
+    `define LMULf2_SUPPORTED
+  `endif
+`elsif SEW32_SUPPORTED
+  `ifdef ELEN64
+    `define LMULf2_SUPPORTED
+  `endif
+`endif
 
 
 // Set register type length

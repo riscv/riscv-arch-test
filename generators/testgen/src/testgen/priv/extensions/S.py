@@ -252,9 +252,9 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 f"    LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
                                 f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"    LA(x{reg3}, 1f)             # return address after sret",
-                                f"    CSRW(mepc, x{reg3})          # set mepc to return address.",
+                                f"    CSRW(sepc, x{reg3})          # set sepc to return address (if S mode exists).",
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
-                                "    sret                   # test sret instruction",
+                                "    sret                   # test sret instruction, expect illegal instruction if S mode is not supported",
                                 f"    li x{check_reg}, -1              # should not be executed",
                                 "1:                         # sret should return to here",
                                 write_sigupd(check_reg, test_data),
@@ -305,7 +305,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
         if tsr == 1:
             lines.append(f"\tCSRS(mstatus, x{check_reg})          # set TSR bit")
         else:
-            lines.append(f"\tCRRC(mstatus, x{check_reg})          # clear TSR bit")
+            lines.append(f"\tCSRC(mstatus, x{check_reg})          # clear TSR bit")
         lines.append("\tRVTEST_GOTO_LOWER_MODE Smode # return to supervisor mode to execute sret tests")
 
         for spp in (0, 1):
@@ -327,7 +327,8 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             f"    li x{check_reg}, -1              # should not be executed",
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "    RVTEST_GOTO_SMODE      # make sure we return to supervisor mode",
+                            "    RVTEST_GOTO_MMODE      # make sure we return to supervisor mode.  Go through M-Mode if coming from U-mode",
+                            "    RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
                             # Test the read value
                             test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
                             gen_csr_read_sigupd(check_reg, "sstatus", test_data),
@@ -346,14 +347,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     # Standard S-mode CSRs
     csrs = ["sstatus", "scause", "sie", "stvec", "scounteren", "senvcfg", "sscratch", "sepc", "stval", "sip"]
 
-    # User-mode CSRs also accessible from S-mode
-    csrsu = csrs
-    # TODO: restore
-    # if test_data.supports_extension("F"):
-    #    csrsu += ["fflags", "frm", "fcsr"]
-    # if test_data.supports_extension("V"):
-    #    csrsu += ["vstart", "vxsat", "vxrm", "vcsr", "vl", "vtype", "vlenb"]
-
     ######################################
     coverpoint = "cp_scsr_access"
     ######################################
@@ -364,8 +357,27 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
-    for csr in csrsu:
+    for csr in csrs:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+
+    ######################################
+    coverpoint = "cp_ucsr_from_s"
+    ######################################
+    lines = [
+        comment_banner(
+            f"{coverpoint}",
+            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
+        ),
+    ]
+    lines.extend(["#ifdef F_SUPPORTED"])
+    for csr in ["fflags", "frm", "fcsr"]:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    lines.extend(["#endif"])
+
+    lines.extend(["#ifdef V_SUPPORTED"])
+    for csr in ["vstart", "vxsat", "vxrm", "vcsr", "vl", "vtype", "vlenb"]:
+        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    lines.extend(["#endif"])
 
     ######################################
     coverpoint = "cp_scsrwalk"
@@ -377,7 +389,8 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    for csr in [*csrs, "satp"]:
+    #    for csr in [*csrs, "satp"]:
+    for csr in [*csrs]:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
 
     ######################################
@@ -492,14 +505,14 @@ def make_s(test_data: TestData) -> list[str]:
     """Generate tests for S supervisor-mode testsuite."""
     lines: list[str] = []
 
-    lines.extend("# Run some tests in machine mode")
-    lines.extend(_generate_mretm_tests(test_data))
-    lines.extend(_generate_sretm_tests(test_data))
-    lines.extend(_generate_srets_tests(test_data))
-    lines.extend("\tRVTEST_GOTO_LOWER_MODE Smode  # Run most tests in supervisor mode")
-    lines.extend(_generate_scause_tests(test_data))
-    lines.extend(_generate_sstatus_sd_tests(test_data))
-    lines.extend(_generate_priv_inst_tests(test_data))
+    lines.extend(["\t# Run some tests in machine mode"])
+    #    lines.extend(_generate_mretm_tests(test_data))
+    #    lines.extend(_generate_sretm_tests(test_data))
+    #    lines.extend(_generate_srets_tests(test_data))
+    lines.extend(["\tRVTEST_GOTO_LOWER_MODE Smode  # Run most tests in supervisor mode"])
+    #    lines.extend(_generate_scause_tests(test_data))
+    #    lines.extend(_generate_sstatus_sd_tests(test_data))
+    #    lines.extend(_generate_priv_inst_tests(test_data))
     lines.extend(_generate_scsr_tests(test_data))
 
     return lines

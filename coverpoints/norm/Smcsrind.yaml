@@ -29,7 +29,7 @@ normative_rule_definitions:
   - name: miselect_min_sz
     coverpoint: [""]
 
-  - name: miselect-msb_op
+  - name: miselect_msb_op
     coverpoint: [""]
 
   - name: mireg_access_on_legal_miselect
@@ -41,7 +41,7 @@ normative_rule_definitions:
   - name: siselect_min_range
     coverpoint: [""]
 
-  - name: siselect-msb_op
+  - name: siselect_msb_op
     coverpoint: [""]
 
   - name: sireg_access_on_illegal_siselect
@@ -59,7 +59,7 @@ normative_rule_definitions:
   - name: vsiselect_min_range
     coverpoint: [""]
 
-  - name: vsiselect-msb_op
+  - name: vsiselect_msb_op
     coverpoint: [""]
 
   - name: sscsrind_virtual_inst_fault

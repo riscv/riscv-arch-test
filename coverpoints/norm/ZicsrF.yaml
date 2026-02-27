@@ -40,7 +40,7 @@ normative_rule_definitions:
   # obtained from the three least-significant bits of integer register rs1 into frm.
   # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
   # field fflags (fcsr bits 4&#8212;&#8203;0).
-  - names: [fcsr-frm_sz, fcsr-frm_acc]
+  - names: [fcsr_frm_sz, fcsr_frm_acc]
     coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_frm_write, cp_frm_write}"]
 
   # The fields within the fcsr can also be accessed individually through different
@@ -61,7 +61,7 @@ normative_rule_definitions:
   # in frm. Rounding modes are encoded as shown in
   # &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm field
   # selects the dynamic rounding mode held in frm
-  - name: fcsr-frm_op
+  - name: fcsr_frm_op
     coverpoint: ["F_fadd_s_cg/cp_csr_frm"]
 
   # The fields within the fcsr can also be accessed individually through different
@@ -76,7 +76,7 @@ normative_rule_definitions:
   # the exception conditions that have arisen on any floating-point arithmetic
   # instruction since the field was last reset by software, as shown in
   # &lt;&lt;bitdef&gt;&gt;
-  - name: fcsr-fflags_op
+  - name: fcsr_fflags_op
     coverpoint:
       ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}"]
 

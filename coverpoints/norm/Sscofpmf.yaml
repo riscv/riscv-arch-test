@@ -24,10 +24,10 @@ normative_rule_definitions:
   # sip.LCOFIP and sie.LCOFIE are read-only zeros.
   - names:
       [
-        sip-lcofip_Sscofpmf_acc,
-        sip-lcofip_Sscofpmf_op,
-        sie-lcofip_Sscofpmf_acc,
-        sie-lcofip_Sscofpmf_op,
+        sip_lcofip_Sscofpmf_acc,
+        sip_lcofip_Sscofpmf_op,
+        sie_lcofip_Sscofpmf_acc,
+        sie_lcofip_Sscofpmf_op,
       ]
     coverpoint: [""]
 

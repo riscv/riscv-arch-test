@@ -25,7 +25,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     # Allocate some registers for testing.  Restrict them to [8,15] in case the registers are used for compressed instructions
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0], reg_range=list(range(8, 16)))
 
-    if instr_type == "L" or instr_type == "FL" or instr_type == "CL" or instr_type == "CILS":
+    if instr_type in {"L", "FL", "CL", "CILS"}:
         test_lines.extend(
             [
                 "# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests",
@@ -91,7 +91,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 ]
             )
             test_data.int_regs.return_registers([2])
-        elif instr_type == "S" or instr_type == "FS" or instr_type == "CS" or instr_type == "CSS":
+        elif instr_type in {"S", "FS", "CS", "CSS"}:
             val = (
                 0x0F1E2D3C if test_data.xlen == 32 else 0x0F1E2D3C4B5A6978
             )  # bytes to store all differ from values placed in scratch

@@ -55,7 +55,7 @@ def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[st
                     cache.parent.mkdir(parents=True, exist_ok=True)
                     cache.write_text(text, encoding="utf-8")
                 return json.loads(text)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             raise RuntimeError(f"Failed to download JSON from {path}: {e}") from e
     # Load from local file
     text = Path(path).read_text(encoding="utf-8")
@@ -440,8 +440,7 @@ def build_rows_from_groups(
 
         # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
         chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
-        for n, c in zip(names, chosen_cps, strict=False):
-            cover_map[n] = c
+        cover_map.update({n: c for n, c in zip(names, chosen_cps, strict=False)})
 
         if len(names) == 1:
             n = names[0]
@@ -561,7 +560,7 @@ def main() -> None:
     if args.always_fetch:
         try:
             jdata = load_json(canonical_json_url, cache_path=cache_path)
-        except Exception as e:
+        except (RuntimeError, OSError, json.JSONDecodeError) as e:
             print(f"Error: failed to fetch canonical JSON ({canonical_json_url}): {e}", file=sys.stderr)
             sys.exit(2)
     else:
@@ -721,7 +720,7 @@ def main() -> None:
             rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
-            missing_in_json = sorted(list(yaml_names - json_names))
+            missing_in_json = sorted(yaml_names - json_names)
             base = yfile.stem
             per_yaml_missing[base] = missing_in_json
 
@@ -736,7 +735,7 @@ def main() -> None:
 
         # After processing all YAMLs, create a single combined mismatch report
         # missing_in_yaml = JSON names that did not appear in any YAML
-        missing_in_yaml = sorted(list(json_names - all_yaml_names))
+        missing_in_yaml = sorted(json_names - all_yaml_names)
 
         report_lines = []
         report_lines.append("Mismatch report")
@@ -768,8 +767,7 @@ def main() -> None:
 
             for chap in sorted(chapter_map.keys()):
                 report_lines.append(f"Chapter: {chap}")
-                for n in sorted(chapter_map[chap]):
-                    report_lines.append("  " + n)
+                report_lines.extend("  " + n for n in sorted(chapter_map[chap]))
                 report_lines.append("")
         else:
             report_lines.append("  (none)")
@@ -794,8 +792,8 @@ def main() -> None:
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
     rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
-    missing_in_json = sorted(list(yaml_names - json_names))
-    missing_in_yaml = sorted(list(json_names - yaml_names))
+    missing_in_json = sorted(yaml_names - json_names)
+    missing_in_yaml = sorted(json_names - yaml_names)
 
     # Always treat --out as a directory
     out_dir = out_path

@@ -98,7 +98,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         raise ValueError(f"cp_offset coverpoint not supported for instruction {instr_name} with type {instr_type}.")
 
-    if coverpoint == "cp_offset_c_jr" or coverpoint == "cp_offset_jalr":
+    if coverpoint in {"cp_offset_c_jr", "cp_offset_jalr"}:
         test_lines.extend(make_offset_lsbs(instr_name, instr_type, test_data))
     elif coverpoint != "cp_offset":
         raise ValueError(f"Unknown variant {coverpoint} for cp_offset coverpoint.")

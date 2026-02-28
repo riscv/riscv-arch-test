@@ -130,7 +130,6 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sprivinst"
     ######################################
-    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -150,7 +149,6 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "    mret                  # test mret instruction",
         "    nop                 # trap handler skips following instruction so this should not be executed",
     ]
-    test_data.int_regs.return_registers([check_reg])
 
     return lines
 
@@ -321,7 +319,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             f"    li x{check_reg}, -1              # should not be executed",
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "    RVTEST_GOTO_MMODE      # make sure we return to supervisor mode.  Go through M-Mode if coming from U-mode",
+                            "    RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
                             "    RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
                             # Test the read value
                             test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
@@ -441,7 +439,6 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ):
         lines.extend(
             [
-                # Test the write value
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"\tCSRR(t0, 0x{csr:03x})    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
             ]
@@ -530,6 +527,7 @@ def make_s(test_data: TestData) -> list[str]:
     lines.extend(_generate_mretm_tests(test_data))
     lines.extend(_generate_sretm_tests(test_data))
     lines.extend(_generate_srets_tests(test_data))
+    lines.extend(["\tRVTEST_GOTO_MMODE  # Get back to machine mode to prepare to go to supervisor mode"])
     lines.extend(["\tRVTEST_GOTO_LOWER_MODE Smode  # Run most tests in supervisor mode"])
     lines.extend(_generate_scause_tests(test_data))
     lines.extend(_generate_sstatus_sd_tests(test_data))

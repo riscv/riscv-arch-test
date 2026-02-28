@@ -26,8 +26,8 @@ covergroup UF_cg with function sample(ins_t ins);
     }
 
     csrop: coverpoint ins.current.insn {
-        bins csrrs = {CSRRS};
-        bins csrrc = {CSRRC};
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     csraccesses : coverpoint ins.current.insn {

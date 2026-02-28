@@ -31,7 +31,9 @@
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','Smpmp']
-# MARCH: rv${XLEN}i_zicsr
+# params:
+#   MXLEN: 32
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 

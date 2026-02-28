@@ -36,7 +36,7 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
             continue
         lines.extend(
             [
-                test_data.add_testcase(coverpoint, f"b_{i}", covergroup),
+                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{check_reg}, {i})           # exception cause {i}",
                 gen_csr_write_sigupd(check_reg, "scause", test_data),
             ]
@@ -61,7 +61,7 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
             continue
         lines.extend(
             [
-                test_data.add_testcase(coverpoint, f"b_{i}", covergroup),
+                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
                 f"    LI(x{check_reg}, {i})           # interrupt cause {i}",
                 f"    or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit",
                 gen_csr_write_sigupd(check_reg, "scause", test_data),
@@ -106,7 +106,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                     binname = f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
                     fields = fs << 13 | xs << 15 | vs << 9
                     test_lines = [
-                        test_data.add_testcase(coverpoint, binname, covergroup),
+                        test_data.add_testcase(binname, coverpoint, covergroup),
                         f"    LI(x{check_reg}, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}",
                     ]
                     if sd == 1:
@@ -134,27 +134,21 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_sprivinst",
+            coverpoint,
             "Executing ecall and ebreak and mret should cause an exception",
         ),
         # ecall test
-        test_data.add_testcase(coverpoint, "ecall", covergroup),
-        f"    li x{check_reg}, 1    # success code",
+        test_data.add_testcase("ecall", coverpoint, covergroup),
         "    ecall                 # test ecall instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                 # trap handler skips following instruction so this should not be executed",
         # ebreak test
-        test_data.add_testcase(coverpoint, "ebreak", covergroup),
-        f"    li x{check_reg}, 1    # success code",
+        test_data.add_testcase("ebreak", coverpoint, covergroup),
         "    ebreak                # test ebreak instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                 # trap handler skips following instruction so this should not be executed",
         # mret test
-        test_data.add_testcase(coverpoint, "mret", covergroup),
-        f"    li x{check_reg}, 1    # success code",
+        test_data.add_testcase("mret", coverpoint, covergroup),
         "    mret                  # test mret instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                 # trap handler skips following instruction so this should not be executed",
     ]
     test_data.int_regs.return_registers([check_reg])
 
@@ -171,7 +165,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mret",
+            coverpoint,
             "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
         ),
         "",
@@ -192,7 +186,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             # Test the write value
-                            test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                            test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             f"    LI(x{check_reg}, 0x{fields:08x})  # mpp = {mpp:02b} mprv = {mprv} mpie = {mpie} mie = {mie}",
                             f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             f"    LA(x{reg3}, 1f)             # return address after mret",
@@ -204,7 +198,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                             "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                             write_sigupd(check_reg, test_data),
                             # Test the read value
-                            test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                            test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                             gen_csr_read_sigupd(check_reg, "mstatus", test_data),
                         ]
                     )
@@ -248,7 +242,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 # Test the write value
-                                test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                                test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 f"    LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
                                 f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"    LA(x{reg3}, 1f)             # return address after sret",
@@ -260,7 +254,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 write_sigupd(check_reg, test_data),
                                 "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                                 # Test the read value
-                                test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                                test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                                 gen_csr_read_sigupd(check_reg, "mstatus", test_data),
                             ]
                         )
@@ -317,7 +311,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             # Test the write value
-                            test_data.add_testcase(coverpoint, f"{binname}_wval", covergroup),
+                            test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             f"    LI(x{check_reg}, 0x{fields:08x}) # spp = {spp} spie = {spie} sie = {sie}",
                             f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to sstatus with SPP/SPIE/SIE bits set/clear",
                             f"    LA(x{reg3}, 1f)             # return address after sret",
@@ -330,7 +324,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             "    RVTEST_GOTO_MMODE      # make sure we return to supervisor mode.  Go through M-Mode if coming from U-mode",
                             "    RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
                             # Test the read value
-                            test_data.add_testcase(coverpoint, f"{binname}_rval", covergroup),
+                            test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                             gen_csr_read_sigupd(check_reg, "sstatus", test_data),
                         ]
                     )
@@ -352,7 +346,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs",
         ),
     ]
@@ -363,12 +357,13 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_ucsr_from_s"
     ######################################
-    lines = [
+    lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all U-mode CSRs from S-mode",
         ),
-    ]
+    )
+
     lines.extend(["#ifdef F_SUPPORTED"])
     for csr in ["fflags", "frm", "fcsr"]:
         lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
@@ -384,13 +379,52 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            "cp_scsrwalk",
-            "Set and clear each bit individually in all writable S-mode CSRs, including non-mode bits of satp",
+            coverpoint,
+            "Set and clear each bit individually in all writable S-mode CSRs, excluding satp, which is exercised in Sv tests",
         ),
     )
 
-    for csr in [*csrs, "satp"]:
+    for csr in csrs:
         lines.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    ######################################
+    coverpoint = "cp_csr_satp"
+    ######################################
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Set and clear each bit individually in satp, excluding satp.mode",
+        ),
+    )
+
+    walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+
+    lines.extend(
+        [
+            "\tcsrw satp, zero      # set satp to 0 to start with",
+            f"\tli x{mask_reg}, -1     # x{mask_reg} = all 1s for walking bit tests",
+            f"\tsrli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
+            f"\tli x{walk_reg}, 7   # 111",
+            f"\tslli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
+            f"\tor x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
+            f"\tli x{walk_reg}, 1 # initialize walking 1",
+        ]
+    )
+    for i in range(60):
+        lines.extend(
+            [
+                test_data.add_testcase(f"bit_{i}_set", coverpoint, covergroup),
+                f"\tcsrs satp, x{walk_reg}    # set bit {i} in satp",
+                gen_csr_read_sigupd(check_reg, "satp", test_data),
+                test_data.add_testcase(f"bit_{i}_clr", coverpoint, covergroup),
+                f"\tcsrc satp, x{walk_reg}    # clear bit {i} in satp",
+                gen_csr_read_sigupd(check_reg, "satp", test_data),
+                f"\tslli x{walk_reg}, x{walk_reg}, 1   # shift to next bit",
+                f"\tand x{walk_reg}, x{walk_reg}, x{mask_reg}    # mask out mode bits",
+            ]
+        )
+
+    test_data.int_regs.return_registers([walk_reg, mask_reg, check_reg])
 
     ######################################
     coverpoint = "cp_csr_insufficient_priv"
@@ -398,7 +432,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to read debug and machine mode registers.  Should throw illegal instruction",
         ),
     )
@@ -408,7 +442,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 # Test the write value
-                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"\tCSRR(t0, 0x{csr:03x})    # attempt to read higher-privilege CSR {csr:03x}; should get illegal instruction",
             ]
         )
@@ -419,26 +453,28 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
+    (r1,) = test_data.int_regs.get_registers(1, exclude_regs=[0])
 
-    lines.append("\tLI(t0, -1)          # t0 = all 1s\n")
+    lines.append(f"\tLI(x{r1}, -1)          # x{r1} = all 1s\n")
     for csr in range(0xC00, 0xF00):
         lines.extend(
             [
-                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
-                f"\tCSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
+                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
+                f"\tCSRW(0x{csr:03x}, x{r1})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
             ]
         )
+    test_data.int_regs.return_registers([r1])
 
     ######################################
     coverpoint = "cp_scsr_from_m"
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all S-mode CSRs from M-mode",
         ),
     )
@@ -452,51 +488,37 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Check that values written to shadowed registers are consistent between machine and supervisor mode",
         ),
     )
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    lines.extend(
-        [
-            f"\tli x{r1}, -1          # x{r1} = all 1s",
-            "",
-            f"\tcsrw mstatus, x{r1}       # write all 1s to mstatus",
-            f"\tcsrr x{r2}, sstatus       # read sstatus to check shadowing",
-            "\tcsrw mstatus, x0       # write all 0s to mstatus",
-            f"\tcsrr x{r2}, sstatus       # read sstatus to check shadowing",
-            "",
-            f"\tcsrw mie, x{r1}       # write all 1s to mie",
-            f"\tcsrr x{r2}, sie       # read sie to check shadowing",
-            "\tcsrw mie, x0       # write all 0s to mie",
-            f"\tcsrr x{r2}, sie       # read sie to check shadowing",
-            "",
-            f"\tcsrw mip, x{r1}       # write all 1s to mip",
-            f"\tcsrr x{r2}, sip       # read sip to check shadowing",
-            "\tcsrw mip, x0       # write all 0s to mip",
-            f"\tcsrr x{r2}, sip       # read sip to check shadowing",
-            "",
-            f"\tcsrw sstatus, x{r1}       # write all 1s to sstatus",
-            f"\tcsrr x{r2}, mstatus       # read mstatus to check shadowing",
-            "\tcsrw sstatus, x0       # write all 0s to sstatus",
-            f"\tcsrr x{r2}, mstatus       # read mstatus to check shadowing",
-            "",
-            f"\tcsrw sie, x{r1}       # write all 1s to sie",
-            f"\tcsrr x{r2}, mie       # read mie to check shadowing",
-            "\tcsrw sie, x0       # write all 0s to sie",
-            f"\tcsrr x{r2}, mie       # read mie to check shadowing",
-            "",
-            f"\tcsrw sip, x{r1}       # write all 1s to sip",
-            f"\tcsrr x{r2}, mip       # read mip to check shadowing",
-            "\tcsrw sip, x0       # write all 0s to sip",
-            f"\tcsrr x{r2}, mip       # read mip to check shadowing",
-            "",
-            "\tRVTEST_GOTO_LOWER_MODE Smode   # return to S-mode\n",
-        ]
-    )
+    lines.append(f"\tli x{r1}, 0          # x{r1} = 0 for writing to shadowed registers\n")
+    lines.append(add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data))
+    lines.append(add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data))
+    lines.append(add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data))
+    lines.append(add_shadow(r1, r2, "sstatus", "mstatus", coverpoint, covergroup, test_data))
+    lines.append(add_shadow(r1, r2, "sie", "mie", coverpoint, covergroup, test_data))
+    lines.append(add_shadow(r1, r2, "sip", "mip", coverpoint, covergroup, test_data))
     test_data.int_regs.return_registers([r1, r2])
 
     return lines
+
+
+def add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergroup: str, test_data: TestData) -> str:
+    """Helper function to generate shadow CSR test lines for writing wreg and reading rreg."""
+    return str.join(
+        "\n",
+        [
+            test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),
+            f"\tcsrw {wreg}, x{r1}       # write all 1s to {wreg}",
+            gen_csr_read_sigupd(r2, rreg, test_data),
+            test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
+            f"\tcsrw {wreg}, x0       # write all 0s to {wreg}",
+            gen_csr_read_sigupd(r2, "sstatus", test_data),
+            "",
+        ],
+    )
 
 
 @add_priv_test_generator("S", required_extensions=["Sm", "S", "Zicsr"])

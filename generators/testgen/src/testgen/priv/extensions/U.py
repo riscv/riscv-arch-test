@@ -22,19 +22,19 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_uprivinst",
+            coverpoint,
             "Execute privileged instructions\nShould cause ecall, breakpoint, illegal instruction traps",
         ),
-        test_data.add_testcase(coverpoint, "ecall", covergroup),
+        test_data.add_testcase("ecall", coverpoint, covergroup),
         "    ecall                 # test ecall instruction",
         "    nop",
-        test_data.add_testcase(coverpoint, "ebreak", covergroup),
+        test_data.add_testcase("ebreak", coverpoint, covergroup),
         "    ebreak                # test ebreak instruction",
         "    nop",
-        test_data.add_testcase(coverpoint, "mret", covergroup),
+        test_data.add_testcase("mret", coverpoint, covergroup),
         "    mret                  # test mret instruction",
         "    nop",
-        test_data.add_testcase(coverpoint, "sret", covergroup),
+        test_data.add_testcase("sret", coverpoint, covergroup),
         "    sret                  # test sret instruction",
         "    nop",
     ]
@@ -52,7 +52,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to read non-user-mode registers.  Should throw illegal instruction",
         ),
     ]
@@ -61,7 +61,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
     ):
         lines.extend(
             [
-                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"\tCSRR(t0, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
             ]
         )
@@ -72,7 +72,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
@@ -81,7 +81,7 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
     for csr in range(0xC00, 0xD00):
         lines.extend(
             [
-                test_data.add_testcase(coverpoint, f"{csr}", covergroup),
+                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
                 f"\tCSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
             ]
         )

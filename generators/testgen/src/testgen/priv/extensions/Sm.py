@@ -85,7 +85,7 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mstatus_sd_write",
+            coverpoint,
             "Write all combinations of mstatus.SD = {0/1}, FS/XS/VS = {00, 01, 10, 11}\n"
             "mstatus.SD is read-only, so nothing should happen",
         ),
@@ -135,18 +135,16 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mprvinst",
+            coverpoint,
             "Execute ecall and ebreak\nShould cause an exception",
         ),
         "",
         # ecall test
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        f"test_{test_data.test_count}:",
         "    ecall                 # test ecall instruction",
         "    nop                   # this is skipped after trap handler returns",
         # ebreak test
         test_data.add_testcase("ebreak", coverpoint, covergroup),
-        f"test_{test_data.test_count}:",
         "    ebreak                # test ebreak instruction",
         "    nop                   # this is skipped after trap handler returns",
     ]
@@ -164,7 +162,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mret",
+            coverpoint,
             "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
         ),
         "",
@@ -217,7 +215,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_sret",
+            coverpoint,
             "Execute sret while sweeping cross-product of mprv, spp, spie, sie, tsr\n"
             "If S-mode is not implemented, sret should raise an illegal instruction exception\n"
             "Otherwise, go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
@@ -325,7 +323,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs",
         ),
     ]
@@ -365,7 +363,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            "cp_mcsrwalk",
+            coverpoint,
             "Set and clear each bit individually in all writable M-mode CSRs",
         ),
     )
@@ -389,7 +387,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to read debug-mode registers.  Should throw illegal instruction",
         ),
     )
@@ -409,7 +407,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
@@ -437,7 +435,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines = []
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode counters",
         ),
     )
@@ -531,7 +529,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Inhibit mcycle",
         ),
     )
@@ -553,7 +551,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Inhibit minstret",
         ),
     )
@@ -575,7 +573,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Write mtime and read back time",
         ),
     )

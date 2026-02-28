@@ -116,16 +116,8 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
         f"    li x{walk_reg}, 1            # 1 in lsb",
     ]
 
-    # don't test MODE bit of satp
-    if csr_name == "satp":
-        r1 = range(31)
-        r2 = range(31, 60)
-    else:
-        r1 = range(32)
-        r2 = range(32, 64)
-
     # Set each bit 0-31
-    for i in r1:
+    for i in range(32):
         lines.extend(
             [
                 "",
@@ -139,7 +131,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     # Set bits 32-63 (RV64 only)
     lines.append("\n#if __riscv_xlen == 64")
-    for i in r2:
+    for i in range(32, 64):
         lines.extend(
             [
                 "",
@@ -152,35 +144,34 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
         )
     lines.append("#endif\n")
 
-    if csr_name != "satp":  # skip walking 0s for satp
-        # Clear each bit 0-31
-        lines.append(f"    li x{walk_reg}, 1            # 1 in lsb")
-        for i in r1:
-            lines.extend(
-                [
-                    "",
-                    f"    CSRW({csr_name}, x{temp_reg})      # set all bits",
-                    f"    CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
-                    test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
-                    gen_csr_read_sigupd(check_reg, csr_name, test_data),
-                    f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
-                ]
-            )
+    # Clear each bit 0-31
+    lines.append(f"    li x{walk_reg}, 1            # 1 in lsb")
+    for i in range(32):
+        lines.extend(
+            [
+                "",
+                f"    CSRW({csr_name}, x{temp_reg})      # set all bits",
+                f"    CSRC({csr_name}, x{walk_reg})      # clear walking 1 in column {i}",
+                test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
+                gen_csr_read_sigupd(check_reg, csr_name, test_data),
+                f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
+            ]
+        )
 
-        # Clear bits 32-63 (RV64 only)
-        lines.append("\n#if __riscv_xlen == 64")
-        for i in r2:
-            lines.extend(
-                [
-                    "",
-                    f"    CSRW({csr_name}, x{temp_reg})    # set all bits",
-                    f"    CSRC({csr_name}, x{walk_reg})    # clear walking 1 in column {i}",
-                    test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
-                    gen_csr_read_sigupd(check_reg, csr_name, test_data),
-                    f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
-                ]
-            )
-        lines.append("#endif\n")
+    # Clear bits 32-63 (RV64 only)
+    lines.append("\n#if __riscv_xlen == 64")
+    for i in range(32, 64):
+        lines.extend(
+            [
+                "",
+                f"    CSRW({csr_name}, x{temp_reg})    # set all bits",
+                f"    CSRC({csr_name}, x{walk_reg})    # clear walking 1 in column {i}",
+                test_data.add_testcase(f"{csr_name}_clr_bit_{i}", coverpoint, covergroup),
+                gen_csr_read_sigupd(check_reg, csr_name, test_data),
+                f"    slli x{walk_reg}, x{walk_reg}, 1      # walk the 1",
+            ]
+        )
+    lines.append("#endif\n")
 
     lines.append(f"    CSRW({csr_name}, x{save_reg})            # restore CSR")
     test_data.int_regs.return_registers([save_reg, temp_reg, walk_reg, check_reg])

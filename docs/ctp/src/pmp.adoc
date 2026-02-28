@@ -5,62 +5,81 @@
 
 [[t-PMPSm-coverpoints]]
 .PMPSm Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1474055416#gid=1474055416[Google Sheet Testplan]
 ,===
+
+include::norm/PMPSm_norm_rules.adoc[]
+
 
 ==== PMPS
 
 [[t-PMPS-coverpoints]]
 .PMPS Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
 ,===
+
 
 ==== PMPU
 
 [[t-PMPU-coverpoints]]
 .PMPU Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=2072825600#gid=2072825600[Google Sheet Testplan]
 ,===
+
+include::norm/PMPU_norm_rules.adoc[]
 
 ==== PMPF
 
 [[t-PMPF-coverpoints]]
 .PMPF Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
 ,===
+
 
 ==== PMPZca
 
 [[t-PMPZca-coverpoints]]
 .PMPZca Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
 ,===
+
+
 
 ==== PMPZicbo
 
 [[t-PMPZicbo-coverpoints]]
 .PMPZicbo Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
 ,===
+
 
 ==== PMPZaamo
 
 [[t-PMPZaamo-coverpoints]]
 .PMPZaamo Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
 ,===
+
 
 ==== PMPZalrsc
 
 [[t-PMPZalrsc-coverpoints]]
 .PMPZalrsc Coverpoints
+
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
 ,===

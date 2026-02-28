@@ -73,7 +73,9 @@ def run_act(
         config_params = get_config_params(udb_config_file)
 
         # Select tests for config
-        selected_tests = select_tests(full_test_dict, implemented_extensions, config_params)
+        selected_tests = select_tests(
+            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+        )
         configs.append(
             {
                 "config": config,

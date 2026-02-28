@@ -194,7 +194,7 @@ def main() -> None:
         try:
             process_rule_file(yaml_file, output_dir, rules_map)
             print(f"  ✓ {yaml_file.name}")
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             print(f"  ✗ {yaml_file.name}: {e}")
 
     print(f"\nOutput files created in {output_dir}")

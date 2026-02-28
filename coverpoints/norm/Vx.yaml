@@ -44,60 +44,60 @@ normative_rule_definitions:
   # changes vector state, including the vector CSRs, will change mstatus.VS to
   # Dirty. Implementations may also change mstatus.VS from Initial or Clean to Dirty
   # at any time, even when there is no change in vector state.
-  - name: mstatus-vs_op_initial_clean
+  - name: mstatus_vs_op_initial_clean
     coverpoint: [""]
 
   # When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any
   # vector instruction, or to access the vector CSRs, raise an illegal-instruction
   # exception when either field is set to Off.
-  - name: vsstatus-vs_mstatus-vs_op_off
+  - name: vsstatus-vs_mstatus_vs_op_off
     coverpoint: [""]
 
   # When the hypervisor extension is present, a vector context status field, VS, is
   # added to vsstatus[10:9]. It is defined analogously to the floating-point context
   # status field, FS.
-  - names: [vsstatus-vs_sz, vsstatus-vs_acc]
+  - names: [vsstatus_vs_sz, vsstatus_vs_acc]
     coverpoint: [""]
 
   # Attempts to execute any vector instruction, or to access the vector CSRs, raise
   # an illegal-instruction exception when mstatus.VS is set to Off.
-  - name: mstatus-vs_op_off
+  - name: mstatus_vs_op_off
     coverpoint: [""]
 
   # When V=1 and neither vsstatus.VS nor mstatus.VS is set to Off, executing any
   # instruction that changes vector state, including the vector CSRs, will change
   # both mstatus.VS and vsstatus.VS to Dirty.
-  - name: mstatus-vs_op_active
+  - name: mstatus_vs_op_active
     coverpoint: [""]
 
   # A vector context status field, VS, is added to mstatus[10:9] and shadowed in
   # sstatus[10:9]. It is defined analogously to the floating-point context status
   # field, FS.
-  - name: sstatus-vs_op
+  - name: sstatus_vs_op
     coverpoint: [""]
 
   # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.
   # Attempts to execute a vector instruction when either field is 0 (Off) raise an
   # illegal-instruction exception. Modifying the vector state when V=1 causes both
   # fields to be set to 3 (Dirty).
-  - name: vsstatus-vs_op2
+  - name: vsstatus_vs_op2
     coverpoint: [""]
 
   # When V=1, both vsstatus.VS and mstatus.VS are in effect: attempts to execute any
   # vector instruction, or to access the vector CSRs, raise an illegal-instruction
   # exception when either field is set to Off.
-  - name: vsstatus-vs_op_off
+  - name: vsstatus_vs_op_off
     coverpoint: [""]
 
   # When V=1 and neither vsstatus.VS nor mstatus.VS is set to Off, executing any
   # instruction that changes vector state, including the vector CSRs, will change
   # both mstatus.VS and vsstatus.VS to Dirty.
-  - name: vsstatus-vs_op_active
+  - name: vsstatus_vs_op_active
     coverpoint: [""]
 
   # If vsstatus.VS is Dirty, vsstatus.SD is 1; otherwise, vsstatus.SD is set in
   # accordance with existing specifications.
-  - name: vsstatus-sd_op_vs
+  - name: vsstatus_sd_op_vs
     coverpoint: [""]
 
   # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
@@ -107,7 +107,7 @@ normative_rule_definitions:
 
   # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
   # accordance with existing specifications.
-  - name: mstatus-sd_op_vs
+  - name: mstatus_sd_op_vs
     coverpoint: [""]
 
   # Implementations may have a writable misa.V field.
@@ -134,21 +134,21 @@ normative_rule_definitions:
   # Bits vtype[XLEN-2:8] should be written with zero, and non-zero values in this
   # field are reserved.
   - names:
-      [vtype-vill_sz, vtype-vma_sz, vtype-vta_sz, vtype-vsew_sz, vtype-vlmul_sz]
+      [vtype_vill_sz, vtype_vma_sz, vtype_vta_sz, vtype_vsew_sz, vtype_vlmul_sz]
     coverpoint: [""]
 
   # The value in vsew sets the dynamic selected element width (SEW). By default, a
   # vector register is viewed as being divided into VLEN/SEW elements.
-  - name: vtype-vsew_op
+  - name: vtype_vsew_op
     coverpoint: [""]
 
   # While it is anticipated the larger vsew[2:0] encodings (100-111) will be used to
   # encode larger SEW, the encodings are formally reserved at this point.
-  - name: vtype-vsew_rsv
+  - name: vtype_vsew_rsv
     coverpoint: [""]
 
   # Implementations must support LMUL integer values of 1, 2, 4, and 8.
-  - name: vtype-lmul_val
+  - name: vtype_lmul_val
     coverpoint: [""]
 
   # Implementations must provide fractional LMUL settings that allow the narrowest
@@ -160,17 +160,17 @@ normative_rule_definitions:
   # vector extensions with ELEN=32, fractional LMULs of 1/2 and 1/4 must be
   # supported. For standard vector extensions with ELEN=64, fractional LMULs of 1/2,
   # 1/4, and 1/8 must be supported.
-  - name: vtype-lmul_fval
+  - name: vtype_lmul_fval
     coverpoint: [""]
 
   # For a given supported fractional LMUL setting, implementations must support SEW
   # settings between SEWMIN and LMUL * ELEN, inclusive.
-  - name: vtype-sew_val
+  - name: vtype_sew_val
     coverpoint: [""]
 
   # The use of vtype encodings with LMUL &lt; SEWMIN/ELEN is reserved, but
   # implementations can set vill if they do not support these configurations.
-  - name: vtype-lmul_fval_rsv
+  - name: vtype_lmul_fval_rsv
     coverpoint: [""]
 
   # LMUL is set by the signed vlmul field in vtype (i.e., LMUL = 2vlmul[2:0]).
@@ -207,18 +207,18 @@ normative_rule_definitions:
   # inactive masked-off elements respectively during the execution of vector
   # instructions. The tail and inactive sets contain element positions that are not
   # receiving new results during a vector operation, as defined in .
-  - name: vtype-vta_op
+  - name: vtype_vta_op
     coverpoint: [""]
 
   # These two bits modify the behavior of destination tail elements and destination
   # inactive masked-off elements respectively during the execution of vector
   # instructions. The tail and inactive sets contain element positions that are not
   # receiving new results during a vector operation, as defined in .
-  - name: vtype-vma_op
+  - name: vtype_vma_op
     coverpoint: [""]
 
   # All systems must support all four options:
-  - names: [vtype-vta_val, vtype-vma_val]
+  - names: [vtype_vta_val, vtype_vma_val]
     coverpoint: [""]
 
   # Mask destination tail elements are always treated as tail-agnostic, regardless
@@ -253,7 +253,7 @@ normative_rule_definitions:
 
   # If the vill bit is set, then any attempt to execute a vector instruction that
   # depends upon vtype will raise an illegal-instruction exception.
-  - name: vtype-vill_op
+  - name: vtype_vill_op
     coverpoint: [""]
 
   # The XLEN-bit-wide read-only vl CSR can only be updated by the vset{i}vl{i}
@@ -316,7 +316,7 @@ normative_rule_definitions:
 
   # The vector fixed-point rounding-mode is given a separate CSR address to allow
   # independent access, but is also reflected as a field in vcsr.
-  - name: vcsr-vxrm_op
+  - name: vcsr_vxrm_op
     coverpoint: [""]
 
   # The fixed-point rounding algorithm is specified as follows. Suppose the
@@ -333,12 +333,12 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # The vxsat bit is mirrored in vcsr.
-  - name: vcsr-vxsat_op
+  - name: vcsr_vxsat_op
     coverpoint: [""]
 
   # The vxrm and vxsat separate CSRs can also be accessed via fields in the
   # XLEN-bit-wide vector control and status CSR, vcsr.
-  - names: [vcsr-vxsat_acc, vcsr-vxrm_acc]
+  - names: [vcsr_vxsat_acc, vcsr_vxrm_acc]
     coverpoint: [""]
 
   # When LMUL=1, elements are simply packed in order from the least-significant to
@@ -511,7 +511,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # the vl register is also set to zero.
-  - name: vtype-vstart_op
+  - name: vtype_vstart_op
     coverpoint: [""]
 
   # The new vtype value is encoded in the immediate fields of vsetvli and vsetivli,
@@ -527,7 +527,7 @@ normative_rule_definitions:
   # consider all bits of the vtype value to determine if the configuration is
   # supported. An unsupported value in any location within the vtype value must
   # result in vill being set.
-  - name: vtype-vill_set
+  - name: vtype_vill_set
     coverpoint: [""]
 
   # When rs1 is not x0, the AVL is an unsigned integer held in the x register
@@ -578,13 +578,13 @@ normative_rule_definitions:
 
   # Vector unit-stride operations access elements stored contiguously in memory
   # starting from the base effective address.
-  - name: vector_ls_unit-stride_op
+  - name: vector_ls_unit_stride_op
     coverpoint: [""]
 
   # Vector constant-stride operations access the first memory element at the base
   # effective address, and then access subsequent elements at address increments
   # given by the byte offset contained in the x register specified by rs2.
-  - name: vector_ls_constant-stride_op
+  - name: vector_ls_constant_stride_op
     coverpoint: [""]
 
   # Vector memory unit-stride and constant-stride operations directly encode EEW of
@@ -596,7 +596,7 @@ normative_rule_definitions:
   # For loads, the vd register will hold the first field loaded from the segment.
   # For stores, the vs3 register is read to provide the first field to be stored to
   # each segment.
-  - name: vector_ls_seg_unit-stride_vd_vs3
+  - name: vector_ls_seg_unit_stride_vd_vs3
     coverpoint: [""]
 
   # Support for misaligned vector memory accesses is independent of an
@@ -727,7 +727,7 @@ normative_rule_definitions:
   # stores (EEW=8), except that the effective vector length is evl=ceil(vl/8) (i.e.
   # EMUL=1), and the destination register is always written with a tail-agnostic
   # policy.
-  - name: vector_ls_unit-stride_mask
+  - name: vector_ls_unit_stride_mask
     coverpoint: [""]
 
   # Negative and zero strides are supported.
@@ -740,7 +740,7 @@ normative_rule_definitions:
 
   # Element accesses within a constant-stride instruction are unordered with respect
   # to each other.
-  - name: vector_ls_constant-stride_unordered
+  - name: vector_ls_constant_stride_unordered
     coverpoint: [""]
 
   # When rs2=x0, then an implementation is allowed, but not required, to perform
@@ -829,14 +829,14 @@ normative_rule_definitions:
 
   # The vector unit-stride load and store segment instructions move packed
   # contiguous segments into multiple destination vector register groups.
-  - name: vector_ls_seg_unit-stride_op
+  - name: vector_ls_seg_unit_stride_op
     coverpoint: [""]
 
   # For fault-only-first segment loads, if an exception is detected partway through
   # accessing the zeroth segment, the trap is taken. If an exception is detected
   # partway through accessing a subsequent segment, vl is reduced to the index of
   # that segment.
-  - name: vector_ls_seg_ff_unit-stride_op
+  - name: vector_ls_seg_ff_unit_stride_op
     coverpoint: [""]
 
   # In both cases, it is implementation-defined whether a subset of the segment is
@@ -853,12 +853,12 @@ normative_rule_definitions:
   # Vector constant-stride segment loads and stores move contiguous segments where
   # each segment is separated by the byte-stride offset given in the rs2 GPR
   # argument.
-  - name: vector_ls_seg_constant-stride_op
+  - name: vector_ls_seg_constant_stride_op
     coverpoint: [""]
 
   # Accesses to the fields within each segment can occur in any order, including the
   # case where the byte stride is such that segments overlap in memory.
-  - name: vector_ls_seg_constant-stride_unordered
+  - name: vector_ls_seg_constant_stride_unordered
     coverpoint: [""]
 
   # Vector indexed segment loads and stores move contiguous segments where each
@@ -939,12 +939,12 @@ normative_rule_definitions:
 
   # Except for vector indexed-ordered loads and stores, element operations are
   # unordered within the instruction.
-  - name: vector_ls_indexed-ordered_ordered
+  - name: vector_ls_indexed_ordered_ordered
     coverpoint: [""]
 
   # Vector indexed-ordered loads and stores read and write elements from/to memory
   # in element order respectively, obeying RVWMO at the element level.
-  - name: vector_ls_indexed-ordered_RVWMO
+  - name: vector_ls_indexed_ordered_RVWMO
     coverpoint: [""]
 
   # Instructions affected by the vector length register vl have a control dependency
@@ -1430,12 +1430,12 @@ normative_rule_definitions:
   # If the floating-point unit status field mstatus.FS is Off then any attempt to
   # execute a vector floating-point instruction will raise an illegal-instruction
   # exception.
-  - name: mstatus-FS_off_V_fp_ill
+  - name: mstatus_FS_off_V_fp_ill
     coverpoint: [""]
 
   # Any vector floating-point instruction that modifies any floating-point extension
   # state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty.
-  - name: mstatus-FS_dirty_V_fp
+  - name: mstatus_FS_dirty_V_fp
     coverpoint: [""]
 
   # If the hypervisor extension is implemented and V=1, the vsstatus.FS field is
@@ -1443,13 +1443,13 @@ normative_rule_definitions:
   # mstatus.FS is Off then any attempt to execute a vector floating-point
   # instruction will raise an illegal-instruction exception.
   - names:
-      [vsstatus-FS_off_hypervisor_V_fp_ill, mstatus-FS_off_hypervisor_V_fp_ill]
+      [vsstatus_FS_off_hypervisor_V_fp_ill, mstatus_FS_off_hypervisor_V_fp_ill]
     coverpoint: [""]
 
   # Any vector floating-point instruction that modifies any floating-point extension
   # state (i.e., floating-point CSRs or f registers) must set both mstatus.FS and
   # vsstatus.FS to Dirty.
-  - names: [vsstatus-FS_dirty_hypervisor_V_fp, mstatus-FS_dirty_hypervisor_V_fp]
+  - names: [vsstatus_FS_dirty_hypervisor_V_fp, mstatus_FS_dirty_hypervisor_V_fp]
     coverpoint: [""]
 
   # A vector floating-point exception at any active floating-point element sets the

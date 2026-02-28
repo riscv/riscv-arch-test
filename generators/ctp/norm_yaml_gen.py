@@ -169,8 +169,7 @@ def generate_yaml_content(
                 text = tag.get("text", "")
                 if text:
                     # Format multi-line text as YAML comments
-                    for line in text.split("\n"):
-                        yaml_lines.append(f"    # {line}")
+                    yaml_lines.extend(f"    # {line}" for line in text.split("\n"))
 
             # Generate coverpoint from CSV data
             coverpoints = data.get("coverpoints", [])
@@ -229,7 +228,7 @@ def main() -> int:
     # Load JSON data
     try:
         json_data = load_json(args.json)
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         print(f"Error loading JSON file: {e}", file=sys.stderr)
         return 1
 
@@ -262,7 +261,7 @@ def main() -> int:
         # Load instructions and coverpoints from CSV
         try:
             instr_data = load_csv_with_coverpoints(csv_file)
-        except Exception as e:
+        except (OSError, csv.Error, KeyError) as e:
             print(f"Error reading {csv_file}: {e}", file=sys.stderr)
             continue
 
@@ -279,7 +278,7 @@ def main() -> int:
             output_file.write_text(yaml_content, encoding="utf-8")
             print(f"Created {output_file}")
             created_count += 1
-        except Exception as e:
+        except OSError as e:
             print(f"Error writing {output_file}: {e}", file=sys.stderr)
 
     print(f"\nSummary: Created {created_count} files, skipped {skipped_count} existing files")

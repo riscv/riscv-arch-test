@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, YAMLError
 
 
 def extract_name_from_defined_by(entry: dict[str, Any] | str | list[Any]) -> str:
@@ -124,7 +124,7 @@ def main() -> None:
             # Skip Xmock entries
             if ext != "Xmock":
                 rows.append({"name": param_name, "ext": ext, "definedBy": defined_by_str, "description": description})
-        except Exception as e:
+        except (OSError, YAMLError, KeyError, TypeError) as e:
             print(f"Error processing {yaml_file.name}: {e}", file=sys.stderr)
 
     # Sort by ext column
@@ -142,7 +142,7 @@ def main() -> None:
         print(f"Total parameters: {len(rows)}")
         if skipped_files:
             print(f"Skipped {len(skipped_files)} empty/null files: {', '.join(skipped_files)}")
-    except Exception as e:
+    except OSError as e:
         print(f"Error writing CSV: {e}", file=sys.stderr)
         sys.exit(1)
 

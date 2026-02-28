@@ -157,7 +157,7 @@ normative_rule_definitions:
   # and F (but not D) is specified (RV32 only) Zca, Zcf and Zcd if D is specified
   # (RV32 only) this configuration excludes Zcmp, Zcmt Zca, Zcd if D is specified
   # (RV64 only) this configuration excludes Zcmp, Zcmt
-  - name: misa-c_set
+  - name: misa_c_set
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/misa"]
 
   # Unless misa is all read-only zero, the "E" bit always reads as the complement of
@@ -685,11 +685,11 @@ normative_rule_definitions:
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mideleg"]
 
   # In harts with S-mode, the medeleg and mideleg registers must exist
-  - name: [medeleg_mandatory_S-mode, mideleg_mandatory_S-mode]
+  - name: [medeleg_mandatory_S_mode, mideleg_mandatory_S_mode]
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/{medeleg/mideleg"]
 
   # In harts without S-mode, the medeleg and mideleg registers should not exist.
-  - name: [medeleg_omit_wo_S-mode, mideleg_omit_wo_S-mode]
+  - name: [medeleg_omit_wo_S_mode, mideleg_omit_wo_S_mode]
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/{medeleg/mideleg"]
 
   # An implementation can choose to subset the delegatable traps, with the supported
@@ -1249,7 +1249,7 @@ normative_rule_definitions:
 
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.
-  - name: trap_del_S-mode_no_M-mode
+  - name: trap_del_S_mode_no_M_mode
     coverpoint:
       [
         "Untested; S-mode handler does not have access to M-mode CSRs and changing to M-mode disturbs CSRs",

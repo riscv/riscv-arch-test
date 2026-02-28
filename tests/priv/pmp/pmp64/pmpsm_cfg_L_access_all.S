@@ -124,7 +124,7 @@ main:
 
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg3, x4
+    csrw pmpcfg2, x4
 
 //                                            Verification Section
 // Test Case: 1 : L -> 0 and No Permissions given to the PMP Region 14

@@ -18,8 +18,8 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         r_temp2: Second temp register number for RV32
     """
     return [
-        f"    la x{r_mtime}, RVMODEL_MTIME_ADDRESS",
-        f"    la x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS",
+        f"    LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+        f"    LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
         f"    LREG x{r_temp}, 0(x{r_mtime})",
         f"    SREG x{r_temp}, 0(x{r_mtimecmp})",
@@ -44,8 +44,8 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
         r_mtimecmp: Register number to hold MTIMECMP address
     """
     return [
-        f"li x{r_temp}, -1",
-        f"la x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS",
+        f"LI(x{r_temp}, -1)",
+        f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",
         "#if __riscv_xlen == 32",
         f"    sw x{r_temp}, 4(x{r_mtimecmp})",
@@ -57,14 +57,14 @@ def set_mtimer_int_soon(
     r_mtime: int, r_mtimecmp: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int
 ) -> list[str]:
     return [
-        f"    la x{r_mtime}, RVMODEL_MTIME_ADDRESS",
-        f"    la x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS",
+        f"    LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+        f"    LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
         # Set mtimecmp to max value first to prevent spurious interrupt.
         # If mtimecmp < mtime from a previous test,
         # mip.MTIP would be set immediately when we enable MTIE, causing
         # an unexpected trap before we're ready.
-        f"    li x{r_temp1}, -1",
+        f"    LI(x{r_temp1}, -1)",
         f"    sd x{r_temp1}, 0(x{r_mtimecmp})",
         # Read current time
         f"    ld x{r_temp1}, 0(x{r_mtime})",
@@ -72,7 +72,7 @@ def set_mtimer_int_soon(
         f"    sd x{r_temp1}, 0(x{r_mtimecmp})",
         "#elif __riscv_xlen == 32",
         # Disable comparator first
-        f"    li x{r_temp1}, -1",
+        f"    LI(x{r_temp1}, -1)",
         f"    sw x{r_temp1}, 0(x{r_mtimecmp})",
         f"    sw x{r_temp1}, 4(x{r_mtimecmp})",
         # Read current time
@@ -106,12 +106,12 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int) -> l
         f"BEQZ x{r_scratch}, 1f",  # If STCE=0, use non sstc method
         "",
         "# Sstc method: Write stimecmp",
-        f"LA x{r_mtime}, RVMODEL_MTIME_ADDRESS",
+        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LREG x{r_temp}, 0(x{r_mtime})",
         f"csrw stimecmp, x{r_temp}",
         "nop",
         "#if __riscv_xlen == 32",
-        f"    li x{r_temp}, -1",
+        f"    LI(x{r_temp}, -1)",
         f"    csrw stimecmp, x{r_temp}",
         f"    lw x{r_temp2}, 4(x{r_mtime})",
         f"    lw x{r_temp}, 0(x{r_mtime})",
@@ -122,7 +122,7 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int) -> l
         "j 2f",
         "",
         "1: # Legacy method: Set mip.STIP from M-mode",
-        f"li x{r_temp}, 0x20",  # STIP = bit 5
+        f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
         f"csrrs x{r_temp}, mip, x{r_temp}",
         "",
         "2: # Continue",
@@ -148,7 +148,7 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int) -> list[str]:
         f"BEQZ x{r_scratch}, 1f",  # If STCE=0, use non sstc method
         "",
         "# Sstc method: Write stimecmp = -1 (max value)",
-        f"li x{r_temp}, -1",
+        f"LI(x{r_temp}, -1)",
         f"csrw stimecmp, x{r_temp}",
         "#if __riscv_xlen == 32",
         f"    csrw stimecmph, x{r_temp}",  # Also clear high word
@@ -156,7 +156,7 @@ def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int) -> list[str]:
         "j 2f",
         "",
         "1: # Legacy method: Clear mip.STIP from M-mode",
-        f"li x{r_temp}, 0x20",  # STIP = bit 5
+        f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
         f"csrrc x{r_temp}, mip, x{r_temp}",
         "",
         "2: # Continue",
@@ -170,10 +170,10 @@ def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: 
     Uses stimecmp CSR (not MTIMECMP memory). Otherwise identical to set_mtimer_int_soon.
     """
     return [
-        f"    la x{r_mtime}, RVMODEL_MTIME_ADDRESS",
+        f"    LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         "#if __riscv_xlen == 64",
         # Disable comparator first
-        f"    li x{r_temp1}, -1",
+        f"    LI(x{r_temp1}, -1)",
         f"    csrw stimecmp, x{r_temp1}",
         # Read current time and add delay
         f"    ld x{r_temp1}, 0(x{r_mtime})",
@@ -181,7 +181,7 @@ def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: 
         f"    csrw stimecmp, x{r_temp1}",
         "#elif __riscv_xlen == 32",
         # Disable comparator first --> set to high value to prevent early firing
-        f"    li x{r_temp1}, -1",
+        f"    LI(x{r_temp1}, -1)",
         f"    csrw stimecmp, x{r_temp1}",
         f"    csrw stimecmph, x{r_temp1}",
         # Read current time

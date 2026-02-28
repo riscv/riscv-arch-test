@@ -383,7 +383,7 @@
 #define RVTEST_CLR_STIMER_INT
 #define RVTEST_CLR_VTIMER_INT
 
-// RVMODEL macros for SAIL. These implement the actual interrupt setup for the SAIL platform and are invoked by the generic RVTEST macros above.
+// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
 #define RVTEST_INTERRUPTS \
   rvtest_set_msw_int: ; \
     RVMODEL_SET_MSW_INT(T2, T5) ; \

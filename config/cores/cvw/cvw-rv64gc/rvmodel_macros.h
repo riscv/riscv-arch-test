@@ -82,14 +82,18 @@
 
 ##### Machine Timer #####
 
+#define RVMODEL_INTERRUPT_LATENCY 10
+
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 #define RVMODEL_MTIMECMP_ADDRESS 0x02004000 /* Address of mtimecmp CSR */
 
 ##### Machine Interrupts #####
 
-#define CVW_CLINT_BASE 0x02000000
-#define CVW_MSIP_ADDRESS (CVW_CLINT_BASE + 0x0)
+#define CLINT_BASE_ADDRESS 0x02000000
+#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
@@ -97,16 +101,16 @@
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
-  li _R2, CVW_MSIP_ADDRESS; \
+  li _R2, MSIP_ADDRESS; \
   sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, CVW_MSIP_ADDRESS; \
+  li _R2, MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
 
-#define CVW_SSIP_ADDRESS (CVW_CLINT_BASE + 0xC000)
+#define CVW_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)
 

@@ -143,9 +143,6 @@
   j 1b                       ;/* Loop */             \
 3:
 
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Access Fault #####
 
@@ -159,8 +156,12 @@
 
 ##### Machine Interrupts #####
 
-#define QEMU_CLINT_BASE 0x02000000
-#define QEMU_MSIP_ADDRESS (QEMU_CLINT_BASE + 0x0)
+#define RVMODEL_INTERRUPT_LATENCY 10
+
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
+#define CLINT_BASE_ADDRESS 0x02000000
+#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
@@ -168,16 +169,16 @@
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2) \
   li _R1, 1; \
-  li _R2, QEMU_MSIP_ADDRESS; \
+  li _R2, MSIP_ADDRESS; \
   sw _R1, 0(_R2);
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2) \
-  li _R2, QEMU_MSIP_ADDRESS; \
+  li _R2, MSIP_ADDRESS; \
   sw zero, 0(_R2);
 
 ##### Supervisor Interrupts #####
 
-#define QEMU_SSIP_ADDRESS (QEMU_CLINT_BASE + 0xC000)
+#define QEMU_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)
 

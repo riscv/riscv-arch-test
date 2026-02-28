@@ -1751,12 +1751,12 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 \__MODE__\()clr_Stmr_int:               // int 5 default to just return
                                         // S-mode timer interrupts need to be reset differently when raised in M or S mode
         .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
-            RVMODEL_CLR_STIMER_INT
+            RVTEST_CLR_STIMER_INT
         .else
                 .ifc \__MODE__ , S
-                        RVMODEL_CLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .else
-                        RVMODEL_CLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .endif
         .endif
         j       resto_\__MODE__\()rtn

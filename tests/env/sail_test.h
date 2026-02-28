@@ -72,36 +72,22 @@
   j 1b                       ;/* Loop */             \
 3:
 
+##### Access Fault #####
+
+#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+
+##### Machine Timer #####
+
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
+
+#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
+
+##### Machine Interrupts #####
 
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
-
-// Add to test_setup.h after other macros:
-
-##### Machine Timer #####
-
-
-# Set the machine timer (mtime) to the value in the register _R1.
-# _R2 can be used as a temporary register (e.g. address of mtime).
-# For RV32, only write the lower 32 bits of mtime and RVMODEL_SET_MTIMEH for upper 32 bits.
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
-#define RVMODEL_SET_MTIME(_R1, _R2)        \
-  li   _R2, RVMODEL_MTIME_ADDRESS        ; /* MTIME address */ \
-  SREG _R1, 0(_R2)            ; /* Set MTIME low */
-
-
-#define RVMODEL_SET_MTIMEH(_R1, _R2)       \
-  li   _R2, RVMODEL_MTIME_ADDRESS        ; /* MTIME address */ \
-  SREG _R1, 4(_R2)            ; /* Set MTIME high */
-
-
-##### Machine Interrupts #####
 
 // TODO: need to implement external interrupts in SAIL
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
@@ -116,16 +102,16 @@
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 
-#define CLINT_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
+#define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
-  li _R2, CLINT_MSIP_ADDRESS;              \
+  li _R2, MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, CLINT_MSIP_ADDRESS;              \
+  li _R2, MSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
 

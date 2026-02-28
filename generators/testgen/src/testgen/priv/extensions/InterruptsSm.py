@@ -51,11 +51,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
         ]
     )
     lines.extend(indent(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2)))
-    lines.extend(
-        [
-            "    RVTEST_IDLE_FOR_INTERRUPT",
-        ]
-    )
+    lines.append("    RVTEST_IDLE_FOR_INTERRUPT")
     lines.extend(["    " + line for line in clr_mtimer_int(r_temp, r_mtimecmp)])
     lines.append("")
 
@@ -67,11 +63,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
         ]
     )
     lines.extend(indent(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2)))
-    lines.extend(
-        [
-            "    RVTEST_IDLE_FOR_INTERRUPT",
-        ]
-    )
+    lines.append("    RVTEST_IDLE_FOR_INTERRUPT")
     lines.append("")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2])
@@ -247,12 +239,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("    RVTEST_SET_MSW_INT")
 
                 # More settling
-                lines.extend(
-                    [
-                        "    RVTEST_IDLE_FOR_INTERRUPT",
-                        "",
-                    ]
-                )
+                lines.append("    RVTEST_IDLE_FOR_INTERRUPT")
 
                 # Clear to prevent leakage
                 if s2 == 2:
@@ -400,12 +387,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
             # Now clear all interrupts (after disabling)
             lines.append("    RVTEST_CLR_MEXT_INT")
             lines.extend(["    " + line for line in clr_mtimer_int(r_temp, r_mtimecmp)])
-            lines.extend(
-                [
-                    "    RVTEST_CLR_MSW_INT",
-                    "",
-                ]
-            )
+            lines.append("    RVTEST_CLR_MSW_INT")
 
     test_data.int_regs.return_registers([r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch, r_csr_tmp])
     return lines

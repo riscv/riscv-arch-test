@@ -26,7 +26,7 @@ normative_rule_definitions:
   # The stimecmp CSR is a 64-bit register and has 64-bit precision on all RV32 and
   # RV64 systems. In RV32 only, accesses to the stimecmp CSR access the low 32 bits,
   # while accesses to the stimecmph CSR access the high 32 bits of stimecmp.
-  - name: stimecmp-stimecmph_sz_acc
+  - name: stimecmp_stimecmph_sz_acc
     coverpoint: [""]
 
   # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in

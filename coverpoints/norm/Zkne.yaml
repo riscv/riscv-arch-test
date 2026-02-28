@@ -1,0 +1,53 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # A core which implements Zkn must implement all of the above extensions.
+  - name: zkn_impl_all
+    coverpoint: ["Definition, checked through UDB"]
+
+  # A core which implements Zk must implement all of the above extensions.
+  - name: zk_impl_all
+    coverpoint: ["Definition, checked through UDB"]
+
+  - name: zkne_shared_instr
+    coverpoint: ["Definition, checked through UDB"]
+
+  - name: zk_scalar_xreg_op
+    coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]
+
+  - name: aes32esi_enc
+    coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges}"]
+
+  - name: aes32esi_op
+    coverpoint: ["Zkne_aes32esi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes32esmi_enc
+    coverpoint: ["Zkne_aes32esmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes32esmi_op
+    coverpoint: ["Zkne_aes32esmi_cg/{cr_rs1_rs2_edges, cp_bs, cp_sbox}"]
+
+  - name: aes64es_enc
+    coverpoint: ["Zkne_aes64es_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64es_op
+    coverpoint: ["Zkne_aes64es_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64esm_enc
+    coverpoint: ["Zkne_aes64esm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64esm_op
+    coverpoint: ["Zkne_aes64esm_cg/{cr_rs1_rs2_edges, cp_sbox}"]
+
+  - name: aes64ks1i_enc
+    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
+
+  - name: aes64ks1i_op
+    coverpoint: ["Zkne_aes64ks1i_cg/{cr_rs1_imm_edges, cp_rnum}"]
+
+  - name: aes64ks2_enc
+    coverpoint: ["Zkne_aes64ks2_cg/cr_rs1_rs2_edges"]
+
+  - name: aes64ks2_op
+    coverpoint: ["Zkne_aes64ks2_cg/cr_rs1_rs2_edges"]

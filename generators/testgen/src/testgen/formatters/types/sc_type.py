@@ -37,6 +37,7 @@ def format_sc_type(
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
         f"LA(x{params.rs1}, scratch) # rs1 = base address",
+        "nop",  # Test fails on spike without this nop; nop is a temp fix; TODO: Link to issue after opening it
         f"{lr_insr} x0, (x{params.rs1}) # establish reservation",
     ]
 

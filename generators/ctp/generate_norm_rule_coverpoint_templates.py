@@ -1,4 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# SPDX-License-Identifier: Apache-2.0
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "ruamel-yaml>=0.18.16",
+# ]
+# ///
+
 """
 Generate normative rule to coverpoint mapping YAML files.
 
@@ -8,14 +17,15 @@ each rule to an empty coverpoint list, with comments from norm-rules.json.
 """
 
 import json
-import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
+
+from ruamel.yaml import YAML
 
 
-def load_norm_rules_json(json_path: Path) -> Dict[str, Dict[str, Any]]:
+def load_norm_rules_json(json_path: Path) -> dict[str, dict[str, Any]]:
     """Load norm-rules.json and create a name -> rule mapping (case-insensitive)."""
-    with open(json_path) as f:
+    with json_path.open() as f:
         data = json.load(f)
 
     rules_map = {}
@@ -28,7 +38,7 @@ def load_norm_rules_json(json_path: Path) -> Dict[str, Dict[str, Any]]:
     return rules_map
 
 
-def get_rule_description(rule: Dict[str, Any]) -> str:
+def get_rule_description(rule: dict[str, Any]) -> str:
     """Extract description from rule tags."""
     descriptions = []
     for tag in rule.get("tags", []):
@@ -42,12 +52,13 @@ def get_rule_description(rule: Dict[str, Any]) -> str:
 def process_rule_file(
     input_yaml: Path,
     output_dir: Path,
-    rules_map: Dict[str, Dict[str, Any]]
+    rules_map: dict[str, dict[str, Any]],
 ) -> None:
     """Process one normative rule definition file and create output."""
     # Load input YAML
-    with open(input_yaml) as f:
-        input_data = yaml.safe_load(f)
+    yaml_parser = YAML(typ="safe", pure=True)
+    with input_yaml.open() as f:
+        input_data = yaml_parser.load(f)
 
     if not input_data:
         return
@@ -95,21 +106,18 @@ def process_rule_file(
             output_rule = {
                 "names": output_names if is_names_list else output_names[0],
                 "is_names_list": is_names_list,
-                "coverpoint": []
+                "coverpoint": [],
             }
             # Use first description as the comment for the group
             comment = descriptions[0] if descriptions else ""
-            output_rules.append({
-                "rule": output_rule,
-                "comment": comment
-            })
+            output_rules.append({"rule": output_rule, "comment": comment})
 
     # Create output YAML with comments
     output_path = output_dir / input_yaml.name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Write YAML with comments
-    with open(output_path, 'w') as f:
+    with output_path.open("w") as f:
         f.write("# Normative rule to coverpoint mappings\n")
         f.write("# Generated from riscv-isa-manual normative rule definitions\n\n")
         f.write("normative_rule_definitions:\n")
@@ -136,11 +144,8 @@ def process_rule_file(
                 if current_line:
                     lines.append(current_line)
 
-                for i, line in enumerate(lines):
-                    if i == 0:
-                        f.write(f"  # {line}\n")
-                    else:
-                        f.write(f"  # {line}\n")
+                for line in lines:
+                    f.write(f"  # {line}\n")
 
             # Write rule - handle both name and names formats
             f.write("  - ")
@@ -150,7 +155,7 @@ def process_rule_file(
                 f.write(f"names: [{names_str}]\n")
             else:
                 f.write(f"name: {rule['names']}\n")
-            f.write(f"    coverpoint: [\"\"]\n")
+            f.write('    coverpoint: [""]\n')
             f.write("\n")
 
 
@@ -189,7 +194,7 @@ def main() -> None:
         try:
             process_rule_file(yaml_file, output_dir, rules_map)
             print(f"  ✓ {yaml_file.name}")
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             print(f"  ✗ {yaml_file.name}: {e}")
 
     print(f"\nOutput files created in {output_dir}")

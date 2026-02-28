@@ -44,7 +44,7 @@ def generate_random_params(
     test_data: TestData,
     instr_type: str,
     exclude_regs: list[int] | None = None,
-    **fixed_params: Any,  # noqa: ANN401 (allow Any type for flexible fixed_params)
+    **fixed_params: Any,  # noqa: ANN401
 ) -> InstructionParams:
     """
     Generate random parameters for an instruction.
@@ -77,7 +77,7 @@ def generate_random_params(
     pair_regs = instr_type_config.pair_regs or set()  # Registers that need pairs
 
     # Determine the register range to use (extracted from formatters)
-    reg_range_raw = instr_type_config.reg_range if instr_type_config.reg_range is not None else range(0, 32)
+    reg_range_raw = instr_type_config.reg_range if instr_type_config.reg_range is not None else range(32)
     reg_range = list(reg_range_raw) if not isinstance(reg_range_raw, list) else reg_range_raw
     if exclude_regs is None:
         exclude_regs = []

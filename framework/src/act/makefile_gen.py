@@ -10,6 +10,7 @@
 import hashlib
 import importlib.resources
 import json
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
@@ -27,6 +28,19 @@ MAKEFILE_HEADER = """
 """
 
 OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
+
+
+def _resolve_script(name: str) -> str:
+    """Resolve the absolute path to an installed entry-point script.
+
+    Works regardless of how the package was installed (uv, pip, etc.)
+    and does not depend on the current working directory.
+    """
+    path = shutil.which(name)
+    if path is None:
+        msg = f"Could not find '{name}' on PATH. Ensure the 'act' package is installed."
+        raise FileNotFoundError(msg)
+    return path
 
 
 def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
@@ -158,7 +172,7 @@ def gen_compile_targets(
         f"\n"
         f"# Modify sig file for inclusion in assembly\n"
         f"{result_file}: {sig_file}\n"
-        f"\tuv run sig_modify {sig_file} {xlen}\n"
+        f"\t{_resolve_script('sig_modify')} {sig_file} {xlen}\n"
         f"\n"
         "# Final ELF target\n"
         f"{final_elf}: {sig_elf} {result_file} | {final_elf.parent}\n"
@@ -199,7 +213,7 @@ def gen_rvvi_targets(test_name: Path, base_dir: Path, config: Config) -> str:
         f"\n"
         "# Generate RVVI trace\n"
         f"{rvvi_trace}: {sail_trace}\n"
-        f"\tuv run sail-to-rvvi \\\n"
+        f"\t{_resolve_script('sail-to-rvvi')} \\\n"
         f"\t\t{sail_trace} \\\n"
         f"\t\t{rvvi_trace}\n"
     )
@@ -450,7 +464,7 @@ def gen_coverage_targets(
             f".PHONY: {coverage_group.stem}-report\n"
             f"{coverage_group.stem}-report: {summary_file}\n"
             f"{summary_file}: {ucdb_file}\n"
-            f"\tuv run coverreport\\\n"
+            f"\t{_resolve_script('coverreport')}\\\n"
             f"\t\t{ucdb_file}\\\n"
             f"\t\t{report_file_base}\n"
         )
@@ -472,7 +486,7 @@ def gen_coverage_targets(
         makefile_lines.append(
             f"# Generate overall coverage summary by merging all individual summaries\n"
             f"{overall_summary}: {summary_files}\n"
-            f"\tuv run merge-summaries {overall_summary} {summary_files}\n"
+            f"\t{_resolve_script('merge-summaries')} {overall_summary} {summary_files}\n"
             f"\t$(MAKE) clean-coverage-summaries # remove individual coverage summaries after merging\n"
         )
         coverage_reports.append(overall_summary)

@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from testgen.data.config import TestConfig
@@ -23,10 +24,13 @@ class TestData:
 
     Attributes:
         config: Immutable test configuration (xlen, flen, register file type)
+        instr_name: Instruction this test is exercising
         int_regs: Integer register file for allocation
         float_regs: Floating-point register file for allocation
         sigupd_count: Running count of integer signature updates
+        test_count: Running count of testcases generated
         test_data_values: List of values to be stored in test_data section
+        test_data_strings: List of debug strings to be stored in test_data section
     """
 
     def __init__(self, test_config: TestConfig, instr_name: str | None = None) -> None:
@@ -45,6 +49,7 @@ class TestData:
         self._test_count = 0
         self._test_data_values: list[int] = []  # List of integer values
         self._test_data_strings: list[str] = []  # List of string values
+        self._current_testcase_label = ""
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, test_count={self._test_count})"
@@ -96,6 +101,11 @@ class TestData:
     @sigupd_count.setter
     def sigupd_count(self, value: int) -> None:
         self._sigupd_count = value
+
+    @property
+    def current_testcase_label(self) -> str:
+        """Get the current testcase label."""
+        return self._current_testcase_label
 
     # Read-only properties delegated to config
     @property
@@ -156,36 +166,40 @@ class TestData:
         """Get the list of test data strings to be stored in .data section."""
         return self._test_data_strings
 
-    def add_testcase(self, coverpoint: str, bin_name: str | None = None, covergroup: str | None = None) -> str:
+    def add_testcase(self, bin_name: str, coverpoint: str, covergroup: str | None = None) -> str:
         """
         Add a test data string and return the testcase label line. Also increments test count.
 
         Args:
-            cp: The coverpoint name
+            bin_name: Bin name to append to the coverpoint name.
+            coverpoint: The coverpoint name
             covergroup: Optional covergroup name. Defaults to '{extension}_{instr_name}_cg'.
-            bin_name: Optional bin name to append to the coverpoint name.
 
         Returns:
-            Label line string in format '{covergroup}_{coverpoint}_{bin_name}}:'
+            Label line string in format '{covergroup}_{coverpoint}_{bin_name}:'
         """
         self.increment_test_count()
 
         if covergroup is None:
             covergroup = f"{self.testsuite}_{self.instr_name}_cg"
 
-        if bin_name is None:
-            bin_name = f"test_{self.test_count}"
-
         # Construct full coverpoint name
         full_name = f"{covergroup}_{coverpoint}_{bin_name}"
 
-        # Add testcase string to test data strings
+        # Normalize full_name to a valid assembly label
+        label = full_name.replace("-", "m")
+        label = re.sub(r"[^a-zA-Z0-9_]", "_", label)
+        label = re.sub(r"_+", "_", label)  # Collapse consecutive underscores
+        label = label.strip("_")
+
+        # Add testcase string to test data strings (keep original names for debugging)
         self._test_data_strings.append(
-            f'test_{self.test_count}: .string "\\"test: {self.test_count}; cp: {full_name}\\""'
+            f'{label}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
 
         # Return label
-        return f"\n{full_name}:"
+        self._current_testcase_label = label
+        return f"{label}:"
 
     def copy(self) -> TestData:
         """Create a deep copy of the TestData object."""

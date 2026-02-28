@@ -11,7 +11,7 @@ normative_rule_definitions:
   # datum; the SPP field of mstatus is written with the active privilege mode at the
   # time of the trap; the SPIE field of mstatus is written with the value of the SIE
   # field at the time of the trap; and the SIE field of mstatus is cleared.
-  - name: trap_del_S-mode_op
+  - name: trap_del_S_mode_op
     coverpoint: ["ExceptionsS_cg/cp_medeleg_msu"]
 
   # Traps never transition from a more-privileged mode to a less-privileged mode.
@@ -46,5 +46,5 @@ normative_rule_definitions:
   # executed to return from the trap handler, the privilege level is set to user
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
-  - names: [sstatus-spp_sz, sstatus-spp_acc, sstatus-spp_op]
+  - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
     coverpoint: [""]

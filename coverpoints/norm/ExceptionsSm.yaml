@@ -55,7 +55,7 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
 
   # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M-mode
+  - name: trap_def_M_mode
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
@@ -223,7 +223,7 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
 
   # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M-mode
+  - name: trap_def_M_mode
     coverpoint:
       [
         "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",

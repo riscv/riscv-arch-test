@@ -27,10 +27,11 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val)
         desc = f"{coverpoint} (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(
+            format_single_test(instr_name, instr_type, test_data, params, desc, f"{edge_val:#x}", coverpoint)
+        )
         return_test_regs(test_data, params)
 
     return test_lines
@@ -46,10 +47,11 @@ def make_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=edge_val)
         desc = f"{coverpoint} (Test source rs2 value = {test_data.xlen_format_str.format(edge_val)})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(
+            format_single_test(instr_name, instr_type, test_data, params, desc, f"{edge_val:#x}", coverpoint)
+        )
         return_test_regs(test_data, params)
 
     return test_lines

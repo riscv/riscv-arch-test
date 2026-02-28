@@ -5,26 +5,34 @@
 
 include::{testplansdir}/Zkne.adoc[]
 
-
+include::norm/Zkne_norm_rules.adoc[]
 
 ==== Zknd NIST AES Decryption
 
 include::{testplansdir}/Zknd.adoc[]
 
-
+include::norm/Zknd_norm_rules.adoc[]
 
 ==== Zknh NIST SHA2 Hashing
 
 include::{testplansdir}/Zknh.adoc[]
 
-
+include::norm/Zknh_norm_rules.adoc[]
 
 ==== Zksed ShangMi SM4 Block Cipher
 
 include::{testplansdir}/Zksed.adoc[]
 
-
+include::norm/Zksed_norm_rules.adoc[]
 
 ==== Zksh ShangMi SM3 Hashing
 
 include::{testplansdir}/Zksh.adoc[]
+
+include::norm/Zksh_norm_rules.adoc[]
+
+==== Zkt Constant-Time Instructions
+
+Not tested yet.
+
+include::norm/Zkt_norm_rules.adoc[]

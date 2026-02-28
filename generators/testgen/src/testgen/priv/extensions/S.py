@@ -454,7 +454,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
-    (r1,) = test_data.int_regs.get_registers(1, exclude_regs=[0])
+    r1 = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines.append(f"\tLI(x{r1}, -1)          # x{r1} = all 1s\n")
     for csr in range(0xC00, 0xF00):
@@ -464,7 +464,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
                 f"\tCSRW(0x{csr:03x}, x{r1})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
             ]
         )
-    test_data.int_regs.return_registers([r1])
+    test_data.int_regs.return_register(r1)
 
     ######################################
     coverpoint = "cp_scsr_from_m"

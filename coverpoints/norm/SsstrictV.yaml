@@ -78,9 +78,9 @@ normative_rule_definitions:
     coverpoint: ["TODO"]
   - name: vstart_val_rsv
     coverpoint: ["TODO"]
-  - name: vtype-lmul_fval_rsv
+  - name: vtype_lmul_fval_rsv
     coverpoint: ["TODO"]
-  - name: vtype-vsew_rsv
+  - name: vtype_vsew_rsv
     coverpoint: ["TODO"]
   - name: vtype_vset_rsv
     coverpoint: ["TODO"]

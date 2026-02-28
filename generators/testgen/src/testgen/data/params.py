@@ -84,8 +84,5 @@ class InstructionParams:
     @property
     def used_float_regs(self) -> list[int]:
         """Return list of all float registers used in this test."""
-        regs: list[int] = []
-        for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg]:
-            if reg is not None:
-                regs.append(reg)
+        regs: list[int] = [reg for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg] if reg is not None]
         return regs

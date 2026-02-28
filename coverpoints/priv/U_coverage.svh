@@ -14,24 +14,16 @@
 covergroup U_uprivinst_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    // "U uprivinst"
 
     // building blocks for the main coverpoints
     privinstrs: coverpoint ins.current.insn  {
         bins ecall  = {ECALL};
         bins ebreak = {EBREAK};
-    }
-    mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};
-    }
-    sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-
     // main coverpoints
     cp_uprivinst:  cross priv_mode_u, privinstrs;
-    cp_mret:       cross priv_mode_u, mret; // should trap
-    cp_sret:       cross priv_mode_u, sret; // should trap
 endgroup
 
 covergroup U_ucsr_cg with function sample(ins_t ins);
@@ -47,12 +39,19 @@ covergroup U_ucsr_cg with function sample(ins_t ins);
     csrr: coverpoint ins.current.insn  {
         wildcard bins csrr = {CSRR};
     }
+    csrw: coverpoint ins.current.insn  {
+        wildcard bins csrw = {CSRRW};
+    }
+    csr_uro: coverpoint ins.current.insn[31:20]  {
+        bins sro[] = {[12'hC00:12'hCFF]};
+    }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
     }
 
     cp_csr_insufficient_priv: cross priv_mode_u, csrr, csr_nonuser, nonzerord;
+    cp_csr_ro:                cross priv_mode_u, csrw, csr_uro;
 endgroup
 
 

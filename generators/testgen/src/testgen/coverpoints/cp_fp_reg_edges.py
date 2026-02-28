@@ -34,12 +34,10 @@ def make_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
     test_lines: list[str] = []
     for edge_val in edges:
         for frm_mode in frm_modes:
-            test_lines.append(
-                test_data.add_testcase(f"b{edge_val:#x}{f'_{frm_mode}' if frm_mode is not None else ''}", coverpoint)
-            )
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs1val=edge_val, frm=frm_mode)
+            bin_name = f"b{edge_val:#x}{f'_{frm_mode}' if frm_mode is not None else ''}"
             desc = f"{coverpoint} (Test source fs1 value = {test_data.flen_format_str.format(edge_val)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
-            test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+            test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint))
             return_test_regs(test_data, params)
 
     return test_lines
@@ -59,10 +57,11 @@ def make_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs2val=edge_val)
         desc = f"{coverpoint} (Test source fs2 value = {test_data.flen_format_str.format(edge_val)})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(
+            format_single_test(instr_name, instr_type, test_data, params, desc, f"b{edge_val:#x}", coverpoint)
+        )
         return_test_regs(test_data, params)
 
     return test_lines
@@ -82,10 +81,11 @@ def make_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     test_lines: list[str] = []
     for edge_val in edges:
-        test_lines.append(test_data.add_testcase(f"b{edge_val:#x}", coverpoint))
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], fs3val=edge_val)
         desc = f"{coverpoint} (Test source fs3 value = {test_data.flen_format_str.format(edge_val)})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(
+            format_single_test(instr_name, instr_type, test_data, params, desc, f"b{edge_val:#x}", coverpoint)
+        )
         return_test_regs(test_data, params)
 
     return test_lines

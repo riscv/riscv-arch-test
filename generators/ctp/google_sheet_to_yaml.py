@@ -53,7 +53,7 @@ from typing import Any
 
 try:
     import requests  # type: ignore[import-untyped]
-except Exception:
+except ImportError:
     requests = None  # type: ignore[assignment]
 
 from ruamel.yaml import YAML
@@ -81,7 +81,7 @@ def fetch_csv_via_gspread(sheet_id: str, gid: str, service_account: str) -> str 
     try:
         import gspread  # type: ignore[import-untyped]
         from google.oauth2.service_account import Credentials  # type: ignore[import-untyped]
-    except Exception:
+    except ImportError:
         return None
 
     scopes = [
@@ -96,7 +96,7 @@ def fetch_csv_via_gspread(sheet_id: str, gid: str, service_account: str) -> str 
         # gspread has internal id as _properties['sheetId']
         try:
             sid = str(w._properties.get("sheetId"))
-        except Exception:
+        except AttributeError:
             sid = None
         if sid == str(gid):
             ws = w
@@ -107,10 +107,7 @@ def fetch_csv_via_gspread(sheet_id: str, gid: str, service_account: str) -> str 
 
     # get_all_values returns list of rows; write CSV text
     rows = ws.get_all_values()
-    output_lines = []
-    for row in rows:
-        # ensure proper CSV row using csv module
-        output_lines.append(",".join('"' + c.replace('"', '""') + '"' for c in row))
+    output_lines = [",".join('"' + c.replace('"', '""') + '"' for c in row) for row in rows]
     return "\n".join(output_lines)
 
 

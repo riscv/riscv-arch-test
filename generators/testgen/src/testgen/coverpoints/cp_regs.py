@@ -36,14 +36,13 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
 
     # Generate tests
     for rd in rd_regs:
-        test_lines.append(test_data.add_testcase(f"b{rd}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rd))
         else:
             test_lines.append(test_data.int_regs.consume_registers([rd]))
         params = generate_random_params(test_data, instr_type, rd=rd)
         desc = f"{coverpoint} (Test destination rd = x{rd})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint))
         return_test_regs(test_data, params)
 
     return test_lines
@@ -74,14 +73,13 @@ def make_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for rs1 in rs1_regs:
-        test_lines.append(test_data.add_testcase(f"b{rs1}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rs1))
         else:
             test_lines.append(test_data.int_regs.consume_registers([rs1]))
         params = generate_random_params(test_data, instr_type, rs1=rs1)
         desc = f"{coverpoint} (Test source rs1 = x{rs1})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rs1}", coverpoint))
         return_test_regs(test_data, params)
 
     return test_lines
@@ -109,14 +107,13 @@ def make_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
 
     # Generate tests
     for rs2 in rs2_regs:
-        test_lines.append(test_data.add_testcase(f"b{rs2}", coverpoint))
         if is_pair:
             test_lines.append(test_data.int_regs.consume_register_pair(rs2))
         else:
             test_lines.append(test_data.int_regs.consume_registers([rs2]))
         params = generate_random_params(test_data, instr_type, rs2=rs2)
         desc = f"{coverpoint} (Test source rs2 = x{rs2})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rs2}", coverpoint))
         return_test_regs(test_data, params)
 
     return test_lines

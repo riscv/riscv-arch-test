@@ -44,6 +44,7 @@ class Config(BaseModel):
     objdump_exe: Path | None = None
     ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
+    include_priv_tests: bool = True
 
     model_config = {"frozen": True}
 

@@ -22,7 +22,8 @@ normative_rule_definitions:
   - name: addi_op
     coverpoint: ["I_addi_cg/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
   - name: addi_overflow
-    coverpoint: ["I_addi_cg/cr_rs1_imm_edges"]
+    coverpoint:
+      ["I_addi_cg/cr_rs1_imm_edges.   Cases such as all 1s + all 1s overflow."]
   - names: ["andi_op, ori_op, xori_op"]
     coverpoint:
       ["{I_andi_cg, I_ori_op, I_xori_op}/{cp_rs1, cp_rd, cr_rs1_imm_edges}"]
@@ -46,7 +47,10 @@ normative_rule_definitions:
   - name: sub_op
     coverpoint: ["I_sub_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - names: ["add_overflow, sub_overflow"]
-    coverpoint: ["{I_add_cg, I_sub_cg}/cr_rs1_rs2_edges"]
+    coverpoint:
+      [
+        "{I_add_cg, I_sub_cg}/cr_rs1_rs2_edges. Cases such as all 1s + all 1s overflow.",
+      ]
   - name: slt_op
     coverpoint: ["I_slt_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]
   - name: sltu_op
@@ -121,18 +125,18 @@ normative_rule_definitions:
   - name: ldst_atomicity_for_aligned
     coverpoint:
       [
-        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte",
+        "I_lw_cg/cp_align_word, I_lh_cg/cp_align_half, I_lhu_cg/cp_align_half, I_lb_cg/cp_align_byte, I_lbu_cg/cp_align_byte, I_sw_cg/cp_align_word, I_sh_cg/cp_align_half, I_sb_cg/cp_align_byte, Atomic behavior not tested.",
       ]
   - name: fence_op
-    coverpoint: ["I_fence_cg/{cp_custom_fence}"]
+    coverpoint: ["I_fence_cg/{cp_custom_fence}, ordering not tested"]
   - name: fence-tso_op
-    coverpoint: ["I_fence_cg/{cp_custom_fence}"]
+    coverpoint: ["I_fence_cg/{cp_custom_fence}, ordering not tested"]
   - name: fence-tso_ordering_rw_rw_ok
-    coverpoint: ["I_fence_cg/{cp_custom_fence}"]
+    coverpoint: ["I_fence_cg/{cp_custom_fence}, implementation not tested"]
   - name: fence_unused_flds_rsv
     coverpoint: ["I_fence_cg/{cp_custom_fence}"]
   - name: fence_cons_ok
-    coverpoint: ["I_fence_cg/{cp_custom_fence}"]
+    coverpoint: ["I_fence_cg/{cp_custom_fence}, ordering not tested"]
   - name: hints_op
     # hints designated for standard use
     coverpoint:

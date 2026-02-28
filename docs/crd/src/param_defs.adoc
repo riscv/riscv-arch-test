@@ -1,0 +1,71 @@
+[appendix]
+== Parameter Definitions
+
+Parameters are implementation-defined options supported by RISC-V standards.
+Many parameters are not named in RISC-V standards but a golden list of parameters
+is maintained separately by RISC-V International and this section uses those names.
+
+NOTE: The golden list of parameters is still under development so the parameters in this document
+are "preliminary parameters" and subject to change as the golden list is finalized.
+
+Parameters map to one or more Implementation-Defined Behaviors as defined in the RISC-V ISA manual's normative rule information.
+
+.Parameter Definitions
+[cols="3,1,1,3,2"]
+|===
+| Parameter | Type | ISA Feature | Definition | Implementation-Defined Behavior(s)
+
+| [#param:MISALIGNED_LDST]#MISALIGNED_LDST#
+| Boolean
+| RV32I/RV64I Base ISA
+| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
+a|
+  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_INVISIBLE_TRAP[MISALIGNED_LDST_INVISIBLE_TRAP]
+  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR[MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR]
+  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP[MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP]
+
+| [#param:TIME_CSR_IMPLEMENTED]#TIME_CSR_IMPLEMENTED#
+| Boolean
+| Zicntr
+| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
+a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+
+| [#param:LRSC_RESERVATION_STRATEGY]#LRSC_RESERVATION_STRATEGY#
+| Enum (Exact, 64B, 128B, Other)
+| Atomic (Zalrsc extension)
+a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
+
+[%autowidth]
+!===
+! Value ! Definition
+
+! Exact ! Reservation set is exactly enough to cover the access and no more
+! 64B ! Reservation set is naturally-aligned 64-byte region
+! 128B ! Reservation set is naturally-aligned 128-byte region
+! Other ! Reservation set strategy doesn't fit any of the specified choices
+!===
+a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+
+| [#param:LRSC_FAIL_ON_NON_EXACT_LRSC]#LRSC_FAIL_ON_NON_EXACT_LRSC#
+| Boolean
+| Atomic (Zalrsc extension)
+| Does a Store Conditional instruction fail if its physical address and size do not
+  exactly match the physical address and size of the last Load Reserved in program order
+  (independent of whether or not the Store Conditional is in the current reservation set).
+a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+
+| [#param:HPM_COUNTER_SZ]#HPM_COUNTER_SZ#
+| Array[3:31] of Integer 0 to 64
+| Zicntr
+| Bit width of each implemented unprivileged hardware performance counter.
+A value of 0 indicates the corresponding counter is not implemented.
+a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+
+| [#param:MISALIGNED_ATOMIC]#MISALIGNED_ATOMIC#
+| Boolean
+| Atomic
+| Implementation supports misaligned atomic instructions (potentially with restrictions expressed by other parameters). Includes all types of RISC-V atomic instructions supported by the implementation.
+a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+
+|===

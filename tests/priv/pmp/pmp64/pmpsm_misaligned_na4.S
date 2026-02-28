@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -26,7 +26,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -39,6 +39,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
+#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -56,60 +57,94 @@ RVTEST_BEGIN
 
 #define NOP     (0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(a4, NOP)                                              // Value to write (NOP)
     // Access Check straddling start
     LA(a5, (\ADDRESS-1))
+    \TEST_CASE\()_1:
     sd a4, 0(a5)                                             // Doubleword-level store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+
+    \TEST_CASE\()_2:
     ld a4, 0(a5)                                             // Doubleword load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
+    \TEST_CASE\()_3:
     sw a4, 0(a5)                                             // Word-level store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
+    \TEST_CASE\()_4:
     lw a4, 0(a5)                                             // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
+
+    \TEST_CASE\()_5:
     lwu a4, 0(a5)                                             // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_5_str)
 
+    \TEST_CASE\()_6:
     sh a4, 0(a5)                                             // Half-word store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
+
+    \TEST_CASE\()_7:
     lh a4, 0(a5)                                             // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)
-    lhu a4, 0(a5)                                             // Half-word load test
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
+
+    \TEST_CASE\()_8:
+    lhu a4, 0(a5)                                            // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
+
 
     // Access Check straddling end
     LA(a5, (\ADDRESS+3))
+
+    \TEST_CASE\()_9:
     sd a4, 0(a5)                                             // Doubleword-level store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
+
+    \TEST_CASE\()_10:
     ld a4, 0(a5)                                             // Doubleword load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)
 
+    \TEST_CASE\()_11:
     sw a4, 0(a5)                                             // Word-level store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
+
+    \TEST_CASE\()_12:
     lw a4, 0(a5)                                             // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)
-    lwu a4, 0(a5)                                             // Word load test
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_8_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
 
+    \TEST_CASE\()_13:
+    lwu a4, 0(a5)                                            // Word load test
+    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
+
+    \TEST_CASE\()_14:
     sh a4, 0(a5)                                             // Half-word store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
+
+    \TEST_CASE\()_15:
     lh a4, 0(a5)                                             // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_9_str)
-    lhu a4, 0(a5)                                             // Half-word load test
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)
+
+    \TEST_CASE\()_16:
+    lhu a4, 0(a5)                                            // Half-word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_10_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_16, test_16_str)
 
 .endm
 
@@ -157,19 +192,17 @@ main:
     LI(x4, PMPREGION_XWR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 -- LXWR Permissions given to the PMP Region.
 
     LI(x4, PMPREGION_LXWR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_11_str)                                       // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -197,17 +230,24 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: pmpm_mislaigned_na4_ld_address-1\""
-test_2_str: .string "\"test: 2; cp: pmpm_mislaigned_na4_lw_address-1\""
-test_3_str: .string "\"test: 3; cp: pmpm_mislaigned_na4__lwu_address-1\""
-test_4_str: .string "\"test: 4; cp: pmpm_mislaigned_na4_lh_address-1\""
-test_5_str: .string "\"test: 5; cp: pmpm_mislaigned_na4_lhu_address-1\""
-test_6_str: .string "\"test: 6; cp: pmpm_mislaigned_na4_ld_address+3\""
-test_7_str: .string "\"test: 7; cp: pmpm_mislaigned_na4_lw_address+3\""
-test_8_str: .string "\"test: 8; cp: pmpm_mislaigned_na4__lwu_address+3\""
-test_9_str: .string "\"test: 9; cp: pmpm_mislaigned_na4_lh_address+3\""
-test_10_str: .string "\"test: 10; cp: pmpm_mislaigned_na4_lhu_address+3\""
-test_11_str: .string "\"test: 11; cp: pmpm_mislaigned_na4\""
+test_1_str:  .string "\"test: 1;  cp: pmpm_misaligned_na4_sd_address-1\""
+test_2_str:  .string "\"test: 2;  cp: pmpm_misaligned_na4_ld_address-1\""
+test_3_str:  .string "\"test: 3;  cp: pmpm_misaligned_na4_sw_address-1\""
+test_4_str:  .string "\"test: 4;  cp: pmpm_misaligned_na4_lw_address-1\""
+test_5_str:  .string "\"test: 5;  cp: pmpm_misaligned_na4_lwu_address-1\""
+test_6_str:  .string "\"test: 6;  cp: pmpm_misaligned_na4_sh_address-1\""
+test_7_str:  .string "\"test: 7;  cp: pmpm_misaligned_na4_lh_address-1\""
+test_8_str:  .string "\"test: 8;  cp: pmpm_misaligned_na4_lhu_address-1\""
+
+test_9_str:  .string "\"test: 9;  cp: pmpm_misaligned_na4_sd_address+3\""
+test_10_str: .string "\"test: 10; cp: pmpm_misaligned_na4_ld_address+3\""
+test_11_str: .string "\"test: 11; cp: pmpm_misaligned_na4_sw_address+3\""
+test_12_str: .string "\"test: 12; cp: pmpm_misaligned_na4_lw_address+3\""
+test_13_str: .string "\"test: 13; cp: pmpm_misaligned_na4_lwu_address+3\""
+test_14_str: .string "\"test: 14; cp: pmpm_misaligned_na4_sh_address+3\""
+test_15_str: .string "\"test: 15; cp: pmpm_misaligned_na4_lh_address+3\""
+test_16_str: .string "\"test: 16; cp: pmpm_misaligned_na4_lhu_address+3\""
+
 
 RVTEST_DATA_END
 

@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -25,7 +25,7 @@
 // Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Zca','S','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32ic_zicsr
@@ -38,6 +38,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
+#define RVTEST_PRIV_TEST
 #define rvtest_strap_routine
 
 #define SKIP_MEPC
@@ -48,35 +49,27 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 4
-#endif
-
-#ifndef NUM_PMP_ENTRIES
-    #define NUM_PMP_ENTRIES 16
-#endif
-
 #define REGION_SIZE         (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS
-
-    LA(x15, \ADDRESS)                                       // Address to be verified
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
+    \TEST_CASE\()_1:
+    LA(x15, \ADDRESS)               // Address to be verified
     c.jalr x15
     nop
-
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 .endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept NUM_PMP_ENTRIES/4
+    .rept RVMODEL_NUM_PMPS/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept NUM_PMP_ENTRIES
+    .rept RVMODEL_NUM_PMPS
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -126,20 +119,11 @@ main:
     LA(x4, PMP2CFG)
     csrw pmpcfg0, x4
 
-    // Test Case 1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2
+    // Test Case 1: Uncompressed return straddling the start of 2nd region
+    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test_1
 
-    // Update signature for test case 1
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
-
-
-    // Test Case 2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_4
-
-    // Update signature for test case 2
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
+    // Test Case 2: Uncompressed return straddling the end of 2nd region
+    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_2
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -173,8 +157,7 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_off_straddling_execute_start\""
-test_2_str: .string "\"test: 2; cp: pmpzca_misaligned_off_straddling_execute_end\""
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END
 

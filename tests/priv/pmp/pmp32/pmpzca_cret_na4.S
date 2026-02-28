@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -26,7 +26,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','C','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Zca','S','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32ic_zicsr
@@ -39,6 +39,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
+#define RVTEST_PRIV_TEST
 #define rvtest_strap_routine
 
 #define SKIP_MEPC
@@ -49,33 +50,25 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef NUM_PMP_ENTRIES
-    #define NUM_PMP_ENTRIES 16
-#endif
-
-.macro VERIFICATION_RWX ADDRESS
-
-    LA(x15, \ADDRESS)                                       // Address to be verified
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
+    \TEST_CASE\()_1:
+    LA(x15, \ADDRESS)               // Address to be verified
     c.jalr x15
     nop
-
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 .endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept NUM_PMP_ENTRIES/4
+    .rept RVMODEL_NUM_PMPS/4
     csrw pmpcfgi , x0
     .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
     .set pmpaddri, CSR_PMPADDR0
-    .rept NUM_PMP_ENTRIES
+    .rept RVMODEL_NUM_PMPS
     csrw pmpaddri, x0
     .set pmpaddri, pmpaddri+1
     .endr
@@ -108,31 +101,17 @@ main:
     csrw pmpcfg0, x4
 
     //Test case1
-    VERIFICATION_RWX TEST_FOR_EXECUTION_0
-
-     // Update signature for test case 1
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
+    VERIFICATION_RWX TEST_FOR_EXECUTION_0, test1
 
     //Test case2
-    VERIFICATION_RWX TEST_FOR_EXECUTION_1
-    // Update signature for test case 1
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
+    VERIFICATION_RWX TEST_FOR_EXECUTION_1, test2
 
     //Test case3
-    VERIFICATION_RWX TEST_FOR_EXECUTION_2
-
-     // Update signature for test case 1
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)
+    VERIFICATION_RWX TEST_FOR_EXECUTION_2, test3
 
     //Test case4
-    VERIFICATION_RWX TEST_FOR_EXECUTION_3
+    VERIFICATION_RWX TEST_FOR_EXECUTION_3, test4
 
-     // Update signature for test case 1
-    li a4, 0xdeadbeef
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)
     j exit                                                      // Verification Complete, exit the test
 
 .align 12
@@ -162,10 +141,7 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute_at_just_before\""
-test_2_str: .string "\"test: 2; cp: pmpzca_cret_napot_execute_at_inside\""
-test_3_str: .string "\"test: 3; cp: pmpzca_cret_napot_execute_at_top\""
-test_4_str: .string "\"test: 4; cp: pmpzca_cret_napot_execute_at_just_above_top\""
+test_1_str: .string "\"test: 1; cp: pmpzca_cret_napot_execute\""
 
 RVTEST_DATA_END
 

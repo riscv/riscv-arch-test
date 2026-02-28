@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -28,7 +28,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -36,12 +36,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_napot_all.S"
+#define TEST_FILE "pmpsm_cfg_napot_all.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -49,23 +49,16 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP         (0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LA(a5, \ADDRESS)                                         // Address to be ve
+    \TEST_CASE\()_1:
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)                                   // Signature update
 
 .endm
 
@@ -174,24 +167,22 @@ main:
     LI(x4, (PMP_REGION_GLOBAL |PMPREGION6_XWR_000|PMPREGION5_XWR_001|PMPREGION4_XWR_000|PMPREGION3_XWR_001|PMPREGION2_XWR_000|PMPREGION1_XWR_001|PMPREGION0_XWR_000))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    (TEST_FOR_EXECUTION_0 - 4)      // Access at the end of default region
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_0
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_1
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_2
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_3
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_4
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_5
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_6
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_7
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_8
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_9
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_10
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_11
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_12
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_13
+    VERIFICATION_RWX    (TEST_FOR_EXECUTION_0 - 4) , test_1     // Access at the end of default region
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_0 , test_2
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_1 , test_3
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_2 , test_4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_3 , test_5
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_4 , test_6
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_5 , test_7
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_6 , test_8
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_7 , test_9
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_8 , test_10
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_9 , test_11
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_10, test_12
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_11, test_13
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_14
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_15
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                        // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -285,7 +276,6 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
-test_2_str: .string "\"test: 2; cp: pmpm_cfg_tor_all\""
 
 RVTEST_DATA_END
 

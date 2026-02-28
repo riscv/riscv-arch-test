@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -25,7 +25,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS:  ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -33,12 +33,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_A_all.S"
+#define TEST_FILE "pmpsm_cfg_A_all.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -47,14 +47,6 @@
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
-
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 64
-#endif
 
 #define NOP         0x13
 
@@ -139,8 +131,6 @@ main:
 
 // ---------------------------------------------------------------------------
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                      // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 12
@@ -159,7 +149,6 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_cfg_A_all\""
 
 RVTEST_DATA_END
 

@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -30,7 +30,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -43,7 +43,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -51,13 +51,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
 
 #if RVMODEL_PMP_GRAIN != 0
   #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
@@ -67,115 +60,170 @@ RVTEST_BEGIN
 
 #define NOP         (0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     // Execution Access Check
     LA (a4, \ADDRESS)
-    LA(x4, 1f)                            // Store the return Address in x4
+    LA(x1, 1f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 1:
     nop
 
     addi a4, a4, -4                     // REGIONSTART - 4
-    LA(x4, 2f)                            // Store the return Address in x4
+    LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 2:
     nop
 
     addi a4, a4, 8                      // REGIONSTART + 4
-    LA(x4, 3f)                            // Store the return Address in x4
+    LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 3:
     nop
 
     addi a4, a4, (g-8)                  // REGIONSTART + g - 4
-    LA(x4, 4f)                            // Store the return Address in x4
+    LA(x1, 4f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 4:
     nop
 
     addi a4, a4, 4                      // REGIONSTART + g
-    LA(x4, 5f)                            // Store the return Address in x4
+    LA(x1, 5f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 5:
     nop
 
     LI(a4, NOP)                                              // Value to write (NOP)
+
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
+
+    \TEST_CASE\()_1:
     sb a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+
+    \TEST_CASE\()_2:
     sh a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
+
+    \TEST_CASE\()_3:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
+
+    \TEST_CASE\()_4:
     sd a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
 
-    addi a5, a5, -4                                         // REGIONSTART - 4
+
+    addi a5, a5, -4                                          // REGIONSTART - 4
+
+    \TEST_CASE\()_5:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
-    addi a5, a5, 8                                          // REGIONSTART + 4
+
+    addi a5, a5, 8                                           // REGIONSTART + 4
+
+    \TEST_CASE\()_6:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+
+    addi a5, a5, (g-8)                                       // REGIONSTART + g - 4
+
+    \TEST_CASE\()_7:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
 
-    addi a5, a5, 4                                          // REGIONSTART + g
+
+    addi a5, a5, 4                                           // REGIONSTART + g
+
+    \TEST_CASE\()_8:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
-    LA(a5, \ADDRESS)                                         // Address to be verified
+    LA(a5, \ADDRESS)
+
+    \TEST_CASE\()_9:
     lb a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
+
+    \TEST_CASE\()_10:
     lbu a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                  // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_10, test_10_str)
+
+    \TEST_CASE\()_11:
     lh a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
+
+    \TEST_CASE\()_12:
     lhu a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)                                  // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_12, test_12_str)
+
+    \TEST_CASE\()_13:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_13, test_13_str)
+
+    \TEST_CASE\()_14:
     lwu a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
+
+    \TEST_CASE\()_15:
     ld a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_15, test_15_str)
 
-    addi a5, a5, -4                                         // REGIONSTART - 4
+
+    addi a5, a5, -4
+
+    \TEST_CASE\()_16:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_8_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_16, test_16_str)
 
-    addi a5, a5, 8                                          // REGIONSTART + 4
+
+    addi a5, a5, 8
+
+    \TEST_CASE\()_17:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_9_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_17, test_17_str)
 
-    addi a5, a5, (g-8)                                      // REGIONSTART + g - 4
+
+    addi a5, a5, (g-8)
+
+    \TEST_CASE\()_18:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_10_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_18, test_18_str)
 
-    addi a5, a5, 4                                          // REGIONSTART + g
+
+    addi a5, a5, 4
+
+    \TEST_CASE\()_19:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_11_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_19, test_19_str)
 
 .endm
 
@@ -233,7 +281,7 @@ main:
     LI(x4, PMPREGION_LXWR_1000)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
 
@@ -243,7 +291,7 @@ main:
     LI(x4, PMPREGION_LXWR_1001)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
 
@@ -253,7 +301,7 @@ main:
     LI(x4, PMPREGION_LXWR_1011)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
@@ -263,7 +311,7 @@ main:
     LI(x4, PMPREGION_LXWR_1100)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 1
 
@@ -273,7 +321,7 @@ main:
     LI(x4, PMPREGION_LXWR_1101)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
 
@@ -283,11 +331,9 @@ main:
     LI(x4, PMPREGION_LXWR_1111)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_12_str)                                      // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 12
@@ -310,18 +356,28 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_cfg_A_napot_lb\""
-test_2_str: .string "\"test: 2; cp: cp_cfg_A_napot_lbu\""
-test_3_str: .string "\"test: 3; cp: cp_cfg_A_napot_lh\""
-test_4_str: .string "\"test: 4; cp: cp_cfg_A_napot_lhu\""
-test_5_str: .string "\"test: 5; cp: cp_cfg_A_napot_lw\""
-test_6_str: .string "\"test: 6; cp: cp_cfg_A_napot_lwu\""
-test_7_str: .string "\"test: 7; cp: cp_cfg_A_napot_ld\""
-test_8_str: .string "\"test: 8; cp: cp_cfg_A_napot_address-4\""
-test_9_str: .string "\"test: 9; cp: cp_cfg_A_napot_address+4\""
-test_10_str: .string "\"test: 10; cp: cp_cfg_A_napot_lw_address+g-4\""
-test_11_str: .string "\"test: 11; cp: cp_cfg_A_napot_lw_address+g\""
-test_12_str: .string "\"test: 12; cp: cp_cfg_A_napot\""
+test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_napot_sb_address\""
+test_2_str:  .string "\"test: 2;  cp: cp_cfg_A_napot_sh_address\""
+test_3_str:  .string "\"test: 3;  cp: cp_cfg_A_napot_sw_address\""
+test_4_str:  .string "\"test: 4;  cp: cp_cfg_A_napot_sd_address\""
+
+test_5_str:  .string "\"test: 5;  cp: cp_cfg_A_napot_sw_address-4\""
+test_6_str:  .string "\"test: 6;  cp: cp_cfg_A_napot_sw_address+4\""
+test_7_str:  .string "\"test: 7;  cp: cp_cfg_A_napot_sw_address+g-4\""
+test_8_str:  .string "\"test: 8;  cp: cp_cfg_A_napot_sw_address+g\""
+
+test_9_str:  .string "\"test: 9;  cp: cp_cfg_A_napot_lb_address\""
+test_10_str: .string "\"test: 10; cp: cp_cfg_A_napot_lbu_address\""
+test_11_str: .string "\"test: 11; cp: cp_cfg_A_napot_lh_address\""
+test_12_str: .string "\"test: 12; cp: cp_cfg_A_napot_lhu_address\""
+test_13_str: .string "\"test: 13; cp: cp_cfg_A_napot_lw_address\""
+test_14_str: .string "\"test: 14; cp: cp_cfg_A_napot_lwu_address\""
+test_15_str: .string "\"test: 15; cp: cp_cfg_A_napot_ld_address\""
+
+test_16_str: .string "\"test: 16; cp: cp_cfg_A_napot_lw_address-4\""
+test_17_str: .string "\"test: 17; cp: cp_cfg_A_napot_lw_address+4\""
+test_18_str: .string "\"test: 18; cp: cp_cfg_A_napot_lw_address+g-4\""
+test_19_str: .string "\"test: 19; cp: cp_cfg_A_napot_lw_address+g\""
 
 RVTEST_DATA_END
 

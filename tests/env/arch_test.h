@@ -1483,7 +1483,7 @@ common_\__MODE__\()excpt_handler:
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
 #ifdef SKIP_MEPC
-        j       adj_\__MODE__\()epc
+        j       sv_\__MODE__\()epc
 #endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)

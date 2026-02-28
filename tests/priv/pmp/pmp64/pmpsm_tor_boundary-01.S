@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -29,7 +29,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -42,7 +42,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -50,27 +50,23 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP     (0x13<<32)+0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(a4, NOP)                                              // Value to write (NOP)
 
-    LA(a5, \ADDRESS)                                         // Address to be verified
+    LA(a5, (\ADDRESS))                                     // Address to be verified
+    \TEST_CASE\()_1:
     sd a4, 0(a5)                                             // Doubleword-level store test
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
+
+    \TEST_CASE\()_2:
     ld a4, 0(a5)                                             // Doubleword-level load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
 .endm
 
@@ -121,10 +117,8 @@ main:
     LI(x4, PMPREGION1_LXWR|PMPREGION0_LXWR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                       // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -148,8 +142,8 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_tor_boundary_ld\""
-test_2_str: .string "\"test: 2; cp: cp_tor_boundary\""
+test_1_str: .string "\"test: 1; cp: cp_tor_boundary_sd\""
+test_2_str: .string "\"test: 2; cp: cp_tor_boundary_ld\""
 
 RVTEST_DATA_END
 

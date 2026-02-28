@@ -8,7 +8,7 @@
 //               systems. It checks that region 0 extends from 0 to pmpaddr0
 //               in TOR mode.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -23,7 +23,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS:  ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -36,7 +36,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 #define SKIP_MTVAL
@@ -57,19 +57,21 @@ RVTEST_BEGIN
 
 #define NOP         (0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
-       LI(a4, NOP)                                              // Value to write (NOP)
+    LI(a4, NOP)                                              // Value to write (NOP)
 
     LA(a5, (\ADDRESS))                                         // Address to be verified
+    \TEST_CASE\()_1:
     sw a4, 0(a5)                                             // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_1,test_1_str)               // Signature update
 
     LA(a5, (\ADDRESS-4))                                     // Address to be verified
+    \TEST_CASE\()_2:
     sw a4, 0(a5)                                             // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_2_str)               // Signature update
 
     LI(x4, 0xACCE)
     li a5, 0
@@ -81,15 +83,18 @@ RVTEST_BEGIN
 
 
     LA(a5, (\ADDRESS))                                         // Address to be verified
+    \TEST_CASE\()_3:
     lw a4, 0(a5)                                             // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_3,test_3_str)               // Signature update
 
     LA(a5, (\ADDRESS-4))                                         // Address to be verified
+    \TEST_CASE\()_4:
     lw a4, 0(a5)                                             // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_4,test_4_str)               // Signature update
 
+    LI(x4, 0xACCE)
     LA(x1, 5f)
     li a5, 0                                                   // Address to be verified
     lw a4, 0(a5)                                             // word-level store test
@@ -99,23 +104,25 @@ RVTEST_BEGIN
     nop
 
 
-
+    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS))
-    LA(x1, 1f)                                                // Store the return Address in x4
+    LA(x1, 1f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 1:
     nop
 
+    LI(x4, 0xACCE)
     LA (a4, (\ADDRESS-4))
-    LA(x1, 2f)                            // Store the return Address in x4
+    LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 2:
     nop
 
+    LI(x4, 0xACCE)
     li a5, 0
-    LA(x1, 3f)                            // Store the return Address in x4
+    LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a5)
     nop
 3:
@@ -162,12 +169,10 @@ main:
     LI(x4, PMPREGION_TOR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE
 
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)                                        // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -195,7 +200,6 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_tor_zero_store_access_at_pmpaddr0
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_tor_zero_store_access_at_pmpaddr0-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0\""
 test_4_str: .string "\"test: 4; cp: pmpm_cfg_A_tor_zero_load_access_at_pmpaddr0-4\""
-test_5_str: .string "\"test: 5; cp: pmpm_cfg_A_tor_zero\""
 
 RVTEST_DATA_END
 

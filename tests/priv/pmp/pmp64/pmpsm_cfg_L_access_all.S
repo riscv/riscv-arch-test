@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -27,7 +27,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -40,7 +40,7 @@
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -50,21 +50,13 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP         (0x13<<32)+0x13
 
-.macro VERIFICATION_RWX ADDRESS      // {jalr, sw, lw} at start of region (0x80002000)
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
-    LA(x4, 1f)                            // Store the return Address in x4
+    LA(x1, 1f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
     nop
@@ -75,15 +67,16 @@ RVTEST_BEGIN
     // Store Access Check
     LA(a5, \ADDRESS)                        // Address to be verified
     LI(a4, NOP)                                // Value to write (NOP)
+    \TEST_CASE\()_2:
     sw a4, 0(a5)                            // Word store test
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
     // Load Access Check
+    \TEST_CASE\()_1:
     lw a4, 0(a5)                            // Word load test
     nop
-    nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)     // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)     // Signature update
 
 .endm
 
@@ -105,7 +98,7 @@ main:
 //                                            Verification Section
 // Test Case: 0 -- M-mode access succeeds when all PMP are off
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_0
     RVTEST_GOTO_MMODE
 
 #define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)  // Background region with RWX enable.
@@ -142,7 +135,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 0 and No Permissions given to the PMP Region 13
 
@@ -152,7 +145,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 0 and No Permissions given to the PMP Region 12
 
@@ -162,7 +155,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 0 and No Permissions given to the PMP Region 11
 
@@ -172,7 +165,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 0 and No Permissions given to the PMP Region 10
 
@@ -182,7 +175,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 0 and No Permissions given to the PMP Region 9
 
@@ -192,7 +185,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 
 // Test Case: 7 : L -> 0 and No Permissions given to the PMP Region 8
@@ -203,7 +196,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 0 and No Permissions given to the PMP Region 7
 
@@ -213,7 +206,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 0 and No Permissions given to the PMP Region 6
 
@@ -223,7 +216,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 0 and No Permissions given to the PMP Region 5
 
@@ -233,7 +226,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP5_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 0 and No Permissions given to the PMP Region 4
 
@@ -243,7 +236,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 0 and No Permissions given to the PMP Region 3
 
@@ -253,7 +246,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 0 and No Permissions given to the PMP Region 2
 
@@ -263,7 +256,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 0 and No Permissions given to the PMP Region 1
 
@@ -273,7 +266,7 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 0 and No Permissions given to the PMP Region 0
 
@@ -283,11 +276,8 @@ main:
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
-
-
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                       // Signature update
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
+                                     // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 12
@@ -311,7 +301,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_access_all_lw and cp_none_lw\""
-test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all and cp_none\""
+test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all_sw and cp_none_sw\""
 
 RVTEST_DATA_END
 

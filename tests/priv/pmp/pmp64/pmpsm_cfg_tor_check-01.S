@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -26,7 +26,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS:  ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -34,12 +34,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_tor_check-01.S"
+#define TEST_FILE "pmpsm_cfg_tor_check-01.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -49,60 +49,58 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP         (0x13<<32)+0x13
 #define g         (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(a4, NOP)                                             // Value to write (NOP)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    \TEST_CASE\()_1:
     sw a4, 0(a5)                                            // word-level store test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)                               // Signature update
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
+    \TEST_CASE\()_2:
     sw a4, 0(a5)                                            // word-level store test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)                                   // Signature update
 
     LA(a5, (\ADDRESS+4))                                    // Address to be verified
+    \TEST_CASE\()_3:
     sw a4, 0(a5)                                            // word-level store test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)                                   // Signature update
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    \TEST_CASE\()_4:
     lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)                               // Signature update
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
+    \TEST_CASE\()_5:
     lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)                                   // Signature update
 
     LA(a5, (\ADDRESS+4))                                    // Address to be verified
+    \TEST_CASE\()_6:
     lw a4, 0(a5)                                            // Word load test
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)                                    // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)                                    // Signature update
 
     LA (a4, (\ADDRESS-4))
     LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
-    LA(x4, 1f)                                                // Store the return Address in x4
+    LA(x1, 1f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop
     nop
@@ -111,7 +109,7 @@ RVTEST_BEGIN
     nop
 
     LA (a4, (\ADDRESS))
-    LA(x4, 2f)                                                // Store the return Address in x4
+    LA(x1, 2f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop
     nop
@@ -120,7 +118,7 @@ RVTEST_BEGIN
     nop
 
     LA (a4, (\ADDRESS+4))
-    LA(x4, 3f)                                                // Store the return Address in x4
+    LA(x1, 3f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop
     nop
@@ -173,12 +171,10 @@ main:
     LI(x4, PMPREGION_UPPER_BOUND)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
     RVTEST_GOTO_MMODE
-
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)                                       // Signature update
+                                      // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -209,7 +205,6 @@ test_3_str: .string "\"test: 3; cp: pmpm_cfg_tor_check1_store_access_at_pmpaddr+
 test_4_str: .string "\"test: 4; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr-4\""
 test_5_str: .string "\"test: 5; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_tor_check1_load_access_at_pmpaddr+4\""
-test_7_str: .string "\"test: 7; cp: pmpm_cfg_tor_check1\""
 
 RVTEST_DATA_END
 

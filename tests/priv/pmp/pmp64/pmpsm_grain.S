@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -27,7 +27,7 @@
 
 #define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
 # MARCH: rv64i_zicsr
@@ -35,12 +35,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_grain.S"
+#define TEST_FILE "pmpsm_grain.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -97,256 +97,277 @@ main:
     LA(x4, PMP_ADDRESS)
     csrw     pmpaddr0, x4
                                                 //Verification Section
-// Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 1: Writing all 0s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
-// Write all 0s in NAPOT
-
+    // Write all 0s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, 0
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_1:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_1, test_1_str)
 
-// Write all 0s in NAPOT
+    // Test Case 2: Writing all 0s in pmpaddr0 when A = NAPOT and read back in NAPOT
 
+    // Write all 0s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, 0
     csrw pmpaddr0, x6
 
-// Read back in NAPOT
-
+    // Read back in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
+    tc_2:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_2, test_2_str)
 
-// Write all 0s in NAPOT
+    // Test Case 3: Writing all 0s in pmpaddr0 when A = NAPOT and read back in TOR
 
+    // Write all 0s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, 0
     csrw pmpaddr0, x6
 
-// Read back in TOR
-
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_3:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_3, test_3_str)
 
-// Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 4: Writing all 0s in pmpaddr0 when A = OFF and read back in OFF
 
-// Write all 0s in OFF
-
+    // Write all 0s in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     li x6, 0
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_4:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_4, test_4_str)
 
-// Write all 0s in OFF
+    // Test Case 5: Writing all 0s in pmpaddr0 when A = OFF and read back in NAPOT
 
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    li x6, 0
-    csrw pmpaddr0, x6
-
-// Read back in NAPOT
-
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    csrr x7, pmpaddr0
-
-// Write all 0s in OFF
-
+    // Write all 0s in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     li x6, 0
     csrw pmpaddr0, x6
 
-// Read back in TOR
+    // Read back in NAPOT
+    LI(x6, PMPREGION_NAPOT)
+    csrw pmpcfg0, x6
+    tc_5:
+    csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_5, test_5_str)
 
+    // Test Case 6: Writing all 0s in pmpaddr0 when A = OFF and read back in TOR
+
+    // Write all 0s in OFF
+    LI(x6, PMPREGION_OFF)
+    csrw pmpcfg0, x6
+    li x6, 0
+    csrw pmpaddr0, x6
+
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_6:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_6, test_6_str)
 
-// Test Case 3: Writing all 1s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 7: Writing all 1s in pmpaddr0 when A = NAPOT and read back in OFF
 
-// Write all 1s in NAPOT
-
+    // Write all 1s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, -1
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_7:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_7, test_7_str)
 
-// Write all 1s in NAPOT
+    // Test Case 8: Writing all 1s in pmpaddr0 when A = NAPOT and read back in NAPOT
 
+    // Write all 1s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, -1
     csrw pmpaddr0, x6
 
-// Read back in NAPOT
-
+    // Read back in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
+    tc_8:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_8, test_8_str)
 
-// Write all 1s in NAPOT
+    // Test Case 9: Writing all 1s in pmpaddr0 when A = NAPOT and read back in TOR
 
+    // Write all 1s in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     li x6, -1
     csrw pmpaddr0, x6
 
-// Read back in TOR
-
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_9:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_9, test_9_str)
 
-// Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 10: Writing all 1s in pmpaddr0 when A = OFF and read back in OFF
 
-// Write all 1s in OFF
-
+    // Write all 1s in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     li x6, -1
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_10:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_10, test_10_str)
 
-// Write all 1s in OFF
+    // Test Case 11: Writing all 1s in pmpaddr0 when A = OFF and read back in NAPOT
 
-    LI(x6, PMPREGION_OFF)
-    csrw pmpcfg0, x6
-    li x6, -1
-    csrw pmpaddr0, x6
-
-// Read back in NAPOT
-
-    LI(x6, PMPREGION_NAPOT)
-    csrw pmpcfg0, x6
-    csrr x7, pmpaddr0
-
-// Write all 1s in OFF
-
+    // Write all 1s in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     li x6, -1
     csrw pmpaddr0, x6
 
-// Read back in TOR
+    // Read back in NAPOT
+    LI(x6, PMPREGION_NAPOT)
+    csrw pmpcfg0, x6
+    tc_11:
+    csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_11, test_11_str)
 
+    // Test Case 12: Writing all 1s in pmpaddr0 when A = OFF and read back in TOR
+
+    // Write all 1s in OFF
+    LI(x6, PMPREGION_OFF)
+    csrw pmpcfg0, x6
+    li x6, -1
+    csrw pmpaddr0, x6
+
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_12:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_12, test_12_str)
 
-// Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 13: Writing checkerboard in pmpaddr0 when A = NAPOT and read back in OFF
 
-// Write checkerboard in NAPOT
-
+    // Write checkerboard in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_13:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_13, test_13_str)
 
-// Write checkerboard in NAPOT
+    // Test Case 14: Writing checkerboard in pmpaddr0 when A = NAPOT and read back in NAPOT
 
+    // Write checkerboard in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in NAPOT
-
+    // Read back in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
+    tc_14:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_14, test_14_str)
 
-// Write checkerboard in NAPOT
+    // Test Case 15: Writing checkerboard in pmpaddr0 when A = NAPOT and read back in TOR
 
+    // Write checkerboard in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in TOR
-
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_15:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_15, test_15_str)
 
-// Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
+    // Test Case 16: Writing checkerboard in pmpaddr0 when A = OFF and read back in OFF
 
-// Write checkerboard in OFF
-
+    // Write checkerboard in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in OFF
-
+    // Read back in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
+    tc_16:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_16, test_16_str)
 
-// Write checkerboard in OFF
+    // Test Case 17: Writing checkerboard in pmpaddr0 when A = OFF and read back in NAPOT
 
+    // Write checkerboard in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in NAPOT
-
+    // Read back in NAPOT
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
+    tc_17:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_17, test_17_str)
 
-// Write checkerboard in OFF
+    // Test Case 18: Writing checkerboard in pmpaddr0 when A = OFF and read back in TOR
 
+    // Write checkerboard in OFF
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
     LI(x6, CHECKERBOARD)
     csrw pmpaddr0, x6
 
-// Read back in TOR
-
+    // Read back in TOR
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
+    tc_18:
     csrr x7, pmpaddr0
+    RVTEST_SIGUPD(x2, x5, x4, x7, tc_18, test_18_str)
 
     RVTEST_GOTO_MMODE
-
-    li a4, 0xbeefcafe                                            // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                       // Signature update
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
@@ -369,7 +390,24 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_pmp_grain\""
+test_1_str:  .string "\"test: 1;  cp: cp_pmp_grain\""
+test_2_str:  .string "\"test: 2;  cp: cp_pmp_grain\""
+test_3_str:  .string "\"test: 3;  cp: cp_pmp_grain\""
+test_4_str:  .string "\"test: 4;  cp: cp_pmp_grain\""
+test_5_str:  .string "\"test: 5;  cp: cp_pmp_grain\""
+test_6_str:  .string "\"test: 6;  cp: cp_pmp_grain\""
+test_7_str:  .string "\"test: 7;  cp: cp_pmp_grain\""
+test_8_str:  .string "\"test: 8;  cp: cp_pmp_grain\""
+test_9_str:  .string "\"test: 9;  cp: cp_pmp_grain\""
+test_10_str: .string "\"test: 10; cp: cp_pmp_grain\""
+test_11_str: .string "\"test: 11; cp: cp_pmp_grain\""
+test_12_str: .string "\"test: 12; cp: cp_pmp_grain\""
+test_13_str: .string "\"test: 13; cp: cp_pmp_grain\""
+test_14_str: .string "\"test: 14; cp: cp_pmp_grain\""
+test_15_str: .string "\"test: 15; cp: cp_pmp_grain\""
+test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
+test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
+test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
 RVTEST_DATA_END
 

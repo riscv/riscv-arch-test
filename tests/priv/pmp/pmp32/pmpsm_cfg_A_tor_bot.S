@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -30,7 +30,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr
@@ -38,12 +38,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_A_tor_bot.S"
+#define TEST_FILE "pmpsm_cfg_A_tor_bot.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -53,85 +53,85 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 4
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP             0x13
 #define g       (1<<(RVMODEL_PMP_GRAIN+2))
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LI(a4, NOP)                                             // Value to write (NOP)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    \TEST_CASE\()_1:
     sw a4, 0(a5)                                            // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
+    \TEST_CASE\()_2:
     sw a4, 0(a5)                                            // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
     LA(a5, ((\ADDRESS+g)-4))                                // Address to be verified
+    \TEST_CASE\()_3:
     sw a4, 0(a5)                                            // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
     LA(a5, (\ADDRESS+g))                                    // Address to be verified
+    \TEST_CASE\()_4:
     sw a4, 0(a5)                                            // word-level store test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
 
     LA(a5, (\ADDRESS-4))                                    // Address to be verified
+    \TEST_CASE\()_5:
     lw a4, 0(a5)                                            // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_5_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
 
     LA(a5, (\ADDRESS))                                      // Address to be verified
+    \TEST_CASE\()_6:
     lw a4, 0(a5)                                            // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_6_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
     LA(a5, ((\ADDRESS+g)-4))                                    // Address to be verified
+    \TEST_CASE\()_7:
     lw a4, 0(a5)                                            // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_7_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_7, test_7_str)
 
     LA(a5, (\ADDRESS+g))                                    // Address to be verified
+    \TEST_CASE\()_8:
     lw a4, 0(a5)                                            // Word load test
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_8_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
     LA (a4, (\ADDRESS-4))
-    LI(x4, 0xACCE)                                          // Store a value which is to be checked in trap handler
-    LA(x4, 1f)                                              // Store the return Address in x4
+    LI(x4, 0xACCE)                                            // Store a value which is to be checked in trap handler
+    LA(x1, 1f)                                                // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 1:
     nop
 
     LA (a4, (\ADDRESS))
-    LA(x4, 2f)                          // Store the return Address in x4
+    LA(x1, 2f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 2:
     nop
 
     LA (a4, ((\ADDRESS+g)-4))
-    LA(x4, 3f)                          // Store the return Address in x4
+    LA(x1, 3f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 3:
     nop
 
     LA (a4, (\ADDRESS+g))
-    LA(x4, 4f)                          // Store the return Address in x4
+    LA(x1, 4f)                            // Store the return Address in x1
     jalr ra, 0(a4)
     nop
 4:
@@ -184,7 +184,7 @@ main:
     LI(x4, PMPREGION_UPPER_BOUND)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2
 
@@ -193,7 +193,7 @@ main:
     LI(x4, PMPREGION_LOWER_BOUND)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
 

@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -24,7 +24,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr
@@ -32,12 +32,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_na4_all.S"
+#define TEST_FILE "pmpsm_cfg_na4_all.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -47,35 +47,30 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 #define NOP         0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LA(a5, \ADDRESS)                                        // Address to be ve
+    \TEST_CASE\()_1:
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)                               // Signature update
 
     addi a5, a5, -4
+    \TEST_CASE\()_2:
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                   // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)                                   // Signature update
 
     addi a5, a5, 8
+    \TEST_CASE\()_3:
     lw a4, 0(a5)
     nop
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_3_str)                               // Signature update
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)                               // Signature update
 
 .endm
 
@@ -124,7 +119,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and No Permissions given to the PMP Region 13
 
@@ -134,7 +129,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and No Permissions given to the PMP Region 12
 
@@ -144,7 +139,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg3, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and No Permissions given to the PMP Region 11
 
@@ -154,7 +149,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 10
 
@@ -164,7 +159,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and No Permissions given to the PMP Region 9
 
@@ -174,7 +169,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 : L -> 1 and No Permissions given to the PMP Region 8
 
@@ -184,7 +179,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 1 and No Permissions given to the PMP Region 7
 
@@ -194,7 +189,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 1 and No Permissions given to the PMP Region 6
 
@@ -204,7 +199,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 1 and No Permissions given to the PMP Region 5
 
@@ -214,7 +209,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 1 and No Permissions given to the PMP Region 4
 
@@ -224,7 +219,7 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg1, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 1 and No Permissions given to the PMP Region 3
 
@@ -234,7 +229,7 @@ main:
     LI(x4, (PMPREGION3_XWR_000))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 1 and No Permissions given to the PMP Region 2
 
@@ -244,7 +239,7 @@ main:
     LI(x4, (PMPREGION2_XWR_000))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 1 and No Permissions given to the PMP Region 1
 
@@ -254,7 +249,7 @@ main:
     LI(x4, (PMPREGION1_XWR_000))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 1 and No Permissions given to the PMP Region 0
 
@@ -264,10 +259,8 @@ main:
     LI(x4, (PMPREGION0_XWR_000))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-    li a4, 0xbeefcafe                                           // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_4_str)                                       // Signature update
     j exit                                                      // Verification Complete, exit the test
 
 .align 13
@@ -294,7 +287,7 @@ canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_na4_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_na4_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_na4_all_address+4\""
-test_4_str: .string "\"test: 4; cp: pmpm_cfg_na4_all\""
+
 
 RVTEST_DATA_END
 

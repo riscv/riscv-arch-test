@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -26,7 +26,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr
@@ -34,12 +34,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_all_entries_check-02.S"
+#define TEST_FILE "pmpsm_all_entries_check-02.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -65,14 +65,17 @@ RVTEST_BEGIN
 
 #define NOP         0x13
 
-.macro VERIFICATION_RWX ADDRESS
+.macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LA(a5, \ADDRESS)                                        // Address to be ve
+    \TEST_CASE\()_1:
     sw a4, 0(a5)
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_1,test_2_str)
+    \TEST_CASE\()_2:
     lw a4, 0(a5)
     nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)
+    RVTEST_SIGUPD(x2, x5, x4, a4,\TEST_CASE\()_2,test_1_str)
 
 .endm
 
@@ -140,7 +143,7 @@ main:
     LI(x4, PMP_REGION_47)
     csrw pmpcfg11, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 46
 
@@ -150,7 +153,7 @@ main:
     LI(x4, PMP_REGION_46)
     csrw pmpcfg11, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 45
 
@@ -160,7 +163,7 @@ main:
     LI(x4, PMP_REGION_45)
     csrw pmpcfg11, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 44
 
@@ -170,7 +173,7 @@ main:
     LI(x4, PMP_REGION_44)
     csrw pmpcfg11, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 43
 
@@ -180,7 +183,7 @@ main:
     LI(x4, PMP_REGION_43)
     csrw pmpcfg10, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 42
 
@@ -190,7 +193,7 @@ main:
     LI(x4, PMP_REGION_42)
     csrw pmpcfg10, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 41
 
@@ -200,7 +203,7 @@ main:
     LI(x4, PMP_REGION_41)
     csrw pmpcfg10, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 40
 
@@ -210,7 +213,7 @@ main:
     LI(x4, PMP_REGION_40)
     csrw pmpcfg10, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 39
 
@@ -220,7 +223,7 @@ main:
     LI(x4, PMP_REGION_39)
     csrw pmpcfg9, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 38
 
@@ -230,7 +233,7 @@ main:
     LI(x4, PMP_REGION_38)
     csrw pmpcfg9, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 37
 
@@ -240,7 +243,7 @@ main:
     LI(x4, PMP_REGION_37)
     csrw pmpcfg9, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 36
 
@@ -250,7 +253,7 @@ main:
     LI(x4, PMP_REGION_36)
     csrw pmpcfg9, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 35
 
@@ -260,7 +263,7 @@ main:
     LI(x4, PMP_REGION_35)
     csrw pmpcfg8, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 34
 
@@ -270,7 +273,7 @@ main:
     LI(x4, PMP_REGION_34)
     csrw pmpcfg8, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 33
 
@@ -280,7 +283,7 @@ main:
     LI(x4, PMP_REGION_33)
     csrw pmpcfg8, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 // Test Case: 16 : L -> 1 and XR Permissions given to the PMP Region 32
 
@@ -290,10 +293,8 @@ main:
     LI(x4, PMP_REGION_32)
     csrw pmpcfg8, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
 
-    li a4, 0xbeefcafe                                           // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_2_str)                                   // Signature update
     j exit                                                      // Verification Complete, exit the test
 
 .align 13
@@ -318,7 +319,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
-test_2_str: .string "\"test: 2; cp: cp_pmpm64\""
+test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
 RVTEST_DATA_END
 

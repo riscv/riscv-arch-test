@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -34,7 +34,7 @@
 // -------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32i_zicsr
@@ -42,12 +42,12 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpm_cfg_L_modify_napot.S"
+#define TEST_FILE "pmpsm_cfg_L_modify_napot.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
 #define rvtest_mtrap_routine
-#define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 
@@ -56,15 +56,6 @@
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
-
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 4
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
@@ -109,12 +100,16 @@ main:
     addi x5, x4, 7
     csrw pmpcfg0, x5
     addi x4, x0,-1
+    tc_1:
     csrw pmpaddr0, x4
+    RVTEST_SIGUPD(x2, x5, x4, a4,tc_1,test_1_str)
 
     // Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
 
     csrw pmpaddr1, x0
+    tc_2:
     csrw pmpcfg0, x0
+    RVTEST_SIGUPD(x2, x5, x4, a4,tc_2,test_2_str)
 
 //--- Re-initialize the CSRs. ---
     csrw pmpaddr0, x0
@@ -132,20 +127,22 @@ main:
     // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
 
     addi x5, x4, 7
+    tc_3:
     csrw pmpcfg0, x5
+    RVTEST_SIGUPD(x2, x5, x4, a4,tc_3,test_3_str)
     addi x4, x0,-1
     csrw pmpaddr0, x4
 
     // Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
 
     csrw pmpaddr1, x0
+    tc_4:
     csrw pmpcfg0, x0
+    RVTEST_SIGUPD(x2, x5, x4, a4,tc_4,test_4_str)
 
 // -------------------------------------------------------------------------------------
 
-    li a4, 0xbeefcafe                                           // Clean Test exit verification signature.
-    RVTEST_SIGUPD(x2, x5, x4, a4, test_1_str)                                       // Signature update
-    j exit                                                      // Verification Complete, exit the test
+   j exit                                                      // Verification Complete, exit the test
 
 .align 10
 .align (RVMODEL_PMP_GRAIN+2)
@@ -160,6 +157,10 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_modify\""
+test_2_str: .string "\"test: 2; cp: cp_cfg_L_modify\""
+test_3_str: .string "\"test: 3; cp: cp_cfg_L_modify\""
+test_4_str: .string "\"test: 4; cp: cp_cfg_L_modify\""
+
 
 RVTEST_DATA_END
 

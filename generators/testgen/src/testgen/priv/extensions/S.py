@@ -493,7 +493,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    lines.append(f"\tli x{r1}, 0          # x{r1} = 0 for writing to shadowed registers\n")
+    lines.append(f"\tli x{r1}, -1          # x{r1} = all 1s for writing to shadowed registers\n")
     lines.append(add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data))
     lines.append(add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data))
     lines.append(add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data))
@@ -515,7 +515,7 @@ def add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergro
             gen_csr_read_sigupd(r2, rreg, test_data),
             test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
             f"\tcsrw {wreg}, x0       # write all 0s to {wreg}",
-            gen_csr_read_sigupd(r2, "sstatus", test_data),
+            gen_csr_read_sigupd(r2, rreg, test_data),
             "",
         ],
     )

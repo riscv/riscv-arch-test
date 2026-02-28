@@ -246,11 +246,11 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         bins sip_mip         = { {CSR_SIP, CSR_MIP} };
     }
     csrw_prev: coverpoint ins.prev.insn {
-        wildcard bins csrr = {CSRR};
+        wildcard bins csrr = {CSRW};
     }
     rs1_prev: coverpoint ins.prev.rs1_val {
         bins zero = { 0  };
-        bins ones = { -1 };
+        bins ones = { '1 };
     }
 
     cp_scsr_access:           cross priv_mode_s, csrname, csraccesses;

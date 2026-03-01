@@ -49,7 +49,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
-    LA(a5, \ADDRESS)                                        // Address to be ve
+    LA(a5, \ADDRESS)                                        // Address to be verified
     \TEST_CASE\()_1:
     lw a4, 0(a5)
     nop

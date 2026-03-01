@@ -25,60 +25,61 @@
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_pmp_on_pa_Umode.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 30
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
-
-#ifndef RVMODEL_PMP_GRAIN
-  #define RVMODEL_PMP_GRAIN 0
-#endif
 
 RVTEST_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
-.macro VERIFICATION_RWX
+.macro VERIFICATION_RWX TEST_CASE
   addi a2, a2, 16
 
   // Test store permission
+  \TEST_CASE\()_store:
   sw  a2, 20(a5)
   nop
 
   // Test load permission
-  lw  a4, 20(a5)
+  \TEST_CASE\()_load:
+  lw a3, 20(a5)
   nop
 
   // Test execute permission
   LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
+  \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
 .endm
 
-.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, STR_PTR
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, TEST_CASE
 
   .if \level == LEVEL1
     // Adjust offset of VA to point to test region
     LI(  a5, (\VA>>22)<<22)
-    LA(  a4, rvtest_data_1)
-    slli a4, a4, 10
-    srli a4, a4, 10
-    add  a5, a5, a4
+    LA(  a0, rvtest_data_1)
+    slli a0, a0, 10
+    srli a0, a0, 10
+    add  a5, a5, a0
   .else
     LI(  a5, \VA)
   .endif
 
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
-  VERIFICATION_RWX
+  VERIFICATION_RWX \TEST_CASE
 
   RVTEST_GOTO_MMODE
 
   // Signature Update
-  RVTEST_SIGUPD(x2, x5, x4, a2, \STR_PTR)
-  RVTEST_SIGUPD(x2, x5, x4, a4, \STR_PTR)
+  RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_load, \TEST_CASE\()_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_exec, \TEST_CASE\()_exec_str)
 .endm
 
 // PMP Macros
@@ -110,7 +111,7 @@ main:
   .endif
 
   or t2, t2, t1
-  RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, t2, "mismatch_pmpaddr1")
+  CSRW(pmpaddr1, t2)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
@@ -145,7 +146,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RX)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, "mismatch_pmpcfg0_rx")
+  pmpcfg0_rx:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rx, pmpcfg0_rx_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -155,7 +157,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, "test_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
@@ -166,7 +168,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, "test_2"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test2
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +178,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI (t2, PMP_GLOBAL_RWX | PMP1CFG_RW)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, "mismatch_pmpcfg0_rw")
+  pmpcfg0_rw:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rw, pmpcfg0_rw_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -186,7 +189,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, "test_3"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test3
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
@@ -197,7 +200,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, "test_4"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test4
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -207,7 +210,8 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI (t2, PMP_GLOBAL_RWX | PMP1CFG_X)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, "mismatch_pmpcfg0_x")
+  pmpcfg0_x:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
@@ -217,7 +221,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, "test_5"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test5
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
@@ -228,7 +232,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, "test_6"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test6
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -243,7 +247,7 @@ RVTEST_DATA_BEGIN
 .align (RVMODEL_PMP_GRAIN+2)
 rvtest_data_1:
   nop
-  addi ra, ra, 4
+  addi a4, a2, 4
   jr ra
   nop
   .word 0xbeefcaf1          // Random word
@@ -259,17 +263,28 @@ rvtest_data_1:
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 
-canary_mismatch:     .string "Testcase signature canary mismatch!"
-mismatch_pmpaddr1:   .string "\"Mismatch in pmpaddr1!\""
-mismatch_pmpcfg0_rx: .string "\"Mismatch in pmpcfg0 while setting RX permission!\""
-mismatch_pmpcfg0_rw: .string "\"Mismatch in pmpcfg0 while setting RW permission!\""
-mismatch_pmpcfg0_x:  .string "\"Mismatch in pmpcfg0 while setting X permission!\""
-test_1: .string "\"Mismatch in Test Case 1!\""
-test_2: .string "\"Mismatch in Test Case 2!\""
-test_3: .string "\"Mismatch in Test Case 3!\""
-test_4: .string "\"Mismatch in Test Case 4!\""
-test_5: .string "\"Mismatch in Test Case 5!\""
-test_6: .string "\"Mismatch in Test Case 6!\""
+canary_mismatch:  .string "Testcase signature canary mismatch!"
+pmpcfg0_rx_str:   .string "\"Mismatch in pmpcfg0 while setting RX permission!\""
+pmpcfg0_rw_str:   .string "\"Mismatch in pmpcfg0 while setting RW permission!\""
+pmpcfg0_x_str:    .string "\"Mismatch in pmpcfg0 while setting X permission!\""
+test1_store_str:  .string "\"Mismatch during sw in Test Case 1!\""
+test1_load_str:   .string "\"Mismatch during lw in Test Case 1!\""
+test1_exec_str:   .string "\"Mismatch during jalr in Test Case 1!\""
+test2_store_str:  .string "\"Mismatch during sw in Test Case 2!\""
+test2_load_str:   .string "\"Mismatch during lw in Test Case 2!\""
+test2_exec_str:   .string "\"Mismatch during jalr in Test Case 2!\""
+test3_store_str:  .string "\"Mismatch during sw in Test Case 3!\""
+test3_load_str:   .string "\"Mismatch during lw in Test Case 3!\""
+test3_exec_str:   .string "\"Mismatch during jalr in Test Case 3!\""
+test4_store_str:  .string "\"Mismatch during sw in Test Case 4!\""
+test4_load_str:   .string "\"Mismatch during lw in Test Case 4!\""
+test4_exec_str:   .string "\"Mismatch during jalr in Test Case 4!\""
+test5_store_str:  .string "\"Mismatch during sw in Test Case 5!\""
+test5_load_str:   .string "\"Mismatch during lw in Test Case 5!\""
+test5_exec_str:   .string "\"Mismatch during jalr in Test Case 5!\""
+test6_store_str:  .string "\"Mismatch during sw in Test Case 6!\""
+test6_load_str:   .string "\"Mismatch during lw in Test Case 6!\""
+test6_exec_str:   .string "\"Mismatch during jalr in Test Case 6!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

@@ -27,6 +27,7 @@
 # REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
+#   RVMODEL_NUM_PMPS: 64
 # MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

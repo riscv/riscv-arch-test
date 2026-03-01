@@ -264,7 +264,11 @@
       tsig_begin_canary:
         CANARY
       mtrap_sigptr:
-        .fill 20000*(XLEN/32),4,0xdeadbeef
+        #ifdef RVTEST_SELFCHECK
+          #include TRAP_SIGNATURE_FILE
+        #else
+                .fill 2000*SIG_STRIDE,4,0xdeadbeef
+        #endif
       tsig_end_canary:
         CANARY
     #endif

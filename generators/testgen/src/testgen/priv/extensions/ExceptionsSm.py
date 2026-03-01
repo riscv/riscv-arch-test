@@ -216,8 +216,6 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     lines = [comment_banner(coverpoint, "Load Access Fault")]
 
     load_ops = ["lb", "lbu", "lh", "lhu", "lw"]
-    if test_data.xlen == 64:
-        load_ops.extend(["lwu", "ld"])
 
     for op in load_ops:
         lines.extend(
@@ -228,6 +226,21 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
                 "nop",
             ]
         )
+
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            test_data.add_testcase("lwu_fault", coverpoint, covergroup),
+            f" lwu x{check_reg}, 0(x{addr_reg})",
+            " nop",
+            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            test_data.add_testcase("ld_fault", coverpoint, covergroup),
+            f" ld x{check_reg}, 0(x{addr_reg})",
+            " nop",
+            "#endif",
+        ]
+    )
 
     test_data.int_regs.return_registers([addr_reg, check_reg])
     return lines

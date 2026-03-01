@@ -256,7 +256,7 @@
         #include SIGNATURE_FILE
       #else
         // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*SIG_STRIDE,4,0xdeadbeef
+        .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
       #endif
 
     // Signature region for trap handlers
@@ -267,7 +267,7 @@
         #ifdef RVTEST_SELFCHECK
           #include TRAP_SIGNATURE_FILE
         #else
-                .fill 2000*SIG_STRIDE,4,0xdeadbeef
+          .fill 5000*(SIG_STRIDE>>2),4,0xdeadbeef
         #endif
       tsig_end_canary:
         CANARY

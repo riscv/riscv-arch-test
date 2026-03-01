@@ -17,9 +17,10 @@
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_satp_access_test.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 70
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -34,7 +35,8 @@ main:
 
   LI(a0, SATP_MODE_SV57<<60)      // satp.MODE = 4'b1010 (Sv57)
   CSRW(satp, a0)
-  RVTEST_SIGUPD_CSR_READ(satp, a4, "test_1")
+  test1_sv57:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test1_sv57, test1_sv57_str)
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -46,20 +48,23 @@ main:
   // satp.PPN = All zeros
   mv   a0, a1
   CSRW(satp, a0)
-  RVTEST_SIGUPD_CSR_READ(satp, a4, "test_2_zeros")
+  test2_zeros:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test2_zeros, test2_zeros_str)
 
   // satp.PPN = All ones
   LI(  a0, 0xFFFFFFFFFFF)
   or   a0, a1, a0
   CSRW(satp, a0)
-  RVTEST_SIGUPD_CSR_READ(satp, a4, "test_2_ones")
+  test2_ones:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test2_ones, test2_ones_str)
 
   // satp.PPN = Walking Ones
   li a2, 1
   .rept(44)
     or   a0, a1, a2
     CSRW(satp, a0)
-    RVTEST_SIGUPD_CSR_READ(satp, a4, "test_2_walk")
+    5:
+    RVTEST_SIGUPD_CSR_READ(satp, a4, 5b, test2_walk_str)
     slli  a2, a2, 1
   .endr
 
@@ -73,14 +78,16 @@ main:
   // satp.ASID = All zeros
   mv   a0, a1
   CSRW(satp, a0)
-  RVTEST_SIGUPD_CSR_READ(satp, a4, "test_3_zeros")
+  test3_zeros:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test3_zeros, test3_zeros_str)
 
   // satp.ASID = All ones
   LI(  a0, 0xFFFF)
   slli a0, a0, 44
   or   a0, a1, a0
   CSRW(satp, a0)
-  RVTEST_SIGUPD_CSR_READ(satp, a4, "test_3_ones")
+  test3_ones:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test3_ones, test3_ones_str)
 
   // satp.ASID = Walking Ones
   li   a2, 1
@@ -88,7 +95,8 @@ main:
   .rept(16)
     or   a0, a1, a2
     CSRW(satp, a0)
-    RVTEST_SIGUPD_CSR_READ(satp, a4, "test_3_walk")
+    6:
+    RVTEST_SIGUPD_CSR_READ(satp, a4, 6b, test3_walk_str)
     slli  a2, a2, 1
   .endr
 
@@ -98,14 +106,14 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1:        .string "\"Mismatch on setting satp.MODE=Sv57 in Test Case 1!\""
-test_2_zeros:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 2!\""
-test_2_ones:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 2!\""
-test_2_walk:   .string "\"Mismatch on walking ones in satp.PPN in Test Case 2!\""
-test_3_zeros:  .string "\"Mismatch on setting satp.ASID=Zeros in Test Case 3!\""
-test_3_ones:   .string "\"Mismatch on setting satp.ASID=Ones in Test Case 3!\""
-test_3_walk:   .string "\"Mismatch on walking ones in satp.ASID in Test Case 3!\""
+canary_mismatch:  .string "Testcase signature canary mismatch!"
+test1_sv57_str:   .string "\"Mismatch on setting satp.MODE=Sv57 in Test Case 1!\""
+test2_zeros_str:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 2!\""
+test2_ones_str:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 2!\""
+test2_walk_str:   .string "\"Mismatch on walking ones in satp.PPN in Test Case 2!\""
+test3_zeros_str:  .string "\"Mismatch on setting satp.ASID=Zeros in Test Case 3!\""
+test3_ones_str:   .string "\"Mismatch on setting satp.ASID=Ones in Test Case 3!\""
+test3_walk_str:   .string "\"Mismatch on walking ones in satp.ASID in Test Case 3!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

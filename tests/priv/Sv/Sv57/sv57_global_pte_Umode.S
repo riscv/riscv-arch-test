@@ -37,9 +37,10 @@
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_global_pte_Umode.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 35
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -48,42 +49,46 @@ RVTEST_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
-.macro VERIFICATION_RWX
+.macro VERIFICATION_RWX TEST_CASE
   addi a2, a2, 16
 
   // Test store permission
+  \TEST_CASE\()_store:
   sw  a2, 20(a5)
   nop
 
   // Test load permission
-  lw  a4, 20(a5)
+  \TEST_CASE\()_load:
+  lw a3, 20(a5)
   nop
 
   // Test execute permission
   LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
+  \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
 .endm
 
-.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, STR_PTR
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, TEST_CASE
 
   // Adjust offset of VA to point to test region
   .set VA_SHIFT, (\level*9)+12
   LI(a5, (\VA>>VA_SHIFT)<<VA_SHIFT)
-  LA(a4, rvtest_data_1)
-  slli a4, a4, 64-VA_SHIFT
-  srli a4, a4, 64-VA_SHIFT
-  add  a5, a5, a4             // Virtual Address
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 64-VA_SHIFT
+  srli a0, a0, 64-VA_SHIFT
+  add  a5, a5, a0             // Virtual Address
 
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
-  VERIFICATION_RWX
+  VERIFICATION_RWX \TEST_CASE
 
   RVTEST_GOTO_MMODE
 
   // Signature Update
-  RVTEST_SIGUPD(x2, x5, x4, a2, \STR_PTR)
-  RVTEST_SIGUPD(x2, x5, x4, a4, \STR_PTR)
+  RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_load, \TEST_CASE\()_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_exec, \TEST_CASE\()_exec_str)
 .endm
 
 
@@ -127,14 +132,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL4, "test_1_access_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL4, test1_access1
 
   CSRR( t0, satp)                                              // Extract ASID (Sv57, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   SFENCE_VMA
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL4, "test_1_access_2"  // No pagetable walk, as the PTE is not invalidated by sfence.vma
+  TEST_CASES_RUNNER Umode, va_data, LEVEL4, test1_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -148,14 +153,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL3, "test_2_access_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL3, test2_access1
 
   CSRR( t0, satp)                                              // Extract ASID (Sv57, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   SFENCE_VMA
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL3, "test_2_access_2"  // No pagetable walk, as the PTE is not invalidated by sfence.vma
+  TEST_CASES_RUNNER Umode, va_data, LEVEL3, test2_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -170,14 +175,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL2, "test_3_access_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL2, test3_access1
 
   CSRR( t0, satp)                                              // Extract ASID (Sv57, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   SFENCE_VMA
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL2, "test_3_access_2"  // No pagetable walk, as the PTE is not invalidated by sfence.vma
+  TEST_CASES_RUNNER Umode, va_data, LEVEL2, test3_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -193,14 +198,14 @@ main:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, "test_4_access_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test4_access1
 
   CSRR( t0, satp)                                              // Extract ASID (Sv57, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   SFENCE_VMA
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, "test_4_access_2"  // No pagetable walk, as the PTE is not invalidated by sfence.vma
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test4_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -217,14 +222,14 @@ main:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_G | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, "test_5_access_1"
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test5_access1
 
   CSRR( t0, satp)                                              // Extract ASID (Sv57, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
   SFENCE_VMA
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, "test_5_access_2"  // No pagetable walk, as the PTE is not invalidated by sfence.vma
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test5_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -238,7 +243,7 @@ RVTEST_DATA_BEGIN
 .align 12
 rvtest_data_1:
   nop
-  addi ra, ra, 4
+  addi a4, a2, 4
   jr ra
   nop
   .word 0xbeefcaf1          // Random word
@@ -260,16 +265,36 @@ rvtest_slvl3_pg_tbl:
     .skip(4096)
 
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_access_1: .string "\"Mismatch in first TEST_CASE_RUNNER of Test Case 1!\""
-test_1_access_2: .string "\"Mismatch in second TEST_CASE_RUNNER of Test Case 1!\""
-test_2_access_1: .string "\"Mismatch in first TEST_CASE_RUNNER of Test Case 2!\""
-test_2_access_2: .string "\"Mismatch in second TEST_CASE_RUNNER of Test Case 2!\""
-test_3_access_1: .string "\"Mismatch in first TEST_CASE_RUNNER of Test Case 3!\""
-test_3_access_2: .string "\"Mismatch in second TEST_CASE_RUNNER of Test Case 3!\""
-test_4_access_1: .string "\"Mismatch in first TEST_CASE_RUNNER of Test Case 4!\""
-test_4_access_2: .string "\"Mismatch in second TEST_CASE_RUNNER of Test Case 4!\""
-test_5_access_1: .string "\"Mismatch in first TEST_CASE_RUNNER of Test Case 5!\""
-test_5_access_2: .string "\"Mismatch in second TEST_CASE_RUNNER of Test Case 5!\""
+test1_access1_store_str: .string "\"Mismatch during sw in Test Case 1, Access 1!\""
+test1_access1_load_str:  .string "\"Mismatch during lw in Test Case 1, Access 1!\""
+test1_access1_exec_str:  .string "\"Mismatch during jalr in Test Case 1, Access 1!\""
+test1_access2_store_str: .string "\"Mismatch during sw in Test Case 1, Access 2!\""
+test1_access2_load_str:  .string "\"Mismatch during lw in Test Case 1, Access 2!\""
+test1_access2_exec_str:  .string "\"Mismatch during jalr in Test Case 1, Access 2!\""
+test2_access1_store_str: .string "\"Mismatch during sw in Test Case 2, Access 1!\""
+test2_access1_load_str:  .string "\"Mismatch during lw in Test Case 2, Access 1!\""
+test2_access1_exec_str:  .string "\"Mismatch during jalr in Test Case 2, Access 1!\""
+test2_access2_store_str: .string "\"Mismatch during sw in Test Case 2, Access 2!\""
+test2_access2_load_str:  .string "\"Mismatch during lw in Test Case 2, Access 2!\""
+test2_access2_exec_str:  .string "\"Mismatch during jalr in Test Case 2, Access 2!\""
+test3_access1_store_str: .string "\"Mismatch during sw in Test Case 3, Access 1!\""
+test3_access1_load_str:  .string "\"Mismatch during lw in Test Case 3, Access 1!\""
+test3_access1_exec_str:  .string "\"Mismatch during jalr in Test Case 3, Access 1!\""
+test3_access2_store_str: .string "\"Mismatch during sw in Test Case 3, Access 2!\""
+test3_access2_load_str:  .string "\"Mismatch during lw in Test Case 3, Access 2!\""
+test3_access2_exec_str:  .string "\"Mismatch during jalr in Test Case 3, Access 2!\""
+test4_access1_store_str: .string "\"Mismatch during sw in Test Case 4, Access 1!\""
+test4_access1_load_str:  .string "\"Mismatch during lw in Test Case 4, Access 1!\""
+test4_access1_exec_str:  .string "\"Mismatch during jalr in Test Case 4, Access 1!\""
+test4_access2_store_str: .string "\"Mismatch during sw in Test Case 4, Access 2!\""
+test4_access2_load_str:  .string "\"Mismatch during lw in Test Case 4, Access 2!\""
+test4_access2_exec_str:  .string "\"Mismatch during jalr in Test Case 4, Access 2!\""
+test5_access1_store_str: .string "\"Mismatch during sw in Test Case 5, Access 1!\""
+test5_access1_load_str:  .string "\"Mismatch during lw in Test Case 5, Access 1!\""
+test5_access1_exec_str:  .string "\"Mismatch during jalr in Test Case 5, Access 1!\""
+test5_access2_store_str: .string "\"Mismatch during sw in Test Case 5, Access 2!\""
+test5_access2_load_str:  .string "\"Mismatch during lw in Test Case 5, Access 2!\""
+test5_access2_exec_str:  .string "\"Mismatch during jalr in Test Case 5, Access 2!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

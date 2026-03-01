@@ -24,10 +24,11 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE ".S"
-#define SIGUPD_COUNT 50
+#define TEST_FILE "sv32_spage_mstatus_sum_set_Smode.S"
+#define SIGUPD_COUNT 25
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -36,24 +37,27 @@ RVTEST_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
-.macro VERIFICATION_RWX
+.macro VERIFICATION_RWX TEST_CASE
   addi a2, a2, 16
 
   // Test store permission
+  \TEST_CASE\()_store:
   sw  a2, 20(a5)
   nop
 
   // Test load permission
-  lw  a4, 20(a5)
+  \TEST_CASE\()_load:
+  lw a3, 20(a5)
   nop
 
   // Test execute permission
   LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
+  \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
 .endm
 
-.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, STR_PTR
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, TEST_CASE
 
   // Set mstatus.SUM
   LI(t0, MSTATUS_SUM)
@@ -62,23 +66,24 @@ RVTEST_BEGIN
   .if \level == LEVEL1
     // Adjust offset of VA to point to test region
     LI(  a5, (\VA>>22)<<22)
-    LA(  a4, rvtest_data_1)
-    slli a4, a4, 10
-    srli a4, a4, 10
-    add  a5, a5, a4
+    LA(  a0, rvtest_data_1)
+    slli a0, a0, 10
+    srli a0, a0, 10
+    add  a5, a5, a0
   .else
     LI(  a5, \VA)
   .endif
 
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
-  VERIFICATION_RWX
+  VERIFICATION_RWX \TEST_CASE
 
   RVTEST_GOTO_MMODE
 
   // Signature Update
-  RVTEST_SIGUPD(x2, x5, x4, a2, \STR_PTR)
-  RVTEST_SIGUPD(x2, x5, x4, a4, \STR_PTR)
+  RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_load, \TEST_CASE\()_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_exec, \TEST_CASE\()_exec_str)
 .endm
 
 
@@ -122,7 +127,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, "test_1"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                  4MB PAGE    Region 2 under test at level 1 -- R permissions given to the region
@@ -132,7 +137,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, "test_2"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                  4MB PAGE    Region 3 under test at level 1 -- X permissions given to the region
@@ -142,7 +147,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, "test_3"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test3
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -157,7 +162,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, "test_4"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test4
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                  4KB PAGE    Region 5 under test at level 0 -- R permissions given to the region
@@ -168,7 +173,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, "test_5"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test5
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                  4KB PAGE    Region 6 under test at level 0 -- X permissions given to the region
@@ -179,7 +184,7 @@ main:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, "test_6"
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test6
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -193,7 +198,7 @@ RVTEST_DATA_BEGIN
 .align 12
 rvtest_data_1:
   nop
-  addi ra, ra, 4
+  addi a4, a2, 4
   jr ra
   nop
   .word 0xbeefcaf1          // Random word
@@ -209,12 +214,24 @@ rvtest_slvl0_pg_tbl:
     .skip(4096)
 
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1: .string "\"Mismatch in Test Case 1!\""
-test_2: .string "\"Mismatch in Test Case 2!\""
-test_3: .string "\"Mismatch in Test Case 3!\""
-test_4: .string "\"Mismatch in Test Case 4!\""
-test_5: .string "\"Mismatch in Test Case 5!\""
-test_6: .string "\"Mismatch in Test Case 6!\""
+test1_store_str: .string "\"Mismatch during sw in Test Case 1!\""
+test1_load_str:  .string "\"Mismatch during lw in Test Case 1!\""
+test1_exec_str:  .string "\"Mismatch during jalr in Test Case 1!\""
+test2_store_str: .string "\"Mismatch during sw in Test Case 2!\""
+test2_load_str:  .string "\"Mismatch during lw in Test Case 2!\""
+test2_exec_str:  .string "\"Mismatch during jalr in Test Case 2!\""
+test3_store_str: .string "\"Mismatch during sw in Test Case 3!\""
+test3_load_str:  .string "\"Mismatch during lw in Test Case 3!\""
+test3_exec_str:  .string "\"Mismatch during jalr in Test Case 3!\""
+test4_store_str: .string "\"Mismatch during sw in Test Case 4!\""
+test4_load_str:  .string "\"Mismatch during lw in Test Case 4!\""
+test4_exec_str:  .string "\"Mismatch during jalr in Test Case 4!\""
+test5_store_str: .string "\"Mismatch during sw in Test Case 5!\""
+test5_load_str:  .string "\"Mismatch during lw in Test Case 5!\""
+test5_exec_str:  .string "\"Mismatch during jalr in Test Case 5!\""
+test6_store_str: .string "\"Mismatch during sw in Test Case 6!\""
+test6_load_str:  .string "\"Mismatch during lw in Test Case 6!\""
+test6_exec_str:  .string "\"Mismatch during jalr in Test Case 6!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

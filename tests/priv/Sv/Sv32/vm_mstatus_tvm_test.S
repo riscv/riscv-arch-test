@@ -32,9 +32,10 @@
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "vm_mstatus_tvm_test.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 10
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
+#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"
@@ -43,18 +44,23 @@ RVTEST_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 main:
+
   // Set mstatus.TVM
   LI(   a0, MSTATUS_TVM)
   CSRS( mstatus, a0)
-  RVTEST_SIGUPD_CSR_READ(mstatus, a0, "tvm_mismatch")
 
+  tvm:
+  RVTEST_SIGUPD_CSR_READ(mstatus, a4, tvm, tvm_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: Access satp in M-mode | mstatus.TVM set | Expected: Successful access
 //---------------------------------------------------------------------------------------------------------------------------------
 
   li a0, 1
-  RVTEST_SIGUPD_CSR_WRITE(satp, a0, "test_1")
+  CSRW(satp, a0)
+
+  test1:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test1, test1_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 2: Access sfence.vma in M-mode | mstatus.TVM set | Expected: Successful access
@@ -68,18 +74,19 @@ main:
 
   RVTEST_GOTO_LOWER_MODE Smode
 
-  li a0, 1
+  li a0, 3
   CSRW(satp, a0)
 
-  li a0, 2
+  li a0, 12
   CSRS(satp, a0)
 
-  li a0, 3
+  li a0, 6
   CSRC(satp, a0)
 
   RVTEST_GOTO_MMODE
 
-  RVTEST_SIGUPD_CSR_READ(satp, a0, "test_3")
+  test3:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, test3, test3_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 4: Access satp in S-mode | mstatus.TVM set | Expected: Illegal instruction exception
@@ -99,9 +106,9 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 
 canary_mismatch: .string "Testcase signature canary mismatch!"
-tvm_mismatch: .string "Mismatch while setting mstatus.TVM"
-test_1: .string "\"Mismatch in Test Case 1!\""
-test_3: .string "\"Mismatch in Test Case 3!\""
+tvm_str:   .string "\"Mismatch in mstatus value while setting TVM bit!\""
+test1_str: .string "\"Mismatch in Test Case 1!\""
+test3_str: .string "\"Mismatch in Test Case 3!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

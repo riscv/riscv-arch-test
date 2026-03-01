@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -8,18 +11,12 @@
 //               systems. It checks that region 0 extends from 0 to pmpaddr0
 //               in TOR mode.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints:  cp_cfg_A_tor0 for PMPM is fully covered in this test file.
 //
 // Test Cases  : Checking region 0 extends from 0 to pmpaddr0 in TOR mode.
 //                 Dropping the background region. With pmpcfg0.L=1, pmpcfg0.A=TOR,
 //                 pmpcfg0.XWR=111, default TOR region: {lw, sw, jalr} to {0,
 //                 pmpaddr0-4, pmpaddr0}.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -55,11 +52,9 @@ RVTEST_BEGIN
     #define RVMODEL_NUM_PMPS 16
 #endif
 
-#define NOP         (0x13<<32)+0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
-    LI(a4, NOP)                                              // Value to write (NOP)
+    LI(a4, NOP64)                                              // Value to write (NOP64)
 
     LA(a5, (\ADDRESS))                                         // Address to be verified
     \TEST_CASE\()_1:
@@ -148,9 +143,6 @@ main:
 #define PMP_REGION_GLOBAL           ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPREGION_TOR                 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF)   << PMP0_CFG_SHIFT))
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero             // Disable address translation.
-#endif
 
     LA(x4, -1)                       // All memory region
     csrw     pmpaddr15, x4

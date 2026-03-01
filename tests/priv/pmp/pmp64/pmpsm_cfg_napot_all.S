@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_A_napot_all for PMPM is fully covered in this test file.
 //
 // Test Cases  : Checking A=NAPOT works in each region with pmpcfg.L = 1,
@@ -21,8 +20,6 @@
 //                 sw and jalr at that address, address - 4, and just beyond top
 //                 of the region. Test file will get reasonably large in size if
 //                 Grain Index value will increase.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -55,11 +52,10 @@ RVTEST_BEGIN
   #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
 #endif
 
-#define NOP         (0x13<<32)+0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LA(a5, \ADDRESS)                                                            // Address to be verified
+    LI(a4, NOP64)
     \TEST_CASE\()_1:
     lw a4, 0(a5)
     nop
@@ -111,9 +107,6 @@ main:
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

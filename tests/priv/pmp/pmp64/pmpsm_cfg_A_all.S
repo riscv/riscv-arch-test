@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_A_all for PMPM is fully covered in this test file.
 //
 // Test Cases  : Checking that A is writable in each region. For each standard
@@ -21,7 +20,6 @@
 //               pmpcfg.L=0, pmpcfg.RWX = 000.  Only able to write NA4 if grain
 //                G = 0. Other pmpcfg bits are writable.
 //
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -48,8 +46,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x13
-
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
@@ -63,10 +59,6 @@ main:
 #define NAPOT   (PMP_NAPOT & 0xFF)
 #define TOR     (PMP_TOR   & 0xFF)
 #define NA4     (PMP_NA4   & 0xFF)
-
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

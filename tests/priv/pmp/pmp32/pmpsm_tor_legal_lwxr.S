@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_A_tor for PMPM is fully covered in this test file.
 //
 // Test Cases  : Checking XWR controls accesses in matching TOR region. With
@@ -21,8 +20,6 @@
 //               default TOR region, address-g in pmpaddr_i-1: making {lw,sw,jalr}
 //               address, address-4, address-g, address-g-4.  Observing proper
 //               access faults for restricted regions.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -220,9 +217,6 @@ main:
 #define TOR_UPPER_BOUND     ((REGIONSTART+g) >> PMP_SHIFT)
 #define TOR_LOWER_BOUND     (REGIONSTART >> PMP_SHIFT)
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4

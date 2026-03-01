@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -13,16 +16,10 @@
 // Coverpoints : cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all
 //                 and cp_cfg_RW11_all for PMPM is partially covered in this file.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Test Cases  : Rolling legal XWR starting from region with lowest priority i.e.,
 //               region 14 to region with highest priority i.e., region 0 such
 //               that each of the writable registers gets each of the 6 legal
 //               combinations at least once.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -49,8 +46,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         (0x13<<32)+0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
@@ -63,7 +58,7 @@ RVTEST_BEGIN
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
+    LI(a4, NOP64)                                              // Value to write (NOP64)
     \TEST_CASE\()_1:
     sb a4, 0(a5)                                             // Byte-level store test
     nop
@@ -142,9 +137,6 @@ main:
 #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)-1)
 #define PMP_MASK            ~(1 << (RVMODEL_PMP_GRAIN - 1)-1)
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

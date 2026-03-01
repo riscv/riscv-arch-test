@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_L_access_all & cp_none for PMPM are fully covered in
 //                 this test file.
 //
@@ -22,8 +21,6 @@
 //                 as standard PMP regions, with pmp.L = 0, pmp.A=NAPOT, pmp.XWR = 0
 //                 {jalr, lw, sw} in each PMP region. Access should always succeed
 //                 because L=0 doesn't enforce permissions.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -50,8 +47,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         (0x13<<32)+0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)
@@ -66,7 +61,7 @@ RVTEST_BEGIN
 
     // Store Access Check
     LA(a5, \ADDRESS)                        // Address to be verified
-    LI(a4, NOP)                                // Value to write (NOP)
+    LI(a4, NOP64)                                // Value to write (NOP64)
     \TEST_CASE\()_2:
     sw a4, 0(a5)                            // Word store test
     nop
@@ -115,9 +110,6 @@ main:
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

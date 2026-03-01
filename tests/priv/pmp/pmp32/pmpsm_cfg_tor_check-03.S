@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes        : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints  : 3rd test case of cp_cfg_A_tor_non-overlap for PMPM is covered
 //                in this test file.
 //
@@ -21,8 +20,7 @@
 //                the following cfgs pmpcfg1.L=1, pmpcfg1.A=TOR, pmpcfg1.XWR=000,
 //                pmpcfg0.L=0, pmpcfg0.A=OFF, pmpcfg1.XWR=000. This test exercises
 //                test case 3 that is when pmpaddr0 =  all 1s
-//
-// Dependencies: model_test.h, arch_test.h
+
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -148,9 +146,6 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4

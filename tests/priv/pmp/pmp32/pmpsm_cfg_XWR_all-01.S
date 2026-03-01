@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_RW00_all, cp_cfg_RW10_all
 //               and cp_cfg_RW11_all for PMPM is partially covered in this file.
 //
@@ -21,8 +20,7 @@
 //               region 14 to region with highest priority i.e., region 0 such
 //               that each of the writable registers gets each of the 6 legal
 //               combinations at least once.
-//
-// Dependencies: model_test.h, arch_test.h
+
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -130,9 +128,6 @@ main:
 #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)-1)
 #define PMP_MASK            ~(1 << (RVMODEL_PMP_GRAIN - 1)-1)
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4

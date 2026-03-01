@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints: cp_grain for PMPM is fully covered in this test file.
 //
 // Test case  : Checking that low bits read as 0/1s depending on grain and address
@@ -21,8 +20,6 @@
 //              pmpaddr0 = {all 0s / all 1s / checkerboard}. Change pmpcfg.A to
 //              {OFF/TOR/NAPOT} and read back pmpaddr0. Bottom G-1 bits always read
 //              as 1s in NAPOT. Bottom G bits read as 0s in TOR/OFF.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -73,10 +70,6 @@ main:
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define REGIONSTART         0x80002000      // RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_ADDRESS         (REGIONSTART >> PMP_SHIFT)
-
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4

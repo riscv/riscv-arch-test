@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,18 +13,12 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints :  cp_misaligned_tor for PMPM is fully covered in this test file.
 //
 // Test Cases  :  Checking that misaligned read/write that crosses a TOR PMP
 //                boundary fails. We Set up standard region with L={0/1},XWR=111
 //                and attempt misaligned {lw, lh, lhu, sw, sh} stradding each
 //                offset partially in start and end of region.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -47,13 +44,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define SINGLE_NOP             0x13
-#define DOUBLE_NOP         (0x13<<32)+0x13
 #define g (1<<(RVMODEL_PMP_GRAIN+2))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, SINGLE_NOP)                                      // Value to write (NOP)
+    LI(a4, NOP32)                                      // Value to write (NOP)
 
     // Access Check straddling start
     LA(a5, (\ADDRESS-1))
@@ -74,7 +69,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
 
-    LI(a4, SINGLE_NOP)
+    LI(a4, NOP32)
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)                                             // Word-level store test
@@ -92,7 +87,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
 
-    LI(a4, DOUBLE_NOP)
+    LI(a4, NOP64)
 
     \TEST_CASE\()_7:
     sd a4, 0(a5)                                             // Doubleword-level store test
@@ -105,7 +100,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
 
-    LI(a4, SINGLE_NOP)
+    LI(a4, NOP32)
 
     // Access Check straddling end
     LA(a5, (\ADDRESS+g-1))
@@ -126,7 +121,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
 
-    LI(a4, SINGLE_NOP)
+    LI(a4, NOP32)
 
     \TEST_CASE\()_12:
     sw a4, 0(a5)                                             // Word-level store test
@@ -144,7 +139,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
 
 
-    LI(a4, DOUBLE_NOP)
+    LI(a4, NOP64)
 
     \TEST_CASE\()_15:
     sd a4, 0(a5)                                             // Doubleword-level store test
@@ -178,9 +173,6 @@ main:
 #define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP3_CFG_SHIFT))
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP3_CFG_SHIFT))
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, -1)                     // All memory region
     csrw     pmpaddr15, x4

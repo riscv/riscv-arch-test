@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,18 +13,12 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_cfg_A_off_all for PMPM is fully covered in this test file.
 //
 // Test Cases  : Checking that A=OFF never matches for each region. For each
 //               standard region with pmpcfg.L=1, pmpcfg.A=OFF, pmpcfg.XWR=000.
 //               Fetching, reading and writing from that region. Should succeed
 //               because region is off even though inaccessible.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['I','Smpmp']
@@ -47,8 +44,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         (0x13<<32)+0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
@@ -65,7 +60,7 @@ RVTEST_BEGIN
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP)                                              // Value to write (NOP)
+    LI(a4, NOP64)                                              // Value to write (NOP64)
     \TEST_CASE\()_2:
     sw a4, 0(a5)                                             // Word store test
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)               // Signature update for sw
@@ -108,10 +103,6 @@ main:
   #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
 #endif
 
-
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, -1)
     csrw     pmpaddr15, x4

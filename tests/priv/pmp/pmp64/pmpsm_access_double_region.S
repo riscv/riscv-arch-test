@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,10 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints :  cp_tor_doubleregionfail for PMPM is covered in this test file.
 //
 // Test Cases  :  Checking doubleword access hitting two separate 4-byte regions
@@ -22,8 +21,6 @@
 //                doubleword + 4, pmpcfg_i+1.A=TOR, XWR = 111, pmpaddr_i+1 = start
 //                of doubleword + 8. Should access fault because doubleword is
 //                split over two regions, or pass if access is split into two.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -50,12 +47,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP     (0x13<<32)+0x13
 #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, NOP)                                              // Value to write (NOP)
+    LI(a4, NOP64)                                              // Value to write (NOP64)
 
     LA(a5, \ADDRESS)                                         // Address to be verified
     \TEST_CASE\()_1:
@@ -94,10 +90,6 @@ main:
 #define REGION0             ((REGIONSTART)     >> PMP_SHIFT)
 #define REGION1             ((REGIONSTART+g)   >> PMP_SHIFT)
 #define REGION2             ((REGIONSTART+2*g) >> PMP_SHIFT)
-
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

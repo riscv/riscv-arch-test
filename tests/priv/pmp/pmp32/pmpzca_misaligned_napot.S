@@ -1,4 +1,7 @@
 // ---------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -10,9 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
 //
 // Coverpoints : cp_misaligned_napot for PMPZca is partially covered
 //               in this test file.
@@ -22,11 +22,10 @@
 //               (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
 //               start and end of the second regions. Attempt jalr to each ret.
 //
-// Dependencies: model_test.h, arch_test.h
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca','S','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 32
 # MARCH: rv32ic_zicsr
@@ -40,7 +39,6 @@
 // Enable trap handler
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
-#define rvtest_strap_routine
 
 #define SKIP_MEPC
 
@@ -99,9 +97,6 @@ main:
     #define STANDARD_REGION3   (NEWREGION3 >> PMP_SHIFT)
 #endif
 
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4

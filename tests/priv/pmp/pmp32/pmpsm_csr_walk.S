@@ -1,4 +1,7 @@
 // --------------------------------------------------------------------------------
+// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
+// SPDX-License-Identifier: Apache-2.0
+//
 // Title        : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors      : Umer Shahid, Allen Baum, David Harris
 //                Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -11,10 +14,6 @@
 //               Specification v1.12 and includes:
 //               - Comprehensive RWX checks for multiple PMP regions.
 //
-// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
-//                 and PMP region count before running this test.
-//               - Adjust PMP configurations for specific hardware if required.
-//
 // Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in
 //               this test file.
 //
@@ -23,8 +22,6 @@
 //               writing walking 1s from lsb to msb (XLEN-1) to pmpcfg CSRs 0, 2 and
 //               writing 0 to pmpcfg 1, 3. If 64 CSRs are supported, doing same
 //               with 4, 6, 8, 10, 12, 14; and 5, 7, 9, 11, 13, 15.
-//
-// Dependencies: model_test.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####

@@ -36,7 +36,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_napot_all.S"
+#define TEST_FILE "pmpsm_cfg_tor_all.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
@@ -97,7 +97,7 @@ main:
 
     //Lock the Background region.
     LI(x4, (PMP_REGION_GLOBAL))
-    csrw pmpcfg3, x4
+    csrw pmpcfg2, x4
 
     LA(x4, TEST_FOR_EXECUTION_0)
     srl x4, x4, PMP_SHIFT

@@ -71,54 +71,86 @@ main:
 // Test Case 1 : Setting region 0-14 to be NA4, NAPOT, TOR and OFF with L->0, XWR->000
 
     LI(x4, (NA4   << PMP7_CFG_SHIFT|NA4   << PMP6_CFG_SHIFT|NA4   << PMP5_CFG_SHIFT|NA4   << PMP4_CFG_SHIFT|NA4   << PMP3_CFG_SHIFT|NA4   << PMP2_CFG_SHIFT|NA4   << PMP1_CFG_SHIFT|NA4  ))
-    csrw pmpcfg0, x4
-    csrw pmpcfg2, x4
+    test_1:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, test_1, test_1_str)
+    test_2:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_2, test_2_str)
 
 .if RVMODEL_NUM_PMPS == 64
-    csrw pmpcfg4, x4
-    csrw pmpcfg6, x4
-    csrw pmpcfg8, x4
-    csrw pmpcfg10, x4
-    csrw pmpcfg12, x4
-    csrw pmpcfg14, x4
+    test_3:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_3, test_3_str)
+    test_4:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, test_4, test_4_str)
+    test_5:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, test_5, test_5_str)
+    test_6:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, test_6, test_6_str)
+    test_7:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, test_7, test_7_str)
+    test_8:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, test_8, test_8_str)
 .endif
 
     LI(x4, (NAPOT << PMP7_CFG_SHIFT|NAPOT << PMP6_CFG_SHIFT|NAPOT << PMP5_CFG_SHIFT|NAPOT << PMP4_CFG_SHIFT|NAPOT << PMP3_CFG_SHIFT|NAPOT << PMP2_CFG_SHIFT|NAPOT << PMP1_CFG_SHIFT|NAPOT))
-    csrw pmpcfg0, x4
-    csrw pmpcfg2, x4
+    test_9:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, test_9, test_9_str)
+    test_10:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_10, test_10_str)
 
 .if RVMODEL_NUM_PMPS == 64
-    csrw pmpcfg4, x4
-    csrw pmpcfg6, x4
-    csrw pmpcfg8, x4
-    csrw pmpcfg10, x4
-    csrw pmpcfg12, x4
-    csrw pmpcfg14, x4
+    test_11:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_11, test_11_str)
+    test_12:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, test_12, test_12_str)
+    test_13:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, test_13, test_13_str)
+    test_14:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, test_14, test_14_str)
+    test_15:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, test_15, test_15_str)
+    test_16:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, test_16, test_16_str)
 .endif
 
     LI(x4, (TOR   << PMP7_CFG_SHIFT|TOR   << PMP6_CFG_SHIFT|TOR   << PMP5_CFG_SHIFT|TOR    << PMP4_CFG_SHIFT|TOR   << PMP3_CFG_SHIFT|TOR   << PMP2_CFG_SHIFT|TOR  << PMP1_CFG_SHIFT|TOR  ))
-    csrw pmpcfg0, x4
-    csrw pmpcfg2, x4
+    test_17:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, test_17, test_17_str)
+    test_18:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, test_18, test_18_str)
 
 .if RVMODEL_NUM_PMPS == 64
-    csrw pmpcfg4, x4
-    csrw pmpcfg6, x4
-    csrw pmpcfg8, x4
-    csrw pmpcfg10, x4
-    csrw pmpcfg12, x4
-    csrw pmpcfg14, x4
+    test_19:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, test_19, test_19_str)
+    test_20:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, test_20, test_20_str)
+    test_21:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, test_21, test_21_str)
+    test_22:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, test_22, test_22_str)
+    test_23:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, test_23, test_23_str)
+    test_24:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, test_24, test_24_str)
 .endif
 
-    csrw pmpcfg0, zero
-    csrw pmpcfg2, zero
+   test_25:
+       RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, zero, test_25, test_25_str)
+   test_26:
+       RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, zero, test_26, test_26_str)
 
 .if RVMODEL_NUM_PMPS == 64
-    csrw pmpcfg4, zero
-    csrw pmpcfg6, zero
-    csrw pmpcfg8, zero
-    csrw pmpcfg10, zero
-    csrw pmpcfg12, zero
-    csrw pmpcfg14, zero
+    test_27:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, zero, test_27, test_27_str)
+    test_28:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, zero, test_28, test_28_str)
+    test_29:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, zero, test_29, test_29_str)
+    test_30:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, zero, test_30, test_30_str)
+    test_31:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, zero, test_31, test_31_str)
+    test_32:
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, zero, test_32, test_32_str)
 .endif
 
 // ---------------------------------------------------------------------------
@@ -141,6 +173,38 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
+test_1_str:  .string "\"test: 1; cp: cp_cfg_A_all_test_1\""
+test_2_str:  .string "\"test: 2; cp: cp_cfg_A_all_test_2\""
+test_3_str:  .string "\"test: 3; cp: cp_cfg_A_all_test_3\""
+test_4_str:  .string "\"test: 4; cp: cp_cfg_A_all_test_4\""
+test_5_str:  .string "\"test: 5; cp: cp_cfg_A_all_test_5\""
+test_6_str:  .string "\"test: 6; cp: cp_cfg_A_all_test_6\""
+test_7_str:  .string "\"test: 7; cp: cp_cfg_A_all_test_7\""
+test_8_str:  .string "\"test: 8; cp: cp_cfg_A_all_test_8\""
+test_9_str:  .string "\"test: 9; cp: cp_cfg_A_all_test_9\""
+test_10_str: .string "\"test: 10; cp: cp_cfg_A_all_test_10\""
+test_11_str: .string "\"test: 11; cp: cp_cfg_A_all_test_11\""
+test_12_str: .string "\"test: 12; cp: cp_cfg_A_all_test_12\""
+test_13_str: .string "\"test: 13; cp: cp_cfg_A_all_test_13\""
+test_14_str: .string "\"test: 14; cp: cp_cfg_A_all_test_14\""
+test_15_str: .string "\"test: 15; cp: cp_cfg_A_all_test_15\""
+test_16_str: .string "\"test: 16; cp: cp_cfg_A_all_test_16\""
+test_17_str: .string "\"test: 17; cp: cp_cfg_A_all_test_17\""
+test_18_str: .string "\"test: 18; cp: cp_cfg_A_all_test_18\""
+test_19_str: .string "\"test: 19; cp: cp_cfg_A_all_test_19\""
+test_20_str: .string "\"test: 20; cp: cp_cfg_A_all_test_20\""
+test_21_str: .string "\"test: 21; cp: cp_cfg_A_all_test_21\""
+test_22_str: .string "\"test: 22; cp: cp_cfg_A_all_test_22\""
+test_23_str: .string "\"test: 23; cp: cp_cfg_A_all_test_23\""
+test_24_str: .string "\"test: 24; cp: cp_cfg_A_all_test_24\""
+test_25_str: .string "\"test: 25; cp: cp_cfg_A_all_test_25\""
+test_26_str: .string "\"test: 26; cp: cp_cfg_A_all_test_26\""
+test_27_str: .string "\"test: 27; cp: cp_cfg_A_all_test_27\""
+test_28_str: .string "\"test: 28; cp: cp_cfg_A_all_test_28\""
+test_29_str: .string "\"test: 29; cp: cp_cfg_A_all_test_29\""
+test_30_str: .string "\"test: 30; cp: cp_cfg_A_all_test_30\""
+test_31_str: .string "\"test: 31; cp: cp_cfg_A_all_test_31\""
+test_32_str: .string "\"test: 32; cp: cp_cfg_A_all_test_32\""
 
 RVTEST_DATA_END
 

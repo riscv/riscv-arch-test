@@ -84,10 +84,13 @@ main:
     li x6, 0
     csrw pmpcfg0, x6
     li x6, -1
-    csrw pmpaddr0, x6
-    tc_1:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, a4,tc_1,test_1_str)
+    test_1:
+         # Write x6 to pmpaddr0, read back and check against expected.
+         RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x6, test_1, test_1_str)
+
+    test_2:
+        # Read pmpaddr0 into x7 and check against expected.
+        RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
 
     RVTEST_GOTO_MMODE
 
@@ -113,7 +116,8 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check\""
+test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
+test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
 RVTEST_DATA_END
 

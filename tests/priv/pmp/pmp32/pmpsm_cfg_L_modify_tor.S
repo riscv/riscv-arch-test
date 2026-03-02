@@ -84,55 +84,82 @@ main:
 // Test Case 1 : Setting region 1 to be TOR with L->0, XWR->111 and pmpaddr->0x100
 
     addi x4, x0, 0x100
-    csrw pmpaddr1, x4
+    test_1:
+        # Write x4 to pmpaddr1, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, test_1, test_1_str)
 
-    LI(x4, ((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
-    csrw pmpcfg0, x4
+        LI(x4, ((PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
+    test_2:
+        # Write x4 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, test_2, test_2_str)
 
-    // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
+// Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
 
     addi x5, x4, 7
-    csrw pmpcfg0, x5
+    test_3:
+        # Write x5 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, test_3, test_3_str)
+
     addi x4, x0,-1
-    tc_1:
-    csrw pmpaddr0, x4
-    RVTEST_SIGUPD(x2, x5, x4, a4,tc_1,test_1_str)
+    test_4:
+        # Write x4 to pmpaddr0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, test_4, test_4_str)
 
-    // Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
+// Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
 
-    csrw pmpaddr1, x0
-    tc_2:
-    csrw pmpcfg0, x0
-    RVTEST_SIGUPD(x2, x5, x4, a4,tc_2,test_2_str)
+    test_5:
+        # Write x0 to pmpaddr1, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, test_5, test_5_str)
 
-//--- Re-initialize the CSRs. ---
-    csrw pmpaddr0, x0
-    csrw pmpcfg0, x0
-//-------------------------------
+    test_6:
+        # Write x0 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, test_6, test_6_str)
 
-// Test Case 2 : Setting region 1 to be TOR with L->1, XWR->111 and pmpaddr->0x100
+
+    //--- Re-initialize the CSRs. ---
+    test_7:
+        # Write x0 to pmpaddr0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x0, test_7, test_7_str)
+
+    test_8:
+        # Write x0 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, test_8, test_8_str)
+    //-------------------------------
+
+
+    // Test Case 2 : Setting region 1 to be TOR with L->1, XWR->111 and pmpaddr->0x100
 
     addi x4, x0, 0x100
-    csrw pmpaddr1, x4
+    test_9:
+        # Write x4 to pmpaddr1, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x4, test_9, test_9_str)
 
     LI(x4, ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)&0xFF) << PMP1_CFG_SHIFT)
-    csrw pmpcfg0, x4
+    test_10:
+        # Write x4 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, test_10, test_10_str)
 
-    // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
+        // Now trying to change pmp0cfg0 to 000000111, and to change pmpaddr0 to 1s.
 
     addi x5, x4, 7
-    tc_3:
-    csrw pmpcfg0, x5
-    RVTEST_SIGUPD(x2, x5, x4, a4,tc_3,test_3_str)
+    test_11:
+        # Write x5 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x5, test_11, test_11_str)
+
     addi x4, x0,-1
-    csrw pmpaddr0, x4
+    test_12:
+        # Write x4 to pmpaddr0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, x4, test_12, test_12_str)
 
-    // Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
+        // Now trying to change pmp1cfg0 to 000000000, and to change pmpaddr1 to 0s.
 
-    csrw pmpaddr1, x0
-    tc_4:
-    csrw pmpcfg0, x0
-    RVTEST_SIGUPD(x2, x5, x4, a4,tc_4,test_4_str)
+    test_13:
+        # Write x0 to pmpaddr1, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpaddr1, x0, test_13, test_13_str)
+
+    test_14:
+        # Write x0 to pmpcfg0, read back and check against expected.
+        RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, test_14, test_14_str)
 
 // --------------------------------------------------------------------------------
 
@@ -149,10 +176,20 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_cfg_L_modify\""
-test_2_str: .string "\"test: 2; cp: cp_cfg_L_modify\""
-test_3_str: .string "\"test: 3; cp: cp_cfg_L_modify\""
-test_4_str: .string "\"test: 4; cp: cp_cfg_L_modify\""
+test_1_str:  .string "\"test: 1; cp: cp_cfg_L_modify\""
+test_2_str:  .string "\"test: 2; cp: cp_cfg_L_modify\""
+test_3_str:  .string "\"test: 3; cp: cp_cfg_L_modify\""
+test_4_str:  .string "\"test: 4; cp: cp_cfg_L_modify\""
+test_5_str:  .string "\"test: 5; cp: cp_cfg_L_modify\""
+test_6_str:  .string "\"test: 6; cp: cp_cfg_L_modify\""
+test_7_str:  .string "\"test: 7; cp: cp_cfg_L_modify\""
+test_8_str:  .string "\"test: 8; cp: cp_cfg_L_modify\""
+test_9_str:  .string "\"test: 9; cp: cp_cfg_L_modify\""
+test_10_str: .string "\"test: 10; cp: cp_cfg_L_modify\""
+test_11_str: .string "\"test: 11; cp: cp_cfg_L_modify\""
+test_12_str: .string "\"test: 12; cp: cp_cfg_L_modify\""
+test_13_str: .string "\"test: 13; cp: cp_cfg_L_modify\""
+test_14_str: .string "\"test: 14; cp: cp_cfg_L_modify\""
 
 RVTEST_DATA_END
 

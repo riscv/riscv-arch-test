@@ -94,9 +94,9 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_1:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_1, test_1_str)
+    test_1:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_1, test_1_str)
+
 
 // Write all 0s in NAPOT
 
@@ -109,9 +109,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_2:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_2, test_2_str)
+    test_2:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
 
 // Write all 0s in NAPOT
 
@@ -124,10 +123,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_3:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_3, test_3_str)
-
+    test_3:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_3, test_3_str)
 
 // Test Case 2: Writing all 0s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
 
@@ -142,9 +139,8 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_4:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_4, test_4_str)
+    test_4:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_4, test_4_str)
 
 // Write all 0s in OFF
 
@@ -157,9 +153,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_5:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_5, test_5_str)
+    test_5:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_5, test_5_str)
 
 // Write all 0s in OFF
 
@@ -172,10 +167,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_6:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_6, test_6_str)
-
+    test_6:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_6, test_6_str)
 
 // Test Case 3: Writing all 1s in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
@@ -190,9 +183,8 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_7:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_7, test_7_str)
+    test_7:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_7, test_7_str)
 
 // Write all 1s in NAPOT
 
@@ -205,9 +197,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_8:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_8, test_8_str)
+    test_8:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_8, test_8_str)
 
 // Write all 1s in NAPOT
 
@@ -220,9 +211,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_9:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_9, test_9_str)
+    test_9:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_9, test_9_str)
 
 
 // Test Case 4: Writing all 1s in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
@@ -238,9 +228,8 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_10:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_10, test_10_str)
+    test_10:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_10, test_10_str)
 
 // Write all 1s in OFF
 
@@ -253,9 +242,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_11:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_11, test_11_str)
+    test_11:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_11, test_11_str)
 
 // Write all 1s in OFF
 
@@ -268,10 +256,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_12:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_12, test_12_str)
-
+    test_12:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_12, test_12_str)
 
 // Test Case 5: Writing checkerboard pattern(1010...) in pmpaddr0 when A = NAPOT and read back when A= {OFF,NAPOT,TOR}
 
@@ -286,9 +272,8 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_13:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_13, test_13_str)
+    test_13:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_13, test_13_str)
 
 // Write checkerboard in NAPOT
 
@@ -301,9 +286,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_14:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_14, test_14_str)
+    test_14:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_14, test_14_str)
 
 // Write checkerboard in NAPOT
 
@@ -316,9 +300,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_15:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_15, test_15_str)
+    test_15:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_15, test_15_str)
 
 
 // Test Case 6: Writing checkerboard pattern(1010...) in pmpaddr0 when A = OFF and read back when A= {OFF,NAPOT,TOR}
@@ -334,9 +317,8 @@ main:
 
     LI(x6, PMPREGION_OFF)
     csrw pmpcfg0, x6
-    tc_16:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_16, test_16_str)
+    test_16:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_16, test_16_str)
 
 // Write checkerboard in OFF
 
@@ -349,9 +331,8 @@ main:
 
     LI(x6, PMPREGION_NAPOT)
     csrw pmpcfg0, x6
-    tc_17:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_17, test_17_str)
+    test_17:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_17, test_17_str)
 
 // Write checkerboard in OFF
 
@@ -364,9 +345,8 @@ main:
 
     LI(x6, PMPREGION_TOR)
     csrw pmpcfg0, x6
-    tc_18:
-    csrr x7, pmpaddr0
-    RVTEST_SIGUPD(x2, x5, x4, x7, tc_18, test_18_str)
+    test_18:
+    RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_18, test_18_str)
 
     RVTEST_GOTO_MMODE
 

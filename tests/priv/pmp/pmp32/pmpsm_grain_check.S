@@ -117,7 +117,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
-test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
+test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
 RVTEST_DATA_END
 

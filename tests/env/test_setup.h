@@ -1,6 +1,6 @@
 # test_setup.h
 # Main riscv-arch-test test macros
-# Jordan Carlin jcarlin@hmc.edu October 2025
+# Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 /*************************************** RVTEST_BEGIN **************************************/
@@ -151,6 +151,13 @@
     RVMODEL_IO_INIT(T1, T2, T3)
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
+
+  // rvtest macros are used to invoke the rvmodel specific interrupt macros and those rvmodels macros need to be at the end of the program because their length is variable and we don't want their lengths to affect the relative addresses of program
+  #ifdef rvtest_mtrap_routine
+    RVTEST_INTERRUPTS
+  #endif
+
+  nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
 
   .option pop
 

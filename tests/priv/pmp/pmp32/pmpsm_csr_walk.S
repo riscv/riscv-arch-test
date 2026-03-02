@@ -34,7 +34,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 250
 
 // Enable trap handler
 #define rvtest_mtrap_routine
@@ -74,7 +74,7 @@ main:
 
     li t2, 1                     // walking one: 0x00000001
 
-1:  // Outer loop for walking ones
+9:  // Outer loop for walking ones
     test_1:
     # Write t2 to pmpaddr0, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, t2, test_1, test_1_str)
@@ -211,11 +211,19 @@ main:
     .endif
 
     slli t2, t2, 1
-    bnez t2, 1b
+    bnez t2, 9b
 
     li t2, 1
 
-2:  // Outer loop for walking ones
+8:  // Outer loop for walking ones
+
+    // Skip reserved encoding: any region where R=0 and W=1
+    // That happens only when walking bit hits any (8*i + 1)
+
+    li   t3, 0x0202020202020202   // all W-bit positions in 64-bit pmpcfg
+    and  t4, t2, t3
+    bnez t4, skip_write
+
     test_65:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, test_65, test_65_str)
     test_66:
@@ -236,8 +244,9 @@ main:
                 RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, t2, test_72, test_72_str)
     .endif
 
+skip_write:
     slli t2, t2, 1
-    bnez t2, 2b
+    bnez t2, 8b
 
     RVTEST_GOTO_MMODE
     j exit                                      // Verification Complete, exit the test

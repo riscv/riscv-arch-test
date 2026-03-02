@@ -251,7 +251,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "    sret                   # test sret instruction",
-                                f"    li x{check_reg}, -1              # should not be executed",
+                                f"   addi x{check_reg}, zero, -1              # should not be executed",
                                 "1:                         # sret should return to here",
                                 write_sigupd(check_reg, test_data),
                                 "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",

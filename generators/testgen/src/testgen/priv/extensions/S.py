@@ -189,12 +189,11 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "    mret                   # test mret instruction",
-                            f"   LI(x{check_reg}, -1)              # should not be executed",
+                            f"   addi x{check_reg}, zero, -1              # should not be executed",
                             "1:                         # mret should return to here",
                             "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                             write_sigupd(check_reg, test_data),
-                            # Test the read value
-                            test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
+                            # Test mstatus was updated properly
                             gen_csr_read_sigupd(check_reg, "mstatus", test_data),
                         ]
                     )
@@ -245,12 +244,11 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "    sret                   # test sret instruction, expect illegal instruction if S mode is not supported",
-                                f"    LI(x{check_reg}, -1)              # should not be executed",
+                                f"   addi x{check_reg}, zero, -1              # should not be executed",
                                 "1:                         # sret should return to here",
                                 write_sigupd(check_reg, test_data),
                                 "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
-                                # Test the read value
-                                test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
+                                # Test mstatus was updated properly
                                 gen_csr_read_sigupd(check_reg, "mstatus", test_data),
                             ]
                         )
@@ -315,13 +313,12 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(sstatus, x{check_reg})       # write sstatus with SPP/SPIE/SIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "    sret                   # test sret instruction",
-                            f"   li x{check_reg}, -1              # should not be executed",  # should not be executed
+                            f"   addi x{check_reg}, zero, -1              # should not be executed",  # should not be executed
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
                             "    RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
                             "    RVTEST_GOTO_LOWER_MODE Smode      # make sure we return to supervisor mode",
-                            # Test the read value
-                            test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
+                            # Test sstatus was updated properly
                             gen_csr_read_sigupd(check_reg, "sstatus", test_data),
                         ]
                     )

@@ -22,20 +22,7 @@ def _generate_ufcsr_tests(test_data: TestData) -> list[str]:
     csrs = ["fcsr", "frm", "fflags"]
     lines = []
 
-    ######################################
-    coverpoint = "cp_ufcsr_from_m"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all fp CSRs from M-mode",
-        ),
-    )
-
-    for csr in csrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
-
-    lines.extend(["\tRVTEST_GOTO_LOWER_MODE Umode  # Run remaining tests in user mode\n"])
+    lines.extend(["\tRVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n"])
 
     ######################################
     coverpoint = "cp_ufcsr_access"

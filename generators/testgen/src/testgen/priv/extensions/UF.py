@@ -2,7 +2,7 @@
 # UF.py
 #
 # UF floating-point from user mode privileged extension test generator.
-# jcarlin@hmc.edu Jan 2026
+# David_Harris@hmc.edu 1 March 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 

@@ -2,7 +2,7 @@
 # SmF.py
 #
 # SmF floating-point from machine mode privileged extension test generator.
-# jcarlin@hmc.edu Jan 2026
+# David_Harris@hmc.edu 1 March 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -18,9 +18,9 @@ def _gen_fs_init(fs: int, temp_reg: int) -> str:
     """Initialize mstatus.FS"""
     lines = [
         f"\t# mstatus.FS={fs}",
-        f"\tli x{temp_reg}, {3 << 13}  # 11 in bits 14:13",
+        f"\tLI(x{temp_reg}, {3 << 13})  # 11 in bits 14:13",
         f"\tCSRC(mstatus, x{temp_reg}) # Clear mstatus.FS=00",
-        f"\tli x{temp_reg}, {fs << 13}  # put fs in bits 14:13",
+        f"\tLI(x{temp_reg}, {fs << 13})  # put fs in bits 14:13",
         f"\tCSRS(mstatus, x{temp_reg}) # Set mstatus.FS to {fs}",
     ]
     return "\n".join(lines)
@@ -45,7 +45,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
     )
 
     ones_reg, check_reg, scratch_reg, temp_reg, save_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
-    lines.append(f"\tli x{ones_reg}, -1")
+    lines.append(f"\tLI(x{ones_reg}, -1)")
 
     for fs in range(4):
         coverpoint_full = f"{coverpoint}_fs{fs}"

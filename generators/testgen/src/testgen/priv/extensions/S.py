@@ -2,7 +2,7 @@
 # S.py
 #
 # S supervisor mode privileged extension test generator.
-# jcarlin@hmc.edu Jan 2026
+# David_Harris@hmc.edu 1 March 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
@@ -191,7 +191,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(mepc, x{reg3})          # set mepc to return address",
                             f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             "    mret                   # test mret instruction",
-                            f"    li x{check_reg}, -1              # should not be executed",
+                            f"   LI(x{check_reg}, -1)              # should not be executed",
                             "1:                         # mret should return to here",
                             "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
                             write_sigupd(check_reg, test_data),
@@ -247,7 +247,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
                                 f"    CSRW(sepc, x{reg3})          # set sepc to return address (if S mode exists).",
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 "    sret                   # test sret instruction, expect illegal instruction if S mode is not supported",
-                                f"    li x{check_reg}, -1              # should not be executed",
+                                f"    LI(x{check_reg}, -1)              # should not be executed",
                                 "1:                         # sret should return to here",
                                 write_sigupd(check_reg, test_data),
                                 "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
@@ -316,7 +316,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(sepc, x{reg3})          # set sepc to return address.",
                             f"    CSRW(sstatus, x{check_reg})       # write sstatus with SPP/SPIE/SIE bits set/clear",
                             "    sret                   # test sret instruction",
-                            f"    li x{check_reg}, -1              # should not be executed",
+                            f"   li x{check_reg}, -1              # should not be executed",  # should not be executed
                             "1:                         # sret should return to here",
                             write_sigupd(check_reg, test_data),
                             "    RVTEST_GOTO_MMODE      # We might be coming from U-mode, so to get back to S-mode, macros may have to go through M",
@@ -378,7 +378,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "Set and clear each bit individually in all writable S-mode CSRs, excluding satp, which is exercised in Sv tests",
+            "Set and clear each bit individually in all writable S-mode CSRs",
         ),
     )
 
@@ -400,12 +400,12 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\tcsrw satp, zero      # set satp to 0 to start with",
-            f"\tli x{mask_reg}, -1     # x{mask_reg} = all 1s for walking bit tests",
+            f"\tLI(x{mask_reg}, -1)     # x{mask_reg} = all 1s for walking bit tests",
             f"\tsrli x{mask_reg}, x{mask_reg}, 4    # change 4 msbs to 0s to exclude satp.mode from RV64 walk tests",
-            f"\tli x{walk_reg}, 7   # 111",
+            f"\tLI(x{walk_reg}, 7)   # 111",
             f"\tslli x{walk_reg}, x{walk_reg}, 28   # bits 30:28 = 111",
             f"\tor x{mask_reg}, x{mask_reg}, x{walk_reg}    # x{mask_reg} = all 1s except satp.MODE (bits 63:60 for RV64 or 31 for RV32)",
-            f"\tli x{walk_reg}, 1 # initialize walking 1",
+            f"\tLI(x{walk_reg}, 1) # initialize walking 1",
         ]
     )
     for i in range(60):
@@ -490,7 +490,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
-    lines.append(f"\tli x{r1}, -1          # x{r1} = all 1s for writing to shadowed registers\n")
+    lines.append(f"\tLI(x{r1}, -1)          # x{r1} = all 1s for writing to shadowed registers\n")
     lines.append(_add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data))
     lines.append(_add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data))
     lines.append(_add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data))

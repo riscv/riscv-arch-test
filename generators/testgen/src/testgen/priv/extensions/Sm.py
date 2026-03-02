@@ -191,7 +191,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "    mret                   # test mret instruction",
-                            f"    li x{check_reg}, -1              # should not be executed",
+                            f"    addi x{check_reg}, zero, -1              # should not be executed              # should not be executed",
                             "1:                         # mret should return to here",
                             write_sigupd(check_reg, test_data),
                             # Test the read value

@@ -45,15 +45,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 4
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
-#define NOP         0x13
 #define g    (1<<(RVMODEL_PMP_GRAIN+2))
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE

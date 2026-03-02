@@ -45,8 +45,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x13
-
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0

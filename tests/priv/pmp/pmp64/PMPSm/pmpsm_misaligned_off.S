@@ -48,7 +48,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, NOP32)                                      // Value to write (NOP)
+    LI(a4, NOP)                                      // Value to write (NOP)
 
     // Access Check straddling start
     LA(a5, (\ADDRESS-1))
@@ -69,7 +69,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
 
-    LI(a4, NOP32)
+    LI(a4, NOP)
 
     \TEST_CASE\()_4:
     sw a4, 0(a5)                                             // Word-level store test
@@ -87,7 +87,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_6, test_6_str)
 
 
-    LI(a4, NOP64)
+    LI(a4, DOUBLE_NOP)
 
     \TEST_CASE\()_7:
     sd a4, 0(a5)                                             // Doubleword-level store test
@@ -100,7 +100,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_8, test_8_str)
 
 
-    LI(a4, NOP32)
+    LI(a4, NOP)
 
     // Access Check straddling end
     LA(a5, (\ADDRESS+g-1))
@@ -121,7 +121,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_11, test_11_str)
 
 
-    LI(a4, NOP32)
+    LI(a4, NOP)
 
     \TEST_CASE\()_12:
     sw a4, 0(a5)                                             // Word-level store test
@@ -139,7 +139,7 @@ RVTEST_BEGIN
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_14, test_14_str)
 
 
-    LI(a4, NOP64)
+    LI(a4, DOUBLE_NOP)
 
     \TEST_CASE\()_15:
     sd a4, 0(a5)                                             // Doubleword-level store test

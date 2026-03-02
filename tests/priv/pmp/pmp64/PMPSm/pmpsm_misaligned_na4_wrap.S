@@ -47,7 +47,7 @@ RVTEST_BEGIN
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
-    LI(a4, NOP64)                                              // Value to write (NOP64)
+    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
 
     LA(a5, (\ADDRESS-2))                                     // Address to be verified
     \TEST_CASE\()_1:

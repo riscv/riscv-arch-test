@@ -54,7 +54,7 @@ RVTEST_BEGIN
   #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
 #endif
 
-#define NOP64           (0x13<<32)+0x13
+#define DOUBLE_NOP           (0x13<<32)+0x13
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -95,7 +95,7 @@ RVTEST_BEGIN
 5:
     nop
 
-    LI(a4, NOP64)                                              // Value to write (NOP64)
+    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified

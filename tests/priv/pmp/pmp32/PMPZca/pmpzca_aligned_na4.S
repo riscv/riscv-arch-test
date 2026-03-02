@@ -44,7 +44,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP             0x13
 #define REGION_SIZE     4
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE

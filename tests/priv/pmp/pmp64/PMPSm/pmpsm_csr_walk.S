@@ -66,7 +66,7 @@ main:
 
     li t2, 1                     // walking one: 0x00000001
 
-9:  // Outer loop for walking ones
+8:  // Outer loop for walking ones
     test_1:
     # Write t2 to pmpaddr0, read back and check against expected.
         RVTEST_SIGUPD_CSR_WRITE(pmpaddr0, t2, test_1, test_1_str)
@@ -203,17 +203,11 @@ main:
     .endif
 
     slli t2, t2, 1               // Shift walking one to left
-    bnez t2, 9b                 // Continue loop while t2 != 0
+    bnez t2, 8b                 // Continue loop while t2 != 0
 
     li t2, 1                     // walking one
 
-8:
-    // Skip reserved encoding: any region where R=0 and W=1
-    // That happens only when walking bit hits any (8*i + 1)
-
-    li   t3, 0x0202020202020202   // all W-bit positions in 64-bit pmpcfg
-    and  t4, t2, t3
-    bnez t4, skip_write
+9:
 
     test_65:
         RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, test_65, test_65_str)
@@ -235,9 +229,8 @@ main:
                 RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, t2, test_72, test_72_str)
     .endif
 
-skip_write:
     slli t2, t2, 1
-    bnez t2, 8b
+    bnez t2, 9b
 
 
     // Loop to SET ALL pmpcfg REGs to zero

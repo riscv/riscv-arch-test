@@ -97,7 +97,7 @@ RVTEST_BEGIN
     nop
     nop
 
-    LI(a4, NOP64)                                              // Value to write (NOP64)
+    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
     // Store Access Check
     LA(a5, \ADDRESS)                                      // Address to be verified
 

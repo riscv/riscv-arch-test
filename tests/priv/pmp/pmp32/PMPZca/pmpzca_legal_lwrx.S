@@ -46,7 +46,7 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x00010001
+#define VALUE         0x00010001
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -62,7 +62,7 @@ RVTEST_BEGIN
     c.nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    LI(x15, NOP)                                              // Value to write (NOP)
+    LI(x15, VALUE)                                              // Value to write (VALUE)
     // Store Access Check
     LA(x8, \ADDRESS)                                         // Address to be verified
    \TEST_CASE\()_1:

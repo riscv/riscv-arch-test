@@ -47,8 +47,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE      // {jalr, sw, lw} at start of region (0x80002000)
     // Execution Access Check
     LA (a4, \ADDRESS)

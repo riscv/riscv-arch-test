@@ -46,8 +46,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x00010001
-
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler

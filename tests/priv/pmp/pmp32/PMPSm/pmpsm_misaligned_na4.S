@@ -46,7 +46,6 @@ RVTEST_BEGIN
 
 #define g               4
 
-#define NOP             0x13
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 

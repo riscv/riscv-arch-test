@@ -45,8 +45,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define NOP         0x13
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LA(a5, \ADDRESS)                                        // Address to be verified

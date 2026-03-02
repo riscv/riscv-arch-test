@@ -60,7 +60,7 @@ RVTEST_BEGIN
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, NOP64)                                              // Value to write (NOP64)
+    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
     \TEST_CASE\()_2:
     sw a4, 0(a5)                                             // Word store test
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)               // Signature update for sw

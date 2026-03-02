@@ -27,7 +27,7 @@
 # REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 32
-#   RVMODEL_NUM_PMPS: 64
+#   NUM_PMP_ENTRIES : 64
 # MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
@@ -47,8 +47,6 @@
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
-
-#define NOP         0x13
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 

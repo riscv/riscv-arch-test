@@ -26,8 +26,8 @@ covergroup UF_cg with function sample(ins_t ins);
     }
 
     csrop: coverpoint ins.current.insn {
-        bins csrrs = {CSRRS};
-        bins csrrc = {CSRRC};
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     csraccesses : coverpoint ins.current.insn {
@@ -40,7 +40,6 @@ covergroup UF_cg with function sample(ins_t ins);
 
     cp_ufcsr_access:           cross priv_mode_u, csrname, csraccesses;
     cp_ufcsrwalk:              cross priv_mode_u, csrname, csrop, walking_ones;
-    cp_ucsr_from_m:            cross priv_mode_m, csrname, csraccesses;
 endgroup
 
 function void uf_sample(int hart, int issue, ins_t ins);

@@ -30,28 +30,34 @@ covergroup SmF_cg with function sample(ins_t ins);
     instrs: coverpoint ins.current.insn {
         wildcard bins fsw          = {FSW};
         wildcard bins flw          = {FLW};
-        wildcard bins fadd         = {FADD.S};
-        wildcard bins fsub         = {FSUB.S};
-        wildcard bins fmul         = {FMUL.S};
-        wildcard bins fdiv         = {FDIV.S};
-        wildcard bins fcvt_s_w     = {FCVT.S.W};
-        wildcard bins fcvt_w_s     = {FCVT.W.S};
+        wildcard bins fadd         = {FADD_S};
+        wildcard bins fsub         = {FSUB_S};
+        wildcard bins fmul         = {FMUL_S};
+        wildcard bins fdiv         = {FDIV_S};
+        wildcard bins fcvt_s_w     = {FCVT_S_W};
+        wildcard bins fcvt_w_s     = {FCVT_W_S};
         `ifdef D_SUPPORTED
-            wildcard bins fcvt_s_d     = {FCVT.S.D};
+            wildcard bins fcvt_s_d     = {FCVT_S_D};
         `endif
-        wildcard bins fmadd        = {FMADD.S};
-        wildcard bins fsqrt        = {FSQRT.S};
-        wildcard bins fsgnj        = {FSGNJ.S};
-        wildcard bins feq          = {FEQ.S};
-        wildcard bins fmv_x_f      = {FMV.X.S};
-        wildcard bins fmv_f_x      = {FMV.S.X};
-        wildcard bins fclass       = {FCLASS.S};
-        wildcard bins fmin         = {FMIN.S};
+        wildcard bins fmadd        = {FMADD_S};
+        wildcard bins fsqrt        = {FSQRT_S};
+        wildcard bins fsgnj        = {FSGNJ_S};
+        wildcard bins feq          = {FEQ_S};
+        wildcard bins fmv_x_f      = {FMV_X_S};
+        wildcard bins fmv_f_x      = {FMV_S_X};
+        wildcard bins fclass       = {FCLASS_S};
+        wildcard bins fmin         = {FMIN_S};
         `ifdef ZFA_SUPPORTED
-            wildcard bins fli          = {FLI.S};
-            wildcard bins fround       = {FROUND.S};
+            wildcard bins fli          = {FLI_S};
+            wildcard bins fround       = {FROUND_S};
+            `ifdef XLEN32
+                `ifdef D_SUPPORTED
+                    wildcard bins fmvh         = {FMVH_X_D};
+                    wildcard bins fmvp         = {FMVP_D_X};
+                `endif
+            `endif
         `endif
-        wildcard bins add          = {ADD}};
+        wildcard bins add          = {ADD};
         wildcard bins csrr_fcsr    = {32'b000000000011_00000_010_?????_1110011};
         wildcard bins csrr_frm     = {32'b000000000010_00000_010_?????_1110011};
         wildcard bins csrr_fflags  = {32'b000000000001_00000_010_?????_1110011};
@@ -64,12 +70,6 @@ covergroup SmF_cg with function sample(ins_t ins);
         wildcard bins csrrc_fcsr   = {32'b000000000011_?????_011_?????_1110011};
         wildcard bins csrrc_frm    = {32'b000000000010_?????_011_?????_1110011};
         wildcard bins csrrc_fflags = {32'b000000000001_?????_011_?????_1110011};
-        `ifdef XLEN32
-            `ifdef D_SUPPORTED
-                wildcard bins fmvh         = {FMVH.X.D};
-                wildcard bins fmvp         = {FMVP.D.X};
-            `endif
-        `endif
     }
     mstatus_FS: coverpoint ins.prev.csr[12'h300][14:13] {
     }

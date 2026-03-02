@@ -8,6 +8,8 @@
 
 """Sm privileged extension test generator."""
 
+from random import seed
+
 from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -85,7 +87,7 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mstatus_sd_write",
+            coverpoint,
             "Write all combinations of mstatus.SD = {0/1}, FS/XS/VS = {00, 01, 10, 11}\n"
             "mstatus.SD is read-only, so nothing should happen",
         ),
@@ -132,29 +134,22 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mprvinst"
     ######################################
-    check_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
         comment_banner(
-            "cp_mprvinst",
+            coverpoint,
             "Execute ecall and ebreak\nShould cause an exception",
         ),
         "",
         # ecall test
-        f"    li x{check_reg}, 1    # success code",
         test_data.add_testcase("ecall", coverpoint, covergroup),
         "    ecall                 # test ecall instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
-        "",
+        "    nop                   # this is skipped after trap handler returns",
         # ebreak test
-        f"    li x{check_reg}, 1    # success code",
         test_data.add_testcase("ebreak", coverpoint, covergroup),
         "    ebreak                # test ebreak instruction",
-        f"    li x{check_reg}, -1   # trap handler skips following instruction so this should not be executed",
-        write_sigupd(check_reg, test_data),
+        "    nop                   # this is skipped after trap handler returns",
     ]
-    test_data.int_regs.return_registers([check_reg])
 
     return lines
 
@@ -169,7 +164,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(
-            "cp_mret",
+            coverpoint,
             "Execute mret while sweeping cross-product of mpp, mprv, mpie, mie",
         ),
         "",
@@ -198,7 +193,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPP/MPRV/MPIE/MIE bits set/clear",
                             test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                             "    mret                   # test mret instruction",
-                            f"    li x{check_reg}, -1              # should not be executed",
+                            f"    addi x{check_reg}, zero, -1              # should not be executed              # should not be executed",
                             "1:                         # mret should return to here",
                             write_sigupd(check_reg, test_data),
                             # Test the read value
@@ -218,11 +213,12 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_sret"
     ######################################
+    seed(0)  # fixed seed for deterministic register allocation across runs
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
         comment_banner(
-            "cp_sret",
+            coverpoint,
             "Execute sret while sweeping cross-product of mprv, spp, spie, sie, tsr\n"
             "If S-mode is not implemented, sret should raise an illegal instruction exception\n"
             "Otherwise, go to S or U mode depending on SPP.  SIE <- SPIE.  SPIE <- 1.  "
@@ -251,11 +247,11 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"    LI(x{check_reg}, 0x{fields:08x}) # mprv = {mprv} spp = {spp} spie = {spie} sie = {sie} tsr = {tsr}",
                                 f"    or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"    LA(x{reg3}, 1f)             # return address after sret",
-                                f"    CSRW(sepc, x{reg3})          # set sepc to return address. Note that sepc might not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                f"    CSRW(sepc, x{reg3})          # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
                                 f"    CSRW(mstatus, x{check_reg})       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "    sret                   # test sret instruction",
-                                f"    li x{check_reg}, -1              # should not be executed",
+                                f"   addi x{check_reg}, zero, -1              # should not be executed",
                                 "1:                         # sret should return to here",
                                 write_sigupd(check_reg, test_data),
                                 "    RVTEST_GOTO_MMODE      # make sure we return to machine mode",
@@ -330,7 +326,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines = [
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode CSRs",
         ),
     ]
@@ -370,7 +366,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            "cp_mcsrwalk",
+            coverpoint,
             "Set and clear each bit individually in all writable M-mode CSRs",
         ),
     )
@@ -394,7 +390,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to read debug-mode registers.  Should throw illegal instruction",
         ),
     )
@@ -414,7 +410,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
@@ -442,7 +438,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines = []
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode counters",
         ),
     )
@@ -536,7 +532,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Inhibit mcycle",
         ),
     )
@@ -558,7 +554,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Inhibit minstret",
         ),
     )
@@ -580,7 +576,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     ######################################
     lines.append(
         comment_banner(
-            f"{coverpoint}",
+            coverpoint,
             "Write mtime and read back time",
         ),
     )

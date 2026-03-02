@@ -34,7 +34,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_all_entries_check-01.S"
-#define SIGUPD_COUNT 50
+#define SIGUPD_COUNT 120
 
 // Enable trap handler
 #define rvtest_mtrap_routine

@@ -220,7 +220,7 @@ main:
     // Skip reserved encoding: any region where R=0 and W=1
     // That happens only when walking bit hits any (8*i + 1)
 
-    li   t3, 0x0202020202020202   // all W-bit positions in 64-bit pmpcfg
+    li t3, 0x02020202  // all W-bit positions in 64-bit pmpcfg
     and  t4, t2, t3
     bnez t4, skip_write
 

@@ -8,6 +8,8 @@
 
 """S supervisor privileged extension test generator."""
 
+from random import seed
+
 from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -268,6 +270,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_s"
     ######################################
+    seed(0)  # fixed seed for deterministic register allocation across runs
     save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [

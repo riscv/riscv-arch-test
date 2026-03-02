@@ -203,6 +203,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
             f"    li x{rd_reg}, 5",
             f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
             "   nop",
+            "   nop",
         ]
     )
     lines.append("#endif")

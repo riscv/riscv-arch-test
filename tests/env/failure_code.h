@@ -40,6 +40,19 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
+    # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
+    failedtest_x7_x9:
+        la x9, begin_failure_scratch
+        SREG x7, 104(x9)               # store return address
+        SREG DEFAULT_TEMP_REG, 32(x9)  # save DEFAULT_TEMP_REG
+        SREG DEFAULT_LINK_REG, 40(x9)  # save DEFAULT_LINK_REG
+        SREG x1, 8(x9)                 # save x1 early
+        sw zero, 0(x9)                 # failure_type = 0 (integer)
+        mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
+        mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
+        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
+        j failedtest_saveregs
+
 #ifdef RVTEST_FP
     # FP failure entry points (failure_type = 1)
     failedtest_fp_x5_x4:

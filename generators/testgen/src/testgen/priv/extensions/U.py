@@ -56,13 +56,14 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
             "Attempt to read non-user-mode registers.  Should throw illegal instruction",
         ),
     ]
+    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
     for csr in (
         list(range(0x100, 0x400)) + list(range(0x500, 0x800)) + list(range(0x900, 0xC00)) + list(range(0xD00, 0x1000))
     ):
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"\tCSRR(t0, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
+                f"\tCSRR(x{temp_reg}, 0x{csr:03x})    # attempt to read CSR {csr:03x}; should get illegal instruction",
             ]
         )
 
@@ -77,14 +78,16 @@ def _generate_ucsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    lines.append("\tLI(t0, -1)          # t0 = all 1s\n")
+    lines.append(f"\tLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s\n")
     for csr in range(0xC00, 0xD00):
         lines.extend(
             [
                 test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"\tCSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
+                f"\tCSRW(0x{csr:03x}, x{temp_reg})    # attempt to write read-only CSR {csr:03x}; should get illegal instruction\n",
             ]
         )
+
+    test_data.int_regs.return_register(temp_reg)
 
     return lines
 

@@ -1288,12 +1288,12 @@ sv_\__MODE__\()vect:                            // **FIXME?: breaks if tramp cro
         andi    T4, T4, 0x1C0                   // deposit SPVP?,xPV, GVA (8:6) into 16:14
         slli    T4, T4, 14-6
         or      T3, T3, T4
-        TRAP_SIGUPD(T4, T3, 0)                  // save 1st sig value, (vec-offset, entrysz, trapmode)
+        TRAP_SIGUPD(T4, T3, 0, sv_\__MODE__\()vect, sv_\__MODE__\()vect_str)    // Save 1st signature (vec-offset, entrysz, trapmode)
 
 //----------------------------------------------------------------
 sv_\__MODE__\()cause:
-        mv      T3, T5                          // move mcause (T5) into T3 so all trap sig stores use T3
-        TRAP_SIGUPD(T4, T3, 1)                  // save 2nd sig value, (mcause)
+        mv      T3, T5                          // move xcause (T5) into T3 so all trap sig stores use T3
+        TRAP_SIGUPD(T4, T3, 1, sv_\__MODE__\()cause, sv_\__MODE__\()cause_str)  // Save XCAUSE
 //----------------------------------------------------------------
         bltz    T5, common_\__MODE__\()int_handler // split off if this is an interrupt
 
@@ -1492,7 +1492,7 @@ adj_\__MODE__\()epc:
         sub     T3, T3, T2                      // Offset adjustment
 
 sv_\__MODE__\()epc:
-        TRAP_SIGUPD(T6, T3, 2)                  // save 3rd sig value, (rel mepc) into trap sig area
+        TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str)  // Save XEPC
         csrr    T3, CSR_XEPC                    // As T3 was adjusted for TRAP_SIGUPD, read XEPC again
 
 #ifdef SKIP_MEPC                                //**** spcl case so fetch faults don't rtn to EPC+4
@@ -1521,7 +1521,7 @@ skp_adj_\__MODE__\()epc:
         csrr    T3, CSR_XTVAL
 
 sv_\__MODE__\()tval:
-        TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (rel tval)
+        TRAP_SIGUPD(T4, T3, 3, sv_\__MODE__\()tval, sv_\__MODE__\()tval_str)  // Save XTVAL
 
 skp_\__MODE__\()tval:
 
@@ -1532,10 +1532,12 @@ skp_\__MODE__\()tval:
   .endif
   .ifnc \__MODE__ , S
     .ifnc \__MODE__ , V                 // must be either M with H enabled or H
+        sv_Mtval2:
         csrr    T3, CSR_MTVAL2          // **** FIXME: does this need reloc also? Its a guest phys addr
-        TRAP_SIGUPD(T4, T3, 4)          // store 5th sig value, only if mmode handler and VS mode exists
+        TRAP_SIGUPD(T4, T3, 4, sv_Mtval2, sv_Mtval2_str)  // Save MTVAL2
+        sv_Mtinst:
         csrr    T3, CSR_MTINST
-        TRAP_SIGUPD(T4, T3, 5)          // store 6th sig value, only if mmode handler and VS mode exists
+        TRAP_SIGUPD(T4, T3, 5, sv_Mtinst, sv_Mtinst_str)  // Save MTINST
     .endif
   .endif
 
@@ -1585,7 +1587,7 @@ common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has
         csrrc   T4, CSR_XIE, T3         // read, then attempt to clear int enable bit??
         csrrc   T3, CSR_XIP, T3         // read, then attempt to clear int pend bit
 sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
-        TRAP_SIGUPD(T4, T3, 2)          // save 3rd sig value, (xip)
+        TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str)  // Save XIP
 
         LI(     T2, 0)                  // index of interrupt dispatch table base
 
@@ -1730,7 +1732,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mext_int:               // int11 default to just return after saving IntID in T3
         RVMODEL_CLR_MEXT_INT(T2, T5)
-        TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
+        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Mext_int, \__MODE__\()clr_Mext_int_str)  // Save intID
         j       resto_\__MODE__\()rtn
 
 //------------- [H]SMode----------------
@@ -1763,7 +1765,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Sext_int:               // int 9 default to just return after saving IntID in T3
         RVMODEL_CLR_SEXT_INT(T2, T5)
-        TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
+        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Sext_int, \__MODE__\()clr_Sext_int_str)  // Save intID
         j       resto_\__MODE__\()rtn
 
 //------------- VSmode----------------
@@ -1777,7 +1779,7 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Vext_int:               // int 10 default to just return after saving IntID in T3
         RVMODEL_CLR_VEXT_INT
-        TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
+        TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Vext_int, \__MODE__\()clr_Vext_int_str)  // Save intID
         j       resto_\__MODE__\()rtn
 
 .ifc \__MODE__ , M

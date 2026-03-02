@@ -1,7 +1,7 @@
 ##################################
 # SmF.py
 #
-# SmF floating-point from user mode privileged extension test generator.
+# SmF floating-point from machine mode privileged extension test generator.
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -15,7 +15,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _gen_fs_init(fs: int, temp_reg: int) -> str:
-    """Generate CSR tests for a single FS value and CSR."""
+    """Initialize mstatus.FS"""
     lines = [
         f"\t# mstatus.FS={fs}",
         f"\tli x{temp_reg}, {3 << 13}  # 11 in bits 14:13",

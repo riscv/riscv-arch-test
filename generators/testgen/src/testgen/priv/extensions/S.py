@@ -491,18 +491,18 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
     )
     r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
     lines.append(f"\tli x{r1}, -1          # x{r1} = all 1s for writing to shadowed registers\n")
-    lines.append(add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data))
-    lines.append(add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data))
-    lines.append(add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data))
-    lines.append(add_shadow(r1, r2, "sstatus", "mstatus", coverpoint, covergroup, test_data))
-    lines.append(add_shadow(r1, r2, "sie", "mie", coverpoint, covergroup, test_data))
-    lines.append(add_shadow(r1, r2, "sip", "mip", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "mstatus", "sstatus", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "mie", "sie", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "mip", "sip", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "sstatus", "mstatus", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "sie", "mie", coverpoint, covergroup, test_data))
+    lines.append(_add_shadow(r1, r2, "sip", "mip", coverpoint, covergroup, test_data))
     test_data.int_regs.return_registers([r1, r2])
 
     return lines
 
 
-def add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergroup: str, test_data: TestData) -> str:
+def _add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergroup: str, test_data: TestData) -> str:
     """Helper function to generate shadow CSR test lines for writing wreg and reading rreg."""
     return str.join(
         "\n",

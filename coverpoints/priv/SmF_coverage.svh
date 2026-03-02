@@ -81,9 +81,4 @@ endgroup
 
 function void smf_sample(int hart, int issue, ins_t ins);
     SmF_cg.sample(ins);
-      $display("pc: %h, ins: %h, fround: %b %b",
-       ins.current.pc_rdata,
-       ins.current.insn,
-       ins.current.insn[31:20] == 12'b010000000100,
-       ins.current.insn[6:0] == 7'b1010011);
-    endfunction
+endfunction

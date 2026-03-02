@@ -155,7 +155,12 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
                 ]
             )
-        lines.append("\n  #if __riscv_xlen == 32\n\t#ifdef ZFA_SUPPORTED")
+        lines.extend(
+            [
+                "  #if __riscv_xlen == 32",
+                "\t#ifdef ZFA_SUPPORTED",
+            ]
+        )
         for insn in [f"fmvh.x.d x{temp_reg}, f1", f"fmvp.d.x f0, x{temp_reg}, x{temp_reg}"]:
             lines.extend(
                 [
@@ -166,7 +171,14 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
                     gen_csr_read_sigupd(temp_reg, "mstatus", test_data),
                 ]
             )
-        lines.append("\t#endif\n  #endif\n#endif\n#ifdef ZFA_SUPPORTED")
+        lines.extend(
+            [
+                "\t#endif",
+                "  #endif",
+                "#endif",
+                "#ifdef ZFA_SUPPORTED",
+            ]
+        )
         for insn in ["fli.s f0, 0.5", "fround.s f0, f3, rup"]:
             lines.extend(
                 [

@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.3)
+= RVI20 Certification Requirements Document (rev 0.4)
 include::adoc_common.adoc[]
 :description: RVI20 CRD (Certificate Requirements Document)
 
@@ -17,6 +17,14 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| March 3, 2026
+| 0.4
+a| * Incorporated feedback from CSC Requirements WG meeting on Feb 27, 2026
+   ** Removed WARL/WLRL handling section since there are no CSRs with WARL/WLRL fields in RVI20
+   ** Preliminary parameters now link to normative rules
+   * Added Extensions and Parameters appendices
+   * Added link to RFC2119 in glossary and use RFC2119 keywords in uppercase throughout the document
 
 | Feb 23, 2026
 | 0.3
@@ -67,12 +75,12 @@ include::crd_common.adoc[]
 
 === Exclusions
 
-As per the unprivileged architecture specification, the ecall
+As per the unprivileged architecture specification, the `ecall`
 instruction causes a requested trap to the execution environment.
 Since the RVI profile family doesn't define any execution environments
-the ecall instruction is OUT-OF-SCOPE for the RVI20 certificate.
+the `ecall` instruction is OUT-OF-SCOPE for the RVI20 certificate.
 
-Similarly the ebreak and c.ebreak instructions are OUT-OF-SCOPE for the RVI20 certificate
+Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the RVI20 certificate
 since they cause a breakpoint exception and the RVI profile family doesn't define any
 execution environments to handle such exceptions.
 
@@ -81,6 +89,8 @@ execution environments to handle such exceptions.
 
 Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
 and the RVI20 certificate doesn't cover their behaviors.
+
+Please refer to the <<extension_defs,Extension Definitions>> appendix for more information about the extensions listed in this section or click on the extension names in the table below to jump to their definitions.
 
 === Mandatory Extensions
 
@@ -132,28 +142,35 @@ None
 
 This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVI20 certificate.
 
+Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
+
 include::in_scope_param_intro.adoc[]
 
 .IN-SCOPE Parameters
 [%autowidth]
 |===
-| Parameter | Values Allowed by Certificate | Impact on Certificate Scope
-
-| <<param:MISALIGNED_LDST,MISALIGNED_LDST>>
-| Any
-| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
-
-| <<param:TIME_CSR_IMPLEMENTED,TIME_CSR_IMPLEMENTED>>
-| Any
-| Reading time-related CSRs is only IN-SCOPE if this parameter is true
+| Parameter | Allowed Value(s) | Impact on Certificate Scope
 
 | <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
 | Any
 | The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
 
-| <<param:LRSC_FAIL_ON_NON_EXACT_LRSC,LRSC_FAIL_ON_NON_EXACT_LRSC>>
+| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
+| True, False
+| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
+and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+
+| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
 | Any
-| None
+a|
+Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
+Non-zero:: Misaligned AMO atomic instructions and
+misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
+any restrictions on misaligned supported expressed by other parameters are met.
+
+| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
+| Any
+| Reading time-related CSRs is only IN-SCOPE if this parameter is true
 
 |===
 
@@ -165,7 +182,6 @@ include::out_of_scope_param_intro.adoc[]
 | Parameter
 
 | <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
-| <<param:MISALIGNED_ATOMIC,MISALIGNED_ATOMIC>>
 
 |===
 

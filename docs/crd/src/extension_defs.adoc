@@ -1,7 +1,8 @@
 [appendix]
+[[extension_defs]]
 == Extension Definitions
 
-[%autowidth]
+[cols="15%,35%,50%"]
 |===
 | Extension | Long Name | Note
 

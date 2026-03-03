@@ -1,4 +1,4 @@
 === IN-SCOPE Parameters
 
-An implementation must abide by the "Value Allowed by Certificate" of IN-SCOPE parameters to obtain a certificate.
-If the "Allowed Value(s)" is "Any" then any value allowed by the parameter is acceptable.
+An implementation MUST abide by the "Allowed Value(s)" of IN-SCOPE parameters to obtain a certificate.
+If the "Allowed Value(s)" is "Any" then any value defined by the parameter is acceptable.

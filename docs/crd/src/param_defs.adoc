@@ -1,37 +1,41 @@
 [appendix]
+[[parameter_defs]]
 == Parameter Definitions
 
-Parameters are implementation-defined options supported by RISC-V standards.
+Parameters are hardware options supported by RISC-V standards.
 Many parameters are not named in RISC-V standards but a golden list of parameters
 is maintained separately by RISC-V International and this section uses those names.
 
 NOTE: The golden list of parameters is still under development so the parameters in this document
 are "preliminary parameters" and subject to change as the golden list is finalized.
 
-Parameters map to one or more Implementation-Defined Behaviors as defined in the RISC-V ISA manual's normative rule information.
+Parameters map to one or more normative rules in the RISC-V ISA manual.
+Typically these normative rules are the Implementation-Defined Behavior variant of normative rules.
+These are normative rules that allow for multiple behaviors and require the implementation to specify its behavior.
+By convention, Implementation-Defined Behaviors have uppercase names while other types of normative rules have lowercase names.
 
 .Parameter Definitions
-[cols="3,1,1,3,2"]
+[cols="30%,10%,10%,50%"]
 |===
-| Parameter | Type | ISA Feature | Definition | Implementation-Defined Behavior(s)
+| Parameter and Mapping to Normative Rules | Type | ISA Feature | Definition
 
-| [#param:MISALIGNED_LDST]#MISALIGNED_LDST#
-| Boolean
-| RV32I/RV64I Base ISA
-| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
 a|
-  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
-  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_INVISIBLE_TRAP[MISALIGNED_LDST_INVISIBLE_TRAP]
-  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR[MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR]
-  * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP[MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP]
+[#param:HPM_COUNTER_SZ]#HPM_COUNTER_SZ#
 
-| [#param:TIME_CSR_IMPLEMENTED]#TIME_CSR_IMPLEMENTED#
-| Boolean
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#HPM_PLATFORM_SPECIFIC_IMPL[HPM_PLATFORM_SPECIFIC_IMPL]
+| Array[3:31] of Integer 0 to 64
 | Zicntr
-| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
-a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+| Bit width of each implemented unprivileged hardware performance counter.
+A value of 0 indicates the corresponding counter is not implemented.
 
-| [#param:LRSC_RESERVATION_STRATEGY]#LRSC_RESERVATION_STRATEGY#
+a|
+[#param:LRSC_RESERVATION_STRATEGY]#LRSC_RESERVATION_STRATEGY#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#LR_RESERVATION_SET_SIZE[LR_RESERVATION_SET_SIZE]
 | Enum (Exact, 64B, 128B, Other)
 | Atomic (Zalrsc extension)
 a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
@@ -45,27 +49,43 @@ a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) 
 ! 128B ! Reservation set is naturally-aligned 128-byte region
 ! Other ! Reservation set strategy doesn't fit any of the specified choices
 !===
-a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
 
-| [#param:LRSC_FAIL_ON_NON_EXACT_LRSC]#LRSC_FAIL_ON_NON_EXACT_LRSC#
+a|
+[#param:MISALIGNED_LDST_HW_SUPPORT]#MISALIGNED_LDST_HW_SUPPORT#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_HW_SUPPORT[MISALIGNED_LDST_HW_SUPPORT]
 | Boolean
-| Atomic (Zalrsc extension)
-| Does a Store Conditional instruction fail if its physical address and size do not
-  exactly match the physical address and size of the last Load Reserved in program order
-  (independent of whether or not the Store Conditional is in the current reservation set).
-a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+| RV32I/RV64I Base ISA
+a| Hardware support for misaligned integer and floating-point load/store instructions.
 
-| [#param:HPM_COUNTER_SZ]#HPM_COUNTER_SZ#
-| Array[3:31] of Integer 0 to 64
-| Zicntr
-| Bit width of each implemented unprivileged hardware performance counter.
-A value of 0 indicates the corresponding counter is not implemented.
-a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+[%autowidth]
+!===
+! Value ! Definition
 
-| [#param:MISALIGNED_ATOMIC]#MISALIGNED_ATOMIC#
-| Boolean
+! False ! No hardware support for misaligned load/store instructions
+! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
+!===
+
+a|
+[#param:MISALIGNED_ATOMICITY_GRANULE_SIZE]#MISALIGNED_ATOMICITY_GRANULE_SIZE#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_ATOMICITY_GRANULE_SIZE[MISALIGNED_ATOMICITY_GRANULE_SIZE]
+| Integer
 | Atomic
-| Implementation supports misaligned atomic instructions (potentially with restrictions expressed by other parameters). Includes all types of RISC-V atomic instructions supported by the implementation.
-a| * https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_LDST_FULLY_HW_SUPPORTED[MISALIGNED_LDST_FULLY_HW_SUPPORTED]
+| See normative rule
+
+a|
+[#param:TIME_CSR_HW_SUPPORT]#TIME_CSR_HW_SUPPORT#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#execution_environment_implementation_flexibility[execution_environment_implementation_flexibility]
+| Boolean
+| Zicntr
+| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
 
 |===

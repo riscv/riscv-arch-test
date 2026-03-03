@@ -1,6 +1,6 @@
 === What's a CRD?
 
-Certification Requirements Documents (CRDs) list requirements an implementation must meet
+Certification Requirements Documents (CRDs) list requirements an implementation MUST meet
 to obtain an associated RVI (RISC-V International) certificate.
 CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
 with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.

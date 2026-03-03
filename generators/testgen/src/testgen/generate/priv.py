@@ -9,7 +9,9 @@
 """Privileged test generation orchestration."""
 
 from pathlib import Path
+from random import seed
 
+from testgen.asm.helpers import reproducible_hash
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.writer import write_test_file
@@ -50,6 +52,9 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
 
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
     test_data.int_regs.consume_registers([1])
+
+    # Seed the RNG for reproducible test generation
+    seed(reproducible_hash(testsuite))
 
     # Generate test body
     priv_test_generator = get_priv_test_generator(testsuite)

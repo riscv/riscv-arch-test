@@ -38,7 +38,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         max_fwd_align = 13  # 2^13 = 8192
         max_bwd_align = 13  # 2^13 = 8192
         min_align = 2
-        li_instr = "li"
+        li_instr = "addi"
     elif coverpoint == "cp_imm_edges_c_jal":
         instr_size = 2
         max_fwd_align = 10  # 2^10 = 1024

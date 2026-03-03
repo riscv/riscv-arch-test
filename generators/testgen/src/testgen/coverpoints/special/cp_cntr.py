@@ -65,7 +65,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
             [
                 "# Loop until time increments, or fail if it does not",
                 f"{instr_name} x{r1}, {cntr}, x0 # read {cntr} initial value",
-                f"li x{r3}, 2000 # timeout counter to prevent infinite loop if counter doesn't increment",
+                f"LI(x{r3}, 2000) # timeout counter to prevent infinite loop if counter doesn't increment",
                 test_data.add_testcase(cntr, "cp_cntr"),
                 f"1: {instr_name} x{r2}, {cntr}, x0 # read {cntr} new value",
                 f"addi x{r3}, x{r3}, -1 # decrement timeout counter",

@@ -1,0 +1,155 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40P, a configuration of the CORE-V project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40p
+description: CV32E40P (CORE-V small) - RV32IMC configuration DUT
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: Smhpm, version: "= 1.11.0" }
+
+params:
+  # XLEN parameters (VERIFIED)
+  MXLEN: 32                              # VERIFIED — intro.rst line 72; RV32I base ISA
+  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  PHYS_ADDR_WIDTH: 32                    # VERIFIED — control_status_registers.rst; 32-bit addressing
+
+  # MISA (VERIFIED)
+  MUTABLE_MISA_M: false                  # VERIFIED — M bit is RO per control_status_registers.rst table
+  MUTABLE_MISA_C: false                  # VERIFIED — C bit is RO per control_status_registers.rst table
+  MISA_CSR_IMPLEMENTED: true             # VERIFIED — MISA CSR (0x301) is read-only; "Writes are ignored"
+
+  # endianness (VERIFIED)
+  M_MODE_ENDIANNESS: little              # VERIFIED — intro.rst line 77 (little-endian architecture)
+  #U_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (Section 5 — Trap & Exception Behavior)
+  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_M: true             # VERIFIED — exceptions_interrupts.rst:122 "cannot be disabled"
+  TRAP_ON_EBREAK: true                   # VERIFIED — exceptions_interrupts.rst:117 "always triggers"
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst:122–125 "cannot be disabled"
+  TRAP_ON_RESERVED_INSTRUCTION: true     # ASSUMED — implied by illegal instruction handling
+  TRAP_ON_UNIMPLEMENTED_CSR: false       # ASSUMED — standard RISC-V: undefined CSRs return 0, no trap
+  TRAP_ON_ILLEGAL_WLRL: false            # ASSUMED — RISC-V Priv Spec § 2.2: illegal WLRL writes silently masked
+
+  # MTVAL reporting (Section 6 — mtval CSR)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true # ASSUMED — standard RISC-V mtval behavior (CV32E40P manual incomplete)
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # ASSUMED — standard RISC-V mtval behavior
+  MTVAL_WIDTH: 32                        # VERIFIED — control_status_registers.rst line 673; RO [31:0]
+
+  # Misaligned load/store support (Section 7 — Misaligned Load/Store)
+  MISALIGNED_LDST: true                  # FROM MANUAL — load_store_unit.rst: non-aligned splits into transactions
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # FROM MANUAL — load_store_unit.rst: “error response ignored”
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # QUESTIONABLE — manual documents 4-byte boundary splits, unclear why 4KB
+  MISALIGNED_SPLIT_STRATEGY: custom      # FROM MANUAL — load_store_unit.rst; word-boundary split strategy
+
+  # CSR / implementation IDs (Section 3 — Implementation IDs)
+  ARCH_ID_VALUE: 0x00000004             # FROM MANUAL — control_status_registers.rst: marchid=0x4
+  IMP_ID_VALUE: 0x0                     # FROM MANUAL — core_versions.rst: mimpid=0 when COREV_PULP=0, FPU=0
+  VENDOR_ID_BANK: 0xC                   # FROM MANUAL — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2                 # FROM MANUAL — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
+
+  # MTVEC (Section 4 — mtvec WARL)
+  MTVEC_MODES: [0, 1]                    # VERIFIED — control_status_registers.rst:589 "both direct and vectored supported"
+  MTVEC_ACCESS: rw                       # VERIFIED — control_status_registers.rst:577 MODE[0] is RW
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain   # ASSUMED — standard trap vector behavior
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256     # VERIFIED — control_status_registers.rst:567 "256-byte aligned"
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256       # VERIFIED — control_status_registers.rst:567 same alignment for both modes
+
+  # Sm params (Section 9 — Sm Parameters)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true   # ASSUMED — standard RISC-V Priv Spec § 3.3 (manual doesn't explicitly state)
+  MARCHID_IMPLEMENTED: true              # VERIFIED — control_status_registers.rst: marchid (0xF12) is implemented
+  MIMPID_IMPLEMENTED: true               # VERIFIED — control_status_registers.rst: mimpid (0xF13) is implemented
+  PMA_GRANULARITY: 3                     # QUESTIONABLE — M-mode only, no MMU/TLB; parameter required by UDB but unused
+
+  # HPM Counters (Section 8 — HPM Counters)
+  HPM_EVENTS: [0]                        # UNKNOWN — perf_counters.rst (needs manual clarification)
+  HPM_COUNTER_EN: [                      # VERIFIED — NUM_MHPMCOUNTERS=1 baseline; only index 3 active
+      false,
+      false,
+      false, # indexes 0..2 (MCYCLE, MINSTRET, unused)
+      true,  # index 3 (MHPMCOUNTER3 — only counter for NUM_MHPMCOUNTERS=1)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  COUNTINHIBIT_EN:                       # VERIFIED — mcountinhibit CSR (Smhpm 1.11.0); only [0,2,3] inhibitable
+    [
+      true,  # index 0 (MCYCLE inhibit)
+      false, # index 1 (unused, TM always RO)
+      true,  # index 2 (MINSTRET inhibit)
+      true,  # index 3 (MHPMCOUNTER3 inhibit — only counter)
+      false, # index 4 (no counter 4)
+      false,
+      false,
+      false, # 5..8
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 9..16
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 17..24
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 25..31
+    ]
+# end

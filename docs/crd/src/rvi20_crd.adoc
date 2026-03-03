@@ -18,7 +18,7 @@ History of documentation changes that eventually lead to releases.
 |===
 | Date | Revision | Changes
 
-| March 3, 2026
+| Mar 3, 2026
 | 0.4
 a| * Incorporated feedback from CSC Requirements WG meeting on Feb 27, 2026
    ** Removed WARL/WLRL handling section since there are no CSRs with WARL/WLRL fields in RVI20
@@ -99,7 +99,7 @@ None
 === Optional Extensions
 
 .Optional Extensions
-[#autowidth]
+[%autowidth]
 |===
 | Requirement ID | Extension | Version
 

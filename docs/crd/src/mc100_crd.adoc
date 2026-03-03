@@ -76,7 +76,7 @@ None
 === Optional Extensions
 
 .Optional Extensions
-[#autowidth]
+[%autowidth]
 |===
 | Requirement ID | Extension | Version
 

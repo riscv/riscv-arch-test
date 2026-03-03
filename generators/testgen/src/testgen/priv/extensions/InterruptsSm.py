@@ -427,7 +427,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             mstatus_val = tw_val << 21  # TW bit, MIE=0
             lines.extend(
                 [
-                    f"    li x{r_scratch}, {mstatus_val}",
+                    f"    LI(x{r_scratch}, {mstatus_val})",
                     f"    csrw mstatus, x{r_scratch}",
                 ]
             )

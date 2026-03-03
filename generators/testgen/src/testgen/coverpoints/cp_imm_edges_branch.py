@@ -78,7 +78,7 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
             f"addi x{params.temp_reg}, x{params.temp_reg}, 300 # shouldn't happen",
             "j 19f # shouldn't happen",
             "",
-            f"19: li x{params.temp_reg}, -1 # Shouldn't reach here, write failure code",
+            f"19: LI(x{params.temp_reg}, -1) # Shouldn't reach here, write failure code",
             "20: # end of branches",
             write_sigupd(params.temp_reg, test_data),
         ]

@@ -8,8 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_RV32PMP
-`define COVER_RV64PMP
+`define COVER_PMPZAAMO
 
 covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;

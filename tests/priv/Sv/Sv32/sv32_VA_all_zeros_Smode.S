@@ -14,7 +14,7 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_VA_all_ones_Smode.S"
+#define TEST_FILE "sv32_VA_all_zeros_Smode.S"
 #define SIGUPD_COUNT 10
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine

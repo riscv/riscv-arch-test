@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-// 1. Only V bit is set for PTE at Level 0:
+// 1. Only V & U bits are set for PTE at Level 0:
 //        Then, in U-Mode, the page is accessed --> required: Load-page-fault, Store-page-fault, Fetch-page-fault
 //
 // Total Expected Faults :: 3

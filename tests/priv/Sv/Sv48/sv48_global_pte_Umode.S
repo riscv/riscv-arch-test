@@ -130,10 +130,10 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL3, test1_access1
 
-  CSRR( t0, satp)                                              // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
-  SFENCE_VMA
+  sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL3, test1_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
@@ -151,10 +151,10 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test2_access1
 
-  CSRR( t0, satp)                                              // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
-  SFENCE_VMA
+  sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL2, test2_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
@@ -173,10 +173,10 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test3_access1
 
-  CSRR( t0, satp)                                              // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
-  SFENCE_VMA
+  sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test3_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 
@@ -196,10 +196,10 @@ main:
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL0, test4_access1
 
-  CSRR( t0, satp)                                              // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
+  CSRR( t0, satp)                                          // Extract ASID (Sv39, ASID is in bits 59:44 of satp)
   slli  t0, t0, 4
   srli  t0, t0, 48
-  SFENCE_VMA
+  sfence.vma x0, t0                                        // Invalidate TLB entries for the ASID (Global entries remain valid)
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL0, test4_access2  // No pagetable walk, as the PTE is not invalidated by sfence.vma
 

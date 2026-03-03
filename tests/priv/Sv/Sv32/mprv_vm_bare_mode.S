@@ -17,7 +17,7 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "vm_mprv_satp_bare_mode.S"
+#define TEST_FILE "mprv_vm_bare_mode.S"
 #define SIGUPD_COUNT 15
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine

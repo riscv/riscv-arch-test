@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-//  1. Set satp.MODE to Sv48 and Bare -> Successful
+//  1. Set satp.MODE to Sv48 -> Successful
 //  2. All zeros, ones and walking ones on the PPN field of satp when satp.MODE=Sv48 -> Successful
 //  3. All zeros, ones and walking ones on the ASID field of satp when satp.MODE=Sv48 -> Successful
 //

@@ -38,7 +38,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         max_fwd_align = 13  # 2^13 = 8192
         max_bwd_align = 13  # 2^13 = 8192
         min_align = 2
-        li_instr = "addi"
+        li_instr = "li"
     elif coverpoint == "cp_imm_edges_c_jal":
         instr_size = 2
         max_fwd_align = 10  # 2^10 = 1024
@@ -63,7 +63,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
                 f".align {align}",
                 test_data.add_testcase(f"b_{align}", coverpoint),
                 f"{instr_name} {f'x{params.rd},' if instr_name == 'jal' else ''} {coverpoint}_fwd_{bin_name}",
-                f"{li_instr} x{params.temp_reg}, -1 # failure code"
+                f"{li_instr} x{params.temp_reg}, 7 # failure code"
                 if not skip_check
                 else "# offset too small, skipping self-check",
                 f".align {align}",
@@ -131,7 +131,7 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         # Fall-through failure case and done label
         test_lines.extend(
             [
-                f"{li_instr} x{params.temp_reg}, -1 # failure code"
+                f"{li_instr} x{params.temp_reg}, 7 # failure code"
                 if not skip_check
                 else "# offset too small, skipping self-check",
                 f"{coverpoint}_done_{bin_name}:",

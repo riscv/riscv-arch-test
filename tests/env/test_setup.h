@@ -47,7 +47,7 @@
         // set up PMP so user and supervisor mode can access full address space
         // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
-        li t0, -1
+        LI(t0, -1)
         CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
         sfence.vma
       #endif

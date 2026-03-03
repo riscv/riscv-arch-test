@@ -420,6 +420,6 @@
     ret ; \
   rvtest_clr_sext_int: ; \
     RVMODEL_CLR_SEXT_INT(T2, T5) ; \
-    li T3, 512 ; \
+    LI(T3, 512) ; \
     csrc sip, T3 ; \
     ret

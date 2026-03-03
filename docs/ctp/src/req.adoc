@@ -11,8 +11,10 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 * All tests are self-checking
 ** Able to run on simulators, RTL, and hardware
 ** Expected values may be produced by the RISC-V Sail reference model or the test code itself, and must account for relevant parameters
+*** Alternate reference model may be used for development until RISC-V Sail is sufficiently mature
 ** Only test features whose behavior is specified for the given parameters (e.g. only test unimplemented instructions if Ssstrict is supported)
 ** Calls RVMODEL_BOOT for DUT-specific boot code before starting the test
+** Test begins in machine mode, if any privileged modes are implemented
 ** Terminate with RVMODEL_HALT_PASS or RVMODEL_HALT_FAIL to indicate success
 ** Print meaningful information to localize a failure with RVMODEL_IO_WRITE_STR, including:
 *** PC at failure point
@@ -32,6 +34,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 * Tests are for certification, not verification
 ** Every normative rule is addressed by at least one coverpoint, defined in the CTP
 ** Every test is directed to a specific coverpoint bin, not fuzzing in the hopes of randomly hitting a coverpoint
+*** Exception: Multicore memory ordering is necessarily nondeterministic
 ** Tests emphasize RISC-V architectural behavior, not microarchitectural behavior such as complex pipeline hazards or timing
 ** Runtime is important
 

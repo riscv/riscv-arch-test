@@ -38,12 +38,12 @@ covergroup H_instr_cg with function sample(ins_t ins);
     `ifdef XLEN64
         mstatus_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv") {
             bins mpv_set = {1'b1};
-            bins mpv_set = {1'b0};
+            bins mpv_unset = {1'b0};
         }
     `else
         mstatush_mpv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv") {
             bins mpv_set = {1'b1};
-            bins mpv_set = {1'b0};
+            bins mpv_unset = {1'b0};
         }
     `endif
 
@@ -120,7 +120,7 @@ covergroup H_instr_cg with function sample(ins_t ins);
         wildcard bins mret = {MRET};
     }
     sret_instr: coverpoint ins.current.insn {
-        wildcard bins mret = {SRET};
+        wildcard bins sret = {SRET};
     }
 
     g_pte_d: coverpoint ins.current.g_pte_d[7:0] {

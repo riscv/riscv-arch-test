@@ -192,83 +192,175 @@
 // TODO: implement SELFCHECK version
 // RVTEST_SIGUPD_V(sigptr, linkreg, tempreg, vtmp, mtmp, offset, vreg, strptr)
 
-// #ifdef SELFCHECK
-//   #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-//       vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
-//       vmsne.vv _MTMP, _VREG, _VTMP                                  ;\
-//       vfirst.m _TEMP_REG, _MTMP                                     ;\
-//       bltz _TEMP_REG, 1f                                             ;\
-//       jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
-//       RVTEST_WORD_PTR _STR_PTR                                       ;\
-//       1:                                                             ;\
-//       addi _SIG_PTR, _SIG_PTR, _OFFSET
-// #else
-//   #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-//       vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
-//       nop                                                               ;\
-//       nop                                                               ;\
-//       beq x0, x0, 1f                                                    ;\
-//       jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
-//       RVTEST_WORD_PTR _STR_PTR                                          ;\
-//       1:                                                             ;\
-//       addi _SIG_PTR, _SIG_PTR, _OFFSET
-// #endif
-
-
 #ifdef SELFCHECK
-  #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
-    vmsne.vv _MTMP, _VREG, _VTMP                                  ;\
-    vfirst.m _TEMP_REG, _MTMP                                     ;\
-    blt _TEMP_REG, x0, 2f                                             ;\
-    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
-    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
-    1:                                                             ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
-    RVTEST_WORD_PTR _STR_PTR                                       ;\
-    2:                                                             ;\
+#define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                         ;\
+    _CMP _MTMP, _VREG, _VTMP                                    ;\
+    vfirst.m _TEMP_REG, _MTMP                                   ;\
+    blt _TEMP_REG, x0, 2f                                       ;\
+    LREG _TEMP_REG, 0(_SIG_PTR)                                 ;\
+    beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
+1:                                                              ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+2:                                                              ;\
     addi _SIG_PTR, _SIG_PTR, _OFFSET
 #else
-  #define RVTEST_SIGUPD_V(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
-    nop                                                               ;\
-    nop                                                               ;\
-    beq x0, x0, 2f                                                    ;\
-    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
-    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
-    1:                                                             ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
-    RVTEST_WORD_PTR _STR_PTR                                          ;\
-    2:                                                             ;\
+#define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                         ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    beq x0, x0, 2f                                              ;\
+    LREG _TEMP_REG, 0(_SIG_PTR)                                 ;\
+    beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
+1:                                                              ;\
+    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+2:                                                              ;\
     addi _SIG_PTR, _SIG_PTR, _OFFSET
 #endif
 
+
 #ifdef SELFCHECK
-  #define RVTEST_SIGUPD_V_MASK(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                                     ;\
-    vmxor.mm _MTMP, _VREG, _VTMP                                  ;\
-    vfirst.m _TEMP_REG, _MTMP                                     ;\
-    blt _TEMP_REG, x0, 2f                                             ;\
-    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
-    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
-    1:                                                             ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG            ;\
-    RVTEST_WORD_PTR _STR_PTR                                       ;\
-    2:                                                             ;\
-    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#define RVTEST_SIGUPD_V_LEN(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,                   \
+    _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _VMASK, _STR_PTR)            \
+    /* Save vl */                                                                   \
+    csrr        _TEMP_REG, vl            ;                                          \
+    /* Set vl = vlmax */                                                            \
+    vsetvli     x0, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                       \
+    /* Load reference and compare */                                                \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                          \
+    _CMP        _MTMP, _VREG, _VTMP      ;                                          \
+    /* Build active mask */                                                         \
+    vid.v       _VTMP                    ;                                          \
+    vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;    /* i < vl*/                           \
+    beqz        _VMASK_FLAG, 1f          ;                                          \
+    vmand.mm    _VTMP, _VTMP, v0         ;    /* apply v0 mask if enabled */        \
+1:                                                                                  \
+    /* Check active mismatch */                                                     \
+    vmand.mm    _VTMP, _VTMP, _MTMP      ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    bge         _LINK_REG, x0, 5f        ;    /* FAIL */                            \
+    /* Reload reference and compare again */                                        \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                          \
+    _CMP        _MTMP, _VREG, _VTMP      ;                                          \
+    /* Build tail mask */                                                           \
+    vid.v       _VTMP                    ;                                          \
+    vmsgeu.vx   _VTMP, _VTMP, _TEMP_REG  ;    /* i >= vl*/                          \
+    /* check vta */                                                                 \
+    csrr        _LINK_REG, vtype         ;                                          \
+    srli        _LINK_REG, _LINK_REG, 6  ;    /* vta bit */                         \
+    andi        _LINK_REG, _LINK_REG, 1  ;                                          \
+    beqz        _LINK_REG, 2f            ;    /* jump if undisturbed */             \
+    /* tail agnostic handling */                                                    \
+    vmseq.vi    _VTMP2, _VREG, -1        ;    /* VTMP2 = (vd == -1) */              \
+    vmandn.mm   _VTMP2, _VTMP, _VTMP2    ;    /* VTMP2 = tail && !(vd == -1) */     \
+2:                                                                                  \
+    /* Check tail mismatches */                                                     \
+    vmand.mm    _VTMP, _MTMP, _VTMP      ;    /* VTMP = tail && (vd != sig) */      \
+    vmand.mm    _VTMP, _VTMP, _VTMP2     ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    bge         _LINK_REG, x0, 5f        ;    /* FAIL */                            \
+    /* Build mask inactive mask (unmasked) */                                       \
+    beqz        _VMASK_FLAG, 4f          ;    /* skip if no mask */                 \
+    vid.v       _VTMP                    ;                                          \
+    vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;                                          \
+    vmnand.mm   _VTMP, _VTMP, v0         ;    /* inactive: (i < vl) && ~v0 */       \
+    /* check vma */                                                                 \
+    csrr        _LINK_REG, vtype         ;                                          \
+    srli        _LINK_REG, _LINK_REG, 7  ;    /* vma bit */                         \
+    andi        _LINK_REG, _LINK_REG, 1  ;                                          \
+    beqz        _LINK_REG, 3f            ;    /* jump if undisturbed */             \
+    /* inactive agnostic handling */                                                \
+    vmseq.vi    _VTMP2, _VREG, -1        ;    /* VTMP2 = (vd == -1) */              \
+    vmandn.mm   _VTMP2, _VTMP, _VTMP2    ;    /* VTMP2 = inactive && !(vd == -1) */ \
+    vmandn.mm   _MTMP, _MTMP, _VTMP2     ;    /* MTMP = inactive && (vd != sig) */  \
+3:                                                                                  \
+    /* check inactive mismatches */                                                 \
+    vmand.mm    _VTMP, _MTMP, _VTMP      ;    /* VTMP = inactive && (vd != sig) */  \
+    vmand.mm    _VTMP, _VTMP, _VTMP2     ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    bge         _LINK_REG, x0, 5f        ;    /* FAIL */                            \
+4:                                                                                  \
+    /* PASS */                                                                      \
+    addi        _SIG_PTR, _SIG_PTR, _OFFSET ;                                       \
+5:                                                                                  \
+    /* FAIL */                                                                      \
+    LREG        _TEMP_REG, 0(_SIG_PTR)     ;                                        \
+    beq         _TEMP_REG, _TEMP_REG, 6f   ;                                        \
+6:                                                                                  \
+    jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                   \
+    RVTEST_WORD_PTR _STR_PTR               ;                                        \
 #else
-  #define RVTEST_SIGUPD_V_MASK(_SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
-    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                                        ;\
-    nop                                                               ;\
-    nop                                                               ;\
-    beq x0, x0, 2f                                                    ;\
-    LREG         _TEMP_REG, 0(_SIG_PTR)                       ;             \
-    beq          _TEMP_REG, _TEMP_REG, 1f                                   ;             \
-    1:                                                             ;\
-    jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG              ;\
-    RVTEST_WORD_PTR _STR_PTR                                          ;\
-    2:                                                             ;\
-    addi _SIG_PTR, _SIG_PTR, _OFFSET
+#define RVTEST_SIGUPD_V_LEN(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,                   \
+    _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _VMASK, _STR_PTR)            \
+    /* Save vl */                                                                   \
+    csrr        _TEMP_REG, vl            ;                                          \
+    /* Set vl = vlmax */                                                            \
+    vsetvli     x0, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                       \
+    /* Store reference */                                                           \
+    vse ## _SEW ##.v _VREG, 0(_SIG_PTR)  ;                                          \
+    _CMP        _MTMP, _VREG, _VTMP      ;                                          \
+    /* Build active mask */                                                         \
+    vid.v       _VTMP                    ;                                          \
+    vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;    /* i < vl*/                           \
+    beqz        _VMASK_FLAG, 1f          ;                                          \
+    vmand.mm    _VTMP, _VTMP, v0         ;    /* apply v0 mask if enabled */        \
+1:                                                                                  \
+    /* Check active mismatch */                                                     \
+    vmand.mm    _VTMP, _VTMP, _MTMP      ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    beq         x0, x0, 5f               ;    /* SET TO PASS */                     \
+    /* Reload reference and compare again */                                        \
+    vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                          \
+    _CMP        _MTMP, _VREG, _VTMP      ;                                          \
+    /* Build tail mask */                                                           \
+    vid.v       _VTMP                    ;                                          \
+    vmsgeu.vx   _VTMP, _VTMP, _TEMP_REG  ;    /* i >= vl*/                          \
+    /* check vta */                                                                 \
+    csrr        _LINK_REG, vtype         ;                                          \
+    srli        _LINK_REG, _LINK_REG, 6  ;    /* vta bit */                         \
+    andi        _LINK_REG, _LINK_REG, 1  ;                                          \
+    beqz        _LINK_REG, 2f            ;    /* jump if undisturbed */             \
+    /* tail agnostic handling */                                                    \
+    vmseq.vi    _VTMP2, _VREG, -1        ;    /* VTMP2 = (vd == -1) */              \
+    vmandn.mm   _VTMP2, _VTMP, _VTMP2    ;    /* VTMP2 = tail && !(vd == -1) */     \
+2:                                                                                  \
+    /* Check tail mismatches */                                                     \
+    vmand.mm    _VTMP, _MTMP, _VTMP      ;    /* VTMP = tail && (vd != sig) */      \
+    vmand.mm    _VTMP, _VTMP, _VTMP2     ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    bge         _LINK_REG, x0, 5f        ;    /* FAIL */                            \
+    /* Build mask inactive mask (unmasked) */                                       \
+    beqz        _VMASK_FLAG, 4f          ;    /* skip if no mask */                 \
+    vid.v       _VTMP                    ;                                          \
+    vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;                                          \
+    vmnand.mm   _VTMP, _VTMP, v0         ;    /* inactive: (i < vl) && ~v0 */       \
+    /* check vma */                                                                 \
+    csrr        _LINK_REG, vtype         ;                                          \
+    srli        _LINK_REG, _LINK_REG, 7  ;    /* vma bit */                         \
+    andi        _LINK_REG, _LINK_REG, 1  ;                                          \
+    beqz        _LINK_REG, 3f            ;    /* jump if undisturbed */             \
+    /* inactive agnostic handling */                                                \
+    vmseq.vi    _VTMP2, _VREG, -1        ;    /* VTMP2 = (vd == -1) */              \
+    vmandn.mm   _VTMP2, _VTMP, _VTMP2    ;    /* VTMP2 = inactive && !(vd == -1) */ \
+    vmandn.mm   _MTMP, _MTMP, _VTMP2     ;    /* MTMP = inactive && (vd != sig) */  \
+3:                                                                                  \
+    /* check inactive mismatches */                                                 \
+    vmand.mm    _VTMP, _MTMP, _VTMP      ;    /* VTMP = inactive && (vd != sig) */  \
+    vmand.mm    _VTMP, _VTMP, _VTMP2     ;                                          \
+    vfirst.m    _LINK_REG, _VTMP         ;                                          \
+    bge         _LINK_REG, x0, 5f        ;    /* FAIL */                            \
+4:                                                                                  \
+    /* PASS */                                                                      \
+    addi        _SIG_PTR, _SIG_PTR, _OFFSET ;                                       \
+5:                                                                                  \
+    /* FAIL */                                                                      \
+    LREG        _TEMP_REG, 0(_SIG_PTR)     ;                                        \
+    beq         _TEMP_REG, _TEMP_REG, 6f   ;                                        \
+6:                                                                                  \
+    jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                   \
+    RVTEST_WORD_PTR _STR_PTR               ;                                        \
 #endif
 
 // Canary value to indicate bounds of signature region

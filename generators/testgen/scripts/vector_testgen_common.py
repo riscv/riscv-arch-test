@@ -1274,7 +1274,7 @@ def writeSIGUPD_V_old(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig
       else:
         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
-def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False):
+def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base"):
 
     global sigupd_count
 
@@ -1298,11 +1298,11 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
     # Determine vd register group (robust LMUL handling)
     # -------------------------------------------------
     if sig_lmul is None:
-        emul = 1
+      emul = 1
     elif sig_lmul >= 1:
-        emul = int(sig_lmul)
+      emul = int(sig_lmul)
     else:
-        emul = 1
+      emul = 1
 
     vd_group = [vd + i for i in range(emul)]
 
@@ -1311,60 +1311,49 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
     # -------------------------------------------------
     valid = False
     while not valid:
-        vtmp = randint(1, 31)
-        valid = True
+      vtmp = randint(1, 31)
+      valid = True
 
-        if emul >= 1:
-            if vtmp % emul != 0:
-                valid = False
+      if emul >= 1:
+        if vtmp % emul != 0:
+          valid = False
 
-        if vtmp + emul - 1 > 31:
-            valid = False
+      if vtmp + emul - 1 > 31:
+        valid = False
 
-        vtmp_group = []
-        i = 0
-        while i < emul:
-            vtmp_group.append(vtmp + i)
-            i += 1
+      vtmp_group = []
+      i = 0
+      while i < emul:
+        vtmp_group.append(vtmp + i)
+        i += 1
 
-        j = 0
-        while j < len(vtmp_group):
-            if vtmp_group[j] in vd_group:
-                valid = False
-            j += 1
+      j = 0
+      while j < len(vtmp_group):
+        if vtmp_group[j] in vd_group:
+          valid = False
+        j += 1
 
     # -------------------------------------------------
-    # Choose mtmp (LMUL aligned, no overlap, not v0)
+    # Choose mtmp (single mask reg, no overlap, not v0)
     # -------------------------------------------------
     valid = False
     while not valid:
-        mtmp = randint(1, 31)
-        valid = True
+      mtmp = randint(1, 31)
+      valid = True
 
-        if mtmp == 0:
-            valid = False
+      if (mtmp == 0) or (mtmp in vd_group) or (mtmp in vtmp_group):
+        valid = False
 
-        if emul >= 1:
-            if mtmp % emul != 0:
-                valid = False
+    # -------------------------------------------------
+    # Choose vtmp2 (single mask reg, no overlap, not v0)
+    # -------------------------------------------------
+    valid = False
+    while not valid:
+      vtmp2 = randint(1, 31)
+      valid = True
 
-        if mtmp + emul - 1 > 31:
-            valid = False
-
-        mtmp_group = []
-        i = 0
-        while i < emul:
-            mtmp_group.append(mtmp + i)
-            i += 1
-
-        j = 0
-        while j < len(mtmp_group):
-            if mtmp_group[j] in vd_group:
-                valid = False
-            if mtmp_group[j] in vtmp_group:
-                valid = False
-            j += 1
-
+      if (vtmp2 == 0) or (vtmp2 in vd_group) or (vtmp2 in vtmp_group) or (vtmp2 == mtmp):
+        valid = False
 
     # -------------------------------------------------
     # Offset handling (original logic preserved)
@@ -1376,28 +1365,52 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
     if sig_whole_register_store:
       writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
 
-    if offset > 2047:
-      if vd_mask:
-        writeLine(
-        f"RVTEST_SIGUPD_V_MASK(x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offsetRem}, v{vd}, {str_ptr})",
-        f"# compare v{vd} (sew={sew}, AVL={avl})")
+    if testtype == "length":
+      if offset > 2047:
+        if vd_mask:
+          writeLine(
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        else:
+          writeLine(
+          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, v{vd}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        for x in range(fullOffsets):
+          writeLine(
+            f"addi x{sigReg}, x{sigReg}, 2047",
+            f"# calculate effective address for SIGUPD_V with large offset")
       else:
-        writeLine(
-        f"RVTEST_SIGUPD_V(x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offsetRem}, v{vd}, {str_ptr})",
-        f"# compare v{vd} (sew={sew}, AVL={avl})")
-      for x in range(fullOffsets):
-        writeLine(
-          f"addi x{sigReg}, x{sigReg}, 2047",
-          f"# calculate effective address for SIGUPD_V with large offset")
+        if vd_mask:
+          writeLine(
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        else:
+          writeLine(
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
     else:
-      if vd_mask:
-        writeLine(
-        f"RVTEST_SIGUPD_V_MASK(x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offset}, v{vd}, {str_ptr})",
-        f"# compare v{vd} (sew={sew}, AVL={avl})")
+      if offset > 2047:
+        if vd_mask:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offsetRem}, v{vd}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        else:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offsetRem}, v{vd}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        for x in range(fullOffsets):
+          writeLine(
+            f"addi x{sigReg}, x{sigReg}, 2047",
+            f"# calculate effective address for SIGUPD_V with large offset")
       else:
-        writeLine(
-        f"RVTEST_SIGUPD_V(x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offset}, v{vd}, {str_ptr})",
-        f"# compare v{vd} (sew={sew}, AVL={avl})")
+        if vd_mask:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offset}, v{vd}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
+        else:
+          writeLine(
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offset}, v{vd}, {str_ptr})",
+          f"# compare v{vd} (sew={sew}, AVL={avl})")
 
 
 
@@ -1628,7 +1641,7 @@ def getSigSpace(xlen, flen):
       signatureWords = sigupd_count + sigupd_countF # all Sigupd, no need to adjust since Xlen is equal to or larger than Flen and SIGUPD_F macro will adjust alignment up to XLEN
   return signatureWords
 
-def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False):
+def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False, testtype="base"):
     scalar_registers_used = list(scalar_registers_used)
 
     writeLine(testline)
@@ -1648,15 +1661,15 @@ def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, 
       writeSIGUPD(fcsrsaveReg)
 
     if (test in vd_widen_ins) or (test in wvsins):
-      writeSIGUPD_V(vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store)  # EEW of vd = 2 * SEW for widening
+      writeSIGUPD_V(vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype)  # EEW of vd = 2 * SEW for widening
     elif (test in maskins):
-      writeSIGUPD_V(vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True)      # EEW of vd = 1 for mask
+      writeSIGUPD_V(vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype)      # EEW of vd = 1 for mask
     elif (test in xvtype):
       writeSIGUPD(rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:
-      writeSIGUPD_V(vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store)
+      writeSIGUPD_V(vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype)
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):
@@ -1970,7 +1983,7 @@ def writeTest(description, instruction, instruction_data,
       signature_target_sew = sew
 
     if (maskval is not None) or (vl is not None):
-      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store)
+      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store, testtype="length")
     else:
       writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store)
 

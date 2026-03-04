@@ -65,16 +65,16 @@ normative_rule_definitions:
   - name: mstateen-bit-63_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
-  - name: hstateen-bit-63_op
+  - name: hstateen_bit_63_op
     coverpoint: [""]
 
   - name: mstateen-bit-63_roz
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
-  - name: hstateen-bit-63_writable
+  - name: hstateen_bit_63_writable
     coverpoint: [""]
 
-  - name: stateen0-c_op
+  - name: stateen0_c_op
     coverpoint: [""]
 
   - name: stateen0-fcsr_op
@@ -92,37 +92,37 @@ normative_rule_definitions:
   - name: mstateen0-se0_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_access_control_over_sstateen}"]
 
-  - name: hstateen0-se0_op
+  - name: hstateen0_se0_op
     coverpoint: [""]
 
   - name: mstateen0-envcfg_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_envcfg}"]
 
-  - name: hstateen0-envcfg_op
+  - name: hstateen0_envcfg_op
     coverpoint: [""]
 
   - name: mstateen0-csrind_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csrind}"]
 
-  - name: hstateen0-csrind_op
+  - name: hstateen0_csrind_op
     coverpoint: [""]
 
   - name: mstateen0-imsic_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_imsic}"]
 
-  - name: hstateen0-imsic_op
+  - name: hstateen0_imsic_op
     coverpoint: [""]
 
   - name: mstateen0-aia_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_aia}"]
 
-  - name: hstateen0-aia_op
+  - name: hstateen0_aia_op
     coverpoint: [""]
 
   - name: mstateen0-context_op
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_context}"]
 
-  - name: hstateen0-context_op
+  - name: hstateen0_context_op
     coverpoint: [""]
 
   - name: mstateen0-p1p13_op

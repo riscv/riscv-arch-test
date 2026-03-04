@@ -5,7 +5,7 @@ normative_rule_definitions:
   # datum; the SPP field of mstatus is written with the active privilege mode at the
   # time of the trap; the SPIE field of mstatus is written with the value of the SIE
   # field at the time of the trap; and the SIE field of mstatus is cleared.
-  - name: trap_del_S-mode_op
+  - name: trap_del_S_mode_op
     coverpoint: ["InterruptsS_cg/cp_priority_mideleg_s"]
 
   # implementations can provide individual read/write bits within medeleg and
@@ -112,7 +112,7 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
-  - name: intr_M-mode_highest_pri
+  - name: intr_M_mode_highest_pri
     coverpoint: [""]
 
   # Supervisor-level external interrupts are made pending based on the logical-OR of
@@ -123,7 +123,7 @@ normative_rule_definitions:
 
   # Multiple simultaneous interrupts destined for M-mode are handled in the
   # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
-  - name: intr_M-mode_pri
+  - name: intr_M_mode_pri
     coverpoint: [""]
 
   # Traps never transition from a more-privileged mode to a less-privileged mode.
@@ -176,14 +176,14 @@ normative_rule_definitions:
     coverpoint: [""]
 
   # If the stimecmp register is not implemented, STIP is writable in mip
-  - name: mip_stip_no-stimecmp_acc
+  - name: mip_stip_no_stimecmp_acc
     coverpoint: [""]
 
   # If supervisor mode is implemented, its mip.STIP and mie.STIE are the
   # interrupt-pending and interrupt-enable bits for supervisor-level timer
   # interrupts. If the stimecmp register is not implemented, STIP is writable in mip
   # may be written by M-mode software to deliver timer interrupts to S-mode.
-  - name: mip_stip_no-stimecmp_op
+  - name: mip_stip_no_stimecmp_op
     coverpoint: [""]
 
   # If the stimecmp (supervisor-mode timer compare) register is implemented, STIP is

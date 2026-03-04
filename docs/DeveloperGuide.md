@@ -190,10 +190,6 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     # in a particular coverpoint. This could be register numbers, register values,
     # immediate values, etc.
     for rd in rd_regs:
-        # Each testcase needs to include a call to the test_data.add_testcase function.
-        # This adds a label for the test to the generated file and adds the appropriate
-        # debugging string.
-        test_lines.append(test_data.add_testcase(bin_name, coverpoint))
         # Any registers that are explicitly used must be marked as used using the
         # test_data.int_regs.consume_registers function. This will automatically move
         # any reserved registers to ensure the desired register is free.
@@ -206,8 +202,9 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         desc = f"{coverpoint} (Test destination rd = x{rd})"
         # format_single_test is the key part of standard coverpoint generators. It takes
         # the provided instruction parameters (created above) and produces the assembly
-        # sequence necessary to test the given instruction.
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        # sequence necessary to test the given instruction. It also calls test_data.add_testcase
+        # to add a label and debugging string.
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint))
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
         return_test_regs(test_data, params)
@@ -519,7 +516,7 @@ For examples of how to write the individual coverpoint helper functions for priv
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
-- Include a call to `test_data.add_testcase` before each testcase within a coverpoint. This creates the appropriate labels and debug strings.
+- Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings.
 - To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
 
 ## Debugging Coverage

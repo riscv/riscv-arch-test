@@ -85,6 +85,8 @@ def write_asciidoc(filepath: Path, tables: list[list[list[str]]], suite_name: st
             f.write("[%autofit]\n")
             f.write(",===\n")
             for row in table:
+                if row and row[0].strip().lower() == "type":
+                    continue
                 # Escape commas in cells if needed; here simply join by comma
                 f.write(",".join(row) + "\n")
             f.write(",===\n\n")
@@ -130,7 +132,7 @@ def main() -> None:
             print(f"Processing {entry.name}...")
             try:
                 process_csv_file_to_adoc(entry, dest_dir, max_columns)
-            except Exception as e:
+            except (OSError, csv.Error) as e:
                 print(f"Error processing {entry.name}: {e}")
 
     print("Done.")

@@ -182,6 +182,7 @@ It should contain the following fields:
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
 - `dut_include_dir`: Directory containing `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file)
+- `include_priv_tests`: Optional; defaults to `True`; if set to `False`, all tests that rely on privilege modes will be skipped
 
 See [test_config.yaml](./config/cores/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
 
@@ -215,17 +216,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_MTIME_ADDRESS`
 - `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
-- `RVMODEL_SET_MEXT_INT`
-- `RVMODEL_CLR_MEXT_INT`
-- `RVMODEL_SET_MSW_INT`
-- `RVMODEL_CLR_MSW_INT`
-- `RVMODEL_SET_SEXT_INT`
-- `RVMODEL_CLR_SEXT_INT`
-- `RVMODEL_SET_SSW_INT`
-- `RVMODEL_CLR_SSW_INT`
+- `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_MSW_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_SSW_INT(_R1, _R2)`
+- `RVMODEL_INTERRUPT_LATENCY`
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
@@ -236,8 +239,8 @@ A linker script is needed to place the code and data regions in the appropriate 
 - The `ENTRY` point must be `rvtest_entry_point`.
   - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else. It should not be directly called by the `ENTRY` point.
 - There must be a `.text` section.
-- There must be a `.data` section.
-- There must be a `.bss` section.
+- There must be a `.bss` section. This should follow the `.text` section.
+- There must be a `.data` section. This should follow the `.bss` section.
 
 For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
 

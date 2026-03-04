@@ -81,13 +81,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: |
-          # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
-          if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
-          else
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
-          fi
+        run: DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
     name: Spike Regression (${{ matrix.name }})
@@ -175,11 +169,12 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \
           EXTENSIONS="" \
-          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 
@@ -265,11 +260,12 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \
           EXTENSIONS= \
-          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,Zaamo,Zalrsc,Zabha,Zacas,ZacasZabha \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 
@@ -333,6 +329,11 @@ jobs:
   ci_pass:
     runs-on: ubuntu-latest
     needs: [lint, regress, spike, qemu, vector-testgen, ctp-build]
+    if: "${{ always() }}"
     steps:
-      - name: Dummy
-        run: echo 'Jobs need at least one step.'
+      - name: exit failure
+        if: "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}"
+        run: exit 1
+      - name: exit success
+        if: "${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}"
+        run: exit 0

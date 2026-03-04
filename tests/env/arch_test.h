@@ -851,10 +851,6 @@
         //.warning "RVMODEL_CLR_MSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_MSW_INT     RVTEST_DFLT_INT_HNDLR
 #endif
-#ifndef RVMODEL_CLR_MTIMER_INT
-        //.warning "RVMODEL_CLR_MTIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_MTIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
 #ifndef RVMODEL_CLR_MEXT_INT
         //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_MEXT_INT    RVTEST_DFLT_INT_HNDLR
@@ -869,25 +865,9 @@
         //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
 #endif
-#ifndef RVMODEL_MCLR_SSW_INT // M-mode interrupt handler for S-mode SW Ints
-        //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_SCLR_SSW_INT // S-mode interrupt handler for S-mode SW Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
 #ifndef RVMODEL_CLR_STIMER_INT
         //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_MCLR_STIMER_INT // M-mode interrupt handler for S-mode Timer Ints
-        //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_SCLR_STIMER_INT // S-mode interrupt handler for S-mode Timer Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_STIMER_INT     RVTEST_DFLT_INT_HNDLR
 #endif
 #ifndef RVMODEL_CLR_SEXT_INT
         //.warning "RVMODEL_CLR_SEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
@@ -1482,6 +1462,12 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
+#ifdef SKIP_MEPC
+        LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
+        addi    T2, T2, 2
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+#endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2                      // construct vmem seg end
@@ -1507,7 +1493,7 @@ adj_\__MODE__\()epc:
 
 sv_\__MODE__\()epc:
         TRAP_SIGUPD(T6, T3, 2)                  // save 3rd sig value, (rel mepc) into trap sig area
-        csrr    T3, CSR_XEPC                    // As T3 was overwritten for TRAP_SIGUPD, read XEPC again
+        csrr    T3, CSR_XEPC                    // As T3 was adjusted for TRAP_SIGUPD, read XEPC again
 
 #ifdef SKIP_MEPC                                //**** spcl case so fetch faults don't rtn to EPC+4
                                                 //**** checks if gp=spcl_value & cause=fetch-xx-fault
@@ -1730,15 +1716,20 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 //------------- MMode----------------
 \__MODE__\()clr_Msw_int:                // int 3 default to just return if not defined
-        RVMODEL_CLR_MSW_INT
+        RVMODEL_CLR_MSW_INT(T2, T5)
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Mtmr_int:               // int 7 default to just return
-        RVMODEL_CLR_MTIMER_INT
+        li T5, -1
+        la T2, RVMODEL_MTIMECMP_ADDRESS
+        SREG T5, 0(T2)
+        #if __riscv_xlen == 32
+                sw T5, 4(T2)
+        #endif
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Mext_int:               // int11 default to just return after saving IntID in T3
-        RVMODEL_CLR_MEXT_INT
+        RVMODEL_CLR_MEXT_INT(T2, T5)
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
@@ -1746,12 +1737,12 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 \__MODE__\()clr_Ssw_int:                // int 1 default to just return if not defined
                                         // S-mode software interrupts need to be reset differently when raised in M or S mode
         .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
-            RVMODEL_MCLR_SSW_INT
+            RVMODEL_CLR_SSW_INT(T2, T5)
         .else
                 .ifc \__MODE__ , S
-                        RVMODEL_SCLR_SSW_INT
+                        RVMODEL_CLR_SSW_INT(T2, T5)
                 .else
-                        RVMODEL_CLR_SSW_INT
+                        RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif
 
@@ -1760,18 +1751,18 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 \__MODE__\()clr_Stmr_int:               // int 5 default to just return
                                         // S-mode timer interrupts need to be reset differently when raised in M or S mode
         .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
-            RVMODEL_MCLR_STIMER_INT
+            RVTEST_CLR_STIMER_INT
         .else
                 .ifc \__MODE__ , S
-                        RVMODEL_SCLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .else
-                        RVMODEL_CLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .endif
         .endif
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Sext_int:               // int 9 default to just return after saving IntID in T3
-        RVMODEL_CLR_SEXT_INT
+        RVMODEL_CLR_SEXT_INT(T2, T5)
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 

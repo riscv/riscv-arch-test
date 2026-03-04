@@ -31,7 +31,6 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
     test_lines: list[str] = []
     for val in memvals:
-        test_lines.append(test_data.add_testcase(f"{val:#x}", coverpoint))
         if instr_type == "S":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=val)
         elif instr_type == "L":
@@ -39,7 +38,7 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         else:
             raise ValueError(f"cp_memval coverpoint not supported for instruction type: {instr_type} in {instr_name}")
         desc = f"{coverpoint} (memory value = {val:#x})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"{val:#x}", coverpoint))
         return_test_regs(test_data, params)
 
     return test_lines

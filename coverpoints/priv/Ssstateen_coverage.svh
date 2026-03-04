@@ -258,10 +258,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         bins context_disabled = {1'b0};
         bins context_enabled  = {1'b1};
     }
-    cp_p1p13: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "p1p13") {
-        bins p1p13_disabled = {1'b0};
-        bins p1p13_enabled  = {1'b1};
-    }
     cp_srmcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "srmcfg") {
         bins srmcfg_disabled = {1'b0};
         bins srmcfg_enabled  = {1'b1};

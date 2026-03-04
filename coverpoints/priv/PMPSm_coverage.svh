@@ -8,8 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_RV32PMP
-`define COVER_RV64PMP
+`define COVER_PMPSM
 
 covergroup PMPSM_cg with function sample(
                     ins_t ins,

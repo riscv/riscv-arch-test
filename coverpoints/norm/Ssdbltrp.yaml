@@ -2,7 +2,7 @@ normative_rule_definitions:
   # The S-mode-disable-trap (SDT) bit is a WARL field introduced by the Ssdbltrp
   # extension to address double trap (See ) at privilege modes lower than M.
   - names:
-      [sstatus-sdt_sz, sstatus-sdt_acc, sstatus-sdt_op, sstatus-sdt_Ssdbltrp]
+      [sstatus_sdt_sz, sstatus_sdt_acc, sstatus_sdt_op, sstatus_sdt_Ssdbltrp]
     coverpoint: [""]
 
   # When the SDT bit is set to 1 by an explicit CSR write, the SIE (Supervisor
@@ -10,7 +10,7 @@ normative_rule_definitions:
   # value written, if any, to the SIE bit by the same write. The SIE bit can only be
   # set to 1 by an explicit CSR write if the SDT bit is being set to 0 by the same
   # write or is already 0.
-  - name: sstatus-sdt_sstatus-sie_overwrite
+  - name: sstatus_sdt_sstatus_sie_overwrite
     coverpoint: [""]
 
   # When a trap is to be taken into S-mode, if the SDT bit is currently 0, it is
@@ -22,9 +22,9 @@ normative_rule_definitions:
   # register is then set to what would be otherwise written into the mcause register
   # by the unexpected trap. The mcause register is set to 16, the double-trap
   # exception code.
-  - name: sstatus-sdt_trap
+  - name: sstatus_sdt_trap
     coverpoint: [""]
 
   # An SRET instruction sets the SDT bit to 0.
-  - name: sstatus-sdt_sret
+  - name: sstatus_sdt_sret
     coverpoint: [""]

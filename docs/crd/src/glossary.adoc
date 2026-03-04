@@ -1,0 +1,32 @@
+[Preface]
+== Glossary
+
+.Glossary
+[%autowidth]
+|===
+| Term | Meaning
+
+| RISC-V | (Reduced Instruction Set Computer) architecture, version 5
+| RVI | RISC-V International (organization that oversees RISC-V)
+| RVCP | RISC-V Certification Program
+| TSC | Technical Steering Committee (branch of RVI that creates standards)
+| CSC | Certification Steering Committee (branch of RVI that oversees the RVCP)
+| CRD | Certification Requirements Document
+| CTP | Certification Test Plan
+| CSR | Control & Status Register (located inside processor, not memory-mapped)
+| TBD | To Be Determined
+| N/A | “Not Applicable”
+| AKA | “Also Known As”
+|===
+
+Additionally, this CRD follows https://datatracker.ietf.org/doc/html/rfc2119[RFC 2119] which defines the keywords "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in uppercase to indicate requirement level. This is summarized in the table below for convenience.
+
+.RFC 2119 Requirement Level Keywords
+[%autowidth]
+|===
+| Term | Meaning
+
+| MUST | Indicates a mandatory requirement
+| SHOULD | Indicates a recommended requirement
+| MAY | Indicates an optional requirement
+|===

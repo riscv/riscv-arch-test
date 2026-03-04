@@ -114,8 +114,7 @@ def generate_all_tests(
                     continue
                 tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
 
-    for testsuite in sorted(priv_ext_list):
-        tasks.append(PrivTask(testsuite, output_test_dir))
+    tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
@@ -142,7 +141,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             output_test_dir=task.output_test_dir,
         )
     else:
-        raise ValueError("Invalid task type.")
+        raise TypeError("Invalid task type.")
 
 
 def main() -> None:

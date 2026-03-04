@@ -48,7 +48,11 @@ def run_act(
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
+    fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
 ) -> None:
+    if debug and fast:
+        raise typer.BadParameter("--debug and --fast cannot be used together")
+
     if workdir is None:
         workdir = Path.cwd() / "work"
 
@@ -69,11 +73,16 @@ def run_act(
         config_params = get_config_params(udb_config_file)
 
         # Select tests for config
-        selected_tests = select_tests(full_test_dict, implemented_extensions, config_params)
+        selected_tests = select_tests(
+            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+        )
+        mxlen = config_params["MXLEN"]
+        if not isinstance(mxlen, int):
+            raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
         configs.append(
             {
                 "config": config,
-                "xlen": config_params["MXLEN"],
+                "xlen": mxlen,
                 "e_ext": "E" in implemented_extensions,
                 "selected_tests": selected_tests,
             }
@@ -87,6 +96,7 @@ def run_act(
         workdir.absolute(),
         coverage,
         debug,
+        fast,
     )
     print(f"Makefiles generated in {workdir}")
     print(f"Run make -C {workdir} compile to build all tests.")

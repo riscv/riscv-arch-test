@@ -12,6 +12,7 @@ WORKDIR     ?= work
 EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
+FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
@@ -47,7 +48,7 @@ endif
 .PHONY: spike spike-rv32 spike-rv64
 
 spike: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
-SPIKE_ISA := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
+SPIKE_ISA := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicntr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
 spike: elfs
 	@exit_code=0; \
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
@@ -61,6 +62,31 @@ spike-rv32: elfs
 spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
 spike-rv64: elfs
 	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
+
+
+##### QEMU test targets #####
+.PHONY: qemu qemu-rv32 qemu-rv64
+
+# -semihosting is needed for test termination
+# -icount shift=1 ensures accurate values for instret
+# pmu-mask sets the number of hpmcounters
+QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+QEMU_RV32_CMD := qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
+
+qemu: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml config/qemu/qemu-rv64-max/test_config.yaml
+qemu: elfs
+	@exit_code=0; \
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+qemu-rv32: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml
+qemu-rv32: elfs
+	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs
+
+qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
+qemu-rv64: elfs
+	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
 
 ###### Test compilation targets ######
@@ -77,6 +103,7 @@ generate-makefiles: # too many dependencies to track; always regenerate Makefile
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
+		$(if $(FAST),--fast) \
 		$(if $(COVERAGE),--coverage)
 
 .PHONY: clean

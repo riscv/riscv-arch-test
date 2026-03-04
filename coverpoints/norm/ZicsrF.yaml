@@ -1,0 +1,84 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: csrrc_op
+    coverpoint: ["Zicsr_csrrc_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrci_op
+    coverpoint: ["Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}"]
+  - name: csrrs_op
+    coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrsi_op
+    coverpoint: ["Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}"]
+  - name: csrrw_op
+    coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrwi_op
+    coverpoint: ["Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}"]
+
+  # The floating-point control and status register, fcsr, is a RISC-V control and
+  # status register (CSR). It is a 32-bit read/write register that selects the
+  # dynamic rounding mode for floating-point arithmetic operations and holds the
+  # accrued exception flags, as shown in .
+  - names: [fscr_sz, fcsr_acc]
+    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_walk}"]
+
+  # The floating-point control and status register, fcsr, is a RISC-V control and
+  # status register (CSR). It is a 32-bit read/write register that selects the
+  # dynamic rounding mode for floating-point arithmetic operations and holds the
+  # accrued exception flags, as shown in . Bits 31&#8212;&#8203;8 of the fcsr are
+  # reserved for other standard extensions. If these extensions are not present,
+  # implementations shall ignore writes to these bits and supply a zero value when
+  # read. Standard software should preserve the contents of these bits.
+  - name: fcsr_op
+    coverpoint: ["ZicsrF_cg/cp_fflags_set, F_fadd_s_cg/cp_csr_frm"]
+
+  # The fields within the fcsr can also be accessed individually through different
+  # CSR addresses, and separate assembler pseudoinstructions are defined for these
+  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
+  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
+  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
+  # the original value into integer register rd, and then writing a new value
+  # obtained from the three least-significant bits of integer register rs1 into frm.
+  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
+  # field fflags (fcsr bits 4&#8212;&#8203;0).
+  - names: [fcsr_frm_sz, fcsr_frm_acc]
+    coverpoint: ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_frm_write, cp_frm_write}"]
+
+  # The fields within the fcsr can also be accessed individually through different
+  # CSR addresses, and separate assembler pseudoinstructions are defined for these
+  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
+  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
+  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
+  # the original value into integer register rd, and then writing a new value
+  # obtained from the three least-significant bits of integer register rs1 into frm.
+  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
+  # field fflags (fcsr bits 4&#8212;&#8203;0). Rounding Mode|Mnemonic|Meaning ===
+  # 000|RNE|Round to Nearest, ties to Even¶001|RTZ|Round towards Zero¶010|RDN|Round
+  # Down (towards −∞)¶011|RUP|Round Up (towards +∞)¶100|RMM|Round to Nearest, ties
+  # to Max Magnitude¶101||Reserved for future use.¶110||Reserved for future
+  # use.¶111|DYN|In instruction&#8217;s rm field, selects dynamic rounding mode; In
+  # Rounding Mode register, reserved. === Floating-point operations use either a
+  # static rounding mode encoded in the instruction, or a dynamic rounding mode held
+  # in frm. Rounding modes are encoded as shown in
+  # &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm field
+  # selects the dynamic rounding mode held in frm
+  - name: fcsr_frm_op
+    coverpoint: ["F_fadd_s_cg/cp_csr_frm"]
+
+  # The fields within the fcsr can also be accessed individually through different
+  # CSR addresses, and separate assembler pseudoinstructions are defined for these
+  # accesses. The FRRM instruction reads the Rounding Mode field frm (fcsr bits
+  # 7&#8212;&#8203;5) and copies it into the least-significant three bits of integer
+  # register rd, with zero in all other bits. FSRM swaps the value in frm by copying
+  # the original value into integer register rd, and then writing a new value
+  # obtained from the three least-significant bits of integer register rs1 into frm.
+  # FRFLAGS and FSFLAGS are defined analogously for the Accrued Exception Flags
+  # field fflags (fcsr bits 4&#8212;&#8203;0). The accrued exception flags indicate
+  # the exception conditions that have arisen on any floating-point arithmetic
+  # instruction since the field was last reset by software, as shown in
+  # &lt;&lt;bitdef&gt;&gt;
+  - name: fcsr_fflags_op
+    coverpoint:
+      ["ZicsrF_cg/{cp_fcsr_access, cp_fcsr_fflags_write, cp_fflags_write}"]
+
+  - name: fmadd-s_op
+    coverpoint: ["ZicsrF_cg/cp_underflow_after_rounding_*"]

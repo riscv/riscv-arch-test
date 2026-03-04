@@ -1,0 +1,95 @@
+=== What's a CRD?
+
+Certification Requirements Documents (CRDs) list requirements an implementation MUST meet
+to obtain an associated RVI (RISC-V International) certificate.
+CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
+with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
+
+The CRDs refer to and augment information provided in existing ratified RVI standards.
+
+There are a variety of certificates offered by RVI to accommodate the various RVI standards.
+There are certificates for processors, non-processor system IP (e.g., IOMMU),
+and system platforms (processor + system IP) hardware standards.
+There are multiple classes of processor certificates available to accommodate the wide range of
+RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
+
+Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
+Note that not all behaviors allowed in RISC-V standards are supported by a particular CRD.
+
+=== Naming Scheme
+
+==== CRD Naming
+
+All components of the RVCP share the following naming scheme:
+
+  Format: <name>[v<version>]
+
+Where:
+
+* Left & right square brackets denote optional.
+* Less-than & greater-than signs just separate fields (i.e., they aren't present in the CRD name).
+* <name> identifies the type of RISC-V standard (processor, non-processor system IP, or platform) along with
+  any other information required to identify the variant of that standard.
+* <version> identifies a particular release
+** Format is <major>[.<minor>[.<patch>]]
+** Inspired by semantic versioning scheme (https://semver.org/) but doesn't follow it exactly
+
+The rules for updating <major>, <minor>, and <patch> are defined by the type of RVCP component.
+However, they follow these general guidelines:
+
+* A <major> release of 0 is used for pre-release versions and release versions start with 1.
+* The <major> release number is updated when mandatory changes are made.
+* The <minor> release number is updated when optional changes are made.
+* The <patch> release number is updated for documentation fixes/improvements that don't affect
+  certificates already obtained for a particular implementation.
+
+
+The specific rules for updating the version number of a CRD are as follows:
+
+* The <major> release number is updated for changes that *could* cause a previously certified
+   implementation to no longer meet requirements. An example is requiring a new version of a standard.
+* The <minor> release number is updated for increased support of optional behaviors.
+* The <patch> release number is updated for documentation fixes/improvements.
+  These changes *cannot* cause a previously certified implementation to no longer meet requirements.
+
+==== Processor Naming
+
+RVCP components for processors have the following format for their <name>:
+
+  <class><model>[<-base>]
+
+Where:
+
+* <class> is MC for Microcontroller Class and AC for Apps-processor Class
+* <model> is 3-digit integer defined as follows:
+** The hundreds' digit indicates the series
+** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
+** The one's digit identifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
+* <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
+** If multiple bases are supported and <base> is omitted in a reference, the reference applies to all bases
+** If only one base is supported then <base> is generally omitted
+
+
+=== Requirements Terminology
+
+.Requirement Types
+[cols="1,5"]
+|===
+| Term | Meaning
+
+| MANDATORY | You have to implement it to get a certificate and the certificate tests will cover it
+| OPTIONAL | It's up to you if you implement or not. If you claim to implement it, certificate tests will cover it
+| IN-SCOPE | Either MANDATORY or OPTIONAL
+| OUT-OF-SCOPE | It's up to you if you implement or not. If you implement it, it won't be certified but make sure you don't mess up anything we are certifying.
+| INCOMPATIBLE | If you implement it you won't get a certificate
+|===
+
+.Requirement ID Naming
+[cols="1,5"]
+|===
+| Term | Meaning
+
+| REQ-<ID> | A requirement that applies to both RVI20-32 and RVI20-64
+| REQ32-<ID> | A requirement that applies to only RVI20-32
+| REQ64-<ID> | A requirement that applies to only RVI20-64
+|===

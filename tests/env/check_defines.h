@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu December 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-########## test.S CHECKS ##########
 
+########## test.S CHECKS ##########
 #ifndef TEST_FILE
   #error "TEST_FILE not defined. It should be defined at the beginning of the test file."
 #endif
@@ -13,24 +13,22 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
-########## rvmodel_macros.h CHECKS ##########
+########## GLOBAL XLEN CHECK  ##########
+#ifndef __riscv_xlen
+  #error "__riscv_xlen not defined."
+#endif
 
+########## rvmodel_macros.h CHECKS ##########
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_ACCESS_FAULT_ADDRESS
-  #error "RVMODEL_ACCESS_FAULT_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
-#endif
-
 ##### STARTUP #####
-
 #ifndef RVMODEL_BOOT
   #error "RVMODEL_BOOT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
 ##### TERMINATION #####
-
 #ifndef RVMODEL_HALT_PASS
   #error "RVMODEL_HALT_PASS not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -39,8 +37,8 @@
   #error "RVMODEL_HALT_FAIL not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-##### IO #####
 
+##### IO #####
 #ifndef RVMODEL_IO_INIT
   #error "RVMODEL_IO_INIT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -49,8 +47,12 @@
   #error "RVMODEL_IO_WRITE_STR not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-##### MTIME #####
+##### ADDRESSES #####
+#ifndef RVMODEL_ACCESS_FAULT_ADDRESS
+  #error "RVMODEL_ACCESS_FAULT_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
+#endif
 
+##### MTIME #####
 #ifndef RVMODEL_MTIME_ADDRESS
   #error "RVMODEL_MTIME_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -59,8 +61,8 @@
   #error "RVMODEL_MTIMECMP_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-##### Machine Interrupts #####
 
+##### Machine Interrupts #####
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -77,8 +79,8 @@
   #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 
-##### Supervisor Interrupts #####
 
+##### Supervisor Interrupts #####
 #ifndef RVMODEL_SET_SEXT_INT
   #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
 #endif

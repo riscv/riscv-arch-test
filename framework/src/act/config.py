@@ -44,6 +44,7 @@ class Config(BaseModel):
     objdump_exe: Path | None = None
     ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
+    include_priv_tests: bool = True
 
     model_config = {"frozen": True}
 
@@ -78,7 +79,8 @@ class Config(BaseModel):
     def compiler_string(self) -> str:
         """Get the compiler executable as a string with relevant flags."""
         compiler_is_clang = "clang" in self.compiler_exe.name
-        return f"{self.compiler_exe} {'--target=riscv${XLEN}' if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
+        clang_flags = "--target=riscv${XLEN} -fuse-ld=lld"
+        return f"{self.compiler_exe} {clang_flags if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
 
     def __str__(self) -> str:
         """Pretty print configuration."""
@@ -104,7 +106,7 @@ def check_ref_model_version(config: Config) -> None:
             if version != required_version:
                 raise ValueError(
                     f"Sail reference model version mismatch. ACT4 requires version {required_version}, but {version} was found. "
-                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv-non-isa/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
+                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
                 )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to check Sail version: {e}") from e

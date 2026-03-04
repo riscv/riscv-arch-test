@@ -9,7 +9,9 @@
 """Privileged test generation orchestration."""
 
 from pathlib import Path
+from random import seed
 
+from testgen.asm.helpers import reproducible_hash
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.writer import write_test_file
@@ -17,6 +19,7 @@ from testgen.priv.registry import (
     get_priv_test_defines,
     get_priv_test_generator,
     get_priv_test_march_extensions,
+    get_priv_test_params,
     get_priv_test_required_extensions,
 )
 
@@ -37,12 +40,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # The xlen=0 indicates this is a multi-xlen test that uses preprocessor conditionals
     test_config = TestConfig(
         xlen=0,  # One test for all XLENs
-        flen=0,
+        flen=64,
         testsuite=testsuite,
         E_ext=False,
         config_dependent=True,
         required_extensions=get_priv_test_required_extensions(testsuite),
         march_extensions=get_priv_test_march_extensions(testsuite),
+        extra_params=get_priv_test_params(testsuite),
     )
 
     # Create test data
@@ -50,6 +54,9 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
 
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
     test_data.int_regs.consume_registers([1])
+
+    # Seed the RNG for reproducible test generation
+    seed(reproducible_hash(testsuite))
 
     # Generate test body
     priv_test_generator = get_priv_test_generator(testsuite)
@@ -59,9 +66,10 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     test_data.int_regs.return_register(1)
 
     # Produce actual test file
+    extra_defines = [*get_priv_test_defines(testsuite), "#define RVTEST_PRIV_TEST"]
     write_test_file(
         test_data,
         body_lines,
         output_path,
-        extra_defines=get_priv_test_defines(testsuite),
+        extra_defines=extra_defines,
     )

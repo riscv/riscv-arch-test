@@ -8,8 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_RV32PMP
-`define COVER_RV64PMP
+`define COVER_PMPS
 
 covergroup PMPS_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
   option.per_instance = 0;

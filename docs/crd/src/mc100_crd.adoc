@@ -1,0 +1,177 @@
+= MC100 Certification Requirements Document (rev 0.1)
+include::adoc_common.adoc[]
+:description: MC100 CRD (Certificate Requirements Document)
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* James Ball
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+[Preface]
+== CRD Revision History
+
+History of documentation changes that eventually lead to releases.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+| TBD
+| 0.1
+a| * Copied from RVI20 CRD rev 0.4 as a starting point
+|===
+
+include::glossary.adoc[]
+
+== Introduction
+
+The MC100-32 processor certificate is based on the RVI20U32 profile with the addition of M-mode.
+The MC100-64 processor certificate is based on the RVI20U64 profile with the addition of M-mode.
+
+include::crd_common.adoc[]
+include::csr_field_types.adoc[]
+
+=== Related Specifications
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
+* https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
+
+<<<
+== Base ISA
+
+.Base ISA Requirements
+[cols="1,4"]
+|===
+| Requirement ID | Description
+
+| REQ32-BASE | Uses the RV32I base integer ISA
+| REQ64-BASE | Uses the RV64I base integer ISA
+| REQ-ENDIANNESS | Only little-endian is supported
+|===
+
+=== Exclusions
+
+As per the unprivileged architecture specification, the `ecall`
+instruction causes a requested trap to the execution environment.
+Since the RVI profile family doesn't define any execution environments
+the `ecall` instruction is OUT-OF-SCOPE for the MC100 certificate.
+
+Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the MC100 certificate
+since they cause a breakpoint exception and the RVI profile family doesn't define any
+execution environments to handle such exceptions.
+
+<<<
+== Extensions
+
+Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
+and the MC100 certificate doesn't cover their behaviors.
+
+Please refer to the <<extension_defs,Extension Definitions>> appendix for more information about the extensions listed in this section or click on the extension names in the table below to jump to their definitions.
+
+=== Mandatory Extensions
+
+None
+
+=== Optional Extensions
+
+.Optional Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version
+
+| REQ-EXT-A
+| <<extension:A,A>>
+| ~> 2.1
+
+| REQ-EXT-C
+| <<extension:C,C>>
+| ~> 2.0
+
+| REQ-EXT-D
+| <<extension:D,D>>
+| ~> 2.2
+
+| REQ-EXT-F
+| <<extension:F,F>>
+| ~> 2.2
+
+| REQ-EXT-M
+| <<extension:M,M>>
+| ~> 2.0
+
+| REQ-EXT-Zicntr
+| <<extension:Zicntr,Zicntr>>
+| ~> 2.0
+
+| REQ-EXT-Zifencei
+| <<extension:Zifencei,Zifencei>>
+| ~> 2.0
+
+| REQ-EXT-Zihpm
+| <<extension:Zihpm,Zihpm>>
+| ~> 2.0
+
+|===
+
+<<<
+== Parameter Values
+
+This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the MC100 certificate.
+
+Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
+
+include::in_scope_param_intro.adoc[]
+
+.IN-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter | Allowed Value(s) | Impact on Certificate Scope
+
+| <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
+| Any
+| The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
+
+| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
+| True, False
+| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
+and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+
+| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
+| Any
+a|
+Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
+Non-zero:: Misaligned AMO atomic instructions and
+misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
+any restrictions on misaligned supported expressed by other parameters are met.
+
+| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
+| Any
+| Reading time-related CSRs is only IN-SCOPE if this parameter is true
+
+|===
+
+include::out_of_scope_param_intro.adoc[]
+
+.OUT-OF-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter
+
+| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+
+|===
+
+== CSR WARL Fields
+
+TBD
+
+== CSR WLRL Fields
+
+TBD
+
+<<<
+include::extension_defs.adoc[]
+
+<<<
+include::param_defs.adoc[]

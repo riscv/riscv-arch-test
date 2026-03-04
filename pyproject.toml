@@ -4,65 +4,46 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tool.uv.workspace]
-members = ["framework", "generators/testgen", "generators/ctp"]
+members = ["framework", "generators/testgen"]
 
 [dependency-groups]
-dev = ["pyright==1.1.408", "ruff==0.14.10"]
+dev = [
+    "pre-commit>=4.5.1",
+    "pyright==1.1.408",
+    "ruff==0.15.4",
+]
 
 ###### RUFF CONFIG #####
 [tool.ruff]
 line-length = 120
 extend-exclude = [
   "external",
-  "ctp",
-  "generators/coverage",
+  "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
 [tool.ruff.lint]
+preview = true
+
+# Extra rules to enable beyond the default set
 extend-select = [
-  "F",   # various basic rules (pyflakes)
-  "E",   # errors (pycodestyle)
-  "W",   # warnings (pycodestyle)
-  "I",   # Import related rules (isort)
-  "UP",  # Upgraded version available in newer Python
-  "B",   # bugbear rules
-  "A",   # shadow builtins
-  "EXE", # Executable file shebangs
   "ANN", # type annotation rules
-  "RUF", # Ruff specific rules
-  "PTH", # Pathlib usage
+  "A",   # shadow builtins
   "SIM", # Simplifications
+  "TID", # Tidy imports
+  "PTH", # Use Pathlib
+  "I",   # Import related rules (isort)
+  "ISC", # Implicit string concatenation
 ]
 
 ignore = [
-  # handled by formatter
-  "W191",
-  "E111",
-  "E114",
-  "E117",
-  "D203",
-  "D206",
-  "D213",
-  "D300",
-  "Q000",
-  "Q001",
-  "Q002",
-  "Q003",
-  "COM812",
-  "COM819",
-  "E501",
-  "T201",   # allow print statements
-  "TD002",  # allow TODO comments without authors
-  "TD003",  # allow TODO comments without issue links
-  "FIX",    # allow TODO comments
+  "RET504", # Unnecessary assignment to {name} before return statement
+  "N",      # Naming requirements
 ]
 
 [tool.ty.src]
 exclude = [
   "external",
-  "generators/ctp",
-  "generators/coverage",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 
@@ -74,9 +55,7 @@ exclude = [
   "**/.*",
   ".venv",
   "external",
-  "ctp",
-  "generators/ctp",
-  "generators/coverage",
+  "docs/docs-resources",
   "generators/testgen/scripts", # Old scripts that still need to be updated
 ]
 typeCheckingMode = "standard"

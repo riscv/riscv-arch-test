@@ -118,8 +118,6 @@
         RVMODEL_CLEAN_SIG
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
         NUM_SPECD_INTCAUSES
-   The following variables are optional if exception tests are enabled (defaulted if not defined):
-        SET_REL_TVAL_MSK     OPT_ZERO_TVAL_MSK
    The following variables are optional:
         rvtest_gpr_save: if defined, stores GPR contents into signature at test end (for debug)
    The following labels are required and defined by required macros:
@@ -129,8 +127,9 @@
         rvtest_data_end:     defined by RVTEST_DATA_END    macro
         rvtest_sig_begin:    defined by RVTEST_SIG_BEGIN   macro (after  RVMODEL_DATA_BEGIN) defines signature begin
         rvtest_sig_end:      defined by RVTEST_SIG_END     macro (before RVMODEL_DATA_END)   defines signature end
-        rvtest_Sroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if  Smode implemented
-        rvtest_Vroot_pg_tbl: defined by RVTEST_PTE_IDENT_MAP macro inside RVTEST_DATA_BEGIN if VSmode implemented
+        rvtest_Sroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if Smode implemented
+        rvtest_Hroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if HSmode implemented
+        rvtest_Vroot_pg_tbl: defined inside RVTEST_DATA_BEGIN if VSmode implemented
         mtrap_sigptr:        defined by test if traps are possible, else is defaulted
 */
 //****WARNING****don't put C-style macros (#define xxx) inside assembly macros; C-style is evaluated before assembly
@@ -201,35 +200,6 @@
   #define RVMODEL_CLEAN_SIG  RVMODEL_FENCEI
 #endif
 
-// **Note** that this is different that previous DATA_REL_TVAL_MASK! This is the OR of Code_Rel+Data_Rel
-// if xTVAL is set to zero for some cause, then the corresponding bit in SET_REL_TVAL_MSK should be cleared
-
-#ifndef SET_REL_TVAL_MSK
-        // For each cause, this bit mask defines whether the TVAL contents are
-        // addresses that may need relocation to match reference model values.
-        // Mask bits should be cleared for implementation options that store zero, or for
-        // exceptions that are not addresses, e.g. opcodes/cause values/implentation defined.
-        // Separately, the SET_ZERO_TVAL_MASK must be set for exceptions that always set TVAL to zero
-        // These must be an input to the sail configuration
-    #define SET_REL_TVAL_MSK (( \
-         1<<CAUSE_MISALIGNED_FETCH | 1<<CAUSE_FETCH_ACCESS     /* illegal op -no rel */            | 1<<CAUSE_BREAKPOINT           | \
-         1<<CAUSE_MISALIGNED_LOAD  | 1<<CAUSE_LOAD_ACCESS      | 1<<CAUSE_MISALIGNED_STORE         | 1<<CAUSE_STORE_ACCESS         | \
-         1<<CAUSE_USER_ECALL       | 1<<CAUSE_SUPERVISOR_ECALL | 1<<CAUSE_VIRTUAL_SUPERVISOR_ECALL | 1<<CAUSE_MACHINE_ECALL        | \
-         1<<CAUSE_FETCH_PAGE_FAULT | 1<<CAUSE_LOAD_PAGE_FAULT  /* RSVD */                          | 1<<CAUSE_STORE_PAGE_FAULT     | \
-         /* no tval for DOUBLE_TRAP    * RSVD *                SW_FAULT -cause:no reloc:*/           1<<CAUSE_HARDWARE_ERROR_FAULT | \
-         1<<CAUSE_FETCH_GUEST_PAGE_FAULT | 1<<CAUSE_LOAD_GUEST_PAGE_FAULT | /*virt illop*/           1<<CAUSE_STORE_GUEST_PAGE_FAULT \
-        ) & 0xFFFFFFFF)
-    #endif
-
-#ifndef OPT_ZERO_TVAL_MSK       // 1's will allow optional clring of TVAL on an exception by exception basis
-    #define OPT_ZERO_TVAL_MSK ((1<<14) | (1<<16) | (1<<17) ) // typically used for EBREAK TVAL option; defaults are RSVD+dbltrap
-#endif
-
-//this is pte entry permision bits for all permissions.
-#define RVTEST_ALLPERMS ( PTE_G | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-//this is pte entry permision bits for no permissions.
-#define RVTEST_NOACC    ( PTE_G | PTE_U )
-
 #ifndef _VA_SZ_
   #if XLEN==32
     #define _VA_SZ_ 32
@@ -238,24 +208,6 @@
   #endif
 #endif
 
-// this is the position of the last level PPN in each root page table PTE
-#define ROOT_PPN_LSB 10
-#if XLEN==32
-  #define PPN_SZ   10
-  #define LVLS     2
-#else
-  #define PPN_SZ   9
-  #define LVLS   ((_VA_SZ_-12)/PPN_SZ)
-#endif
-
-// this defines a page of PTEs at top level (depending on _VA_SZ_) with named permissions
-// for the largest size page and a common base (which is set to zero for identity mapping)
-#define RVTEST_PTE_IDENT_MAP(PGBASE,LVLS,PERMS)                                 ;\
-    .set ppn, 0                                                                 ;\
-    .rept (4096 >> REGWIDTH)                                                    ;\
-      .fill   1,   REGWIDTH, (PGBASE | (ppn<<(10+(LVLS-1)*PPN_SZ)) | PERMS)     ;\
-      .set ppn, (ppn+1)                                                         ;\
-    .endr                                                                       ;\
 
 //---------------------------mode encoding definitions-----------------------------
 .set MMODE_SIG, 3
@@ -338,7 +290,7 @@
  *
  ***************************************************************************************************/
 #define actual_tramp_sz ((XLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)
-#define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep aligment for sv area alloc
+#define tramp_sz        ((actual_tramp_sz+4) & -8)                    // round up to keep alignment for sv area alloc
 #define ptr_sv_sz       (16*8)
 #define reg_sv_sz       ( 8*REGWIDTH)
 #define model_sv_sz     ( 8*REGWIDTH)
@@ -729,7 +681,7 @@
 
 /***********************************************************************************/
 /**** This must be used before using RVTEST_GOTO_LOWER_MODE and at CODE_END.    ****/
-/**** It sets x3 to 0 to signal that this is not an explict ECALL, and that it  ****/
+/**** It sets x3 to 0 to signal that this is not an explicit ECALL, and that it  ****/
 /**** returns normally. The handler will check that trap cause==ecall, & divert ****/
 /**** to a spcl rtn_fm_mmode: handler if x3=0. That code translates MEPC from   ****/
 /**** caller's mode to Mmodes BARE mode, restore regs & branches to relocated   ****/
@@ -899,10 +851,6 @@
         //.warning "RVMODEL_CLR_MSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_MSW_INT     RVTEST_DFLT_INT_HNDLR
 #endif
-#ifndef RVMODEL_CLR_MTIMER_INT
-        //.warning "RVMODEL_CLR_MTIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_MTIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
 #ifndef RVMODEL_CLR_MEXT_INT
         //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_MEXT_INT    RVTEST_DFLT_INT_HNDLR
@@ -917,25 +865,9 @@
         //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
 #endif
-#ifndef RVMODEL_MCLR_SSW_INT // M-mode interrupt handler for S-mode SW Ints
-        //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_SCLR_SSW_INT // S-mode interrupt handler for S-mode SW Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
 #ifndef RVMODEL_CLR_STIMER_INT
         //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_MCLR_STIMER_INT // M-mode interrupt handler for S-mode Timer Ints
-        //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_MCLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_SCLR_STIMER_INT // S-mode interrupt handler for S-mode Timer Ints
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SCLR_STIMER_INT     RVTEST_DFLT_INT_HNDLR
 #endif
 #ifndef RVMODEL_CLR_SEXT_INT
         //.warning "RVMODEL_CLR_SEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
@@ -1093,7 +1025,7 @@ overwt_tt_\__MODE__\()loop:                     // now build new tramp table w/ 
 #ifdef HANDLER_TESTCODE_ONLY
         csrr    T5, CSR_XSCRATCH                // load trapreg_sv from scratch
         addi    T5, T5,256                      // calculate some offset into the save area
-        bgt     T5, T1, endcopy_\__MODE__\()tramp // and pretend if couldnt be written
+        bgt     T5, T1, endcopy_\__MODE__\()tramp // and pretend if couldn't be written
 #endif
         addi    T2, T2, WDBYTSZ                 // next tvec  inst. index
         addi    T1, T1, WDBYTSZ                 // next save  inst. index
@@ -1132,9 +1064,9 @@ rvtest_\__MODE__\()prolog_done:
   /**********************************************************************/
   /**** This is the entry point for all x-modetraps, vectored or not.****/
   /**** xtvec should either point here, or trampoline code does and  ****/
-  /**** trampoline code was copied to whereever xtvec pointed to.    ****/
+  /**** trampoline code was copied to wherever xtvec pointed to.     ****/
   /**** At entry, xscratch will contain a pointer to a scratch area. ****/
-  /**** This is an array of branches at 4B intevals that spreads out ****/
+  /**** This is an array of branches at 4B intervals that spreads out****/
   /**** to an array of 12B xhandler stubs for specd int causes, and  ****/
   /**** to a return for anything above that (which causes a mismatch)****/
   /**********************************************************************/
@@ -1240,14 +1172,14 @@ spcl_\__MODE__\()chk4ecall:
         beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature
 .endif
 //------normal trap rtn; pre-update trap_sig pointer so handlers can themselves trap-----
-\__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. excpt, int type, and h mode
+\__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. exception, interrupt type, and h mode
         li      T2, 4*REGWIDTH                  // standard entry length
         bgez    T5, \__MODE__\()xcpt_sig_sv     // Keep std length if cause is an exception for now (MSB==0)
 \__MODE__\()int_sig_sv:
         slli    T3, T5, 1                       // remove MSB, cause<<1
-        addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an extint or larger? ( (cause<<1) > (8<<1) )?
+        addi    T3, T3, -(IRQ_M_TIMER)<<1       // is cause (w/o MSB) an external interrupt or larger? ( (cause<<1) > (8<<1) )?
         bgez    T3, \__MODE__\()trap_sig_sv     // yes, keep std length
-        li      T2, 3*REGWIDTH                  // no,  its a timer or swint, overrride preinc to 3*regsz
+        li      T2, 3*REGWIDTH                  // no,  its a timer or swint, override preinc to 3*regsz
         j       \__MODE__\()trap_sig_sv
 
   /**********************************************************************/
@@ -1461,7 +1393,7 @@ common_\__MODE__\()excpt_handler:
         csrr    T6, CSR_MISA           // select effective xATP based on misa[7] (H)
         slli    T6, T6, XLEN-7-1
         bgez    T6, 1f                 // keep  SATP      if no hypervisor
-        csrr    T2, CSR_HGATP          // subsitute HGATP if    hypervisor
+        csrr    T2, CSR_HGATP          // substitute HGATP if    hypervisor
 1:      srli    T2, T2, MODE_LSB
         addi    T4, sp, 1*sv_area_sz   // T4 points to HS/S mode sv_area
         bnez    T2, sv_\__MODE__\()epc // skip reloc if not bare mode
@@ -1530,6 +1462,12 @@ common_\__MODE__\()excpt_handler:
   //********************************************************************************
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
+#ifdef SKIP_MEPC
+        LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
+        addi    T2, T2, 2
+        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+#endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)
         add     T6, T6, T2                      // construct vmem seg end
@@ -1547,15 +1485,15 @@ data_adj_\__MODE__\()epc:
         LREG    T2, data_bgn_off(T4)            // see if epc is in the data area
         LREG    T6, data_seg_siz(T4)
         add     T6, T6, T2                      // construct data seg end
-        bgeu    T3, T6, cleanup_epilogs         // mepc > rvtest_code_end,  (outside data seg), abort
-        bltu    T3, T2, cleanup_epilogs         // mepc < rvtest_code_begin (outside data seg), abort
+        bgeu    T3, T6, abort_test              // mepc > rvtest_code_end,  (outside data seg), abort
+        bltu    T3, T2, abort_test              // mepc < rvtest_code_begin (outside data seg), abort
 
 adj_\__MODE__\()epc:
         sub     T3, T3, T2                      // Offset adjustment
 
 sv_\__MODE__\()epc:
         TRAP_SIGUPD(T6, T3, 2)                  // save 3rd sig value, (rel mepc) into trap sig area
-        csrr    T3, CSR_XEPC                    // As T3 was overwritten for TRAP_SIGUPD, read XEPC again
+        csrr    T3, CSR_XEPC                    // As T3 was adjusted for TRAP_SIGUPD, read XEPC again
 
 #ifdef SKIP_MEPC                                //**** spcl case so fetch faults don't rtn to EPC+4
                                                 //**** checks if gp=spcl_value & cause=fetch-xx-fault
@@ -1579,61 +1517,8 @@ adj_\__MODE__\()epc_rtn:                // adj mepc so there is at least 4B of p
         csrw    CSR_XEPC, T3            // restore adjusted value, w/ 2,4 or 6B of padding
 
 skp_adj_\__MODE__\()epc:
-  /****WARNING needs updating when insts>32b are ratified, only 4 or 6B of padding;
-        for 64b insts,  2B or 4B of padding   ****/
-
-  /******************************************************************************/
-  /* Relocate mtval if it's an addr (by sig, data or code regions) else by zero */
-  /* error if exception address isn't inside code, data or signature segments   */
-  /* Enter with rvtest_code_begin (which is start of actual test) in T3         */
-  /* FUTURE FIXME: this may need to be updated to handle 48 or 64b opcodes      */
-  /* This uses offset sp in T4 from epc relocation                              */
-  /******************************************************************************/
 
         csrr    T3, CSR_XTVAL
-
-#ifdef SKIP_MTVAL
-        li      T2, 0           // No translation required on tval if virtualisation is enabled
-        j       adj_\__MODE__\()tval
-#endif
-
-chk_\__MODE__\()tval:
-        andi    T5, T5, EXCPT_CAUSE_MSK // T5 is mcause; ensures in range when used as  shift amt
-        LI(     T2, (SET_REL_TVAL_MSK & ~ OPT_ZERO_TVAL_MSK)) // mask of causes that have addrs in tval
-        srl     T2, T2, T5              // test if mcause[T5] (mask of addresses)=0, skip adjusting
-        slli    T2, T2, XLEN-1
-        bgez    T2, sv_\__MODE__\()tval // if MSB=0, no adj, sv to ensure tval was cleared
-
-vmem_adj_\__MODE__\()tval:                        // T4 still points to sv area of trapping mode
-        LREG    T2, vmem_bgn_off(T4)              // fetch sig_begin addr
-        LREG    T6, vmem_seg_siz(T4)
-        add     T6, T6, T2                        // construct vmem seg end
-        bgeu    T3, T6,  sig_adj_\__MODE__\()tval // tval > rvtest_sig_end, chk code seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_sig_begin, adj & save
-
-sig_adj_\__MODE__\()tval:
-        LREG    T2, sig_bgn_off(T4)               // fetch sig_begin addr
-        LREG    T6, sig_seg_siz(T4)
-        add     T6, T6, T2                        // construct sig seg end
-        bgeu    T3, T6, code_adj_\__MODE__\()tval // tval > rvtest_sig_end, chk code seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_sig_begin, adj & save
-
-code_adj_\__MODE__\()tval:
-        LREG    T2, code_bgn_off(T4)              // fetch code_begin addr
-        LREG    T6, code_seg_siz(T4)
-        add     T6, T6, T2                        // construct code seg end
-        bgeu    T3, T6, data_adj_\__MODE__\()tval // tval > rvtest_code_end, chk data seg
-        bgeu    T3, T2,      adj_\__MODE__\()tval // tval >=rvtest_code_begin, adj & save
-
-data_adj_\__MODE__\()tval:
-        LREG    T2, data_bgn_off(T4)              // fetch data_begin addr
-        LREG    T6, data_seg_siz(T4)
-        add     T6, T6, T2                        // construct data seg end
-        bgeu    T3, T6, cleanup_epilogs           // tval > rvtest_data_end,  (outside data seg), abort
-        bltu    T3, T2, cleanup_epilogs           // tval < rvtest_data_begin (outside data seg), abort
-
-adj_\__MODE__\()tval:
-        sub     T3, T3, T2              // perform mtval adjust by either code, data, or sig position in T3
 
 sv_\__MODE__\()tval:
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (rel tval)
@@ -1665,11 +1550,11 @@ chk_\__MODE__\()trapsig_overrun:        // sv_area_off is defined above at Xtrap
 
 // now see if the pointer has overrun sig_end
         add     T1, T1, T2                      // construct segment end address
-        bgtu    T4, T1, cleanup_epilogs         // abort test if pre-incremented value overruns
+        bgtu    T4, T1, abort_test              // abort test if pre-incremented value overruns
 
   /**** vector to exception special handling routines ****/
         li      T2, int_hndlr_tblsz             // offset of exception dispatch table base
-        j       spcl_\__MODE__\()handler        // jump to shared int/excpt spcl handling dispatcher
+        j       spcl_\__MODE__\()handler        // jump to shared interrupt/exception spcl handling dispatcher
 
  /**** common return code for both interrupts and exceptions ****/
 resto_\__MODE__\()rtn:                  // restore and return
@@ -1690,7 +1575,7 @@ resto_\__MODE__\()rtn:                  // restore and return
  /**************************************************************/
  /**** This is the interrupt specific code. It attempts     ****/
  /**** to clear the int and saves int-specific CSRS         ****/
- /**** NOTE! also clrs IE in case clring ip bit doesnt work ****/
+ /**** NOTE! also clrs IE in case clring ip bit doesn't work****/
  /**************************************************************/
 common_\__MODE__\()int_handler:         // T1 has sig ptr, T5 has mcause, sp has save area
         li      T3, 1
@@ -1706,8 +1591,8 @@ sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
 
 /**************************************************************/
 /**** spcl int/excp dispatcher. T5 has mcause, T2 holds    ****/
-/**** int table (0) or excpt tbl (int_tbl_sz) offset       ****/
-/**** This loads an entry @(table_base+table_off+mcause*8 ****/
+/**** int table (0) or exception tbl (int_tbl_sz) offset   ****/
+/**** This loads an entry @(table_base+table_off+mcause*8  ****/
 /**** if entry=0, it should never be taken, error return   ****/
 /**** if entry is odd, it has cause<<1,  skip disptaching  ****/
 /**** otherwise if even & >0, it is the handler address    ****/
@@ -1717,7 +1602,7 @@ sv_\__MODE__\()ip:                      // note: clear has no effect on MxIP
 spcl_\__MODE__\()handler:               // case table branch to special handler code, depending on mcause
         auipc   T3, 0                   // shortcut for LA(clrint_\__MODE__\()tbl) (might be 4 too large)
         addi    T3, T3, 15*4            // shortcut to avoid LA clrint_xtbl - this is might be 4 too large
-        add     T3, T3, T2              // offset into the correct int/excpt dispatch table
+        add     T3, T3, T2              // offset into the correct interrupt/exception dispatch table
         slli    T2, T5, 3               // index into 8b aligned dispatch entry and jump through it
         add     T3, T3, T2
         andi    T3, T3, -8              // make sure this is dblwd aligned, correct if it is 4 too large
@@ -1729,7 +1614,7 @@ spcl_\__MODE__\()dispatch_handling:
         srli    T3, T3,1                //odd entry>0, remove LSB, normalizing to cause range
         beq     T5, T3, resto_\__MODE__\()rtn // case range matches, not an error, just noop
 1:
-        j       abort_tests             //FIXME: this needs to report an error somehow
+        j       abort_test
 
 spcl_\__MODE__\()dispatch:
         jr      T3                      // not a default, jump to handler
@@ -1831,15 +1716,20 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 //------------- MMode----------------
 \__MODE__\()clr_Msw_int:                // int 3 default to just return if not defined
-        RVMODEL_CLR_MSW_INT
+        RVMODEL_CLR_MSW_INT(T2, T5)
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Mtmr_int:               // int 7 default to just return
-        RVMODEL_CLR_MTIMER_INT
+        li T5, -1
+        la T2, RVMODEL_MTIMECMP_ADDRESS
+        SREG T5, 0(T2)
+        #if __riscv_xlen == 32
+                sw T5, 4(T2)
+        #endif
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Mext_int:               // int11 default to just return after saving IntID in T3
-        RVMODEL_CLR_MEXT_INT
+        RVMODEL_CLR_MEXT_INT(T2, T5)
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
@@ -1847,12 +1737,12 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 \__MODE__\()clr_Ssw_int:                // int 1 default to just return if not defined
                                         // S-mode software interrupts need to be reset differently when raised in M or S mode
         .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
-            RVMODEL_MCLR_SSW_INT
+            RVMODEL_CLR_SSW_INT(T2, T5)
         .else
                 .ifc \__MODE__ , S
-                        RVMODEL_SCLR_SSW_INT
+                        RVMODEL_CLR_SSW_INT(T2, T5)
                 .else
-                        RVMODEL_CLR_SSW_INT
+                        RVMODEL_CLR_SSW_INT(T2, T5)
                 .endif
         .endif
 
@@ -1861,18 +1751,18 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 \__MODE__\()clr_Stmr_int:               // int 5 default to just return
                                         // S-mode timer interrupts need to be reset differently when raised in M or S mode
         .ifc \__MODE__ , M              // Select the interrupt handler function based on current privilege mode
-            RVMODEL_MCLR_STIMER_INT
+            RVTEST_CLR_STIMER_INT
         .else
                 .ifc \__MODE__ , S
-                        RVMODEL_SCLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .else
-                        RVMODEL_CLR_STIMER_INT
+                        RVTEST_CLR_STIMER_INT
                 .endif
         .endif
         j       resto_\__MODE__\()rtn
 
 \__MODE__\()clr_Sext_int:               // int 9 default to just return after saving IntID in T3
-        RVMODEL_CLR_SEXT_INT
+        RVMODEL_CLR_SEXT_INT(T2, T5)
         TRAP_SIGUPD(T4, T3, 3)          // save 4th sig value, (intID)
         j       resto_\__MODE__\()rtn
 
@@ -1921,7 +1811,11 @@ from_vs:
         addi    sp, sp, -sv_area_sz
         j       1f
 from_hs_u:
+  #ifdef rvtest_strap_routine
         LREG    T6, code_bgn_off+0*sv_area_sz(sp) /* V=0& H=1, HS;  *1 offset   */
+  #else
+        LREG    T6, code_bgn_off-1*sv_area_sz(sp) /* Use M-mode save area       */
+  #endif
 //calc callerEPC-callerBgn
 1:
         csrr    T2, CSR_MEPC            /* get rtn addr in orig mode's VM */
@@ -1986,11 +1880,11 @@ resto_\__MODE__\()edeleg:
 .ifnc \__MODE__ , S
   .ifnc \__MODE__ , V
         csrw    CSR_XEDELEG,  T2
-// TODO: Commenting this code only because CSR_M/S/HEDELEGH is not defined in reference + spike
-// Writing this CSR is causing infinite traps of illegal access
-// #if (XLEN==32)
-//         csrw    CSR_XEDELEGH, T4
-// #endif
+    .ifc \_MODE__ , M   // TODO: Remove this .ifc when sail supports hedelegh (if Smstateen is supported, set mstateen0.P1P13)
+      #if (XLEN==32)
+        csrw    CSR_XEDELEGH, T4
+      #endif
+    .endif
   .endif
 .endif
 
@@ -2007,8 +1901,8 @@ resto_\__MODE__\()satp:
 
 //----------------------
 resto_\__MODE__\()scratch:
-        LREG    T5, xscr_save_off(T1)           // restore saved xscratch
-        csrw    CSR_XSCRATCH, T5
+        LREG    T4, xscr_save_off(T1)           // restore saved xscratch
+        csrw    CSR_XSCRATCH, T4
 
 //----------------------
 resto_\__MODE__\()xtvec:
@@ -2051,7 +1945,7 @@ rvtest_\__MODE__\()end:
 /*******************************************************************************/
 /**** This macro defines per/mode save areas for mmode for each mode        ****/
 /**** note that it is the code area, not the data area, and                 ****/
-/**** must be mulitple of 8B, so multiple instantiations stay aligned       ****/
+/**** must be multiple of 8B, so multiple instantiations stay aligned       ****/
 /**** This is preceded by the current signature pointer, (@Mtrpreg_sv -64?  ****/
 /*******************************************************************************/
 .macro RVTEST_TRAP_SAVEAREA __MODE__

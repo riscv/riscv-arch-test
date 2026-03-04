@@ -17,21 +17,21 @@ PRIV_EXTENSIONS = {"Sm", "S", "U"}
 ConfigParamValue = int | bool | str | list[int | str | bool]
 
 # Parameter constraint comparison operators
-_COMPARISON_RE = re.compile(r"^(>=|<=|!=|==|>|<)\s*(\d+)$")
+_COMPARISON_RE = re.compile(r"^(>=|<=|!=|==|>|<)\s*(0[xX][0-9a-fA-F]+|\d+)$")
 
 
 def _compare_param(test_value: object, config_value: object) -> bool:
     """Compare a test parameter requirement against a config parameter value.
 
-    Supports comparison operator prefixes on string values:
-    e.g. '>=128', '<= 64', '> 0', '<256', '!=0', '==64'.
-    Falls back to exact equality for all other values.
+    Supports comparison operator prefixes on strings with decimal or hex values.
+    e.g. '>=128', '<= 64', '> 0', '<256', '!=0', '==64', '>=0x80', '<0xFF'.
+    Falls back to exact equality if there is no comparison operator prefix.
     """
     if isinstance(test_value, str):
         match = _COMPARISON_RE.match(test_value)
         if match:
             op, required_val = match.groups()
-            required_val = int(required_val)
+            required_val = int(required_val, 0)
             if type(config_value) is not int:
                 return False
             if op == ">=":

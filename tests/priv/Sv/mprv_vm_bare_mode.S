@@ -1,4 +1,6 @@
 // --------------------------------------------------------------------------------------------------------------------------------
+// Developed by: Umer Shahid, Muhammad Zain, Hamza Ali, Muhammad Abdullah and Muhammad Ahmed
+// --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
 // 1. mstatus.MPRV set, mstatus.MPP = S-mode and virtualization is not enabled (Bare Mode):
@@ -11,9 +13,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, S]
-# params:
-#   MXLEN: 32
-# MARCH: rv32i_zicsr
+# MARCH: rv${XLEN}i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -117,7 +117,6 @@ rvtest_data_1:
   jr ra
 
 //---------------------------------------------------------------------------------------------------------------------------------
-
 
 canary_mismatch:   .string "Testcase signature canary mismatch!"
 test1_mstatus_str: .string "\"Mismatch in mstatus value in Test Case 1!\""

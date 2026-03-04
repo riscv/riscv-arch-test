@@ -1183,7 +1183,7 @@ if __name__ == '__main__':
         storecmd = "sd"
         wordsize = 8
 
-      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2, sum(1 << i for i in range(xlen) if i % 2 == 0), sum(1 << i for i in range(xlen) if i % 2 == 1)]
+      redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
       if (xlen == 32):
         redgesv = redgesv + [0b01011011101111001000100001110010, 0b10101010101010101010101010101010, 0b01010101010101010101010101010101]
       else:

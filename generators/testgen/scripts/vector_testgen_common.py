@@ -1654,7 +1654,16 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     scalar_registers_used = list(scalar_registers_used)
 
     # record testcase string (_INST_PTR)
-    add_testcase_string(str(cp), instruction)
+
+    instruction_clean = instruction.replace('.', '_')
+    cp_clean = cp.replace('-', 'neg')
+
+    # capitalize only the first character (preserve the rest)
+    extension_cap = extension[:1].upper() + extension[1:]
+
+    inst_ptr = f"{extension_cap}_{instruction_clean}_cg_{cp_clean}"
+
+    writeLine(f"{inst_ptr}:")
 
     writeLine(testline)
 
@@ -1674,15 +1683,15 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeSIGUPD(fcsrsaveReg)
 
     if (test in vd_widen_ins) or (test in wvsins):
-      writeSIGUPD_V(cp, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
+      writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
     elif (test in maskins):
-      writeSIGUPD_V(cp, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
+      writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
     elif (test in xvtype):
       writeSIGUPD(rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:
-      writeSIGUPD_V(cp, vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)
+      writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):

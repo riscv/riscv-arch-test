@@ -232,7 +232,9 @@
 // RVTEST_SIGUPD_V(sigptr, linkreg, tempreg, vtmp, mtmp, offset, vreg, strptr)
 
 #ifdef SELFCHECK
-    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR) \
+        .option push                                                ;\
+        .option norvc                                               ;\
         vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                         ;\
         _CMP _MTMP, _VREG, _VTMP                                    ;\
         vfirst.m _TEMP_REG, _MTMP                                   ;\
@@ -243,9 +245,12 @@
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET
+        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        .option pop
 #else
-    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _STR_PTR) \
+    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR) \
+        .option push                                                ;\
+        .option norvc                                               ;\
         vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                         ;\
         nop                                                         ;\
         nop                                                         ;\
@@ -256,17 +261,20 @@
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET
+        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        .option pop
 #endif
 
 
 #ifdef SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _MASK_REG,        \
-        _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _STR_PTR)                    \
+        _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)         \
+        .option push                         ;                                          \
+        .option norvc                        ;                                          \
         /* Save vl */                                                                   \
         csrr        _TEMP_REG, vl            ;                                          \
         /* Set vl = vlmax */                                                            \
-        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                       \
+        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                \
         /* Load reference and compare */                                                \
         vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                          \
         _CMP        _MTMP, _VREG, _VTMP      ;                                          \
@@ -329,15 +337,18 @@
         RVTEST_WORD_PTR _STR_PTR               ;                                        \
     6:                                                                                  \
         /* PASS */                                                                      \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET
+        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                        \
+        .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _MASK_REG,        \
-        _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _STR_PTR)                    \
+        _VTMP, _VTMP2, _MTMP, _VREG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)         \
+        .option push                         ;                                          \
+        .option norvc                        ;                                          \
         /* Save vl */                                                                   \
         csrr        _TEMP_REG, vl            ;                                          \
         /* Set vl = vlmax */                                                            \
-        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                       \
-        /* Store reference and compare */                                                \
+        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                \
+        /* Store reference and compare */                                               \
         vse ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                          \
         _CMP        _MTMP, _VREG, _VTMP      ;                                          \
         /* Build active mask */                                                         \
@@ -399,7 +410,8 @@
         RVTEST_WORD_PTR _STR_PTR               ;                                        \
     6:                                                                                  \
         /* PASS */                                                                      \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET
+        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                        \
+        .option pop
 #endif
 
 // Canary value to indicate bounds of signature region

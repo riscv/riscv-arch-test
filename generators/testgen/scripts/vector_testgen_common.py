@@ -1274,7 +1274,7 @@ def writeSIGUPD_V_old(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig
       else:
         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
-def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False):
+def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False):
 
     global sigupd_count
 
@@ -1378,11 +1378,11 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
       if offset > 2047:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         for x in range(fullOffsets):
           writeLine(
@@ -1391,21 +1391,21 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
       else:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
     else:
       if offset > 2047:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offsetRem}, v{vd}, {str_ptr})",
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offsetRem}, v{vd}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offsetRem}, v{vd}, {str_ptr})",
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offsetRem}, v{vd}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         for x in range(fullOffsets):
           writeLine(
@@ -1414,11 +1414,11 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
       else:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offset}, v{vd}, {str_ptr})",
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, {offset}, v{vd}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offset}, v{vd}, {str_ptr})",
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offset}, v{vd}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
 
 
@@ -1650,10 +1650,14 @@ def getSigSpace(xlen, flen):
       signatureWords = sigupd_count + sigupd_countF # all Sigupd, no need to adjust since Xlen is equal to or larger than Flen and SIGUPD_F macro will adjust alignment up to XLEN
   return signatureWords
 
-def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False, testtype="base", masked=False):
+def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False, testtype="base", masked=False):
     scalar_registers_used = list(scalar_registers_used)
 
+    # record testcase string (_INST_PTR)
+    add_testcase_string(str(cp), instruction)
+
     writeLine(testline)
+
     if (priv):
       writeLine("nop",                                           "# nop after possible trap")
       writeLine(f"vsetivli x0, 1, SEWSIZE, m{sig_lmul}, tu, mu",  f"# re-initialize vl = 1, LMUL = {sig_lmul}, SEW = SEWMIN for signature")
@@ -1670,15 +1674,15 @@ def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, 
       writeSIGUPD(fcsrsaveReg)
 
     if (test in vd_widen_ins) or (test in wvsins):
-      writeSIGUPD_V(vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
+      writeSIGUPD_V(cp, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
     elif (test in maskins):
-      writeSIGUPD_V(vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
+      writeSIGUPD_V(cp, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
     elif (test in xvtype):
       writeSIGUPD(rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:
-      writeSIGUPD_V(vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)
+      writeSIGUPD_V(cp, vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):
@@ -1848,7 +1852,7 @@ def getInstructionArguments(instruction):
 
   return instruction_arguments
 
-def writeTest(description, instruction, instruction_data,
+def writeTest(description, instruction, cp, instruction_data,
               sew=None, lmul=1, vl=1, vstart=0, maskval=None, vxrm=None,
               frm=None, vxsat=None, vta=0, vma=0, suite="base"):
     global tab_count
@@ -2015,9 +2019,9 @@ def writeTest(description, instruction, instruction_data,
       signature_target_sew = sew
 
     if (maskval is not None) or (vl is not None):
-      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
+      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
     else:
-      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
+      writeVecTest(instruction, cp, signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
 
     if (ifdef_string != "#if "):
       tab_count -= 1

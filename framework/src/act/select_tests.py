@@ -24,7 +24,7 @@ def _compare_param(test_value: object, config_value: object) -> bool:
     """Compare a test parameter requirement against a config parameter value.
 
     Supports comparison operator prefixes on string values:
-    '>=128', '<= 64', '> 0', '<256', '!=0', '==64'.
+    e.g. '>=128', '<= 64', '> 0', '<256', '!=0', '==64'.
     Falls back to exact equality for all other values.
     """
     if isinstance(test_value, str):
@@ -32,7 +32,7 @@ def _compare_param(test_value: object, config_value: object) -> bool:
         if match:
             op, required_val = match.groups()
             required_val = int(required_val)
-            if not isinstance(config_value, int):
+            if type(config_value) is not int:
                 return False
             if op == ">=":
                 return config_value >= required_val

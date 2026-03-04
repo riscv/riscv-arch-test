@@ -12,7 +12,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
 
 import rich
 from ruamel.yaml import YAML
@@ -53,7 +52,7 @@ def validate_udb_config(udb_config_file: Path) -> None:
         sys.exit(1)
 
 
-def get_config_params(udb_config_file: Path) -> dict[str, Any]:
+def get_config_params(udb_config_file: Path) -> dict[str, int | bool | str | list[int | str | bool]]:
     yaml = YAML(typ="safe", pure=True)
     udb_config = yaml.load(udb_config_file.read_text())
     config_params = udb_config["params"]

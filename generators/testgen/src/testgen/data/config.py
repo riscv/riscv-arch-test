@@ -30,6 +30,7 @@ class TestConfig:
                              If None, extensions are parsed from testsuite name.
         march_extensions: Optional list of extensions to use for building the march string.
                           If None, march is built from required_extensions.
+        extra_params: Optional list of extra parameter requirements for the test.
     """
 
     xlen: int
@@ -39,6 +40,7 @@ class TestConfig:
     config_dependent: bool = False
     required_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
+    extra_params: list[str] | None = None
 
     @property
     def xlen_format_str(self) -> str:

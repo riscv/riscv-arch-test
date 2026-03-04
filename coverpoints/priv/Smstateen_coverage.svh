@@ -246,7 +246,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         bins jvt_disabled = {1'b0};
         bins jvt_enabled  = {1'b1};
     }
-    cp_jvt_lower_mode: cross priv_mode_m_s , jvt_state;
+    cp_jvt_lower_mode: cross priv_mode_s_u , jvt_state;
     cp_envcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "envcfg") { // bit 63 = ENVCFG in mstateen0
         bins envcfg_disabled = {1'b0};
         bins envcfg_enabled  = {1'b1};

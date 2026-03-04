@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.4)
+= RVI20 Certification Requirements Document (rev 0.5)
 include::adoc_common.adoc[]
 :description: RVI20 CRD (Certificate Requirements Document)
 
@@ -17,6 +17,10 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 4, 2026
+| 0.5
+a| * Added note and link to GitHub issue that MISALIGNED_ATOMICITY_GRANULE_SIZE might be removed from this CRD
 
 | Mar 3, 2026
 | 0.4
@@ -163,6 +167,8 @@ and if any restrictions on misaligned load/store instructions expressed by other
 | <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
 | Any
 a|
+NOTE: This parameter might be removed from this CRD. See GitHub Issue https://github.com/riscv/riscv-arch-test/issues/1037.
+
 Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
 Non-zero:: Misaligned AMO atomic instructions and
 misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that

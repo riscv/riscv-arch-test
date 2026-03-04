@@ -1,0 +1,20 @@
+
+[appendix]
+== Privileged Test Plan
+
+Privileged https://drive.google.com/drive/folders/11hTR2Yl48kOMODxhwrSsC-eXYtM_rJJE?usp=share_link:[test plan spreadsheets] are available.  They need to be edited into a more standardized format. Each test plan spreadsheet contains multiple columns for the applicable configurations.  For example, Sm applies to any configuration with machine mode, S applies to any configuration with supervisor mode, and SmF applies to any configuration with floating-point.
+
+The privileged testplan is organized by major categories of behaviors or extensions in the following sections.
+Each of these categories has multiple coverage files with suffixes indicating the circumstances to which they apply.  For example, InterruptsSm applies to any configuration with Zicsr and M-mode.  InterruptsU applies to any configuration with Zicsr and U-mode.  InterruptsS applies to any configuration with Zicsr and S-mode.  S-mode implies the presence of U and M modes so all three coverage files apply to a system with S-mode.  Moreover, InterruptsS includes tests that execute in U and M-mode, such as setting a bit in `mideleg` and then checking that the corresponding interrupt is delegated to S-mode when taken in U-mode, but not when taken in M-mode.
+
+include::priv_csr_instr.adoc[]
+include::exceptions.adoc[]
+include::interrupts.adoc[]
+include::zicntr.adoc[]
+include::endian.adoc[]
+include::ssstrict.adoc[]
+include::pmp.adoc[]
+include::sv.adoc[]
+include::h.adoc[]
+include::privmisc23.adoc[]
+include::privmisc.adoc[]

@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSZAAMO
-covergroup ExceptionsZaamo_exceptions_cg with function sample(ins_t ins);
+covergroup ExceptionsZaamo_cg with function sample(ins_t ins);
     option.per_instance = 0;
 
     // building blocks for the main coverpoints
@@ -38,18 +38,19 @@ covergroup ExceptionsZaamo_exceptions_cg with function sample(ins_t ins);
         `endif
     }
     illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`ACCESS_FAULT_ADDRESS};
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
     }
-    adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
-        // auto fills 000 through 111
+    // TODO: adjust number of lsbs based on MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+    adr_LSBs: coverpoint ins.current.rs1_val[4:0]  {
+        // auto fills 00000 through 11111
     }
     // main coverpoints
-    cp_load_address_misaligned:  cross amo_instrs, adr_LSBs;
-    cp_load_access_fault:        cross amo_instrs, illegal_address;
+    cp_amo_address_misaligned:  cross amo_instrs, adr_LSBs;
+    cp_amo_access_fault:        cross amo_instrs, illegal_address;
 
 endgroup
 
 function void exceptionszaamo_sample(int hart, int issue, ins_t ins);
-    ExceptionsZaamo_exceptions_cg.sample(ins);
+    ExceptionsZaamo_cg.sample(ins);
     // $display("rs1: %b, op[6:0]: %b, op:%b", ins.current.rs1_val[2:0], ins.current.insn[6:0], ins.current.insn);
 endfunction

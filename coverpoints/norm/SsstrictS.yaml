@@ -1,0 +1,45 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # I rules
+  - name: slliw_imm5_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_IWshift"]
+
+  # Zca rules
+  - name: c-addi16sp_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  - name: c-addi4spn_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed00"]
+  - name: c-addiw_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  - name: c-jr_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+  - name: c-ldsp_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+  - name: c-lui_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+  - name: c-lwsp_rsv
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+
+  # Zcmt rules
+  - name: cm-mvsa01_res
+    coverpoint:
+      ["SsstrictS_comp_instr_cg/cp_compressed10"]
+      # For the encoding to be legal r1s' != r2s'.
+
+  # F rules
+  - name: roundingmode_rsv
+    # static and dynamic rounding mode checks, respectively
+    coverpoint: ["SsstrictS_instr_cg/cp_Ftype, ExceptionsF_cg/cp_badfrm"]
+
+  # Zfa rules
+  - name: fcvtmod-w-d_rsv
+    coverpoint: ["SsstrictS_instr_cg/cp_cvtmodwdfrm"]
+
+  # Zbs rules
+  - name: Zb_shamt_rsv_rv32
+    coverpoint: ["SsstrictS_instr_cg/cp_Itype"]
+
+  # E rules
+  - name: diff_rv32e_rv32i
+    coverpoint: ["{SsstrictS_cg,SsstricM_cg}/{cp_upperreg}"]

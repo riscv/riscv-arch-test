@@ -150,7 +150,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -291,7 +291,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -431,7 +431,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -572,7 +572,7 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.3] - 2023-09-29
 
 - Added test RV32i_m/div-01.S and RV64i_m/div-01.S tests.
-- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv-non-isa/riscv-arch-test/issues/306)
+- Added tests for resolving missing coverage issue of hardcoded registers[issue #306](https://github.com/riscv/riscv-arch-test/issues/306)
 
 ## [3.7.2] - 2023-08-16
 
@@ -595,7 +595,7 @@ Add missing check ISA fields in recently modified div and amo tests
 
 - Updated the LI macro
 - Make Trap handler compatible for RV32E
-- Remove the warning messages [issue #336](https://github.com/riscv-non-isa/riscv-arch-test/issues/336)
+- Remove the warning messages [issue #336](https://github.com/riscv/riscv-arch-test/issues/336)
 - Added Macros for testing Virtual Memory in Sv32 mode.
 
 ## [3.6.8] - 2023-06-22
@@ -613,13 +613,13 @@ Add missing check ISA fields in recently modified div and amo tests
 ## [3.7.1] - 2023-07-22
 
 - Added test case for division if most negative number by -1
-- Solved the [issue #300](https://github.com/riscv-non-isa/riscv-arch-test/issues/300)
+- Solved the [issue #300](https://github.com/riscv/riscv-arch-test/issues/300)
 
 ## [3.7.0] - 2023-05-16
 
 - Updated the LI macro
 - Make Trap handler compatible for RV32E
-- Remove the warning messages [issue #336](https://github.com/riscv-non-isa/riscv-arch-test/issues/336)
+- Remove the warning messages [issue #336](https://github.com/riscv/riscv-arch-test/issues/336)
 - Added Macros for testing Virtual Memory in Sv32 mode.
 
 ## [3.6.9] - 2023-06-25

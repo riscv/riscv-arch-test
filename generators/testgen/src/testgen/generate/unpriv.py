@@ -1,0 +1,132 @@
+##################################
+# generate/unpriv.py
+#
+# Unprivileged test generation orchestration.
+# jcarlin@hmc.edu Jan 2026
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
+"""Unprivileged test generation from CSV testplans."""
+
+from pathlib import Path
+
+from testgen.constants import (
+    CONFIG_DEPENDENT_EXTENSIONS,
+    TESTCASES_PER_FILE,
+    get_flen_for_extension,
+)
+from testgen.coverpoints import generate_tests_for_coverpoint
+from testgen.data.config import TestConfig
+from testgen.data.state import TestData
+from testgen.io.testplans import read_testplan
+from testgen.io.writer import write_test_file
+
+
+def generate_unpriv_extension_tests(
+    xlen: int, E_ext: bool, testsuite: str, testplan_dir: Path, output_test_dir: Path
+) -> None:
+    """
+    Generate tests for all instructions in a given unprivileged testsuite.
+
+    Args:
+        xlen: Target XLEN (32 or 64)
+        E_ext: Whether to generate RV32E tests
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
+        testplan_dir: Directory containing testplan CSV files
+        output_test_dir: Directory to output generated tests
+    """
+    # Read testplan for this testsuite
+    instructions = read_testplan(testplan_dir / f"{testsuite}.csv")
+    if testsuite == "I" and E_ext:
+        testsuite = "E"
+
+    # Create testsuite-wide test configuration
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    flen = get_flen_for_extension(testsuite)
+    config_dependent = testsuite in CONFIG_DEPENDENT_EXTENSIONS
+    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, config_dependent=config_dependent)
+
+    # Iterate through each instruction in the testsuite; generate separate test files for each
+    for instr_data in instructions:
+        # Skip instructions not valid for this xlen
+        if (xlen == 32 and not instr_data.rv32) or (xlen == 64 and not instr_data.rv64):
+            continue
+
+        _generate_unpriv_tests_for_instruction(
+            instr_data.instr_name,
+            instr_data.instr_type,
+            instr_data.coverpoints,
+            test_config,
+            output_dir,
+        )
+
+
+def _generate_unpriv_tests_for_instruction(
+    instr_name: str,
+    instr_type: str,
+    coverpoints: list[str],
+    test_config: TestConfig,
+    output_dir: Path,
+) -> None:
+    """
+    Generate tests for a specific instruction based on its coverpoints.
+    Splits tests into multiple parts if they exceed TESTCASES_PER_FILE.
+
+    Args:
+        instr_name: Instruction mnemonic (e.g., 'add', 'lw')
+        instr_type: Type of instruction (e.g., 'R', 'I')
+        coverpoints: List of coverpoints to generate
+        test_config: Test configuration
+        output_dir: Directory to output generated tests
+    """
+    current_test_data = TestData(test_config, instr_name)
+    current_body_lines: list[str] = []
+    file_idx = 0
+
+    # Iterate through each coverpoint and generate tests
+    for coverpoint in coverpoints:
+        # Skip cp_asm_count if mixed with other coverpoints
+        if coverpoint == "cp_asm_count" and len(coverpoints) > 1:
+            continue
+
+        # Create a copy of the current state to try generating the next coverpoint
+        temp_test_data = current_test_data.copy()
+
+        # Generate code for this coverpoint using the temporary state
+        cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, temp_test_data)
+
+        # Check if we should split
+        # Split if adding this coverpoint would exceed the limit AND we have content already
+        if current_test_data.test_count > 0 and (temp_test_data.test_count > TESTCASES_PER_FILE):
+            # Write current file
+            write_test_file(
+                current_test_data,
+                current_body_lines,
+                output_dir,
+                file_idx,
+            )
+
+            # Start new file
+            file_idx += 1
+            current_test_data = TestData(test_config, instr_name)
+            current_body_lines = []
+
+            # Regenerate code for this coverpoint using the NEW state
+            # TODO: This is not the most efficient and could be optimized to avoid regenerating,
+            # but is not currently a bottleneck and this is simpler for now.
+            cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, current_test_data)
+        else:
+            # If we didn't split, commit the temporary state to the current state
+            current_test_data = temp_test_data
+
+        current_body_lines.append(cp_code)
+
+    # Write the last file
+    write_test_file(
+        current_test_data,
+        current_body_lines,
+        output_dir,
+        file_idx,
+    )

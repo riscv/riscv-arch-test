@@ -1,0 +1,34 @@
+
+=== I Base Integer Extension
+
+<<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.
+
+include::{testplansdir}/I.adoc[]
+
+[[t-I-modified-coverpoints]]
+.I Modified Coverpoints
+[cols="2, 1, 4" options=header]
+|===
+|Modified Coverpoint|Bins|Definition
+|cp_rs1_nx0|31|The rs1 register number used in the instruction, excluding x0.  x0 is hardwired to 0, which results in potentially access faults for loads, stores, and jalr.
+|cmp_rd_rs1_nx0|31|See cp_rs1_nx0
+|cp_offset_jalr|6|cp_offset + 2*2 combinations of rs1_val[0] and imm[0] affecting lsb of jalr address
+|cp_uimm_5|32|5-bit unsigned immediate shift amount for {slliw/srliw/sraiw}
+|cp_imm_edges_20bit|27|20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`.
+|cp_imm_edges_jal|23|20-bit positive and negative jump offsets for `jal`.  Note that testing the full 20-bit range takes a large amount of program memory, so tests may cover a subset of this range.
+|cp_align_{byte/hword/word}|8/4/2|Alignment of naturally-aligned load/store operand within doubleword in memory
+|cp_custom_fence|3|Test that fence, fence rw,rw, and fence.tso all execute without trapping.
+|===
+
+<<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that check they have been exercised.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
+
+* Opcodes (cp_asm_count)
+* All Source and Destination Registers (cp_rs1, cp_rs2, cp_rd)
+* Edge values (cp_rs1_edges, cp_rs2_edges, cp_imm_edges, cr_rs1_rs2_edges, cr_rs1_imm_edges)
+* All other bitfields in the instruction
+
+include::norm/I_norm_rules.adoc[]
+
+Standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
+
+include::norm/rv64_norm_rules.adoc[]

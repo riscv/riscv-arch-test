@@ -487,26 +487,20 @@ mCsrSkip = (
 
 ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
 
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrM-CSR-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictSm-CSR-Tests.h"
 csrtests(pathname, mCsrSkip + sCsrSkip + uCsrSkip)
 
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrS-CSR-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictS-CSR-Tests.h"
 csrtests(pathname, sCsrSkip + uCsrSkip + [0x180])  # 0x180 is the satp register
 
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrU-CSR-Tests.h"
+pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictU-CSR-Tests.h"
 csrtests(pathname, uCsrSkip)
-
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrM-Walk.h"
-csrwalk(pathname, mregs + sregs + ["satp"], mregsh)
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrS-Walk.h"
 csrwalk(pathname, sregs, [])
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicsrUF-Walk.h"
 csrwalk(pathname, fregs, [])
-
-pathname = f"{ARCH_VERIF}/tests/priv/headers/ZicntrM-Walk.h"
-csrwalk(pathname, mcntrs, mcntrsh)
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/Zicntr-MWalkU.h"
 counterenwalk(pathname, "mcounteren", cntrs, cntrsh, "U")

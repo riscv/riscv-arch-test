@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run
-# ruff: noqa: ANN401
+# SPDX-License-Identifier: Apache-2.0
 #
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "pyyaml",
+#     "ruamel-yaml>=0.18.16",
 # ]
 # ///
 
@@ -16,8 +16,8 @@ Usage:
 
 Defaults:
     json: coverpoints/norm/norm-rules.json
-    yaml: coverpoints/norm/yaml
-    out:  ctp/src/norm/
+    yaml: coverpoints/norm
+    out:  docs/ctp/src/norm/
 
 The script writes an .adoc file containing a table with columns:
   - normative rule name
@@ -39,40 +39,41 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote, urlparse
 
-import yaml
+from ruamel.yaml import YAML, YAMLError
 
 
-def load_json(path: Path | str, cache_path: Path | str | None = None) -> Any:
+def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[str, Any] | list[Any]:
     """Load JSON from a local file path or an HTTP/HTTPS URL."""
     path_str = str(path)
     parsed = urlparse(path_str)
-    if parsed.scheme in ('http', 'https'):
+    if parsed.scheme in ("http", "https"):
         try:
             with urllib.request.urlopen(path_str, timeout=20) as resp:
-                text = resp.read().decode('utf-8')
+                text = resp.read().decode("utf-8")
                 if cache_path:
                     cache = Path(cache_path)
                     cache.parent.mkdir(parents=True, exist_ok=True)
-                    cache.write_text(text, encoding='utf-8')
+                    cache.write_text(text, encoding="utf-8")
                 return json.loads(text)
-        except Exception as e:
-            raise RuntimeError(f'Failed to download JSON from {path}: {e}') from e
+        except (OSError, ValueError) as e:
+            raise RuntimeError(f"Failed to download JSON from {path}: {e}") from e
     # Load from local file
-    text = Path(path).read_text(encoding='utf-8')
+    text = Path(path).read_text(encoding="utf-8")
     # Save to cache if cache_path is provided
     if cache_path:
         cache = Path(cache_path)
         cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_text(text, encoding='utf-8')
+        cache.write_text(text, encoding="utf-8")
     return json.loads(text)
 
 
-def load_yaml(path: Path | str) -> Any:
+def load_yaml(path: Path | str) -> dict[str, Any] | list[dict[str, Any]]:
     """Load YAML with fallback parsing if standard parsing fails."""
-    text = Path(path).read_text(encoding='utf-8')
+    text = Path(path).read_text(encoding="utf-8")
+    yaml_parser = YAML(typ="safe", pure=True)
     try:
-        return yaml.safe_load(text)
-    except yaml.YAMLError:
+        return yaml_parser.load(text)
+    except YAMLError:
         return parse_coverpoints_fallback(text)
 
 
@@ -100,7 +101,7 @@ def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
         for n in names:
             all_names.extend(split_name_list(n))
         if all_names:
-            groups.append({'names': all_names, 'coverpoint': cover})
+            groups.append({"names": all_names, "coverpoint": cover})
         name = None
         names = []
         cover = None
@@ -119,7 +120,7 @@ def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
 
         if m_name:
             val = m_name.group(1).strip()
-            val = val.strip('"\'')
+            val = val.strip("\"'")
             # finalize any previous group
             if name or names or cover:
                 flush_group()
@@ -127,20 +128,20 @@ def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
         elif m_names:
             val = m_names.group(1).strip()
             # Expect bracketed list like [a, b] or comma list
-            if val.startswith('[') and val.endswith(']'):
+            if val.startswith("[") and val.endswith("]"):
                 inner = val[1:-1]
-                parts = [p.strip() for p in inner.split(',') if p.strip()]
+                parts = [p.strip() for p in inner.split(",") if p.strip()]
                 names.extend(parts)
             else:
-                parts = [p.strip() for p in val.split(',') if p.strip()]
+                parts = [p.strip() for p in val.split(",") if p.strip()]
                 names.extend(parts)
         elif m_cover:
-            cover = m_cover.group(1).strip().strip('"\'')
+            cover = m_cover.group(1).strip().strip("\"'")
         else:
             # Try to catch list-style '- name: value' entries
             m_dash_name = re.match(r"^-+\s*name:\s*(.+)$", bline)
             if m_dash_name:
-                val = m_dash_name.group(1).strip().strip('"\'')
+                val = m_dash_name.group(1).strip().strip("\"'")
                 if name or names or cover:
                     flush_group()
                 name = val
@@ -153,31 +154,31 @@ def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
     return groups
 
 
-def find_normative_rules(data: Any) -> list[dict[str, Any]]:
+def find_normative_rules(data: dict[str, Any] | list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Extract normative rules list from JSON data."""
     if isinstance(data, dict):
-        if 'normative_rules' in data:
-            return data['normative_rules']
+        if "normative_rules" in data:
+            return data["normative_rules"]
         # Search for first list of dicts with 'name' key
         for v in data.values():
-            if isinstance(v, list) and v and isinstance(v[0], dict) and 'name' in v[0]:
+            if isinstance(v, list) and v and isinstance(v[0], dict) and "name" in v[0]:
                 return v
     elif isinstance(data, list):
         return data
-    raise ValueError('Could not locate normative rules list in JSON')
+    raise ValueError("Could not locate normative rules list in JSON")
 
 
-def extract_rule_text(tags: Any) -> str:
+def extract_rule_text(tags: dict[str, Any] | list[Any] | None) -> str:
     """Extract text from tags structure (dict, list, or mixed)."""
     if not tags:
-        return ''
+        return ""
 
     texts = []
     items = [tags] if isinstance(tags, dict) else tags if isinstance(tags, list) else []
 
     for item in items:
         if isinstance(item, dict):
-            text = item.get('text')
+            text = item.get("text")
             if isinstance(text, list):
                 texts.extend(str(x).strip() for x in text if x)
             elif text:
@@ -185,31 +186,34 @@ def extract_rule_text(tags: Any) -> str:
         elif item:
             texts.append(str(item).strip())
 
-    return ' '.join(texts)
+    return " ".join(texts)
 
 
-def split_name_list(val: Any) -> list[str]:
+def split_name_list(val: str | list[str] | None) -> list[str]:
     """Split name(s) into a list, handling various formats."""
     if not val:
         return []
-    s = str(val).strip().strip('"\'')
+    s = str(val).strip().strip("\"'")
     # Remove list brackets if present
-    if s.startswith('[') and s.endswith(']'):
+    if s.startswith("[") and s.endswith("]"):
         s = s[1:-1]
-    return [p.strip() for p in s.split(',') if p.strip()] if ',' in s else [s]
+    return [p.strip() for p in s.split(",") if p.strip()] if "," in s else [s]
 
 
 def extract_names_from_item(item: dict[str, Any]) -> list[str]:
     """Extract and normalize names from a YAML item."""
     names = []
     # Process 'names' field (can be list or string)
-    if 'names' in item:
-        n = item['names']
-        names.extend(split_name_list(el) if isinstance(n, list) else split_name_list(n) for el in ([n] if not isinstance(n, list) else n))
+    if "names" in item:
+        n = item["names"]
+        names.extend(
+            split_name_list(el) if isinstance(n, list) else split_name_list(n)
+            for el in ([n] if not isinstance(n, list) else n)
+        )
         names = [name for sublist in names for name in sublist]  # Flatten
     # Process 'name' field (prepend to preserve order)
-    if 'name' in item:
-        names = split_name_list(item['name']) + names
+    if "name" in item:
+        names = split_name_list(item["name"]) + names
     return names
 
 
@@ -221,11 +225,11 @@ def process_items_to_groups(items: Iterable[dict[str, Any]]) -> list[dict[str, A
             continue
         names = extract_names_from_item(item)
         if names:
-            groups.append({'names': names, 'coverpoint': item.get('coverpoint')})
+            groups.append({"names": names, "coverpoint": item.get("coverpoint")})
     return groups
 
 
-def build_coverpoint_groups(yaml_data: Any) -> list[dict[str, Any]]:
+def build_coverpoint_groups(yaml_data: dict[str, Any] | list[dict[str, Any]] | None) -> list[dict[str, Any]]:
     """Extract groups from YAML data in various formats."""
     if isinstance(yaml_data, list):
         return process_items_to_groups(yaml_data)
@@ -235,34 +239,39 @@ def build_coverpoint_groups(yaml_data: Any) -> list[dict[str, Any]]:
 
     # Check for nested list under a key
     for v in yaml_data.values():
-        if isinstance(v, list) and v and isinstance(v[0], dict) and any(key in v[0] for key in ('name', 'names', 'coverpoint')):
+        if (
+            isinstance(v, list)
+            and v
+            and isinstance(v[0], dict)
+            and any(key in v[0] for key in ("name", "names", "coverpoint"))
+        ):
             return process_items_to_groups(v)
 
     # Top-level mapping: key -> {coverpoint: ...}
     groups = []
     for k, v in yaml_data.items():
-        if isinstance(v, dict) and 'coverpoint' in v:
-            groups.append({'names': split_name_list(k), 'coverpoint': v['coverpoint']})
+        if isinstance(v, dict) and "coverpoint" in v:
+            groups.append({"names": split_name_list(k), "coverpoint": v["coverpoint"]})
 
     # Also check nested 'coverpoints' key
-    if 'coverpoints' in yaml_data:
-        cp_data = yaml_data['coverpoints']
+    if "coverpoints" in yaml_data:
+        cp_data = yaml_data["coverpoints"]
         if isinstance(cp_data, dict):
             for k, v in cp_data.items():
-                if isinstance(v, dict) and 'coverpoint' in v:
-                    groups.append({'names': split_name_list(k), 'coverpoint': v['coverpoint']})
+                if isinstance(v, dict) and "coverpoint" in v:
+                    groups.append({"names": split_name_list(k), "coverpoint": v["coverpoint"]})
 
     return groups
 
 
-def normalize_coverpoint(cp: Any) -> str:
+def normalize_coverpoint(cp: str | list[Any] | None) -> str:
     """Normalize coverpoint value for AsciiDoc output."""
-    c = ', '.join(str(x) for x in cp) if isinstance(cp, list) else str(cp).strip() if cp else ''
+    c = ", ".join(str(x) for x in cp) if isinstance(cp, list) else str(cp).strip() if cp else ""
 
     # Strip brackets and quotes
-    c = c.strip('[]"\'')
+    c = c.strip("[]\"'")
     # Clean up braces and pipes
-    c = re.sub(r'}+', '}', c).replace('|', '&#124;')
+    c = re.sub(r"}+", "}", c).replace("|", "&#124;")
     return c
 
 
@@ -271,43 +280,49 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
     lines = []
     # Add auto-generation header comment with absolute paths
     argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
-    command_line = ' '.join(argv_abs)
-    gen_date = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
-    lines.extend([
-        '// WARNING: This file was automatically generated.',
-        '// Do not modify by hand.',
-        '// Generation command: ' + command_line,
-        '// Generation date: ' + gen_date,
-        ''
-    ])
+    command_line = " ".join(argv_abs)
+    gen_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    lines.extend(
+        [
+            "// WARNING: This file was automatically generated.",
+            "// Do not modify by hand.",
+            "// Generation command: " + command_line,
+            "// Generation date: " + gen_date,
+            "",
+        ]
+    )
     if base:
-        lines.extend([f'[[t-{base}-normative_rules]]', f'.{base} Normative Rules'])
+        lines.extend([f"[[t-{base}-normative-rules]]", f".{base} Normative Rules"])
 
-    lines.extend([
-        '[cols="1,4,3", options="header"]',
-        '|===',
-        '|Normative Rule |Rule Text |Coverpoints',
-        ''
-    ])
+    lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
 
     for name, text, cp in rows:
-        n = name.replace('|', '&#124;')
-        t = (text or '').replace('|', '&#124;')
+        n = name.replace("|", "&#124;")
+        t = (text or "").replace("|", "&#124;")
         c = normalize_coverpoint(cp)
 
-        # Use multi-paragraph cell only for plain text with newlines
-        if '\n' in t and not (t.strip().startswith('<p') or '<a href=' in t or 'pass:[' in t):
-            lines.append(f'|{n} |a|{t} |{c}')
+        # Use multi-paragraph cell only for plain text with newlines.
+        # Avoid 'a|' when the text contains link: macros — asciidoctor
+        # fails to parse multi-line 'a|' cells that contain inline link
+        # macros, producing "dropping cells from incomplete row" errors.
+        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t or "link:" in t):
+            lines.append(f"|{n} |a|{t} |{c}")
         else:
-            lines.append(f'|{n} |{t} |{c}')
-        lines.append('')
+            # Collapse any remaining newlines so the row stays on one line
+            t = t.replace("\n", " ")
+            lines.append(f"|{n} |{t} |{c}")
+        lines.append("")
 
-    lines.extend(['|===', ''])
+    lines.extend(["|===", ""])
+    # Append link to corresponding parameters table if base is provided
+    if base:
+        # norm files live in src/norm and parameters in src/param, so use ../param
+        lines.extend([f"include::../param/{base}_parameters.adoc[]", ""])
     outpath.parent.mkdir(parents=True, exist_ok=True)
-    outpath.write_text('\n'.join(lines), encoding='utf-8')
+    outpath.write_text("\n".join(lines), encoding="utf-8")
 
 
-def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
+def pick_cover_for_name(coverpoint: str | list[str] | None, names: list[str], idx: int) -> str | list[str] | None:
     """If `coverpoint` contains a brace-delimited list (e.g. "{A, B, C}..."),
     attempt to select the item corresponding to position `idx` in `names`.
     Otherwise return the original coverpoint.
@@ -330,39 +345,39 @@ def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
 
     # If there is a slash, keep the entire right-hand side and select the
     # corresponding element from the left-hand brace-list.
-    slash_pos = s.find('/')
+    slash_pos = s.find("/")
     if slash_pos != -1:
         left = s[:slash_pos]
-        right = s[slash_pos+1:]
+        right = s[slash_pos + 1 :]
         # Try to find a brace-delimited list on the left side first
         m_left = re.search(r"\{([^}]*)\}", left)
         if m_left:
             # If the YAML group contains a single normative name, preserve
             # the entire brace-delimited list (don't pick a single element).
             if len(names) == 1:
-                return left + '/' + right
+                return left + "/" + right
             inner = m_left.group(1)
-            parts = [p.strip() for p in inner.split(',') if p.strip()]
+            parts = [p.strip() for p in inner.split(",") if p.strip()]
             if 0 <= idx < len(parts):
                 # preserve the right-hand side exactly as it appears
-                return parts[idx] + '/' + right
+                return parts[idx] + "/" + right
         else:
             # No brace group on left. Try splitting on commas (single or multiple names).
-            parts = [p.strip() for p in left.split(',') if p.strip()]
+            parts = [p.strip() for p in left.split(",") if p.strip()]
             if parts:
                 # If the YAML group contains a single normative name, preserve
                 # the entire left-hand listing instead of selecting an element.
                 if len(names) == 1:
-                    return left + '/' + right
+                    return left + "/" + right
                 if 0 <= idx < len(parts):
-                    return parts[idx] + '/' + right
+                    return parts[idx] + "/" + right
                 # If only one part and names indicates a single normative name, prefer that
                 if len(parts) == 1:
-                    return parts[0] + '/' + right
+                    return parts[0] + "/" + right
             # As a last resort, if the YAML names list contains a single name,
             # use it (this handles cases like mul_op where names==[mul_op]).
             if len(names) == 1 and idx == 0:
-                return names[0] + '/' + right
+                return names[0] + "/" + right
 
     # Fallback: find the first {...} group anywhere and pick element
     m = re.search(r"\{([^}]*)\}", s)
@@ -370,7 +385,7 @@ def pick_cover_for_name(coverpoint: Any, names: list[str], idx: int) -> Any:
         return coverpoint
 
     inner = m.group(1)
-    parts = [p.strip() for p in inner.split(',') if p.strip()]
+    parts = [p.strip() for p in inner.split(",") if p.strip()]
     if not parts:
         return coverpoint
 
@@ -385,17 +400,122 @@ def truncate_rule_text(text: str) -> str:
     return text
 
 
+def render_rule_text(name: str, json_text_map: dict[str, str], json_links_map: dict[str, list[str]]) -> str:
+    """Return the display text (with links) for a normative rule name."""
+    text = truncate_rule_text(json_text_map.get(name, ""))
+    links = json_links_map.get(name, [])
+    if links:
+        text = (text + "  " + " ".join(links)).strip()
+    return text
+
+
+def build_rows_from_groups(
+    groups: Iterable[dict[str, Any]], json_text_map: dict[str, str], json_links_map: dict[str, list[str]]
+) -> tuple[list[tuple[str, str, Any]], dict[str, Any], set[str]]:
+    """Create table rows while keeping grouped names on a single row.
+
+    When a YAML entry contains multiple names, emit one row whose Normative Rule
+    cell lists all of those names (comma-separated) instead of one row per name.
+    Coverpoints are still resolved per-name when brace lists are used, and the
+    resulting coverpoints are combined into the single row to avoid losing
+    information.
+    """
+
+    rows: list[tuple[str, str, Any]] = []
+    cover_map: dict[str, Any] = {}
+    yaml_names: set[str] = set()
+
+    for g in groups:
+        if not isinstance(g, dict):
+            continue
+
+        names = g.get("names", []) or []
+        if not names:
+            continue
+
+        names = list(names)
+        cp = g.get("coverpoint")
+
+        yaml_names.update(names)
+
+        # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
+        chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
+        cover_map.update({n: c for n, c in zip(names, chosen_cps, strict=False)})
+
+        if len(names) == 1:
+            n = names[0]
+            text = render_rule_text(n, json_text_map, json_links_map)
+            rows.append((n, text, chosen_cps[0]))
+            continue
+
+        # Multi-name group: keep a single row with the names combined.
+        combined_name = ", ".join(names)
+
+        # Combine rule texts, preserving order and collapsing duplicates.
+        text_parts: list[tuple[str, str]] = []
+        seen_texts: set[str] = set()
+        for n in names:
+            t = render_rule_text(n, json_text_map, json_links_map)
+            if not t:
+                continue
+            if t in seen_texts:
+                continue
+            text_parts.append((n, t))
+            seen_texts.add(t)
+
+        if not text_parts:
+            text = ""
+        elif len(text_parts) == 1:
+            text = text_parts[0][1]
+        else:
+            # Annotate which text corresponds to which name when they differ.
+            text = "\n".join(f"{n}: {t}" for n, t in text_parts)
+
+        # Combine coverpoints; keep per-name detail when they differ.
+        unique_cps: list[Any] = []
+        for c in chosen_cps:
+            if c not in unique_cps:
+                unique_cps.append(c)
+
+        if len(unique_cps) == 1:
+            cp_cell = unique_cps[0]
+        else:
+            cp_bits = []
+            for n, c in zip(names, chosen_cps, strict=False):
+                val = "" if c is None else str(c)
+                cp_bits.append(f"{n}: {val}")
+            cp_cell = "; ".join(cp_bits)
+
+        rows.append((combined_name, text, cp_cell))
+
+    return rows, cover_map, yaml_names
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(description='Generate ASCIIDoc table from normative rules JSON and coverpoints YAML')
+    p = argparse.ArgumentParser(description="Generate ASCIIDoc table from normative rules JSON and coverpoints YAML")
     # Default: download the canonical norm-rules.json from the ISA manual snapshot
     # canonical remote JSON used as default and as the fetch target when
     # --always-fetch is requested
-    canonical_json_url = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json'
-    p.add_argument('--json', default=canonical_json_url, help='Path or URL to norm-rules.json')
-    p.add_argument('--yaml', default='coverpoints/norm/yaml', help='Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm/yaml)')
-    p.add_argument('--out', default='ctp/src/norm/', help='Output directory for ASCIIDoc files (default: ctp/src/norm/)')
-    p.add_argument('--report', default='coverpoints/norm/mismatch_report.txt', help='Report file or directory when --yaml is a directory')
-    p.add_argument('--always-fetch', action='store_true', help='Always fetch the canonical remote JSON and update local cache even when --json is a local path')
+    canonical_json_url = "https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json"
+    p.add_argument("--json", default=canonical_json_url, help="Path or URL to norm-rules.json")
+    p.add_argument(
+        "--yaml",
+        default="coverpoints/norm",
+        help="Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)",
+    )
+    p.add_argument(
+        "--out", default="docs/ctp/src/norm/", help="Output directory for ASCIIDoc files (default: docs/ctp/src/norm/)"
+    )
+    p.add_argument(
+        "--report",
+        default="coverpoints/norm/mismatch_report.txt",
+        help="Report file or directory when --yaml is a directory",
+    )
+    p.add_argument(
+        "--always-fetch",
+        action="store_true",
+        help="Always fetch the canonical remote JSON and update local cache even when --json is a local path",
+    )
     args = p.parse_args()
 
     # If paths are relative and not found from current CWD, try resolving
@@ -409,14 +529,14 @@ def main() -> None:
     report_path = Path(args.report)
 
     # If args.json is an HTTP(S) URL, we'll download it later; skip filesystem checks.
-    if urlparse(args.json).scheme not in ('http', 'https'):
+    if urlparse(args.json).scheme not in ("http", "https"):
         json_path_obj = Path(args.json)
         if not json_path_obj.exists():
             alt = script_dir / args.json
             if alt.exists():
                 json_path = alt
             else:
-                print(f'Error: JSON file not found: {args.json}', file=sys.stderr)
+                print(f"Error: JSON file not found: {args.json}", file=sys.stderr)
                 sys.exit(2)
         else:
             json_path = json_path_obj
@@ -426,12 +546,12 @@ def main() -> None:
         if alt.exists():
             yaml_path = alt
         else:
-            print(f'Error: YAML file not found: {args.yaml}', file=sys.stderr)
+            print(f"Error: YAML file not found: {args.yaml}", file=sys.stderr)
             sys.exit(2)
 
     # Compute a cache path under the repository's coverpoints/norm directory.
     repo_root = script_dir.parent.parent
-    cache_path = repo_root / 'coverpoints' / 'norm' / 'norm-rules.json'
+    cache_path = repo_root / "coverpoints" / "norm" / "norm-rules.json"
 
     # Load JSON. Default behavior: if args.json is a URL it will be downloaded
     # and cached. If args.json is a local path the local file will be read.
@@ -440,12 +560,12 @@ def main() -> None:
     if args.always_fetch:
         try:
             jdata = load_json(canonical_json_url, cache_path=cache_path)
-        except Exception as e:
-            print(f'Error: failed to fetch canonical JSON ({canonical_json_url}): {e}', file=sys.stderr)
+        except (RuntimeError, OSError, json.JSONDecodeError) as e:
+            print(f"Error: failed to fetch canonical JSON ({canonical_json_url}): {e}", file=sys.stderr)
             sys.exit(2)
     else:
         jdata = load_json(json_path, cache_path=cache_path)
-    print(f'Loaded normative rules JSON from: {json_path} to {cache_path}')
+    print(f"Loaded normative rules JSON from: {json_path} to {cache_path}")
     rules_list = find_normative_rules(jdata)
 
     # Build a mapping of JSON rule name -> text for fast lookup
@@ -456,32 +576,32 @@ def main() -> None:
     for entry in rules_list:
         if not isinstance(entry, dict):
             continue
-        name = entry.get('name')
+        name = entry.get("name")
         if not name:
             continue
         json_names.add(name)
-        tags = entry.get('tags') or entry.get('tag') or []
-    # Build ASCIIDoc linked text for tags associated with this rule.
-    # The link should apply to the tagged text (tag['text']) and the
-    # tag 'name' (e.g. 'norm:...') should not be printed.
+        tags = entry.get("tags") or entry.get("tag") or []
+        # Build ASCIIDoc linked text for tags associated with this rule.
+        # The link should apply to the tagged text (tag['text']) and the
+        # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
-        UNPRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/unprivileged/index.html'
-        PRIV_BASE = 'https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/privileged/index.html'
+        UNPRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html"
+        PRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html"
         tags_iter = [tags] if isinstance(tags, dict) else list(tags) if tags is not None else []
         for tg in tags_iter:
             if not isinstance(tg, dict):
                 continue
-            tag_name = tg.get('name')
-            tag_fn = tg.get('tag_filename', '') or ''
-            tag_text = tg.get('text') or ''
+            tag_name = tg.get("name")
+            tag_fn = tg.get("tag_filename", "") or ""
+            tag_text = tg.get("text") or ""
             if not tag_name:
                 continue
             # choose privileged or unprivileged base URL based on filename
             # do a case-insensitive check and test for 'unprivileged' first
-            tag_fn_l = (tag_fn or '').lower()
-            if 'unprivileged' in tag_fn_l:
+            tag_fn_l = (tag_fn or "").lower()
+            if "unprivileged" in tag_fn_l:
                 base = UNPRIV_BASE
-            elif 'privileged' in tag_fn_l:
+            elif "privileged" in tag_fn_l:
                 base = PRIV_BASE
             else:
                 base = UNPRIV_BASE
@@ -490,32 +610,32 @@ def main() -> None:
             # Use urllib.parse.quote with an empty 'safe' to encode reserved
             # characters (e.g., ':') so the fragment is valid when embedded in
             # a link target.
-            frag = quote(str(tag_name), safe='')
+            frag = quote(str(tag_name), safe="")
             url = f"{base}#{frag}"
             # Prepare display text: collapse whitespace and remove surrounding newlines
-            disp = ' '.join(str(tag_text).split())
+            disp = " ".join(str(tag_text).split())
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by
             # literal '|' characters appearing inside quoted link or cell
             # text.
-            if '|' in disp:
-                disp = disp.replace('|', '&#124;')
+            if "|" in disp:
+                disp = disp.replace("|", "&#124;")
             # ASCIIDoc inline link: link:url["display text"]
             # Use quoted display text to allow commas in the text (otherwise
             # Asciidoctor will treat commas as attribute separators). Also
             # escape double-quotes, backslashes and closing brackets inside
             # the display text.
             if disp:
-                esc = disp.replace('\\', '\\\\').replace('"', '\\"').replace(']', '\\]')
+                esc = disp.replace("\\", "\\\\").replace('"', '\\"').replace("]", "\\]")
                 # encode comma as HTML entity so Asciidoctor won't treat it
                 # as an attribute separator and we can emit an unquoted
                 # link:URL[display text] form (no visible quotes).
-                if ',' in esc:
-                    esc = esc.replace(',', '&#44;')
+                if "," in esc:
+                    esc = esc.replace(",", "&#44;")
                 # final safety: replace any remaining '|' with '&#124;'
-                if '|' in esc:
-                    esc = esc.replace('|', '&#124;')
+                if "|" in esc:
+                    esc = esc.replace("|", "&#124;")
                 # Store as a tuple so we can render multi-link cases as HTML
                 # paragraphs (anchors) later to avoid relying on the Asciidoc
                 # 'a|' multi-paragraph cell marker which was showing up as a
@@ -543,7 +663,7 @@ def main() -> None:
                 # We've encoded commas to '&#44;' and escaped ']' already,
                 # so emit the simple inline link form without surrounding
                 # quotes to avoid visible quotation marks in the ADOC.
-                joined = f'link:{url}[{esc}]'
+                joined = f"link:{url}[{esc}]"
             else:
                 # For multiple links, emit simple inline Asciidoc link macros
                 # separated by single spaces (no HTML/passthrough and no
@@ -554,8 +674,8 @@ def main() -> None:
                 for url, esc in linked_text_parts:
                     # commas are encoded and brackets escaped above; emit
                     # the plain inline link macro to avoid visible quotes.
-                    parts.append(f'link:{url}[{esc}]')
-                joined = ' '.join(parts)
+                    parts.append(f"link:{url}[{esc}]")
+                joined = " ".join(parts)
 
             json_text_map[name] = joined
             json_links_map[name] = []
@@ -563,23 +683,23 @@ def main() -> None:
             # Extract rule text and collapse any internal newlines/whitespace
             # into single spaces so we never emit multi-paragraph cells
             # (which previously required the 'a|' marker).
-            raw_text = extract_rule_text(tags) or ''
-            text = ' '.join(str(raw_text).split())
+            raw_text = extract_rule_text(tags) or ""
+            text = " ".join(str(raw_text).split())
             # Replace any literal '|' characters with the HTML entity
             # to avoid breaking Asciidoc table parsing.
-            if '|' in text:
-                text = text.replace('|', '&#124;')
+            if "|" in text:
+                text = text.replace("|", "&#124;")
             json_text_map[name] = text
             json_links_map[name] = []
         # capture def_filename for later grouping in reports
-        def_fn = entry.get('def_filename') or entry.get('def_file') or entry.get('definition_filename')
-        json_def_map[name] = def_fn or 'unknown'
+        def_fn = entry.get("def_filename") or entry.get("def_file") or entry.get("definition_filename")
+        json_def_map[name] = def_fn or "unknown"
 
     # If args.yaml is a directory, process every .yaml/.yml file inside
     if yaml_path.is_dir():
-        yaml_files = sorted(list(yaml_path.glob('*.yaml')) + list(yaml_path.glob('*.yml')))
+        yaml_files = sorted(list(yaml_path.glob("*.yaml")) + list(yaml_path.glob("*.yml")))
         if not yaml_files:
-            print(f'No YAML files found in directory: {yaml_path}', file=sys.stderr)
+            print(f"No YAML files found in directory: {yaml_path}", file=sys.stderr)
             sys.exit(2)
 
         # Always treat --out as a directory
@@ -596,32 +716,11 @@ def main() -> None:
             ydata = load_yaml(yfile)
             groups = build_coverpoint_groups(ydata)
 
-            # Build rows and mappings
-            cover_map = {}
-            yaml_names = set()
-            rows = []
-            for g in groups:
-                names = g.get('names', [])
-                cp = g.get('coverpoint')
-                for idx, n in enumerate(names):
-                    # If coverpoint contains multiple brace-delimited groups,
-                    # pick the one corresponding to this name's index.
-                    chosen_cp = pick_cover_for_name(g.get('coverpoint'), names, idx)
-                    cover_map[n] = chosen_cp
-                    yaml_names.add(n)
-                    if idx == 0:
-                        text = truncate_rule_text(json_text_map.get(n, ''))
-                        # append tag links (if any) to the rule text
-                        tlinks = json_links_map.get(n, [])
-                        if tlinks:
-                            # separate text and links with two spaces so ADOC treats it as appended content
-                            text = (text + '  ' + ' '.join(tlinks)).strip()
-                    else:
-                        text = 'see above'
-                    rows.append((n, text, chosen_cp))
+            # Build rows and mappings; keep grouped names on a single row.
+            rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
-            missing_in_json = sorted(list(yaml_names - json_names))
+            missing_in_json = sorted(yaml_names - json_names)
             base = yfile.stem
             per_yaml_missing[base] = missing_in_json
 
@@ -631,59 +730,58 @@ def main() -> None:
             # Write adoc for this yaml
             out_dir.mkdir(parents=True, exist_ok=True)
             report_dir.mkdir(parents=True, exist_ok=True)
-            outpath = out_dir / f'{base}_norm_rules.adoc'
+            outpath = out_dir / f"{base}_norm_rules.adoc"
             make_adoc_table(rows, outpath, base=base)
 
         # After processing all YAMLs, create a single combined mismatch report
         # missing_in_yaml = JSON names that did not appear in any YAML
-        missing_in_yaml = sorted(list(json_names - all_yaml_names))
+        missing_in_yaml = sorted(json_names - all_yaml_names)
 
         report_lines = []
-        report_lines.append('Mismatch report')
-        report_lines.append('===============')
-        report_lines.append('')
-        report_lines.append(f'Total JSON rules: {len(json_names)}')
-        report_lines.append(f'Total YAML coverpoints (unique names seen): {len(all_yaml_names)}')
-        report_lines.append('')
+        report_lines.append("Mismatch report")
+        report_lines.append("===============")
+        report_lines.append("")
+        report_lines.append(f"Total JSON rules: {len(json_names)}")
+        report_lines.append(f"Total YAML coverpoints (unique names seen): {len(all_yaml_names)}")
+        report_lines.append("")
         # Per-YAML sections: only include files that have missing names
         for base in sorted(per_yaml_missing.keys()):
             missing = per_yaml_missing[base]
             if not missing:
                 # omit files with no missing names from the report
                 continue
-            report_lines.append(f'YAML file: {base}.yaml')
-            report_lines.append('-' * (10 + len(base)))
-            report_lines.append('Names present in YAML but missing from JSON:')
-            report_lines.extend(['  ' + n for n in missing])
-            report_lines.append('')
+            report_lines.append(f"YAML file: {base}.yaml")
+            report_lines.append("-" * (10 + len(base)))
+            report_lines.append("Names present in YAML but missing from JSON:")
+            report_lines.extend(["  " + n for n in missing])
+            report_lines.append("")
 
         # Now list JSON-only names organized by def_filename (chapter)
-        report_lines.append('Names present in JSON but missing from any YAML (organized by def_filename):')
+        report_lines.append("Names present in JSON but missing from any YAML (organized by def_filename):")
         if missing_in_yaml:
             # group by def_filename
             chapter_map = {}
             for name in missing_in_yaml:
-                chapter = json_def_map.get(name, 'unknown') or 'unknown'
+                chapter = json_def_map.get(name, "unknown") or "unknown"
                 chapter_map.setdefault(chapter, []).append(name)
 
             for chap in sorted(chapter_map.keys()):
-                report_lines.append(f'Chapter: {chap}')
-                for n in sorted(chapter_map[chap]):
-                    report_lines.append('  ' + n)
-                report_lines.append('')
+                report_lines.append(f"Chapter: {chap}")
+                report_lines.extend("  " + n for n in sorted(chapter_map[chap]))
+                report_lines.append("")
         else:
-            report_lines.append('  (none)')
+            report_lines.append("  (none)")
 
         # Write the single report file. If args.report is a directory, write mismatch_report.txt inside it.
         if report_path.is_dir() or str(report_path).endswith(os.sep):
             rpt_dir = report_path
             rpt_dir.mkdir(parents=True, exist_ok=True)
-            final_report_path = rpt_dir / 'mismatch_report.txt'
+            final_report_path = rpt_dir / "mismatch_report.txt"
         else:
             report_path.parent.mkdir(parents=True, exist_ok=True)
             final_report_path = report_path
 
-        final_report_path.write_text('\n'.join(report_lines), encoding='utf-8')
+        final_report_path.write_text("\n".join(report_lines), encoding="utf-8")
 
         return
 
@@ -692,59 +790,40 @@ def main() -> None:
     groups = build_coverpoint_groups(ydata)
 
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
-    cover_map = {}
-    yaml_names = set()
-    rows = []
-    for g in groups:
-        names = g.get('names', [])
-        cp = g.get('coverpoint')
-        # populate cover_map and create one row per normative rule name
-        for idx, n in enumerate(names):
-            chosen_cp = pick_cover_for_name(cp, names, idx)
-            cover_map[n] = chosen_cp
-            yaml_names.add(n)
-            # Only include the rule text for the first name in the group
-            if idx == 0:
-                text = truncate_rule_text(json_text_map.get(n, ''))
-                tlinks = json_links_map.get(n, [])
-                if tlinks:
-                    text = (text + '  ' + ' '.join(tlinks)).strip()
-            else:
-                text = 'see above'
-            rows.append((n, text, chosen_cp))
+    rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
-    missing_in_json = sorted(list(yaml_names - json_names))
-    missing_in_yaml = sorted(list(json_names - yaml_names))
+    missing_in_json = sorted(yaml_names - json_names)
+    missing_in_yaml = sorted(json_names - yaml_names)
 
     # Always treat --out as a directory
     out_dir = out_path
     out_dir.mkdir(parents=True, exist_ok=True)
     base = yaml_path.stem
-    outpath = out_dir / f'{base}_norm_rules.adoc'
+    outpath = out_dir / f"{base}_norm_rules.adoc"
     make_adoc_table(rows, outpath, base=base)
 
     # Write the mismatch report only to the report file (do not print to stdout)
     report_lines = []
-    report_lines.append('Mismatch report')
-    report_lines.append('===============')
-    report_lines.append('')
-    report_lines.append(f'Total JSON rules: {len(json_names)}')
-    report_lines.append(f'Total YAML coverpoints: {len(yaml_names)}')
-    report_lines.append('')
-    report_lines.append('Names present in YAML but missing from JSON:')
+    report_lines.append("Mismatch report")
+    report_lines.append("===============")
+    report_lines.append("")
+    report_lines.append(f"Total JSON rules: {len(json_names)}")
+    report_lines.append(f"Total YAML coverpoints: {len(yaml_names)}")
+    report_lines.append("")
+    report_lines.append("Names present in YAML but missing from JSON:")
     if missing_in_json:
-        report_lines.extend(['  ' + n for n in missing_in_json])
+        report_lines.extend(["  " + n for n in missing_in_json])
     else:
-        report_lines.append('  (none)')
-    report_lines.append('')
-    report_lines.append('Names present in JSON but missing from YAML:')
+        report_lines.append("  (none)")
+    report_lines.append("")
+    report_lines.append("Names present in JSON but missing from YAML:")
     if missing_in_yaml:
-        report_lines.extend(['  ' + n for n in missing_in_yaml])
+        report_lines.extend(["  " + n for n in missing_in_yaml])
     else:
-        report_lines.append('  (none)')
+        report_lines.append("  (none)")
 
-    report_path.write_text('\n'.join(report_lines), encoding='utf-8')
+    report_path.write_text("\n".join(report_lines), encoding="utf-8")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

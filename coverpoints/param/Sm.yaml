@@ -1,0 +1,36 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: MXLEN
+    coverpoint: ["all tests"]
+    effect: "Implicitly tested by all the XLEN-dependent tests (e.g. add would fail if XLEN is wrong)"
+  - name: MISA_CSR_IMPLEMENTED
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["misa bin results depend on parameter"]
+  - name: TIME_CSR_IMPLEMENTED
+    coverpoint: ["cp_mtime_write"]
+    effect: ["coverpoint only applies if parameter is True"]
+  - name: COUNTINHIBIT_EN
+    coverpoint: ["cp_inhibit"]
+    effect:
+      [
+        "bins 0 and 2 for `mcycle` and `minstret` are affected by this parameter.  Other bins are OUT-OF-SCOPE and not tested because HPM behavior is UNSPECIFIED",
+      ]
+  - name: MARCHID_IMPLEMENTED
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["if false, `marchid` bin is read-only zero"]
+  - name: ARCH_ID_VALUE
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["`marchid` value"]
+  - name: MIMPID_IMPLEMENTED
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["if false, `mimpid` is read-only zero."]
+  - name: IMP_ID_VALUE
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["`mimpid` value"]
+  - name: VENDOR_ID_BANK
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["`mvendorid` value"]
+  - name: VENDOR_ID_OFFSET
+    coverpoint: ["cp_mcsr_access"]
+    effect: ["`mvendorid` value"]

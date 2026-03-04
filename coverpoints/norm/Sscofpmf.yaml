@@ -1,0 +1,68 @@
+normative_rule_definitions:
+  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts. reflects the occurrence of a local counter-overflow overflow
+  # interrupt request resulting from any of the mhpmeventn.OF bits being set.
+  - name: mip_lcofip_op
+    coverpoint: [""]
+
+  # If the Sscofpmf extension is implemented, bits mip.LCOFIP and mie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts.
+  - name: mie_lcofie_op
+    coverpoint: [""]
+
+  # The mhpmeventnh CSRs are provided only if the Sscofpmf extension is implemented.
+  - name: mhpmeventh_presence
+    coverpoint: ["TODO, also in Ssstrict"]
+
+  # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
+  # interrupt-pending and interrupt-enable bits for local-counter-overflow
+  # interrupts. LCOFIP is read-write in sip and reflects the occurrence of a local
+  # counter-overflow overflow interrupt request resulting from any of the
+  # mhpmeventn.OF bits being set. If the Sscofpmf extension is not implemented,
+  # sip.LCOFIP and sie.LCOFIE are read-only zeros.
+  - names:
+      [
+        sip_lcofip_Sscofpmf_acc,
+        sip_lcofip_Sscofpmf_op,
+        sie_lcofip_Sscofpmf_acc,
+        sie_lcofip_Sscofpmf_op,
+      ]
+    coverpoint: [""]
+
+  - name: mhpmevent-INH_op
+    coverpoint: [""]
+
+  - name: mhpmevent-OF_op
+    coverpoint: [""]
+
+  - name: hpmcounter_overflow
+    coverpoint: [""]
+
+  - name: count_overflow_interrupt
+    coverpoint: [""]
+
+  - name: count_overflow_trigger
+    coverpoint: [""]
+
+  - name: mhpmevent-OF_bit_Set
+    coverpoint: [""]
+
+  - names: [mip-LCOFIP_op, sip-LCOFIP_op]
+    coverpoint: [""]
+
+  - name: scountovf_op
+    coverpoint: [""]
+
+  - name: scountovf_smode_read_access_control
+    coverpoint: [""]
+
+  - name: scountovf_mmode_read_access
+    coverpoint: [""]
+
+  - name: scountovf_smode_read_access
+    coverpoint: [""]
+
+  - name: scountovf_vsmode_read_access
+    coverpoint: [""]

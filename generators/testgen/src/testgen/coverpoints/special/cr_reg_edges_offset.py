@@ -7,11 +7,11 @@
 
 """Cross-product register edge value for branches coverpoint generator (cr_rs1_rs2_edges_offset)."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
-from testgen.utils.edges import get_general_edges
-from testgen.utils.param_generator import generate_random_params
+from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.edges import get_general_edges
+from testgen.data.state import TestData
+from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_rs2_edges_offset")
@@ -30,11 +30,11 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             assert params.rs1val is not None and params.rs2val is not None
             test_lines.extend(
                 [
-                    test_data.add_testcase(coverpoint),
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     "0: # destination for backwards branch that is never taken",
+                    test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}", coverpoint),
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 3f # forward branch, if taken",
                     "1: # goes here if not taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 0b # backward branch, never taken",

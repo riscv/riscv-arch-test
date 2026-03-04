@@ -50,8 +50,7 @@ basetest_count          = 0
 lengthtest_count        = 0
 
 sigTotal                = 0 # total number of bytes in signature
-sigReg                  = 3 # start with x4 for signatures ->marina changed it to x3 because that what riscv-arch-test uses TO DO
-
+sigReg                  = 2 # DEFAULT_SIG_REG = x2 in test_setup.h
 base_suite_test_count   = 0
 length_suite_test_count = 0
 
@@ -175,6 +174,8 @@ vfedgesemul2  = [(vcorner + "_emul2" ) for vcorner in vectorfpedges]
 if __name__ == "__main__":
     raise RuntimeError("This file is not meant to be run directly.")
 
+tab_count = 0
+
 def writeLine(argument: str, comment = ""):
     raise NotImplementedError("This function must be overridden by the importing file.")
 
@@ -184,7 +185,7 @@ def writeLine(argument: str, comment = ""):
 
 def newInstruction():
   global sigReg, lengthtest_count, basetest_count, base_suite_test_count, length_suite_test_count, sigupd_count
-  sigReg                    = 3
+  sigReg                    = 2
   lengthtest_count          = 0
   basetest_count            = 0
   base_suite_test_count     = 0
@@ -1200,7 +1201,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
-        .replace("@CONFIG_DEPENDENT@", "false")  # TODO: Make this configurable for some tests (e.g. Zimop)
+        .replace("@CONFIG_DEPENDENT@", "true")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
     )
@@ -1210,12 +1211,12 @@ def writeSIGUPD(rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count)
-    linkReg = 4
-    linkOptions = [4, 7, 12]
-    while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == rd or linkReg + 1 == rd:
+    linkReg = 5
+    linkOptions = [5, 8, 13]
+    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == rd or linkReg - 1 == rd:
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
-    tempReg = linkReg + 1
+    tempReg = linkReg - 1
     writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {str_ptr})", f"# store x{rd} in signature")
 
 def writeSIGUPD_F(fd):
@@ -1223,14 +1224,16 @@ def writeSIGUPD_F(fd):
     global sigupd_countF
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
     sigupd_countF += 1   # Increment counter on each call since SIGUPD_F macro stores FREG
-    linkReg = 4
-    linkOptions = [4, 7, 12]
-    while linkReg == sigReg or linkReg + 1 == sigReg or linkReg == fd or linkReg + 1 == fd:
+    str_ptr = "test_" + str(testcase_count)
+    linkReg = 5
+    linkOptions = [5, 8, 13]
+    while linkReg == sigReg or linkReg - 1 == sigReg or linkReg == fd or linkReg - 1 == fd:
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
-    tempReg = linkReg + 1
+    tempReg = linkReg - 1
+    ftempReg = tempReg
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
-    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{fd})", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
+    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr})", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
 def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
     global sigupd_count        # Allow modification of global variable
@@ -1548,47 +1551,47 @@ def loadVxsatMode(*scalar_registers_used):
 def getLMULIfdef(lmul):
   ifdef = ""
   if (lmul == 0.5):
-    ifdef = "#ifdef LMULf2_SUPPORTED\n"
+    ifdef = "LMULf2_SUPPORTED"
   elif (lmul == 0.25):
-    ifdef = "#ifdef LMULf4_SUPPORTED\n"
+    ifdef = "LMULf4_SUPPORTED"
   elif (lmul == 0.125):
-    ifdef = "#ifdef LMULf8_SUPPORTED\n"
+    ifdef = "LMULf8_SUPPORTED"
   return ifdef
 
 def getELENIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "#if ELEN >= 64\n"
+    ifdef = "ELEN >= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "#if ELEN >= 32\n"
+    ifdef = "ELEN >= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "#if ELEN >= 16\n"
+    ifdef = "ELEN >= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "#if ELEN >= 8\n"
+    ifdef = "ELEN >= 8 & "
   return ifdef
 
 def getSEWMINIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "#if SEWMIN <= 64\n"
+    ifdef = "SEWMIN <= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "#if SEWMIN <= 32\n"
+    ifdef = "SEWMIN <= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "#if SEWMIN <= 16\n"
+    ifdef = "SEWMIN <= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "#if SEWMIN <= 8\n"
+    ifdef = "SEWMIN <= 8 & "
   return ifdef
 
 def getMaxIndexEEWIfdef(instruction):
   ifdef = ""
   if   instruction in eew64_ins:
-    ifdef = "#if MAXINDEXEEW >= 64\n"
+    ifdef = "MAXINDEXEEW >= 64 & "
   elif instruction in eew32_ins:
-    ifdef = "#if MAXINDEXEEW >= 32\n"
+    ifdef = "MAXINDEXEEW >= 32 & "
   elif instruction in eew16_ins:
-    ifdef = "#if MAXINDEXEEW >= 16\n"
+    ifdef = "MAXINDEXEEW >= 16 & "
   elif instruction in eew8_ins:
-    ifdef = "#if MAXINDEXEEW >= 8\n"
+    ifdef = "MAXINDEXEEW >= 8 & "
   return ifdef
 
 def getInstructionEEW(instruction):
@@ -1606,20 +1609,20 @@ def prepMaskV(maskval, sew, tempReg, lmul):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX) ? 1 : 0")
   elif (maskval == "vlmaxm1_ones"):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine(f"addi x{tempReg}, x{tempReg}, -1",             f"# x{tempReg} = VLMAX - 1")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX-1) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX-1) ? 1 : 0")
   elif (maskval == "vlmaxd2p1_ones"):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
     writeLine(f"srli x{tempReg}, x{tempReg}, 1",              f"# x{tempReg} = VLMAX / 2")
     writeLine(f"addi x{tempReg}, x{tempReg}, 1",              f"# x{tempReg} = VLMAX / 2 + 1")
     writeLine("vid.v v1",                                    "# v1 = [0,1,2,...]")
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
-    writeLine(f"vmslt.vx v0, v1, x{tempReg}",                 "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
+    writeLine(f"vmsltu.vx v0, v1, x{tempReg}",               "# v0[i] = (i < VLMAX/2+1) ? 1 : 0")
   else: # random mask
     writeLine("vmv.v.i v0, 0",                               "# Reset mask value to 0")
     writeLine(f"la x{tempReg}, {maskval}")
@@ -1682,6 +1685,9 @@ def getInstructionArguments(instruction):
 def writeTest(description, instruction, instruction_data,
               sew=None, lmul=1, vl=1, vstart=0, maskval=None, vxrm=None,
               frm=None, vxsat=None, vta=0, vma=0):
+    global tab_count
+
+    writeLine("\n")
 
     [vector_register_data, scalar_register_data, floating_point_register_data, imm_val] = instruction_data
 
@@ -1705,13 +1711,20 @@ def writeTest(description, instruction, instruction_data,
 
     # deal with conflict before generating lmul ifdefs to not cause issue if the test is unused
 
-    writeLine("\n" + getLMULIfdef(lmul))
+    if getLMULIfdef(lmul) != "":
+      writeLine("#ifdef " + getLMULIfdef(lmul))
+      tab_count += 1
 
-    writeLine(getELENIfdef(instruction))
+    ifdef_string = "#if "
 
-    writeLine(getMaxIndexEEWIfdef(instruction))
+    # TODO want to delete once top-of-file params work
+    ifdef_string += getELENIfdef        (instruction)
+    ifdef_string += getMaxIndexEEWIfdef (instruction)
+    ifdef_string += getSEWMINIfdef      (instruction)
 
-    writeLine(getSEWMINIfdef(instruction))
+    if (ifdef_string != "#if "):
+      writeLine(ifdef_string[:-3])
+      tab_count += 1
 
     writeLine("# Testcase " + str(description))
 
@@ -1816,14 +1829,14 @@ def writeTest(description, instruction, instruction_data,
     else:
       writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store)
 
-    if (getLMULIfdef(lmul) != ""):
+    if (ifdef_string != "#if "):
+      tab_count -= 1
       writeLine("#endif")
-    if (getELENIfdef(instruction) != ""):
+
+    if getLMULIfdef(lmul) != "":
+      tab_count -= 1
       writeLine("#endif")
-    if (getSEWMINIfdef(instruction) != ""):
-      writeLine("#endif")
-    if (getMaxIndexEEWIfdef(instruction) != ""):
-      writeLine("#endif")
+
 
 def getLoadEquivilentInstruction(instruction, sew):
   if instruction in whole_register_stores:
@@ -2337,7 +2350,7 @@ def readTestplans(priv=False):
                         testplans["Vls" + effew] = tp
                     del testplans["Vls"]
                 if (arch == "Vf"):
-                    # for effew in ["16", "32", "64"]:
-                    #     testplans["Vf" + effew] = tp
+                    for effew in ["16", "32", "64"]:
+                        testplans["Vf" + effew] = tp
                     del testplans["Vf"]
     return testplans

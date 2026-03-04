@@ -46,15 +46,20 @@
 # FLEN specific macros
 #define FREGWIDTH (FLEN>>3)      // in units of #bytes
 
-#if FLEN==32
+#ifdef ZFINX
+  #define FLREG LREG
+  #define FSREG SREG
+#else
+  #if FLEN==32
     #define FLREG flw
     #define FSREG fsw
-#elif FLEN==64
+  #elif FLEN==64
     #define FLREG fld
     #define FSREG fsd
-#elif FLEN==128
+  #elif FLEN==128
     #define FLREG flq
     #define FSREG fsq
+  #endif
 #endif
 
 // Default VDSEW to 0 for non-vector tests
@@ -139,43 +144,14 @@
     csrr VLENB_CACHE, vlenb
 
 
-/* TODO: Add support for Zfinx
-#if ZFINX==1
-    #define FLREG ld
-    #define FSREG sd
-    #define FREGWIDTH 8
-    #define FLEN 64
-    #if XLEN==64
-        #define SIGALIGN 8
-    #else
-        #define SIGALIGN 4
-    #endif
-    #elif ZDINX==1
-        #define FLREG LREG
-        #define FSREG SREG
-        #define FREGWIDTH 8
-        #define FLEN 64
-    #elif ZHINX==1
-        #define FLREG lw
-        #define FSREG sw
-        #define FREGWIDTH 4
-        #define FLEN 32
-#endif
-*/
-
 //-----------------------------------------------------------------------
 //Fixed length la, li macros; # of ops is ADDR_SZ dependent, not data dependent
 //-----------------------------------------------------------------------
 
+/**** fixed length LI macro ****/
 // this generates a constants using the standard addi or lui/addi sequences
 // but also handles cases that are contiguous bit masks in any position,
 // and also constants handled with the addi/lui/addi but are shifted left
-
-#ifndef UNROLLSZ
-  #define UNROLLSZ 5
-#endif
-
-/**** fixed length LI macro ****/
 #if (XLEN<64)
   #define LI(reg, imm)                                                            ;\
     .option push                                                                  ;\
@@ -218,12 +194,12 @@
     .rept XLEN                                                                    ;\
       .if   (fnd1<0)              /* looking for first edge?              */      ;\
         .if (BIT(imme,pos)==1)    /* look for falling edge[pos]           */      ;\
-          .set  edge1,pos         /* fnd falling edge, don’t chk for more */      ;\
+          .set  edge1,pos         /* fnd falling edge, don't chk for more */      ;\
           .set  fnd1,0                                                            ;\
         .endif                                                                    ;\
       .elseif (fnd2<0)            /* looking for second edge?             */      ;\
         .if (BIT(imme,pos)==0)    /* yes, found rising edge[pos]?         */      ;\
-          .set  edge2, pos        /* fnd rising  edge, don’t chk for more */      ;\
+          .set  edge2, pos        /* fnd rising  edge, don't chk for more */      ;\
           .set  fnd2,0                                                            ;\
         .endif                                                                    ;\
       .endif                                                                      ;\
@@ -291,6 +267,13 @@
   .option pop
 #endif
 
+# Alignment size for LA macro. Must be larger than the longest instruction
+# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+# On some rv64 targets, this may need to be increased to 6.
+#ifndef UNROLLSZ
+  #define UNROLLSZ 5
+#endif
+
 /**** fixed length LA macro; alignment and rvc/norvc unknown before execution ****/
 #define LA(reg,val) ;\
   .ifnc(reg, X0)    ;\
@@ -309,41 +292,123 @@
 
 #define CSRRW(_R2, _CSR, _R1) \
     csrrw _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRRS(_R2, _CSR, _R1) \
     csrrs _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRRC(_R2, _CSR, _R1) \
     csrrc _R2, _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRR(_R2, _CSR) \
     csrr _R2, _CSR      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRW(_CSR, _R1) \
     csrw _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRS(_CSR, _R1) \
     csrs _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
 #define CSRC(_CSR, _R1) \
     csrc _CSR, _R1      ;\
-    nop      # in case csr op traps
+    nop
 
+// Macros for instructions that can trap
+// each instruction is followed by a nop in case the access causes a trap
+// because the trap return skips the next instruction
 
+#define SFENCE_VMA \
+    sfence.vma         ;\
+    nop
 
 // Utility Macros
 
 // Place 1 in msb
 #if XLEN == 64
 #define SET_MSB(_R) \
-    LI(_R, 0x8000000000000000)    // 1 in bit 63
+    LI(_R, 0x8000000000000000)
 #else  /* XLEN == 32 */
 #define SET_MSB(_R) \
-    LI(_R, 0x80000000)    // 1 in bit 31
+    LI(_R, 0x80000000)
 #endif
+
+// Interrupt Macros
+// Idle for interrupt latency
+#define RVTEST_IDLE_FOR_INTERRUPT \
+   .rept RVMODEL_INTERRUPT_LATENCY; \
+       nop; \
+   .endr
+
+
+// Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
+// This allows tests to be portable across different platforms with different interrupt implementations.
+#define RVTEST_SET_MSW_INT \
+  jal rvtest_set_msw_int     /* Trigger machine software interrupt */
+
+#define RVTEST_CLR_MSW_INT \
+  jal rvtest_clr_msw_int     /* Clear machine software interrupt */
+
+#define RVTEST_SET_MEXT_INT \
+  jal rvtest_set_mext_int     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT \
+  jal rvtest_clr_mext_int     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSW_INT \
+  jal rvtest_set_ssw_int     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT \
+  jal rvtest_clr_ssw_int     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT \
+  jal rvtest_set_sext_int     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT \
+  jal rvtest_clr_sext_int     /* Clear supervisor external interrupt */
+
+
+// V-mode interrupts not yet supported in Sail reference model
+// Define as empty to prevent assembly errors
+#define RVTEST_SET_VSW_INT
+#define RVTEST_CLR_VSW_INT
+#define RVTEST_SET_VEXT_INT
+#define RVTEST_CLR_VEXT_INT
+
+// Timer interrupts (no parameters)
+#define RVTEST_CLR_STIMER_INT
+#define RVTEST_CLR_VTIMER_INT
+
+// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
+#define RVTEST_INTERRUPTS \
+  rvtest_set_msw_int: ; \
+    RVMODEL_SET_MSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_msw_int: ; \
+    RVMODEL_CLR_MSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_set_mext_int: ; \
+    RVMODEL_SET_MEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_mext_int: ; \
+    RVMODEL_CLR_MEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_set_ssw_int: ; \
+    RVMODEL_SET_SSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_ssw_int: ; \
+    RVMODEL_CLR_SSW_INT(T2, T5) ; \
+    csrci sip, 2 ; \
+    ret ; \
+  rvtest_set_sext_int: ; \
+    RVMODEL_SET_SEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_sext_int: ; \
+    RVMODEL_CLR_SEXT_INT(T2, T5) ; \
+    LI(T3, 512) ; \
+    csrc sip, T3 ; \
+    ret

@@ -1,0 +1,9 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: zkt_optional_instr
+    coverpoint: ["Definition, not tested"]
+
+  - name: zkt_impl_must_constant_latency
+    coverpoint: ["TODO"]

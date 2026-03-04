@@ -7,10 +7,10 @@
 
 """cp_align coverpoint generator."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, return_test_regs, write_sigupd
-from testgen.utils.param_generator import generate_random_params
+from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
+from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
@@ -28,7 +28,6 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     test_lines: list[str] = []
 
     for alignment in alignments:
-        test_lines.append(test_data.add_testcase(coverpoint))
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)
             assert params.rs1 is not None, "rs1 must be provided for L-type instruction"
@@ -44,6 +43,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     load_int_reg("temp_reg", params.temp_reg, params.temp_val, test_data),
                     f"SREG x{params.temp_reg}, 0(x{params.rs1}) # store test value to memory",
                     f"SREG x{params.temp_reg}, REGWIDTH(x{params.rs1}) # store test value to memory",
+                    test_data.add_testcase(f"b{alignment}", coverpoint),
                     f"{instr_name} x{params.rd}, {params.immval}(x{params.rs1}) # perform load",
                     write_sigupd(params.rd, test_data, "int"),
                     "",
@@ -65,9 +65,10 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+                    test_data.add_testcase(f"b{alignment}", coverpoint),
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
-                    "#ifdef SELFCHECK",
+                    "#ifdef RVTEST_SELFCHECK",
                     f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
                     write_sigupd(params.temp_reg, test_data),
                     # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
@@ -94,7 +95,13 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.rd is not None and params.temp_reg is not None
 
             # Need to use the appropriate store instruction to avoid misaligned access
-            if instr_name.endswith(".w"):
+            if instr_name.endswith(".b"):
+                store_instr = "sb"
+                load_instr = "lb"
+            elif instr_name.endswith(".h"):
+                store_instr = "sh"
+                load_instr = "lh"
+            elif instr_name.endswith(".w"):
                 store_instr = "sw"
                 load_instr = "lw"
             elif instr_name.endswith(".d"):
@@ -103,17 +110,21 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             else:
                 raise ValueError(f"Unknown amo ending for {instr_name} in cp_align.")
 
-            test_lines = [
-                load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
-                load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-                f"LA(x{params.rs1}, scratch) # load base address into rs1",
-                f"addi x{params.rs1}, x{params.rs1}, {alignment} # adjust for alignment",
-                f"{store_instr} x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
-                f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
-                write_sigupd(params.rd, test_data, "int"),
-                f"{load_instr} x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
-                write_sigupd(params.rs1, test_data, "int"),
-            ]
+            test_lines.extend(
+                [
+                    load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
+                    load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+                    f"LA(x{params.rs1}, scratch) # load base address into rs1",
+                    f"addi x{params.rs1}, x{params.rs1}, {alignment} # adjust for alignment",
+                    f"{store_instr} x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
+                    test_data.add_testcase(f"b{alignment}", coverpoint),
+                    f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+                    write_sigupd(params.rd, test_data, "int"),
+                    f"{load_instr} x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
+                    write_sigupd(params.rs1, test_data, "int"),
+                ]
+            )
+
         else:
             raise ValueError(f"Unknown instruction type: {instr_type} for cp_align.")
 

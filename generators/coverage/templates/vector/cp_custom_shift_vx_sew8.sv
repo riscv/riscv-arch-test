@@ -1,0 +1,23 @@
+//////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vshift_upperbits_rs1_ones
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector shift instructions with vv operands
+
+    // ensures vd updates
+    // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+
+
+    rs1_top_bits_one_cross_sew8 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  ins.current.rs1_val} {
+        `ifdef XLEN32
+        wildcard bins sew8      = {34'b00_????????_????????_????????_11111???};
+        `endif
+
+        `ifdef XLEN64
+        wildcard bins sew8      = {66'b00_????????_????????_????????_????????_????????_????????_????????_11111???};
+        `endif
+    }
+
+    cp_custom_vshift_upperbits_rs1_ones : cross std_vec, rs1_top_bits_one_cross_sew8;
+
+    //// end cp_custom_vshift_upperbits_rs1_ones////////////////////////////////////////////////

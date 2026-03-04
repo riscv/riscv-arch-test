@@ -10,7 +10,7 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Notes       : - Ensure `model_test.h` is configured to match your PMP grain
+// Notes       : - Ensure `rvmodel_macros.h` is configured to match your PMP grain
 //                 and PMP region count before running this test.
 //               - Adjust PMP configurations for specific hardware if required.
 //
@@ -22,11 +22,11 @@
 //               that each of the writable registers gets each of the 6 legal
 //               combinations at least once.
 //
-// Dependencies: model_test.h, arch_test.h
+// Dependencies: rvmodel_macros.h, arch_test.h
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
-#include "model_test.h"
+#include "rvmodel_macros.h"
 #include "arch_test.h"
 RVTEST_ISA("RV64I_Zicsr")
 # Test code region

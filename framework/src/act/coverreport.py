@@ -103,12 +103,15 @@ def main() -> None:
 
     report_dir.mkdir(parents=True, exist_ok=True)
 
+    # -suppress vcover-17388
     vcover_cmd = ["vcover", "report", "-details", str(args.ucdb)]
     subprocess.run([*vcover_cmd, "-output", str(full_report)], check=True)
     remove_duplicates_after_second_header(full_report)
 
-    uncovered_report_cmd = [*vcover_cmd, "-below", "100", "-output", str(uncovered_report)]
-    subprocess.run(uncovered_report_cmd, check=True)
-    remove_duplicates_after_second_header(uncovered_report)
+    # Only generate uncovered report if coverage is not 100%
+    if "TOTAL COVERGROUP COVERAGE: 100.00%" not in full_report.read_text():
+        uncovered_report_cmd = [*vcover_cmd, "-below", "100", "-output", str(uncovered_report)]
+        subprocess.run(uncovered_report_cmd, check=True)
+        remove_duplicates_after_second_header(uncovered_report)
 
     report_to_summary(full_report, summary_report)

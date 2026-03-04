@@ -1,0 +1,124 @@
+
+=== Priv
+
+The privileged tests exercise CSRs that are mandatory in each privilege mode.
+They also test mandatory privileged instructions: `ecall`, `ebreak`, `mret`, and `sret`.
+The CSR read/write/set/clear instructions themselves are tested in the
+unprivileged Zicsr tests of <<Zicsr Control/Status Register Instructions>>.
+
+`wfi` is tested in <<Interrupts>> and `sfence.vma` is tested in <<Sv* Virtual Memory>>.
+
+Privileged tests do not test reserved or custom instructions or CSRs because their behavior is UNSPECIFIED.
+Reserved instructions and CSRs are tested in the <<Ssstrict>> Ssstrict tests,
+where they should throw an Illegal Instruction exception if not implemented.
+
+==== Sm Machine-Mode CSRs and Instructions
+
+These test CSRs and privileged instructions in machine mode.
+
+[[t-Sm-coverpoints]]
+.Sm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604[Google Sheet Testplan]
+,===
+
+TODO: Plan how to check WARL, WPRI, WLRL fields.  It seems every CSR needs parameters, either to tell the reference model how they should behave (to generate expected values), or to tell the tests and coverpoints which values are legal to test.
+
+include::norm/Sm_norm_rules.adoc[]
+
+TODO: Many new normative rules have been added since this was written.  Update Sm.yaml.
+
+==== S Supervisor-Mode CSRs and Instructions
+
+These test additional CSRs that exist in supervisor mode, and privileged instructions in supervisor mode.
+
+[[t-S-coverpoints]]
+.S Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=335048477#gid=335048477[Google Sheet Testplan]
+,===
+
+include::norm/S_norm_rules.adoc[]
+
+[NOTE]
+====
+sie_sip_strap_time_constraint is not tested yet.  How to handle timing constraints in certification?
+How to handle interrupts that don't get evaluated immediately after the macro sets them? The
+macro could spin until they fire, but needs to know if they should fire (e.g. not blocked by xstatus.xIE).
+====
+
+
+
+==== U User-Mode CSRs and Instructions
+
+These test additional CSRs that exist in user mode, and privileged instructions in user mode.
+
+[[t-U-coverpoints]]
+.U Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356[Google Sheet Testplan]
+,===
+
+TODO: Incorporate normative rules now that Sm is fully tagged.
+
+==== SmF Floating-Point CSRs
+
+These test additional CSRs that exist when floating-point is supported.
+
+[[t-SmF-coverpoints]]
+.SmF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079[Google Sheet Testplan]
+,===
+
+==== SmV Vector CSRs and Instructions
+
+These test additional CSRs and vset* instructions that exist when vector is supported.
+
+[[t-SmV-coverpoints]]
+.SmV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=416753800#gid=416753800[Google Sheet Testplan]
+,===
+
+==== SmVF Vector Floating-Point CSRs
+
+These test additional CSRs that exist when vector floating-point is supported.
+
+[[t-SmVF-coverpoints]]
+.SmVF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN72ok/edit?gid=1892166886#gid=1892166886[Google Sheet Testplan]
+,===
+
+==== UF User-Mode Floating-Point CSRs
+
+These test additional CSR scenarios that exist when floating-point and user mode are supported.
+
+[[t-UF-coverpoints]]
+.UF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=242878857#gid=242878857[Google Sheet Testplan]
+,===
+
+==== UV User-Mode Vector CSRs
+
+These test additional CSR scenarios that exist when vector and user mode are supported.
+
+[[t-UV-coverpoints]]
+.UV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1488477674#gid=1488477674[Google Sheet Testplan]
+,===
+
+==== Zkr Entropy CSR
+
+These test CSRs when the Zkr entropy extension is supported.
+
+[[t-Zkr-coverpoints]]
+.Zkr Coverpoints
+,===
+
+,===
+
+include::norm/Zkr_norm_rules.adoc[]

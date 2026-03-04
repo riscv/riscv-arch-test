@@ -1,0 +1,34 @@
+
+== Reference Model
+
+Certification may rely on a reference model (simulator) to compute the expected results of a test, such as sum of two numbers in an `add` instruction or the answer for a `fsqrt.d` instruction.  Self-checking tests compare the result from the DUT against the expected result that was precomputed by the reference model and flag mismatches.  Alternatively, the test may be generated with a set of one or more expected results for each test case (without a reference model), and the test can check that the DUT produces one of the expected results.
+
+TODO: Discuss one vs. many reference models. RISC-V International has blessed https://github.com/riscv/sail-riscv[RISC-V Sail] as the golden RISC-V model, so RISC-V Sail is used as the reference model.
+
+=== Deterministic, Nondeterministic, and Unspecified Behaviors
+
+RISC-V feature behavior can be classified as deterministic, nondeterministic, and unspecified.  Deterministic features have a unique expected value for a given configuration, such as the result of `sub` 1 - 2 on RV32.  Nondeterministic features have a fine set of possible outcomes, and might vary unpredictably even on the same DUT.  For example, vector tail-agnostic elements can preserve the input value or propagate all 1s, with no guarantee whether the same instruction has the same behavior on all elements or when executed twice in a row. Unspecified features, such as unimplemented instructions, could do anything, from being ignored, to predictably or unpredictably changing architectural state, to halting and catching fire.
+
+All RISC-V simulators, when properly configured to match the behavior of a DUT, should produce the same answers as the DUT and each other for deterministic features.  For nondeterministic features, they should produce one of the legal outcomes.  For unspecified features, they can do anything.
+
+Self-checking certification tests must check that the result of deterministic features match the reference model.  Nondeterministic features must produce one of the finite set of legal outcomes, which must be provided by the test developer because a reference model only produces a single outcome.  Unspecified features are not tested because there are no wrong answers.
+
+This is harder than it seems because RISC-V has many features whose behaviors are not fully specified.  Many of these features are not yet named, and the set of legal behaviors is not yet enumerated.  https://github.com/riscv/riscv-unified-db[Unified Database] (UDB) is in the process of naming and enumerating all of these features and behaviors to fully describe the behavior of a DUT.  Moreover, no simulator yet is fully configurable to match every feature.  Some simulators, such as Spike, intentionally have a minimal set of configuration options and are hardwired to particular behaviors.
+
+Nevertheless, the RISC-V Sail model is making rapid progress and is aiming to fully implement the ratified RVA23 profile, read a UDB configuration, and support at least the most reasonable behaviors in time for certification.
+
+=== List of Fundamentally Nondeterministic Behaviors
+
+* Mask- and tail-agnostic vector operations
+** Self-checking tests must accept undisturbed and all 1s in each element
+* Traps on misaligned accesses
+** If mtval is written with a nonzero value, it can be any address within the access***
+** When it also causes access fault / misaligned store, Allen has list of 7ish possible outcomes.
+
+If nondeterministic behaviors are tested, the test must accept all legal outcomes.  This is costly, so some nondeterministic behaviors may be untested.  Nevertheless, agnostic vector operations will definitely be tested and accept all legal results.
+
+When possible, the behavior should be made deterministic by a parameter such that the reference model can match the DUT with that parameter setting.
+
+=== List of Theoretically Nondeterministic Behaviors with Configurable Deterministic Implementations
+
+* CSR *WARL* Fields: any legal value could be read, and the value is theoretically nondeterministic and could change from one write to another.  UDB will define configurations with a single sensible behavior (such as all 0s), and we may limit certification to DUTs that implement a reasonable configuration.

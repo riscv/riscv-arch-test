@@ -1,0 +1,77 @@
+[[manual:ctp,RISC-V Certification Test Plan]]
+= RISC-V Certification Test Plan
+include::../docs-resources/global-config.adoc[]
+:description: Certification Test Plan
+:colophon:
+:preface-title: Preamble
+:appendix-caption: Appendix
+:imagesoutdir: {docdir}/../build/images-out
+:imagesdir: ../docs-resources/images
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+ifdef::draft-watermark[]
+:page-background-image: image:/draft.png[opacity=20%]
+endif::[]
+:back-cover-image: image:risc-v_logo.svg[opacity=25%]
+// Settings:
+:experimental:
+:reproducible:
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:sectnums:
+:sectnumlevels: 5
+:toc: left
+:toclevels: 5
+:source-highlighter: rouge
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:data-uri:
+:hide-uri-scheme:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+:testplansdir: testplans
+
+// :autofit-option:
+// :base-font-size-min: 0
+
+_Contributors to all versions of the spec in alphabetical order_
+
+* Allen Baum
+* Jordan Carlin
+* James Kaden Cassidy
+* David Harris
+* Georgia Tai
+* Mike Thompson
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+This Certification Test Plan (CTP) is a work in progress.  It describes the coverpoints and tests
+being developed by the RISC-V Certification Steering Committee.  It is intended to be read in
+conjunction with the Certification Requirements Documents (CRDs) defining the features in each
+certificate, and the https://github.com/riscv/riscv-arch-test[riscv-arch-test] repository
+that contains information about how to use and contribute to the tests.
+
+include::intro.adoc[]
+include::cert.adoc[]
+include::profiles.adoc[]
+include::strategy.adoc[]
+include::req.adoc[]
+include::rvmodel.adoc[]
+include::coverage.adoc[]
+include::ref.adoc[]
+
+include::unpriv.adoc[]
+include::priv.adoc[]
+include::nonisa.adoc[]
+include::params.adoc[]
+include::examples.adoc[]

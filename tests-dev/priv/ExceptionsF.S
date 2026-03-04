@@ -22,28 +22,6 @@ main:
     jal ra, fp_instructions
 
 /////////////////////////////////
-// cp_badfrm
-/////////////////////////////////
-
-    // Test floating point instructions function with:
-    // mstatus.FS = 1, frm = 5
-    li  a0, 1
-    li  a1, 5
-    jal ra, fp_instructions
-
-    // Test floating point instructions function with:
-    // mstatus.FS = 1, frm = 6
-    li  a0, 1
-    li  a1, 6
-    jal ra, fp_instructions
-
-    // Test floating point instructions function with:
-    // mstatus.FS = 1, frm = 7
-    li  a0, 1
-    li  a1, 7
-    jal ra, fp_instructions
-
-/////////////////////////////////
 // cp_mstatus_fs_legal
 /////////////////////////////////
 

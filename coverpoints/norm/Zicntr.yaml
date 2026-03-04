@@ -1,0 +1,14 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: zihpm_op_sz_mode_acc
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_rdcycle_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_rdtime_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]
+
+  - name: zicntr_rdinstret_op
+    coverpoint: ["Zicntr_csrrs_cg/{cp_cntr}"]

@@ -1,0 +1,3 @@
+Instruction,Type,RV32,RV64,cp_cntr
+csrrs,CSR,x,x,x
+csrrc,CSR,x,x,x

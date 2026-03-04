@@ -1,0 +1,58 @@
+
+=== Endian
+
+==== EndianSm Machine-Mode Endianness
+
+[[t-EndianSm-coverpoints]]
+.EndianSm Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=220856688#gid=220856688[Google Sheet Testplan]
+,===
+
+==== EndianS Supervisor-Mode Endianness
+
+[[t-EndianS-coverpoints]]
+.EndianS Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=561554401#gid=561554401[Google Sheet Testplan]
+,===
+
+==== EndianU User-Mode Endianness
+
+[[t-EndianU-coverpoints]]
+.EndianU Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=0#gid=0[Google Sheet Testplan]
+,===
+
+==== EndianZaamo Endianness for AMOs
+
+[[t-EndianZaamo-coverpoints]]
+.EndianZaamo Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=470611865#gid=470611865[Google Sheet Testplan]
+,===
+
+==== EndianZalrsc Endianness for LR/SC
+
+[[t-EndianZalrsc-coverpoints]]
+.EndianZalrsc Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1511292549#gid=1511292549[Google Sheet Testplan]
+,===
+
+==== EndianF Endianness for Floats
+
+[[t-EndianF-coverpoints]]
+.EndianF Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1999049510#gid=1999049510[Google Sheet Testplan]
+,===
+
+==== EndianZca Endianness for Compressed Instructions
+
+[[t-EndianZca-coverpoints]]
+.EndianZca Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=547928668#gid=547928668[Google Sheet Testplan]
+,===

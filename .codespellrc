@@ -1,3 +1,2 @@
 [codespell]
-ignore-words-list = hart, vill, vor, FPR, fpr, mone, sie, fle, stip, sxl, VAs, ExceptionsS
-skip = ctp/*.adoc, tests/env/arch_test.h
+ignore-words-list = hart, vill, vor, FPR, fpr, mone, sie, fle, stip, sxl, VAs, ExceptionsS, rouge, Synopsys, ExtInt

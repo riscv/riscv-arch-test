@@ -1,0 +1,257 @@
+normative_rule_definitions:
+  # An instruction-address-misaligned exception is generated on a taken branch or
+  # unconditional jump if the target address is not IALIGN-bit aligned. This
+  # exception is reported on the branch or jump instruction, not on the target
+  # instruction.
+  - name: taken_cti_misaligned_exc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
+      ]
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint: ["ExceptionsSm/cp_illegal_instruction (etc)"]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  - name: mcause_exccode_enc
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["TODO"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["TODO"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["TODO"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_M_mode
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # Note that load and load-reserved instructions generate load exceptions
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: [""]
+
+  # No instruction-address-misaligned exception is generated for a conditional
+  # branch that is not taken.
+  - name: cond_br_no_ia_misaligned_exc_not_taken
+    coverpoint: ["ExceptionsSm_cg/cp_instr_adr_misaligned_branch_nottaken"]
+
+  # If an instruction access-fault or instruction page-fault exception occurs on the
+  # target of a jump or taken branch, the exception is reported on the target
+  # instruction, not on the jump or branch instruction.
+  - name: ia_fault_exc_on_target
+    coverpoint: ["ExceptionsSm_cg/cp_instr_access_fault, TODO for page fault"]
+
+  - name: branch_misaligned_taken_exception
+    coverpoint: ["ExceptionsSm_cg/cp_instr_adr_misaligned_branch"]
+  - name: branch_misaligned_untaken_exception
+    coverpoint: ["ExceptionsSm_cg/cp_instr_adr_misaligned_branch_nottaken"]
+  - name: jump_misaligned_exception
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
+      ]
+
+  # loads and stores whose effective addresses are naturally aligned shall not raise
+  # an address-misaligned exception.
+  - name: ldst_no_exc_aligned
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # Loads with a destination of x0 must still raise any exceptions and cause any
+  # other side effects even though the load value is discarded.
+  - name: load_exc_x0
+    coverpoint: ["TODO"]
+
+  # Loads and stores whose effective address is not naturally aligned to the
+  # referenced datatype (i.e., the effective address is not divisible by the size of
+  # the access in bytes) have behavior dependent on the EEI.
+  - name: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # misaligned loads and stores can be handled in hardware
+  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+  # via an invisible trap into the execution environment implementation
+  - name: MISALIGNED_LDST_INVISIBLE_TRAP
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # combination of hardware and invisible trap depending on address.
+  - name: MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # loads and stores that are not naturally aligned may either complete execution
+  # successfully or raise an exception.
+  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # When an EEI does not guarantee misaligned loads and stores are handled
+  # invisibly, the EEI must define if exceptions caused by address misalignment
+  # result in a contained trap (allowing software running inside the execution
+  # environment to handle the trap) or a fatal trap (terminating execution).
+  - name: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # The exception raised can be either an address-misaligned exception or an
+  # access-fault exception. For a memory access that would otherwise be able to
+  # complete except for the misalignment, an access-fault exception can be raised
+  # instead of an address-misaligned exception if the misaligned access should not
+  # be emulated, e.g., if accesses to the memory region have side effects.
+  - name: ldst_addr_misaligned_or_access_fault_exc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # naturally aligned loads and stores are guaranteed to execute atomically
+  - name: ldst_atomicity_for_aligned
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # The ECALL instruction is used to make a service request to the execution
+  # environment.
+  - name: ecall_op
+    coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
+
+  # The EBREAK instruction is used to return control to a debugging environment.
+  - name: ebreak_op
+    coverpoint: ["ExceptionsSm_cg/cp_breakpoint_m"]
+
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint:
+      [
+        "ExceptionsSm/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
+      ]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  - name: mcause_exccode_enc
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["TODO show mtvec does not affect synchronous exceptions"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["TODO"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["TODO"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_M_mode
+    coverpoint:
+      [
+        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+      ]
+
+  # If an instruction may raise multiple synchronous exceptions, the decreasing
+  # priority order of &lt;&lt;norm:exc_priority&gt;&gt; indicates which exception is
+  # taken and reported in mcause. Load/store/AMO address-misaligned exceptions may
+  # have either higher or lower priority than load/store/AMO page-fault and
+  # access-fault exceptions.
+  - name: mcause_exccode_pri
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
+      ]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
+  # 1|During instruction address translation: First encountered page fault or access
+  # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
+  # 8,9,11 3 3|Illegal instruction Instruction address misaligned Environment call
+  # Environment break Load/store/AMO address breakpoint¶|4,6|Optionally:
+  # Load/store/AMO address misaligned¶|13, 15, 5, 7|During address translation for
+  # an explicit memory access: First encountered page fault or access
+  # fault¶|5,7|With physical address for an explicit memory access: Load/store/AMO
+  # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
+  # misaligned ===
+  - name: exc_priority
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
+      ]

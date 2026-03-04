@@ -7,9 +7,9 @@
 
 """cp_custom_fence_i coverpoint generator."""
 
-from testgen.coverpoints.coverpoints import add_coverpoint_generator
-from testgen.data.test_data import TestData
-from testgen.utils.common import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.coverpoints.registry import add_coverpoint_generator
+from testgen.data.state import TestData
 
 
 def encode_addi(rd: int, rs1: int, imm: int) -> int:
@@ -43,12 +43,12 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
 
         test_lines.extend(
             [
-                test_data.add_testcase("cp_custom_fencei"),
                 f"# Testcase: {desc}",
                 f"LI(x{reg1}, 3)",
                 f"LA(x{reg3}, {label})",
                 load_int_reg(f"addi x{reg1}, x{reg1}, {add_val}", reg2, encoded_instr, test_data),
                 f"sw x{reg2}, 0(x{reg3})",
+                test_data.add_testcase(desc, "cp_custom_fencei"),
                 f"{fence_instr} # {desc}",
                 f"{label}:",
                 f"addi x{reg1}, x{reg1}, 1 # original code",

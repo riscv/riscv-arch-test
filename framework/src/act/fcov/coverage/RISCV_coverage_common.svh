@@ -77,6 +77,11 @@
   `define FLEN 32
 `endif
 
+///////////////////////////////////////////////////
+// VECTOR-RELATED MACROS
+// TODO: refactor to be generated based on config
+///////////////////////////////////////////////////
+
 // VLEN as usable numbers, ifdef contents should be defined in config
 `ifdef VLEN65536
   `define VLEN 65536
@@ -115,7 +120,7 @@
   `ifdef VX32_COVERAGE
     `VX32_COVERAGE_NOT_SUPPORTED_WITH_VLEN16 // this is meant to throw an error letting the user know coverage is not supported in this case
   `endif
-`else
+`elsif VLEN8
   `define VLEN 8
   `ifdef VX64_COVERAGE
     // the missing `define is intentional
@@ -146,6 +151,19 @@
   `define SEW8_SUPPORTED
 `endif
 
+`ifdef VLS64_COVERAGE
+  `define SEW64_SUPPORTED
+`endif
+`ifdef VLS32_COVERAGE
+  `define SEW32_SUPPORTED
+`endif
+`ifdef VLS16_COVERAGE
+  `define SEW16_SUPPORTED
+`endif
+`ifdef VLS8_COVERAGE
+  `define SEW8_SUPPORTED
+`endif
+
 // ELEN (max SEW) definition
 `ifdef VX64_COVERAGE
   `define ELEN64
@@ -161,19 +179,18 @@
   `endif
 `endif
 
-// Get load store/floating point coverage
-
-`ifdef VX64_COVERAGE
-  `define VLS64_COVERAGE
-`endif
-`ifdef VX32_COVERAGE
-  `define VLS32_COVERAGE
-`endif
-`ifdef VX16_COVERAGE
-  `define VLS16_COVERAGE
-`endif
-`ifdef VX8_COVERAGE
-  `define VLS8_COVERAGE
+`ifdef VLS64_COVERAGE
+  `define ELEN64
+`else
+  `ifdef VLS32_COVERAGE
+    `define ELEN32
+  `else
+    `ifdef VLS16_COVERAGE
+      `define ELEN16
+    `else
+      `define ELEN8
+    `endif
+  `endif
 `endif
 
 // edge cases
@@ -222,6 +239,7 @@
     `define LMULf2_SUPPORTED
   `endif
 `endif
+
 
 // Set register type length
 `define XLEN_BITS         bit        [`XLEN-1:0]

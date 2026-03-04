@@ -1,0 +1,9 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: STVEC_MODE_DIRECT
+    coverpoint: ["TODO"]
+    effect: ["TODO"]
+  - name: STVEC_MODE_VECTORED
+    coverpoint: ["TODO"]
+    effect: ["TODO"]

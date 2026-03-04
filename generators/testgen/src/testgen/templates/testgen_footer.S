@@ -5,10 +5,10 @@ RVTEST_CODE_END
 // Create scratch data sections and label for test data
 RVTEST_DATA_BEGIN
 
-    // Test data
+// Test data
 @TEST_DATA@
 
-    // Testcase strings
+// Testcase strings
 @TESTCASE_STRINGS@
 
 // End of test data section and model specific data

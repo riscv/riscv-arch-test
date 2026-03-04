@@ -9,7 +9,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`include "coverage/RISCV_decode_pkg.svh"
 `include "coverage/RISCV_disassemble_helpers.svh"
 
 function string disassemble (logic [31:0] instrRaw);
@@ -229,6 +228,36 @@ function string disassemble (logic [31:0] instrRaw);
     AMOSWAP_D: $sformat(decoded, "amoswap.d %s, %s, (%s)", rd, rs2, rs1);
     AMOXOR_D:  $sformat(decoded, "amoxor.d %s, %s, (%s)", rd, rs2, rs1);
   `endif
+
+    // Zabha Extension
+    AMOADD_B:  $sformat(decoded, "amoadd.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOAND_B:  $sformat(decoded, "amoand.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAX_B:  $sformat(decoded, "amomax.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAXU_B: $sformat(decoded, "amomaxu.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMIN_B:  $sformat(decoded, "amomin.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOMINU_B: $sformat(decoded, "amominu.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOOR_B:   $sformat(decoded, "amoor.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOSWAP_B: $sformat(decoded, "amoswap.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOXOR_B:  $sformat(decoded, "amoxor.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOADD_H:  $sformat(decoded, "amoadd.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOAND_H:  $sformat(decoded, "amoand.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAX_H:  $sformat(decoded, "amomax.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMAXU_H: $sformat(decoded, "amomaxu.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMIN_H:  $sformat(decoded, "amomin.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOMINU_H: $sformat(decoded, "amominu.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOOR_H:   $sformat(decoded, "amoor.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOSWAP_H: $sformat(decoded, "amoswap.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOXOR_H:  $sformat(decoded, "amoxor.h %s, %s, (%s)", rd, rs2, rs1);
+
+    // Zacas Extension
+    AMOCAS_B:  $sformat(decoded, "amocas.b %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_H:  $sformat(decoded, "amocas.h %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_W:  $sformat(decoded, "amocas.w %s, %s, (%s)", rd, rs2, rs1);
+    AMOCAS_D:  $sformat(decoded, "amocas.d %s, %s, (%s)", rd, rs2, rs1);
+  `ifdef XLEN64
+    AMOCAS_Q:  $sformat(decoded, "amocas.q %s, %s, (%s)", rd, rs2, rs1);
+  `endif
+
     // Zalrsc Extension
     LR_W:      $sformat(decoded, "lr.w %s, (%s)", rd, rs1);
     SC_W:      $sformat(decoded, "sc.w %s, %s, (%s)", rd, rs2, rs1);
@@ -380,6 +409,9 @@ function string disassemble (logic [31:0] instrRaw);
     // Zfh + Q Extensions
     FCVT_H_Q: $sformat(decoded,"fcvt.h.q %s, %s, %s", fd, fs1, get_frm_string(frm));
     FCVT_Q_H: $sformat(decoded,"fcvt.q.h %s, %s, %s", fd, fs1, get_frm_string(frm));
+    // Zfbfmin Extension
+    FCVT_BF16_S:  $sformat(decoded,"fcvt.bf16.s %s, %s, %s", fd, fs1, get_frm_string(frm));
+    FCVT_S_BF16:  $sformat(decoded,"fcvt.s.bf16 %s, %s, %s", fd, fs1, get_frm_string(frm));
     // Zfa Extension
     FLEQ_S:     $sformat(decoded, "fleq.s %s, %s, %s", rd, fs1, fs2);
     FLI_S:      $sformat(decoded, "fli.s %s, %s", fd, rs1);

@@ -1,0 +1,11 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
+  # to senvcfg. The CBZE field controls execution of the cache block zero
+  # instruction (CBO.ZERO) in U-mode. Execution of CBO.ZERO in U-mode is enabled
+  # only if execution of the instruction is enabled for use in S-mode and CBZE is
+  # set to 1; otherwise, an illegal-instruction exception is raised. When the Zicboz
+  # extension is not implemented, CBZE is read-only zero.
+  - name: senvcfg_cbze
+    coverpoint: [""]

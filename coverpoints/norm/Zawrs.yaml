@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: Zawrs_wrs-nto_stall_exec
+    coverpoint: [""]
+
+  - name: Zawrs_wrs-sto_stall_duration
+    coverpoint: [""]
+
+  - name: Zawrs_stall_terminate
+    coverpoint: [""]
+
+  - name: Zawrs_exec_resume_rules
+    coverpoint: [""]
+
+  - name: Zawrs_priv_illegal_instr_excp
+    coverpoint: [""]
+
+  - name: Zawrs_virtual_instr_excp
+    coverpoint: [""]

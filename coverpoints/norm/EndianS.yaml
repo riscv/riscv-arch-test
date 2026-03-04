@@ -1,0 +1,75 @@
+normative_rule_definitions:
+  # The UBE bit is a WARL field that controls the endianness of explicit memory
+  # accesses made from U-mode, which may differ from the endianness of memory
+  # accesses in S-mode. An implementation may make UBE be a read-only field that
+  # always specifies the same endianness as for S-mode.
+  - names: [sstatus_ube_sz, sstatus_ube_acc, sstatus_ube_op]
+    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+
+  # UBE has no effect on instruction fetches, which are implicit memory accesses
+  # that are always little-endian.
+  - name: sstatus_ube_implicit
+    coverpoint: ["EndianS/cp_sstatus_ube_endianness_lw"]
+
+  # The EEI will define whether the memory system is little-endian or big-endian.
+  - name: ENDIANNESS_LITTLE_OR_BIG
+    coverpoint: [""]
+
+  # In RISC-V, endianness is byte-address invariant.
+  - name: ldst_endian_byte_invariant
+    coverpoint: [""]
+
+  # In a system for which endianness is byte-address invariant, the following
+  # property holds: if a byte is stored to memory at some address in some
+  # endianness, then a byte-sized load from that address in any endianness returns
+  # the stored value.
+  - name: ldst_endian_byte_op
+    coverpoint: [""]
+
+  # In a little-endian configuration, multibyte stores write the least-significant
+  # register byte at the lowest memory byte address, followed by the other register
+  # bytes in ascending order of their significance. Loads similarly transfer the
+  # contents of the lesser memory byte addresses to the less-significant register
+  # bytes.
+  - name: ldst_little_endian_op
+    coverpoint: [""]
+
+  # In a big-endian configuration, multibyte stores write the most-significant
+  # register byte at the lowest memory byte address, followed by the other register
+  # bytes in descending order of their significance. Loads similarly transfer the
+  # contents of the greater memory byte addresses to the less-significant register
+  # bytes.
+  - name: ldst_big_endian_op
+    coverpoint: [""]
+
+  # When MPRV=0, explicit memory accesses behave as normal, using the translation
+  # and protection mechanisms of the current privilege mode. When MPRV=1, load and
+  # store memory addresses are translated and protected, and endianness is applied,
+  # as though the current privilege mode were set to MPP.
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["EndianS/cp_mstatus_mprv_sbe_endianness"]
+
+  # If S-mode is not supported, SBE is read-only 0. Otherwise, SBE controls whether
+  # explicit load and store memory accesses made from S-mode are little-endian
+  # (SBE=0) or big-endian (SBE=1).
+  - name: mstatus_sbe_op
+    coverpoint: [""]
+
+  # For implicit accesses to supervisor-level memory management data structures,
+  # such as page tables, endianness is always controlled by SBE.
+  - name: mstatus_sbe_implicit
+    coverpoint: [""]
+
+  # For implicit accesses to supervisor-level memory management data structures,
+  # such as page tables, endianness is always controlled by SBE. Since changing SBE
+  # alters the implementation’s interpretation of these data structures, if any such
+  # data structures remain in use across a change to SBE, M-mode software must
+  # follow such a change to SBE by executing an SFENCE.VMA instruction with rs1=x0
+  # and rs2=x0.
+  - name: mstatus_sbe_change_fence
+    coverpoint: [""]
+
+  # If S-mode is supported, an implementation may make SBE be a read-only copy of
+  # MBE.
+  - name: mstatus_sbe_rocopy
+    coverpoint: [""]

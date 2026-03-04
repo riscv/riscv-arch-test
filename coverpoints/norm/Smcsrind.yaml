@@ -1,0 +1,84 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: csr_access
+    coverpoint: [""]
+
+  - name: select_value_separate_address_space
+    coverpoint: [""]
+
+  - name: select_value_unrelated
+    coverpoint: [""]
+
+  - name: csrs_alias
+    coverpoint: [""]
+
+  - name: miph_csr_number
+    coverpoint: [""]
+
+  - name: miselect_op
+    coverpoint: [""]
+
+  - name: miselect_value_range
+    coverpoint: [""]
+
+  - name: miselect_WARL
+    coverpoint: [""]
+
+  - name: miselect_min_sz
+    coverpoint: [""]
+
+  - name: miselect_msb_op
+    coverpoint: [""]
+
+  - name: mireg_access_on_legal_miselect
+    coverpoint: [""]
+
+  - name: mireg_access_behaviour
+    coverpoint: [""]
+
+  - name: siselect_min_range
+    coverpoint: [""]
+
+  - name: siselect_msb_op
+    coverpoint: [""]
+
+  - name: sireg_access_on_illegal_siselect
+    coverpoint: [""]
+
+  - name: sireg_access_on_legal_siselect
+    coverpoint: [""]
+
+  - name: sireg_access_behaviour
+    coverpoint: [""]
+
+  - name: sscsrind_smode_csrs_sz
+    coverpoint: [""]
+
+  - name: vsiselect_min_range
+    coverpoint: [""]
+
+  - name: vsiselect_msb_op
+    coverpoint: [""]
+
+  - name: sscsrind_virtual_inst_fault
+    coverpoint: [""]
+
+  - name: vsireg_access_on_legal_vsiselect
+    coverpoint: [""]
+
+  - name: vsireg_access_behaviour
+    coverpoint: [""]
+
+  - name: vsmode_virtual_inst_fault
+    coverpoint: [""]
+
+  - name: sscsrind_vsmode_csrs_sz
+    coverpoint: [""]
+
+  - name: sscsrind_csrs_access_control
+    coverpoint: [""]
+
+  - name: hypervisor_impl_csrs_access_control
+    coverpoint: [""]

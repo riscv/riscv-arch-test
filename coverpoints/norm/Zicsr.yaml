@@ -1,0 +1,15 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: csrrc_op
+    coverpoint: ["Zicsr_csrrc_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrci_op
+    coverpoint: ["Zicsr_csrrci_cg/{cp_rd, cp_uimm_5}"]
+  - name: csrrs_op
+    coverpoint: ["Zicsr_csrrs_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrsi_op
+    coverpoint: ["Zicsr_csrrsi_cg/{cp_rd, cp_uimm_5}"]
+  - name: csrrw_op
+    coverpoint: ["Zicsr_csrrw_cg/{cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: csrrwi_op
+    coverpoint: ["Zicsr_csrrwi_cg/{cp_rd, cp_uimm_5}"]

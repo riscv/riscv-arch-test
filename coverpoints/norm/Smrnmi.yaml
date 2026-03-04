@@ -1,0 +1,40 @@
+normative_rule_definitions:
+  # The MNRET instruction, provided by the Smrnmi extension, sets the MDT bit to 0
+  # if the new privilege mode is not M. If it is U, VS, or VU, then sstatus.SDT is
+  # also set to 0.
+  - name: sstatus_sdt_clr_mnret
+    coverpoint: [""]
+
+  # When the Smrnmi extension is implemented, a trap caused by an RNMI is not
+  # considered an unexpected trap irrespective of the state of the MDT bit.
+  - name: trap_unexp_rnmi
+    coverpoint: [""]
+
+  # a trap that occurs when executing in M-mode with mnstatus.NMIE set to 0 is an
+  # unexpected trap.
+  - name: trap_unexp_mnstatus_nmie_0
+    coverpoint: [""]
+
+  # In the event of a unexpected trap, the handling is as follows: When the Smrnmi
+  # extension is implemented and mnstatus.NMIE is 1, the hart traps to the RNMI
+  # handler. To deliver this trap, the mnepc and mncause registers are written with
+  # the values that the unexpected trap would have written to the mepc and mcause
+  # registers respectively. The privilege mode information fields in the mnstatus
+  # register are written to indicate M-mode and its NMIE field is set to 0.
+  - name: trap_unexp_hndl_rnmi
+    coverpoint: [""]
+
+  # In the event of a unexpected trap, the handling is as follows: When the Smrnmi
+  # extension is not implemented, or if the Smrnmi extension is implemented and
+  # mnstatus.NMIE is 0, the hart enters a critical-error state without updating any
+  # architectural state, including the pc. This state involves ceasing execution,
+  # disabling all interrupts (including NMIs), and asserting a critical-error signal
+  # to the platform.
+  - name: trap_unexp_hndl_no_rnmi
+    coverpoint: [""]
+
+  # The actions performed by the platform when a hart asserts a critical-error
+  # signal are platform-specific. The range of possible actions include restarting
+  # the affected hart or restarting the entire platform, among others.
+  - name: critical-error
+    coverpoint: [""]

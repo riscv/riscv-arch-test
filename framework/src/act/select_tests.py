@@ -11,6 +11,8 @@ from typing import Any
 
 from act.parse_test_constraints import TestMetadata
 
+PRIV_EXTENSIONS = {"Sm", "S", "U"}
+
 
 def check_test_params(test_params: dict[str, Any], config_params: dict[str, Any]) -> bool:
     """Check if all parameters in test_params match those in config_params."""
@@ -21,24 +23,22 @@ def check_test_params(test_params: dict[str, Any], config_params: dict[str, Any]
 
 
 def select_tests(
-    test_dict: dict[str, TestMetadata], implemented_extensions: set[str], config_params: dict[str, Any]
+    test_dict: dict[str, TestMetadata],
+    implemented_extensions: set[str],
+    config_params: dict[str, Any],
+    *,
+    include_priv_tests: bool = True,
 ) -> dict[str, TestMetadata]:
     """Select tests that match the UDB configuration."""
     selected_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
+        # Skip privileged tests if disabled
+        if not include_priv_tests and not test_metadata.required_extensions.isdisjoint(PRIV_EXTENSIONS):
+            continue
         # Check if all required extensions are implemented
-        if (test_metadata.required_extensions).issubset(implemented_extensions):
+        if test_metadata.required_extensions.issubset(implemented_extensions):
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):
                 selected_tests[test_name] = test_metadata
     return selected_tests
-
-
-def get_common_tests(test_dict: dict[str, TestMetadata], xlen: int, e_ext: bool) -> dict[str, TestMetadata]:
-    "Get tests that do not depend on configuration and match the given XLEN."
-    common_tests: dict[str, TestMetadata] = {}
-    for test_name, test_metadata in test_dict.items():
-        if not test_metadata.config_dependent and test_metadata.mxlen == xlen and test_metadata.e_ext == e_ext:
-            common_tests[test_name] = test_metadata
-    return common_tests

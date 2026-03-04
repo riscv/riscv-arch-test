@@ -24,9 +24,13 @@ class InstructionParams:
 
     # Integer registers
     rs1: int | None = None
+    rs1_is_pair: bool = False
     rs2: int | None = None
+    rs2_is_pair: bool = False
     rs3: int | None = None
+    rs3_is_pair: bool = False
     rd: int | None = None
+    rd_is_pair: bool = False
     temp_reg: int | None = None  # Temporary register for use in test setup/teardown
 
     # Integer register values
@@ -64,16 +68,21 @@ class InstructionParams:
     def used_int_regs(self) -> list[int]:
         """Return list of all integer registers used in this test."""
         regs: list[int] = []
-        for reg in [self.rs1, self.rs2, self.rs3, self.rd, self.temp_reg]:
+        for reg, reg_is_pair in [
+            (self.rs1, self.rs1_is_pair),
+            (self.rs2, self.rs2_is_pair),
+            (self.rs3, self.rs3_is_pair),
+            (self.rd, self.rd_is_pair),
+            (self.temp_reg, False),
+        ]:
             if reg is not None:
                 regs.append(reg)
+                if reg_is_pair:
+                    regs.append(reg + 1)
         return regs
 
     @property
     def used_float_regs(self) -> list[int]:
         """Return list of all float registers used in this test."""
-        regs: list[int] = []
-        for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg]:
-            if reg is not None:
-                regs.append(reg)
+        regs: list[int] = [reg for reg in [self.fs1, self.fs2, self.fs3, self.fd, self.temp_freg] if reg is not None]
         return regs

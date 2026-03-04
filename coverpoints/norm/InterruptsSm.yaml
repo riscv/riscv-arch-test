@@ -1,0 +1,176 @@
+normative_rule_definitions:
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The Interrupt bit in the mcause register is set if the trap was caused by an
+  # interrupt.
+  - name: mcause_intr_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  - name: mcause_exccode_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_M_mode
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["InterruptsSm_cg/cp_vectored"]
+
+  # Global interrupt-enable bits, MIE and SIE, are provided for M-mode and S-mode
+  # respectively. When a hart is executing in privilege mode x, interrupts are
+  # globally enabled when xIE=1 and globally disabled when xIE=0.
+  - names: [mstatus_mie_op]
+    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+
+  # each privilege mode x that can respond to interrupts has a two-level stack of
+  # interrupt-enable bits and privilege modes. xPIE holds the value of the
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous
+  # privilege mode.
+  - names: [mstatus_xpie_op, mstatus_xpp_op]
+    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
+  # the value of xIE; xIE is set to 0; and xPP is set to y.
+  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+    coverpoint: ["InterruptsSm_cg/cp_interupts"]
+
+  # The TW (Timeout Wait) bit is a WARL field that supports intercepting the WFI
+  # instruction (see &lt;&lt;wfi&gt;&gt;).
+  - name: mstatus_tw_warl
+    coverpoint: ["InterruptsSm_cg/cp_wfi"]
+
+  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
+  # interrupt causes only, while bits 16 and above are designated for platform use.
+  - name: mip_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # Interrupt cause number i (as reported in CSR mcause, &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both mip and mie. Bits 15:0 are allocated to standard
+  # interrupt causes only, while bits 16 and above are designated for platform use.
+  - name: mie_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
+  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
+  - name: mip_std_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # The standard portions (bits 15:0) of the mip and mie registers are formatted as
+  # shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
+  - name: mie_std_enc
+    coverpoint: ["InterruptsSm/cp_priority"]
+
+  # If interrupt i can become pending but bit i in mip is read-only, the
+  # implementation must provide some other mechanism for clearing the pending
+  # interrupt.
+  - name: mip_bits_rdonly_op
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # Bits mip.MEIP and mie.MEIE are the interrupt-pending and interrupt-enable bits
+  # for machine-level external interrupts.
+  - names: [mip_meip_op, mie_meie_op]
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # MEIP is read-only in mip, and is set and cleared by a platform-specific
+  # interrupt controller.
+  - name: mip_meip_rdonly
+    coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_mei"]
+
+  # Bits mip.MTIP and mie.MTIE are the interrupt-pending and interrupt-enable bits
+  # for machine timer interrupts.
+  - names: [mip_mtip_op, mie_mtie_op]
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # MTIP is read-only in the mip register, and is cleared by writing to the
+  # memory-mapped machine-mode timer compare register.
+  - name: mip_mtip_rdonly
+    coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_mti"]
+
+  # Bits mip.MSIP and mie.MSIE are the interrupt-pending and interrupt-enable bits
+  # for machine-level software interrupts.
+  - names: [mip_msip_op, mie_msie_op]
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # MSIP is read-only in mip, and is written by accesses to memory-mapped control
+  # registers, which are used to provide machine-level interprocessor interrupts.
+  - name: mip_msip_rdonly
+    coverpoint: ["Sm_cg/cp_mcsr_access/mip, InterruptsSm/trigger_msi"]
+
+  # A hart's memory-mapped msip register is a 32-bit read/write register
+  - names: [msip_sz, msip_acc]
+    coverpoint: ["InterruptsSm/trigger_msi"]
+
+  # bits 31--1 read as zero and bit 0 contains the MSIP bit.
+  - name: msip_enc
+    coverpoint: ["InterruptsSm/cp_trigger_msi, TODO read and record MSIP reg"]
+
+  # When the memory-mapped msip register changes, it is guaranteed to be reflected
+  # in mip.MSIP eventually, but not necessarily immediately.
+  - name: msip_update_max_time
+    coverpoint: ["InterruptsSm/cp_trigger_msi"]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg.
+  - name: intr_mip_mie_op
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg. These conditions
+  # for an interrupt trap to occur must be evaluated in a bounded amount of time
+  # from when an interrupt becomes, or ceases to be, pending in mip,
+  - name: intr_mip_mie_bounded_time
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg. be evaluated
+  # immediately following the execution of an xRET instruction or an explicit write
+  # to a CSR on which these interrupt trap conditions expressly depend (including
+  # mip, mie, mstatus, and mideleg).
+  - name: intr_mip_mie_xret_csrwr
+    coverpoint: ["InterruptsSm/cp_interrupts"]
+
+  # Multiple simultaneous interrupts destined for M-mode are handled in the
+  # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
+  - name: intr_M_mode_pri
+    coverpoint: ["InterruptsSm/cp_priority"]

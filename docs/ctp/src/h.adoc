@@ -1,0 +1,256 @@
+
+=== H Hypervisor
+
+The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, endian, and virtual memory.
+
+[[t-H-normative-rules]]
+.Hypervisor Normative Rules
+***
+
+==== H Hypervisor CSRs and Instructions
+
+[[t-H-coverpoints]]
+.H Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262865576#gid=262865576[Google Sheet Testplan]
+,===
+
+==== ExceptionsH Hypervisor Exceptions
+
+[[t-ExceptionsH-coverpoints]]
+.ExceptionsH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1980169189#gid=1980169189[Google Sheet Testplan]
+,===
+
+==== ExceptionsHV Hypervisor Vector Exceptions
+
+[[t-ExceptionsHV-coverpoints]]
+.ExceptionsHV Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552219666#gid=552219666[Google Sheet Testplan]
+,===
+
+==== InterruptsH Hypervisor Interrupts
+
+[[t-InterruptsH-coverpoints]]
+.InterruptsH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552831967#gid=552831967[Google Sheet Testplan]
+,===
+
+==== HV Hypervisor Vector CSRs
+
+[[t-HV-coverpoints]]
+.HV Coverpoints
+,===
+***[Google Sheet Testplan]
+,===
+
+
+==== EndianH Hypervisor Endianness
+
+[[t-EndianH-coverpoints]]
+.EndianH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=923631685#gid=923631685[Google Sheet Testplan]
+,===
+
+==== ZicntrH Hypervisor Counters
+
+[[t-ZicntrH-coverpoints]]
+.ZicntrH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2079344243#gid=2079344243[Google Sheet Testplan]
+,===
+
+[NOTE]
+====
+ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is needed.
+====
+
+==== PMPH Hypervisor Physical Memory Protection
+
+[[t-PMPH-coverpoints]]
+.PMPH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=161540329#gid=161540329[Google Sheet Testplan]
+,===
+
+==== SvH Hypervisor 2-Stage Virtual Memory
+
+[[t-SvH-coverpoints]]
+.SvH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=747120884#gid=747120884[Google Sheet Testplan]
+,===
+
+==== SvHZicbo Hypervisor VirtMem + Cache Block Operations
+
+[[t-SvHZicbo-coverpoints]]
+.SvHZicbo Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128[Google Sheet Testplan]
+,===
+
+==== Shcounterenw Writable Counter Enables
+
+[[t-Shcounterenw-coverpoints]]
+.Shcounterenw Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=359491363#gid=359491363[Google Sheet Testplan]
+,===
+
+==== Shvsatpa Virtual Memory Modes Supported
+
+[[t-Shvsatpa-coverpoints]]
+.Shvsatpa Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1777147736#gid=1777147736[Google Sheet Testplan]
+,===
+
+==== Shgatpa Virtual Memory x4 Modes Supported
+
+[[t-Shgatpa-coverpoints]]
+.Shgatpa Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=262220701#gid=262220701[Google Sheet Testplan]
+,===
+
+==== Shvstvecd VS-Mode Direct Vectors
+
+[[t-Shvstvecd-coverpoints]]
+.Shvstvecd Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1109621355#gid=1109621355[Google Sheet Testplan]
+,===
+
+==== Shvstvala VS-Mode Trap Address
+
+[[t-Shvstvala-coverpoints]]
+.Shvstvala Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=970539312#gid=970539312[Google Sheet Testplan]
+,===
+
+==== Shtvala HS-Mode Trap Address
+
+[[t-Shtvala-coverpoints]]
+.Shtvala Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1365004927#gid=1365004927[Google Sheet Testplan]
+,===
+
+==== Shlcofideleg Hypervisor Counter Overflow Delegation
+
+[[t-Shlcofideleg-coverpoints]]
+.Shlcofideleg Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=820648507#gid=820648507[Google Sheet Testplan]
+,===
+
+==== ZkrH Hypervisor Entropy Register
+
+[[t-ZkrH-coverpoints]]
+.ZkrH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=443731814#gid=443731814[Google Sheet Testplan]
+,===
+
+==== SstcH Hypervisor Timer Compare
+
+[[t-SstcH-coverpoints]]
+.SstcH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1537373133#gid=1537373133[Google Sheet Testplan]
+,===
+
+==== SsstateenH Hypervisor State Enable
+
+[[t-SsstateenH-coverpoints]]
+.SsstateenH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=311784014#gid=311784014[Google Sheet Testplan]
+,===
+
+==== SscrindH Hypervisor Indirect CSR Access
+
+Hypervisor indirect CSR access.
+
+[[t-SscrindH-coverpoints]]
+.SscrindH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=886109861#gid=886109861[Google Sheet Testplan]
+,===
+
+==== SscfgH Hypervisor Counter Delegation
+
+[[t-SscfgH-coverpoints]]
+.SscfgH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2089644586#gid=2089644586[Google Sheet Testplan]
+,===
+
+==== SmctrH Hypervisor Control Transfer Records
+
+[[t-SmctrH-coverpoints]]
+.SmctrH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=858128446#gid=858128446[Google Sheet Testplan]
+,===
+
+==== SvinvalH Hypervisor Memory Management Table Invalidation
+
+[[t-SvinvalH-coverpoints]]
+.SvinvalH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=292965592#gid=292965592[Google Sheet Testplan]
+,===
+
+==== SvaduH Hypervisor Hardware Page Table A/D Updates
+
+[[t-SvaduH-coverpoints]]
+.SvaduH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=530717859#gid=530717859[Google Sheet Testplan]
+,===
+
+==== ZicfilpH Hypervisor Landing Pads
+
+[[t-ZicfilpH-coverpoints]]
+.ZicfilpH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1214579712#gid=1214579712[Google Sheet Testplan]
+,===
+
+==== ZicfissH Hypervisor Shadow Stack
+
+[[t-ZicfissH-coverpoints]]
+.ZicfissH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=890828729#gid=890828729[Google Sheet Testplan]
+,===
+
+==== SsdbltrpH Hypervisor Double Trap
+
+[[t-SsdbltrpH-coverpoints]]
+.SsdbltrpH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1156592509#gid=1156592509[Google Sheet Testplan]
+,===
+
+==== SsnpmH Hypervisor Pointer Masking
+
+[[t-SsnpmH-coverpoints]]
+.SsnpmH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=669410459#gid=669410459[Google Sheet Testplan]
+,===
+
+==== SmnpmH Hypervisor Pointer Masking
+
+[[t-SmnpmH-coverpoints]]
+.SmnpmH Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1162472491#gid=1162472491[Google Sheet Testplan]
+,===

@@ -1,0 +1,77 @@
+
+== Introduction
+
+This Certification Test Plan describes the coverpoints and tests to certify RISC-V profiles.  It summarizes the profiles intended to be supported and the test suites that need to run on each profile.  It also summarizes the contents of each test suite.
+This CTP will also include coverpoints and tests for features that are not part of a certified profile.
+
+=== Certificates and Certification
+
+A RISC-V _Certificate_ is a named set of requirements for a RISC-V implementation, typically defined by a ratified profile and a set of additional requirements. For example, the RVA23 Certificate requires meeting the RVA23S64 profile and having a conforming machine mode implementation.
+
+_Certification_ is the process of testing that a RISC-V implementation meets the requirements of a RISC-V certificate.  The goal of certification is to deliver software interoperability across implementations.
+
+There is a fuzzy line between certification and verification.  Certification involves testing that an implementation meets all of the normative rules in ratified specifications relevant to the certificate, but does not involve testing that requires detailed knowledge of the microarchitecture. Specifically, certification does not check timing (such as the arrival of interrupts relative to the start, middle, or end of multicycle instructions), pipeline hazards, power management features, etc.
+
+Certification assumes the ratified specification is read and interpreted with knowledge of computer architecture and reasonable judgement, because not every detail is spelled out in normative rules.  For example, certification that "ADD performs the addition of _rs1_ and _rs2_" involves testing ADD with a reasonable set of values.  The test plan author exercises judgement selecting these values because they are not spelled out.  For example, the values might involve every combination of {0, 1, -1, maximum positive integer, maximum negative integer, intermediate value} for the two source register values. The intermediate value involves an arbitrary choice.  A reasonable author might pick some other sensible edge values, such as some values one more or less than those in the set above.  However, certification does not attempt to prove every bit of a carry chain works for every possible input, or that all stuck-at faults would be detected. Similarly, the test plan author may exercise all 32 registers as sources or destinations for each instruction, which is implicitly required but not spelled out in a normative rule.
+
+When in doubt, it is better to test slightly more than strictly necessary for normative rules, rather than slightly less. Over-testing is acceptable, as long as it does not cause false failures or excessive test time. It is often easier to test cross-products of all relevant inputs, even if not all combinations are explicitly named by normative rules. It also reduces the risk of human error missing a required combination.
+
+An implementation that passes certification tests is said to be certified for the relevant certificate. The process of certification is described in TODO CSC page.
+
+=== Normative Rules, Coverpoints, and Tests
+
+Normative rules are the key to certification.  They are the features of the RISC-V architecture that need to be tested in order to certify a profile.  However, normative rules are human-readable portions of a specification and cannot be checked in an automated manner.
+
+Instead, certification relies on coverpoints, which are machine-readable descriptions of the features to be tested.  Every normative rule is tied to one or more coverpoints, such that if the coverpoints are hit, the normative rule is considered to be certified.
+
+Each coverpoint has a set of tests that exercise it, and each test has a set of coverpoints that it hits.
+
+This test plan defines the normative rules that must be hit for each profile, specifies the coverpoints that measure those rules, and outlines the tests that hit those coverpoints.  The tests are self-checking, and report pass/fail results.  The coverage report confirms that the tests hit all the coverpoints and thus all the normative rules.
+
+Coverpoints are written in SystemVerilog, and are designed to be used with the Extended https://github.com/riscv-verification/RVVI[RISC-V Verification Interface] (RVVI).  They are written to be independent of the DUT (Device Under Test), so that they can be used with any RISC-V implementation. footnote:[Extended RVVI adds signals for virtual memory verification, including physical and virtual instruction and data addresses, and I/D TLB entries.] Functional coverage is collected using SystemVerilog infrastructure adapted from https://github.com/riscv-verification/riscvISACOV[riscvISACOV] footnote:[Portions of riscvISACOV that depend on proprietary Synopsys code such as a disassembler have been replaced with open-source equivalents].
+
+Coverpoints are organized into .svh SystemVerilog coverage files, each of which contain one or more covergroups, each of which contain one or more coverpoints.  Coverage files apply to a DUT with a particular set of extensions.  For example, the I_coverage.svh coverage file is used for any 32 or 64-bit DUT that supports the I extension. The ZfhD.svh coverage file applies to a DUT that supports both the Zfh and D extensions (and includes conversions between half and double-precision, which do not exist if Zfh or D alone are implemented).
+
+Tests are written in assembly language .S files. Tests are organized into directories for each extension, and into a privileged directory.  The coverpoints are hit by running all of the applicable tests in a directory.  For example, RV32I coverage involves running add.S, addi.S, sub.S, etc.  RV64I coverage also involves running addw.S, which is unique to RV64.
+
+=== Glossary
+
+The following terms are used in this test plan:
+
+* Extensions: named and ratified RISC-V extensions, such as RV32I, M, Zbb, Zicsr, or Svadu.  Many extensions define instructions or CSRs, but some only define parameters (e.g. Sstvecd requires that the STVEC_MODE_DIRECT=True).
+
+* Parameters: options describing the behavior of extensions.  All parameters will be named by the Parameters Working Group (started February 2026) and will appear in UDB. For example, the PMP_GRANULARITY parameter defines the minimum size of a
+PMP region.
+
+* Configuration: A set of extensions and parameters partially or fully describing the behavior of a RISC-V hart.  A full configuration is sufficient for a reference model to exactly match the behavior of a DUT except with regard to non-deterministic behaviors. Configurations are described in machine-readable YAML format that are read by UDB and used to generate configuration files for various tools.
+
+* Constrained Non-Deterministic Behaviors: behaviors that cannot be predicted based on either architectural configuration or defined parameters, but whose result are constrained to be a small number of possible values. The example of a tail-agnostic vector instruction is one of those, where the number of legal results is limited to just two: either the previous value, or all ones. Either behavior is correct, and the hart might change behaviors from one instruction to the next, so the DUT and reference model cannot be guaranteed to exactly match. Self-checking tests must accept all legal outcomes for non-deterministic behaviors.
+
+* Unconstrained Non-Deterministic Behaviors: behaviors that cannot be predicted based on either architectural configuration or defined parameters, and whose result is not constrained to a small number of possible values.  For example, the value of an integer register after reset is an unconstrained non-deterministic behavior.  Tests must not make any assumptions about the value of such behaviors, and must not check them against the reference model.
+
+* Profile: A named collection of required and optional extensions, such as RVI20 or RVA23S64.  Profiles may be ratified by RISC-V or developed by the Certification Steering Committee to meet certification market needs, such as a simple microcontroller. A profile is a partial configuration.  The test plan must allow the DUT configuration to indicate which optional extensions and other parameters are used, and fully test all optional profile extensions provided by the DUT.
+
+* UDB: https://github.com/riscv/riscv-unified-db[Unified Database], a standardized way to describe the configuration and generate config files for various tools from a single point of truth.
+
+* <<Normative Rule, Normative rule>>: Description of a single certifiable feature, preferably a direct quotation from a ratified specification.
+
+* Coverage files: a SystemVerilog .svh file containing all of the covergroups for an extension or combination of extensions, such as I_coverage.svh or ZfaD_coverage.svh.
+
+* Covergroup: A SystemVerilog construct that contains one or more coverpoints.  Covergroups are used to collect functional coverage of a particular feature or set of features in the RISC-V architecture.  For example, the I_coverage.svh file contains a covergroup for each instruction in the I extension, such as add, addi, sub, etc.  The InterruptsSm_coverage.svh contains a single InterruptsSm_cg covergroup with all the coverpoints for machine-mode interrupts.
+
+* Coverpoint: A SystemVerilog construct describing a set of conditions to test.  For example, the cp_rd coverpoint checks that all 32 destination registers x0-x31 are exercised by instructions that don't trap. Each coverpoint has one or more bins; for example, cp_rd has 32 bins for the different registers.
+
+* Bin: One target value for a coverpoint.  Each bin may be covered or not by a test suite.
+
+* Test files: A file containing one or more tests, typically written in assembly language.  For example, rv32/I/add.S contains all of the RV32 tests to exercise the add_cg covergroup in I_coverage.svh.
+
+* Test: A snippet of code, typically a sequence of assembly language instructions, that exercises at least one bin of a coverpoint.
+
+* Test Suite: A collection of coverage and test files to test a particular extension, combination of extensions, or group of extensions.  For example, the RV32I test suite contains the I_coverage.svh coverage file and the rv32/I/add.S, addi.S, sub.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RV64ZfaD test suite contains the ZfaD_coverage.svh coverage file and the rv64/ZfaD/fround.d.S, and other tests files with tests that hit the coverpoints in that coverage file.  The RVA23S64 test suite contains all of the required and selected optional test suites for the profile, incluidng RV64I, RV64ZfaD, ExceptionsS, etc.
+
+* RVMODEL DUT-Specific Macros: A set of macros that perform _semihosting_/_trick box_ functions such as booting the DUT, sending interrupts, and logging results. The macros are defined in <<rvmodel-macros, RVMODEL DUT-Specific Macros>>.
+
+[NOTE]
+====
+Beware that Test Suite is also used outside this document to mean a full set of tests for a given profile from a given provider.  For example, Synopsys, Breker, and riscv-arch-test all have test suites for the RVI20U32 profile.
+====

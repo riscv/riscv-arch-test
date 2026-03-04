@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicsrF_fcsr_cg = new();         ZicsrF_fcsr_cg.set_inst_name("obj_ZicsrF_fcsr");
+    ZicsrF_cg = new();         ZicsrF_cg.set_inst_name("obj_ZicsrF");

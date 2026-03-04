@@ -1,0 +1,377 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # The MXR (Make eXecutable Readable) bit modifies the privilege with which loads
+  # access virtual memory. When MXR=0, only loads from pages marked readable (R=1 in
+  # ) will succeed. When MXR=1, loads from pages marked either readable or
+  # executable (R=1 or X=1) will succeed. MXR has no effect when page-based virtual
+  # memory is not in effect.
+  - names: [sstatus_mxr_sz, sstatus_mxr_acc, sstatus_mxr_op]
+    coverpoint: [""]
+
+  # The SUM (permit Supervisor User Memory access) bit modifies the privilege with
+  # which S-mode loads and stores access virtual memory. When SUM=0, S-mode memory
+  # accesses to pages that are accessible by U-mode (U=1 in ) will fault. When
+  # SUM=1, these accesses are permitted. SUM has no effect when page-based virtual
+  # memory is not in effect, nor when executing in U-mode. Note that S-mode can
+  # never execute instructions from user pages, regardless of the state of SUM.
+  - names: [sstatus_sum_sz, sstatus_sum_acc, sstatus_sum_op]
+    coverpoint: [""]
+
+  # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for
+  # SXLEN=32 and for SXLEN=64, which controls supervisor-mode address translation
+  # and protection. This register holds the physical page number (PPN) of the root
+  # page table, i.e., its supervisor physical address divided by 4 KiB; an address
+  # space identifier (ASID), which facilitates address-translation fences on a
+  # per-address-space basis; and the MODE field, which selects the current
+  # address-translation scheme. Further details on the access to this register are
+  # described in .
+  - names: [satp_sz, satp_acc, satp_op, satp_mode]
+    coverpoint: ["Sv_satp_cg/access_m_s, TODO rest of the bits"]
+
+  # shows the encodings of the MODE field when SXLEN=32 and SXLEN=64. When
+  # MODE=Bare, supervisor virtual addresses are equal to supervisor physical
+  # addresses, and there is no additional memory protection beyond the physical
+  # memory protection scheme described in . To select MODE=Bare, software must write
+  # zero to the remaining fields of satp (bits 30–0 when SXLEN=32, or bits 59–0 when
+  # SXLEN=64). Attempting to select MODE=Bare with a nonzero pattern in the
+  # remaining fields has an UNSPECIFIED effect on the value that the remaining
+  # fields assume and an UNSPECIFIED effect on address translation and protection
+  # behavior.
+  - names: [satp_mode_sz, satp_mode_acc, satp_mode_op]
+    coverpoint: [""]
+
+  # When SXLEN=32, the only other valid setting for MODE is Sv32, a paged
+  # virtual-memory scheme described in .
+  - name: satp_mode_sxlen32
+    coverpoint: ["Sv_satp_cg/satp_bare, SV_PA_VA_cg/VA_d_mode"]
+
+  # When SXLEN=64, three paged virtual-memory schemes are defined: Sv39, Sv48, and
+  # Sv57, described in , , and , respectively. One additional scheme, Sv64, will be
+  # defined in a later version of this specification. The remaining MODE settings
+  # are reserved for future use and may define different interpretations of the
+  # other fields in satp.
+  - name: satp_mode_sxlen64
+    coverpoint: ["Sv_satp_cg/satp_bare, SV_PA_VA_cg/VA_d_mode"]
+
+  # Implementations are not required to support all MODE settings, and if satp is
+  # written with an unsupported MODE, the entire write has no effect; no fields in
+  # satp are modified.
+  - name: satp_mode_op_unsupported
+    coverpoint: [""]
+
+  # The number of ASID bits is UNSPECIFIED and may be zero. The number of
+  # implemented ASID bits, termed ASIDLEN, may be determined by writing one to every
+  # bit position in the ASID field, then reading back the value in satp to see which
+  # bit positions in the ASID field hold a one. The least-significant bits of ASID
+  # are implemented first: that is, if ASIDLEN &gt; 0, ASID[ASIDLEN-1:0] is
+  # writable. The maximal value of ASIDLEN, termed ASIDMAX, is 9 for Sv32 or 16 for
+  # Sv39, Sv48, and Sv57.
+  - name: satp-asidlen
+    coverpoint: [""]
+
+  # The satp CSR is considered active when the effective privilege mode is S-mode or
+  # U-mode. Executions of the address-translation algorithm may only begin using a
+  # given value of satp when satp is active.
+  - name: satp_op_active
+    coverpoint: [""]
+
+  # Note that writing satp does not imply any ordering constraints between
+  # page-table updates and subsequent address translations, nor does it imply any
+  # invalidation of address-translation caches. If the new address space’s page
+  # tables have been modified, or if an ASID is reused, it may be necessary to
+  # execute an SFENCE.VMA instruction (see ) after, or in some cases before, writing
+  # satp.
+  - name: satp_op_sfence_vma
+    coverpoint: [""]
+
+  # The supervisor memory-management fence instruction SFENCE.VMA is used to
+  # synchronize updates to in-memory memory-management data structures with current
+  # execution. Instruction execution causes implicit reads and writes to these data
+  # structures; however, these implicit references are ordinarily not ordered with
+  # respect to explicit loads and stores. Executing an SFENCE.VMA instruction
+  # guarantees that any previous stores already visible to the current RISC-V hart
+  # are ordered before certain implicit references by subsequent instructions in
+  # that hart to the memory-management data structures. The specific set of
+  # operations ordered by SFENCE.VMA is determined by rs1 and rs2, as described
+  # below. SFENCE.VMA is also used to invalidate entries in the address-translation
+  # cache associated with a hart (see ). Further details on the behavior of this
+  # instruction are described in and .
+  - name: sfence_vma_op
+    coverpoint: [""]
+
+  # Executing an SFENCE.VMA instruction guarantees that any previous stores already
+  # visible to the current RISC-V hart are ordered before certain implicit
+  # references by subsequent instructions in that hart to the memory-management data
+  # structures. The specific set of operations ordered by SFENCE.VMA is determined
+  # by rs1 and rs2, as described below.
+  - name: sfence_vma_ordering
+    coverpoint: [""]
+
+  # SFENCE.VMA is also used to invalidate entries in the address-translation cache
+  # associated with a hart (see &lt;&lt;sv32algorithm&gt;&gt;).
+  - name: sfence_vma_invalidation
+    coverpoint: [""]
+
+  # If rs1=x0 and rs2=x0, the fence orders all reads and writes made to any level of
+  # the page tables, for all address spaces. The fence also invalidates all
+  # address-translation cache entries, for all address spaces.
+  - name: sfence_vma_all_asid_va
+    coverpoint: [""]
+
+  # If rs1=x0 and rs2{ne}x0, the fence orders all reads and writes made to any level
+  # of the page tables, but only for the address space identified by integer
+  # register rs2. Accesses to global mappings (see &lt;&lt;translation&gt;&gt;) are
+  # not ordered. The fence also invalidates all address-translation cache entries
+  # matching the address space identified by integer register rs2, except for
+  # entries containing global mappings.
+  - name: sfence_vma_asid_only
+    coverpoint: [""]
+
+  # If rs1{ne}x0 and rs2=x0, the fence orders only reads and writes made to leaf
+  # page table entries corresponding to the virtual address in rs1, for all address
+  # spaces. The fence also invalidates all address-translation cache entries that
+  # contain leaf page table entries corresponding to the virtual address in rs1, for
+  # all address spaces.
+  - name: sfence_vma_va_all_asid
+    coverpoint: [""]
+
+  # If rs1{ne}x0 and rs2{ne}x0, the fence orders only reads and writes made to leaf
+  # page table entries corresponding to the virtual address in rs1, for the address
+  # space identified by integer register rs2. Accesses to global mappings are not
+  # ordered. The fence also invalidates all address-translation cache entries that
+  # contain leaf page table entries corresponding to the virtual address in rs1 and
+  # that match the address space identified by integer register rs2, except for
+  # entries containing global mappings.
+  - name: sfence_vma_va_asid
+    coverpoint: [""]
+
+  # If the value held in rs1 is not a valid virtual address, then the SFENCE.VMA
+  # instruction has no effect. No exception is raised in this case.
+  - name: sfence_vma_invalid_va
+    coverpoint: [""]
+
+  # When rs2≠x0, bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for
+  # future standard use. Until their use is defined by a standard extension, they
+  # should be zeroed by software and ignored by current implementations.
+  # Furthermore, if ASIDLEN&lt;ASIDMAX, the implementation shall ignore bits
+  # ASIDMAX-1:ASIDLEN of the value held in rs2.
+  - name: sfence_vma_rs2_bits
+    coverpoint: [""]
+
+  # An implicit read of the memory-management data structures may return any
+  # translation for an address that was valid at any time since the most recent
+  # SFENCE.VMA that subsumes that address. The ordering implied by SFENCE.VMA does
+  # not place implicit reads and writes to the memory-management data structures
+  # into the global memory order in a way that interacts cleanly with the standard
+  # RVWMO ordering rules. In particular, even though an SFENCE.VMA orders prior
+  # explicit accesses before subsequent implicit accesses, and those implicit
+  # accesses are ordered before their associated explicit accesses, SFENCE.VMA does
+  # not necessarily place prior explicit accesses before subsequent explicit
+  # accesses in the global memory order. These implicit loads also need not
+  # otherwise obey normal program order semantics with respect to prior loads or
+  # stores to the same address.
+  - name: sfence_vma_ordering_semantics
+    coverpoint: [""]
+
+  # Implementations must only perform implicit reads of the translation data
+  # structures pointed to by the current contents of the satp register or a
+  # subsequent valid (V=1) translation data structure entry, and must only raise
+  # exceptions for implicit accesses that are generated as a result of instruction
+  # execution, not those that are performed speculatively.
+  - name: sfence_vma_implicit_access
+    coverpoint: [""]
+
+  # Changes to the sstatus fields SUM and MXR take effect immediately, without the
+  # need to execute an SFENCE.VMA instruction.
+  - name: sfence_vma_sum_mxr_effect
+    coverpoint: [""]
+
+  # Changing satp.MODE from Bare to other modes and vice versa also takes effect
+  # immediately, without the need to execute an SFENCE.VMA instruction.
+  - name: sfence_vma_mode_effect
+    coverpoint: [""]
+
+  # Likewise, changes to satp.ASID take effect immediately.
+  - name: sfence_vma_asid_effect
+    coverpoint: [""]
+
+  # If a hart employs an address-translation cache, that cache must appear to be
+  # private to that hart. In particular, the meaning of an ASID is local to a hart;
+  # software may choose to use the same ASID to refer to different address spaces on
+  # different harts.
+  - name: asid_hart_private
+    coverpoint: [""]
+
+  # For implementations that make satp.MODE read-only zero (always Bare), attempts
+  # to execute an SFENCE.VMA instruction might raise an illegal-instruction
+  # exception.
+  - name: satp-mode_roz_sfence_illegal
+    coverpoint: [""]
+
+  # Attempting to fetch an instruction from a page that does not have execute
+  # permissions raises a fetch page-fault exception.
+  - name: fetch_page_fault_no_x
+    coverpoint: [""]
+
+  # Attempting to execute a load, load-reserved, or cache-block management
+  # instruction whose effective address lies within a page without read permissions
+  # raises a load page-fault exception.
+  - name: load_page_fault_no_r
+    coverpoint: [""]
+
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction instruction whose effective address lies within a page without write
+  # permissions raises a store page-fault exception.
+  - name: store_page_fault_no_w
+    coverpoint: [""]
+
+  - name: Sv39_sxlen
+    coverpoint: [""]
+
+  - name: Sv39_va_sz
+    coverpoint: [""]
+
+  - name: Sv39_va_signext
+    coverpoint: [""]
+
+  - name: Sv39_vpn_sz
+    coverpoint: [""]
+
+  - name: satp_ppn_sv39_sz
+    coverpoint: [""]
+
+  - name: Sv39_levels
+    coverpoint: [""]
+
+  - name: Sv39_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv39_pte_count
+    coverpoint: [""]
+
+  - name: Sv39_pte_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_sz
+    coverpoint: [""]
+
+  - name: Sv39_pt_align
+    coverpoint: [""]
+
+  - name: Sv39_pte_svnapot_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_svpbmt_rsv
+    coverpoint: [""]
+
+  - name: Sv39_pte_future_rsv
+    coverpoint: [""]
+
+  - name: Sv39_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv39_page_sizes
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align
+    coverpoint: [""]
+
+  - name: Sv39_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv39_LEVELS
+    coverpoint: [""]
+
+  - name: Sv39_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv48_sxlen
+    coverpoint: [""]
+
+  - name: Sv48_va_sz
+    coverpoint: [""]
+
+  - name: Sv48_requires_Sv39
+    coverpoint: [""]
+
+  - name: Sv48_va_signext
+    coverpoint: [""]
+
+  - name: Sv48_vpn_sz
+    coverpoint: [""]
+
+  - name: satp_ppn_sv48_sz
+    coverpoint: [""]
+
+  - name: Sv48_levels
+    coverpoint: [""]
+
+  - name: Sv48_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv48_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv48_page_sizes
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align
+    coverpoint: [""]
+
+  - name: Sv48_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv48_LEVELS
+    coverpoint: [""]
+
+  - name: Sv48_PTESIZE
+    coverpoint: [""]
+
+  - name: Sv57_sxlen
+    coverpoint: [""]
+
+  - name: Sv57_va_sz
+    coverpoint: [""]
+
+  - name: Sv57_requires_Sv48
+    coverpoint: [""]
+
+  - name: Sv57_va_signext
+    coverpoint: [""]
+
+  - name: Sv57_vpn_sz
+    coverpoint: [""]
+
+  - name: satp_ppn_sv57_sz
+    coverpoint: [""]
+
+  - name: Sv57_levels
+    coverpoint: [""]
+
+  - name: Sv57_page_offset_sz
+    coverpoint: [""]
+
+  - name: Sv57_leaf_any_level
+    coverpoint: [""]
+
+  - name: Sv57_page_sizes
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align
+    coverpoint: [""]
+
+  - name: Sv57_superpage_align_fault
+    coverpoint: [""]
+
+  - name: Sv57_LEVELS
+    coverpoint: [""]
+
+  - name: Sv57_PTESIZE
+    coverpoint: [""]
+
+  # If stval is written with a nonzero value when a breakpoint, address-misaligned,
+  # access-fault, page-fault, or hardware-error exception occurs on an instruction
+  # fetch, load, or store, then stval will contain the faulting virtual address.
+  - name: stval_op_faulting_addr
+    coverpoint: ["TODO: page faults"]

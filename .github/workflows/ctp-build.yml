@@ -6,7 +6,7 @@ on:
     branches:
       - act4
     paths:
-      - "ctp/**"
+      - "docs/ctp/**"
       - "generators/ctp/**"
       - "testplans/**"
       - ".github/workflows/ctp-build.yml"
@@ -15,38 +15,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
-      - run: git submodule update --init ctp/docs-resources
+      - run: git submodule update --init docs/docs-resources external/riscv-unified-db
 
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       - name: Build
-        run: cd ctp && make -j2
+        run: cd docs/ctp && make -j2
 
       - name: Make GitHub pages directory
         run: |
           mkdir github-pages
-          cp ctp/build/ctp.html github-pages/index.html
+          cp docs/ctp/build/ctp.html github-pages/index.html
 
       - name: Upload PDF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
-          path: ctp/build/ctp.pdf
+          path: docs/ctp/build/ctp.pdf
 
       - name: Upload HTML
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.html
-          path: ctp/build/ctp.html
+          path: docs/ctp/build/ctp.html
 
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: github-pages
 
@@ -55,33 +55,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download PDF
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ctp.pdf
           path: ./
 
       - name: Download HTML
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ctp.html
           path: ./
 
       - name: Get current date
         run: |
-          echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
           echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
         with:
           draft: false
           prerelease: ${{ ! (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true') }}
           make_latest: true
           # generate_release_notes: true
-          tag_name: ctp-release-${{ env.SHORT_SHA }}-${{ env.CURRENT_DATE }}
-          name: ctp-release-${{ env.SHORT_SHA }}-${{ env.CURRENT_DATE }}
-          body: |
-            This release was created by: ${{ github.event.sender.login }}
+          tag_name: ctp-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
+          name: "CTP Release ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
+          body: "Automated release of the CTP built on ${{ env.CURRENT_DATE }} from commit ${{ env.SHORT_SHA }}."
           files: |
             ctp.pdf
             ctp.html

@@ -1,0 +1,136 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # V reserved rules
+  - name: EMUL_NFIELDS_rsv
+    coverpoint: ["TODO"]
+  - name: EMUL_offgroup_rsv
+    coverpoint: ["TODO"]
+  - name: EMUL_rsv
+    coverpoint: ["TODO"]
+  - name: V_fp_EEW_IEEE_nsupported_rsv
+    coverpoint: ["TODO"]
+  - name: V_fp_eew_rsv
+    coverpoint: ["TODO"]
+  - name: V_inv_frm_rsv
+    coverpoint: ["TODO"]
+  - name: egs_ge_vlmax_rsv
+    coverpoint: ["TODO"]
+  - name: egs_vl_rsv
+    coverpoint: ["TODO"]
+  - name: vadc_unmasked_rsv
+    coverpoint: ["TODO"]
+  - name: vadc_vd_v0_rsv
+    coverpoint: ["TODO"]
+  - name: vcompress_masked_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_EEW_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_EMUL_offgroup_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_EMUL_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_ins_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_mew_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_seg_indexed_vreg_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_seg_rsv
+    coverpoint: ["TODO"]
+  - name: vector_ls_seg_wholereg_nf_rsv
+    coverpoint: ["TODO"]
+  - name: vfmv-s-f_masked_rsv
+    coverpoint: ["TODO"]
+  - name: vfmv_vs2_nv0_rsv
+    coverpoint: ["TODO"]
+  - name: vid_vs2_nv0_rsv
+    coverpoint: ["TODO"]
+  - name: vmasklogical_masked_rsv
+    coverpoint: ["TODO"]
+  - name: vmv-nr-r_nreg_rsv
+    coverpoint: ["TODO"]
+  - name: vmv-nr-r_unaligned_rsv
+    coverpoint: ["TODO"]
+  - name: vmv-s-x_masked_rsv
+    coverpoint: ["TODO"]
+  - name: vmv-x-s_masked_rsv
+    coverpoint: ["TODO"]
+  - name: vmv_vs2_nv0_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_offgroup_LMUL2_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_offgroup_LMUL4_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_offgroup_LMUL8_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_overlap_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_source_EEW_rsv
+    coverpoint: ["TODO"]
+  - name: vreg_vmask_rsv
+    coverpoint: ["TODO"]
+  - name: vsbc_unmasked_rsv
+    coverpoint: ["TODO"]
+  - name: vsbc_vd_v0_rsv
+    coverpoint: ["TODO"]
+  - name: vsext_ill_eew_emul_rsv
+    coverpoint: ["TODO"]
+  - name: vstart_val_rsv
+    coverpoint: ["TODO"]
+  - name: vtype_lmul_fval_rsv
+    coverpoint: ["TODO"]
+  - name: vtype_vsew_rsv
+    coverpoint: ["TODO"]
+  - name: vtype_vset_rsv
+    coverpoint: ["TODO"]
+  - name: vzext_ill_eew_emul_rsv
+    coverpoint: ["TODO"]
+
+  # Zvk* reserved rules
+  - name: vclmul_sewn64_rsv
+    coverpoint: ["TODO"]
+  - name: vclmulh_sewn64_rsv
+    coverpoint: ["TODO"]
+  - name: veccrypto_sew_rsv
+    coverpoint: ["TODO"]
+  - name: veccrypto_vl_rsv
+    coverpoint: ["TODO"]
+  - name: veccrypto_vstart_rsv
+    coverpoint: ["TODO"]
+  - name: vghsh-vv_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vgmul-vv_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ch-vv_Zvknha_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ch-vv_Zvknhb_sewn32or64_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ch-vv_vdoverlapvs1vs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2cl-vv_Zvknha_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2cl-vv_Zvknhb_sewn32or64_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2cl-vv_vdoverlapvs1vs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ms-vv_Zvknha_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ms-vv_Zvknhb_sewn32or64_rsv
+    coverpoint: ["TODO"]
+  - name: vsha2ms-vv_vdoverlapvs1vs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsm3c-vi_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsm3c-vi_vdoverlapvs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsm3me-vv_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsm3me-vv_vdoverlapvs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsm4k-vi_sewn32_rsv
+    coverpoint: ["TODO"]
+  - name: vsm4r-vs_vdoverlapvs2_rsv
+    coverpoint: ["TODO"]
+  - name: vsm4r_sewn32_rsv
+    coverpoint: ["TODO"]

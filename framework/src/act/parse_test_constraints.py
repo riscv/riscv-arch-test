@@ -8,7 +8,6 @@
 ##################################
 
 from pathlib import Path
-from typing import Any
 
 from pydantic import BaseModel, Field, FilePath
 from ruamel.yaml import YAML
@@ -21,7 +20,7 @@ class TestMetadata(BaseModel):
     required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     config_dependent: bool = Field(alias="CONFIG_DEPENDENT")
-    params: dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}
 
@@ -32,7 +31,8 @@ class TestMetadata(BaseModel):
     @property
     def mxlen(self) -> int | None:
         """Get MXLEN parameter if present."""
-        return self.params.get("MXLEN")
+        value = self.params.get("MXLEN")
+        return value if isinstance(value, int) else None
 
     @property
     def flen(self) -> str:

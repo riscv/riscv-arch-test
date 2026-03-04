@@ -308,27 +308,29 @@ jobs:
       - name: Pull Container
         run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
-      - name: Build
+      - name: Build CTP
         run: cd docs/ctp && make -j2
 
-      - name: Upload PDF
-        uses: actions/upload-artifact@v6
-        with:
-          name: ctp.pdf
-          path: docs/ctp/build/ctp.pdf
+  crd-build:
+    name: Build CRD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
-      - name: Upload HTML
-        uses: actions/upload-artifact@v6
-        with:
-          name: ctp.html
-          path: docs/ctp/build/ctp.html
+      - run: git submodule update --init docs/docs-resources
+
+      - name: Pull Container
+        run: docker pull riscvintl/riscv-docs-base-container-image:latest
+
+      - name: Build CRD
+        run: cd docs/crd && make -j2
 
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [lint, regress, spike, qemu, vector-testgen, ctp-build]
+    needs: [lint, regress, spike, qemu, vector-testgen, ctp-build, crd-build]
     if: "${{ always() }}"
     steps:
       - name: exit failure

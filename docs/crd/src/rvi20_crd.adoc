@@ -1,6 +1,6 @@
 = RVI20 Certification Requirements Document (rev 0.3)
-include::adoc_common.adoc[]
 :description: RVI20 CRD (Certificate Requirements Document)
+include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 

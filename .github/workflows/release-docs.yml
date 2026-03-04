@@ -55,17 +55,17 @@ jobs:
       - name: Build CRD
         run: cd docs/crd && make -j2
 
-      - name: Upload CRD PDF
+      - name: Upload CRD PDFs
         uses: actions/upload-artifact@v6
         with:
-          name: rvi20_crd.pdf
-          path: docs/crd/build/rvi20_crd.pdf
+          name: crd-pdf
+          path: docs/crd/build/*.pdf
 
-      - name: Upload CRD HTML
+      - name: Upload CRD HTMLs
         uses: actions/upload-artifact@v6
         with:
-          name: rvi20_crd.html
-          path: docs/crd/build/rvi20_crd.html
+          name: crd-html
+          path: docs/crd/build/*.html
 
   release:
     needs: [build-ctp, build-crd]
@@ -83,16 +83,16 @@ jobs:
           name: ctp.html
           path: ./
 
-      - name: Download CRD PDF
+      - name: Download CRD PDFs
         uses: actions/download-artifact@v7
         with:
-          name: rvi20_crd.pdf
+          name: crd-pdf
           path: ./
 
-      - name: Download CRD HTML
+      - name: Download CRD HTMLs
         uses: actions/download-artifact@v7
         with:
-          name: rvi20_crd.html
+          name: crd-html
           path: ./
 
       - name: Get current date
@@ -114,6 +114,8 @@ jobs:
             ctp.html
             rvi20_crd.pdf
             rvi20_crd.html
+            mc100_crd.pdf
+            mc100_crd.html
 
   deploy-pages:
     needs: [build-ctp, build-crd]
@@ -122,43 +124,26 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: docs/pages
+
       - name: Download CTP HTML
         uses: actions/download-artifact@v7
         with:
           name: ctp.html
-          path: ./github-pages/ctp
+          path: docs/pages
 
-      - name: Download CRD HTML
+      - name: Download CRD HTMLs
         uses: actions/download-artifact@v7
         with:
-          name: rvi20_crd.html
-          path: ./github-pages/crd
-
-      - name: Rename HTML files to index.html
-        run: |
-          mv ./github-pages/ctp/ctp.html ./github-pages/ctp/index.html
-          mv ./github-pages/crd/rvi20_crd.html ./github-pages/crd/index.html
-
-      - name: Create index page
-        run: |
-          cat > ./github-pages/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head><title>RISC-V Certification Documentation</title></head>
-          <body>
-          <h1>RISC-V Certification Documentation</h1>
-          <ul>
-            <li><a href="ctp/">Certification Test Plan (CTP)</a></li>
-            <li><a href="crd/">Certification Requirements Document (CRD)</a></li>
-          </ul>
-          </body>
-          </html>
-          EOF
+          name: crd-html
+          path: docs/pages/crd
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: github-pages
+          path: docs/pages
 
       - name: Deploy to GitHub Pages
         id: deployment

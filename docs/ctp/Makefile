@@ -1,4 +1,4 @@
-# Makefile for RISC-V Conformance Test Plan (CTP)
+# Makefile for RISC-V Certification Test Plan (CTP)
 #
 # This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
 # International License. To view a copy of this license, visit

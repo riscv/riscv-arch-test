@@ -1274,7 +1274,7 @@ def writeSIGUPD_V_old(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig
       else:
         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
-def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base"):
+def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False):
 
     global sigupd_count
 
@@ -1293,6 +1293,10 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
     tempReg = linkReg - 1
+
+    maskReg = randint(1,31)
+    while maskReg == sigReg or maskReg == tempReg:
+      maskReg = randint(1,31)
 
     # -------------------------------------------------
     # Determine vd register group (robust LMUL handling)
@@ -1365,15 +1369,20 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
     if sig_whole_register_store:
       writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
 
+    if masked == False:
+      writeLine(f"li x{maskReg}, 0",        f"# set {maskReg} to zero to indicate unmasked operation for SIGUPD_V")
+    else:
+      writeLine(f"li x{maskReg}, 1",        f"# set {maskReg} to one to indicate masked operation for SIGUPD_V")
+
     if testtype == "length":
       if offset > 2047:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, v{vd}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         for x in range(fullOffsets):
           writeLine(
@@ -1382,11 +1391,11 @@ def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_who
       else:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
     else:
       if offset > 2047:
@@ -1641,7 +1650,7 @@ def getSigSpace(xlen, flen):
       signatureWords = sigupd_count + sigupd_countF # all Sigupd, no need to adjust since Xlen is equal to or larger than Flen and SIGUPD_F macro will adjust alignment up to XLEN
   return signatureWords
 
-def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False, testtype="base"):
+def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, fd=None, vl=1, sig_lmul = None, sig_whole_register_store = False, load_testline = None, priv = False, testtype="base", masked=False):
     scalar_registers_used = list(scalar_registers_used)
 
     writeLine(testline)
@@ -1661,15 +1670,15 @@ def writeVecTest(vd, sew, testline, *scalar_registers_used, test=None, rd=None, 
       writeSIGUPD(fcsrsaveReg)
 
     if (test in vd_widen_ins) or (test in wvsins):
-      writeSIGUPD_V(vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype)  # EEW of vd = 2 * SEW for widening
+      writeSIGUPD_V(vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
     elif (test in maskins):
-      writeSIGUPD_V(vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype)      # EEW of vd = 1 for mask
+      writeSIGUPD_V(vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
     elif (test in xvtype):
       writeSIGUPD(rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:
-      writeSIGUPD_V(vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype)
+      writeSIGUPD_V(vd, sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)
 
 # TODO : Make this works with vector FP
 def loadFrmRoundingMode(frm, *scalar_registers_used):
@@ -1841,7 +1850,7 @@ def getInstructionArguments(instruction):
 
 def writeTest(description, instruction, instruction_data,
               sew=None, lmul=1, vl=1, vstart=0, maskval=None, vxrm=None,
-              frm=None, vxsat=None, vta=0, vma=0):
+              frm=None, vxsat=None, vta=0, vma=0, suite="base"):
     global tab_count
 
     writeLine("\n")
@@ -1897,6 +1906,28 @@ def writeTest(description, instruction, instruction_data,
     elif any(instruction in instype for instype in [vvivtype, vvvvtype, vvxvtype, vvfvtype]):
       writeLine("vmv.v.i v0, 0", "# set v0 register to 0 in base suit where vm is fixed to 0")
 
+    # --- special handling: preload vd at VLMAX for length-suite tests ---
+    vd_preloaded = False
+    if suite == "length":
+      # pick temporary regs avoiding conflicts
+      tempVlmax = 7
+      while tempVlmax in scalar_registers_used:
+        tempVlmax = randint(1,31)
+      scalar_registers_used.append(tempVlmax)
+
+      tempReg2 = 5
+      while tempReg2 in scalar_registers_used:
+        tempReg2 = randint(1,31)
+      scalar_registers_used.append(tempReg2)
+
+      # set vtype to VLMAX for vd load
+      lmulflag = getLmulFlag(lmul)
+      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
+      # actually perform load for vd (pass through loadVecReg)
+      scalar_registers_used = loadVecReg(instruction, 'vd', vector_register_data, sew, lmul, *scalar_registers_used)
+      vd_preloaded = True
+      # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
+
     scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, *scalar_registers_used)
 
     if frm is not None:
@@ -1921,7 +1952,8 @@ def writeTest(description, instruction, instruction_data,
       elif argument == 'imm':
         testline = testline + f"{imm_val}"
       elif argument[0] == 'v':
-        scalar_registers_used = loadVecReg(instruction, argument, vector_register_data, sew, lmul, *scalar_registers_used)
+        if not (argument == 'vd' and vd_preloaded): # skip loading vd if we already preloaded it with VLMAX
+          scalar_registers_used = loadVecReg(instruction, argument, vector_register_data, sew, lmul, *scalar_registers_used)
         testline = testline + f"v{vector_register_data[argument]['reg']}"
       elif argument[0] == 'r':
         if argument == "rs1" and instruction in vector_ls_ins:
@@ -1983,9 +2015,9 @@ def writeTest(description, instruction, instruction_data,
       signature_target_sew = sew
 
     if (maskval is not None) or (vl is not None):
-      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store, testtype="length")
+      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, vl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
     else:
-      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store)
+      writeVecTest(signature_target_vd, signature_target_sew, testline, *scalar_registers_used, test=instruction, rd=rd, fd=fd, sig_lmul=sig_lmul, load_testline = load_testline,  sig_whole_register_store=sig_whole_register_store, testtype=suite, masked=(maskval is not None))
 
     if (ifdef_string != "#if "):
       tab_count -= 1

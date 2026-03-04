@@ -130,7 +130,7 @@ def make_vl_0(instruction, sew, lmul = 1):
   description = "cr_vl_0 (Test vl = 0)"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul = lmul)
 
-  writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl=0)
+  writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl=0, suite="length")
   incrementLengthtestCount()
   vsAddressCount("length")
 
@@ -455,7 +455,7 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None):
       description = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul = emul, additional_no_overlap=no_overlap)
 
-      writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl=vl, maskval=maskval, vta=vta, vma=vma)
+      writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl=vl, maskval=maskval, vta=vta, vma=vma, suite="length")
       incrementLengthtestCount()
       vsAddressCount("length")
 
@@ -469,7 +469,7 @@ def make_mask_edges(instruction, sew, lmul = 1):
     description = f"cp_masking_edges (Test v0 = {m})"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), lmul=lmul, suite="length", additional_no_overlap=[['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']])
 
-    writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="vlmax", maskval=m, vma=vma)
+    writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="vlmax", maskval=m, vma=vma, suite="length")
     incrementLengthtestCount()
     vsAddressCount("length")
 
@@ -497,7 +497,7 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
       description = f"cr_vtype_agnostic (Test vta = {vta}, vma = {vma})"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul = emul, additional_no_overlap=no_overlap)
 
-      writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="random", maskval=maskval, vta=vta, vma=vma)
+      writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="random", maskval=maskval, vta=vta, vma=vma, suite="length")
       incrementLengthtestCount()
       vsAddressCount("length")
 
@@ -509,7 +509,7 @@ def make_custom_vmask_write_lmulge1(instruction, sew):
     description = f"cp_custom_vmask_write_lmulge1 (Test lmul = {lmul})"
     instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul = lmul)
 
-    writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="vlmax")
+    writeTest(description, instruction, instruction_data, sew=sew, lmul=lmul, vl="vlmax", suite="length")
     incrementLengthtestCount()
     vsAddressCount("length")
 
@@ -520,7 +520,7 @@ def make_custom_vmask_write_v0_masked(instruction, sew):
   description = "cp_custom_vmask_write_v0_masked"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), vd = 0, suite="length", additional_no_overlap=no_overlap)
 
-  writeTest(description, instruction, instruction_data, sew=sew, vl="vlmax", maskval=maskval)
+  writeTest(description, instruction, instruction_data, sew=sew, vl="vlmax", maskval=maskval, suite="length")
   incrementLengthtestCount()
   vsAddressCount("length")
 
@@ -554,7 +554,7 @@ def make_custom_gprWriting_vstart_eq_vl(instruction, sew):
   description = "cp_custom_gprWriting_vstart_eq_vl"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length")
 
-  writeTest(description, instruction, instruction_data, sew=sew, vl=0, vstart=0)
+  writeTest(description, instruction, instruction_data, sew=sew, vl=0, vstart=0, suite="length")
   incrementLengthtestCount()
   vsAddressCount("length")
 
@@ -679,7 +679,7 @@ def make_custom_element0Masked(instruction, sew):
   description = "cp_custom_element0Masked"
   instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="base", additional_no_overlap=no_overlap)
 
-  writeTest(description, instruction, instruction_data, sew=sew, vl="vlmax", maskval="ones")
+  writeTest(description, instruction, instruction_data, sew=sew, vl="vlmax", maskval="ones", suite="length")
   incrementBasetestCount()
   vsAddressCount()
 

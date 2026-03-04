@@ -6,12 +6,12 @@
 // .if (RVMODEL_PMP_GRAIN < 10)
 // Configure level 1 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 1 with RWX permissions
-//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 // .endif
 //
 // Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
 // 2. Setup a PTE at Level 0 with RWX permissions
-//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
 // .if (RVMODEL_PMP_GRAIN < 10)
 //         Total Expected Faults :: 6
@@ -21,12 +21,14 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32, Smpmp]
+# REQUIRED_EXTENSIONS: [I, Sv32]
+# params:
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pmp_on_pte_Umode.S"
+#define TEST_FILE "sv32_pmp_on_pte_Smode.S"
 #define SIGUPD_COUNT 15
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
@@ -113,7 +115,7 @@ main:
 
 
   // PTE setup for Code Region
-  SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
   sfence.vma
 
   // Save area setup for code region
@@ -128,7 +130,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
   // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-  // the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
+  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
   .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -152,11 +154,11 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 1: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  // Test case 1: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test1
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test1
 
 
   .endif
@@ -178,12 +180,12 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 2: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 2: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test2
 
 
 //---------------------------------------------------------------------------------------------------------------------------------

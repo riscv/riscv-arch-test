@@ -6,24 +6,24 @@
 // .if (RVMODEL_PMP_GRAIN < 10)
 // Configure level 4 PTE as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 4 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 // .endif
 //
 // Configure level 3 PTE as NAPOT with X permission (pmp0cfg0)
 // 2. Setup a PTE at Level 3 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
 // Configure level 2 PTE as NAPOT with X permission (pmp0cfg0)
 // 3. Setup a PTE at Level 2 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
 // Configure level 1 PTE as NAPOT with X permission (pmp0cfg0)
 // 4. Setup a PTE at Level 1 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
 // Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
 // 5. Setup a PTE at Level 0 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      → Then, in U-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
 //
 // .if (RVMODEL_PMP_GRAIN < 10)
 //         Total Expected Faults :: 15
@@ -33,12 +33,14 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Smpmp]
+# REQUIRED_EXTENSIONS: [I, Sv57]
+# params:
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv57_pmp_on_pte_Smode.S"
+#define TEST_FILE "sv57_pmp_on_pte_Umode.S"
 #define SIGUPD_COUNT 25
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
@@ -121,7 +123,7 @@ main:
 
 
   // PTE setup for Code Region
-  SUPERPAGE_PTE_SETUP_SV57(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL4)
   sfence.vma
 
   // Save area setup for code region
@@ -136,7 +138,7 @@ main:
   sfence.vma                                                             // Flush TLB
 
 // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-// the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
+// the entire root page table will lose its read/write permissions, preventing entry into U-Mode.
 .if (RVMODEL_PMP_GRAIN < 10)
 //---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -160,11 +162,11 @@ main:
 //                    256TB PAGE    Region 1 under test at level 4 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 1: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault, Instruction access fault
-  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
+  // Test case 1: Test in U-Mode | RWX bit set | expected = Store access fault, Load access fault, Instruction access fault
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL4, test1
+  TEST_CASES_RUNNER Umode, va_data, LEVEL4, test1
 
 
 .endif
@@ -186,12 +188,12 @@ main:
 //                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 2: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 2: Test in U-Mode | RWX bit set | expected = Store access fault, Load access fault, Instruction access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
-  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL3, test2
+  TEST_CASES_RUNNER Umode, va_data, LEVEL3, test2
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -212,13 +214,13 @@ main:
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 3: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 3: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test3
+  TEST_CASES_RUNNER Umode, va_data, LEVEL2, test3
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -239,14 +241,14 @@ main:
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 4: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 4: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test4
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1, test4
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -267,15 +269,15 @@ main:
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 5: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 5: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test5
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0, test5
 
 
 //---------------------------------------------------------------------------------------------------------------------------------

@@ -19,7 +19,9 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Smpmp]
+# REQUIRED_EXTENSIONS: [I, Sv57]
+# params:
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

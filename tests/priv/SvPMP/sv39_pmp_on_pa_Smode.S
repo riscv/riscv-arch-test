@@ -4,28 +4,30 @@
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
 // Configure test data region as NAPOT with RX permissions (pmp1cfg0)
-// 1-4. Setup a PTE at Level (3/2/1/0) with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: 4 Store access faults
+// 1-3. Setup a PTE at Level (2/1/0) with RWX permissions
+//      → Then, in S-Mode, the page is accessed --> required: 3 Store access faults
 //
 // Configure test data region as NAPOT with RW permissions (pmp1cfg0)
-// 5-8. Setup a PTE at Level (3/2/1/0) with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: 4 Instruction access faults
+// 4-6. Setup a PTE at Level (2/1/0) with RWX permissions
+//      → Then, in S-Mode, the page is accessed --> required: 3 Instruction access faults
 //
 // Configure test data region as NAPOT with X permission (pmp1cfg0)
-// 9-12. Setup a PTE at Level (3/2/1/0) with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: 4 Store access faults, 4 Load access faults
+// 7-9. Setup a PTE at Level (2/1/0) with RWX permissions
+//      → Then, in S-Mode, the page is accessed --> required: 3 Store access faults, 3 Load access faults
 //
-// Total Expected Faults :: 16
+// Total Expected Faults :: 12
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv48, Smpmp]
+# REQUIRED_EXTENSIONS: [I, Sv39]
+# params:
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv48_pmp_on_pa_Smode.S"
-#define SIGUPD_COUNT 45
+#define TEST_FILE "sv39_pmp_on_pa_Smode.S"
+#define SIGUPD_COUNT 35
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST
@@ -115,14 +117,14 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Virtual Address of Test section (rvtest_data_1)
-  .set va_data,               0x028500403000
+  .set va_data,               0x140802000
 
   // Virtual Address for code region
-  .set va_rvtest_code_begin,  0x030080000000
+  .set va_rvtest_code_begin,  0x180000000
 
 
   // PTE setup for Code Region
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL3)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
   // Save area setup for code region
@@ -133,7 +135,7 @@ main:
 //                                               Test Cases Start from here
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  SATP_SETUP_RV64(sv48)                                                  // Set SATP for virtualization
+  SATP_SETUP_RV64(sv39)                                                  // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -147,50 +149,37 @@ main:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rx, pmpcfg0_rx_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  // Test case 1: Test in S-Mode | RWX bit set | expected = Store access fault
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  sfence.vma
-
-  TEST_CASES_RUNNER Smode, va_data, LEVEL3, test1
-
-//---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 2: Test in S-Mode | RWX bit set | expected = Store access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  // Test case 1: Test in S-Mode | RWX bit set | expected = Store access fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test2
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test1
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 3: Test in S-Mode | RWX bit set | expected = Store access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  // Test case 2: Test in S-Mode | RWX bit set | expected = Store access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test3
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test2
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 4: Test in S-Mode | RWX bit set | expected = Store access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  // Test case 3: Test in S-Mode | RWX bit set | expected = Store access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test4
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test3
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -204,50 +193,37 @@ main:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_rw, pmpcfg0_rw_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  // Test case 5: Test in S-Mode | RWX bit set | expected = Instruction access fault
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  sfence.vma
-
-  TEST_CASES_RUNNER Smode, va_data, LEVEL3, test5
-
-//---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 6: Test in S-Mode | RWX bit set | expected = Instruction access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  // Test case 4: Test in S-Mode | RWX bit set | expected = Instruction access fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test6
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test4
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 7: Test in S-Mode | RWX bit set | expected = Instruction access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  // Test case 5: Test in S-Mode | RWX bit set | expected = Instruction access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test7
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test5
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 8: Test in S-Mode | RWX bit set | expected = Instruction access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  // Test case 6: Test in S-Mode | RWX bit set | expected = Instruction access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test8
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test6
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -261,50 +237,37 @@ main:
   RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//                    512GB PAGE    Region 1 under test at level 3 -- RWX permissions given to the region
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  // Test case 9: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  sfence.vma
-
-  TEST_CASES_RUNNER Smode, va_data, LEVEL3, test9
-
-//---------------------------------------------------------------------------------------------------------------------------------
 //                    1GB PAGE    Region 1 under test at level 2 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 10: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  // Test case 7: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test10
+  TEST_CASES_RUNNER Smode, va_data, LEVEL2, test7
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 11: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  // Test case 8: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test11
+  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test8
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 12: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
-  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  // Test case 9: Test in S-Mode | RWX bit set | expected = Store access fault, Load access fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test12
+  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test9
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -314,7 +277,7 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                            PHYSICAL ADDRESS REGION FOR TESTING
 //---------------------------------------------------------------------------------------------------------------------------------
-// Physical Address region under testing for LEVEL 0, 1, 2 and 3
+// Physical Address region under testing for LEVEL 0, 1 and 2
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)
 rvtest_data_1:
@@ -330,13 +293,11 @@ rvtest_data_1:
 .align (RVMODEL_PMP_GRAIN+2)
 //---------------------------------------------------------------------------------------------------------------------------------
 
-// Page Tables
+// Page Table
 .align 12
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 rvtest_slvl1_pg_tbl:
-    .skip(4096)
-rvtest_slvl2_pg_tbl:
     .skip(4096)
 
 canary_mismatch:  .string "Testcase signature canary mismatch!"
@@ -370,15 +331,6 @@ test8_exec_str:   .string "\"Mismatch during jalr in Test Case 8!\""
 test9_store_str:  .string "\"Mismatch during sw in Test Case 9!\""
 test9_load_str:   .string "\"Mismatch during lw in Test Case 9!\""
 test9_exec_str:   .string "\"Mismatch during jalr in Test Case 9!\""
-test10_store_str: .string "\"Mismatch during sw in Test Case 10!\""
-test10_load_str:  .string "\"Mismatch during lw in Test Case 10!\""
-test10_exec_str:  .string "\"Mismatch during jalr in Test Case 10!\""
-test11_store_str: .string "\"Mismatch during sw in Test Case 11!\""
-test11_load_str:  .string "\"Mismatch during lw in Test Case 11!\""
-test11_exec_str:  .string "\"Mismatch during jalr in Test Case 11!\""
-test12_store_str: .string "\"Mismatch during sw in Test Case 12!\""
-test12_load_str:  .string "\"Mismatch during lw in Test Case 12!\""
-test12_exec_str:  .string "\"Mismatch during jalr in Test Case 12!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

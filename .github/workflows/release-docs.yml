@@ -9,6 +9,8 @@ on:
       - "docs/**"
       - "generators/ctp/**"
       - "testplans/**"
+      - "coverpoints/norm/**"
+      - "coverpoints/param/**"
       - ".github/workflows/release-docs.yml"
 
 permissions:

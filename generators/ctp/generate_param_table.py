@@ -474,7 +474,8 @@ def main() -> None:
     if args.norm_dir:
         norm_dir = Path(args.norm_dir)
         if not norm_dir.exists():
-            norm_dir = None
+            print(f"Error: specified norm directory does not exist: {norm_dir}", file=sys.stderr)
+            sys.exit(2)
     else:
         script_dir = Path(__file__).resolve().parent
         repo_root_candidate = script_dir.parent.parent

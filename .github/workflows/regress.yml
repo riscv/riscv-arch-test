@@ -305,9 +305,6 @@ jobs:
 
       - run: git submodule update --init docs/docs-resources external/riscv-unified-db
 
-      - name: Pull Container
-        run: docker pull riscvintl/riscv-docs-base-container-image:latest
-
       - name: Build CTP
         run: cd docs/ctp && make -j2
 
@@ -318,9 +315,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - run: git submodule update --init docs/docs-resources
-
-      - name: Pull Container
-        run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       - name: Build CRD
         run: cd docs/crd && make -j2

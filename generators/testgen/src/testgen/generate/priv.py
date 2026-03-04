@@ -19,6 +19,7 @@ from testgen.priv.registry import (
     get_priv_test_defines,
     get_priv_test_generator,
     get_priv_test_march_extensions,
+    get_priv_test_params,
     get_priv_test_required_extensions,
 )
 
@@ -45,6 +46,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         config_dependent=True,
         required_extensions=get_priv_test_required_extensions(testsuite),
         march_extensions=get_priv_test_march_extensions(testsuite),
+        extra_params=get_priv_test_params(testsuite),
     )
 
     # Create test data

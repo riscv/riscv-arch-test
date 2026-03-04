@@ -198,6 +198,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
             f"    LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"    addi x{addr_reg}, x{addr_reg}, 1",
             f"    LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
+            f"    LI(x{rd_reg}, 0xDECAFCAB)",
             test_data.add_testcase("sc.w_off1_priority", coverpoint, covergroup),
             f"    lr.w x{rd_reg}, (x{addr_reg})",
             "     nop",
@@ -207,6 +208,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
             "     nop",
             "#if __riscv_xlen == 64",
             f"    LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",  # Match original value
+            f"    LI(x{rd_reg}, 0xDECAFCAB)",
             test_data.add_testcase("sc.d_off1_priority", coverpoint, covergroup),
             f"    lr.d x{rd_reg}, (x{addr_reg})",
             "     nop",

@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 

@@ -72,25 +72,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download CTP PDF
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ctp.pdf
           path: ./
 
       - name: Download CTP HTML
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ctp.html
           path: ./
 
       - name: Download CRD PDFs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: crd-pdf
           path: ./
 
       - name: Download CRD HTMLs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: crd-html
           path: ./
@@ -129,13 +129,13 @@ jobs:
           sparse-checkout: docs/pages
 
       - name: Download CTP HTML
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ctp.html
           path: docs/pages
 
       - name: Download CRD HTMLs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: crd-html
           path: docs/pages/crd

@@ -1,13 +1,51 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
 <!doctype html>
-<html>
+<html lang="en-us">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RISC-V Certification Documentation</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
-    <h1>RISC-V Certification Documentation</h1>
-    <ul>
-      <li><a href="ctp.html">Certification Test Plan (CTP)</a></li>
-      <li><a href="crd/">Certification Requirements Documents (CRDs)</a></li>
-    </ul>
+    <div class="container my-5">
+      <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <h1 class="text-body-emphasis">RISC-V Certification Documentation</h1>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col">
+          <h3>Certification Test Plan (CTP)</h3>
+          <p>
+            The CTP describes the test methodology and coverpoints used to
+            certify RISC-V implementations.
+          </p>
+          <ul>
+            <li><a href="ctp.html">CTP</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col">
+          <h3>Certification Requirements Documents (CRDs)</h3>
+          <p>
+            CRDs define the requirements that a RISC-V implementation must meet
+            for certification.
+          </p>
+          <ul>
+            <li><a href="crd/rvi20_crd.html">RVI20 CRD</a></li>
+            <li><a href="crd/mc100_crd.html">MC100 CRD</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

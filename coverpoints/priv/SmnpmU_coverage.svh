@@ -119,5 +119,5 @@ covergroup SmnpmU_cg with function sample(ins_t ins);
 endgroup
 
 function void smnpmu_sample(int hart, int issue, ins_t ins);
-    SmnpmU_cg.sample(ins);
+SmnpmU_cg.sample(ins);
 endfunction

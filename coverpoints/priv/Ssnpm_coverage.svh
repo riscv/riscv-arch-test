@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written:
+// Written:ammarahwakeel9@gmail.com
 //
 // Copyright (C) : 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
@@ -78,11 +78,11 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         bins misaligned = {[3'b001:3'b111]};
     }
 
-    mode_satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
+    mode_satp_pa: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
         bins bare = {4'b0000};
     }
 
-    mode_satp_va: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
+    mode_satp_va: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
         `ifdef SV39
         bins sv39 = {4'b1000};
         `endif
@@ -94,7 +94,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         `endif
     }
 
-    mode_satp_rv64: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "satp", "mode") {
+    mode_satp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
         bins bare = {4'b0000};
         `ifdef SV39
         bins sv39 = {4'b1000};
@@ -112,8 +112,8 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         bins enabled_11  = {2'b11};
     }
 
-    amo_op: coverpoint ins.current.insn
-    iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "A") == 1'b1) {
+    `ifdef ZAAMO_SUPPORTED
+    amo_op: coverpoint ins.current.insn {
         wildcard bins amoadd  = {AMOADD_W};
         wildcard bins amoswap = {AMOSWAP_W};
         wildcard bins amoxor  = {AMOXOR_W};
@@ -121,6 +121,7 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         wildcard bins amoswap_d = {AMOSWAP_D};
         wildcard bins amoxor_d  = {AMOXOR_D};
     }
+    `endif
 
     exec_op: coverpoint ins.current.insn {
         wildcard bins jal = {JAL};
@@ -131,16 +132,12 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         bins enabled  = {1'b1};
     }
 
-   uxlen: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl")
-   iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "mxl") == 2'b10){
-        bins xlen_32 = {2'b01};
-        bins xlen_64 = {2'b10};
-    }
-
     cp_pmlen_masking_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64,  write_instr;
     cp_pmlen_masking_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, read_instr;
+    `ifdef ZAAMO_SUPPORTED
     cp_effective_address_explicit_write: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, write_instr, amo_op ;
     cp_effective_address_explicit_read: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, read_instr, amo_op ;
+    `endif
     cp_effective_address_fetch: cross priv_mode_u, senvcfg_pmm,mode_satp_bare, exec_op ;
     cp_virtual_address_sign_extension_write: cross priv_mode_u, senvcfg_pmm, mode_satp_va, write_instr ;
     cp_virtual_address_sign_extension_read: cross priv_mode_u, senvcfg_pmm, mode_satp_va, read_instr ;
@@ -156,11 +153,9 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
     cp_pm_misaligned_word_read: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, misalign_read_instr_word,  misaligned_word ;
     cp_pm_misaligned_double_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, misalign_write_instr_double, misaligned_double ;
     cp_pm_misaligned_double_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, misalign_read_instr_double, misaligned_double ;
-    cp_pm_effective_xlen_constraint_write: cross priv_mode_u, senvcfg_pmm,  mode_satp_rv64, uxlen,  write_instr;
-    cp_pm_effective_xlen_constraint_read: cross priv_mode_u, senvcfg_pmm,  mode_satp_rv64, uxlen, read_instr;
 
-    endgroup
+endgroup
 
-    function void Ssnpm_sample(int hart, int issue, ins_t ins);
-    Ssnpm_cg.sample(ins);
+function void ssnpm_sample(int hart, int issue, ins_t ins);
+Ssnpm_cg.sample(ins);
 endfunction

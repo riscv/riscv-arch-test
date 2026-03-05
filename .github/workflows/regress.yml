@@ -185,7 +185,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
@@ -276,7 +276,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: qemu-${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs

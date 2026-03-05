@@ -132,27 +132,27 @@ covergroup Ssnpm_cg with function sample(ins_t ins);
         bins enabled  = {1'b1};
     }
 
-    cp_pmlen_masking_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64,  write_instr;
-    cp_pmlen_masking_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, read_instr;
+    cp_pmlen_masking_write: cross priv_mode_u, senvcfg_pmm, mode_satp,  write_instr;
+    cp_pmlen_masking_read: cross priv_mode_u, senvcfg_pmm, mode_satp, read_instr;
     `ifdef ZAAMO_SUPPORTED
-    cp_effective_address_explicit_write: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, write_instr, amo_op ;
-    cp_effective_address_explicit_read: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, read_instr, amo_op ;
+    cp_effective_address_explicit_write: cross priv_mode_u, senvcfg_pmm,mode_satp, write_instr, amo_op ;
+    cp_effective_address_explicit_read: cross priv_mode_u, senvcfg_pmm,mode_satp, read_instr, amo_op ;
     `endif
-    cp_effective_address_fetch: cross priv_mode_u, senvcfg_pmm,mode_satp_bare, exec_op ;
+    cp_effective_address_fetch: cross priv_mode_u, senvcfg_pmm,mode_satp_pa, exec_op ;
     cp_virtual_address_sign_extension_write: cross priv_mode_u, senvcfg_pmm, mode_satp_va, write_instr ;
     cp_virtual_address_sign_extension_read: cross priv_mode_u, senvcfg_pmm, mode_satp_va, read_instr ;
-    cp_physical_address_zero_extension_write: cross priv_mode_u, senvcfg_pmm, mode_satp_bare ,  write_instr;
-    cp_physical_address_zero_extension_read: cross priv_mode_u, senvcfg_pmm, mode_satp_bare , read_instr;
-    cp_mask_priv_mode_only_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64,   write_instr;
-    cp_mask_priv_mode_only_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64,  read_instr ;
+    cp_physical_address_zero_extension_write: cross priv_mode_u, senvcfg_pmm, mode_satp_pa ,  write_instr;
+    cp_physical_address_zero_extension_read: cross priv_mode_u, senvcfg_pmm, mode_satp_pa , read_instr;
+    cp_mask_priv_mode_only_write: cross priv_mode_u, senvcfg_pmm, mode_satp,   write_instr;
+    cp_mask_priv_mode_only_read: cross priv_mode_u, senvcfg_pmm, mode_satp,  read_instr ;
     cp_pm_mxr_disable_write: cross priv_mode_u, senvcfg_pmm, mxr_bit, mode_satp_va,  write_instr ;
     cp_pm_mxr_disable_read: cross priv_mode_u, senvcfg_pmm, mxr_bit, mode_satp_va, read_instr ;
-    cp_pm_misaligned_half_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, misalign_write_instr_half, misaligned_half ;
-    cp_pm_misaligned_half_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64,  misalign_read_instr_half, misaligned_half ;
-    cp_pm_misaligned_word_write: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64,  misalign_write_instr_word,  misaligned_word ;
-    cp_pm_misaligned_word_read: cross priv_mode_u, senvcfg_pmm,mode_satp_rv64, misalign_read_instr_word,  misaligned_word ;
-    cp_pm_misaligned_double_write: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, misalign_write_instr_double, misaligned_double ;
-    cp_pm_misaligned_double_read: cross priv_mode_u, senvcfg_pmm, mode_satp_rv64, misalign_read_instr_double, misaligned_double ;
+    cp_pm_misaligned_half_write: cross priv_mode_u, senvcfg_pmm, mode_satp, misalign_write_instr_half, misaligned_half ;
+    cp_pm_misaligned_half_read: cross priv_mode_u, senvcfg_pmm, mode_satp,  misalign_read_instr_half, misaligned_half ;
+    cp_pm_misaligned_word_write: cross priv_mode_u, senvcfg_pmm,mode_satp,  misalign_write_instr_word,  misaligned_word ;
+    cp_pm_misaligned_word_read: cross priv_mode_u, senvcfg_pmm,mode_satp, misalign_read_instr_word,  misaligned_word ;
+    cp_pm_misaligned_double_write: cross priv_mode_u, senvcfg_pmm, mode_satp, misalign_write_instr_double, misaligned_double ;
+    cp_pm_misaligned_double_read: cross priv_mode_u, senvcfg_pmm, mode_satp, misalign_read_instr_double, misaligned_double ;
 
 endgroup
 

@@ -34,13 +34,13 @@ jobs:
         run: cd docs/ctp && make -j2
 
       - name: Upload CTP PDF
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ctp.pdf
           path: docs/ctp/build/ctp.pdf
 
       - name: Upload CTP HTML
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ctp.html
           path: docs/ctp/build/ctp.html
@@ -56,13 +56,13 @@ jobs:
         run: cd docs/crd && make -j2
 
       - name: Upload CRD PDFs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: crd-pdf
           path: docs/crd/build/*.pdf
 
       - name: Upload CRD HTMLs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: crd-html
           path: docs/crd/build/*.html

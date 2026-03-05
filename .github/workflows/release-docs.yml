@@ -1,0 +1,150 @@
+name: Build & Deploy Certification Documents
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - act4
+    paths:
+      - "docs/**"
+      - "generators/ctp/**"
+      - "testplans/**"
+      - "coverpoints/norm/**"
+      - "coverpoints/param/**"
+      - ".github/workflows/release-docs.yml"
+
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-ctp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - run: git submodule update --init docs/docs-resources external/riscv-unified-db
+
+      - name: Build CTP
+        run: cd docs/ctp && make -j2
+
+      - name: Upload CTP PDF
+        uses: actions/upload-artifact@v6
+        with:
+          name: ctp.pdf
+          path: docs/ctp/build/ctp.pdf
+
+      - name: Upload CTP HTML
+        uses: actions/upload-artifact@v6
+        with:
+          name: ctp.html
+          path: docs/ctp/build/ctp.html
+
+  build-crd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - run: git submodule update --init docs/docs-resources
+
+      - name: Build CRD
+        run: cd docs/crd && make -j2
+
+      - name: Upload CRD PDFs
+        uses: actions/upload-artifact@v6
+        with:
+          name: crd-pdf
+          path: docs/crd/build/*.pdf
+
+      - name: Upload CRD HTMLs
+        uses: actions/upload-artifact@v6
+        with:
+          name: crd-html
+          path: docs/crd/build/*.html
+
+  release:
+    needs: [build-ctp, build-crd]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download CTP PDF
+        uses: actions/download-artifact@v7
+        with:
+          name: ctp.pdf
+          path: ./
+
+      - name: Download CTP HTML
+        uses: actions/download-artifact@v7
+        with:
+          name: ctp.html
+          path: ./
+
+      - name: Download CRD PDFs
+        uses: actions/download-artifact@v7
+        with:
+          name: crd-pdf
+          path: ./
+
+      - name: Download CRD HTMLs
+        uses: actions/download-artifact@v7
+        with:
+          name: crd-html
+          path: ./
+
+      - name: Get current date
+        run: |
+          echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
+        with:
+          draft: false
+          prerelease: ${{ github.event_name != 'workflow_dispatch' }}
+          make_latest: true
+          tag_name: cert-docs-${{ env.CURRENT_DATE }}-${{ env.SHORT_SHA }}
+          name: "Certification Documents ${{ env.CURRENT_DATE }}: ${{ env.SHORT_SHA }}"
+          body: "Automated release of the certification documents (CTP & CRD) built on ${{ env.CURRENT_DATE }} from commit ${{ env.SHORT_SHA }}."
+          files: |
+            ctp.pdf
+            ctp.html
+            rvi20_crd.pdf
+            rvi20_crd.html
+            mc100_crd.pdf
+            mc100_crd.html
+
+  deploy-pages:
+    needs: [build-ctp, build-crd]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: docs/pages
+
+      - name: Download CTP HTML
+        uses: actions/download-artifact@v7
+        with:
+          name: ctp.html
+          path: docs/pages
+
+      - name: Download CRD HTMLs
+        uses: actions/download-artifact@v7
+        with:
+          name: crd-html
+          path: docs/pages/crd
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/pages
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

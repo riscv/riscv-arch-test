@@ -11,7 +11,7 @@
 
 
 `define COVER_SMMPM
-covergroup smmpm_cg with function sample(ins_t ins);
+covergroup Smmpm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -171,5 +171,5 @@ covergroup smmpm_cg with function sample(ins_t ins);
 endgroup
 
 function void smmpm_sample(int hart, int issue, ins_t ins);
-smmpm_cg.sample(ins);
+Smmpm_cg.sample(ins);
 endfunction

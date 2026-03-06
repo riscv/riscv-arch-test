@@ -222,17 +222,69 @@
 
 
 
-// RVTEST_SIGUPD_V(_SIG_PTR, _TMP, AVL, SEW, VREG)
-//  _SIG_PTR  - Base register for signature region
-//  _TEMP_REG - Temporary int register to use for loading signature
-//   AVL       - Application vector length (immediate constant)
-//   SEW       - Element width in bits (8, 16, 32, or 64)
-//   VREG      - Vector register containing data
-// TODO: implement SELFCHECK version
-// RVTEST_SIGUPD_V(sigptr, linkreg, tempreg, vtmp, mtmp, offset, vreg, strptr)
+// RVTEST_SIGUPD_V(cmp, sigptr, linkreg, tempreg,
+//                 vtmp, mtmp, sew, offset, vreg, instptr, strptr)
+//
+// This macro either compares a vector register against the reference
+// signature (SELFCHECK mode) or stores the vector register to the
+// signature (non-SELFCHECK mode).
+//
+// In SELFCHECK mode:
+//   1. The reference vector is loaded from memory at 0(sigptr) into vtmp.
+//   2. The comparison operation cmp is executed between vreg (the register
+//      under test) and the loaded reference. The cmp instruction must produce
+//      a mask register mtmp where:
+//         - mtmp[i] = 1  → mismatch
+//         - mtmp[i] = 0  → match
+//      Typical examples:
+//         vmsne.vv  (for data vector comparison)
+//         vmxor.mm  (for mask register comparison)
+//
+//   3. vfirst.m searches the mismatch mask (mtmp) for the first set bit.
+//      - If no mismatches exist, vfirst.m returns -1 and execution continues.
+//      - If any mismatch exists, the macro jumps to a failure handler.
+//
+//   4. On failure:
+//      - The reference word at 0(sigptr) is loaded to tempreg.
+//      - Control jumps to a failure handler label constructed from
+//        linkreg and tempreg.
+//      - instptr and strptr are emitted so that the failing instruction
+//        address and descriptive string can be recovered.
+//
+//   5. On success:
+//      - sigptr is advanced by offset.
+//
+// In non-SELFCHECK mode:
+//   - The macro simply stores the vector register vreg to memory at
+//     0(sigptr) using vse{sew}.v.
+//   - No comparisons are performed.
+//   - sigptr is advanced by offset.
+//
+// offset is calculated in vector-testgen.py due to the complexity of
+// computing the correct signature stride for different SEW/LMUL settings.
+//
+// Assumptions:
+//   - For mask producing instructions, the default SEW is 8.
+//   - vfirst.m returns -1 if no bits are set and >=0 otherwise.
+//   - Base suite only test for vl = 1 with ta and ma, so the macro only
+//     checks for mismatches in the first element for simplicity.
+//
+// Parameters:
+//   _CMP        - Vector comparison instruction producing mismatch mask
+//   _SIG_PTR    - Base register for signature region
+//   _LINK_REG   - Link register used for failure jump
+//   _TEMP_REG   - Temporary scalar register
+//   _VTMP       - Temporary vector register used to load reference data
+//   _MTMP       - Mask register holding mismatch results
+//   _SEW        - Element width
+//   _OFFSET     - Signature stride (computed in vector-testgen.py)
+//   _VREG       - Vector register under test
+//   _INST_PTR   - Label of instruction under test
+//   _STR_PTR    - Label to descriptive string
 
 #ifdef SELFCHECK
-    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR) \
+    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
+        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
         .option push                                                ;\
         .option norvc                                               ;\
         vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                         ;\
@@ -248,7 +300,8 @@
         addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
         .option pop
 #else
-    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR) \
+    #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
+        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
         .option push                                                ;\
         .option norvc                                               ;\
         vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                         ;\
@@ -266,8 +319,8 @@
 #endif
 
 
-// RVTEST_SIGUPD_V_LEN_{DATA/MASK} (sigptr, linkreg, tempreg, maskreg,
-//                     vtmp, vtmp2, mtmp, vreg, sew, lmul, offset, instptr, strptr)
+// RVTEST_SIGUPD_V_LEN(sigptr, linkreg, tempreg, maskreg, vtmp, vtmp2, mtmp, vr,
+//                     maskprod_flag, masked_flag, sew, lmul, offset, instptr, strptr)
 //
 // Compares the vector register vreg against the reference signature stored at
 // memory location 0(sigptr). The comparison is performed element-wise using

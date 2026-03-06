@@ -17,7 +17,7 @@ Usage:
 Defaults:
     yaml: coverpoints/param
     udb:  external/riscv-unified-db/spec/std/isa/param
-    out:  docs/ctp/src/param/
+    out:  docs/ctp/build/generated/param/
 
 The script generates:
   - One .adoc file per YAML in coverpoints/param with parameter tables
@@ -410,7 +410,8 @@ def main() -> None:
     p.add_argument(
         "--udb", default="external/riscv-unified-db/spec/std/isa/param", help="Path to UDB parameter directory"
     )
-    p.add_argument("--out", default="docs/ctp/src/param/", help="Output directory for ASCIIDoc files")
+    p.add_argument("--out", default="docs/ctp/build/generated/param/", help="Output directory for ASCIIDoc files")
+    p.add_argument("--norm-dir", default=None, help="Path to norm rules directory (for placeholder generation)")
     args = p.parse_args()
 
     # Resolve paths relative to script directory if needed
@@ -467,21 +468,26 @@ def main() -> None:
 
     # Also produce a placeholder .adoc for any extension that has a norm adoc
     # but lacks a corresponding input YAML in the provided yaml source directory.
-    # We treat files named "<base>_norm_rules.adoc" in docs/ctp/src/norm as extensions.
+    # We treat files named "<base>_norm_rules.adoc" in the norm directory as extensions.
 
-    # Resolve norm directory relative to repository layout
-    script_dir = Path(__file__).resolve().parent
-    # Prefer top-level docs/ctp/src/norm relative to the repo (sibling of generators)
-    repo_root_candidate = script_dir.parent.parent  # .../riscv-arch-test-dh
-    norm_dir_candidates = [
-        repo_root_candidate / "docs" / "ctp" / "src" / "norm",
-        (Path.cwd() / "src" / "norm"),
-    ]
-    norm_dir = None
-    for cand in norm_dir_candidates:
-        if cand.exists():
-            norm_dir = cand
-            break
+    # Resolve norm directory
+    if args.norm_dir:
+        norm_dir = Path(args.norm_dir)
+        if not norm_dir.exists():
+            print(f"Error: specified norm directory does not exist: {norm_dir}", file=sys.stderr)
+            sys.exit(2)
+    else:
+        script_dir = Path(__file__).resolve().parent
+        repo_root_candidate = script_dir.parent.parent
+        norm_dir_candidates = [
+            repo_root_candidate / "docs" / "ctp" / "build" / "generated" / "norm",
+            (Path.cwd() / "build" / "generated" / "norm"),
+        ]
+        norm_dir = None
+        for cand in norm_dir_candidates:
+            if cand.exists():
+                norm_dir = cand
+                break
 
     if norm_dir is None:
         print("Warning: norm directory not found; skipping placeholder generation", file=sys.stderr)

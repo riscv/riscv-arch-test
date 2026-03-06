@@ -573,19 +573,19 @@ def make_custom_voffgroup_vr(instruction, sew, lmul, vr):
           vs2 = randomizeOngroupVectorRegister(instruction, v, vd, math.floor(v/lmul) * lmul, lmul=lmul)
         else:
           vs2 = randomizeOngroupVectorRegister(instruction, v, vd, lmul=lmul)
-        instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = v, suite="base", lmul = lmul)
+        instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = v, suite="length", lmul = lmul)
       elif vr == "vs2":
         vd  = randomizeOngroupVectorRegister(instruction, v, lmul=lmul)
         vs1 = randomizeOngroupVectorRegister(instruction, v, vd, lmul=lmul)
-        instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = v, vs1 = vs1, suite="base", lmul = lmul)
+        instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), vd = vd, vs2 = v, vs1 = vs1, suite="length", lmul = lmul)
       else: # vd
         vs2 = randomizeOngroupVectorRegister(instruction, v, lmul=lmul)
         vs1 = randomizeOngroupVectorRegister(instruction, v, vs2, lmul=lmul)
-        instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = v, vs2 = vs2, vs1 = vs1, suite="base", lmul = lmul)
+        instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), vd = v, vs2 = vs2, vs1 = vs1, suite="length", lmul = lmul)
 
-      writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=lmul)
-      incrementBasetestCount()
-      vsAddressCount()
+      writeTest(description, instruction, cp, instruction_data, sew=sew, vl="vlmax", lmul=lmul, suite="length")
+      incrementLengthtestCount()
+      vsAddressCount("length")
 
 def make_custom_gprWriting_vstart_eq_vl(instruction, sew):
   description = "cp_custom_gprWriting_vstart_eq_vl"

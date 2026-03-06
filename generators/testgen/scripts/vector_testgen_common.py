@@ -1278,7 +1278,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
 
     global sigupd_count
 
-    if (avl == "random" or avl == "vlmax" or testtype == "length"):
+    if (avl == "random" or avl == "vlmax" or testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr))):
       avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
     if (avl == 1):
       sigupd_count += avl * 2  # Increment counter on each call
@@ -1367,14 +1367,15 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
     fullOffsets = offset // 2047
 
     if sig_whole_register_store:
-      writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
+      #writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
+      pass
 
     if masked == False:
       masked_flag = 0
     else:
       masked_flag = 1
 
-    if testtype == "length":
+    if testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr)):
       if offset > 2047:
         if vd_mask:
           writeLine(
@@ -1453,7 +1454,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
     register              = register_data['reg']
     register_val_pointer  = register_data['val_pointer']
     register_value        = register_data['val']
-    register_emul         = int(lmul * register_data['size_multiplier'] * register_data['segments'] * vext_multiplier)
+    register_emul         = int(instruction[3]) if instruction in whole_register_move else int(lmul * register_data['size_multiplier'] * register_data['segments'] * vext_multiplier)
 
     if register_data['reg_type'] == "mask" : register_sew = 8
     if instruction in vector_ls_ins        :
@@ -1500,6 +1501,8 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
         if instruction == "vmadc.vi" and register_argument_name == 'vd':
           print(f"unique vtype for register_emul {register_emul} for vd")
         writeLine(f"vsetvli x0, x{avlReg}, e{register_sew}, m{max(register_emul, 1)}, tu, mu", f"# set unique vtype with lmul {register_emul} for load")
+      elif instruction in whole_register_move:
+        writeLine(f"vsetvli x{avlReg}, x0, e{register_sew}, m{register_emul}, tu, mu", f"# set unique vtype with lmul {register_emul} and vl = VLMAX for whole register move load")
       else:
         writeLine(f"vsetvli x0, x{avlReg}, e{max(register_sew, sew)}, m1, tu, mu", "# set lmul to 1 for load") # we do a max of sew an register_sew to ensure masks load with sew and scalars load with their eew so both load exactly a whole register when desired
 
@@ -1684,9 +1687,9 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (test in vd_widen_ins) or (test in wvsins):
       writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
-    elif (test in maskins):
+    elif (test in maskins) or (test in vmlogicalins) or (test in mmins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
-    elif (test in xvtype):
+    elif (test in xvtype) or (test in xvmtype):
       writeSIGUPD(inst_ptr, rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
@@ -1921,7 +1924,7 @@ def writeTest(description, instruction, cp, instruction_data,
 
     # --- special handling: preload vd at VLMAX for length-suite tests ---
     vd_preloaded = False
-    if suite == "length":
+    if suite == "length" and (instruction not in xvtype and instruction not in xvmtype):
       # pick temporary regs avoiding conflicts
       tempVlmax = 7
       while tempVlmax in scalar_registers_used:
@@ -1939,6 +1942,27 @@ def writeTest(description, instruction, cp, instruction_data,
       # actually perform load for vd (pass through loadVecReg)
       scalar_registers_used = loadVecReg(instruction, 'vd', vector_register_data, sew, lmul, *scalar_registers_used)
       vd_preloaded = True
+      # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
+
+    vs2_preloaded = False
+    if suite == "length" and (instruction in whole_register_move):
+      # pick temporary regs avoiding conflicts
+      tempVlmax = 7
+      while tempVlmax in scalar_registers_used:
+        tempVlmax = randint(1,31)
+      scalar_registers_used.append(tempVlmax)
+
+      tempReg2 = 5
+      while tempReg2 in scalar_registers_used:
+        tempReg2 = randint(1,31)
+      scalar_registers_used.append(tempReg2)
+
+      # set vtype to VLMAX for vd load
+      lmulflag = getLmulFlag(lmul)
+      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load hereeeee")
+      # actually perform load for vd (pass through loadVecReg)
+      scalar_registers_used = loadVecReg(instruction, 'vs2', vector_register_data, sew, lmul, *scalar_registers_used)
+      vs2_preloaded = True
       # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
 
     scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, *scalar_registers_used)
@@ -1965,7 +1989,7 @@ def writeTest(description, instruction, cp, instruction_data,
       elif argument == 'imm':
         testline = testline + f"{imm_val}"
       elif argument[0] == 'v':
-        if not (argument == 'vd' and vd_preloaded): # skip loading vd if we already preloaded it with VLMAX
+        if not (argument == 'vd' and vd_preloaded) and not (argument == 'vs2' and vs2_preloaded): # skip loading vd if we already preloaded it with VLMAX
           scalar_registers_used = loadVecReg(instruction, argument, vector_register_data, sew, lmul, *scalar_registers_used)
         testline = testline + f"v{vector_register_data[argument]['reg']}"
       elif argument[0] == 'r':

@@ -1498,8 +1498,6 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       writeLine(f"csrr x{vtypeReg}, vtype", "# save vtype register for after load")
       writeLine(f"csrr x{avlReg}, vl",      "# save vl register for after load")
       if register_emul != 1 and "ext.vf" in instruction:
-        if instruction == "vmadc.vi" and register_argument_name == 'vd':
-          print(f"unique vtype for register_emul {register_emul} for vd")
         writeLine(f"vsetvli x0, x{avlReg}, e{register_sew}, m{max(register_emul, 1)}, tu, mu", f"# set unique vtype with lmul {register_emul} for load")
       elif instruction in whole_register_move:
         writeLine(f"vsetvli x{avlReg}, x0, e{register_sew}, m{register_emul}, tu, mu", f"# set unique vtype with lmul {register_emul} and vl = VLMAX for whole register move load")

@@ -384,7 +384,7 @@
         csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                                            \
+        vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                            \
         /* Load reference from signature and compute mismatch mask */                                               \
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
@@ -438,7 +438,7 @@
         beqz        _LINK_REG, 10f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
         vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
-        vmnand.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
+        vmandn.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
         /* Extract and check vma policy */                                                                          \
         srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vta = vtype[7] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
@@ -481,7 +481,7 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                                            \
+        vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                            \
         /* Load reference from signature and compute mismatch mask */                                               \
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \

@@ -97,7 +97,10 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   "vlseg3e32.v",
   "vlseg4e32.v",
   "vsseg3e64.v",
-  "vsseg3e32.v"
+  "vsseg3e32.v",
+  "vwredusum.vs",
+  "vwredsum.vs",
+  "vwredsumu.vs",
 
 ]
 

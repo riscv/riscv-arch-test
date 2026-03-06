@@ -1502,7 +1502,8 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       elif instruction in whole_register_move:
         writeLine(f"vsetvli x{avlReg}, x0, e{register_sew}, m{register_emul}, tu, mu", f"# set unique vtype with lmul {register_emul} and vl = VLMAX for whole register move load")
       else:
-        writeLine(f"vsetvli x0, x{avlReg}, e{max(register_sew, sew)}, m1, tu, mu", "# set lmul to 1 for load") # we do a max of sew an register_sew to ensure masks load with sew and scalars load with their eew so both load exactly a whole register when desired
+        if register_argument_name != "vd":
+          writeLine(f"vsetvli x0, x{avlReg}, e{max(register_sew, sew)}, m1, tu, mu", "# set lmul to 1 for load") # we do a max of sew an register_sew to ensure masks load with sew and scalars load with their eew so both load exactly a whole register when desired
 
     load_vls_random_corner = register_val_pointer == "vs_corner_random_within_2vlmax"
 
@@ -1935,7 +1936,10 @@ def writeTest(description, instruction, cp, instruction_data,
       scalar_registers_used.append(tempReg2)
 
       # set vtype to VLMAX for vd load
-      lmulflag = getLmulFlag(lmul)
+      if lmul < 1:
+        lmulflag = getLmulFlag(1) # for LMUL fractional cases we still want to load with LMUL=1 to get VLMAX number of elements loaded
+      else:
+        lmulflag = getLmulFlag(lmul)
       writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
       # actually perform load for vd (pass through loadVecReg)
       scalar_registers_used = loadVecReg(instruction, 'vd', vector_register_data, sew, lmul, *scalar_registers_used)

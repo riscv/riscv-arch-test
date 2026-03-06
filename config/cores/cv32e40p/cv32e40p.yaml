@@ -80,8 +80,8 @@ params:
   MARCHID_IMPLEMENTED: true              # VERIFIED — control_status_registers.rst: marchid (0xF12) is implemented
   MIMPID_IMPLEMENTED: true               # VERIFIED — core_versions.rst:117 mimpid=0 is a deliberate version encoding for baseline config; RTL non-FPU path groups it with mtval as "unimplemented" (misleading comment) but FPU path cs_registers.sv:511-512 confirms it is implemented with conditional value
   PMA_GRANULARITY: 2                     # QUESTIONABLE — no PMA hardware exists in RTL (no PMA checker, no PMA table, zero occurrences of "PMA" in RTL or docs); schema minimum is 2 (=4 bytes); OBI bus is 32-bit with byte enables (load_store_unit.sv:41 data_be_o[3:0]) making 4 bytes the natural minimum transaction granule
-     # PMP (Section 9 — PMP)
-  NUM_PMP_ENTRIES: 0                     # VERIFIED — cv32e40p_if_stage.sv:176 "PMP is not supported in CV32E40P"
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: false            # VERIFIED — perf_counters.rst:130-133: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
 
   # HPM Counters (Section 8 — HPM Counters)
   HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cs_registers.sv:1327-1342: 16 events defined (hpm_events[0..15]); for baseline config (no COREV_CLUSTER, no APU/FPU) events 0-10 are active, events 11-15 are hardwired 0

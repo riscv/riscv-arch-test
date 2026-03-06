@@ -223,37 +223,6 @@
   // Failure detection data (strings and scratch space)
   RVTEST_FAILURE_DATA
 
-  // Failure strings for the trap handler
-  sv_Mvect_str:         .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
-  sv_Sect_str:          .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
-  sv_Hvect_str:         .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
-  sv_Vvect_str:         .string "\"Mismatch in trap vector signature! Trap was being handled in VS-Mode.\"";
-  sv_Mcause_str:        .string "\"Mismatch in mcause value! Trap was being handled in M-Mode.\"";
-  sv_Scause_str:        .string "\"Mismatch in scause value! Trap was being handled in S-Mode.\"";
-  sv_Hcause_str:        .string "\"Mismatch in scause value! Trap was being handled in HS-Mode.\"";
-  sv_Vcause_str:        .string "\"Mismatch in vscause value! Trap was being handled in VS-Mode.\"";
-  sv_Mepc_str:          .string "\"Mismatch in mepc value! Trap was being handled in M-Mode.\"";
-  sv_Sepc_str:          .string "\"Mismatch in sepc value! Trap was being handled in S-Mode.\"";
-  sv_Hepc_str:          .string "\"Mismatch in sepc value! Trap was being handled in HS-Mode.\"";
-  sv_Vepc_str:          .string "\"Mismatch in vsepc value! Trap was being handled in VS-Mode.\"";
-  sv_Mtval_str:         .string "\"Mismatch in mtval value! Trap was being handled in M-Mode.\"";
-  sv_Stval_str:         .string "\"Mismatch in stval value! Trap was being handled in S-Mode.\"";
-  sv_Htval_str:         .string "\"Mismatch in stval value! Trap was being handled in HS-Mode.\"";
-  sv_Vtval_str:         .string "\"Mismatch in vstval value! Trap was being handled in VS-Mode.\"";
-  sv_Mtval2_str:        .string "\"Mismatch in mtval2 value! Trap was being handled in M-Mode.\"";
-  sv_Mtinst_str:        .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
-  sv_Mip_str:           .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
-  sv_Sip_str:           .string "\"Mismatch in sip value! Trap was being handled in S-Mode.\"";
-  sv_Hip_str:           .string "\"Mismatch in hip value! Trap was being handled in HS-Mode.\"";
-  sv_Vip_str:           .string "\"Mismatch in vsip value! Trap was being handled in VS-Mode.\"";
-  Mclr_Mext_int_str:    .string "\"Mismatch in machine external interrupt ID! Trap was being handled in M-Mode.\"";
-  Mclr_Sext_int_str:    .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
-  Sclr_Sext_int_str:    .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
-  Hclr_Sext_int_str:    .string "\"Mismatch in hypervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
-  Mclr_Vext_int_str:    .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
-  Hclr_Vext_int_str:    .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
-  Vclr_Vext_int_str:    .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
-
   // End of data region
   .global rvtest_data_end
   rvtest_data_end:
@@ -277,37 +246,36 @@
   .global rvtest_sig_begin
   rvtest_sig_begin:
 
-    // Create canary at beginning of signature region to detect overwrites
-    sig_begin_canary:
-      CANARY
-
     // Main signature region
-    signature_base:
-      #ifdef RVTEST_SELFCHECK
-        // Preload signature region with correct values for self-checking
-        #include SIGNATURE_FILE
-      #else
+    #ifdef RVTEST_SELFCHECK
+        signature_base:
+          // Preload signature region with correct values for self-checking
+          #include SIGNATURE_FILE
+    #else
+      // Create canary at beginning of signature region to detect overwrites
+      sig_begin_canary:
+        CANARY
+
+      signature_base:
         // Initialize signature region to known value for initial pass
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+
+      // Signature region for trap handlers
+      #ifdef rvtest_mtrap_routine
+        tsig_begin_canary:
+          TRAP_CANARY
+
+        mtrap_sigptr:
+            .fill 15000*(SIG_STRIDE>>2),4,0xdeadbeef
+
+        tsig_end_canary:
+          CANARY
       #endif
 
-    // Signature region for trap handlers
-    #ifdef rvtest_mtrap_routine
-      tsig_begin_canary:
-        CANARY
-      mtrap_sigptr:
-        #ifdef RVTEST_SELFCHECK
-          #include TRAP_SIGNATURE_FILE
-        #else
-          .fill 5000*(SIG_STRIDE>>2),4,0xdeadbeef
-        #endif
-      tsig_end_canary:
+      // Create canary at end of signature region to detect overwrites
+      sig_end_canary:
         CANARY
     #endif
-
-    // Create canary at end of signature region to detect overwrites
-    sig_end_canary:
-      CANARY
 
   .align 4
   .global rvtest_sig_end

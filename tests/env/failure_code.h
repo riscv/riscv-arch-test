@@ -600,6 +600,64 @@
 #ifdef RVTEST_PRIV_TEST
     addrstr:
         .string "RVCP: Approximate address (failure may be slightly after this): "
+    sv_Mvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
+    sv_Sect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
+    sv_Hvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
+    sv_Vvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in VS-Mode.\"";
+    sv_Mcause_str:
+        .string "\"Mismatch in mcause value! Trap was being handled in M-Mode.\"";
+    sv_Scause_str:
+        .string "\"Mismatch in scause value! Trap was being handled in S-Mode.\"";
+    sv_Hcause_str:
+        .string "\"Mismatch in scause value! Trap was being handled in HS-Mode.\"";
+    sv_Vcause_str:
+        .string "\"Mismatch in vscause value! Trap was being handled in VS-Mode.\"";
+    sv_Mepc_str:
+        .string "\"Mismatch in mepc value! Trap was being handled in M-Mode.\"";
+    sv_Sepc_str:
+        .string "\"Mismatch in sepc value! Trap was being handled in S-Mode.\"";
+    sv_Hepc_str:
+        .string "\"Mismatch in sepc value! Trap was being handled in HS-Mode.\"";
+    sv_Vepc_str:
+        .string "\"Mismatch in vsepc value! Trap was being handled in VS-Mode.\"";
+    sv_Mtval_str:
+        .string "\"Mismatch in mtval value! Trap was being handled in M-Mode.\"";
+    sv_Stval_str:
+        .string "\"Mismatch in stval value! Trap was being handled in S-Mode.\"";
+    sv_Htval_str:
+        .string "\"Mismatch in stval value! Trap was being handled in HS-Mode.\"";
+    sv_Vtval_str:
+        .string "\"Mismatch in vstval value! Trap was being handled in VS-Mode.\"";
+    sv_Mtval2_str:
+        .string "\"Mismatch in mtval2 value! Trap was being handled in M-Mode.\"";
+    sv_Mtinst_str:
+        .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
+    sv_Mip_str:
+        .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
+    sv_Sip_str:
+        .string "\"Mismatch in sip value! Trap was being handled in S-Mode.\"";
+    sv_Hip_str:
+        .string "\"Mismatch in hip value! Trap was being handled in HS-Mode.\"";
+    sv_Vip_str:
+        .string "\"Mismatch in vsip value! Trap was being handled in VS-Mode.\"";
+    Mclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in M-Mode.\"";
+    Mclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Sclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Hclr_Sext_int_str:
+        .string "\"Mismatch in hypervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Mclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Hclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Vclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
 #else
     addrstr:
         .string "RVCP: Address: "

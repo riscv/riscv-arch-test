@@ -243,11 +243,19 @@
       0x6F5CA309E7D4B281
   #define CANARY \
       .dword CANARY_VALUE
+  #define TRAP_CANARY_VALUE \
+      0xD3A91F6C8B47E25D
+  #define TRAP_CANARY \
+      .dword TRAP_CANARY_VALUE
 #else
   #define CANARY_VALUE \
       0x6F5CA309
   #define CANARY \
       .word CANARY_VALUE
+  #define TRAP_CANARY_VALUE \
+      0xD3A91F6C
+  #define TRAP_CANARY \
+      .word TRAP_CANARY_VALUE
 #endif
 
 // Read _CSR into _R and record/check the signature

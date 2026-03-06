@@ -27,7 +27,7 @@ MAKEFILE_HEADER = """
 .PHONY: compile
 """
 
-OBJDUMP_FLAGS = "-D"
+OBJDUMP_FLAGS = "-Stsxd -M no-aliases,numeric"
 
 
 def _resolve_script(name: str) -> str:
@@ -134,7 +134,6 @@ def gen_compile_targets(
     sig_elf = build_dir / test_name.with_suffix(".sig.elf")
     sig_file = build_dir / test_name.with_suffix(".sig")
     result_file = build_dir / test_name.with_suffix(".results")
-    trap_result_file = build_dir / test_name.with_suffix(".trap.results")
     sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
@@ -181,7 +180,6 @@ def gen_compile_targets(
         f"\t\t-o {final_elf} \\\n"
         f"\t\t-march={march} -mabi={mabi} -DRVTEST_SELFCHECK -DXLEN={xlen} -DFLEN={flen} \\\n"
         f'\t\t-DSIGNATURE_FILE=\\"{result_file}\\" \\\n'
-        f'\t\t-DTRAP_SIGNATURE_FILE=\\"{trap_result_file}\\" \\\n'
         f"\t\t{test_path}\n"
         # Objdump (only if objdump_exe is set and fast mode is disabled)
         f"{

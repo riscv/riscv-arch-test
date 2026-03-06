@@ -57,10 +57,10 @@ params:
 
 
 #   # Misaligned load/store support (Section 7 — Misaligned Load/Store)
-#   MISALIGNED_LDST: true                  # FROM MANUAL — load_store_unit.rst: non-aligned splits into transactions
-#   MISALIGNED_LDST_EXCEPTION_PRIORITY: low # FROM MANUAL — load_store_unit.rst: “error response ignored”
-#   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # QUESTIONABLE — manual documents 4-byte boundary splits, unclear why 4KB
-#   MISALIGNED_SPLIT_STRATEGY: custom      # FROM MANUAL — load_store_unit.rst; word-boundary split strategy
+  MISALIGNED_LDST: true                  # VERIFIED — load_store_unit.rst performed as two bustransactions (this is little confisuing udb asks Does it perform non-atomic misaligned loads/stores.)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — load_store_unit.rst: never raises exception; DO we need this parameter if above is true? It seems like this is only relevant if above is false, but we can include it for completeness?
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — load_store_unit.rst performed as two bustransactions no ato
+  MISALIGNED_SPLIT_STRATEGY: custom      # FROM MANUAL — load_store_unit.rst; lowest address is performed first from manual, UDB only has two options costume and sequential bytes
 
 #   # CSR / implementation IDs (Section 3 — Implementation IDs)
 #   ARCH_ID_VALUE: 0x00000004             # FROM MANUAL — control_status_registers.rst: marchid=0x4

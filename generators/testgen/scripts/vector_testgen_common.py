@@ -505,6 +505,7 @@ vupgatherins = vslideupins + vrgatherins
 vmlogicalins = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m"]
 vfredins = ["vfredosum.vs", "vfwredosum.vs", "vfredusum.vs", "vfwredusum.vs", "vfredmax.vs", "vfredmin.vs"]
 vredins  = ["vredsum.vs", "vwredsumu.vs", "vwredsum.vs", "vredmaxu.vs", "vredmax.vs", "vredminu.vs", "vredmin.vs", "vredand.vs", "vredor.vs", "vredxor.vs"] + vfredins
+maskprodins = mmins + vmlogicalins + maskins
 
 ls_not_maskable = [
   "vl1re8.v",  "vl2re8.v",  "vl4re8.v",  "vl8re8.v",
@@ -1936,8 +1937,10 @@ def writeTest(description, instruction, cp, instruction_data,
       scalar_registers_used.append(tempReg2)
 
       # set vtype to VLMAX for vd load
-      if lmul < 1:
+      if lmul < 1 and instruction not in vd_widen_ins:
         lmulflag = getLmulFlag(1) # for LMUL fractional cases we still want to load with LMUL=1 to get VLMAX number of elements loaded
+      elif lmul > 1 and instruction in maskprodins:
+        lmulflag = getLmulFlag(1) # for maskprodins vd is always a single register
       else:
         lmulflag = getLmulFlag(lmul)
       writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")

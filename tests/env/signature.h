@@ -469,8 +469,8 @@
         addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
         .option pop
 #else
-    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,         \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                         \
+    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
+        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -478,20 +478,18 @@
         nop                                  ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ## _SEW ##, m ## _LMUL ##, ta, ma ;                                            \
-        \
         /* Load reference from signature and compute mismatch mask */                                               \
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        \
         /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
         vsm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
         nop                                  ;                                                                      \
         beq         x0, x0, 2f               ;   /* Unconditional skip data vector comparison to active check */    \
-    1: \
+    1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
         vse ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                                                      \
         nop                                  ;                                                                      \
-    2: \
+    2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -510,16 +508,14 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        \
         /* Load reference from signature and compute mismatch mask */                                               \
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        \
         /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-    4: \
+    4:                                                                                                              \
         /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -539,11 +535,9 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        \
         /* Load reference from signature and compute mismatch mask */                                               \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        \
         /* Mask vector mask agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \

@@ -9,7 +9,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40p
-description: CV32E40P (CORE-V small) - RV32IMC configuration DUT
+description: CV32E40P (CORE-V small) - RV32IMCF configuration DUT (FPU=1, ZFINX=0)
 implemented_extensions: # VERIFIED — manual documents these extensions as implemented
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -19,6 +19,7 @@ implemented_extensions: # VERIFIED — manual documents these extensions as impl
   - { name: Zicntr, version: "= 2.0" }
   - { name: Sm, version: "= 1.11.0" }
   - { name: Smhpm, version: "= 1.11.0" }
+  - { name: F, version: "= 2.2.0" }     # FPU=1, ZFINX=0 — standard F with dedicated f0-f31 registers
 
 params:
   # XLEN parameters (VERIFIED)
@@ -29,6 +30,7 @@ params:
   # MISA (VERIFIED)
   MUTABLE_MISA_M: false                  # VERIFIED — M bit is RO per control_status_registers.rst table
   MUTABLE_MISA_C: false                  # VERIFIED — C bit is RO per control_status_registers.rst table
+  MUTABLE_MISA_F: false                  # VERIFIED — control_status_registers.rst:1444,1457: F bit is RO; writes ignored; value = FPU&&!ZFINX (not runtime-mutable)
   MISA_CSR_IMPLEMENTED: true             # VERIFIED — MISA CSR (0x301) documented
 
   # endianness (VERIFIED)
@@ -64,7 +66,7 @@ params:
 
 #   # CSR / implementation IDs (Section 3 — Implementation IDs) ## these are all verified by checking the manual for the relevant CSRs
   ARCH_ID_VALUE: 0x00000004             # VERIFIED — control_status_registers.rst: marchid=0x4
-  IMP_ID_VALUE: 0x0                     # VERIFIED — core_versions.rst: mimpid=0 when COREV_PULP=0, FPU=0 (we might change our config to FPU=0 per Maikes instructions - test with optional ISA features)
+  IMP_ID_VALUE: 0x1                     # VERIFIED — cs_registers.sv:511-513: (FPU==1||COREV_PULP==1||COREV_CLUSTER==1)?32'h1:'b0; FPU=1 → mimpid=0x1; core_versions.rst:150-174 confirms
   VENDOR_ID_BANK: 0xC                   # VERIFIED — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
   VENDOR_ID_OFFSET: 0x2                 # VERIFIED — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
 
@@ -82,6 +84,10 @@ params:
   PMA_GRANULARITY: 2                     # QUESTIONABLE — no PMA hardware exists in RTL (no PMA checker, no PMA table, zero occurrences of "PMA" in RTL or docs); schema minimum is 2 (=4 bytes); OBI bus is 32-bit with byte enables (load_store_unit.sv:41 data_be_o[3:0]) making 4 bytes the natural minimum transaction granule
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false            # VERIFIED — perf_counters.rst:130-133: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
+
+  # F extension params (defined by F + Sm)
+  HW_MSTATUS_FS_DIRTY_UPDATE: imprecise  # VERIFIED — cs_registers.sv:1034: marks FS=DIRTY on fregs_we_i OR fflags_we_i; fflags_we_i fires for ops like FCVT.W.S (writes INT reg, not FP reg) → not strictly precise; control_status_registers.rst:483: "to simplify... any F instructions except FSW"
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3] # VERIFIED — cs_registers.sv:964: mstatus_fs_n = FS_t'(csr_wdata_int[...]) with no masking; cv32e40p_pkg.sv:580-583: FS_OFF=0, FS_INITIAL=1, FS_CLEAN=2, FS_DIRTY=3; control_status_registers.rst:448-456: all 4 states documented as RW
 
   # HPM Counters (Section 8 — HPM Counters)
   HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cs_registers.sv:1327-1342: 16 events defined (hpm_events[0..15]); for baseline config (no COREV_CLUSTER, no APU/FPU) events 0-10 are active, events 11-15 are hardwired 0

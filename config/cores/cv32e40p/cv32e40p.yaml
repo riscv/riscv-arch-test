@@ -44,16 +44,17 @@ params:
   TRAP_ON_UNIMPLEMENTED_CSR: true       # VERIFIED - rtl code from decoder.sv shows case statement for illegal instructions (if we configure it without FPU for example), there is default case (this is our situation!)
   TRAP_ON_ILLEGAL_WLRL: false            # VERIFIED - checked decoder.sv it only traps illegal csrs, cs_registers.sv does only masking 
 
-#   # MTVAL reporting (Section 6 — mtval CSR)
-#   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true # ASSUMED — standard RISC-V mtval behavior (CV32E40P manual incomplete)
-#   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true # ASSUMED — standard RISC-V mtval behavior
-#   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true # ASSUMED — standard RISC-V mtval behavior
-#   MTVAL_WIDTH: 32                        # VERIFIED — control_status_registers.rst line 673; RO [31:0]
+   # MTVAL reporting (Section 6 — mtval CSR)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  MTVAL_WIDTH: 32                        # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
+
 
 #   # Misaligned load/store support (Section 7 — Misaligned Load/Store)
 #   MISALIGNED_LDST: true                  # FROM MANUAL — load_store_unit.rst: non-aligned splits into transactions

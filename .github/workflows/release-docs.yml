@@ -34,13 +34,13 @@ jobs:
         run: cd docs/ctp && make -j2
 
       - name: Upload CTP PDF
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.pdf
           path: docs/ctp/build/ctp.pdf
 
       - name: Upload CTP HTML
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: ctp.html
           path: docs/ctp/build/ctp.html
@@ -56,13 +56,13 @@ jobs:
         run: cd docs/crd && make -j2
 
       - name: Upload CRD PDFs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: crd-pdf
           path: docs/crd/build/*.pdf
 
       - name: Upload CRD HTMLs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: crd-html
           path: docs/crd/build/*.html
@@ -101,7 +101,7 @@ jobs:
           echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
+        uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: ${{ github.event_name != 'workflow_dispatch' }}

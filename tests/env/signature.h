@@ -282,7 +282,7 @@
 //   _INST_PTR   - Label of instruction under test
 //   _STR_PTR    - Label to descriptive string
 
-#ifdef SELFCHECK
+#ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
         _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
         .option push                                                ;\
@@ -373,7 +373,7 @@
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
 
-#ifdef SELFCHECK
+#ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
         _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
         .option push                         ;                                                                      \

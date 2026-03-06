@@ -1,6 +1,6 @@
 = MC100 Certification Requirements Document (rev 0.1)
-include::adoc_common.adoc[]
 :description: MC100 CRD (Certificate Requirements Document)
+include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 

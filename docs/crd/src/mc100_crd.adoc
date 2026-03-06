@@ -17,7 +17,7 @@ History of documentation changes that eventually lead to releases.
 |===
 | Date | Revision | Changes
 
-| TBD
+| Mar 3, 2026
 | 0.1
 a| * Copied from RVI20 CRD rev 0.4 as a starting point
    * What is left:

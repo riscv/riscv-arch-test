@@ -1207,7 +1207,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
     )
     writeLine(template)
 
-def writeSIGUPD(rd):
+def writeSIGUPD(inst_ptr, rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
     str_ptr = "test_" + str(testcase_count)
@@ -1217,7 +1217,7 @@ def writeSIGUPD(rd):
       linkInd = randint(0,2)
       linkReg = linkOptions[linkInd - 1]
     tempReg = linkReg - 1
-    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {str_ptr})", f"# store x{rd} in signature")
+    writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {inst_ptr}, {str_ptr})", f"# store x{rd} in signature")
 
 def writeSIGUPD_F(fd):
     global sigupd_count  # Allow modification of global variable
@@ -1278,7 +1278,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
 
     global sigupd_count
 
-    if (avl == "random" or avl == "vlmax"):
+    if (avl == "random" or avl == "vlmax" or testtype == "length"):
       avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
     if (avl == 1):
       sigupd_count += avl * 2  # Increment counter on each call
@@ -1687,7 +1687,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     elif (test in maskins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
     elif (test in xvtype):
-      writeSIGUPD(rd)
+      writeSIGUPD(inst_ptr, rd)
     elif (test in fvtype):
       writeSIGUPD_F(fd)
     else:

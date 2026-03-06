@@ -295,6 +295,7 @@
         beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
     1:                                                              ;\
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
         addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
@@ -312,6 +313,7 @@
         beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
     1:                                                              ;\
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
         addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
@@ -408,7 +410,8 @@
         bge         _LINK_REG, x0, 8f        ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build tail element mask (i >= vl) */                                                                     \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
-        vmsgeu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* VTMP[i] = (i >= original vl) */                                 \
+        vmsltu.vx    _VTMP, _VTMP, _TEMP_REG ;   /* VTMP[i] = (i < original vl) */                                  \
+        vmnand.mm    _VTMP, _VTMP, _VTMP     ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
         /* Extract and check vta policy */                                                                          \
         srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
@@ -463,6 +466,7 @@
         beq         _TEMP_REG, _TEMP_REG, 9f ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     9:                                                                                                              \
         jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     10:                                                                                                             \
         /* PASS */                                                                                                  \
@@ -482,12 +486,12 @@
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vsm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
+        vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
         nop                                  ;                                                                      \
         beq         x0, x0, 2f               ;   /* Unconditional skip data vector comparison to active check */    \
     1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vse ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                                                      \
+        vse ## _SEW ##.v _VR, 0(_SIG_PTR)    ;                                                                      \
         nop                                  ;                                                                      \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
@@ -502,6 +506,7 @@
         nop                                  ;                                                                      \
         bge         x0, x0, 10f              ;   /* Unconditional set to PASS for non-selfcheck */                  \
         /* Build tail element mask (i >= vl) */                                                                     \
+        nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Extract and check vta policy */                                                                          \
@@ -558,6 +563,7 @@
         beq         _TEMP_REG, _TEMP_REG, 9f ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
     9:                                                                                                              \
         jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
+        RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     10:                                                                                                             \
         /* PASS */                                                                                                  \

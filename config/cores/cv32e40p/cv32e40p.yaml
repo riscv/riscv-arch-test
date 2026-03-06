@@ -63,10 +63,10 @@ params:
   MISALIGNED_SPLIT_STRATEGY: custom      # FROM MANUAL — load_store_unit.rst; lowest address is performed first from manual, UDB only has two options costume and sequential bytes
 
 #   # CSR / implementation IDs (Section 3 — Implementation IDs)
-#   ARCH_ID_VALUE: 0x00000004             # FROM MANUAL — control_status_registers.rst: marchid=0x4
-#   IMP_ID_VALUE: 0x0                     # FROM MANUAL — core_versions.rst: mimpid=0 when COREV_PULP=0, FPU=0
-#   VENDOR_ID_BANK: 0xC                   # FROM MANUAL — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
-#   VENDOR_ID_OFFSET: 0x2                 # FROM MANUAL — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
+  ARCH_ID_VALUE: 0x00000004             # VERIFIED — control_status_registers.rst: marchid=0x4
+  IMP_ID_VALUE: 0x0                     # VERIFIED — core_versions.rst: mimpid=0 when COREV_PULP=0, FPU=0 (we might change our config to FPU=0 per Maikes instructions - test with optional ISA features)
+  VENDOR_ID_BANK: 0xC                   # FROM MANUAL — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2                 # FROM MANUAL — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
 
 #   # MTVEC (Section 4 — mtvec WARL)
 #   MTVEC_MODES: [0, 1]                    # VERIFIED — control_status_registers.rst:589 "both direct and vectored supported"

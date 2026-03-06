@@ -95,7 +95,7 @@ execution environments to handle such exceptions.
 <<<
 == Extensions
 
-:include::extensions_intro.adoc[]
+include::extensions_intro.adoc[]
 
 === Mandatory Extensions
 

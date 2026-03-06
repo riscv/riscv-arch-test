@@ -1370,19 +1370,19 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
 
     if masked == False:
-      writeLine(f"li x{maskReg}, 0",        f"# set {maskReg} to zero to indicate unmasked operation for SIGUPD_V")
+      masked_flag = 0
     else:
-      writeLine(f"li x{maskReg}, 1",        f"# set {maskReg} to one to indicate masked operation for SIGUPD_V")
+      masked_flag = 1
 
     if testtype == "length":
       if offset > 2047:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 1, {masked_flag}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 0, {masked_flag}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         for x in range(fullOffsets):
           writeLine(
@@ -1391,11 +1391,11 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       else:
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 1, {masked_flag}, 8, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V_LEN(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
+          f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 0, {masked_flag}, {sew}, {emul}, {offsetRem}, {inst_ptr}, {str_ptr})",
           f"# compare v{vd} (sew={sew}, AVL={avl})")
     else:
       if offset > 2047:

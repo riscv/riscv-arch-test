@@ -679,7 +679,7 @@ def make_custom_allVdOverlapTopVs2_vd_vs2(instruction, sew, lmul):
       vs1 = randomizeOngroupVectorRegister(instruction, vs2, vd, lmul=lmul)
 
       description = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul} (Test vd = {v}, vs2 = {vs2})"
-      cp = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul} (Test vd = {v}, vs2 = {vs2})"
+      cp = f"cp_custom_allVdOverlapTopVs2_vd_vs2_lmul{lmul}_vd_v{v}_vs2_v{vs2}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = vs1, suite="base", lmul = lmul)
 
       writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=lmul)
@@ -700,7 +700,7 @@ def make_custom_allVdOverlapTopVs1_vd_vs1(instruction, sew, lmul):
         vs2 = randomizeOngroupVectorRegister(instruction, vs1, vd, lmul=lmul)
 
       description = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul} (Test vd = {v}, vs1 = {vs1})"
-      cp = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul} (Test vd = {v}, vs1 = {vs1})"
+      cp = f"cp_custom_allVdOverlapTopVs1_vd_vs1_lmul{lmul}_vd_v{v}_vs1_v{vs1}"
       instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), vd = vd, vs2 = vs2, vs1 = vs1, suite="base", lmul = lmul)
 
       writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=lmul)

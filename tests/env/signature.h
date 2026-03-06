@@ -407,7 +407,7 @@
         /* Check active elements mismatch */                                                                        \
         vmand.mm    _MTMP2, _MTMP2, _MTMP    ;   /* Active mismatches = active (MTMP2) && mismatch (MTMP)*/         \
         vfirst.m    _LINK_REG, _MTMP2        ;   /* Find first active mismatch index; -1 if none */                 \
-        bge         _LINK_REG, x0, 8f        ;   /* If >=0, mismatch found → FAIL */                                \
+        bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build tail element mask (i >= vl) */                                                                     \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
         vmsltu.vx    _VTMP, _VTMP, _TEMP_REG ;   /* VTMP[i] = (i < original vl) */                                  \
@@ -430,45 +430,53 @@
     5:                                                                                                              \
         /* Check tail elements mismatches */                                                                        \
         vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
+        srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
+        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+        beqz        _LINK_REG, 6f            ;   /* If vta==0 (undisturbed), skip agnostic all 1s comparison */     \
         vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
+    6:                                                                                                              \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
-        bge         _LINK_REG, x0, 8f        ;   /* If >=0, mismatch found → FAIL */                                \
+        bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build mask inactive mask */                                                                              \
         li          _LINK_REG, _MASKED_FLAG  ;   /* Load whether instr was masked (0 = unmasked) */                 \
-        beqz        _LINK_REG, 10f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
+        beqz        _LINK_REG, 12f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
         vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
         vmandn.mm   _VTMP, _VTMP, v0         ;   /* VTMP = Inactive = (i < vl) && (v0 == 0) */                      \
         /* Extract and check vma policy */                                                                          \
-        srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vta = vtype[7] */                                               \
+        srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-        beqz        _LINK_REG, 7f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
+        beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
         /* Load reference from signature and compute mismatch mask */                                               \
         li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 6f            ;   /* If not mask-producing, skip to data vector comparison */        \
+        beqz        _LINK_REG, 7f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector mask agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-        beq         x0, x0, 7f               ;   /* Unconditional skip data vec agnostic to inactive check */       \
-    6:                                                                                                              \
+        beq         x0, x0, 8f               ;   /* Unconditional skip data vec agnostic to inactive check */       \
+    7:                                                                                                              \
         /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
         vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == -1) → mismatch with all 1s*/  \
-    7:                                                                                                              \
+    8:                                                                                                              \
         /* Check inactive element mismatches */                                                                     \
         vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = inactive && (vd != sig) → mismatch with signature */  \
+        srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
+        andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+        beqz        _LINK_REG, 9f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
         vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
+    9:                                                                                                              \
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
-        blt         _LINK_REG, x0, 10f       ;   /* If no mismatch found → PASS ALL */                              \
-    8:                                                                                                              \
+        blt         _LINK_REG, x0, 12f       ;   /* If no mismatch found → PASS ALL */                              \
+    10:                                                                                                             \
         /* FAIL path */                                                                                             \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 9f ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
-    9:                                                                                                              \
+        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    11:                                                                                                             \
         jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
-    10:                                                                                                             \
+    12:                                                                                                             \
         /* PASS */                                                                                                  \
         addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
         .option pop
@@ -504,7 +512,7 @@
         /* Check active elements mismatch */                                                                        \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        bge         x0, x0, 10f              ;   /* Unconditional set to PASS for non-selfcheck */                  \
+        bge         x0, x0, 12f              ;   /* Unconditional set to PASS for non-selfcheck */                  \
         /* Build tail element mask (i >= vl) */                                                                     \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -530,6 +538,10 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+    6:                                                                                                              \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
         /* Build mask inactive mask */                                                                              \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -547,25 +559,29 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-    6:                                                                                                              \
+    7:                                                                                                              \
         /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-    7:                                                                                                              \
+    8:                                                                                                              \
         /* Check inactive element mismatches */                                                                     \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-    8:                                                                                                              \
+        nop                                  ;                                                                      \
+    9:                                                                                                              \
+        nop                                  ;                                                                      \
+        nop                                  ;                                                                      \
+    10:                                                                                                             \
         /* FAIL path */                                                                                             \
         LREG        _TEMP_REG, 0(_SIG_PTR)   ;   /* Load first reference word (for debug context) */                \
-        beq         _TEMP_REG, _TEMP_REG, 9f ;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
-    9:                                                                                                              \
+        beq         _TEMP_REG, _TEMP_REG, 11f;   /* Unconditional branch to failure label (mirror SIGUPD) */        \
+    11:                                                                                                             \
         jal         _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG ;                                               \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
-    10:                                                                                                             \
+    12:                                                                                                             \
         /* PASS */                                                                                                  \
         addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
         .option pop

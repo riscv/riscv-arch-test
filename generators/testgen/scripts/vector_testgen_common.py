@@ -2577,7 +2577,9 @@ def readTestplans(priv=False):
                     #     testplans["Vls" + effew] = tp
                     del testplans["Vls"]
                 if (arch == "Vf"):
-                    for effew in ["16", "32", "64"]:
-                        testplans["Vf" + effew] = tp
+                    # for effew in ["16", "32", "64"]:
+                    #     testplans["Vf" + effew] = tp
                     del testplans["Vf"]
+                if (arch == "VlsCustom") or (arch == "VfCustom"):
+                    del testplans[arch]
     return testplans

@@ -20,6 +20,11 @@ History of documentation changes that eventually lead to releases.
 | TBD
 | 0.1
 a| * Copied from RVI20 CRD rev 0.4 as a starting point
+   * What is left:
+   ** Merge content from https://riscv.atlassian.net/wiki/spaces/PRMT/pages/1307639809/WARL+WLRL+legal+value+schema[WARL/WLRL Legal Value Schema] into the CSR field types section
+   ** List each possible WARL/WLRL field and use the "WARL/WLRL Legal Value Schema" to assign the required behavior of WARL/WLRL fields in order to obtain a certificate
+   ** Define additional parameters for extensions in MC100 not present in RVI20
+
 |===
 
 include::glossary.adoc[]
@@ -88,6 +93,8 @@ include::extensions_intro.adoc[]
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
 | REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Smepmp | <<extension:Smepmp,Enhanced PMP (Smepmp)>> | ~> 1.13
+| REQ-EXT-Smpmp | <<extension:Smpmp,Original PMP>> | ~> 1.13
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0

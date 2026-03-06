@@ -141,6 +141,24 @@ Microcontroller compressed instructions
 Description::
 Additional compressed instructions for microcontrollers including push/pop and table jump.
 
+[[extension:Smepmp]]
+=== Extension Smepmp
+
+Long Name::
+Enhanced PMP
+
+Description::
+Original PMP with additional features such as guards against additional attack vectors.
+
+[[extension:Smpmp]]
+=== Extension Smpmp
+
+Long Name::
+Original PMP
+
+Description::
+Original PMP as defined in the "Physical Memory Protection" section of the RISC-V Privileged Architecture Machine-mode chapter, without the additional features of Smepmp.
+
 [[extension:Zicntr]
 === Extension Zicntr
 

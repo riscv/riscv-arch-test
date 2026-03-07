@@ -269,9 +269,6 @@
 
         mtrap_sigptr:
             .fill 15000*(SIG_STRIDE>>2),4,0xdeadbeef
-
-        tsig_end_canary:
-          CANARY
       #endif
 
       // Create canary at end of signature region to detect overwrites

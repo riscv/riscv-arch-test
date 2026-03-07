@@ -42,7 +42,6 @@ covergroup SmnpmU_cg with function sample(ins_t ins);
 
     misalign_read_instr_word: coverpoint ins.current.insn {
         wildcard bins lw = {LW};
-        wildcard bins sw = {SW};
         wildcard bins lwu = {LWU};
     }
 
@@ -102,8 +101,7 @@ covergroup SmnpmU_cg with function sample(ins_t ins);
     cp_pmlen_masking_write: cross priv_mode_u, menvcfg_pmm, write_instr ;
     cp_pmlen_masking_read: cross priv_mode_u, menvcfg_pmm, read_instr ;
     `ifdef ZAAMO_SUPPORTED
-    cp_effective_address_explicit_write: cross priv_mode_u, menvcfg_pmm, write_instr, amo_op ;
-    cp_effective_address_explicit_read: cross priv_mode_u, menvcfg_pmm, read_instr, amo_op ;
+    cp_effective_address_explicit_write: cross priv_mode_u, menvcfg_pmm, amo_op ;
     `endif
     cp_effective_address_fetch: cross priv_mode_u, menvcfg_pmm, exec_op ;
     cp_mask_priv_mode_only_write: cross priv_mode_u, menvcfg_pmm, write_instr ; //still working on this one.

@@ -67,9 +67,9 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_MTIME_ADDRESS     0x0200bff8  
+#define RVMODEL_MTIME_ADDRESS     0x0200bff8  // sail.json configuration
 
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  // sail.json configuration
 
 ##### Machine Interrupts #####
 

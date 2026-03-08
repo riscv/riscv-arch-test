@@ -1165,6 +1165,10 @@ spcl_\__MODE__\()chk4ecall:
         bnez    T3, \__MODE__\()trapsig_ptr_upd // no, not an ecall either, store normal trap signature
    .endif
                                                 // fall thru to chk for selftest fail or rtn2mmode
+.ifnc \__MODE__ , M
+        csrr    T5, CSR_XCAUSE                  // load xcause into T5 for non-M modes
+.endif
+// ***
 //****FIXME: what is the correct parameter register? x3=0?
 
 .ifc \__MODE__ ,  M                             // If ecall is delegated, can't go to Mmode

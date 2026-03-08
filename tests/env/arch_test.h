@@ -1142,6 +1142,7 @@ common_\__MODE__\()entry:
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  //x28 (or x12 for RV32e)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  //x7
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  //x6  save other temporaries
+        csrr    T5, CSR_XCAUSE                  // load xcause into T5 for all priv modes
 
 //**** NOTE: this code exists ONLY for Mmode
 //**** If delegated to any other mode then test is buggy since you can't get to Mmode
@@ -1150,7 +1151,6 @@ common_\__MODE__\()entry:
   .ifc \__MODE__ ,  M   //spcl case handling for ECALL in GOTO_MMODE mode,)
                         // ****tests can't use ECALL w/ x3=0; rsvd for GOTO_MMODE ****/
 spcl_\__MODE__\()2mmode_test:
-        csrr    T5, CSR_XCAUSE
         LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
         and     T4, T4, T5                      // Keep only int bit and cause[11:0], fixing CLIC incompatibility
 spcl_\__MODE__\()chk4alt:
@@ -1165,6 +1165,7 @@ spcl_\__MODE__\()chk4ecall:
         bnez    T3, \__MODE__\()trapsig_ptr_upd // no, not an ecall either, store normal trap signature
    .endif
                                                 // fall thru to chk for selftest fail or rtn2mmode
+
 //****FIXME: what is the correct parameter register? x3=0?
 
 .ifc \__MODE__ ,  M                             // If ecall is delegated, can't go to Mmode

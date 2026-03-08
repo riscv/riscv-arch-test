@@ -1872,6 +1872,9 @@ exit_\__MODE__\()cleanup:                       // if you enter here from the ab
       .endif
 
 //----------------------
+// Guard below must match init_edeleg. If init skips the csrw (e.g. no S-mode),
+// restore must skip it too. Mismatch causes infinite trap loop on configs where
+// the CSR does not exist. See issue #1050.
 resto_\__MODE__\()edeleg:
         LREG    T2,   xedeleg_sv_off(T1)        // get saved xedeleg
 #if (XLEN==32)

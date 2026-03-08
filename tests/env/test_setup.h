@@ -268,7 +268,7 @@
           TRAP_CANARY
 
         mtrap_sigptr:
-            .fill 15000*(SIG_STRIDE>>2),4,0xdeadbeef
+            .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
       #endif
 
       // Create canary at end of signature region to detect overwrites

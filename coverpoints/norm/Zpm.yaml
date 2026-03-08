@@ -5,13 +5,17 @@ normative_rule_definitions:
   # RISC-V Pointer Masking (PM) is a feature that, when enabled, causes the CPU to
   # ignore the upper bits of the effective address
   - name: pm_ignore_upper_bits
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
-
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # Such tools can be applied in all privilege modes (U, S, and M).
   - name: pm_all_priv_modes
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
-
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # The tag checks themselves can be implemented in software or hardware.
   - name: pm_tag_check_impl
@@ -21,7 +25,10 @@ normative_rule_definitions:
   # or physical address. For virtual addresses, it replaces the upper PMLEN bits
   # with the sign extension of the PMLEN+1st bit.
   - name: pm_ignore_va
-    coverpoint: ["Ssnpm_cg / {cp_virtual_address_sign_extension_write, cp_virtual_address_sign_extension_read}"]
+    coverpoint:
+      [
+        "Ssnpm_cg / {cp_virtual_address_sign_extension_write, cp_virtual_address_sign_extension_read}",
+      ]
 
   # When applied to a physical address, including guest-physical addresses (i.e.,
   # all cases except when the active satp register's MODE field != Bare), the ignore
@@ -29,30 +36,43 @@ normative_rule_definitions:
   # of running in M-mode and running in other privilege modes with Bare address
   # translation mode.
   - name: pm_ignore_pa
-    coverpoint: ["Ssnpm_cg / {cp_physical_address_zero_extension_write, cp_physical_address_zero_extension_read}"]
-
+    coverpoint:
+      [
+        "Ssnpm_cg / {cp_physical_address_zero_extension_write, cp_physical_address_zero_extension_read}",
+      ]
 
   # When pointer masking is enabled, the ignore transformation will be applied to
   # every explicit memory access (e.g., loads/stores, atomics operations, and
   # floating point loads/stores).
   - name: pm_apply_explicit
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / cp_effective_address_explicit"]
-
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / cp_effective_address_explicit",
+      ]
 
   # The transformation does not apply to implicit accesses such as page-table walks
   # or instruction fetches.
   - name: pm_not_apply_implicit
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / cp_effective_address_fetch"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / cp_effective_address_fetch",
+      ]
 
   # Pointer masking with the same value of PMLEN always has the same effect for the
   # same type of address (virtual or physical).
   - name: pm_deterministic_effect
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # The current standard only supports PMLEN=XLEN-48 (i.e., PMLEN=16 in RV64) and
   # PMLEN=XLEN-57 (i.e., PMLEN=7 in RV64).
   - name: pmlen_supported_values
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # A setting has been reserved to potentially support other values of PMLEN in
   # future standards.
@@ -61,7 +81,10 @@ normative_rule_definitions:
 
   # Pointer masking is controlled separately for different privilege modes.
   - name: pm_per_mode_control
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # Different privilege modes may have different pointer masking settings active
   # simultaneously and the hardware will automatically apply the pointer masking
@@ -72,12 +95,18 @@ normative_rule_definitions:
   # A privilege mode's pointer masking setting is configured by bits in
   # configuration registers of the next-higher privilege mode.
   - name: pm_config_next_higher
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # the pointer masking setting that is applied only depends on the active privilege
   # mode, not on the address that is being masked.
   - name: pm_mode_only_dependency
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_mask_priv_mode_only_write, cp_mask_priv_mode_only_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_mask_priv_mode_only_write, cp_mask_priv_mode_only_read}",
+      ]
 
   # MPRV and SPVP affect pointer masking as well, causing the pointer masking
   # settings of the effective privilege mode to be applied.
@@ -87,34 +116,52 @@ normative_rule_definitions:
   # When MXR is in effect at the effective privilege mode where explicit memory
   # access is performed, pointer masking does not apply.
   - name: pm_mxr_exception
-    coverpoint: ["{SmnpmS_cg , Ssnpm_cg } / {cp_pm_mxr_disable_write, cp_pm_mxr_disable_read}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg , Ssnpm_cg } / {cp_pm_mxr_disable_write, cp_pm_mxr_disable_read}",
+      ]
 
   # Pointer masking only applies to accesses generated by instructions on the CPU
   # (including CPU extensions such as an FPU). E.g., it does not apply to accesses
   # generated by page-table walks, the IOMMU, or devices.
   - name: pm_cpu_only
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_effective_address_explicit}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_effective_address_explicit}",
+      ]
 
   # Misaligned accesses are supported, subject to the same limitations as in the
   # absence of pointer masking. The behavior is identical to applying the pointer
   # masking transformation to every constituent aligned memory access.
   - name: pm_misaligned_equivalence
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pm_misaligned_half_write, cp_pm_misaligned_half_read, cp_pm_misaligned_word_write, cp_pm_misaligned_word_read, cp_pm_misaligned_double_write,cp_pm_misaligned_double_read}"]
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pm_misaligned_half_write, cp_pm_misaligned_half_read, cp_pm_misaligned_word_write, cp_pm_misaligned_word_read, cp_pm_misaligned_double_write,cp_pm_misaligned_double_read}",
+      ]
 
   # No pointer masking operations are applied when software reads/writes to CSRs,
   # including those meant to hold addresses.
   - name: pm_no_csr_sw
-    coverpoint: ["{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}",
+      ]
 
   # The implemented WARL width of CSRs is unaffected by pointer masking
   - name: pm_warl_unaffected
-    coverpoint: ["{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}",
+      ]
 
   # pointer masking, when applicable, is applied for hardware writes to a CSR (e.g.,
   # when the hardware writes the transformed address to stval when taking an
   # exception).
   - name: pm_csr_hw_apply
-    coverpoint:  ["{SmnpmS_cg , Smmpm_cg} / {cp_hardware_csr_writes_read, cp_hardware_csr_writes_write}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg , Smmpm_cg} / {cp_hardware_csr_writes_read, cp_hardware_csr_writes_write}",
+      ]
 
   # Pointer masking is also applied, when applicable, to the memory access address
   # when matching address triggers in debug.
@@ -124,7 +171,10 @@ normative_rule_definitions:
   # on trap delivery (e.g., due to an exception or interrupt), pointer masking will
   # not be applied to the address of the trap handler.
   - name: pm_no_trap_vector_mask
-    coverpoint: ["{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg, Smmpm_cg }/ {cp_pm_csr_software_access_write, cp_pm_csr_software_access_read}",
+      ]
 
   # Pointer masking refers to a number of separate extensions, all of which are
   # privileged.
@@ -136,11 +186,13 @@ normative_rule_definitions:
   - name: ssnpm_definition
     coverpoint: ["Ssnpm_cg / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
 
-
   # A machine-level extension that provides pointer masking for the next lower
   # privilege mode (S/HS if S-mode is implemented, or U-mode otherwise).
   - name: smnpm_definition
-    coverpoint:  ["{SmnpmS_cg, SmnpmU_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
+    coverpoint:
+      [
+        "{SmnpmS_cg, SmnpmU_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # A machine-level extension that provides pointer masking for M-mode.
   - name: smmpm_definition
@@ -160,8 +212,10 @@ normative_rule_definitions:
 
   # Pointer masking only applies to RV64.
   - name: pm_rv64_only
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
-
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # In RV32, trying to enable pointer masking will result in an illegal WARL write
   # and not update the pointer masking configuration bits
@@ -176,8 +230,10 @@ normative_rule_definitions:
   # the supported values of PMLEN may depend on the effective privilege mode. The
   # current standard only defines PMLEN=XLEN-48 and PMLEN=XLEN-57,
   - name: pmlen_mode_depend
-    coverpoint: ["{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}"]
-
+    coverpoint:
+      [
+        "{Smmpm_cg, SmnpmS_cg, SmnpmU_cg, Ssnpm_cg} / {cp_pmlen_masking_write, cp_pmlen_masking_read}",
+      ]
 
   # Trying to enable pointer masking in an unsupported scenario represents an
   # illegal write to the corresponding pointer masking enable bit and follows WARL

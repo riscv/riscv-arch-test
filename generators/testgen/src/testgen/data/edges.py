@@ -22,6 +22,9 @@ from testgen.data.random import random_int, random_range
 class IMMEDIATE_EDGES:
     """Edge values for immediates of various widths."""
 
+    # 5-bit unsigned immediate (BEQI, BNEI instructions in Zibi extension)
+    imm_5bit = (0, 1, 2, 3, 4, 8, 16, 30, 31)
+
     # 6-bit signed immediate (compressed instructions)
     imm_6bit = (0, 1, 2, 3, 4, 8, 16, 30, 31, -32, -31, -2, -1)
 

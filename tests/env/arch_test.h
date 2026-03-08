@@ -1151,7 +1151,6 @@ common_\__MODE__\()entry:
   .ifc \__MODE__ ,  M   //spcl case handling for ECALL in GOTO_MMODE mode,)
                         // ****tests can't use ECALL w/ x3=0; rsvd for GOTO_MMODE ****/
 spcl_\__MODE__\()2mmode_test:
-        csrr    T5, CSR_XCAUSE
         LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0).
         and     T4, T4, T5                      // Keep only int bit and cause[11:0], fixing CLIC incompatibility
 spcl_\__MODE__\()chk4alt:

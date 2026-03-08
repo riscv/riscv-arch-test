@@ -446,14 +446,16 @@
         LA(x9, xepcinstrstr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         # Check if its a compressed instruction
-        lw a0, 0(a0)        # Load instruction at xepc
-        li a1, 32
-        andi x7, a0, 3
-        li x8, 3
-        beq x7, x8, 1f      # if its a 32-bit instruction
-        slli a0, a0, 16
-        srli a0, a0, 16
+        mv x7, a0           # move xepc
+        lhu a0, 0(x7)       # load lower half of instruction at xepc
         li a1, 16
+        andi x8, a0, 3
+        li x9, 3
+        bne x8, x9, 1f      # compressed: only lower half needed
+        lhu x8, 2(x7)
+        slli x8, x8, 16
+        or a0, a0, x8
+        li a1, 32
         1:
         jal failedtest_hex_to_str
         LA(x9, ascii_buffer)

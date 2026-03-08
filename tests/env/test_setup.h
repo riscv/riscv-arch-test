@@ -123,7 +123,7 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-  #ifdef RVTEST_PRIV_TEST
+  #ifdef rvtest_mtrap_routine
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
     jal     T2, failedtest_trap_x7_x9

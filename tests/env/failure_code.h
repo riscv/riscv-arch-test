@@ -40,7 +40,7 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-#ifdef RVTEST_PRIV_TEST
+#ifdef rvtest_mtrap_routine
     # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
     failedtest_trap_x7_x9:
         la x9, begin_failure_scratch
@@ -427,7 +427,7 @@
         LA(x9, ascii_buffer)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
-#ifdef RVTEST_PRIV_TEST
+#ifdef rvtest_mtrap_routine
     failedtest_report_traphandler:
         lw a0, failure_type
         li a1, 3            # Failed in trap handler

@@ -90,7 +90,8 @@ normative_rule_definitions:
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_jvt_lower}"]
 
   - name: mstateen0-se0_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_access_control_over_sstateen}"]
+    coverpoint:
+      ["{Smstateen_cg,Ssstateen_cg}/{cp_mstateen_access_control_over_sstateen}"]
 
   - name: hstateen0_se0_op
     coverpoint: [""]

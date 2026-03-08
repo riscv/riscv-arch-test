@@ -28,7 +28,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         params = generate_random_params(test_data, instr_type)
 
-    if instr_type in ["B", "CB"]:
+    if instr_type in ["B", "BI", "CB"]:
         assert params.rs1 is not None and params.temp_reg is not None and params.temp_val is not None
         if instr_type == "B":
             test_lines.extend(
@@ -37,6 +37,13 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                     f"LI(x{params.rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
                 ]
             )
+        elif instr_type == "BI":
+            assert params.rs1 is not None and params.immval is not None
+            if instr_name == "beqi":
+                test_lines.append(f"LI(x{params.rs1}, {params.immval}) # setup for taken branch")
+            else:  # bnei
+                val = params.immval + 1 if params.immval != 31 else params.immval - 1
+                test_lines.append(f"LI(x{params.rs1}, {val}) # setup for taken branch")
         else:  # CB
             branch_val = 0 if instr_name == "c.beqz" else 1  # set value to ensure branch is taken
             test_lines.append(f"LI(x{params.rs1}, {branch_val}) # initialize rs1 to {branch_val} for taken branch")

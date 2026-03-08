@@ -1,0 +1,3 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs1_edges,cr_rs1_cimm_edges,cmp_rs1_cimm,cp_offset,cp_uimm,cp_imm_edges,cp_align,cp_memval,cp_custom
+beqi,BI,x,x,x,x,x,offset,,x,,,,,
+bnei,BI,x,x,x,x,x,offset,,x,,,,,

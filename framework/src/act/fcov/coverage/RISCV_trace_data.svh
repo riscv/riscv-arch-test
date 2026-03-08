@@ -151,6 +151,7 @@ class riscvTraceData
   bit [(XLEN-1):0]          imm;
   bit [(XLEN-1):0]          imm2;
   bit [(XLEN-1):0]          imm3;
+  bit [(XLEN-1):0]          cimm;
   bit [(XLEN-1):0]          mem_addr;
 
   bit [2:0]                 eSEW;

@@ -1142,6 +1142,7 @@ common_\__MODE__\()entry:
         SREG    T3, trap_sv_off+3*REGWIDTH(sp)  //x28 (or x12 for RV32e)
         SREG    T2, trap_sv_off+2*REGWIDTH(sp)  //x7
         SREG    T1, trap_sv_off+1*REGWIDTH(sp)  //x6  save other temporaries
+        csrr    T5, CSR_XCAUSE                  // load xcause into T5 for all priv modes
 
 //**** NOTE: this code exists ONLY for Mmode
 //**** If delegated to any other mode then test is buggy since you can't get to Mmode
@@ -1165,9 +1166,6 @@ spcl_\__MODE__\()chk4ecall:
         bnez    T3, \__MODE__\()trapsig_ptr_upd // no, not an ecall either, store normal trap signature
    .endif
                                                 // fall thru to chk for selftest fail or rtn2mmode
-.ifnc \__MODE__ , M
-        csrr    T5, CSR_XCAUSE                  // load xcause into T5 for non-M modes
-.endif
 
 //****FIXME: what is the correct parameter register? x3=0?
 

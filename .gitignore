@@ -37,9 +37,6 @@ tests/rv64e
 tests/priv/Sm/Sm-00.S
 tests/priv/ExceptionsZc/ExceptionsZc-00.S
 # docs
-docs/ctp/src/norm
-docs/ctp/src/param
-docs/ctp/src/testplans
 docs/ctp/mismatch_report.txt
 docs/crd/build
 coverpoints/norm/norm-rules.json

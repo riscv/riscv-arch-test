@@ -11,7 +11,7 @@
 """Top-level command-line interface for test generation."""
 
 import os
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated
@@ -121,7 +121,7 @@ def generate_all_tests(
         futures = [executor.submit(_dispatch_test_gen, task) for task in tasks]
 
         # Process completed tasks with progress tracking
-        for future in track(futures, description="[cyan]Generating tests...", total=len(futures)):
+        for future in track(as_completed(futures), description="[cyan]Generating tests...", total=len(futures)):
             future.result()  # Re-raise any exceptions
 
 

@@ -19,8 +19,7 @@ History of documentation changes that eventually lead to releases.
 
 | Mar 9, 2026
 | 0.2
-a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
-   * The ecall, ebreak, and c.ebreak instructions are all IN-SCOPE (previously had them as exclusions)
+a| * The ecall, ebreak, and c.ebreak instructions are all IN-SCOPE (previously had them as exclusions incorrectly)
    * Don't use Smpmp term which is a made-up UDB extension name for the original PMP.
    * Removed optional extensions not supported by tests (Zce and Smepmp)
 
@@ -97,17 +96,6 @@ include::extensions_intro.adoc[]
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
-
-|===
-
-=== Dependent Extensions
-
-.Dependent Extensions
-[%autowidth]
-|===
-| Requirement ID | Extension | Version | Dependency
-
-| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
 
 |===
 

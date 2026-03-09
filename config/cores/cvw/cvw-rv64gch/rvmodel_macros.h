@@ -88,22 +88,22 @@
 
 ##### Machine Interrupts #####
 
-#define RVMODEL_SET_MEXT_INT
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
-#define RVMODEL_CLR_MEXT_INT
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
 
-#define RVMODEL_SET_MSW_INT
+#define RVMODEL_SET_MSW_INT(_R1, _R2)
 
-#define RVMODEL_CLR_MSW_INT
+#define RVMODEL_CLR_MSW_INT(_R1, _R2)
 
 ##### Supervisor Interrupts #####
 
-#define RVMODEL_SET_SEXT_INT
+#define RVMODEL_SET_SEXT_INT(_R1, _R2)
 
-#define RVMODEL_CLR_SEXT_INT
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
 
-#define RVMODEL_SET_SSW_INT
+#define RVMODEL_SET_SSW_INT(_R1, _R2)
 
-#define RVMODEL_CLR_SSW_INT
+#define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _COMPLIANCE_MODEL_H

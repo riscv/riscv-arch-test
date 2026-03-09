@@ -202,9 +202,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend([
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    RVTEST_SET_MEXT_INT",
-                "    nop",
-                "    nop",
-                "    nop",
+                "    RVTEST_IDLE_FOR_INTERRUPT",
             ])
             
             lines.extend([
@@ -352,7 +350,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                 "",
             ])
             
-            # WFI - label right before (should trap with illegal instruction)
+            # WFI
             lines.extend([
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    wfi",

@@ -76,10 +76,13 @@ def run_act(
         selected_tests = select_tests(
             full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
         )
+        mxlen = config_params["MXLEN"]
+        if not isinstance(mxlen, int):
+            raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
         configs.append(
             {
                 "config": config,
-                "xlen": config_params["MXLEN"],
+                "xlen": mxlen,
                 "e_ext": "E" in implemented_extensions,
                 "selected_tests": selected_tests,
             }

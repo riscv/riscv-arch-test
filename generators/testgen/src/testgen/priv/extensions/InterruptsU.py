@@ -52,10 +52,8 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             if mtvec_mode:
                 lines.append("csrsi mtvec, 1")
             
-            # Set mstatus.MIE if needed
-            # if mstatus_mie:
-            #     lines.append("csrsi mstatus, 8")
-            # Set mstatus.MPIE (bit 7) instead of MIE (bit 3)
+            # Set mstatus.MPIE (not MIE) because mret copies MPIE→MIE when transitioning to U-mode.
+            # Setting MIE directly would be overwritten by mret's automatic MPIE restoration.
             if mstatus_mie:
                 lines.extend([
                     f"LI(x{r_scratch}, 0x80)",  # MPIE bit mask
@@ -76,12 +74,8 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             # Go to U-mode
             lines.append("RVTEST_GOTO_LOWER_MODE Umode")
             
-            # Trigger interrupt - label right before trigger
+            # Trigger interrupt
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
-
-            lines.extend([
-                "RVTEST_IDLE_FOR_INTERRUPT",
-            ])
             
             lines.extend(indent(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2)))
             
@@ -132,8 +126,6 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             if mtvec_mode:
                 lines.append("csrsi mtvec, 1")
             
-            # if mstatus_mie:
-            #     lines.append("csrsi mstatus, 8")
             if mstatus_mie:
                 lines.extend([
                     f"LI(x{r_scratch}, 0x80)",
@@ -157,9 +149,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
             lines.extend([
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    RVTEST_SET_MSW_INT",
-                "    nop",
-                "    nop",
-                "    nop",
+                "    RVTEST_IDLE_FOR_INTERRUPT",
             ])
             
             lines.extend([
@@ -226,9 +216,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             lines.extend([
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    RVTEST_SET_MEXT_INT",
-                "    nop",
-                "    nop",
-                "    nop",
+                "    RVTEST_IDLE_FOR_INTERRUPT",
             ])
             
             lines.extend([
@@ -380,7 +368,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                 "",
             ])
             
-            # WFI - label right before (should trap with illegal instruction)
+            # WFI
             lines.extend([
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "    wfi",

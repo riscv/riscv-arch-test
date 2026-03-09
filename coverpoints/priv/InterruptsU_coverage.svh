@@ -16,8 +16,9 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    mstatus_mie: coverpoint ins.current.csr[12'h300][3]  {
+    mstatus_mie: coverpoint ins.prev.csr[12'h300][3]  { // TODO: I MADE IT PREV HERE
         // autofill 0/1
+        // bins one = {1}; // with this we are at full coverage
     }
     mstatus_tw:  coverpoint ins.current.csr[12'h300][21] {
         // autofill 0/1
@@ -51,28 +52,50 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {32'b0001000_00101_00000_000_00000_1110011};
     }
-    timeout: coverpoint ins.current.csr[12'h344][7] iff (ins.trap == 1) {
-        bins no_timer_int = {0};
-    }
-    m_ext_intr: coverpoint ins.current.m_ext_intr {
-        bins mei = {1};
-    }
-    m_timer_intr: coverpoint ins.current.m_timer_intr {
-        bins mti = {1};
-    }
-    m_soft_intr: coverpoint ins.current.m_soft_intr {
-        bins msi = {1};
-    }
+    // timeout: coverpoint ins.current.csr[12'h344][7] iff (ins.trap == 1) {
+    //     bins no_timer_int = {0};
+    // }
+    // m_ext_intr: coverpoint ins.current.m_ext_intr {
+    //     bins mei = {1};
+    // }
+    // m_timer_intr: coverpoint ins.current.m_timer_intr {
+    //     bins mti = {1};
+    // }
+    // m_soft_intr: coverpoint ins.current.m_soft_intr {
+    //     bins msi = {1};
+    //}
 
     // main coverpoints
-    cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, m_timer_intr, mip_mtip;
-    cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one, m_soft_intr,  mip_msip;
-    cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one, m_ext_intr,   mip_meip;
-    cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, m_timer_intr;
-    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, timeout;
+    // OG
+    // cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, m_timer_intr, mip_mtip;
+    // cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one, m_soft_intr,  mip_msip;
+    // cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one, m_ext_intr,   mip_meip;
+    // cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, m_timer_intr;
+    // cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, timeout;
+
+    cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, mip_mtip;
+    cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one,  mip_msip;
+    cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one,   mip_meip;
+    cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one;
+    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one;
 
 endgroup
 
 function void interruptsu_sample(int hart, int issue, ins_t ins);
     InterruptsU_cg.sample(ins);
+
+    $display("=== InterruptsU Debug ===");
+    $display("PC: %h Instr: %s", ins.current.pc_rdata, ins.current.disass);
+    $display("  mstatus.MIE=%b mstatus.TW=%b mode: %b, vector: %b",
+                ins.prev.csr[12'h300][3], ins.current.csr[12'h300][21], {ins.prev.mode_virt, ins.prev.mode}, {ins.current.csr[12'h305][1:0]});
+    $display("  mie: MEIE=%b MTIE=%b MSIE=%b (full=%h)",
+                ins.current.csr[12'h304][11], ins.current.csr[12'h304][7],
+                ins.current.csr[12'h304][3], ins.current.csr[12'h304][15:0]);
+    $display("  mip: MEIP=%b MTIP=%b MSIP=%b (full=%h)",
+                ins.current.csr[12'h344][11], ins.current.csr[12'h344][7],
+                ins.current.csr[12'h344][3], ins.current.csr[12'h344]);
+    if (ins.current.trap)
+        $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
+    $display("");
 endfunction
+

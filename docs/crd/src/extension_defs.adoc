@@ -1,0 +1,196 @@
+[appendix]
+[[extension_defs]]
+== Extension Definitions
+
+[[extension:A]]
+=== Extension A
+
+Long Name::
+Atomic Instructions
+
+Description::
+Atomic instructions from the Zaamo and Zalrsc extensions
+
+[[extension:C]]
+=== Extension C
+
+Long Name::
+Compressed instructions
+
+Description::
+Always includes Zca, includes Zcf if F is present (RV32 only), and includes Zcd if D is present
+
+[[extension:D]]
+=== Extension D
+
+Long Name::
+Double-Precision Floating-Point
+
+Description::
+Double-precision floating-point instructions and CSRs. Requires F.
+
+[[extension:F]]
+=== Extension F
+
+Long Name::
+Single-Precision Floating-Point
+
+Description::
+Single-precision floating-point instructions and CSRs
+
+[[extension:M]]
+=== Extension M
+
+Long Name::
+Multiply
+
+Description::
+Integer multiply and divide instructions
+
+[[extension:Sm]]
+=== Extension Sm
+
+Long Name::
+Minimal Machine Mode
+
+Description::
+All Machine-mode features defined as mandatory by the RISC-V Privileged Architectures specification.
+
+.RV32/64 mandatory CSRs (many can be read-only zero)
+[%autowidth]
+|===
+| CSR name | Normative rule defining CSR as mandatory | Notes
+
+| misa | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#misa_always_rd[misa_always_rd] |
+| mvendorid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mvendorid_always_rd[mvendorid_always_rd] |
+| marchid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#marchid_always_rd[marchid_always_rd] |
+| mimpid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mimpid_always_rd[mimpid_always_rd] |
+| mhartid | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhartid_always_rd[mhartid_always_rd] |
+| mstatus | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mstatus_acc[mstatus_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mtvec | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtvec_mandatory[mtvec_mandatory] |
+| mip | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mip_acc[mip_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mie | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mie_acc[mie_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mcycle | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#m_mode_perf_monitoring[m_mode_perf_monitoring] |
+| minstret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#m_mode_perf_monitoring[m_mode_perf_monitoring] |
+| mhpmcounter3-mhpmcounter31 | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhpmcounter_mandatory[mhpmcounter_mandatory] |
+| mscratch | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mscratch_sz_acc[mscratch_sz_acc] | closest rule requiring CSR to be implemented, seems implicitly required
+| mepc | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mepc_op[mepc_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mcause | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mcause_op[mcause_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mtval | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtval_op[mtval_op] | closest rule requiring CSR to be implemented, seems implicitly required
+| mconfigptr |https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mconfigptr_mandatory[mconfigptr_mandatory] |
+| cycle | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#cycle_op[cycle_op] | read-only shadow of mcycle[31:0]
+| time | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#time_op[time_op] | read-only shadow of mtime[31:0] memory-mapped register, only exists if TIME_CSR_HW_SUPPORT parameter is true
+| instret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#instret_op[instret_op] | read-only shadow of minstret[31:0]
+| hpmcounter3-hpmcounter31 | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#hpmcounter_op[hpmcounter_op] |
+|===
+
+.Additional RV32-only mandatory CSRs (many can be read-only zero)
+[%autowidth]
+|===
+| CSR name | Normative rule defining CSR as mandatory | Notes
+
+| mstatush | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mstatush_acc[mstatush_acc] | Mentioned as mandatory in the Priv ISA manual "Preface to Version 20211203"
+| mcycleh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mcycleh_op[mcycleh_op] |
+| minstreth | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#minstreth_op[minstreth_op] |
+| mhpmcounter3h-mhpmcounter31h | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mhpmcounterh_op[mhpmcounterh_op] |
+| cycleh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#cycleh_op[cycleh_op] |
+| timeh | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#timeh_op[timeh_op] | read-only shadow of mtime[63:32] memory-mapped register, only exists if TIME_CSR_HW_SUPPORT parameter is true
+| instreth | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#instreth_op[instreth_op] |
+|===
+
+.Memory-mapped registers (not CSRs)
+[%autowidth]
+|===
+| Register name | Normative rule defining register as mandatory | Notes
+
+| mtime | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtime_acc[mtime_acc] |
+| mtimecmp | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mtimecmp_sz[mtimecmp_sz] |
+|===
+
+.Instructions
+[%autowidth]
+|===
+| Instruction name | Normative rule defining instruction as mandatory | Notes
+
+| ecall | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#ecall_op[ecall_op] | Implicitlymandatory
+| ebreak | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#ebreak_op[ebreak_op] | Implicitlymandatory
+| c.ebreak | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#c-ebreak_op[c-ebreak_op] | Implicitlymandatory
+| mret | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#mret_presence[mret_presence] |
+| wfi | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#wfi_op[wfi_op] | Implicitlymandatory
+|===
+
+.PMAs (Physical Memory Attributes)
+[%autowidth]
+|===
+| PMA | Normative rule or Implementation-defined behavior
+
+| Main-memory PMAs | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_mm_vs_io_def[pma_mm_vs_io_def]
+| Support read and write of all access widths required by the attached devices | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_mm_rw[pma_mm_rw]
+| Support instruction fetch if PMA_MM_IFETCH is true for the PMA region | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#PMA_MM_IFETCH[PMA_MM_IFETCH]
+| Support atomics if PMA_CACHE_MM_ALL_ATOMICS is true for the PMA region | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#PMA_CACHE_MM_ALL_ATOMICS[PMA_CACHE_MM_ALL_ATOMICS]
+| AMO support levels | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_amo_levels[pma_amo_levels]
+| Size support per AMO level | https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#pma_amo_sz_support[pma_amo_sz_support]
+|===
+
+[[extension:Zce]]
+=== Extension Zce
+
+Long Name::
+Microcontroller compressed instructions
+
+Description::
+Additional compressed instructions for microcontrollers including push/pop and table jump.
+
+[[extension:Smepmp]]
+=== Extension Smepmp
+
+Long Name::
+Enhanced PMP
+
+Description::
+Original PMP with additional features such as guards against additional attack vectors.
+
+[[extension:Smpmp]]
+=== Extension Smpmp
+
+Long Name::
+Original PMP
+
+Description::
+Original PMP as defined in the "Physical Memory Protection" section of the RISC-V Privileged Architecture Machine-mode chapter, without the additional features of Smepmp.
+
+[[extension:Zicntr]]
+=== Extension Zicntr
+
+Long Name::
+Base Counters and Timers
+
+Description::
+Base counters and timers including the time/timeh, cycle/cycleh, and instret/instreth CSRs.
+
+[[extension:Zicsr]]
+=== Extension Zicsr
+
+Long Name::
+Control and Status Register Instructions
+
+Description::
+Instructions for reading and writing control and status registers.
+
+[[extension:Zifencei]]
+=== Extension Zifencei
+
+Long Name::
+Instruction Fence
+
+Description::
+Instruction fence instructions and related CSRs.
+
+[[extension:Zihpm]]
+=== Extension Zihpm
+
+Long Name::
+Hardware Performance Counters
+
+Description::
+The number of counters is platform-specific.

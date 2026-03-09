@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 
@@ -64,7 +64,10 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 #### 3. RISC-V Compiler
 
-The ACT framework is compatible with GCC or LLVM/Clang. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
+The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
+Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
+
+This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
 
 > [!NOTE]
 >
@@ -194,7 +197,7 @@ See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an exam
 
 #### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
-The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/#_Macros).
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/ctp.html#rvmodel-macros).
 
 **Required Macros**:
 

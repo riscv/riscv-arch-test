@@ -1,0 +1,6 @@
+Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
+and the associated certificate doesn't cover their behaviors.
+
+Please refer to the <<extension_defs,Extension Definitions>> appendix for more information about the extensions listed in this section or click on the extension names in the table below to jump to their definitions.
+
+Note that the syntax `~>` for version numbers in the tables below means "version or later backwards-compatible version".

@@ -27,11 +27,13 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
                 f"    LA(x{addr_reg}, scratch)",
                 f"    addi x{addr_reg}, x{addr_reg}, {offset}",
+                f"    LI(x{check_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
                 f"    lr.w x{check_reg}, (x{addr_reg})",
                 "   nop",
                 write_sigupd(check_reg, test_data),
                 "#if __riscv_xlen == 64",
+                f"    LI(x{check_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
                 f"    lr.d x{check_reg}, (x{addr_reg})",
                 "   nop",
@@ -61,10 +63,13 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"    LA(x{base_reg}, scratch)",
                 f"    addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
                 f"    LI(x{data_reg}, 0xDECAFCAB)",
+                f"    LI(x{temp_reg}, 0xBAD)",
+                test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
                 f"    lr.w x{temp_reg}, (x{addr_reg})",  # establish reservation
                 "    nop",
-                test_data.add_testcase(f"sc.w_off{offset}", coverpoint, covergroup),
+                write_sigupd(temp_reg, test_data),
                 f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+                test_data.add_testcase(f"sc.w_off{offset}", coverpoint, covergroup),
                 f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
                 "    nop",
                 write_sigupd(rd_reg, test_data),
@@ -77,10 +82,13 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"    lw x{check_reg}, 12(x{base_reg})",
                 write_sigupd(check_reg, test_data),
                 "#if __riscv_xlen == 64",
+                f"    LI(x{temp_reg}, 0xBAD)",
+                test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
                 f"    lr.d x{temp_reg}, (x{addr_reg})",  # establish reservation
                 "    nop",
-                test_data.add_testcase(f"sc.d_off{offset}", coverpoint, covergroup),
+                write_sigupd(temp_reg, test_data),
                 f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+                test_data.add_testcase(f"sc.d_off{offset}", coverpoint, covergroup),
                 f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
                 "    nop",
                 write_sigupd(rd_reg, test_data),
@@ -107,15 +115,15 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(coverpoint),
-        test_data.add_testcase("lr.w_load_access_fault", coverpoint, covergroup),
         f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         f"    LI(x{check_reg}, 0xBAD)",
+        test_data.add_testcase("lr.w_load_access_fault", coverpoint, covergroup),
         f"    lr.w x{check_reg}, (x{addr_reg})",
         "   nop",
         write_sigupd(check_reg, test_data),
         "#if __riscv_xlen == 64",
-        test_data.add_testcase("lr.d_load_access_fault", coverpoint, covergroup),
         f"    LI(x{check_reg}, 0xBAD)",
+        test_data.add_testcase("lr.d_load_access_fault", coverpoint, covergroup),
         f"    lr.d x{check_reg}, (x{addr_reg})",
         "   nop",
         write_sigupd(check_reg, test_data),
@@ -136,14 +144,14 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint),
         f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         f"    addi x{addr_reg}, x{addr_reg}, 1",
-        test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
         f"    LI(x{check_reg}, 0xBAD)",
+        test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
         f"    lr.w x{check_reg}, (x{addr_reg})",
         "    nop",
         write_sigupd(check_reg, test_data),
         "#if __riscv_xlen == 64",
-        test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
         f"    LI(x{check_reg}, 0xBAD)",
+        test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
         f"    lr.d x{check_reg}, (x{addr_reg})",
         "    nop",
         write_sigupd(check_reg, test_data),
@@ -159,25 +167,34 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate store access fault exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_access_fault"
     addr_reg, data_reg, rd_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
-
+    # sc.w at illegal address does not trigger exception in QEMU
+    # QEMU issue: https://gitlab.com/qemu-project/qemu/-/issues/3323
     lines = [
         comment_banner(coverpoint),
         f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        test_data.add_testcase("sc.w_fault", coverpoint, covergroup),
         f"    LI(x{data_reg}, 0xADDEDCAB)",
+        f"    LI(x{rd_reg}, 0xBAD)",
+        test_data.add_testcase("lr.w_store_fault", coverpoint, covergroup),
         f"    lr.w x{rd_reg}, (x{addr_reg})",
         "     nop",
+        write_sigupd(rd_reg, test_data),
         f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+        test_data.add_testcase("sc.w_fault", coverpoint, covergroup),
         f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
         "   nop",
+        write_sigupd(rd_reg, test_data),
         "#if __riscv_xlen == 64",
-        test_data.add_testcase("sc.d_fault", coverpoint, covergroup),
         f"    LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",
+        f"    LI(x{rd_reg}, 0xBAD)",
+        test_data.add_testcase("lr.d_store_fault", coverpoint, covergroup),
         f"    lr.d x{rd_reg}, (x{addr_reg})",
         "     nop",
+        write_sigupd(rd_reg, test_data),
         f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+        test_data.add_testcase("sc.d_fault", coverpoint, covergroup),
         f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
         "   nop",
+        write_sigupd(rd_reg, test_data),
         "#endif",
         "",
     ]
@@ -199,23 +216,27 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
             f"    addi x{addr_reg}, x{addr_reg}, 1",
             f"    LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
             f"    LI(x{rd_reg}, 0xDECAFCAB)",
-            test_data.add_testcase("sc.w_off1_priority", coverpoint, covergroup),
+            test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
             f"    lr.w x{rd_reg}, (x{addr_reg})",
             "     nop",
             write_sigupd(rd_reg, test_data),
             f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+            test_data.add_testcase("sc.w_off1_priority", coverpoint, covergroup),
             f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
             "     nop",
+            write_sigupd(rd_reg, test_data),
             "#if __riscv_xlen == 64",
             f"    LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",  # Match original value
             f"    LI(x{rd_reg}, 0xDECAFCAB)",
-            test_data.add_testcase("sc.d_off1_priority", coverpoint, covergroup),
+            test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
             f"    lr.d x{rd_reg}, (x{addr_reg})",
             "     nop",
             write_sigupd(rd_reg, test_data),
             f"    LI(x{rd_reg}, 0xBAD)",  # previous rd greater than 1
+            test_data.add_testcase("sc.d_off1_priority", coverpoint, covergroup),
             f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
             "     nop",
+            write_sigupd(rd_reg, test_data),
             "#endif",
             "",
         ]

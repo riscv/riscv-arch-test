@@ -22,6 +22,10 @@ SRCDIR32E      := $(TESTDIR)/rv32e
 PRIVDIR        := $(TESTDIR)/priv
 PRIVHEADERSDIR := $(PRIVDIR)/headers
 
+COVERPOINT_DIR         := coverpoints
+UNPRIV_COVERPOINTS_DIR := $(COVERPOINT_DIR)/unpriv
+COVERAGE_HELPERS_DIR   := $(COVERPOINT_DIR)/coverage
+
 TEMPLATEDIR := templates
 TESTGEN_SRC_DIR := generators/testgen
 COVERGROUPGEN_SRC_DIR := generators/coverage
@@ -149,8 +153,7 @@ tests: covergroupgen testgen privheaders
 .PHONY: clean-tests
 clean-tests:
 	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR)
-	rm -rf coverpoints/unpriv/*
-	rm -rf coverpoints/coverage/*
+	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
 	rm -rf $(STAMP_DIR)
 
 $(PRIVHEADERSDIR) $(STAMP_DIR):

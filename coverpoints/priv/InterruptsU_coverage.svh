@@ -82,4 +82,3 @@ function void interruptsu_sample(int hart, int issue, ins_t ins);
     //     $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
     // $display("");
 endfunction
-

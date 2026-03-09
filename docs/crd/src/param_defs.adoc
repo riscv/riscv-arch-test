@@ -14,6 +14,8 @@ Typically these normative rules are the Implementation-Defined Behavior variant 
 These are normative rules that allow for multiple behaviors and require the implementation to specify its behavior.
 By convention, Implementation-Defined Behaviors have uppercase names while other types of normative rules have lowercase names.
 
+Just because a parameter is listed in this appendix doesn't necessarily mean that it's required for a particular certificate. Please refer to the "Parameters" section of the relevant CRD for information about which parameters are required for that certificate.
+
 .Parameter Definitions
 [cols="30%,10%,10%,50%"]
 |===

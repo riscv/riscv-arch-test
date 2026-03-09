@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.6)
+= RVI20 Certification Requirements Document (rev 0.7)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,10 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 9, 2026
+| 0.7
+a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
 
 | Mar 5, 2026
 | 0.6
@@ -116,6 +120,17 @@ None
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
+|===
+
+=== Dependent Extensions
+
+.Dependent Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version | Dependency
+
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
+
 |===
 
 <<<

@@ -1,4 +1,4 @@
-= MC100 Certification Requirements Document (rev 0.1)
+= MC100 Certification Requirements Document (rev 0.2)
 :description: MC100 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -16,6 +16,13 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 9, 2026
+| 0.2
+a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
+   * The ecall, ebreak, and c.ebreak instructions are all IN-SCOPE (previously had them as exclusions)
+   * Don't use Smpmp term which is a made-up UDB extension name for the original PMP.
+   * Removed optional extensions not supported by tests (Zce and Smepmp)
 
 | Mar 3, 2026
 | 0.1
@@ -57,14 +64,7 @@ include::csr_field_types.adoc[]
 
 === Exclusions
 
-As per the unprivileged architecture specification, the `ecall`
-instruction causes a requested trap to the execution environment.
-Since the RVI profile family doesn't define any execution environments
-the `ecall` instruction is OUT-OF-SCOPE for the MC100 certificate.
-
-Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the MC100 certificate
-since they cause a breakpoint exception and the RVI profile family doesn't define any
-execution environments to handle such exceptions.
+None
 
 <<<
 == Extensions
@@ -93,12 +93,21 @@ include::extensions_intro.adoc[]
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
 | REQ-EXT-M | <<extension:M,M>> | ~> 2.0
-| REQ-EXT-Smepmp | <<extension:Smepmp,Enhanced PMP (Smepmp)>> | ~> 1.13
 | REQ-EXT-Smpmp | <<extension:Smpmp,Original PMP>> | ~> 1.13
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
-| REQ-EXT-Zce | <<extension:Zce,Zce>> | ~> 1.0
+
+|===
+
+=== Dependent Extensions
+
+.Dependent Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version | Dependency
+
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
 
 |===
 

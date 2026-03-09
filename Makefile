@@ -117,7 +117,7 @@ clean: clean-tests
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
 $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/coverage/covergroupgen.py
+	$(UV_RUN) covergroupgen testplans $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: testgen
@@ -149,7 +149,8 @@ tests: covergroupgen testgen privheaders
 .PHONY: clean-tests
 clean-tests:
 	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR)
-	rm -rf fcov/unpriv/*
+	rm -rf coverpoints/unpriv/*
+	rm -rf coverpoints/coverage/*
 	rm -rf $(STAMP_DIR)
 
 $(PRIVHEADERSDIR) $(STAMP_DIR):

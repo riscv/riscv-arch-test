@@ -125,10 +125,15 @@
 
   #ifdef rvtest_mtrap_routine
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-    bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
+    bne     T4, T5, check_trap_count
     jal     T2, failedtest_trap_x7_x9
     RVTEST_WORD_PTR abort_test
     RVTEST_WORD_PTR abortstr
+
+    check_trap_count:
+      LA(     T1, Mtrap_sig)
+      LREG    T1, 0(T1)
+      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_count, trap_count_mismatch)
   #endif
 
   // Terminate test

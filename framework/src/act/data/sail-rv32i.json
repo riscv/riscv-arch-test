@@ -49,6 +49,10 @@
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
       "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
+      // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
+      // "Xtvec_Ignore" – use old Mode of xtvec.
+      "xtvec_mode": "Xtvec_Ignore",
       // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
@@ -239,6 +243,9 @@
       "supported": true
     },
     "Zicfilp": {
+      "supported": true
+    },
+    "Zicfiss": {
       "supported": true
     },
     "Zicond": {

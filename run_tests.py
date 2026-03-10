@@ -65,7 +65,8 @@ def main() -> int:
 
     failed = 0
 
-    print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
+    for elf in elf_files:
+        print(f"\nRunning tests in {elf_dir} with command: {args.command} {elf}:")
     with Pool(args.jobs) as pool:
         for fail_status in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:

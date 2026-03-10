@@ -18,7 +18,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 
-def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
+def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bool:
     """Run a single ELF and return (elf_path, passed, exit_code)."""
 
     # Create log file path
@@ -26,6 +26,9 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     full_cmd = [*cmd, str(elf_path)]
+
+    if verbose:
+        print(f"\nRunning {' '.join(full_cmd)}")
 
     with log_file.open("w") as f:
         result = subprocess.run(
@@ -62,15 +65,11 @@ def main() -> int:
 
     # Partial function with fixed command and log_dir
     cmd = shlex.split(args.command)
-    partial_run_test = partial(run_test, cmd, log_dir)
+    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose)
 
     failed = 0
 
-    if args.verbose:
-        for elf in elf_files:
-            print(f"\nRunning {args.command} {elf}:")
-    else:
-        print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
+    print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
     with Pool(args.jobs) as pool:
         for fail_status in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:

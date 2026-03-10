@@ -1,0 +1,19 @@
+# pyproject.toml
+# covergroupgen python project configuration file for riscv-arch-test
+# SPDX-License-Identifier: Apache-2.0
+
+[project]
+name = "covergroupgen"
+version = "0.1.0"
+description = "RISC-V Architectural Certification Covergroup Generator"
+authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
+requires-python = ">=3.12"
+dependencies = ["typer>=0.20.0", "rich>=13.0.0"]
+
+[project.scripts]
+covergroupgen = "covergroupgen.cli:main"
+
+##### BUILD #####
+[build-system]
+requires = ["uv_build>=0.9.4,<0.10.0"]
+build-backend = "uv_build"

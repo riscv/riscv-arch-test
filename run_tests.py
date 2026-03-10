@@ -18,7 +18,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 
-def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
+def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bool:
     """Run a single ELF and return (elf_path, passed, exit_code)."""
 
     # Create log file path
@@ -26,6 +26,9 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path) -> bool:
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     full_cmd = [*cmd, str(elf_path)]
+
+    if verbose:
+        print(f"\nRunning {' '.join(full_cmd)}")
 
     with log_file.open("w") as f:
         result = subprocess.run(
@@ -47,6 +50,7 @@ def main() -> int:
     )
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
     parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Print the full command for every test")
     args = parser.parse_args()
 
     elf_dir = args.elf_dir.resolve()
@@ -61,7 +65,7 @@ def main() -> int:
 
     # Partial function with fixed command and log_dir
     cmd = shlex.split(args.command)
-    partial_run_test = partial(run_test, cmd, log_dir)
+    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose)
 
     failed = 0
 

@@ -47,6 +47,7 @@ def main() -> int:
     )
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
     parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Print the full command for every test")
     args = parser.parse_args()
 
     elf_dir = args.elf_dir.resolve()
@@ -65,8 +66,11 @@ def main() -> int:
 
     failed = 0
 
-    for elf in elf_files:
-        print(f"\nRunning tests in {elf_dir} with command: {args.command} {elf}:")
+    if args.verbose:
+        for elf in elf_files:
+            print(f"\nRunning {args.command} {elf}:")
+    else:
+        print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
     with Pool(args.jobs) as pool:
         for fail_status in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:

@@ -68,7 +68,7 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
             if arch == "I":  # duplicate I testplan for E
                 testplans["E"] = tp
                 arch_sources["E"] = source
-            if "Vx" in arch or "Vls" in arch:
+            if "Vx" in arch or "Vls" in arch or "Zvkb" in arch:
                 for effew in ["8", "16", "32", "64"]:
                     testplans[f"{arch}{effew}"] = tp
                     arch_sources[f"{arch}{effew}"] = source

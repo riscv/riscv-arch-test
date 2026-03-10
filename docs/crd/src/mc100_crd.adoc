@@ -92,7 +92,6 @@ include::extensions_intro.adoc[]
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
 | REQ-EXT-M | <<extension:M,M>> | ~> 2.0
-| REQ-EXT-Smpmp | <<extension:Smpmp,Original PMP>> | ~> 1.13
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0

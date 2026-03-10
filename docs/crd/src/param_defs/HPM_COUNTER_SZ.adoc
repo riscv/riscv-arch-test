@@ -7,4 +7,4 @@ Normative Rule(s):
 | Array[3:31] of Integer 0 to 64
 | Zicntr
 | Bit width of each implemented unprivileged hardware performance counter.
-A value of 0 indicates the corresponding counter is not implemented and will not trap if read.
+A value of 0 indicates the corresponding counter is not implemented.

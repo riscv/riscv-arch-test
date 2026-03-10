@@ -110,7 +110,7 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build: build-pdf build-html
 
-ALL_SRCS := $(shell find src -name "*.adoc")
+ALL_SRCS := $(wildcard src/*.adoc) $(wildcard src/ext_defs/*.adoc) $(wildcard src/param_defs/*.adoc)
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)

@@ -8,8 +8,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: cv32e40p
-description: CV32E40P (CORE-V small) - RV32IMCF configuration DUT (FPU=1, ZFINX=0)
+name: cv32e40p_v1.8.3_rv32imcf
+description: CV32E40P v1.8.3 (CORE-V small) - RV32IMCF configuration DUT (FPU=1, ZFINX=0, mimpid=1)
 implemented_extensions: # VERIFIED — manual documents these extensions as implemented
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }

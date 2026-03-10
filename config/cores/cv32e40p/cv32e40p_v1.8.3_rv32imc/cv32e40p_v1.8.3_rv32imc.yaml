@@ -1,0 +1,157 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40P, a configuration of the CORE-V project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40p_v1.8.3_rv32imc
+description: CV32E40P v1.8.3 (CORE-V small) - RV32IMC configuration DUT (FPU=0, mimpid=0)
+implemented_extensions: # VERIFIED — manual documents these extensions as implemented
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: Smhpm, version: "= 1.11.0" }
+
+params:
+  # XLEN parameters (VERIFIED)
+  MXLEN: 32                              # VERIFIED — intro.rst line 72; RV32I base ISA
+  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  PHYS_ADDR_WIDTH: 32                    # VERIFIED — control_status_registers.rst; 32-bit addressing
+
+  # MISA (VERIFIED)
+  MUTABLE_MISA_M: false                  # VERIFIED — M bit is RO per control_status_registers.rst table
+  MUTABLE_MISA_C: false                  # VERIFIED — C bit is RO per control_status_registers.rst table
+  MISA_CSR_IMPLEMENTED: true             # VERIFIED — MISA CSR (0x301) documented
+
+  # endianness (VERIFIED)
+  M_MODE_ENDIANNESS: little              # VERIFIED — intro.rst line 77 (little-endian architecture)
+  #U_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (Section 5 — Trap & Exception Behavior)
+  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_M: true             # VERIFIED — exceptions_interrupts.rst:122 "cannot be disabled"
+  TRAP_ON_EBREAK: true                   # VERIFIED — exceptions_interrupts.rst Exception part has table with exception code breakpoint
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst:122–125 "cannot be disabled"
+  TRAP_ON_RESERVED_INSTRUCTION: true     # VERIFIED — exceptions_interrupts.rst; rtl shows default case traps undefined opcodes
+  TRAP_ON_UNIMPLEMENTED_CSR: true        # VERIFIED — decoder.sv: illegal instruction default case
+  TRAP_ON_ILLEGAL_WLRL: false            # VERIFIED — cs_registers.sv: only masking, no illegal-write trap
+
+  # MTVAL reporting (Section 6 — mtval CSR)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — cs_registers.sv: mtval is hardwired to 0
+  MTVAL_WIDTH: 32                        # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
+
+  # Misaligned load/store support (Section 7 — Misaligned Load/Store)
+  MISALIGNED_LDST: true                  # VERIFIED — load_store_unit.rst: performed as two bus transactions
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — load_store_unit.rst: never raises exception
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — load_store_unit.rst: two bus transactions, no atomicity
+  MISALIGNED_SPLIT_STRATEGY: custom      # VERIFIED — load_store_unit.rst: lowest address performed first
+
+  # CSR / implementation IDs (Section 3 — Implementation IDs)
+  ARCH_ID_VALUE: 0x00000004             # VERIFIED — control_status_registers.rst: marchid=0x4
+  IMP_ID_VALUE: 0x0                     # VERIFIED — core_versions.rst: mimpid=0 for baseline config (FPU=0, COREV_PULP=0, COREV_CLUSTER=0); cs_registers.sv: conditional expression returns 0
+  VENDOR_ID_BANK: 0xC                   # VERIFIED — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2                 # VERIFIED — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
+
+  # MTVEC (Section 4 — mtvec WARL)
+  MTVEC_MODES: [0, 1]                    # VERIFIED — control_status_registers.rst: "both direct and vectored supported"
+  MTVEC_ACCESS: rw                       # VERIFIED — control_status_registers.rst: MODE[0] is RW, rtl confirms writable
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom   # VERIFIED — cs_registers.sv: mtvec_mode_n = {1'b0, csr_wdata_int[0]}; masking always produces valid mode (0 or 1), illegal state unreachable
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256     # VERIFIED — control_status_registers.rst: "256-byte aligned"; rtl: CSR_MTVEC read = {mtvec_q, 6'h0, mtvec_mode_q}
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256       # VERIFIED — same as vectored; bits [7:2] always 0
+
+  # Sm params (Section 9 — Sm Parameters)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true   # ASSUMED — exceptions_interrupts.rst:26: "core sets mepc to the current program counter"
+  MARCHID_IMPLEMENTED: true              # VERIFIED — control_status_registers.rst: marchid (0xF12) implemented
+  MIMPID_IMPLEMENTED: true               # VERIFIED — core_versions.rst: mimpid=0 is deliberate version encoding; CSR exists and returns 0x0 for this config
+  PMA_GRANULARITY: 2                     # QUESTIONABLE — no PMA hardware in RTL; schema minimum is 2 (=4 bytes); OBI bus is 32-bit with byte enables making 4 bytes natural minimum
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: false            # VERIFIED — perf_counters.rst: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
+
+  # HPM Counters (Section 8 — HPM Counters)
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cs_registers.sv: events 0-10 active for FPU=0 baseline (events 11-15 hardwired 0 when COREV_CLUSTER=0, APU=0)
+  HPM_COUNTER_EN:                        # VERIFIED — cs_registers.sv: NUM_MHPMCOUNTERS=1 default; only index 3 active
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      true,  # index 3 (MHPMCOUNTER3 — only active counter)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  COUNTINHIBIT_EN:                       # VERIFIED — cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q
+    [
+      true,  # index 0 (MCYCLE inhibit)
+      false, # index 1 (TM — always false per UDB)
+      true,  # index 2 (MINSTRET inhibit)
+      true,  # index 3 (MHPMCOUNTER3 inhibit)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+# end

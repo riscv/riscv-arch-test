@@ -17,7 +17,34 @@
 # Install by running:
 #		make docker-pull-latest
 
-DOCS := rvi20_crd mc100_crd all_impldefs
+REPO_ROOT := $(shell git rev-parse --show-toplevel)
+
+SRC_DIR := src
+BUILD_DIR := build
+GENERATED_DIR := $(BUILD_DIR)/generated
+
+DOCS := rvi20_crd mc100_crd
+DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
+DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
+
+NORM_RULES_JSON := "norm-rules.json"
+
+ENV := LANG=C.utf8
+XTRA_ADOC_OPTS :=
+
+ASCIIDOCTOR_PDF := $(ENV) asciidoctor-pdf
+ASCIIDOCTOR_HTML := $(ENV) asciidoctor
+
+OPTIONS := --trace \
+           -a compress \
+           -a mathematical-format=svg \
+           -a pdf-fontsdir=docs-resources/fonts \
+           -a pdf-theme=docs-resources/themes/riscv-pdf.yml \
+           -a docinfo=shared \
+           $(XTRA_ADOC_OPTS) \
+           -D build \
+           --failure-level=WARN
+REQUIRES :=
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
@@ -46,6 +73,7 @@ ifneq ($(SKIP_DOCKER),true)
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+						-v ${PWD}/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
@@ -58,42 +86,14 @@ else
         cd $@.workdir &&
 endif
 
-ifdef UNRELIABLE_BUT_FASTER_INCREMENTAL_BUILDS
-WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../common ../../docs-resources $@.workdir/
-WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
-else
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
     mkdir -p $@.workdir && \
-    ln -sfn ../../src ../../common ../../docs-resources $@.workdir/
+    ln -sfn ../../src ../../../common ../../../docs-resources $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
     rm -rf $@.workdir
-endif
-
-SRC_DIR := src
-BUILD_DIR := build
-
-DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
-DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
-
-ENV := LANG=C.utf8
-XTRA_ADOC_OPTS :=
-
-ASCIIDOCTOR_PDF := $(ENV) asciidoctor-pdf
-ASCIIDOCTOR_HTML := $(ENV) asciidoctor
-
-OPTIONS := --trace \
-           -a compress \
-           -a mathematical-format=svg \
-           -a pdf-fontsdir=docs-resources/fonts \
-           -a pdf-theme=docs-resources/themes/riscv-pdf.yml \
-           -a docinfo=shared \
-           $(XTRA_ADOC_OPTS) \
-           -D build \
-           --failure-level=WARN
-REQUIRES :=
 
 .PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check
 
@@ -123,6 +123,10 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
+
+impldefs:
+	@echo "Generating implementation-defined behavior tables...."
+	$(REPO_ROOT)/generators/crd/generate_impl_def_table.py --norm-rules-path $(NORM_RULES_JSON) --out $(GENERATED_DIR)/all_impldefs.adoc
 
 # Update docker image to latest
 docker-pull-latest:

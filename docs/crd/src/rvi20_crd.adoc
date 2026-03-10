@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.5)
+= RVI20 Certification Requirements Document (rev 0.6)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,10 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 5, 2026
+| 0.6
+a| * Removed MISALIGNED_ATOMICITY_GRANULE_SIZE parameter due to https://github.com/riscv/riscv-isa-manual/issues/2726
 
 | Mar 4, 2026
 | 0.5
@@ -91,10 +95,7 @@ execution environments to handle such exceptions.
 <<<
 == Extensions
 
-Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
-and the RVI20 certificate doesn't cover their behaviors.
-
-Please refer to the <<extension_defs,Extension Definitions>> appendix for more information about the extensions listed in this section or click on the extension names in the table below to jump to their definitions.
+include::extensions_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -107,38 +108,14 @@ None
 |===
 | Requirement ID | Extension | Version
 
-| REQ-EXT-A
-| <<extension:A,A>>
-| ~> 2.1
-
-| REQ-EXT-C
-| <<extension:C,C>>
-| ~> 2.0
-
-| REQ-EXT-D
-| <<extension:D,D>>
-| ~> 2.2
-
-| REQ-EXT-F
-| <<extension:F,F>>
-| ~> 2.2
-
-| REQ-EXT-M
-| <<extension:M,M>>
-| ~> 2.0
-
-| REQ-EXT-Zicntr
-| <<extension:Zicntr,Zicntr>>
-| ~> 2.0
-
-| REQ-EXT-Zifencei
-| <<extension:Zifencei,Zifencei>>
-| ~> 2.0
-
-| REQ-EXT-Zihpm
-| <<extension:Zihpm,Zihpm>>
-| ~> 2.0
-
+| REQ-EXT-A | <<extension:A,A>> | ~> 2.1
+| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
+| REQ-EXT-D | <<extension:D,D>> | ~> 2.2
+| REQ-EXT-F | <<extension:F,F>> | ~> 2.2
+| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
+| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
+| REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
 |===
 
 <<<
@@ -163,16 +140,6 @@ include::in_scope_param_intro.adoc[]
 | True, False
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
-
-| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
-| Any
-a|
-NOTE: This parameter might be removed from this CRD. See GitHub Issue https://github.com/riscv/riscv-arch-test/issues/1037.
-
-Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
-Non-zero:: Misaligned AMO atomic instructions and
-misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
-any restrictions on misaligned supported expressed by other parameters are met.
 
 | <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
 | Any

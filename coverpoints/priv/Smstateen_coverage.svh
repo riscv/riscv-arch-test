@@ -8,16 +8,18 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         wildcard bins csrrw = {CSRRW};
     }
     csr: coverpoint ins.current.insn[31:20] {
-    bins mstateen0 = {CSR_MSTATEEN0};
-    bins mstateen1 = {CSR_MSTATEEN1};
-    bins mstateen2 = {CSR_MSTATEEN2};
-    bins mstateen3 = {CSR_MSTATEEN3};
+        bins mstateen1 = {CSR_MSTATEEN1};
+        bins mstateen2 = {CSR_MSTATEEN2};
+        bins mstateen3 = {CSR_MSTATEEN3};
     `ifdef XLEN32
         bins mstateen0h = {CSR_MSTATEEN0H};
         bins mstateen1h = {CSR_MSTATEEN1H};
         bins mstateen2h = {CSR_MSTATEEN2H};
         bins mstateen3h = {CSR_MSTATEEN3H};
     `endif
+    }
+    csr_mstateen0: coverpoint ins.current.insn[31:20] {
+       bins mstateen0 = {CSR_MSTATEEN0};
     }
     mstateen_reset: coverpoint ins.current.csr[ins.current.insn[31:20]] {
         bins all_zeros = {`XLEN'h0};
@@ -242,59 +244,63 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         bins jvt_disabled = {1'b0};
         bins jvt_enabled  = {1'b1};
     }
-    cp_jvt_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "jvt") {
-        bins jvt_disabled = {1'b0};
-        bins jvt_enabled  = {1'b1};
-    }
-    cp_jvt_lower_mode: cross priv_mode_s_u , jvt_state;
-    cp_envcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "envcfg") { // bit 63 = ENVCFG in mstateen0
+    envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "envcfg") {
         bins envcfg_disabled = {1'b0};
         bins envcfg_enabled  = {1'b1};
     }
-    cp_csrind: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "csrind") {
+    csrind_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "csrind") {
         bins csrind_disabled = {1'b0};
         bins csrind_enabled  = {1'b1};
     }
-    cp_aia: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "aia") {
+    aia_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "aia") {
         bins aia_disabled = {1'b0};
         bins aia_enabled  = {1'b1};
     }
-    cp_imsic: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "imsic") {
+    imsic_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "imsic") {
         bins imsic_disabled = {1'b0};
         bins imsic_enabled  = {1'b1};
     }
-    cp_context: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "context") {
+    context_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "context") {
         bins context_disabled = {1'b0};
         bins context_enabled  = {1'b1};
     }
-    cp_p1p13: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
+    p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
         bins p1p13_disabled = {1'b0};
         bins p1p13_enabled  = {1'b1};
     }
-    cp_srmcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "srmcfg") {
+    srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "srmcfg") {
         bins srmcfg_disabled = {1'b0};
         bins srmcfg_enabled  = {1'b1};
     }
-    cp_ctr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "ctr") {
+    ctr_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "ctr") {
         bins ctr_disabled = {1'b0};
         bins ctr_enabled  = {1'b1};
     }
-
-    cp_fcsr_ro_zero: cross misa_F, mstateen0_fcsr_bit {
+    cp_fcsr_ro_zero: cross misa_F, csr_mstateen0, csrrw, mstateen0_fcsr_bit {
         ignore_bins ig1    = binsof(misa_F.F_clear);
         ignore_bins ig2    = binsof(misa_F.F_set) && binsof(mstateen0_fcsr_bit.fcsr_one);
         bins fcsr_reads_zero      = binsof(misa_F.F_set) && binsof(mstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr: cross misa_F, mstateen0_fcsr_bit, csrrw {
+    cp_fcsr: cross misa_F, csr_mstateen0, csrrw, mstateen0_fcsr_bit {
         ignore_bins ig1 = binsof(misa_F.F_set);
-
     }
-    cp_fcsr_lower: cross priv_mode_s_u, misa_F, mstateen0_fcsr_bit, csrrw {
+    cp_fcsr_lower: cross priv_mode_s_u, misa_F, csr_mstateen0, csrrw, mstateen0_fcsr_bit {
         ignore_bins ig = binsof(misa_F.F_set);
     }
-    cp_csr_illegal_accesses: cross priv_mode_u, csr, csrrw;
-    cp_mstateen_reset_val: cross csr, csrrw, mstateen_reset;
-    cp_walking_ones:       cross csr, csrrw, csr_walk;
+    cp_csr_illegal_accesses: cross csr_mstateen0, priv_mode_u, csr, csrrw;
+    cp_mstateen_reset_val:   cross csr_mstateen0, csr, csrrw, mstateen_reset;
+    cp_walking_ones:         cross csr_mstateen0, csr, csrrw, csr_walk;
+    cp_jvt_access:           cross csr_mstateen0, csrrw, jvt_state;
+    cp_jvt_lower_mode:       cross csr_mstateen0, priv_mode_s_u, csrrw, jvt_state;
+    cp_envcfg:               cross csr_mstateen0, csrrw, envcfg_state;
+    cp_csrind:               cross csr_mstateen0, csrrw, csrind_state;
+    cp_aia:                  cross csr_mstateen0, csrrw, aia_state;
+    cp_imsic:                cross csr_mstateen0, csrrw, imsic_state;
+    cp_context:              cross csr_mstateen0, csrrw, context_state;
+    cp_p1p13:                cross csr_mstateen0, csrrw, p1p13_state;
+    cp_srmcfg:               cross csr_mstateen0, csrrw, srmcfg_state;
+    cp_ctr:                  cross csr_mstateen0, csrrw, ctr_state;
+
 
 endgroup
 function void smstateen_sample(int hart, int issue, ins_t ins);

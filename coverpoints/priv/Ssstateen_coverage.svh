@@ -13,6 +13,9 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     bins sstateen2 = {CSR_SSTATEEN2};
     bins sstateen3 = {CSR_SSTATEEN3};
     }
+    csr_sstateen0: coverpoint ins.current.insn[31:20] {
+       bins sstateen0 = {CSR_SSTATEEN0};
+    }
 
     `ifdef XLEN64
     csr_walk: coverpoint ins.current.rs1_val {
@@ -221,6 +224,10 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         wildcard bins walking0_31 = {32'b0???????????????????????????????};
     }
     `endif
+    se0_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "SE0") {
+    bins se0_disabled = {1'b0};
+    bins se0_enabled  = {1'b1};
+    }
     misa_F: coverpoint ins.current.csr[CSR_MISA][5] {
         bins F_set   = {1'b1};
         bins F_clear = {1'b0};
@@ -233,54 +240,58 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         bins jvt_disabled = {1'b0};
         bins jvt_enabled  = {1'b1};
     }
-    cp_jvt_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "jvt") {
-        bins jvt_disabled = {1'b0};
-        bins jvt_enabled  = {1'b1};
-    }
-    cp_jvt_lower_mode: cross priv_mode_u , jvt_state;
-    cp_envcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "envcfg") { // bit 63 = ENVCFG in mstateen0
+    envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "envcfg") {
         bins envcfg_disabled = {1'b0};
         bins envcfg_enabled  = {1'b1};
     }
-    cp_csrind: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "csrind") {
+    csrind_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "csrind") {
         bins csrind_disabled = {1'b0};
         bins csrind_enabled  = {1'b1};
     }
-    cp_aia: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "aia") {
+    aia_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "aia") {
         bins aia_disabled = {1'b0};
         bins aia_enabled  = {1'b1};
     }
-    cp_imsic: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "imsic") {
+    imsic_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "imsic") {
         bins imsic_disabled = {1'b0};
         bins imsic_enabled  = {1'b1};
     }
-    cp_context: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "context") {
+    context_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "context") {
         bins context_disabled = {1'b0};
         bins context_enabled  = {1'b1};
     }
-    cp_srmcfg: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "srmcfg") {
+    srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "srmcfg") {
         bins srmcfg_disabled = {1'b0};
         bins srmcfg_enabled  = {1'b1};
     }
-    cp_ctr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "ctr") {
+    ctr_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "sstateen0", "ctr") {
         bins ctr_disabled = {1'b0};
         bins ctr_enabled  = {1'b1};
     }
-
-    cp_fcsr_ro_zero: cross misa_F, sstateen0_fcsr_bit {
+    cp_fcsr_ro_zero: cross misa_F, csr_sstateen0, csrrw, sstateen0_fcsr_bit {
         ignore_bins ig1    = binsof(misa_F.F_clear);
         ignore_bins ig2    = binsof(misa_F.F_set) && binsof(sstateen0_fcsr_bit.fcsr_one);
         bins fcsr_reads_zero      = binsof(misa_F.F_set) && binsof(sstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_fcsr: cross misa_F, sstateen0_fcsr_bit, csrrw {
+    cp_fcsr: cross misa_F, csr_sstateen0, csrrw, sstateen0_fcsr_bit {
         ignore_bins ig1 = binsof(misa_F.F_set);
-
     }
-    cp_fcsr_lower: cross priv_mode_u, misa_F, sstateen0_fcsr_bit, csrrw {
+    cp_fcsr_lower: cross priv_mode_u, misa_F, csr_sstateen0, csrrw, sstateen0_fcsr_bit {
         ignore_bins ig = binsof(misa_F.F_set);
     }
-    cp_csr_illegal_accesses: cross priv_mode_u, csr, csrrw;
-    cp_walking_ones:       cross csr, csrrw, csr_walk;
+    cp_mstateen0_se0_controls_sstateen0: cross csr_sstateen0, csrrw, se0_state;
+    cp_csr_illegal_accesses:             cross csr_sstateen0, priv_mode_u, csr, csrrw;
+    cp_walking_ones:                     cross csr_sstateen0, csr, csrrw, csr_walk;
+    cp_jvt_access:                       cross csr_sstateen0, csrrw, jvt_state;
+    cp_jvt_lower_mode:                   cross csr_sstateen0, priv_mode_u, csrrw, jvt_state;
+    cp_envcfg:                           cross csr_sstateen0, csrrw, envcfg_state;
+    cp_csrind:                           cross csr_sstateen0, csrrw, csrind_state;
+    cp_aia:                              cross csr_sstateen0, csrrw, aia_state;
+    cp_imsic:                            cross csr_sstateen0, csrrw, imsic_state;
+    cp_context:                          cross csr_sstateen0, csrrw, context_state;
+    cp_srmcfg:                           cross csr_sstateen0, csrrw, srmcfg_state;
+    cp_ctr:                              cross csr_sstateen0, csrrw, ctr_state;
+
 
 endgroup
 function void ssstateen_sample(int hart, int issue, ins_t ins);

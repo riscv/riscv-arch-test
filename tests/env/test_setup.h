@@ -132,7 +132,9 @@
 
     check_trap_count:
       LA(     T1, Mtrap_sig)
-      LREG    T1, 0(T1)
+      LREG    T1, 0(T1)               // Trap signature pointer
+      LA(     T2, mtrap_sigptr)       // Base address of trap signature region
+      sub     T1, T1, T2              // Calculate offset
       RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_count, trap_count_mismatch)
   #endif
 

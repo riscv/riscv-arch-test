@@ -47,7 +47,8 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     """Compute a hash of the config options that affect common test compilation.
 
     Includes the linker script, `rvmodel_macros.h`, the paths to the compiler, reference model,
-    and objdump executables, xlen, e_ext, and the memory map from `sail.json` (if present).
+    and objdump executables, reference model settings (`ref_model_type`, `ref_model_args`),
+    xlen, e_ext, and the memory map from `sail.json` (if present).
     """
     hasher = hashlib.sha256()
 
@@ -74,6 +75,10 @@ def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
     hasher.update(str(config.ref_model_exe.resolve()).encode())
     if config.objdump_exe is not None:
         hasher.update(str(config.objdump_exe.resolve()).encode())
+
+    # Hash reference model settings that affect signature generation command lines
+    hasher.update(config.ref_model_type.value.encode())
+    hasher.update((config.ref_model_args or "").encode())
 
     return hasher.hexdigest()
 
@@ -151,7 +156,7 @@ def gen_compile_targets(
     ref_model_args_line = f"\t\t{config.ref_model_args} \\\n" if config.ref_model_args else ""
     ref_model_debug_line = ""
     if debug:
-        ref_model_debug_flags = config.ref_model_type.debug_flags().format(sig_trace_file=sig_trace_file)
+        ref_model_debug_flags = config.ref_model_type.debug_flags.format(sig_trace_file=sig_trace_file)
         ref_model_debug_line = f"\t\t{ref_model_debug_flags} \\\n" if ref_model_debug_flags else ""
     ref_model_config_line = ""
     if config.ref_model_type == RefModelType.SAIL:

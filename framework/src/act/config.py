@@ -32,6 +32,7 @@ class RefModelType(str, Enum):
         }
         return flags_map[self]
 
+    @property
     def debug_flags(self) -> str:
         """Get the debug/trace flags for this reference model."""
         flags_map = {

@@ -1,4 +1,4 @@
-= MC100 Certification Requirements Document (rev 0.2)
+= MC100 Certification Requirements Document (rev 0.3)
 :description: MC100 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -16,6 +16,13 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 0.3
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * Changes to Sm extension definition in appendix:
+   ** Clarified Unpriv shadow CSRs of M-mode CSRs (in their own table)
+   ** Clarified that the c.ebreak instruction only exists if the C extension is present
 
 | Mar 9, 2026
 | 0.2

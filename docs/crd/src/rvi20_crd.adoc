@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.7)
+= RVI20 Certification Requirements Document (rev 0.8)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,11 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 0.8
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * The c.ebreak instruction only exists if the C extension is present.
 
 | Mar 9, 2026
 | 0.7

@@ -112,8 +112,8 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     lines = [
         f"    CSRR(x{save_reg}, {csr_name})      # Save CSR",
-        f"    li x{temp_reg}, -1             # x{temp_reg} = all 1s",
-        f"    li x{walk_reg}, 1            # 1 in lsb",
+        f"    LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s",
+        f"    LI(x{walk_reg}, 1)            # 1 in lsb",
     ]
 
     # Set each bit 0-31
@@ -145,7 +145,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
     lines.append("#endif\n")
 
     # Clear each bit 0-31
-    lines.append(f"    li x{walk_reg}, 1            # 1 in lsb")
+    lines.append(f"    LI(x{walk_reg}, 1)            # 1 in lsb")
     for i in range(32):
         lines.extend(
             [

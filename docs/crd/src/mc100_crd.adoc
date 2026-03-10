@@ -68,7 +68,7 @@ None
 <<<
 == Extensions
 
-include::extensions_intro.adoc[]
+include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -154,8 +154,22 @@ TBD
 
 TBD
 
-<<<
-include::extension_defs.adoc[]
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Sm.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
 
-<<<
-include::param_defs.adoc[]
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

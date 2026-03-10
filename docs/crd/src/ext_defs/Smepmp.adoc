@@ -1,0 +1,8 @@
+[[extension:Smepmp]]
+=== Extension Smepmp
+
+Long Name::
+Enhanced PMP
+
+Description::
+Original PMP with additional features such as guards against additional attack vectors.

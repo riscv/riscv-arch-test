@@ -1,0 +1,8 @@
+[[extension:A]]
+=== Extension A
+
+Long Name::
+Atomic Instructions
+
+Description::
+Atomic instructions from the Zaamo and Zalrsc extensions

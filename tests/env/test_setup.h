@@ -125,17 +125,18 @@
 
   #ifdef rvtest_mtrap_routine
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-    bne     T4, T5, check_trap_count
+    bne     T4, T5, check_trap_sig_offset
     jal     T2, failedtest_trap_x7_x9
     RVTEST_WORD_PTR abort_test
     RVTEST_WORD_PTR abortstr
 
-    check_trap_count:
+    // Check trap signature offset to make sure the correct number of traps occurred
+    check_trap_sig_offset:
       LA(     T1, Mtrap_sig)
       LREG    T1, 0(T1)               // Trap signature pointer
       LA(     T2, mtrap_sigptr)       // Base address of trap signature region
       sub     T1, T1, T2              // Calculate offset
-      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_count, trap_count_mismatch)
+      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
   #endif
 
   // Terminate test

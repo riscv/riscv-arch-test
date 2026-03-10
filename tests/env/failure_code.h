@@ -646,7 +646,7 @@
         .string "RVCP: Address of instruction that trapped (XEPC): "
     xepcinstrstr:
         .string "RVCP: Instruction that trapped: "
-    trap_count_mismatch:
+    trap_sig_offset_mismatch:
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";

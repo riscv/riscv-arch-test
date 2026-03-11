@@ -33,7 +33,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_cfg_XWR_all-03.S"
-#define SIGUPD_COUNT 150
+#define SIGUPD_COUNT 400
 
 // Enable trap handler
 #define rvtest_mtrap_routine

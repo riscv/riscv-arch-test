@@ -35,7 +35,7 @@
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "pmpsm_csr_walk.S"
-#define SIGUPD_COUNT 300
+#define SIGUPD_COUNT 40000
 
 // Enable trap handler
 #define rvtest_mtrap_routine

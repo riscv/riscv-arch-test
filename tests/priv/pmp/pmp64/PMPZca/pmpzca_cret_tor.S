@@ -27,7 +27,7 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ic_zicsr
+# MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -76,11 +76,7 @@ main:
 #define PMP1CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL                           -1                                              // All memory region
-#define REGIONSTART         0x80002000  // RAM_BASE_ADDR + PROGRAM_SIZE
-
-#define LOWER_BOUND         (REGIONSTART     >> PMP_SHIFT)
-#define UPPER_BOUND         ((REGIONSTART+REGION_SIZE) >> PMP_SHIFT)
-
+#define REGIONSTART         TEST_FOR_EXECUTION_1  // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -92,11 +88,14 @@ main:
 //                                          Verification Section
 // Test Case: TOR Region with L->1 and XWR->111
 
-    LA(x5, LOWER_BOUND)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
 
-    LA(x6, UPPER_BOUND)
-    csrw pmpaddr1, x6
+    LA(x5, REGIONSTART)
+    addi x5, x5, REGION_SIZE
+    srl x5, x5, PMP_SHIFT
+    csrw pmpaddr1, x5
 
     LA(x4, PMP1CFG)
     csrw pmpcfg0, x4
@@ -115,9 +114,8 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
-.skip (0x1000 -2)
+.align 11
+.skip (0x800 -2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

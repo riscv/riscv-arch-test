@@ -26,7 +26,7 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ic_zicsr
+# MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -46,6 +46,9 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
+#define VALUE          0x00010001
+#define DOUBLE_VALUE  (0x00010001<<32)+0x00010001
+
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
@@ -60,20 +63,17 @@ RVTEST_BEGIN
     c.nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)
 
-    LI(x15, NOP)                                              // Value to write (NOP)
+    LI(x15, VALUE)                                              // Value to write (VALUE)
     // Store Access Check
     LA(x8, \ADDRESS)                                         // Address to be verified
-   \TEST_CASE\()_1:
+    \TEST_CASE\()_1:
     c.sw x15, 0(x8)
     c.nop
     c.nop
-    c.nop
-    c.nop
+
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
     \TEST_CASE\()_2:
     c.lw x15, 0(x8)
-    c.nop
-    c.nop
     c.nop
     c.nop
     RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
@@ -86,12 +86,10 @@ RVTEST_BEGIN
     c.nop
     c.nop
     c.nop
-    c.nop
-    c.nop
-    c.nop
-    c.nop
 
     c.lwsp x15, 0(sp)
+    c.nop
+    c.nop
     c.nop
     c.nop
     mv sp, t0
@@ -100,10 +98,43 @@ RVTEST_BEGIN
     c.nop
     c.nop
     c.nop
+/*
+    LI(x15, DOUBLE_VALUE)
+    \TEST_CASE\()_4:
+    c.sd x15, 0(x8)
+    c.nop
+    c.nop
+
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
+    \TEST_CASE\()_5:
+    c.ld x15, 0(x8)
+    c.nop
+    c.nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
+
+    LA(x8, \ADDRESS)
+
+    mv t0, sp
+    addi sp, x8, 0
+
+    c.sdsp x15, 0(sp)
+    c.nop
     c.nop
     c.nop
     c.nop
 
+    c.ldsp x15, 0(sp)
+    c.nop
+    c.nop
+    c.nop
+    c.nop
+    mv sp, t0
+
+    c.nop
+    c.nop
+    c.nop
+    c.nop
+*/
 .endm
 
 main:
@@ -130,15 +161,9 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            0x80002000    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
 #define PMP_REGION_SIZE     ((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-
-#if RVMODEL_PMP_GRAIN != 0
-    #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-#else
-    #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
-#endif
 
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -151,7 +176,10 @@ main:
 //                                            Verification Section
 // Test Case: 1 : L -> No Permissions given to the PMP Region 5
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
@@ -161,7 +189,10 @@ main:
 
 // Test Case: 2 : L -> R Permission given to the PMP Region 4
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
@@ -172,7 +203,10 @@ main:
 
 // Test Case: 3 : L ->  WR Permissions given to the PMP Region 3
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
@@ -183,7 +217,10 @@ main:
 
 // Test Case: 4 : L ->  X Permissions given to the PMP Region 2
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr2, x5
 
     LI(x4, PMPREGION_LXWR_1100)
@@ -194,7 +231,10 @@ main:
 
 // Test Case: 5 : L ->  XR Permissions given to the PMP Region 1
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr1, x5
 
     LI(x4, PMPREGION_LXWR_1101)
@@ -205,7 +245,10 @@ main:
 
 // Test Case: 6 : L ->  XWR Permissions given to the PMP Region 0
 
-    LA(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)
@@ -216,8 +259,7 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<RVMODEL_PMP_GRAIN+2)
     c.nop
@@ -239,8 +281,10 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
-test_2_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_lw\""
-test_3_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.jalr\""
+test_2_str: .string "\"test: 2; cp: pmpzca_legal_lxwr_lw\""
+test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
+test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
+test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
 
 RVTEST_DATA_END
 

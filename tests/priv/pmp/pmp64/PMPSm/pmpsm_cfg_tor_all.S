@@ -181,77 +181,77 @@ main:
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:                        // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (1<<(RVMODEL_PMP_GRAIN))
     nop
     .endr
 
 TEST_FOR_EXECUTION_1:                        // Adding nops in TOR Region from 0x80001000 + g to 0x80001000 + 3g
-    .rept (2*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (2*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_2:                        // Adding nops in TOR Region from 0x80001000 + 3g to 0x80001000 + 6g
-    .rept (3*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (3*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_3:                        // Adding nops in TOR Region from 0x80001000 + 6g to 0x80001000 + 10g
-    .rept (4*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (4*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_4:                        // Adding nops in TOR Region from 0x80001000 + 10g to 0x80001000 + 15g
-    .rept (5*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (5*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_5:                        // Adding nops in TOR Region from 0x80001000 + 15g to 0x80001000 + 21g
-    .rept (6*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (6*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_6:                        // Adding nops in TOR Region from 0x80001000 + 21g to 0x80001000 + 28g
-    .rept (7*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (7*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_7:                        // Adding nops in TOR Region from 0x80001000 + 28g to 0x80001000 + 36g
-    .rept (8*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (8*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_8:                        // Adding nops in TOR Region from 0x80001000 + 36g to 0x80001000 + 45g
-    .rept (9*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (9*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_9:                        // Adding nops in TOR Region from 0x80001000 + 45g to 0x80001000 + 55g
-    .rept (10*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (10*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_10:                        // Adding nops in TOR Region from 0x80001000 + 55g to 0x80001000 + 66g
-    .rept (11*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (11*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_11:                        // Adding nops in TOR Region from 0x80001000 + 66g to 0x80001000 + 78g
-    .rept (12*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (12*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_12:                        // Adding nops in TOR Region from 0x80001000 + 78g to 0x80001000 + 91g
-    .rept (13*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (13*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_13:                        // Adding nops in TOR Region from 0x80001000 + 91g to 0x80001000 + 105g
-    .rept (14*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (14*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 
 TEST_FOR_EXECUTION_14:                        // Adding nops in TOR Region from 0x80001000 + 105g to 0x80001000 + 120g
-    .rept (15*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (15*(1<<(RVMODEL_PMP_GRAIN)))
     nop
     .endr
 

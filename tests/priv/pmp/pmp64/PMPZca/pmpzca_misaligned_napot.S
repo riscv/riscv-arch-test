@@ -27,7 +27,7 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ic_zicsr
+# MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -78,23 +78,13 @@ main:
 #define PMP2CFG             ((((PMP_L|                  PMP_NAPOT)&0xFF) << PMP2_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1              // All memory region
-#define REGIONSTART                 0x80002000      // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART                 TEST_FOR_EXECUTION_1      // RAM_BASE_ADDR + PROGRAM_SIZE
 #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
 #define PMP_REGION_SIZE     ((1 << (RVMODEL_PMP_GRAIN - 1))-1)
 
 #define NEWREGION1          (REGIONSTART)
 #define NEWREGION2          (REGIONSTART+REGION_SIZE)
 #define NEWREGION3          (REGIONSTART+(2*REGION_SIZE))
-
-#if RVMODEL_PMP_GRAIN != 0
-    #define STANDARD_REGION1   (((NEWREGION1 >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-    #define STANDARD_REGION2   (((NEWREGION2 >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-    #define STANDARD_REGION3   (((NEWREGION3 >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-#else
-    #define STANDARD_REGION1   (NEWREGION1 >> PMP_SHIFT)
-    #define STANDARD_REGION2   (NEWREGION2 >> PMP_SHIFT)
-    #define STANDARD_REGION3   (NEWREGION3 >> PMP_SHIFT)
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -106,19 +96,28 @@ main:
 //                                          Verification Section
 // Test Case: Three NAPOT regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
-    LA(x5, STANDARD_REGION1)
+    LA(x5, NEWREGION1)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, STANDARD_REGION2)
+    LA(x5, NEWREGION2)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr1, x5
 
     LA(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, STANDARD_REGION3)
+    LA(x5, NEWREGION3)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr2, x5
 
     LA(x4, PMP2CFG)
@@ -130,10 +129,9 @@ main:
     // Test Case 2: Uncompressed return straddling the end of 2nd region
     VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
 
-
     j exit                                                      // Verification Complete, exit the test
 
-.align 13
+.align 12
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
     nop

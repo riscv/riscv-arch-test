@@ -34,7 +34,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_napot_all.S"
+#define TEST_FILE "pmpsm_cfg_tor_all.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
@@ -162,97 +162,97 @@ main:
     csrw pmpcfg3, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION_0 , test_1
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_0 , test_2
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_1 , test_3
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_2 , test_4
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_3 , test_5
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_4 , test_6
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_5 , test_7
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_6 , test_8
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_7 , test_9
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_8 , test_10
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_9 , test_11
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_10, test_12
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_11, test_13
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_14
-    VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_15
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_1 , test_2
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_2 , test_3
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_3 , test_4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_4 , test_5
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_5 , test_6
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_6 , test_7
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_7 , test_8
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_8 , test_9
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_9 , test_10
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_10, test_11
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_11, test_12
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_12, test_13
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_14
+    VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
 
     j exit                                                      // Verification Complete, exit the test
 
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:                       // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
     nop
     .endr
 
 TEST_FOR_EXECUTION_1:                       // Adding nops in TOR Region from 0x80001000 + g to 0x80001000 + 3g
-    .rept (2*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (2*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_2:                       // Adding nops in TOR Region from 0x80001000 + 3g to 0x80001000 + 6g
-    .rept (3*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (3*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_3:                       // Adding nops in TOR Region from 0x80001000 + 6g to 0x80001000 + 10g
-    .rept (4*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (4*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_4:                       // Adding nops in TOR Region from 0x80001000 + 10g to 0x80001000 + 15g
-    .rept (5*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (5*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_5:                       // Adding nops in TOR Region from 0x80001000 + 15g to 0x80001000 + 21g
-    .rept (6*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (6*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_6:                       // Adding nops in TOR Region from 0x80001000 + 21g to 0x80001000 + 28g
-    .rept (7*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (7*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_7:                       // Adding nops in TOR Region from 0x80001000 + 28g to 0x80001000 + 36g
-    .rept (8*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (8*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_8:                       // Adding nops in TOR Region from 0x80001000 + 36g to 0x80001000 + 45g
-    .rept (9*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (9*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_9:                       // Adding nops in TOR Region from 0x80001000 + 45g to 0x80001000 + 55g
-    .rept (10*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (10*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_10:                      // Adding nops in TOR Region from 0x80001000 + 55g to 0x80001000 + 66g
-    .rept (11*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (11*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_11:                      // Adding nops in TOR Region from 0x80001000 + 66g to 0x80001000 + 78g
-    .rept (12*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (12*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_12:                      // Adding nops in TOR Region from 0x80001000 + 78g to 0x80001000 + 91g
-    .rept (13*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (13*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_13:                      // Adding nops in TOR Region from 0x80001000 + 91g to 0x80001000 + 105g
-    .rept (14*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (14*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 
 TEST_FOR_EXECUTION_14:                      // Adding nops in TOR Region from 0x80001000 + 105g to 0x80001000 + 120g
-    .rept (15*(1<<(RVMODEL_PMP_GRAIN+2)))
+    .rept (15*((1<<(RVMODEL_PMP_GRAIN+2))/4))
     nop
     .endr
 

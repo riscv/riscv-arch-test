@@ -257,7 +257,7 @@ main:
 
    j exit                                                      // Verification Complete, exit the test
 
-.align 12
+.align 11
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

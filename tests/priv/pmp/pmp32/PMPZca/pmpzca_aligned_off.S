@@ -25,7 +25,7 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 32
-# MARCH: rv32ic_zicsr
+# MARCH: rv32i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -76,11 +76,7 @@ main:
 #define PMP2CFG                     ((((PMP_L|PMP_R|PMP_W|PMP_X          )&0xFF) << PMP2_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART                 0x80002000  // RAM_BASE_ADDR + PROGRAM_SIZE
-#define STANDARD_REGION1            ((REGIONSTART)       >> PMP_SHIFT)
-#define STANDARD_REGION2            ((REGIONSTART+REGION_SIZE)     >> PMP_SHIFT)
-#define STANDARD_REGION3            ((REGIONSTART+(2*REGION_SIZE)) >> PMP_SHIFT)
-
+#define REGIONSTART                 TEST_FOR_EXECUTION_1  // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -92,19 +88,24 @@ main:
 //                                          Verification Section
 // Test Case: Setting up 3 OFF regions with LWXR = 1111
 
-    LA(x5, STANDARD_REGION1)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, STANDARD_REGION2)
+    LA(x5, REGIONSTART)
+    addi x5, x5, REGION_SIZE
+    srl  x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
     LA(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
-    LA(x5, STANDARD_REGION3)
+    LA(x5, REGIONSTART)
+    addi x5, x5, 2*REGION_SIZE
+    srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
     LA(x4, PMP2CFG)
@@ -118,7 +119,7 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 13
+.align 12
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) - 4) / 2)                        //(region size - jalr size)/ compressed nop size

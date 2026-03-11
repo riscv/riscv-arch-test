@@ -86,10 +86,7 @@ main:
 #define PMPREGION2_LXWR     ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR  )&0xFF)   << PMP2_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define REGION0             ((REGIONSTART)     >> PMP_SHIFT)
-#define REGION1             ((REGIONSTART+g)   >> PMP_SHIFT)
-#define REGION2             ((REGIONSTART+2*g) >> PMP_SHIFT)
+#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -98,13 +95,18 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    LA(x4, REGION0)
+    LA(x4, REGIONSTART)
+    srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
 
-    LA(x4, REGION1)
+    LA(x4, REGIONSTART)
+    addi x4, x4, g
+    srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 
-    LA(x4, REGION2)
+    LA(x4, REGIONSTART)
+    addi x4, x4, 2*g
+    srl x4, x4, PMP_SHIFT
     csrw pmpaddr2, x4
 
 //                                            Verification Section

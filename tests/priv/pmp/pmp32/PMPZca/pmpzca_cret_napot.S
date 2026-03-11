@@ -26,7 +26,7 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 32
-# MARCH: rv32ic_zicsr
+# MARCH: rv32i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -73,17 +73,10 @@ main:
 #define PMP0CFG             ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         0x80002000
+#define REGIONSTART             TEST_FOR_EXECUTION_1        // In this test, TEST_FOR_EXECUTION_1 is at 0x80001000 which is also regionstart.
 
 #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
 #define PMP_REGION_SIZE     ((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-
-#if RVMODEL_PMP_GRAIN != 0
-  #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
-#else
-  #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
-#endif
-
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -95,7 +88,10 @@ main:
 //                                          Verification Section
 // Test Case: NAPOT Region with L->1 and XWR->111
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
@@ -115,9 +111,8 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 12
-.align (RVMODEL_PMP_GRAIN+2)
-.skip (0x1000 -2)
+.align 11
+.skip (0x800-2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

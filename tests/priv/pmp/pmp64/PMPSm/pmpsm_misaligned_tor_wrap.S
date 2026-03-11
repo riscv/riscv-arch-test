@@ -85,10 +85,7 @@ main:
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF)   << PMP1_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define LOWER_BOUND         ((REGIONSTART)   >> PMP_SHIFT)
-#define UPPER_BOUND         ((REGIONSTART+g) >> PMP_SHIFT)
-
+#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -97,10 +94,13 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    LA(x4, LOWER_BOUND)
+    LA(x4, REGIONSTART)
+    srl x4, x4, PMP_SHIFT
     csrw     pmpaddr0, x4
 
-    LA(x4, UPPER_BOUND)
+    LA(x4, REGIONSTART)
+    addi x4, x4, g
+    srl x4, x4, PMP_SHIFT
     csrw     pmpaddr1, x4
 
 //                                            Verification Section
@@ -123,7 +123,6 @@ main:
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
-.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

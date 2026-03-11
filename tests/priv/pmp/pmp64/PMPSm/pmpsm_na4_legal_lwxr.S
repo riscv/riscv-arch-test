@@ -154,9 +154,7 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4  )&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART        0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define NA4_REGION         (REGIONSTART >> PMP_SHIFT)
-
+#define REGIONSTART        TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -168,7 +166,8 @@ main:
 //                                            Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr5, x5
 
     LI(x4, PMPREGION_LXWR_1000)
@@ -178,7 +177,8 @@ main:
 
 // Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr4, x5
 
     LI(x4, PMPREGION_LXWR_1001)
@@ -188,7 +188,8 @@ main:
 
 // Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr3, x5
 
     LI(x4, PMPREGION_LXWR_1011)
@@ -198,7 +199,8 @@ main:
 
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr2, x5
 
     LI(x4, PMPREGION_LXWR_1100)
@@ -208,7 +210,8 @@ main:
 
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 1
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr1, x5
 
     LI(x4, PMPREGION_LXWR_1101)
@@ -218,7 +221,8 @@ main:
 
 // Test Case: 6 : L -> 1 and XWR Permissions given to the PMP Region 0
 
-    LA(x5, NA4_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
 
     LI(x4, PMPREGION_LXWR_1111)
@@ -229,8 +233,7 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

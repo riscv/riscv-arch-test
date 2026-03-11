@@ -27,7 +27,8 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ic_zicsr
+#   PMP_GRANULARITY: 2
+# MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -74,9 +75,7 @@ main:
 #define PMP0CFG                 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NA4  ) &0xFF)   << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL   -1                          // All memory region
-#define REGIONSTART             0x80002000
-#define PMP_ADDRESS            (REGIONSTART >> PMP_SHIFT)
-
+#define REGIONSTART             TEST_FOR_EXECUTION_1        // In this test, TEST_FOR_EXECUTION_1 is at 0x80001000 which is also regionstart.
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -88,7 +87,8 @@ main:
 //                                          Verification Section
 // Test Case: NA4 Region with L->1 and XWR->111
 
-    LA(x5, PMP_ADDRESS)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
     csrw pmpaddr0, x5
 
     LA(x4, PMP0CFG)
@@ -108,8 +108,8 @@ main:
 
     j exit                                                  // Verification Complete, exit the test
 
-.align 12
-.skip (0x1000 -2)
+.align 11
+.skip (0x800 -2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

@@ -44,14 +44,6 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#ifndef RVMODEL_PMP_GRAIN
-    #define RVMODEL_PMP_GRAIN 0
-#endif
-
-#ifndef RVMODEL_NUM_PMPS
-    #define RVMODEL_NUM_PMPS 16
-#endif
-
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
 
     LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)

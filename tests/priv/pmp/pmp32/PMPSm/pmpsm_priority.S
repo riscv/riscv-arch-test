@@ -179,7 +179,6 @@ main:
     j exit                                                      // Verification Complete, exit the test
 
 .align 13
-.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:     // Largest Region of size 7*g
     .rept 7*(1<<(RVMODEL_PMP_GRAIN+2))
     nop

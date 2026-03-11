@@ -63,9 +63,7 @@ main:
 #define PMP_REGION_GLOBAL   ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_ADDRESS            (REGIONSTART >> PMP_SHIFT)
-
+#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -74,7 +72,8 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    LA(x4, PMP_ADDRESS)
+    LA(x4, REGIONSTART)
+    srl x4, x4, PMP_SHIFT
     csrw pmpaddr0, x4
 
 //                                            Verification Section

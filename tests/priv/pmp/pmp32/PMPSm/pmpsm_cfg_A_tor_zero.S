@@ -162,7 +162,7 @@ main:
 .align 13
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
     nop
     .endr
 

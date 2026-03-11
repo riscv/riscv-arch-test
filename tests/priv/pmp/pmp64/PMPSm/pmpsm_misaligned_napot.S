@@ -180,16 +180,14 @@ main:
 #define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1)) -1)
-#define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
-
+#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 #if RVMODEL_PMP_GRAIN != 0
-  #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 #else
-  #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
 #endif
-
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -198,8 +196,11 @@ main:
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    LA(x4, STANDARD_REGION)
-    csrw     pmpaddr0, x4
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
+    csrw     pmpaddr0, x5
 
 //                                            Verification Section
 // Test Case: 1 -- XWR Permissions given to the PMP Region.
@@ -221,7 +222,6 @@ main:
     j exit                                                        // Verification Complete, exit the test
 
 .align 13
-.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

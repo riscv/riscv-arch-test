@@ -97,16 +97,14 @@ main:
 #define PMPREGION_XWR_000   ((PMP_L|PMP_NAPOT)&0xFF)
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define    REGIONSTART            0x80002000        // RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-#define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1))-1
-
+#define    REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 #if RVMODEL_PMP_GRAIN != 0
-  #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 #else
-  #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
 #endif
-
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
@@ -118,7 +116,10 @@ main:
 //                                            Verification Section
 // Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 14
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr14, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
@@ -128,7 +129,10 @@ main:
 
 // Test Case: 2 : L -> 1 and No Permissions given to the PMP Region 13
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr13, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP5_CFG_SHIFT))
@@ -138,7 +142,10 @@ main:
 
 // Test Case: 3 : L -> 1 and No Permissions given to the PMP Region 12
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr12, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
@@ -148,7 +155,10 @@ main:
 
 // Test Case: 4 : L -> 1 and No Permissions given to the PMP Region 11
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr11, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
@@ -158,7 +168,10 @@ main:
 
 // Test Case: 5 : L -> 1 and No Permissions given to the PMP Region 10
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr10, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -168,7 +181,10 @@ main:
 
 // Test Case: 6 : L -> 1 and No Permissions given to the PMP Region 9
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr9, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -178,7 +194,10 @@ main:
 
 // Test Case: 7 : L -> 1 and No Permissions given to the PMP Region 8
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr8, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
@@ -188,7 +207,10 @@ main:
 
 // Test Case: 8 : L -> 1 and No Permissions given to the PMP Region 7
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr7, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP7_CFG_SHIFT))
@@ -198,7 +220,10 @@ main:
 
 // Test Case: 9 : L -> 1 and No Permissions given to the PMP Region 6
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr6, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP6_CFG_SHIFT))
@@ -208,7 +233,10 @@ main:
 
 // Test Case: 10 : L -> 1 and No Permissions given to the PMP Region 5
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr5, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP5_CFG_SHIFT))
@@ -218,7 +246,10 @@ main:
 
 // Test Case: 11 : L -> 1 and No Permissions given to the PMP Region 4
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr4, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP4_CFG_SHIFT))
@@ -228,7 +259,10 @@ main:
 
 // Test Case: 12 : L -> 1 and No Permissions given to the PMP Region 3
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr3, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
@@ -238,7 +272,10 @@ main:
 
 // Test Case: 13 : L -> 1 and No Permissions given to the PMP Region 2
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr2, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
@@ -248,7 +285,10 @@ main:
 
 // Test Case: 14 : L -> 1 and No Permissions given to the PMP Region 1
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr1, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
@@ -258,7 +298,10 @@ main:
 
 // Test Case: 15 : L -> 1 and No Permissions given to the PMP Region 0
 
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr0, x5
 
     LI(x4, (PMPREGION_XWR_000 << PMP0_CFG_SHIFT))
@@ -268,8 +311,7 @@ main:
 
     j exit
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

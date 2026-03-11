@@ -26,13 +26,12 @@
 # REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
 #   MXLEN: 64
-#   RVMODEL_NUM_PMPS: 64
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_all_entries_check-01.S"
+#define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 120
 
 // Enable trap handler
@@ -133,16 +132,14 @@ main:
 #define PMP_REGION_16       ((PMP_L|PMP_R|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
-#define REGIONSTART         0x80002000      // RAM_BASE_ADDR + PROGRAM_SIZE
-#define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-#define PMP_REGION_SIZE     ((1 << (RVMODEL_PMP_GRAIN - 1))-1)
-
+#define REGIONSTART         TEST_FOR_EXECUTION      // RAM_BASE_ADDR + PROGRAM_SIZE
 #if RVMODEL_PMP_GRAIN != 0
-    #define STANDARD_REGION   (((REGIONSTART >> PMP_SHIFT) & PMP_MASK) | PMP_REGION_SIZE)
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
 #else
-    #define STANDARD_REGION   (REGIONSTART >> PMP_SHIFT)
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
 #endif
-
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr63, x4
@@ -154,329 +151,470 @@ main:
 //                                            Verification Section
 
 // Test Case: 1 : L -> 1 and XR Permissions given to the PMP Region 62
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr62, x5
     LI(x4, PMP_REGION_62)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 : L -> 1 and XR Permissions given to the PMP Region 61
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr61, x5
     LI(x4, PMP_REGION_61)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
 // Test Case: 3 : L -> 1 and XR Permissions given to the PMP Region 60
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr60, x5
     LI(x4, PMP_REGION_60)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
 // Test Case: 4 : L -> 1 and XR Permissions given to the PMP Region 59
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr59, x5
     LI(x4, PMP_REGION_59)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
 
 // Test Case: 5 : L -> 1 and XR Permissions given to the PMP Region 58
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr58, x5
     LI(x4, PMP_REGION_58)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
 
 // Test Case: 6 : L -> 1 and XR Permissions given to the PMP Region 57
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr57, x5
     LI(x4, PMP_REGION_57)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
 // Test Case: 7 : L -> 1 and XR Permissions given to the PMP Region 56
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr56, x5
     LI(x4, PMP_REGION_56)
     csrw pmpcfg14, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
 
 // Test Case: 8 : L -> 1 and XR Permissions given to the PMP Region 55
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr55, x5
     LI(x4, PMP_REGION_55)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
 // Test Case: 9 : L -> 1 and XR Permissions given to the PMP Region 54
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr54, x5
     LI(x4, PMP_REGION_54)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
 // Test Case: 10 : L -> 1 and XR Permissions given to the PMP Region 53
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr53, x5
     LI(x4, PMP_REGION_53)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
 // Test Case: 11 : L -> 1 and XR Permissions given to the PMP Region 52
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr52, x5
     LI(x4, PMP_REGION_52)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
 // Test Case: 12 : L -> 1 and XR Permissions given to the PMP Region 51
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr51, x5
     LI(x4, PMP_REGION_51)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
 
 // Test Case: 13 : L -> 1 and XR Permissions given to the PMP Region 50
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr50, x5
     LI(x4, PMP_REGION_50)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
 
 // Test Case: 14 : L -> 1 and XR Permissions given to the PMP Region 49
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr49, x5
     LI(x4, PMP_REGION_49)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
 
 // Test Case: 15 : L -> 1 and XR Permissions given to the PMP Region 48
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr48, x5
     LI(x4, PMP_REGION_48)
     csrw pmpcfg12, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
 // Test Case: 16 : L -> 1 and XR Permissions given to the PMP Region 47
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr47, x5
     LI(x4, PMP_REGION_47)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
 
 // Test Case: 17 : L -> 1 and XR Permissions given to the PMP Region 46
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr46, x5
     LI(x4, PMP_REGION_46)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_17
 
 // Test Case: 18 : L -> 1 and XR Permissions given to the PMP Region 45
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr45, x5
     LI(x4, PMP_REGION_45)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_18
 
 // Test Case: 19 : L -> 1 and XR Permissions given to the PMP Region 44
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr44, x5
     LI(x4, PMP_REGION_44)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_19
 
 // Test Case: 20 : L -> 1 and XR Permissions given to the PMP Region 43
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr43, x5
     LI(x4, PMP_REGION_43)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_20
 
 // Test Case: 21 : L -> 1 and XR Permissions given to the PMP Region 42
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr42, x5
     LI(x4, PMP_REGION_42)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_21
 
 // Test Case: 22 : L -> 1 and XR Permissions given to the PMP Region 41
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr41, x5
     LI(x4, PMP_REGION_41)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_22
 
 // Test Case: 23 : L -> 1 and XR Permissions given to the PMP Region 40
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr40, x5
     LI(x4, PMP_REGION_40)
     csrw pmpcfg10, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_23
 
 // Test Case: 24 : L -> 1 and XR Permissions given to the PMP Region 39
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr39, x5
     LI(x4, PMP_REGION_39)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_24
 
 // Test Case: 25 : L -> 1 and XR Permissions given to the PMP Region 38
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr38, x5
     LI(x4, PMP_REGION_38)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_25
 
 // Test Case: 26 : L -> 1 and XR Permissions given to the PMP Region 37
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr37, x5
     LI(x4, PMP_REGION_37)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_26
 
 // Test Case: 27 : L -> 1 and XR Permissions given to the PMP Region 36
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr36, x5
     LI(x4, PMP_REGION_36)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_27
 
 // Test Case: 28 : L -> 1 and XR Permissions given to the PMP Region 35
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr35, x5
     LI(x4, PMP_REGION_35)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_28
 
 // Test Case: 29 : L -> 1 and XR Permissions given to the PMP Region 34
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr34, x5
     LI(x4, PMP_REGION_34)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_29
 
 // Test Case: 30 : L -> 1 and XR Permissions given to the PMP Region 33
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr33, x5
     LI(x4, PMP_REGION_33)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_30
 
 // Test Case: 31 : L -> 1 and XR Permissions given to the PMP Region 32
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr32, x5
     LI(x4, PMP_REGION_32)
     csrw pmpcfg8, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_31
 
 // Test Case: 32 : L -> 1 and XR Permissions given to the PMP Region 31
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr31, x5
     LI(x4, PMP_REGION_31)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_32
 
 // Test Case: 33 : L -> 1 and XR Permissions given to the PMP Region 30
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr30, x5
     LI(x4, PMP_REGION_30)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_33
 
 // Test Case: 34 : L -> 1 and XR Permissions given to the PMP Region 29
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr29, x5
     LI(x4, PMP_REGION_29)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_34
 
 // Test Case: 35 : L -> 1 and XR Permissions given to the PMP Region 28
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr28, x5
     LI(x4, PMP_REGION_28)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_35
 
 // Test Case: 36 : L -> 1 and XR Permissions given to the PMP Region 27
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr27, x5
     LI(x4, PMP_REGION_27)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_36
 
 // Test Case: 37 : L -> 1 and XR Permissions given to the PMP Region 26
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr26, x5
     LI(x4, PMP_REGION_26)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_37
 
 // Test Case: 38 : L -> 1 and XR Permissions given to the PMP Region 25
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr25, x5
     LI(x4, PMP_REGION_25)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_38
 
 // Test Case: 39 : L -> 1 and XR Permissions given to the PMP Region 24
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr24, x5
     LI(x4, PMP_REGION_24)
     csrw pmpcfg6, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_39
 
 // Test Case: 40 : L -> 1 and XR Permissions given to the PMP Region 23
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr23, x5
     LI(x4, PMP_REGION_23)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_40
 
 // Test Case: 41 : L -> 1 and XR Permissions given to the PMP Region 22
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr22, x5
     LI(x4, PMP_REGION_22)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_41
 
 // Test Case: 42 : L -> 1 and XR Permissions given to the PMP Region 21
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr21, x5
     LI(x4, PMP_REGION_21)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_42
 
 // Test Case: 43 : L -> 1 and XR Permissions given to the PMP Region 20
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr20, x5
     LI(x4, PMP_REGION_20)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_43
 
 // Test Case: 44 : L -> 1 and XR Permissions given to the PMP Region 19
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr19, x5
     LI(x4, PMP_REGION_19)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_44
 
 // Test Case: 45 : L -> 1 and XR Permissions given to the PMP Region 18
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr18, x5
     LI(x4, PMP_REGION_18)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_45
 
 // Test Case: 46 : L -> 1 and XR Permissions given to the PMP Region 17
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr17, x5
     LI(x4, PMP_REGION_17)
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_46
 
 // Test Case: 47 : L -> 1 and XR Permissions given to the PMP Region 16
-    LI(x5, STANDARD_REGION)
+    LA(x5, REGIONSTART)
+    srl x5, x5, PMP_SHIFT
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr16, x5
     LI(x4, PMP_REGION_16)
     csrw pmpcfg4, x4
@@ -484,8 +622,7 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 13
-.align (RVMODEL_PMP_GRAIN+2)
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop

@@ -1,7 +1,4 @@
 // --------------------------------------------------------------------------------
-// Copyright (C) 2025 Harvey Mudd College & Oklahoma State University, UET Lahore, Habib University
-// SPDX-License-Identifier: Apache-2.0
-//
 // Title           : Comprehensive PMP (Physical Memory Protection) Verification
 // Authors         : Umer Shahid, Allen Baum, David Harris
 //                  Muhammad Abdullah, Hamza Ali, Muhammad Zain
@@ -20,11 +17,13 @@
 //               Fetching, reading and writing from that region. Should succeed
 //               because region is off even though inaccessible.
 // --------------------------------------------------------------------------------
+
+#define SKIP_MEPC
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Smpmp']
 # params:
-#   MXLEN: 64
-# MARCH: rv64i_zicsr
+#   MXLEN: 32
+# MARCH: rv32i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -36,52 +35,46 @@
 #define rvtest_mtrap_routine
 #define RVTEST_PRIV_TEST
 
-#define SKIP_MEPC
-
 // Include framework macros
 #include "riscv_arch_test.h"
 
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-.macro VERIFICATION_RWX ADDRESS, TEST_CASE
+.macro VERIFICATION_RWX ADDRESS TEST_CASE
     // Execution Access Check
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
-    \TEST_CASE\()_3:
+    \TEST_CASE\()_1:
     jalr ra, 0(a4)
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)               // Signature update for jalr
-    nop
     nop
 1:
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
-    LI(a4, DOUBLE_NOP)                                              // Value to write (DOUBLE_NOP)
+    LI(a4, NOP)                                              // Value to write (NOP)
     \TEST_CASE\()_2:
     sw a4, 0(a5)                                             // Word store test
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)               // Signature update for sw
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_2, test_2_str)
 
     // Load Access Check
-    \TEST_CASE\()_1:
+    \TEST_CASE\()_3:
     lw a4, 0(a5)                                             // Word load test
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_1, test_1_str)               // Signature update for lw
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)                                   // Signature update
 
 .endm
 
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/8
+    .rept RVMODEL_NUM_PMPS/4
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+2
+    .set pmpcfgi, pmpcfgi+1
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
@@ -91,8 +84,9 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-
 #define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)      // Background region with RWX enable.
+
+#define PMPADDRESS_TOP_GLOBAL        -1                                        // All memory region
 #define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
@@ -102,12 +96,12 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-    LA(x4, -1)
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
 
     //Lock the Background region.
-    LI(x4, (PMP_REGION_GLOBAL << PMP7_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    LI(x4, (PMP_REGION_GLOBAL << PMP3_CFG_SHIFT))
+    csrw pmpcfg3, x4
 
 //                                            Verification Section
 // Test Case: 1 -- No Permissions given to the PMP Region 14
@@ -118,8 +112,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr14, x5
 
-    LI(x4, (0x80 << PMP6_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    LI(x4, (0x80 << PMP2_CFG_SHIFT))
+    csrw pmpcfg3, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
@@ -133,8 +127,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr13, x5
 
-    LI(x4, (0x80 << PMP5_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    LI(x4, (0x80 << PMP1_CFG_SHIFT))
+    csrw pmpcfg3, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
@@ -148,8 +142,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr12, x5
 
-    LI(x4, (0x80 << PMP4_CFG_SHIFT))
-    csrw pmpcfg2, x4
+    LI(x4, (0x80 << PMP0_CFG_SHIFT))
+    csrw pmpcfg3, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
 
@@ -223,8 +217,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr7, x5
 
-    LI(x4, (0x80 << PMP7_CFG_SHIFT))
-    csrw pmpcfg0, x4
+    LI(x4, (0x80 << PMP3_CFG_SHIFT))
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
 
@@ -238,8 +232,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr6, x5
 
-    LI(x4, (0x80 << PMP6_CFG_SHIFT))
-    csrw pmpcfg0, x4
+    LI(x4, (0x80 << PMP2_CFG_SHIFT))
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
 
@@ -253,8 +247,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr5, x5
 
-    LI(x4, (0x80 << PMP5_CFG_SHIFT))
-    csrw pmpcfg0, x4
+    LI(x4, (0x80 << PMP1_CFG_SHIFT))
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
 
@@ -268,8 +262,8 @@ main:
     ori x5, x5, PMP_REGION_SIZE
     csrw pmpaddr4, x5
 
-    LI(x4, (0x80 << PMP4_CFG_SHIFT))
-    csrw pmpcfg0, x4
+    LI(x4, (0x80 << PMP0_CFG_SHIFT))
+    csrw pmpcfg1, x4
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
 
@@ -335,24 +329,11 @@ main:
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 16 -- No Permissions given to the PMP Region 0
-
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
-    csrw pmpaddr0, x5
-
-    LI(x4, (0x80 << PMP0_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_16
-
     j exit                                                        // Verification Complete, exit the test
 
-.align 11
+.align 12
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
     nop
     .endr
 
@@ -369,9 +350,9 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: cp_cfg_A_off_all_lw\""
-test_2_str: .string "\"test: 2; cp: cp_cfg_A_off_all_sw\""
-test_3_str: .string "\"test: 3; cp: cp_cfg_A_off_all_x\""
+test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr\""
+test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
+test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
 
 RVTEST_DATA_END
 

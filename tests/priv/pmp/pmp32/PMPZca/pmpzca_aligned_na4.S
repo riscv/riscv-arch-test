@@ -24,7 +24,8 @@
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
 #   MXLEN: 32
-# MARCH: rv32ic_zicsr
+#   PMP_GRANULARITY: 2
+# MARCH: rv32i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -75,12 +76,7 @@ main:
 #define PMP2CFG                  ((((PMP_L|                  PMP_NA4)   &0xFF)   << PMP2_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL    -1             // All memory region
-#define REGIONSTART              0x80002000     // RAM_BASE_ADDR + PROGRAM_SIZE
-
-#define PMP_ADDRESS_0            ( (REGIONSTART)       >> PMP_SHIFT)
-#define PMP_ADDRESS_1            ( (REGIONSTART+REGION_SIZE)     >> PMP_SHIFT)
-#define PMP_ADDRESS_2            ( (REGIONSTART+(2*REGION_SIZE)) >> PMP_SHIFT)
-
+#define REGIONSTART             TEST_FOR_EXECUTION_1      // RAM_BASE_ADDR + PROGRAM_SIZE
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw    pmpaddr15, x4
@@ -91,19 +87,24 @@ main:
 
     // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
-    LI(x5, PMP_ADDRESS_0)
+    LA(x5, REGIONSTART)
+    srl, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
     csrw pmpaddr0, x5
 
     LI(x4, PMP0CFG)
     csrw pmpcfg0, x4
 
-    LI(x5, PMP_ADDRESS_1)
+    LA(x5, REGIONSTART)
+    addi x5, x5, REGION_SIZE
+    srl, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
     LI(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
-    LI(x5, PMP_ADDRESS_2)
+    LA(x5, REGIONSTART)
+    addi x5, x5, 2*REGION_SIZE
+    srl, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
     LI(x4, PMP2CFG)
@@ -117,7 +118,7 @@ main:
 
     j exit
 
-.align 13
+.align 12
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
     jalr x0, x1, 0
 

@@ -112,12 +112,12 @@ Python generator to generate tests for that coverpoint.
 #### Coverpoint SystemVerilog Templates
 
 All coverpoints (and coverpoint variants) need a template file in
-[`generators/coverage/templates`](../generators/coverage/templates).
+[`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates).
 These templates should be named `<coverpoint_name>.sv` or
 `<coverpoint_name>_<variant>.sv`.
 The coverpoint templates are directly included in a larger covergroup,
 so they must contain a complete and valid SystemVerilog coverpoint.
-See the [`generators/coverage/templates`](../generators/coverage/templates)
+See the [`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates)
 directory for example coverpoints. A few hints are included below:
 
 - All data about the instruction is accessed using the `ins` object.
@@ -246,7 +246,7 @@ Python instruction formatter.
 #### Instruction Format Sample Templates
 
 All instruction formats need a template file in
-[`generators/coverage/templates`](../generators/coverage/templates).
+[`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates).
 These templates should be named `sample_<INSTRUCTION_TYPE>.sv`.
 The instruction format templates are directly included in a SystemVerilog
 case statement.
@@ -266,7 +266,7 @@ All instruction sample templates must match the following format:
 - The various `add_*` functions assign parameters from the instruction's assembly string to variables. The number indicates which parameter from the assembly string should be assigned to the specified variable. For example, in the code above, the first parameter is assigned to `rd`, the second to `rs1`, and the third to `rs2`.
 - For a full list of all the `add_*` functions, see [`RISCV_instruction_base.svh`](../framework/src/act/fcov/coverage/RISCV_instruction_base.svh).
 
-See the [`generators/coverage/templates`](../generators/coverage/templates)
+See the [`generators/coverage/src/covergroupgen/templates`](../generators/coverage/src/covergroupgen/templates)
 directory for example instruction format sample sequences.
 
 #### Python Instruction Formatters

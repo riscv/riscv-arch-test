@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.6)
+= RVI20 Certification Requirements Document (rev 0.8)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,15 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 0.8
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * The c.ebreak instruction only exists if the C extension is present.
+
+| Mar 9, 2026
+| 0.7
+a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
 
 | Mar 5, 2026
 | 0.6
@@ -95,7 +104,7 @@ execution environments to handle such exceptions.
 <<<
 == Extensions
 
-include::extensions_intro.adoc[]
+include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -116,6 +125,17 @@ None
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
+|===
+
+=== Dependent Extensions
+
+.Dependent Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version | Dependency
+
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
+
 |===
 
 <<<
@@ -166,8 +186,20 @@ There are no CSRs in RVI20 with WARL fields.
 
 There are no CSRs in RVI20 with WLRL fields.
 
-<<<
-include::extension_defs.adoc[]
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
 
-<<<
-include::param_defs.adoc[]
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

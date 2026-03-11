@@ -1,4 +1,4 @@
-= MC100 Certification Requirements Document (rev 0.1)
+= MC100 Certification Requirements Document (rev 0.3)
 :description: MC100 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -16,6 +16,19 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 0.3
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * Changes to Sm extension definition in appendix:
+   ** Clarified Unpriv shadow CSRs of M-mode CSRs (in their own table)
+   ** Clarified that the c.ebreak instruction only exists if the C extension is present
+
+| Mar 9, 2026
+| 0.2
+a| * The ecall, ebreak, and c.ebreak instructions are all IN-SCOPE (previously had them as exclusions incorrectly)
+   * Don't use Smpmp term which is a made-up UDB extension name for the original PMP.
+   * Removed optional extensions not supported by tests (Zce and Smepmp)
 
 | Mar 3, 2026
 | 0.1
@@ -57,19 +70,12 @@ include::csr_field_types.adoc[]
 
 === Exclusions
 
-As per the unprivileged architecture specification, the `ecall`
-instruction causes a requested trap to the execution environment.
-Since the RVI profile family doesn't define any execution environments
-the `ecall` instruction is OUT-OF-SCOPE for the MC100 certificate.
-
-Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the MC100 certificate
-since they cause a breakpoint exception and the RVI profile family doesn't define any
-execution environments to handle such exceptions.
+None
 
 <<<
 == Extensions
 
-include::extensions_intro.adoc[]
+include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -93,12 +99,9 @@ include::extensions_intro.adoc[]
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
 | REQ-EXT-M | <<extension:M,M>> | ~> 2.0
-| REQ-EXT-Smepmp | <<extension:Smepmp,Enhanced PMP (Smepmp)>> | ~> 1.13
-| REQ-EXT-Smpmp | <<extension:Smpmp,Original PMP>> | ~> 1.13
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
-| REQ-EXT-Zce | <<extension:Zce,Zce>> | ~> 1.0
 
 |===
 
@@ -158,8 +161,22 @@ TBD
 
 TBD
 
-<<<
-include::extension_defs.adoc[]
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Sm.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
 
-<<<
-include::param_defs.adoc[]
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

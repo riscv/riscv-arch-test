@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 ##################################
-# covergroupgen.py
+# generate.py
 #
 # David_Harris@hmc.edu 15 August 2025
 # SPDX-License-Identifier: Apache-2.0
@@ -9,10 +8,14 @@
 ##################################
 
 import csv
+import importlib.resources
 import math
 import re
+from difflib import get_close_matches
 from pathlib import Path
 from typing import TextIO
+
+from rich.progress import track
 
 ##################################
 # Functions
@@ -25,21 +28,38 @@ from typing import TextIO
 # the value being a list of covergroups for that instruction
 
 
-def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str], list[str]]], dict[str, str]]:
+def read_testplans(
+    testplan_dir: Path,
+    extensions: str = "all",
+    exclude: str = "",
+) -> tuple[dict[str, dict[tuple[str, str], list[str]]], dict[str, str]]:
     """
     Iterates over all of the CSV testplan files in the provided directory. It populates a dictionary of dictionaries with
     the top level key being the architecture/extension (e.g. RV64I), the second level key being a tuple of
     (instruction mnemonic, type) to allow duplicate instructions with different types, and the value being a list
     of coverpoints for that instruction.
     """
+    # Parse extension filter lists
+    include_set: set[str] | None = None
+    if extensions != "all":
+        include_set = {ext.strip() for ext in extensions.split(",") if ext.strip()}
+    exclude_set: set[str] = set()
+    if exclude:
+        exclude_set = {ext.strip() for ext in exclude.split(",") if ext.strip()}
+
     testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
     arch_sources: dict[str, str] = {}
-    coverplan_dirs = [(testplans_dir, "unpriv")]
+    coverplan_dirs = [(testplan_dir, "unpriv")]
     for coverplan_dir, source in coverplan_dirs:
         if not coverplan_dir.exists():
             continue  # Skip missing directories
         for file in coverplan_dir.rglob("*.csv"):
             arch = file.stem
+            # Filter by extension name
+            if include_set is not None and arch not in include_set:
+                continue
+            if arch in exclude_set:
+                continue
             with file.open() as csvfile:
                 reader = csv.DictReader(csvfile)
                 tp: dict[tuple[str, str], list[str]] = {}
@@ -68,7 +88,7 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
             if arch == "I":  # duplicate I testplan for E
                 testplans["E"] = tp
                 arch_sources["E"] = source
-            if "Vx" in arch or "Vls" in arch:
+            if "Vx" in arch or "Vls" in arch or "Zvkb" in arch:
                 for effew in ["8", "16", "32", "64"]:
                     testplans[f"{arch}{effew}"] = tp
                     arch_sources[f"{arch}{effew}"] = source
@@ -83,19 +103,28 @@ def read_testplans(testplans_dir: Path) -> tuple[dict[str, dict[tuple[str, str],
     return testplans, arch_sources
 
 
-def read_covergroup_templates(template_dir: Path) -> dict[str, str]:
-    """Read the covergroup templates from the templates directory."""
-    covergroupTemplates: dict[str, str] = {}
-    for file in template_dir.rglob("*.sv"):
-        cg = file.stem
-        covergroupTemplates[cg] = file.read_text()
-    return covergroupTemplates
+def read_covergroup_templates(package: str = "covergroupgen.templates") -> dict[str, str]:
+    """Recursively read all .sv covergroup templates from the given package and its sub-packages."""
+    templates: dict[str, str] = {}
+    for item in importlib.resources.files(package).iterdir():
+        if item.is_file() and item.name.endswith(".sv"):
+            templates[item.name.removesuffix(".sv")] = item.read_text()
+        elif item.is_dir() and not item.name.startswith("__"):
+            templates.update(read_covergroup_templates(f"{package}.{item.name}"))
+    return templates
 
 
 def customize_template(covergroup_templates: dict[str, str], name: str, arch: str, instr: str, effew: str = "") -> str:
     """Customize the covergroup template with the given parameters and pick from RV32/RV64 as necessary."""
     if name not in covergroup_templates:
-        raise ValueError(f"No template found for '{name}'. Check if there are spaces before or after coverpoint name.")
+        available = list(covergroup_templates.keys())
+        similar = get_close_matches(name, available, n=5, cutoff=0.4)
+        msg = f"No template found for '{name}'. "
+        if similar:
+            msg += f"Similar templates: {', '.join(similar)}. "
+        templates_dir = importlib.resources.files("covergroupgen.templates")
+        msg += f"To add support, create a new .sv template in '{templates_dir}'."
+        raise ValueError(msg)
     template = covergroup_templates[name]
     instr_nodot = instr.replace(".", "_")
     template = (
@@ -305,14 +334,13 @@ def write_covergroups(
 
     with (coverageHeaderDir / "RISCV_instruction_sample.svh").open("w") as fsample:
         fsample.write(customize_template(covergroup_templates, "instruction_sample_header", "NA", "NA"))
-        for arch, tp in test_plans.items():
+        for arch, tp in track(test_plans.items(), description="[cyan]Generating covergroups...", total=len(test_plans)):
             covergroupSubDir = arch_sources.get(arch, "unpriv")
             covergroup_out_dir = covergroup_dir / covergroupSubDir
             covergroup_out_dir.mkdir(parents=True, exist_ok=True)
 
             file = arch + "_coverage.svh"
             initfile = arch + "_coverage_init.svh"
-            print("***** Writing " + file)
 
             vector = arch.startswith(("Vx", "Zv", "Vls", "Vf"))
             effew = get_effew(arch) if vector else ""
@@ -386,15 +414,7 @@ def write_covergroups(
 ##################################
 # Main Python Script
 ##################################
-
-
-def main(testplan_dir: Path, output_dir: Path) -> None:
-    test_plans, arch_sources = read_testplans(testplan_dir)
-    covergroup_templates = read_covergroup_templates(Path(__file__).parent / "templates")
+def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str = "all", exclude: str = "") -> None:
+    test_plans, arch_sources = read_testplans(testplan_dir, extensions, exclude)
+    covergroup_templates = read_covergroup_templates()
     write_covergroups(test_plans, covergroup_templates, arch_sources, output_dir)
-
-
-if __name__ == "__main__":
-    test_plan_dir = (Path(__file__).parent / "../../testplans").resolve()
-    output_dir = (Path(__file__).parent / "../../coverpoints").resolve()
-    main(test_plan_dir, output_dir)

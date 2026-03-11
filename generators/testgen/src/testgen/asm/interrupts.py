@@ -28,6 +28,7 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"LREG x{r_temp}, 0(x{r_mtime})",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",
         "#elif __riscv_xlen == 32",
+<<<<<<< HEAD
         "# Write sequence to prevent spurious interrupts",
         "# Read mtime (new comparand will be in temp2:temp)",
         f"lw x{r_temp}, 0(x{r_mtime}) # mtime[31:0] -> low word",
@@ -155,6 +156,7 @@ def set_mtimer_int_soon(
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
+<<<<<<< HEAD
         "# Read current time and add delay",
         f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
         f"LREG x{r_temp1}, 0(x{r_mtime})",  # Use LREG macro

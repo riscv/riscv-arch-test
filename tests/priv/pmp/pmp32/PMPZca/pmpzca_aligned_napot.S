@@ -136,7 +136,7 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 12
+.align 13
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) - 4) / 2)                        //(region size - jalr size)/ compressed nop size

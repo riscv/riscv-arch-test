@@ -17,7 +17,7 @@ Usage:
 Defaults:
     json: coverpoints/norm/norm-rules.json
     yaml: coverpoints/norm
-    out:  docs/ctp/src/norm/
+    out:  docs/ctp/build/generated/norm/
 
 The script writes an .adoc file containing a table with columns:
   - normative rule name
@@ -294,7 +294,11 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
     if base:
         lines.extend([f"[[t-{base}-normative-rules]]", f".{base} Normative Rules"])
 
-    lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
+    if not rows:
+        lines.append("No normative rules found for this section.")
+        lines.append("")
+    else:
+        lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
 
     for name, text, cp in rows:
         n = name.replace("|", "&#124;")
@@ -313,7 +317,8 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
             lines.append(f"|{n} |{t} |{c}")
         lines.append("")
 
-    lines.extend(["|===", ""])
+    if rows:
+        lines.extend(["|===", ""])
     # Append link to corresponding parameters table if base is provided
     if base:
         # norm files live in src/norm and parameters in src/param, so use ../param
@@ -504,7 +509,9 @@ def main() -> None:
         help="Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)",
     )
     p.add_argument(
-        "--out", default="docs/ctp/src/norm/", help="Output directory for ASCIIDoc files (default: docs/ctp/src/norm/)"
+        "--out",
+        default="docs/ctp/build/generated/norm/",
+        help="Output directory for ASCIIDoc files (default: docs/ctp/build/generated/norm/)",
     )
     p.add_argument(
         "--report",
@@ -614,6 +621,10 @@ def main() -> None:
             url = f"{base}#{frag}"
             # Prepare display text: collapse whitespace and remove surrounding newlines
             disp = " ".join(str(tag_text).split())
+            # Strip asciidoctor image macros (e.g. image:path/stem-xxx.svg[...])
+            # that reference pre-rendered math from the ISA manual build.
+            # These images don't exist in the CTP build context.
+            disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by

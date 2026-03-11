@@ -17,7 +17,7 @@
 # Install by running:
 #		make docker-pull-latest
 
-DOCS := rvi20_crd
+DOCS := rvi20_crd mc100_crd all_impldefs
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
@@ -46,6 +46,7 @@ ifneq ($(SKIP_DOCKER),true)
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
             $(DOCKER_USER_ARG) \
@@ -58,13 +59,13 @@ else
 endif
 
 ifdef UNRELIABLE_BUT_FASTER_INCREMENTAL_BUILDS
-WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../docs-resources $@.workdir/
+WORKDIR_SETUP = mkdir -p $@.workdir && ln -sfn ../../src ../../common ../../docs-resources $@.workdir/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
 else
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
     mkdir -p $@.workdir && \
-    ln -sfn ../../src ../../docs-resources $@.workdir/
+    ln -sfn ../../src ../../common ../../docs-resources $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
@@ -109,7 +110,7 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build: build-pdf build-html
 
-ALL_SRCS := $(wildcard src/*.adoc)
+ALL_SRCS := $(shell find src -name "*.adoc")
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)

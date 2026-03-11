@@ -1,11 +1,10 @@
-= RVI20 Certification Requirements Document (rev 0.8)
-:description: RVI20 CRD (Certificate Requirements Document)
+= MC100 Certification Requirements Document (rev 0.3)
+:description: MC100 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 
 * James Ball
-* David Harris
 
 _This document is released under a Creative Commons Attribution 4.0 International License._
 
@@ -19,63 +18,42 @@ History of documentation changes that eventually lead to releases.
 | Date | Revision | Changes
 
 | Mar 10, 2026
-| 0.8
+| 0.3
 a| * Extension and Parameter appendices now only list things mentioned in the CRD.
-   * The c.ebreak instruction only exists if the C extension is present.
+   * Changes to Sm extension definition in appendix:
+   ** Clarified Unpriv shadow CSRs of M-mode CSRs (in their own table)
+   ** Clarified that the c.ebreak instruction only exists if the C extension is present
 
 | Mar 9, 2026
-| 0.7
-a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
-
-| Mar 5, 2026
-| 0.6
-a| * Removed MISALIGNED_ATOMICITY_GRANULE_SIZE parameter due to https://github.com/riscv/riscv-isa-manual/issues/2726
-
-| Mar 4, 2026
-| 0.5
-a| * Added note and link to GitHub issue that MISALIGNED_ATOMICITY_GRANULE_SIZE might be removed from this CRD
+| 0.2
+a| * The ecall, ebreak, and c.ebreak instructions are all IN-SCOPE (previously had them as exclusions incorrectly)
+   * Don't use Smpmp term which is a made-up UDB extension name for the original PMP.
+   * Removed optional extensions not supported by tests (Zce and Smepmp)
 
 | Mar 3, 2026
-| 0.4
-a| * Incorporated feedback from CSC Requirements WG meeting on Feb 27, 2026
-   ** Removed WARL/WLRL handling section since there are no CSRs with WARL/WLRL fields in RVI20
-   ** Preliminary parameters now link to normative rules
-   * Added Extensions and Parameters appendices
-   * Added link to RFC2119 in glossary and use RFC2119 keywords in uppercase throughout the document
-
-| Feb 23, 2026
-| 0.3
-a| * Incorporated feedback from CSC Requirements WG meeting on Feb 20, 2026
-   ** Added column for "Impact on Certificate Scope" in the IN-SCOPE parameters table
-   ** Added note that parameters are preliminary
-
-| Feb 23, 2026
-| 0.2
-a| * Moved from https://github.com/RISC-V-Certification-Steering-Committee/RVCP-docs
-
-| Feb 5, 2026
 | 0.1
-a| * Copied from UDB-generated adoc
+a| * Copied from RVI20 CRD rev 0.4 as a starting point
+   * What is left:
+   ** Merge content from https://riscv.atlassian.net/wiki/spaces/PRMT/pages/1307639809/WARL+WLRL+legal+value+schema[WARL/WLRL Legal Value Schema] into the CSR field types section
+   ** List each possible WARL/WLRL field and use the "WARL/WLRL Legal Value Schema" to assign the required behavior of WARL/WLRL fields in order to obtain a certificate
+   ** Define additional parameters for extensions in MC100 not present in RVI20
+
 |===
 
 include::glossary.adoc[]
 
 == Introduction
 
-The RVI20-32 processor certificate is based on the RVI20U32 profile.
-The RVI20-64 processor certificate is based on the RVI20U64 profile.
-
-The RVI certificate class corresponds to the RVI Profile Family.
-This certificate class only includes the RISC-V Unprivileged ISA.
-Certificates for the RVI certificate class are intended for internal
-use by the RVCP (RISC-V Certification Program).
+The MC100-32 processor certificate is based on the RVI20U32 profile with the addition of M-mode.
+The MC100-64 processor certificate is based on the RVI20U64 profile with the addition of M-mode.
 
 include::crd_common.adoc[]
+include::csr_field_types.adoc[]
 
 === Related Specifications
 
 * https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
-* https://github.com/riscv/riscv-profiles/blob/main/src/profiles.adoc[RISC-V Profiles Document] - Will be moving to ISA Manual repository soon
+* https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
 
 <<<
 == Base ISA
@@ -92,14 +70,7 @@ include::crd_common.adoc[]
 
 === Exclusions
 
-As per the unprivileged architecture specification, the `ecall`
-instruction causes a requested trap to the execution environment.
-Since the RVI profile family doesn't define any execution environments
-the `ecall` instruction is OUT-OF-SCOPE for the RVI20 certificate.
-
-Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the RVI20 certificate
-since they cause a breakpoint exception and the RVI profile family doesn't define any
-execution environments to handle such exceptions.
+None
 
 <<<
 == Extensions
@@ -108,7 +79,16 @@ include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
-None
+.Mandatory Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version
+
+| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0
+| REQ-EXT-Sm | <<extension:Sm,Minimal Machine Mode>> | ~> 1.13
+
+|===
 
 === Optional Extensions
 
@@ -118,30 +98,17 @@ None
 | Requirement ID | Extension | Version
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
-| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
-| REQ-EXT-D | <<extension:D,D>> | ~> 2.2
-| REQ-EXT-F | <<extension:F,F>> | ~> 2.2
 | REQ-EXT-M | <<extension:M,M>> | ~> 2.0
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
 | REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
-|===
-
-=== Dependent Extensions
-
-.Dependent Extensions
-[%autowidth]
-|===
-| Requirement ID | Extension | Version | Dependency
-
-| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
 
 |===
 
 <<<
 == Parameter Values
 
-This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVI20 certificate.
+This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the MC100 certificate.
 
 Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
 
@@ -160,6 +127,14 @@ include::in_scope_param_intro.adoc[]
 | True, False
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+
+| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
+| Any
+a|
+Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
+Non-zero:: Misaligned AMO atomic instructions and
+misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
+any restrictions on misaligned supported expressed by other parameters are met.
 
 | <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
 | Any
@@ -180,11 +155,11 @@ include::out_of_scope_param_intro.adoc[]
 
 == CSR WARL Fields
 
-There are no CSRs in RVI20 with WARL fields.
+TBD
 
 == CSR WLRL Fields
 
-There are no CSRs in RVI20 with WLRL fields.
+TBD
 
 include::ext_appendix.adoc[]
 include::ext_defs/A.adoc[]
@@ -192,6 +167,7 @@ include::ext_defs/C.adoc[]
 include::ext_defs/D.adoc[]
 include::ext_defs/F.adoc[]
 include::ext_defs/M.adoc[]
+include::ext_defs/Sm.adoc[]
 include::ext_defs/Zicntr.adoc[]
 include::ext_defs/Zicsr.adoc[]
 include::ext_defs/Zifencei.adoc[]
@@ -201,5 +177,6 @@ include::param_appendix.adoc[]
 include::param_defs/HPM_COUNTER_SZ.adoc[]
 include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
 include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
 include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
 |===

@@ -13,7 +13,6 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-//
 // Coverpoints : cp_misaligned_tor for PMPZca is partially covered
 //               in this test file.
 //
@@ -21,14 +20,14 @@
 //               Setting up 3 standard consecutive TOR PMP regions with L=1, XWR=111
 //               (XWR = 000 for region 3).Place an uncompressed ret = jalr straddling the
 //               start and end of the second regions. Attempt jalr to each ret.
-//
+
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
 # params:
-#   MXLEN: 32
-# MARCH: rv32i_zca_zicsr
+#   MXLEN: 64
+# MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -61,9 +60,9 @@ RVTEST_BEGIN
 main:
     // Loop to SET ALL pmpcfg REGs to zero
     .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
+    .rept RVMODEL_NUM_PMPS/8
     csrw pmpcfgi , x0
-    .set pmpcfgi, pmpcfgi+1
+    .set pmpcfgi, pmpcfgi+2
     .endr
 
     // Loop to SET ALL pmpaddr REGs to zero
@@ -73,7 +72,7 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-#define PMP_REGION_GLOBAL               ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP3_CFG_SHIFT))  // Background region with RWX enable.
+#define PMP_REGION_GLOBAL               ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT) &0xFF)   << PMP7_CFG_SHIFT))  // Background region with RWX enable.
 #define PMP1CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP1_CFG_SHIFT))
 #define PMP2CFG                         ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)   &0xFF)   << PMP2_CFG_SHIFT))
 #define PMP3CFG                         ((((PMP_L|                  PMP_TOR)   &0xFF)   << PMP3_CFG_SHIFT))
@@ -87,7 +86,7 @@ main:
 
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
-    csrw pmpcfg3, x4
+    csrw pmpcfg2, x4
 
 //                                          Verification Section
 // Test Case: Setting up three TOR regions with L = 1, and XWR = 111 and XWR = 000 for third region
@@ -101,7 +100,7 @@ main:
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
-    LA(x4, PMP1CFG)
+    LI(x4, PMP1CFG)
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
@@ -109,7 +108,7 @@ main:
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
-    LA(x4, PMP2CFG)
+    LI(x4, PMP2CFG)
     csrw pmpcfg0, x4
 
     LA(x5, REGIONSTART)
@@ -117,13 +116,13 @@ main:
     srl x5, x5, PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr3, x5
 
-    LA(x4, PMP3CFG)
+    LI(x4, PMP3CFG)
     csrw pmpcfg0, x4
 
-    // Test Case 1: Uncompressed return straddling the start of 2nd region
+    // Test Case 1
     VERIFICATION_RWX TEST_FOR_EXECUTION_2, test_1
 
-    // Test Case 2: Uncompressed return straddling the end of 2nd region
+    // Test Case 2
     VERIFICATION_RWX TEST_FOR_EXECUTION_4, test_2
 
     j exit                                                      // Verification Complete, exit the test
@@ -163,7 +162,7 @@ RVTEST_DATA_BEGIN
 
 // Test case strings for reporting
 canary_mismatch: .string "Testcase signature canary mismatch!"
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_tor_start\""
 
 RVTEST_DATA_END
 

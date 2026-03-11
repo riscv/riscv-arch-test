@@ -25,9 +25,10 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Zca']
 # params:
 #   MXLEN: 32
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

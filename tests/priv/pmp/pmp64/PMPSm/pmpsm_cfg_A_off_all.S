@@ -21,9 +21,10 @@
 //               because region is off even though inaccessible.
 // --------------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Smpmp']
+# REQUIRED_EXTENSIONS:  ['I']
 # params:
 #   MXLEN: 64
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

@@ -23,9 +23,10 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca','Smpmp']
+# REQUIRED_EXTENSIONS: ['I','Zca']
 # params:
 #   MXLEN: 64
+#   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
@@ -98,43 +99,7 @@ RVTEST_BEGIN
     c.nop
     c.nop
     c.nop
-/*
-    LI(x15, DOUBLE_VALUE)
-    \TEST_CASE\()_4:
-    c.sd x15, 0(x8)
-    c.nop
-    c.nop
 
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_4, test_4_str)
-    \TEST_CASE\()_5:
-    c.ld x15, 0(x8)
-    c.nop
-    c.nop
-    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_5, test_5_str)
-
-    LA(x8, \ADDRESS)
-
-    mv t0, sp
-    addi sp, x8, 0
-
-    c.sdsp x15, 0(sp)
-    c.nop
-    c.nop
-    c.nop
-    c.nop
-
-    c.ldsp x15, 0(sp)
-    c.nop
-    c.nop
-    c.nop
-    c.nop
-    mv sp, t0
-
-    c.nop
-    c.nop
-    c.nop
-    c.nop
-*/
 .endm
 
 main:
@@ -287,8 +252,6 @@ canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
 test_2_str: .string "\"test: 2; cp: pmpzca_legal_lxwr_lw\""
 test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
-test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
-test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
 
 RVTEST_DATA_END
 

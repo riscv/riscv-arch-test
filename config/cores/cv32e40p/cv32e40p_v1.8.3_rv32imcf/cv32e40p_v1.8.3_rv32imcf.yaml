@@ -14,6 +14,7 @@ implemented_extensions: # VERIFIED — manual documents these extensions as impl
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }

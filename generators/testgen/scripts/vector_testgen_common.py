@@ -1941,6 +1941,8 @@ def writeTest(description, instruction, cp, instruction_data,
         lmulflag = getLmulFlag(1) # for LMUL fractional cases we still want to load with LMUL=1 to get VLMAX number of elements loaded
       elif lmul > 1 and instruction in maskprodins:
         lmulflag = getLmulFlag(1) # for maskprodins vd is always a single register
+      elif lmul > 1 and (instruction in vredins or instruction == "vmv.s.x"):
+        lmulflag = getLmulFlag(1) # for vredins vd is always a single register
       else:
         lmulflag = getLmulFlag(lmul)
       writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
@@ -1950,7 +1952,7 @@ def writeTest(description, instruction, cp, instruction_data,
       # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
 
     vs2_preloaded = False
-    if suite == "length" and (instruction in whole_register_move):
+    if suite == "length" and ((instruction in whole_register_move) or (instruction in vslidedownins) or (instruction in vrgatherins)):
       # pick temporary regs avoiding conflicts
       tempVlmax = 7
       while tempVlmax in scalar_registers_used:
@@ -1964,7 +1966,7 @@ def writeTest(description, instruction, cp, instruction_data,
 
       # set vtype to VLMAX for vd load
       lmulflag = getLmulFlag(lmul)
-      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load hereeeee")
+      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vs2 load")
       # actually perform load for vd (pass through loadVecReg)
       scalar_registers_used = loadVecReg(instruction, 'vs2', vector_register_data, sew, lmul, *scalar_registers_used)
       vs2_preloaded = True
@@ -2573,6 +2575,8 @@ def readTestplans(priv=False):
                                     cps.append(key)
                         tp[instr] = cps
                 testplans[arch] = tp
+                if (arch == "VxTemp"):
+                  del testplans["VxTemp"]
                 if (arch == "Vx"):
                     for effew in ["8", "16", "32", "64"]:
                         testplans["Vx" + effew] = tp

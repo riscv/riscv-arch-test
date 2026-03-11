@@ -759,20 +759,20 @@ def make_custom_vshift_upperbits_r1_ones(instruction, sew, r1, narrow=False):
 def make_custom_vindexedges_index_ge_vlmax(instruction, sew):
   description = "cp_custom_vindexedges_index_ge_vlmax"
   cp = "cp_custom_vindexedges_index_ge_vlmax"
-  instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite="base", vs1_val=-1)
+  instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", vs1_val=-1)
 
-  writeTest(description, instruction, cp, instruction_data, sew=sew)
-  incrementBasetestCount()
-  vsAddressCount()
+  writeTest(description, instruction, cp, instruction_data, sew=sew, suite="length")
+  incrementLengthtestCount()
+  vsAddressCount("length")
 
 def make_custom_vindexedges_index_gt_vl_lt_vlmax(instruction, sew):
   description = "cp_custom_vindexedges_index_gt_vl_lt_vlmax"
   cp = "cp_custom_vindexedges_index_gt_vl_lt_vlmax"
-  instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite="base", lmul=2, vs1_val=2)
+  instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul=2, vs1_val=2)
 
-  writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=2)
-  incrementBasetestCount()
-  vsAddressCount()
+  writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=2, suite="length")
+  incrementLengthtestCount()
+  vsAddressCount("length")
 
 #####################################           test generation           #####################################
 

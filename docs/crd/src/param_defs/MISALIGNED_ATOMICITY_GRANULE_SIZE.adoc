@@ -1,0 +1,9 @@
+a|
+[#param:MISALIGNED_ATOMICITY_GRANULE_SIZE]#MISALIGNED_ATOMICITY_GRANULE_SIZE#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#MISALIGNED_ATOMICITY_GRANULE_SIZE[MISALIGNED_ATOMICITY_GRANULE_SIZE]
+| Integer
+| Atomic
+| See normative rule

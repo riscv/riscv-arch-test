@@ -28,6 +28,7 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"LREG x{r_temp}, 0(x{r_mtime})",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",
         "#elif __riscv_xlen == 32",
+<<<<<<< HEAD
         "# Write sequence to prevent spurious interrupts",
         "# Read mtime (new comparand will be in temp2:temp)",
         f"lw x{r_temp}, 0(x{r_mtime}) # mtime[31:0] -> low word",
@@ -37,6 +38,17 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"sw x{r_mtime}, 0(x{r_mtimecmp}) # Step 1: Write -1 to low (no smaller than old)",
         f"sw x{r_temp2}, 4(x{r_mtimecmp}) # Step 2: Write high word (no smaller than new)",
         f"sw x{r_temp}, 0(x{r_mtimecmp}) # Step 3: Write low word (new value)",
+=======
+        # Write sequence to prevent spurious interrupts
+        # Read mtime (new comparand will be in temp2:temp)
+        f"    lw x{r_temp}, 0(x{r_mtime})",  # mtime[31:0] -> low word
+        f"    lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32] -> high word
+        # 3-step write sequence (new comparand is in temp2:temp)
+        f"    li x{r_mtime}, -1",  # Reuse r_mtime for -1
+        f"    sw x{r_mtime}, 0(x{r_mtimecmp})",  # Step 1: Write -1 to low (no smaller than old)
+        f"    sw x{r_temp2}, 4(x{r_mtimecmp})",  # Step 2: Write high word (no smaller than new)
+        f"    sw x{r_temp}, 0(x{r_mtimecmp})",  # Step 3: Write low word (new value)
+>>>>>>> 9e4cabd7a (udpated interrupt tests)
         "#endif",
         "#endif",
     ]
@@ -82,6 +94,7 @@ def set_mtimer_int_soon(
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
+<<<<<<< HEAD
         "# Read current time and add delay",
         "# Load delay first for more accurate timing",
         f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
@@ -104,6 +117,28 @@ def set_mtimer_int_soon(
         f"sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
         f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
         f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
+=======
+        # Read current time and add delay
+        f"    ld x{r_temp1}, 0(x{r_mtime})",
+        f"    LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
+        f"    add x{r_temp1}, x{r_temp1}, x{r_temp2}",  # mtime + delay
+        f"    sd x{r_temp1}, 0(x{r_mtimecmp})",
+        "#elif __riscv_xlen == 32",
+        # Read current time (64-bit on RV32)
+        f"    lw x{r_temp1}, 0(x{r_mtime})",  # mtime[31:0]
+        f"    lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32]
+        # Add delay to 64-bit value
+        f"    LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
+        f"    add x{r_temp3}, x{r_temp1}, x{r_temp4}",  # new_low = mtime_low + delay
+        f"    sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",  # carry bit
+        f"    add x{r_temp2}, x{r_temp2}, x{r_temp4}",  # new_high = mtime_high + carry
+        # Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt
+        # New comparand is in temp2:temp3
+        f"    li x{r_temp1}, -1",
+        f"    sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
+        f"    sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
+        f"    sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
+>>>>>>> 9e4cabd7a (udpated interrupt tests)
         "#endif",
         "#endif",
     ]

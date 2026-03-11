@@ -34,6 +34,7 @@
 
 #define TEST_FILE "sv39_pmp_on_pte_Umode.S"
 #define SIGUPD_COUNT 15
+#define TRAP_SIGUPD_COUNT 50
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

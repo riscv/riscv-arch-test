@@ -31,6 +31,7 @@
 
 #define TEST_FILE "sv48_mstatus_mxr_Umode.S"
 #define SIGUPD_COUNT 30
+#define TRAP_SIGUPD_COUNT 60
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

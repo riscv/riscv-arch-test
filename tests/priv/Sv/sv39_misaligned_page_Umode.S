@@ -19,6 +19,7 @@
 
 #define TEST_FILE "sv39_misaligned_page_Umode.S"
 #define SIGUPD_COUNT 15
+#define TRAP_SIGUPD_COUNT 40
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

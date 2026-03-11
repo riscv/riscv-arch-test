@@ -9,7 +9,7 @@
 //  3. satp accessed in S-Mode with mstatus.TVM set -> 3 Illegal instruction exceptions
 //  4. sfence.vma accessed in S-Mode with mstatus.TVM set -> Illegal instruction exception
 //
-// Total Expected Faults: 4
+// Total Expected Faults :: 4
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -20,6 +20,7 @@
 
 #define TEST_FILE "vm_mstatus_tvm_test.S"
 #define SIGUPD_COUNT 10
+#define TRAP_SIGUPD_COUNT 30
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

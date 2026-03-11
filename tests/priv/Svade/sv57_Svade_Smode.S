@@ -55,6 +55,7 @@
 
 #define TEST_FILE "sv57_Svade_Smode.S"
 #define SIGUPD_COUNT 65
+#define TRAP_SIGUPD_COUNT 150
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

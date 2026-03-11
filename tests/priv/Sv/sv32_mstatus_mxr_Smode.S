@@ -32,6 +32,7 @@
 
 #define TEST_FILE "sv32_mstatus_mxr_Smode.S"
 #define SIGUPD_COUNT 20
+#define TRAP_SIGUPD_COUNT 40
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

@@ -56,6 +56,7 @@
 
 #define TEST_FILE "sv32_upage_mstatus_sum_unset_Smode.S"
 #define SIGUPD_COUNT 35
+#define TRAP_SIGUPD_COUNT 130
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

@@ -30,6 +30,7 @@
 
 #define TEST_FILE "sv32_upage_mprv_set_sum_unset_Smode.S"
 #define SIGUPD_COUNT 15
+#define TRAP_SIGUPD_COUNT 30
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

@@ -33,7 +33,7 @@
 // 8. PTE.D unset, PTE.A unset at level 0, RWX permissions (read, write, execute page):
 //        Then access the page in U-Mode. Expected: Store, Load & Fetch page fault
 //
-// Total Expected Faults: 14
+// Total Expected Faults :: 14
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -44,6 +44,7 @@
 
 #define TEST_FILE "sv32_Svade_Umode.S"
 #define SIGUPD_COUNT 30
+#define TRAP_SIGUPD_COUNT 70
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

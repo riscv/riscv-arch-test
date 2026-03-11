@@ -22,7 +22,7 @@
 //  5. All zeros, ones and walking ones on the ASID field of satp when satp.MODE=Sv32 -> Successful
 //  6. All zeros and random value to satp[59:0] when satp.MODE=Bare -> Successful
 //
-// Total Expected Faults: 3
+// Total Expected Faults :: 3
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -33,6 +33,7 @@
 
 #define TEST_FILE "sv32_satp_access_test.S"
 #define SIGUPD_COUNT 55
+#define TRAP_SIGUPD_COUNT 30
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

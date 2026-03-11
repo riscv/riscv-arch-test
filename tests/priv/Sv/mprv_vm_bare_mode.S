@@ -19,6 +19,7 @@
 
 #define TEST_FILE "mprv_vm_bare_mode.S"
 #define SIGUPD_COUNT 15
+#define TRAP_SIGUPD_COUNT 10
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

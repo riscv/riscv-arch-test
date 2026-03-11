@@ -28,6 +28,7 @@
 
 #define TEST_FILE "sv48_pmp_on_pa_Umode.S"
 #define SIGUPD_COUNT 45
+#define TRAP_SIGUPD_COUNT 80
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

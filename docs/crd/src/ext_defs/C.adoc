@@ -1,0 +1,8 @@
+[[extension:C]]
+=== Extension C
+
+Long Name::
+Compressed instructions
+
+Description::
+Always includes Zca, includes Zcf if F is present (RV32 only), and includes Zcd if D is present

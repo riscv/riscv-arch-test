@@ -123,10 +123,21 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
+  #ifdef rvtest_mtrap_routine
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-    bne     T4, T5, exit_cleanup      // Exit with a success message if not being aborted
-    jal     T3, failedtest_x8_x7
-    RVTEST_WORD_PTR "abortstr"
+    bne     T4, T5, check_trap_sig_offset
+    jal     T2, failedtest_trap_x7_x9
+    RVTEST_WORD_PTR abort_test
+    RVTEST_WORD_PTR abortstr
+
+    // Check trap signature offset to make sure the correct number of traps occurred
+    check_trap_sig_offset:
+      LA(     T1, Mtrap_sig)
+      LREG    T1, 0(T1)               // Trap signature pointer
+      LA(     T2, mtrap_sigptr)       // Base address of trap signature region
+      sub     T1, T1, T2              // Calculate offset
+      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+  #endif
 
   // Terminate test
   exit_cleanup:
@@ -245,33 +256,33 @@
   .global rvtest_sig_begin
   rvtest_sig_begin:
 
-    // Create canary at beginning of signature region to detect overwrites
-    sig_begin_canary:
-      CANARY
-
     // Main signature region
-    signature_base:
-      #ifdef RVTEST_SELFCHECK
-        // Preload signature region with correct values for self-checking
-        #include SIGNATURE_FILE
-      #else
+    #ifdef RVTEST_SELFCHECK
+        signature_base:
+          // Preload signature region with correct values for self-checking
+          #include SIGNATURE_FILE
+    #else
+      // Create canary at beginning of signature region to detect overwrites
+      sig_begin_canary:
+        CANARY
+
+      signature_base:
         // Initialize signature region to known value for initial pass
-        .fill SIGUPD_COUNT*SIG_STRIDE,4,0xdeadbeef
+        .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+
+      // Signature region for trap handlers
+      #ifdef rvtest_mtrap_routine
+        tsig_begin_canary:
+          TRAP_CANARY
+
+        mtrap_sigptr:
+            .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
       #endif
 
-    // Signature region for trap handlers
-    #ifdef rvtest_mtrap_routine
-      tsig_begin_canary:
-        CANARY
-      mtrap_sigptr:
-        .fill 20000*(XLEN/32),4,0xdeadbeef
-      tsig_end_canary:
+      // Create canary at end of signature region to detect overwrites
+      sig_end_canary:
         CANARY
     #endif
-
-    // Create canary at end of signature region to detect overwrites
-    sig_end_canary:
-      CANARY
 
   .align 4
   .global rvtest_sig_end

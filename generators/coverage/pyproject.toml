@@ -4,7 +4,7 @@
 
 [project]
 name = "covergroupgen"
-version = "0.1.0"
+version = "0.2.0"
 description = "RISC-V Architectural Certification Covergroup Generator"
 authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
 requires-python = ">=3.12"

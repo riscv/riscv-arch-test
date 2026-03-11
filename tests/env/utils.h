@@ -98,6 +98,8 @@
 #define PMP5_CFG_SHIFT  40
 #define PMP6_CFG_SHIFT  48
 #define PMP7_CFG_SHIFT  56
+#define NOP              0x13
+#define DOUBLE_NOP       (0x13<<32)+0x13
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.

@@ -120,7 +120,7 @@ main:
 
     j exit
 
-.align 12
+.align 13
 TEST_FOR_EXECUTION_1:               // Uncompressed return inside the first region
     jalr x0, x1, 0
 

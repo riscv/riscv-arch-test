@@ -1,0 +1,10 @@
+a|
+[#param:HPM_COUNTER_SZ]#HPM_COUNTER_SZ#
+
+Normative Rule(s):
+
+* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#HPM_PLATFORM_SPECIFIC_IMPL[HPM_PLATFORM_SPECIFIC_IMPL]
+| Array[3:31] of Integer 0 to 64
+| Zicntr
+| Bit width of each implemented unprivileged hardware performance counter.
+A value of 0 indicates the corresponding counter is not implemented.

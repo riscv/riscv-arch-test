@@ -57,11 +57,14 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
         bins wfi = {32'b0001000_00101_00000_000_00000_1110011};
     }
 
+
     cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, mip_mtip;
     cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one,  mip_msip;
+
+    // Note: External interrupts (MEI) not supported in Sail simulator yet
     cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one,   mip_meip;
     cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one;
-    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one;
+    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw_one, mie_mtie;
 
 endgroup
 

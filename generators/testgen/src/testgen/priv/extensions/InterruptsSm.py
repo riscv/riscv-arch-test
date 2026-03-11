@@ -441,6 +441,14 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
 def make_interruptssm(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
 
+<<<<<<< HEAD
+=======
+    # Consume t2 and t5 - reserved by trap handler in arch_test.h for interrupt clearing subroutines
+    # The trap handler uses these registers when calling RVMODEL_CLR_*_INT macros
+    # See: tests/env/arch_test.h, trap handler interrupt dispatch logic
+    test_data.int_regs.consume_registers([7, 30])
+
+>>>>>>> 9e4cabd7a (udpated interrupt tests)
     lines: list[str] = []
 
     lines.extend(_generate_trigger_mti_tests(test_data))

@@ -87,6 +87,7 @@ implemented_extensions:
   - { name: Zfbfmin, version: "= 1.0.0" }
   - { name: Zfh, version: "= 1.0.0" }
   - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zibi, version: "= 0.6" }
   - { name: Zic64b, version: "= 1.0.0" }
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }

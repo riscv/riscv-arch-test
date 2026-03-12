@@ -12,7 +12,7 @@ import subprocess
 from enum import Enum
 from pathlib import Path
 
-from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator
+from pydantic import BaseModel, DirectoryPath, FilePath, ValidationInfo, field_validator, model_validator
 from ruamel.yaml import YAML
 
 
@@ -23,14 +23,20 @@ class RefModelType(str, Enum):
     SAIL = "sail"
     # SPIKE = "spike"
 
-    @property
-    def signature_flags(self) -> str:
+    def signature_flags(self, sig_file: Path | str, granularity: int) -> list[str]:
         """Get the flags for this reference model."""
-        flags_map = {
-            RefModelType.SAIL: "--test-signature={sig_file} --signature-granularity {granularity}",
-            # RefModelType.SPIKE: "+signature={sig_file} +signature-granularity={granularity}",
+        flags_map: dict[RefModelType, list[str]] = {
+            RefModelType.SAIL: [f"--test-signature={sig_file}", "--signature-granularity", str(granularity)],
+            # RefModelType.SPIKE: [f"+signature={sig_file}", f"+signature-granularity={granularity}"],
         }
         return flags_map[self]
+
+
+class CompilerType(str, Enum):
+    """Compiler types."""
+
+    CLANG = "clang"
+    GCC = "gcc"
 
 
 class Config(BaseModel):
@@ -42,6 +48,7 @@ class Config(BaseModel):
     dut_include_dir: DirectoryPath
     compiler_exe: Path
     objdump_exe: Path | None = None
+    compiler_type: CompilerType  # Inferred from compiler_exe by model validator
     ref_model_type: RefModelType = RefModelType.SAIL
     ref_model_exe: Path
     include_priv_tests: bool = True
@@ -60,6 +67,18 @@ class Config(BaseModel):
         else:
             return v
 
+    @model_validator(mode="before")
+    @classmethod
+    def infer_compiler_type(cls, data: dict[str, object]) -> dict[str, object]:
+        """Infer compiler type from compiler_exe if not explicitly set."""
+        if data.get("compiler_type") is None:
+            compiler_exe = data.get("compiler_exe")
+            if isinstance(compiler_exe, str) and "clang" in compiler_exe:
+                data["compiler_type"] = CompilerType.CLANG
+            else:
+                data["compiler_type"] = CompilerType.GCC
+        return data
+
     @field_validator("udb_config", "linker_script", "dut_include_dir", mode="before")
     @classmethod
     def resolve_relative_paths(cls, v: str | None, info: ValidationInfo) -> Path | None:
@@ -74,13 +93,6 @@ class Config(BaseModel):
             raise ValueError("Unable to resolve relative paths.")
         config_file_dir: Path = context["config_file_dir"]
         return config_file_dir.absolute() / path
-
-    @property
-    def compiler_string(self) -> str:
-        """Get the compiler executable as a string with relevant flags."""
-        compiler_is_clang = "clang" in self.compiler_exe.name
-        clang_flags = "--target=riscv${XLEN} -fuse-ld=lld"
-        return f"{self.compiler_exe} {clang_flags if compiler_is_clang else ''}\\\n\t\t-I{self.dut_include_dir.absolute()} \\\n\t\t-T{self.linker_script.absolute()}"
 
     def __str__(self) -> str:
         """Pretty print configuration."""

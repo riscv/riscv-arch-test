@@ -56,13 +56,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # so they can be split for long priv tests (e.g. Ssstrict)
     tc = test_data.begin_test_chunk()
 
-    # Reserve registers for priv tests:
-    #   - x0: avoid so desired values are actually loaded into registers
-    #   - x1/ra: used as the return address for function calls
-    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
-    #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
-    test_data.int_regs.consume_registers(priv_exclude_regs)
+    # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
+    test_data.int_regs.consume_registers([1])
+
+    # Consume t2 and t5 (x7, x30) - reserved by trap handler in arch_test.h for interrupt clearing
+    # The trap handler uses these registers when calling RVMODEL_CLR_*_INT macros
+    # See: tests/env/arch_test.h, trap handler interrupt dispatch logic
+    test_data.int_regs.consume_registers([7, 30])
 
     # Seed the RNG for reproducible test generation
     seed(reproducible_hash(testsuite))
@@ -71,8 +71,8 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
-    # Return x0/zero and x1/ra
-    test_data.int_regs.return_registers(priv_exclude_regs)
+    # Return x1/ra
+    test_data.int_regs.return_registers([1, 7, 30])
 
     # Save test chunk
     tc.code = "\n".join(body_lines)

@@ -186,34 +186,16 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
             if mtvec_mode:
                 lines.append("csrsi mtvec, 1")  # Set mtvec.MODE to vectored (01)
 
-            cmd = ["CSRC", "CSRS"][mstatus_mie]  # CSRC if 0, CSRS if 1
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
-                    f"{cmd}(mstatus, x{r_scratch})",
-                ]
-            )
-
-            # Enable MEIE
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x800)",
+                    f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"LI(x{r_scratch}, 0x800)",  # Enable MEIE
                     f"CSRW(mie, x{r_scratch})",
-                ]
-            )
-
-            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
-
-            lines.extend(
-                [
+                    "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "    RVTEST_SET_MEXT_INT",
-                    "    RVTEST_IDLE_FOR_INTERRUPT",
-                ]
-            )
-
-            lines.extend(
-                [
+                    "RVTEST_SET_MEXT_INT",
+                    "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MEXT_INT",
@@ -255,11 +237,10 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             )
 
             # Set MIE if needed
-            cmd = ["CSRC", "CSRS"][mie_val]  # CSRC if 0, CSRS if 1
             lines.extend(
                 [
                     f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
-                    f"{cmd}(mstatus, x{r_scratch})",
+                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )
 
@@ -273,14 +254,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
                 )
 
             # Enable MTIE
-            lines.extend(
-                [
-                    f"LI(x{r_scratch}, 0x80)",
-                    f"CSRW(mie, x{r_scratch})",
-                ]
-            )
-
-            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
+            lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
 
             # Set timer to fire soon
             lines.extend(indent(set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2)))
@@ -333,15 +307,8 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                     "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
                     f"LI(x{r_scratch}, 0x80)",
                     f"CSRC(mie, x{r_scratch})",
-                ]
-            )
-
-            # Set MIE if needed
-            cmd = ["CSRC", "CSRS"][mie_val]  # CSRC if 0, CSRS if 1
-            lines.extend(
-                [
                     f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
-                    f"{cmd}(mstatus, x{r_scratch})",
+                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )
 
@@ -361,24 +328,12 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
                 [
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     "",
-                ]
-            )
-
-            # WFI
-            lines.extend(
-                [
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "    wfi",
-                    "    nop",
-                ]
-            )
-
-            lines.extend(
-                [
+                    "wfi",
+                    "nop",
                     "RVTEST_GOTO_MMODE",
                 ]
             )
-            lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_temp, r_mtimecmp, r_scratch])
     return lines
@@ -387,11 +342,6 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator("InterruptsU", required_extensions=["Sm", "U", "I", "Zicsr"])
 def make_interruptsu(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
-
-    # Consume t2 and t5 - reserved by trap handler in arch_test.h for interrupt clearing subroutines
-    # The trap handler uses these registers when calling RVMODEL_CLR_*_INT macros
-    # See: tests/env/arch_test.h, trap handler interrupt dispatch logic
-    test_data.int_regs.consume_registers([7, 30])
 
     lines: list[str] = []
 
@@ -411,8 +361,5 @@ def make_interruptsu(test_data: TestData) -> list[str]:
     lines.extend(_generate_user_mei_tests(test_data))
     lines.extend(_generate_user_wfi_tests(test_data))
     lines.extend(_generate_user_wfi_timeout_tests(test_data))
-
-    # Return the consumed registers before test ends
-    test_data.int_regs.return_registers([7, 30])
 
     return lines

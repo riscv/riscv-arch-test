@@ -60,6 +60,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
     test_data.int_regs.consume_registers([1])
 
+    # Consume t2 and t5 (x7, x30) - reserved by trap handler in arch_test.h for interrupt clearing
+    # The trap handler uses these registers when calling RVMODEL_CLR_*_INT macros
+    # See: tests/env/arch_test.h, trap handler interrupt dispatch logic
+    test_data.int_regs.consume_registers([7, 30])
+
     # Seed the RNG for reproducible test generation
     seed(reproducible_hash(testsuite))
 
@@ -68,7 +73,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     body_lines = priv_test_generator(test_data)
 
     # Return x1/ra
-    test_data.int_regs.return_register(1)
+    test_data.int_regs.return_registers([1, 7, 30])
 
     # Save test chunk
     tc.code = "\n".join(body_lines)

@@ -95,13 +95,8 @@ qemu-rv64: elfs
 
 ###### Test compilation targets ######
 .PHONY: elfs
-elfs: generate-makefiles Makefile
-	$(MAKE) -C $(WORKDIR) compile
-
-.PHONY: generate-makefiles
-generate-makefiles: # too many dependencies to track; always regenerate Makefile
-	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) \
+elfs: tests
+	@$(UV_RUN) act $(CONFIG_FILES) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
@@ -121,13 +116,13 @@ clean: clean-tests
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
 $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) covergroupgen testplans $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) covergroupgen testplans $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen
@@ -140,11 +135,11 @@ $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-test
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
 $(STAMP_DIR)/csrtests.stamp: generators/testgen/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/csrtests.py
+	@$(UV_RUN) generators/testgen/scripts/csrtests.py
 	@touch $@
 
 $(STAMP_DIR)/illegalinstrtests.stamp: generators/testgen/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
+	@$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
 	@touch $@
 
 .PHONY: tests
@@ -157,14 +152,14 @@ clean-tests:
 	rm -rf $(STAMP_DIR)
 
 $(PRIVHEADERSDIR) $(STAMP_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 ###### Coverage targets ######
+# Just sets some variables and then runs the standard elfs target
 .PHONY: coverage
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
-coverage: generate-makefiles Makefile
-	$(MAKE) -C $(WORKDIR) coverage
+coverage: elfs
 
 ##### Dev targets #####
 .PHONY: lint

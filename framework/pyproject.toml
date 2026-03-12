@@ -5,26 +5,21 @@
 
 [project]
 name = "act"
-version = "0.2.0"
-description = "RISC-V Architecture Compatibility Test Framework"
+version = "0.3.0"
+description = "RISC-V Architecture Certification Test Framework"
 readme = "../README.md"
-authors = [
-    { name = "Jordan Carlin", email = "jcarlin@hmc.edu" }
-]
+authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
 requires-python = ">=3.12"
 dependencies = [
-    "pydantic>=2.11.9",
-    "pyjson5>=2.0.0",
-    "ruamel-yaml>=0.18.16",
-    "typer>=0.20.0",
+  "pydantic>=2.11.9",
+  "pyjson5>=2.0.0",
+  "rich>=14.0.0",
+  "ruamel-yaml>=0.18.16",
+  "typer>=0.20.0",
 ]
 
 [project.scripts]
 act = "act.act:main"
-sail-to-rvvi = "act.sail_to_rvvi:main"
-coverreport = "act.coverreport:main"
-sig_modify = "act.sig_modify:main"
-merge-summaries = "act.merge_summaries:main"
 
 ##### BUILD #####
 [build-system]

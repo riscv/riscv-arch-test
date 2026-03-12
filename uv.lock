@@ -18,11 +18,12 @@ dev = [
 
 [[package]]
 name = "act"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "framework" }
 dependencies = [
     { name = "pydantic" },
     { name = "pyjson5" },
+    { name = "rich" },
     { name = "ruamel-yaml" },
     { name = "typer" },
 ]
@@ -31,6 +32,7 @@ dependencies = [
 requires-dist = [
     { name = "pydantic", specifier = ">=2.11.9" },
     { name = "pyjson5", specifier = ">=2.0.0" },
+    { name = "rich", specifier = ">=14.0.0" },
     { name = "ruamel-yaml", specifier = ">=0.18.16" },
     { name = "typer", specifier = ">=0.20.0" },
 ]

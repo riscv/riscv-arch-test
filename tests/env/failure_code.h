@@ -433,10 +433,17 @@
         li a1, 3            # Failed in trap handler
         bne a0, a1, failedtest_report_end
     failedtest_report_xepc:
-        # Print xepc
         LA(x9, xepcstr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        csrr a0, CSR_XEPC
+        # Load CSR_XEPC (12-bit CSR addr) placed after STR_PTR
+        lhu x6, 2*REGWIDTH(DEFAULT_LINK_REG)
+        LI(x7, CSR_MEPC)
+        bne x6, x7, 1f
+        csrr a0, mepc
+        j 2f
+        1:
+        csrr a0, sepc
+        2:
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
         LA(x9, ascii_buffer)

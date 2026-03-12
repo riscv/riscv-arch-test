@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.5)
+= RVI20 Certification Requirements Document (rev 0.8)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,19 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 0.8
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * The c.ebreak instruction only exists if the C extension is present.
+
+| Mar 9, 2026
+| 0.7
+a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
+
+| Mar 5, 2026
+| 0.6
+a| * Removed MISALIGNED_ATOMICITY_GRANULE_SIZE parameter due to https://github.com/riscv/riscv-isa-manual/issues/2726
 
 | Mar 4, 2026
 | 0.5
@@ -91,10 +104,7 @@ execution environments to handle such exceptions.
 <<<
 == Extensions
 
-Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
-and the RVI20 certificate doesn't cover their behaviors.
-
-Please refer to the <<extension_defs,Extension Definitions>> appendix for more information about the extensions listed in this section or click on the extension names in the table below to jump to their definitions.
+include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -107,37 +117,24 @@ None
 |===
 | Requirement ID | Extension | Version
 
-| REQ-EXT-A
-| <<extension:A,A>>
-| ~> 2.1
+| REQ-EXT-A | <<extension:A,A>> | ~> 2.1
+| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
+| REQ-EXT-D | <<extension:D,D>> | ~> 2.2
+| REQ-EXT-F | <<extension:F,F>> | ~> 2.2
+| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
+| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
+| REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
+|===
 
-| REQ-EXT-C
-| <<extension:C,C>>
-| ~> 2.0
+=== Dependent Extensions
 
-| REQ-EXT-D
-| <<extension:D,D>>
-| ~> 2.2
+.Dependent Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version | Dependency
 
-| REQ-EXT-F
-| <<extension:F,F>>
-| ~> 2.2
-
-| REQ-EXT-M
-| <<extension:M,M>>
-| ~> 2.0
-
-| REQ-EXT-Zicntr
-| <<extension:Zicntr,Zicntr>>
-| ~> 2.0
-
-| REQ-EXT-Zifencei
-| <<extension:Zifencei,Zifencei>>
-| ~> 2.0
-
-| REQ-EXT-Zihpm
-| <<extension:Zihpm,Zihpm>>
-| ~> 2.0
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
 
 |===
 
@@ -164,16 +161,6 @@ include::in_scope_param_intro.adoc[]
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
 
-| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
-| Any
-a|
-NOTE: This parameter might be removed from this CRD. See GitHub Issue https://github.com/riscv/riscv-arch-test/issues/1037.
-
-Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
-Non-zero:: Misaligned AMO atomic instructions and
-misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
-any restrictions on misaligned supported expressed by other parameters are met.
-
 | <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
 | Any
 | Reading time-related CSRs is only IN-SCOPE if this parameter is true
@@ -199,8 +186,20 @@ There are no CSRs in RVI20 with WARL fields.
 
 There are no CSRs in RVI20 with WLRL fields.
 
-<<<
-include::extension_defs.adoc[]
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
 
-<<<
-include::param_defs.adoc[]
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

@@ -1,0 +1,6 @@
+<<<
+[appendix]
+[[extension_defs]]
+== Extension Definitions
+
+This appendix contains information about RISC-V extensions mentioned in this CRD.

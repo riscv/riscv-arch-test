@@ -64,7 +64,10 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 #### 3. RISC-V Compiler
 
-The ACT framework is compatible with GCC or LLVM/Clang. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
+The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
+Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
+
+This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
 
 > [!NOTE]
 >

@@ -13,6 +13,10 @@ from typing import Literal
 from testgen.data.config import TestConfig
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
 
+# Pre-compiled regex patterns for label normalization in add_testcase()
+_LABEL_INVALID_CHARS = re.compile(r"[^a-zA-Z0-9_]")
+_LABEL_MULTI_UNDERSCORE = re.compile(r"_+")
+
 
 class TestData:
     """
@@ -50,6 +54,7 @@ class TestData:
         self._test_data_values: list[int] = []  # List of integer values
         self._test_data_strings: list[str] = []  # List of string values
         self._current_testcase_label = ""
+        self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, test_count={self._test_count})"
@@ -71,18 +76,22 @@ class TestData:
     @property
     def fp_load_size(self) -> Literal["single", "double", "half", "quad"]:
         """Get the floating point load size based on the instruction."""
+        if self._fp_load_size is not None:
+            return self._fp_load_size
         if self.instr_name.endswith("q"):
-            return "quad"
+            result = "quad"
         elif self.instr_name.endswith("d") or self.instr_name in ("c.fsdsp", "c.fldsp"):
-            return "double"
+            result = "double"
         elif self.instr_name.endswith(("s", "w")) or self.instr_name in ("c.fswsp", "c.flwsp"):
-            return "single"
+            result = "single"
         elif self.instr_name.endswith(("h", "bf16")):
-            return "half"
+            result = "half"
         else:
             raise ValueError(
                 f"Unknown floating point load size for instruction {self.instr_name}. Modify {__file__} as needed."
             )
+        self._fp_load_size = result
+        return result
 
     # Register file accessors
     @property
@@ -188,8 +197,8 @@ class TestData:
 
         # Normalize full_name to a valid assembly label
         label = full_name.replace("-", "m")
-        label = re.sub(r"[^a-zA-Z0-9_]", "_", label)
-        label = re.sub(r"_+", "_", label)  # Collapse consecutive underscores
+        label = _LABEL_INVALID_CHARS.sub("_", label)
+        label = _LABEL_MULTI_UNDERSCORE.sub("_", label)  # Collapse consecutive underscores
         label = label.strip("_")
 
         # Add testcase string to test data strings (keep original names for debugging)

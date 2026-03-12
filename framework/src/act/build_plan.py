@@ -567,7 +567,7 @@ def generate_build_plan(
                 if coverage_enabled:
                     trace_name = test_name.with_suffix(".rvvi")
                     trace_path = config_coverage_dir / trace_name
-                    coverage_group_dir = trace_path.parent
+                    coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
                     if coverage_group_dir not in coverage_targets:
                         coverage_targets[coverage_group_dir] = []
                     coverage_targets[coverage_group_dir].append(trace_path.absolute())

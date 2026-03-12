@@ -138,7 +138,7 @@ def execute_task(task: BuildTask) -> BuildError | None:
                 cwd=action.cwd,
             )
             if action.stdout_file is not None:
-                action.stdout_file.write_text(result.stdout)
+                action.stdout_file.write_text(result.stdout + result.stderr)
             if result.returncode != 0:
                 return BuildError(
                     task_name=task.name,
@@ -344,7 +344,7 @@ def _task_str(task: BuildTask) -> str:
     if isinstance(action, SubprocessAction):
         cmd_str = " ".join(action.cmd)
         if action.stdout_file:
-            cmd_str += f" > {action.stdout_file}"
+            cmd_str += f" > {action.stdout_file} 2>&1"
         return cmd_str
     if isinstance(action, PythonAction):
         return f"{action.fn.__name__}({', '.join(str(a) for a in action.args)})"

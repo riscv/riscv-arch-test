@@ -73,7 +73,10 @@ class Config(BaseModel):
         """Infer compiler type from compiler_exe if not explicitly set."""
         if data.get("compiler_type") is None:
             compiler_exe = data.get("compiler_exe")
-            if isinstance(compiler_exe, str) and "clang" in compiler_exe:
+            compiler_str = str(compiler_exe) if isinstance(compiler_exe, (str, Path)) else None
+            if compiler_str is None:
+                raise ValueError("Unable to infer compiler type from compiler_exe.")
+            if "clang" in compiler_str:
                 data["compiler_type"] = CompilerType.CLANG
             else:
                 data["compiler_type"] = CompilerType.GCC

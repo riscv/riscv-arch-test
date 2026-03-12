@@ -97,7 +97,6 @@ qemu-rv64: elfs
 .PHONY: elfs
 elfs: tests
 	@$(UV_RUN) act $(CONFIG_FILES) \
-		-j $(shell nproc) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \

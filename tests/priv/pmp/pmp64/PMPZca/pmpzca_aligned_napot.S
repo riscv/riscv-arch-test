@@ -47,7 +47,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE         (1<<(RVMODEL_PMP_GRAIN+2))
+#if RVMODEL_PMP_GRAIN !=0
+    #define REGION_SIZE  (1<<(RVMODEL_PMP_GRAIN+2))
+#else
+    #define REGION_SIZE 8
+#endif
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     \TEST_CASE\()_1:
@@ -139,18 +143,18 @@ main:
 .align 13
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) - 4) / 2)                        //(region size - jalr size)/ compressed nop size
+    .rept ((REGION_SIZE - 4) / 2)                               //(region size - jalr size)/ compressed nop size
     nop
     .endr
 
 TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              // Uncompressed return inside the second region
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) - 4) / 2)
+    .rept ((REGION_SIZE - 4) / 2)
     nop
     .endr
 
 TEST_FOR_EXECUTION_3:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (REGION_SIZE)
     nop
     .endr
 

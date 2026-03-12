@@ -95,7 +95,7 @@ main:
 // Test Case: Three NA4 regions with L=1 and XWR = 111 for first 2 regions, and XWR = 000 for third region.
 
     LA(x5, REGIONSTART)
-    srli x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
+    srl x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_0
     csrw pmpaddr0, x5
 
     LI(x4, PMP0CFG)
@@ -103,7 +103,7 @@ main:
 
     LA(x5, REGIONSTART)
     addi x5, x5, REGION_SIZE
-    srli x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
+    srl x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_1
     csrw pmpaddr1, x5
 
     LI(x4, PMP1CFG)
@@ -111,7 +111,7 @@ main:
 
     LA(x5, REGIONSTART)
     addi x5, x5, 2*REGION_SIZE
-    srli x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
+    srl x5, x5 ,PMP_SHIFT  // This will create dynamic PMP_ADDRESS_2
     csrw pmpaddr2, x5
 
     LI(x4, PMP2CFG)

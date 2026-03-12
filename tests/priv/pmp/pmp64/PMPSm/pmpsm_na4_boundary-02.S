@@ -94,6 +94,7 @@ main:
     csrw pmpcfg2, x4
 
     LA(x4, REGIONSTART)
+    addi x4, x4, 4
     srl x4, x4, PMP_SHIFT
     csrw pmpaddr1, x4
 

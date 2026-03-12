@@ -333,7 +333,6 @@ def make_interruptsu(test_data: TestData) -> list[str]:
     # Initial setup - clear any pending timer
     lines.extend(
         [
-            "",
             "CSRW(mideleg, zero)",
         ]
     )

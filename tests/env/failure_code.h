@@ -650,7 +650,7 @@
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
-    sv_Sect_str:
+    sv_Svect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
     sv_Hvect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
@@ -696,14 +696,24 @@
         .string "\"Mismatch in machine external interrupt ID! Trap was being handled in M-Mode.\"";
     Mclr_Sext_int_str:
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
-    Sclr_Sext_int_str:
-        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
-    Hclr_Sext_int_str:
-        .string "\"Mismatch in hypervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
     Mclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Sclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Hclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Hclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
     Hclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Vclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in VS-Mode.\"";
+    Vclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
 #else

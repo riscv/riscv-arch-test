@@ -16,6 +16,7 @@ description: CV32E40P v1.0.0 (CORE-V small) - RV32IMC configuration DUT (FPU=0, 
 implemented_extensions: # VERIFIED — intro.rst: standard extensions table
   - { name: I, version: "= 2.1" }      # intro.rst: "RV32I Base Integer Instruction Set, version 2.1"
   - { name: M, version: "= 2.0" }      # intro.rst: "M: Standard Extension for Integer Multiplication and Division, 2.0, always enabled"
+  - { name: C, version: "= 2.0" }      # misa.C=1 (read-only) — control_status_registers.rst:1459
   - { name: Zca, version: "= 1.0.0" }  # intro.rst: "C: Standard Extension for Compressed Instructions, 2.0, always enabled" (C = Zca in UDB)
   - { name: Zicsr, version: "= 2.0" }  # intro.rst: "Zicsr: Control and Status Register Instructions, 2.0, always enabled"
   - { name: Zifencei, version: "= 2.0" } # intro.rst: "Zifencei: Instruction-Fetch Fence, 2.0, always enabled"

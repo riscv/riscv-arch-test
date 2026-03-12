@@ -13,6 +13,7 @@ description: CV32E40P v1.8.3 (CORE-V small) - RV32IMCF configuration DUT (FPU=1,
 implemented_extensions: # VERIFIED — manual documents these extensions as implemented
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcf, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }

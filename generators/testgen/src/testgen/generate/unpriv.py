@@ -106,7 +106,7 @@ def _split_testcases(test_cases: list[TestCase], max_per_file: int) -> list[list
     """Split a list of TestCases into chunks that don't exceed max_per_file testcases each."""
     # Check for empty list
     if not test_cases:
-        return [test_cases]
+        raise ValueError("No test cases provided!")
 
     test_chunks: list[list[TestCase]] = []
     current_chunk: list[TestCase] = []

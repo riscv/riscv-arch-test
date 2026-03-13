@@ -12,10 +12,10 @@
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
-`define G 4
+`define G 0
 
 // Uncomment below if G = 0
-// `define G_IS_0
+ `define G_IS_0
 
 // PMP mode selection
 `define PMP_16     // Choose between PMP_16 or PMP_64 or None

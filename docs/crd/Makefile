@@ -27,7 +27,24 @@ DOCS := rvi20_crd mc100_crd
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
 DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 
-NORM_RULES_JSON := "norm-rules.json"
+NORM_RULES_JSON := norm-rules.json
+
+PARAMS_JSON_OUTPUT_FNAME := params.json
+PARAMS_HTML_OUTPUT_FNAME := params.html
+
+PARAMS_JSON := $(BUILD_DIR)/$(PARAMS_JSON_OUTPUT_FNAME)
+PARAMS_HTML := $(BUILD_DIR)/$(PARAMS_HTML_OUTPUT_FNAME)
+
+PARAM_DEF_DIR := param_defs
+
+# All parameter definition input YAML files.
+PARAM_DEF_FILES := $(wildcard $(PARAM_DEF_DIR)/*.yaml)
+
+# Add --param-def to each parameter definition filename
+PARAM_DEF_ARGS := $(foreach relative_pname,$(PARAM_DEF_FILES),--param-def $(relative_pname))
+
+CREATE_PARAMS_TOOL := docs-resources/tools/create_params.py
+CREATE_PARAMS_PYTHON := python3 $(CREATE_PARAMS_TOOL)
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -73,6 +90,7 @@ ifneq ($(SKIP_DOCKER),true)
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/param_defs:/param_defs:ro${DOCKER_EXTRA_VOL_SUFFIX} \
 						-v ${PWD}/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
@@ -88,8 +106,8 @@ endif
 
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
-    mkdir -p $@.workdir && \
-    ln -sfn ../../src ../../../common ../../../docs-resources $@.workdir/
+    mkdir -p $@.workdir $@.workdir/build $(GENERATED_DIR) && \
+    ln -sfn ../../src ../../../common ../../../docs-resources ../../param_defs $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
@@ -126,7 +144,25 @@ $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 
 impldefs:
 	@echo "Generating implementation-defined behavior tables...."
+	mkdir -p $(GENERATED_DIR)
 	$(REPO_ROOT)/generators/crd/generate_impl_def_table.py --norm-rules-path $(NORM_RULES_JSON) --out $(GENERATED_DIR)/all_impldefs.adoc
+
+.PHONY: params
+params: $(PARAMS_JSON) $(PARAMS_HTML)
+
+# Build params JSON output from generated normative rules JSON and parameter definitions.
+$(PARAMS_JSON): $(NORM_RULES_JSON) $(PARAM_DEF_FILES)
+	$(WORKDIR_SETUP)
+	cp -f $(NORM_RULES_JSON) $@.workdir
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAMS_PYTHON) --norm-rules $(NORM_RULES_JSON) $(PARAM_DEF_ARGS) --output $@ $(DOCKER_QUOTE)
+	$(WORKDIR_TEARDOWN)
+
+# Build params HTML output from generated normative rules JSON and parameter definitions.
+$(PARAMS_HTML): $(NORM_RULES_JSON) $(PARAM_DEF_FILES)
+	$(WORKDIR_SETUP)
+	cp -f $(NORM_RULES_JSON) $@.workdir
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAMS_PYTHON) --html --norm-rules $(NORM_RULES_JSON) $(PARAM_DEF_ARGS) --output $@ $(DOCKER_QUOTE)
+	$(WORKDIR_TEARDOWN)
 
 # Update docker image to latest
 docker-pull-latest:

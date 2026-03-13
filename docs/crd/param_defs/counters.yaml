@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: Counters
+
+parameter_definitions:
+  # Zicsr extension
+  - name: HPM_COUNTER_SZ
+    impl-def: HPM_PLATFORM_SPECIFIC_IMPL
+    range: [0, 64]
+    description: |
+      Bit width of each implemented unprivileged hardware performance counter.
+      A value of 0 indicates the corresponding counter is not implemented.
+
+  - name: TIME_CSR_HW_SUPPORT
+    impl-def: EE_IMPL_FLEX
+    type: boolean
+    description: |
+      Implementation supports reading of all unprivileged time-related CSRs without triggering an exception.
+      For RV31I the `time` and `timeh` CSRs are the unprivileged time-related CSRs.
+      For RV64I the `time` CSR is the only unprivileged time-related CSR.

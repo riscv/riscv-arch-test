@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: RV32I Base ISA
+
+parameter_definitions:
+  - name: MISALIGNED_LDST_HW_SUPPORT
+    impl-def: MISALIGNED_LDST_HW_SUPPORT
+    type: boolean
+    description: |
+      Hardware support for misaligned integer and floating-point load/store instructions.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! False ! No hardware support for misaligned load/store instructions
+      ! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
+      !===

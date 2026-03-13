@@ -12985,13 +12985,17 @@
       ]
     },
     {
-      "name": "execution_environment_implementation_flexibility",
+      "name": "EE_IMPL_FLEX",
       "def_filename": "normative_rule_defs/intro.yaml",
       "chapter_name": "Introduction",
-      "impl-def-behavior": false,
+      "kind": "base",
+      "impl-def-behavior": true,
+      "instances": [
+        "Any"
+      ],
       "tags": [
         {
-          "name": "norm:execution_environment_implementation_flexibility",
+          "name": "norm:ee_impl_flex",
           "context": false,
           "text": "The implementation of a RISC-V\nexecution environment can be pure hardware, pure software, or a\ncombination of hardware and software. For example, opcode traps and\nsoftware emulation can be used to implement functionality not provided\nin hardware.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",

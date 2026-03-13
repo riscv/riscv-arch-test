@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: A Extension
+
+parameter_definitions:
+  - name: LR_RESERVATION_SET_SIZE
+    impl-def: LR_RESERVATION_SET_SIZE
+    type: [Exact, 64B, 128B, Other]
+    description: |
+      Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Exact ! Reservation set is exactly enough to cover the access and no more
+      ! 64B ! Reservation set is naturally-aligned 64-byte region
+      ! 128B ! Reservation set is naturally-aligned 128-byte region
+      ! Other ! Reservation set strategy doesn't fit any of the specified choices
+      !===
+
+  - name: MISALIGNED_ATOMICITY_GRANULE_SIZE
+    impl-def: MISALIGNED_ATOMICITY_GRANULE_SIZE
+    type: [2,4,8,16,32,64,128,256,512,1024,2048,4096]

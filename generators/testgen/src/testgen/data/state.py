@@ -12,6 +12,7 @@ from typing import Literal
 
 from testgen.data.config import TestConfig
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
+from testgen.data.testcase import TestCase
 
 # Pre-compiled regex patterns for label normalization in add_testcase()
 _LABEL_INVALID_CHARS = re.compile(r"[^a-zA-Z0-9_]")
@@ -20,10 +21,10 @@ _LABEL_MULTI_UNDERSCORE = re.compile(r"_+")
 
 class TestData:
     """
-    Context and state for test generation. Created per instruction (test file).
+    Context and state for test generation. Created per test file (instruction for unpriv, feature for priv).
 
     This class manages mutable state during test generation, including register
-    file allocation and signature space tracking. The immutable configuration
+    file allocation and the active TestCase. The immutable configuration
     (xlen, flen, etc.) is stored in a TestConfig object.
 
     Attributes:
@@ -31,10 +32,8 @@ class TestData:
         instr_name: Instruction this test is exercising
         int_regs: Integer register file for allocation
         float_regs: Floating-point register file for allocation
-        sigupd_count: Running count of integer signature updates
         test_count: Running count of testcases generated
-        test_data_values: List of values to be stored in test_data section
-        test_data_strings: List of debug strings to be stored in test_data section
+        testcase: Active TestCase for generated code/sigupds/etc.
     """
 
     def __init__(self, test_config: TestConfig, instr_name: str | None = None) -> None:
@@ -49,15 +48,13 @@ class TestData:
         self._instr_name = instr_name
         self._int_regs = IntegerRegisterFile(test_config.E_ext)
         self._float_regs = FloatRegisterFile()
-        self._sigupd_count = 10  # Start with a margin of 10 spaces in signature
         self._test_count = 0
-        self._test_data_values: list[int] = []  # List of integer values
-        self._test_data_strings: list[str] = []  # List of string values
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
+        self.testcase: TestCase | None = None
 
     def __repr__(self) -> str:
-        return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, sigupd_count={self._sigupd_count}, test_count={self._test_count})"
+        return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
 
     # Configuration accessor
     @property
@@ -101,15 +98,6 @@ class TestData:
     @property
     def float_regs(self) -> FloatRegisterFile:
         return self._float_regs
-
-    # Make sigupd_count variables available as properties so they can be accessed and modified directly
-    @property
-    def sigupd_count(self) -> int:
-        return self._sigupd_count
-
-    @sigupd_count.setter
-    def sigupd_count(self, value: int) -> None:
-        self._sigupd_count = value
 
     @property
     def current_testcase_label(self) -> str:
@@ -156,24 +144,17 @@ class TestData:
         """Increment the test count by 1."""
         self._test_count += 1
 
-    @property
-    def test_data_values(self) -> list[int]:
-        """Get the list of test data values to be stored in .data section."""
-        return self._test_data_values
+    def begin_testcase(self) -> TestCase:
+        """Create and set a new active TestCase."""
+        self.testcase = TestCase()
+        return self.testcase
 
-    def add_test_data_value(self, value: int) -> None:
-        """
-        Add a test data value to be stored in .data section.
-
-        Args:
-            value: The integer value to store
-        """
-        self._test_data_values.append(value)
-
-    @property
-    def test_data_strings(self) -> list[str]:
-        """Get the list of test data strings to be stored in .data section."""
-        return self._test_data_strings
+    def end_testcase(self) -> TestCase:
+        """Return the completed TestCase and clear the active one."""
+        assert self.testcase is not None, "No active testcase to end"
+        tc = self.testcase
+        self.testcase = None
+        return tc
 
     def add_testcase(self, bin_name: str, coverpoint: str, covergroup: str | None = None) -> str:
         """
@@ -201,32 +182,16 @@ class TestData:
         label = _LABEL_MULTI_UNDERSCORE.sub("_", label)  # Collapse consecutive underscores
         label = label.strip("_")
 
-        # Add testcase string to test data strings (keep original names for debugging)
-        self._test_data_strings.append(
+        # Add testcase string to the active TestCase
+        assert self.testcase is not None, "No active testcase — call begin_testcase() first"
+        self.testcase.data_strings.append(
             f'{label}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
+        self.testcase.num_tests += 1
 
         # Return label
         self._current_testcase_label = label
         return f"{label}:"
-
-    def copy(self) -> TestData:
-        """Create a deep copy of the TestData object."""
-        new_data = TestData(self.config, self.instr_name)
-
-        # Copy register state
-        new_data._int_regs = self._int_regs.copy()
-        new_data._float_regs = self._float_regs.copy()
-
-        # Copy signature counts
-        new_data._sigupd_count = self._sigupd_count
-        new_data._test_count = self._test_count
-
-        # Copy data values
-        new_data._test_data_values = self._test_data_values.copy()
-        new_data._test_data_strings = self._test_data_strings.copy()
-
-        return new_data
 
     def destroy(self) -> None:
         """Clean up resources used by TestData."""

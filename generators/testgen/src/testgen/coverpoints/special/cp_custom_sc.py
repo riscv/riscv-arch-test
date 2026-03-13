@@ -10,17 +10,19 @@
 from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_custom_sc")
-def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for store-conditional coverpoints."""
     if instr_type != "SC":
         raise ValueError(
             f"cp_custom_sc coverpoint generator only supports SC-type instructions, got {instr_type} for {instr_name}."
         )
 
+    tc = test_data.begin_testcase()
     lr_insn = "lr.w" if instr_name.endswith(".w") else "lr.d"
     test_lines: list[str] = []
 
@@ -237,4 +239,5 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             )
             return_test_regs(test_data, params)
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]

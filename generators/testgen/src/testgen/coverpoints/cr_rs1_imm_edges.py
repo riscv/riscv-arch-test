@@ -11,12 +11,13 @@ from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import IMMEDIATE_EDGES, get_general_edges
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_imm_edges")
-def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for cross-product of rs1 and immediate edge values."""
     edges_reg = get_general_edges(test_data.xlen)
     if coverpoint == "cr_rs1_imm_edges":
@@ -34,7 +35,7 @@ def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, tes
     else:
         raise ValueError(f"Unknown cr_rs1_imm_edges coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     for reg_edge_val in edges_reg:
         for imm_edge_val in edges_imm:
@@ -43,7 +44,8 @@ def make_cr_rs1_imm_edges(instr_name: str, instr_type: str, coverpoint: str, tes
             )
             desc = f"{coverpoint} (rs1 = {test_data.xlen_format_str.format(reg_edge_val)}, imm = {imm_edge_val})"
             bin_name = f"rs1val={reg_edge_val:#x}, immval={imm_edge_val:#x}"
-            test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint))
+            tc = format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            test_cases.append(tc)
             return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

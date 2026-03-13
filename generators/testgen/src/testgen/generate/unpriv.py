@@ -18,6 +18,7 @@ from testgen.constants import (
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -81,9 +82,8 @@ def _generate_unpriv_tests_for_instruction(
         test_config: Test configuration
         output_dir: Directory to output generated tests
     """
-    current_test_data = TestData(test_config, instr_name)
-    current_body_lines: list[str] = []
-    file_idx = 0
+    test_data = TestData(test_config, instr_name)
+    all_testcases: list[TestCase] = []
 
     # Iterate through each coverpoint and generate tests
     for coverpoint in coverpoints:
@@ -91,42 +91,37 @@ def _generate_unpriv_tests_for_instruction(
         if coverpoint == "cp_asm_count" and len(coverpoints) > 1:
             continue
 
-        # Create a copy of the current state to try generating the next coverpoint
-        temp_test_data = current_test_data.copy()
+        all_testcases.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
-        # Generate code for this coverpoint using the temporary state
-        cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, temp_test_data)
+    # Split into files and write
+    test_chunks = _split_testcases(all_testcases, TESTCASES_PER_FILE)
+    for file_idx, test_chunk in enumerate(test_chunks):
+        write_test_file(test_config, instr_name, test_chunk, output_dir, file_idx)
 
-        # Check if we should split
-        # Split if adding this coverpoint would exceed the limit AND we have content already
-        if current_test_data.test_count > 0 and (temp_test_data.test_count > TESTCASES_PER_FILE):
-            # Write current file
-            write_test_file(
-                current_test_data,
-                current_body_lines,
-                output_dir,
-                file_idx,
-            )
+    # Clean up (make sure all registers were returned)
+    test_data.destroy()
 
-            # Start new file
-            file_idx += 1
-            current_test_data = TestData(test_config, instr_name)
-            current_body_lines = []
 
-            # Regenerate code for this coverpoint using the NEW state
-            # TODO: This is not the most efficient and could be optimized to avoid regenerating,
-            # but is not currently a bottleneck and this is simpler for now.
-            cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, current_test_data)
-        else:
-            # If we didn't split, commit the temporary state to the current state
-            current_test_data = temp_test_data
+def _split_testcases(test_cases: list[TestCase], max_per_file: int) -> list[list[TestCase]]:
+    """Split a list of TestCases into chunks that don't exceed max_per_file testcases each."""
+    # Check for empty list
+    if not test_cases:
+        return [test_cases]
 
-        current_body_lines.append(cp_code)
+    test_chunks: list[list[TestCase]] = []
+    current_chunk: list[TestCase] = []
+    count = 0
 
-    # Write the last file
-    write_test_file(
-        current_test_data,
-        current_body_lines,
-        output_dir,
-        file_idx,
-    )
+    # Iterate over all testcases and break into chunks
+    for tc in test_cases:
+        if count > 0 and count + tc.num_tests > max_per_file:
+            test_chunks.append(current_chunk)
+            current_chunk = []
+            count = 0
+        current_chunk.append(tc)
+        count += tc.num_tests
+
+    # Add final chunk
+    if current_chunk:
+        test_chunks.append(current_chunk)
+    return test_chunks

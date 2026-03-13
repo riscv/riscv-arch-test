@@ -359,258 +359,260 @@ main:
     // -----------------------------------------------------------------------
 
     // --- pmpcfg even walking ones, bit 0 ---
-    li t2, (1 << 0)
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 0)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 1 ---
-    li t2, (1 << 1)
+
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 1)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 2 ---
-    li t2, (1 << 2)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 2)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 3 ---
-    li t2, (1 << 3)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 3)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 4 ---
-    li t2, (1 << 4)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 4)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 5 ---
-    li t2, (1 << 5)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 5)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 6 ---
-    li t2, (1 << 6)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 6)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 7 ---
-    li t2, (1 << 7)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 7)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 8 ---
-    li t2, (1 << 8)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 8)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 9 ---
-    li t2, (1 << 9)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 9)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 10 ---
-    li t2, (1 << 10)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 10)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 11 ---
-    li t2, (1 << 11)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 11)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 12 ---
-    li t2, (1 << 12)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 12)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 13 ---
-    li t2, (1 << 13)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 13)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 14 ---
-    li t2, (1 << 14)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 14)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 15 ---
-    li t2, (1 << 15)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 15)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 16 ---
-    li t2, (1 << 16)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 16)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 17 ---
-    li t2, (1 << 17)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 17)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 18 ---
-    li t2, (1 << 18)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 18)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 19 ---
-    li t2, (1 << 19)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 19)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 20 ---
-    li t2, (1 << 20)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 20)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 21 ---
-    li t2, (1 << 21)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 21)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 22 ---
-    li t2, (1 << 22)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 22)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 23 ---
-    li t2, (1 << 23)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 23)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 24 ---
-    li t2, (1 << 24)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 24)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 25 ---
-    li t2, (1 << 25)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 25)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 26 ---
-    li t2, (1 << 26)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 26)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 27 ---
-    li t2, (1 << 27)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 27)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 28 ---
-    li t2, (1 << 28)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 28)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 29 ---
-    li t2, (1 << 29)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 29)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 30 ---
-    li t2, (1 << 30)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 30)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 
     // --- pmpcfg even walking ones, bit 31 ---
-    li t2, (1 << 31)
     .set pmpcfgi, CSR_PMPCFG0
     .rept RVMODEL_NUM_PMPS/8
-1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
+1:  li t2, (1 << 31)
+    RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, test_65_str)
     .set pmpcfgi, pmpcfgi+2
     .endr
 

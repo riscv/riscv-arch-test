@@ -6,7 +6,7 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: A Extension
 
 parameter_definitions:
-  - name: LR_RESERVATION_SET_SIZE
+  - name: LRSC_RESERVATION_STRATEGY
     impl-def: LR_RESERVATION_SET_SIZE
     type: [Exact, 64B, 128B, Other]
     description: |

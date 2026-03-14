@@ -21,7 +21,6 @@ REPO_ROOT := $(shell git rev-parse --show-toplevel)
 
 SRC_DIR := src
 BUILD_DIR := build
-GENERATED_DIR := $(BUILD_DIR)/generated
 
 DOCS := rvi20_crd mc100_crd
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
@@ -46,6 +45,12 @@ PARAM_DEF_ARGS := $(foreach relative_pname,$(PARAM_DEF_FILES),--param-def $(rela
 CREATE_PARAMS_TOOL := docs-resources/tools/create_params.py
 CREATE_PARAMS_PYTHON := python3 $(CREATE_PARAMS_TOOL)
 
+CREATE_PARAM_APPENDIX_TOOL := ../docs-resources/tools/create_param_appendix.py
+CREATE_PARAM_APPENDIX_PYTHON := python3 $(CREATE_PARAM_APPENDIX_TOOL)
+
+PARAM_APPENDIX_ADOC_DIR := $(BUILD_DIR)/param-appendix-adoc-includes
+PARAM_APPENDIX_ADOC_STAMP := $(BUILD_DIR)/.param-appendix-adoc.stamp
+
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
 
@@ -62,6 +67,8 @@ OPTIONS := --trace \
            -D build \
            --failure-level=WARN
 REQUIRES :=
+
+#            -v ${PWD}/$(PARAM_APPENDIX_ADOC_DIR):/$(PARAM_APPENDIX_ADOC_DIR):ro${DOCKER_EXTRA_VOL_SUFFIX} \
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
@@ -91,7 +98,6 @@ ifneq ($(SKIP_DOCKER),true)
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
             -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/param_defs:/param_defs:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-						-v ${PWD}/$(GENERATED_DIR):/build/generated:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
@@ -106,14 +112,14 @@ endif
 
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
-    mkdir -p $@.workdir $@.workdir/build $(GENERATED_DIR) && \
+    mkdir -p $@.workdir $@.workdir/build && \
     ln -sfn ../../src ../../../common ../../../docs-resources ../../param_defs $@.workdir/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
     rm -rf $@.workdir
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check
+.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check param-appendix-adoc
 
 all: build
 
@@ -130,22 +136,25 @@ build: build-pdf build-html
 
 ALL_SRCS := $(wildcard src/*.adoc) $(wildcard src/ext_defs/*.adoc) $(wildcard src/param_defs/*.adoc)
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(PARAM_APPENDIX_ADOC_STAMP)
 	$(WORKDIR_SETUP)
+	mkdir -p $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
+	cp $(PARAM_APPENDIX_ADOC_DIR)/*.adoc $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS)
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(PARAM_APPENDIX_ADOC_STAMP)
 	$(WORKDIR_SETUP)
+	mkdir -p $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
+	cp $(PARAM_APPENDIX_ADOC_DIR)/*.adoc $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
 impldefs:
 	@echo "Generating implementation-defined behavior tables...."
-	mkdir -p $(GENERATED_DIR)
-	$(REPO_ROOT)/generators/crd/generate_impl_def_table.py --norm-rules-path $(NORM_RULES_JSON) --out $(GENERATED_DIR)/all_impldefs.adoc
+	$(REPO_ROOT)/generators/crd/generate_impl_def_table.py --norm-rules-path $(NORM_RULES_JSON) --out all_impldefs.adoc
 
 .PHONY: params
 params: $(PARAMS_JSON) $(PARAMS_HTML)
@@ -163,6 +172,16 @@ $(PARAMS_HTML): $(NORM_RULES_JSON) $(PARAM_DEF_FILES)
 	cp -f $(NORM_RULES_JSON) $@.workdir
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAMS_PYTHON) --html --norm-rules $(NORM_RULES_JSON) $(PARAM_DEF_ARGS) --output $@ $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
+
+# Build per-parameter AsciiDoc include files from params JSON.
+$(PARAM_APPENDIX_ADOC_STAMP): $(PARAMS_JSON)
+	$(WORKDIR_SETUP)
+	cp -f $(PARAMS_JSON) $@.workdir/$(BUILD_DIR)
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --output-dir $(PARAM_APPENDIX_ADOC_DIR) $(DOCKER_QUOTE)
+	mkdir -p $(PARAM_APPENDIX_ADOC_DIR) && cp $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)/* $(PARAM_APPENDIX_ADOC_DIR) && touch $@.workdir/$@
+	$(WORKDIR_TEARDOWN)
+
+param-appendix-adoc: $(PARAM_APPENDIX_ADOC_STAMP)
 
 # Update docker image to latest
 docker-pull-latest:

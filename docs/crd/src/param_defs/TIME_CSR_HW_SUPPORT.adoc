@@ -1,9 +1,0 @@
-a|
-[#param:TIME_CSR_HW_SUPPORT]#TIME_CSR_HW_SUPPORT#
-
-Normative Rule(s):
-
-* https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.html#execution_environment_implementation_flexibility[execution_environment_implementation_flexibility]
-| Boolean
-| Zicntr
-| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV31I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.

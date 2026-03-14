@@ -325,7 +325,11 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
        ignore_bins ig1 = binsof(misa_F.F_set) && binsof(sstateen0_fcsr_bit.fcsr_zero);
        ignore_bins ig2 = binsof(misa_F.F_clear) && binsof(sstateen0_fcsr_bit.fcsr_zero);
     }
-    cp_mstateen0_se0_controls_sstateen0: cross csrrw, se0_state;
+    cp_mstateen0_se0_controls_sstateen0: cross csrrw, se0_state, csr{
+        ignore_bins ig1 = binsof(csr.sstateen1);
+        ignore_bins ig2 = binsof(csr.sstateen2);
+        ignore_bins ig3 = binsof(csr.sstateen3);
+    }
     cp_csr_illegal_accesses:             cross priv_mode_u, csr, csrrw;
     cp_walking_ones:                     cross csr, csrrw, csr_walk;
     cp_jvt:                              cross  csrrw, jvt_csr, jvt_state;

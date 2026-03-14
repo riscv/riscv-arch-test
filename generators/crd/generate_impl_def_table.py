@@ -77,9 +77,12 @@ def main() -> None:
     rows.sort(key=lambda x: (x["extension"].lower(), x["name"].lower()))
 
     extension_groups = []
-    for extension_value, extension_rows_iter in groupby(rows, key=lambda x: x["extension"]):
+    # Group extensions case-insensitively to be consistent with the sort key.
+    # Use the original-cased extension from the first row in each group for display.
+    for _ext_key, extension_rows_iter in groupby(rows, key=lambda x: x["extension"].lower()):
         extension_rows = list(extension_rows_iter)
-        extension_groups.append((extension_value if extension_value else "(none)", extension_rows))
+        display_extension = extension_rows[0]["extension"] if extension_rows[0]["extension"] else "(none)"
+        extension_groups.append((display_extension, extension_rows))
 
     # Generate summary table (extension + count).
     output = []

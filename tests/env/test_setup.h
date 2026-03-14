@@ -129,6 +129,7 @@
     jal     T2, failedtest_trap_x7_x9
     RVTEST_WORD_PTR abort_test
     RVTEST_WORD_PTR abortstr
+    .word   CSR_MEPC
 
     // Check trap signature offset to make sure the correct number of traps occurred
     check_trap_sig_offset:

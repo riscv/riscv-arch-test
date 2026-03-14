@@ -90,7 +90,6 @@ main:
         # Read pmpaddr0 into x7 and check against expected.
         RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
 
-    RVTEST_GOTO_MMODE
 
     j exit                                                      // Verification Complete, exit the test
 

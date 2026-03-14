@@ -89,29 +89,32 @@ def report_to_summary(report_path: Path, summary_path: Path) -> None:
         summary_file.write("\n".join(formatted_rows) + "\n")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate coverage reports from a UCDB file.")
-    parser.add_argument("ucdb", help="Input UCDB file", type=Path)
-    parser.add_argument("report_prefix", help="Output report prefix", type=Path)
-    args = parser.parse_args()
-
-    report_dir = args.report_prefix.parent
-    report_name = args.report_prefix.name
+def generate_report(ucdb: Path, report_prefix: Path) -> None:
+    """Generate coverage reports from a UCDB file."""
+    report_dir = report_prefix.parent
+    report_name = report_prefix.name
     full_report = report_dir / f"{report_name}_report.txt"
     uncovered_report = report_dir / f"{report_name}_uncovered.txt"
     summary_report = report_dir / f"{report_name}_summary.txt"
 
     report_dir.mkdir(parents=True, exist_ok=True)
 
-    # -suppress vcover-17388
-    vcover_cmd = ["vcover", "report", "-details", str(args.ucdb)]
-    subprocess.run([*vcover_cmd, "-output", str(full_report)], check=True)
+    vcover_cmd = ["vcover", "report", "-details", str(ucdb)]
+    subprocess.run([*vcover_cmd, "-output", str(full_report)], check=True, capture_output=True)
     remove_duplicates_after_second_header(full_report)
 
     # Only generate uncovered report if coverage is not 100%
     if "TOTAL COVERGROUP COVERAGE: 100.00%" not in full_report.read_text():
         uncovered_report_cmd = [*vcover_cmd, "-below", "100", "-output", str(uncovered_report)]
-        subprocess.run(uncovered_report_cmd, check=True)
+        subprocess.run(uncovered_report_cmd, check=True, capture_output=True)
         remove_duplicates_after_second_header(uncovered_report)
 
     report_to_summary(full_report, summary_report)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate coverage reports from a UCDB file.")
+    parser.add_argument("ucdb", help="Input UCDB file", type=Path)
+    parser.add_argument("report_prefix", help="Output report prefix", type=Path)
+    args = parser.parse_args()
+    generate_report(args.ucdb, args.report_prefix)

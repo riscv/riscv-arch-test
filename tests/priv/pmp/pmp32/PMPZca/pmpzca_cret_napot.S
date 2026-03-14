@@ -116,8 +116,8 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 11
-.skip (0x800-2)
+.align 12
+.skip (0x1000-2)
 TEST_FOR_EXECUTION_0:
     ret                                                         // Compressed return just before the start of region
 

@@ -26,9 +26,9 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I','Zca']
 # params:
-#   MXLEN: 64
+#   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv64i_zca_zicsr
+# MARCH: rv32i_zca_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
@@ -128,7 +128,7 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
-.align 12
+.align 13
 TEST_FOR_EXECUTION_1:
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
     nop

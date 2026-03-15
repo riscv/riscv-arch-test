@@ -195,7 +195,6 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 
-canary_mismatch:  .string "Testcase signature canary mismatch!"
 test1_csrw_str:   .string "\"Mismatch on csrw in Test Case 1!\""
 test1_csrs_str:   .string "\"Mismatch on csrs in Test Case 1!\""
 test1_csrc_str:   .string "\"Mismatch on csrc in Test Case 1!\""

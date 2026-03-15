@@ -737,4 +737,6 @@
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:
         .string "fflags\n"
+    canary_mismatch:
+        .string "Testcase signature canary mismatch!"
 .endm

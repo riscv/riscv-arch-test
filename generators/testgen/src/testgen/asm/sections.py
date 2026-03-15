@@ -46,7 +46,6 @@ def generate_test_string_section(data_strings: list[str]) -> str:
     Returns:
         Assembly code for the .data section
     """
-    lines: list[str] = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
-    lines.extend(data_strings)
+    lines: list[str] = list(data_strings)
 
     return "\n".join(lines)

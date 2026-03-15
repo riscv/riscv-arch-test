@@ -562,7 +562,6 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 

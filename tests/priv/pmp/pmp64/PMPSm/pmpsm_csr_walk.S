@@ -1280,7 +1280,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str:  .string "\"test: 1; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_1\""
 test_2_str:  .string "\"test: 2; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_2\""
 test_3_str:  .string "\"test: 3; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_3\""

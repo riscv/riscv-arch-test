@@ -35,7 +35,13 @@
   // Include model specific boot code
   j rvmodel_boot
 
-  // Create new section to ensure alignment of code does not influence entry point
+  // Create new section so that .align directives in the test code don't affect the
+  // entry point address. The assembler increases a section's overall alignment to
+  // the largest .align in that section, so any large .align used in a test would
+  // increase .text.init's alignment, shifting rvtest_entry_point to an unexpected
+  // address. Placing test code in its own section avoids that because the .text.rvtest
+  // section will have its own alignment. This requires .text.init and .text.rvtest
+  // to be in separate output sections in the linker script.
   .section .text.rvtest
 
   // Test initialization

@@ -241,10 +241,10 @@ A linker script is needed to place the code and data regions in the appropriate 
 
 - The `ENTRY` point must be `rvtest_entry_point`.
   - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else.
-- There must be a `.text` output section.
-  - The `.text` output section must place the `.text.init` input section before the rest of the `.text` input sections, i.e. `.text : { *(.text.init) *(.text) }`.
-- There must be a `.bss` output section. This should follow the `.text` section.
-- There must be a `.data` output section. This should follow the `.bss` section.
+- There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
+- There must be another `.text` output section that contains at least the `.text.rvtest` input section (i.e. `.text : { *(.text) *(.text.*) }`).
+- There must be a `.bss` output section (i.e. `.bss : { *(.bss) }`). This should follow the `.text` section.
+- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.bss` section.
 
 For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
 

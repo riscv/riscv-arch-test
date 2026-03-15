@@ -466,7 +466,6 @@ rvtest_data_1:
 rvtest_slvl0_pg_tbl:
     .skip(4096)
 
-canary_mismatch:  .string "Testcase signature canary mismatch!"
 test1_clean_str:  .string "\"Mismatch during cbo.clean in Test Case 1!\""
 test1_flush_str:  .string "\"Mismatch during cbo.flush in Test Case 1!\""
 test1_inval_str:  .string "\"Mismatch during cbo.inval in Test Case 1!\""

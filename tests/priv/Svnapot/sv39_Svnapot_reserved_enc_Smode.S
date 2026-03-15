@@ -220,7 +220,6 @@ rvtest_slvl0_pg_tbl:
 rvtest_slvl1_pg_tbl:
     .skip(4096)
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test1_store_str:  .string "\"Mismatch during sw in Test Case 1!\""
 test1_load_str:   .string "\"Mismatch during lw in Test Case 1!\""
 test1_exec_str:   .string "\"Mismatch during jalr in Test Case 1!\""

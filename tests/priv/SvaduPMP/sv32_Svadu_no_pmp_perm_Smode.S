@@ -269,7 +269,6 @@ rvtest_slvl0_pg_tbl:
     .skip(4096)
 .align (RVMODEL_PMP_GRAIN+2)
 
-canary_mismatch:     .string "Testcase signature canary mismatch!"
 write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
 test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""
 test1_load_str:      .string "\"Mismatch during lw in Test Case 1!\""

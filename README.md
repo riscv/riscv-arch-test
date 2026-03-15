@@ -240,10 +240,11 @@ Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc
 A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
 
 - The `ENTRY` point must be `rvtest_entry_point`.
-  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else. It should not be directly called by the `ENTRY` point.
-- There must be a `.text` section.
-- There must be a `.bss` section. This should follow the `.text` section.
-- There must be a `.data` section. This should follow the `.bss` section.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else.
+- There must be a `.text` output section.
+  - The `.text` output section must place the `.text.init` input section before the rest of the `.text` input sections, i.e. `.text : { *(.text.init) *(.text) }`.
+- There must be a `.bss` output section. This should follow the `.text` section.
+- There must be a `.data` output section. This should follow the `.bss` section.
 
 For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
 

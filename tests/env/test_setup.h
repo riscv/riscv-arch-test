@@ -31,10 +31,12 @@
   .option rvc
   .align UNROLLSZ
   .option norvc
-  .section .text.init
 
   // Include model specific boot code
   j rvmodel_boot
+
+  // Create new section to ensure alignment of code does not influence entry point
+  .section .text.rvtest
 
   // Test initialization
   .global rvtest_init

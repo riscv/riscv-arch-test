@@ -10,21 +10,25 @@
 from testgen.asm.helpers import return_test_regs, to_hex, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_custom_lr")
-def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for load-reserved coverpoints."""
     if instr_type != "LR":
         raise ValueError(
             f"cp_custom_lr coverpoint generator only supports LR-type instructions, got {instr_type} for {instr_name}."
         )
 
+    test_cases: list[TestCase] = []
+
+    # cp_custom_aqrl — inline assembly, wrap as single TestCase
+    tc = test_data.begin_testcase()
     test_lines: list[str] = []
 
-    # cp_custom_aqrl
     for suffix in ["", ".aq", ".aqrl"]:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
         assert (
@@ -35,7 +39,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
         )
 
         # Add value to load data region
-        test_data.add_test_data_value(params.temp_val)
+        tc.data_values.append(params.temp_val)
 
         test_lines.extend(
             [
@@ -51,14 +55,17 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
         return_test_regs(test_data, params)
 
-    # cp_custom_rd_edges
+    tc.code = "\n".join(test_lines)
+    test_cases.append(test_data.end_testcase())
+
+    # cp_custom_rd_edges — uses format_single_test, each produces its own TestCase
     edges = [0, 1, -1]
     for edge_val in edges:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_val=edge_val)
         desc = f"cp_custom_rd_edges (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"
-        test_lines.append(
+        test_cases.append(
             format_single_test(instr_name, instr_type, test_data, params, desc, f"{edge_val}", "cp_custom_rd_edges")
         )
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

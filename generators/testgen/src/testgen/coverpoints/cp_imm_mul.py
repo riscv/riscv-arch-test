@@ -10,12 +10,13 @@
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_mul")
-def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for compressed immediate values that are multiples."""
     exclude_regs: list[int] = []
     if coverpoint == "cp_imm_mul":
@@ -33,11 +34,12 @@ def make_cp_uimm(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         imm_mul = [i for i in range(-512, 512, 16) if i != 0]
     else:
         raise ValueError(f"Unknown cp_uimm coverpoint variant: {coverpoint} for {instr_name}")
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
     for imm in imm_mul:
         params = generate_random_params(test_data, instr_type, immval=imm, exclude_regs=exclude_regs)
         desc = f"{coverpoint}: imm={imm}"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{imm:#x}", coverpoint))
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{imm:#x}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

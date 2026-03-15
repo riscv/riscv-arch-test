@@ -301,7 +301,6 @@ rvtest_slvl0_pg_tbl:
 rvtest_slvl1_pg_tbl:
     .skip(4096)
 
-canary_mismatch:  .string "Testcase signature canary mismatch!"
 pmpcfg0_rx_str:   .string "\"Mismatch in pmpcfg0 while setting RX permission!\""
 pmpcfg0_rw_str:   .string "\"Mismatch in pmpcfg0 while setting RW permission!\""
 pmpcfg0_x_str:    .string "\"Mismatch in pmpcfg0 while setting X permission!\""

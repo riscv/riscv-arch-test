@@ -11,13 +11,15 @@
 from testgen.asm.helpers import return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges_jal", "cp_imm_edges_c_jal")
-def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests covering immediate-edge bins for jal / c.j / c.jal."""
 
+    tc = test_data.begin_testcase()
     test_lines: list[str] = []
 
     # Generate parameters specific to instruction
@@ -145,4 +147,5 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
         )
 
     return_test_regs(test_data, params)
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]

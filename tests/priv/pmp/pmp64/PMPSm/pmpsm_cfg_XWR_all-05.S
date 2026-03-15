@@ -261,7 +261,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_XWR_all_sb\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_XWR_all_sh\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_XWR_all_sw\""

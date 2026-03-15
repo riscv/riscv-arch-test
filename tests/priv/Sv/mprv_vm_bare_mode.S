@@ -119,7 +119,6 @@ rvtest_data_1:
 
 //---------------------------------------------------------------------------------------------------------------------------------
 
-canary_mismatch:   .string "Testcase signature canary mismatch!"
 test1_mstatus_str: .string "\"Mismatch in mstatus value in Test Case 1!\""
 test1_store_str:   .string "\"Mismatch during sw in Test Case 1!\""
 test1_load_str:    .string "\"Mismatch during lw in Test Case 1!\""

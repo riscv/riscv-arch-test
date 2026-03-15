@@ -28,7 +28,8 @@ def format_clb_type(
     assert params.rd is not None and params.immval is not None
 
     # Add value to load data region
-    test_data.add_test_data_value(params.temp_val)
+    assert test_data.testcase is not None
+    test_data.testcase.data_values.append(params.temp_val)
 
     setup = [
         f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",

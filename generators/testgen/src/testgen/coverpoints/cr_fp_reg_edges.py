@@ -11,12 +11,13 @@ from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import FLOAT_EDGES
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_fs1_fs2_edges")
-def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for cross-product of fs1 and fs2 edge values."""
     if coverpoint.endswith("_D"):
         edges1 = FLOAT_EDGES.double
@@ -35,7 +36,7 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
@@ -45,16 +46,15 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
                 )
                 bin_name = f"fs1val={edge_val1:#x}, fs2val={edge_val2:#x}, frm={frm_mode}"
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
-                test_lines.append(
-                    format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-                )
+                tc = format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                test_cases.append(tc)
                 return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases
 
 
 @add_coverpoint_generator("cr_fs1_fs3_edges")
-def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for cross-product of fs1 and fs3 edge values."""
     if coverpoint.endswith("_D"):
         edges1 = FLOAT_EDGES.double
@@ -73,7 +73,7 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
@@ -83,9 +83,8 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
                 )
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
                 bin_name = f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_mode}"
-                test_lines.append(
-                    format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
-                )
+                tc = format_single_test(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                test_cases.append(tc)
                 return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

@@ -137,14 +137,14 @@ The following applies to all coverpoint test generators:
 - All coverpoint generator functions must use the following signature:
 
   ```py
-  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
   ```
 
   - `instr_name` is the instruction currently being tested. This allows coverpoint test generators to be reused for multiple instructions.
   - `instr_type` is the type of the instruction currently being tested. This allows the correct instruction formatter (see below) to be selected.
   - `coverpoint` is the full name of the coverpoint, including any variant suffix. Coverpoint test generators can match multiple variants of a coverpoint. This argument allows different values, registers, etc. to be selected based on the variant.
-  - `test_data` is a dataclass that is passed to all parts of the test generation process and stores the signature count, test values, debug strings, etc.
-  - The generator must return a list of strings. They will be combined with newlines separating each string in the final output test.
+  - `test_data` is the generation context that is passed to all parts of the test generation process and manages register allocation, test counting, and the active `TestCase`.
+  - The generator must return a list of `TestCase` objects. Each `TestCase` holds its own assembly code, data values, debug strings, and signature update count. The framework uses these to split tests across files and combine them into the final output.
 
 Coverpoint test generators can largely be broken into two categories: standard and special.
 Standard generators use the [instruction formatters](#python-instruction-formatters) and can be applied to a wide range
@@ -166,7 +166,7 @@ It is also included below with many additional comments added to explain how it 
 # which coverpoints they apply to.
 @add_coverpoint_generator("cp_rd")
 # Coverpoint generators all use the standard signature described above.
-def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for destination register coverpoints."""
     # Determine which rd registers to test based on the coverpoint variant.
     # Multiple variants can match to the same generator. This is useful when
@@ -182,8 +182,8 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # to make debugging easy.
         raise ValueError(f"Unknown cp_rd coverpoint variant: {coverpoint} for {instr_name}")
 
-    # Initialize a list of strings to build up the test
-    test_lines: list[str] = []
+    # Initialize a list of TestCase objects to collect results
+    test_cases: list[TestCase] = []
 
     # Generate tests
     # A common pattern is to use a loop to iterate over some value that is being tested
@@ -193,7 +193,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # Any registers that are explicitly used must be marked as used using the
         # test_data.int_regs.consume_registers function. This will automatically move
         # any reserved registers to ensure the desired register is free.
-        test_lines.append(test_data.int_regs.consume_registers([rd]))
+        asm_setup = test_data.int_regs.consume_registers([rd])
         # The generate_random_params function will populate any instruction parameters
         # used by the provided instruction type that are not explicitly specified with
         # random (legal) values. In this case, only rd is specified, so rs1, rs2, imm, etc.
@@ -201,17 +201,21 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         params = generate_random_params(test_data, instr_type, rd=rd)
         desc = f"{coverpoint} (Test destination rd = x{rd})"
         # format_single_test is the key part of standard coverpoint generators. It takes
-        # the provided instruction parameters (created above) and produces the assembly
-        # sequence necessary to test the given instruction. It also calls test_data.add_testcase
+        # the provided instruction parameters (created above) and produces a TestCase object
+        # containing the assembly code and associated data. It also calls test_data.add_testcase
         # to add a label and debugging string.
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint))
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint)
+        # If consume_registers returned setup code (register moves), prepend it to the TestCase
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_cases.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
         return_test_regs(test_data, params)
 
-    # The final list of assembly lines is returned. It will be concatenated with newlines
-    # when the test is written to a file.
-    return test_lines
+    # Return the list of TestCase objects. The framework will use these to split tests
+    # across files (based on num_tests counts) and combine their data for the final output.
+    return test_cases
 ```
 
 Additional documentation for all of these functions (and many other helper functions) is
@@ -229,9 +233,19 @@ cases each individual instruction).
 Special coverpoint generators vary widely, so it is impossible to provide a complete guide,
 but they usually follow the same initial flow as a standard coverpoint and then diverge
 where the call to `format_single_test` would be. Instead of calling `format_single_test`,
-special coverpoint generators manually add assembly code to the `test_lines` list. While
-most of this code is handwritten, you are still encouraged to use helper Python functions.
-The most useful helpers for special coverpoints tends to be `load_int_reg` and
+special coverpoint generators use `test_data.begin_testcase()` and `test_data.end_testcase()`
+to wrap their inline assembly in a single `TestCase`. The typical pattern is:
+
+```py
+tc = test_data.begin_testcase()
+test_lines: list[str] = []
+# ... build assembly lines, call test_data.add_testcase(), load_int_reg(), write_sigupd(), etc. ...
+tc.code = "\n".join(test_lines)
+return [test_data.end_testcase()]
+```
+
+While most of this code is handwritten, you are still encouraged to use helper Python
+functions. The most useful helpers for special coverpoints tend to be `load_int_reg` and
 `write_sigupd`. See [Python Instruction Formatters](#python-instruction-formatters) for
 details on those functions.
 

@@ -11,12 +11,16 @@ from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import get_general_edges
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_rs2_edges_offset")
-def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_rs1_rs2_edges_offset(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestCase]:
     """Generate tests for cross-product of rs1/rs2 edges with branch offset testing."""
+    tc = test_data.begin_testcase()
     edges1 = get_general_edges(test_data.xlen)
     edges2 = get_general_edges(test_data.xlen)
 
@@ -51,4 +55,5 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
             )
             return_test_regs(test_data, params)
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]

@@ -11,11 +11,7 @@ Register management for riscv-arch-test test generation.
 
 from __future__ import annotations
 
-import logging
 import random
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class RegisterFile:
@@ -23,16 +19,16 @@ class RegisterFile:
 
     def __init__(self, reg_count: int) -> None:
         self._reg_count = reg_count
-        self.reg_list = list(range(reg_count))
+        self.reg_list: set[int] = set(range(reg_count))
 
     def __repr__(self) -> str:
-        return f"Register File with the following registers available: {self.reg_list}"
+        return f"Register File with the following registers available: {sorted(self.reg_list)}"
 
     def destroy(self) -> None:
         """Clean up resources used by RegisterFile."""
         if len(self.reg_list) != self._reg_count:
             raise RuntimeError(
-                f"Cannot destroy RegisterFile: some registers are still in use. The current state of the register file is: {self.reg_list}"
+                f"Cannot destroy RegisterFile: some registers are still in use. The current state of the register file is: {sorted(self.reg_list)}"
             )
 
     def copy(self) -> RegisterFile:
@@ -49,23 +45,17 @@ class RegisterFile:
         self, num_regs: int, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None
     ) -> list[int]:
         """Get a specified number of unique registers from the register file."""
-        # Handle exclusions and range limitations)
-        if exclude_regs is None:
-            exclude_regs = []
+        available_regs = self.reg_list
         if reg_range is not None:
-            exclude_regs.extend([reg for reg in self.reg_list if reg not in reg_range])
-        available_regs = [reg for reg in self.reg_list if reg not in exclude_regs]
-        # Select random registers and remove them from the available list
+            available_regs = available_regs & set(reg_range)
+        if exclude_regs:
+            available_regs = available_regs - set(exclude_regs)
         if num_regs > len(available_regs):
             raise ValueError(
                 f"Not enough registers available to select from. Requested {num_regs}, but only {len(available_regs)} available."
             )
-        selected_regs = random.sample(available_regs, num_regs)
-        for reg in selected_regs:
-            self.reg_list.remove(reg)
-        logger.debug(
-            f"Getting {num_regs} registers from available {available_regs}, excluding {exclude_regs}. Selected: {selected_regs}"
-        )
+        selected_regs = random.sample(sorted(available_regs), num_regs)
+        self.reg_list -= set(selected_regs)
         return selected_regs
 
     def get_register(self, *, exclude_regs: list[int] | None = None, reg_range: list[int] | None = None) -> int:
@@ -74,10 +64,7 @@ class RegisterFile:
 
     def return_registers(self, regs: list[int]) -> None:
         """Mark registers as available again."""
-        self.reg_list.extend(regs)
-        self.reg_list = list(set(self.reg_list))  # Ensure uniqueness
-        self.reg_list.sort()
-        logger.debug(f"Returned registers: {regs}. Available registers after return: {self.reg_list}")
+        self.reg_list.update(regs)
 
     def return_register(self, reg: int) -> None:
         """Mark a single register as available again."""
@@ -85,12 +72,11 @@ class RegisterFile:
 
     def consume_registers(self, regs: list[int]) -> str | None:
         """Mark registers as used/unavailable."""
-        logger.debug(f"Consuming registers: {regs}")
-        for reg in regs:
-            if reg in self.reg_list:
-                self.reg_list.remove(reg)
-            else:
-                raise ValueError(f"Register {reg} is already in use or is not available.")
+        regs_set = set(regs)
+        unavailable = regs_set - self.reg_list
+        if unavailable:
+            raise ValueError(f"Registers {sorted(unavailable)} are already in use or not available.")
+        self.reg_list -= regs_set
         return None
 
 
@@ -158,16 +144,16 @@ class IntegerRegisterFile(RegisterFile):
         Returns:
             The even register number of the pair.
         """
-        if exclude_regs is None:
-            exclude_regs = []
+        exclude_set = set(exclude_regs) if exclude_regs else set()
+        range_set = set(reg_range) if reg_range is not None else None
 
         # Find even registers where both the even and odd register are available
         available_pairs: list[int] = []
-        for reg in self.reg_list:
+        for reg in sorted(self.reg_list):
             is_even = reg % 2 == 0
             odd_available = (reg + 1) in self.reg_list
-            not_excluded = reg not in exclude_regs and (reg + 1) not in exclude_regs
-            in_range = reg_range is None or (reg in reg_range and (reg + 1) in reg_range)
+            not_excluded = reg not in exclude_set and (reg + 1) not in exclude_set
+            in_range = range_set is None or (reg in range_set and (reg + 1) in range_set)
             if is_even and odd_available and not_excluded and in_range:
                 available_pairs.append(reg)
 
@@ -175,9 +161,8 @@ class IntegerRegisterFile(RegisterFile):
             raise ValueError("No register pairs available")
 
         even_reg = random.choice(available_pairs)
-        self.reg_list.remove(even_reg)
-        self.reg_list.remove(even_reg + 1)
-        logger.debug(f"Getting register pair: x{even_reg}/x{even_reg + 1}")
+        self.reg_list.discard(even_reg)
+        self.reg_list.discard(even_reg + 1)
         return even_reg
 
     def consume_register_pair(self, even_reg: int) -> str:

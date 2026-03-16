@@ -53,7 +53,8 @@ def to_hex(value: int, bits: int) -> str:
 
 def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
-    test_data.add_test_data_value(val)
+    assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
+    test_data.testcase.data_values.append(val)
     return f"\tRVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.data_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
@@ -68,7 +69,8 @@ def load_float_reg(
     if fp_load_type is None:
         fp_load_type = test_data.fp_load_size
 
-    test_data.add_test_data_value(val)
+    assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
+    test_data.testcase.data_values.append(val)
     return f"\tRVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
 
 
@@ -76,12 +78,13 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
     """
     Generate assembly for SIGUPD and increment sigupd_count.
     """
+    assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
     sig_reg = test_data.int_regs.sig_reg
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
     fp_temp_reg = test_data.float_regs.temp_reg
     if sig_type == "int":
-        test_data.sigupd_count += 1
+        test_data.testcase.sigupd_count += 1
         return (
             f"\t# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
             f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
@@ -89,9 +92,9 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
         )
     elif sig_type == "float":
         if test_data.flen > test_data.xlen:
-            test_data.sigupd_count += 3
+            test_data.testcase.sigupd_count += 3
         else:
-            test_data.sigupd_count += 2
+            test_data.testcase.sigupd_count += 2
         return (
             f"\t# Check if f{check_reg} contains the expected result. Also checks fflags. "
             f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "

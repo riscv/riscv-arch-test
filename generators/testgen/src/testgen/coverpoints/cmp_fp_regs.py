@@ -10,12 +10,13 @@
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cmp_fd_fs1")
-def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests where fd = fs1."""
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fd_fs1":
@@ -25,21 +26,22 @@ def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data
     else:
         raise ValueError(f"Unknown cmp_fd_fs1 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     # Generate tests
     for reg in regs:
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg)
         desc = f"{coverpoint} (Test fd = fs1 = f{reg})"
-        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)])
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases
 
 
 @add_coverpoint_generator("cmp_fd_fs2")
-def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests where fd = fs2."""
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fd_fs2":
@@ -49,21 +51,22 @@ def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data
     else:
         raise ValueError(f"Unknown cmp_fd_fs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     # Generate tests
     for reg in regs:
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs2 = f{reg})"
-        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)])
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases
 
 
 @add_coverpoint_generator("cmp_fd_fs3")
-def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests where fd = fs3."""
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fd_fs3":
@@ -73,21 +76,22 @@ def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data
     else:
         raise ValueError(f"Unknown cmp_fd_fs3 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     # Generate tests
     for reg in regs:
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs3=reg)
         desc = f"{coverpoint} (Test fd = fs3 = f{reg})"
-        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)])
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases
 
 
 @add_coverpoint_generator("cmp_fs1_fs2")
-def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests where fd = fs2."""
     # Determine which fd registers to test based on coverpoint variant
     if coverpoint == "cmp_fs1_fs2":
@@ -97,21 +101,22 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
     else:
         raise ValueError(f"Unknown cmp_fs1_fs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     # Generate tests
     for reg in regs:
         test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fs1 = fs2 = f{reg})"
-        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)])
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases
 
 
 @add_coverpoint_generator("cmp_fd_fs1_fs2")
-def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests where fd = fs1 = fs2."""
     # Determine which rd registers to test based on coverpoint variant
     if coverpoint == "cmp_fd_fs1_fs2":
@@ -121,14 +126,15 @@ def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_
     else:
         raise ValueError(f"Unknown cmp_fd_fs1_fs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.int_regs.consume_registers([reg]))
+        test_data.float_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, fd=reg, fs1=reg, fs2=reg)
         desc = f"{coverpoint} (Test fd = fs1 = fs2 = f{reg})"
-        test_lines.extend([format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)])
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

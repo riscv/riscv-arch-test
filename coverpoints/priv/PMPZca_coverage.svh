@@ -89,7 +89,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins straddle_second_third = {`REGIONSTART + 2*`g_tor - 2 };
   }
 
-  addr_in_consecutive_regions_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
+  addr_in_consecutive_regions_napot: coverpoint (ins.current.rs1_val) {
     bins inside_first_region   = {`REGIONSTART};
     bins straddle_first_second = {`REGIONSTART + `g_napot - 2};
     bins inside_second_region  = {`REGIONSTART + `g_napot};
@@ -179,8 +179,10 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     }
 
     // PMP0, PMP1, PMP2: NA4, L=1, XWR=111 — regions at REGIONSTART, REGIONSTART+4, REGIONSTART+8
-    pmpaddr_consecutive_na4: coverpoint ({ins.current.csr[12'h3B2], ins.current.csr[12'h3B1], ins.current.csr[12'h3B0]}) {
-      bins first_three_regions = {{((`REGIONSTART + 8) >> 2), ((`REGIONSTART + 4) >> 2), (`REGIONSTART >> 2)}};
+    pmpaddr_consecutive_na4: coverpoint ((ins.current.csr[12'h3B2] == ((`REGIONSTART + 8) >> 2)) &&
+                                         (ins.current.csr[12'h3B1] == ((`REGIONSTART + 4) >> 2)) &&
+                                         (ins.current.csr[12'h3B0] == (`REGIONSTART >> 2))) {
+      bins first_three_regions = {1};
     }
 
     na4_region: coverpoint (ins.current.csr[12'h3B0]) {
@@ -205,7 +207,7 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   }
   cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_region, write_c_instr;
 
-  cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions, exec_c_instr;
+  cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions_napot, exec_c_instr;
   cp_cret_napot: cross priv_mode_m, napot_setup, napot_region, exec_c_instr, addr_adjacent_to_pmp_boundary_napot;
 
   cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;

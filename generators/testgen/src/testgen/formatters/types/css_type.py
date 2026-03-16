@@ -74,7 +74,8 @@ def format_css_type(
         "#endif",
     ]
 
-    test_data.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
+    assert test_data.testcase is not None
+    test_data.testcase.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
 
     if params.rs2 != 2:
         # Return sp if it was allocated specially for this testcase

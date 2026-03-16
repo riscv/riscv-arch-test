@@ -23,7 +23,8 @@ def format_lr_type(
     assert params.temp_val is not None, "temp_val must be provided for LR-type instruction"
 
     # Add value to load data region
-    test_data.add_test_data_value(params.temp_val)
+    assert test_data.testcase is not None
+    test_data.testcase.data_values.append(params.temp_val)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:

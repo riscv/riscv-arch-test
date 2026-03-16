@@ -85,7 +85,6 @@ RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1: .string "\"test: 1; cp: check mstatus.tvm\""
 test_2: .string "\"test: 2; cp: check satp\""
 

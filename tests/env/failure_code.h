@@ -433,10 +433,17 @@
         li a1, 3            # Failed in trap handler
         bne a0, a1, failedtest_report_end
     failedtest_report_xepc:
-        # Print xepc
         LA(x9, xepcstr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        csrr a0, CSR_XEPC
+        # Load CSR_XEPC (12-bit CSR addr) placed after STR_PTR
+        lhu x6, 2*REGWIDTH(DEFAULT_LINK_REG)
+        LI(x7, CSR_MEPC)
+        bne x6, x7, 1f
+        csrr a0, mepc
+        j 2f
+        1:
+        csrr a0, sepc
+        2:
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
         LA(x9, ascii_buffer)
@@ -650,7 +657,7 @@
         .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
     sv_Mvect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
-    sv_Sect_str:
+    sv_Svect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
     sv_Hvect_str:
         .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
@@ -696,14 +703,24 @@
         .string "\"Mismatch in machine external interrupt ID! Trap was being handled in M-Mode.\"";
     Mclr_Sext_int_str:
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
-    Sclr_Sext_int_str:
-        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
-    Hclr_Sext_int_str:
-        .string "\"Mismatch in hypervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
     Mclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Sclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Hclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Hclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
     Hclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Vclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in VS-Mode.\"";
+    Vclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
 #else
@@ -720,4 +737,6 @@
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:
         .string "fflags\n"
+    canary_mismatch:
+        .string "Testcase signature canary mismatch!"
 .endm

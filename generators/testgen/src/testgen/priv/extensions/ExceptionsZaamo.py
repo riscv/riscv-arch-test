@@ -15,7 +15,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZaamo_cg", "cp_amo_address_misaligned"
-    addr_reg, check_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    addr_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -31,7 +31,6 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
                 f"    LI(x{limit_reg}, {offset})",
-                "",
                 f"    LA(x{addr_reg}, scratch)",
                 "",
                 f"    LI(x{source_reg}, 0xDEADBEEF)",
@@ -49,7 +48,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
         )
         for i in range(len(ops)):
             op = ops[i]
-            lines.append(f"      LI(x{check_reg}, 0)")
+            lines.append(f"      LI(x{dest_reg}, 0xBAD)")
             lines.append(test_data.add_testcase(f"{op[:-1]}_w_offset_{offset}", coverpoint, covergroup))
             lines.append(f"      {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})")
             lines.append("       nop")
@@ -61,7 +60,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
         )
         for i in range(len(ops)):
             op = ops[i]
-            lines.append(f"         LI(x{check_reg}, 0)")
+            lines.append(f"         LI(x{dest_reg}, 0xBAD)")
             lines.append(test_data.add_testcase(f"{op[:-1]}_d_offset_{offset}", coverpoint, covergroup))
             lines.append(f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})")
             lines.append("          nop")
@@ -72,14 +71,14 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
             ]
         )
 
-    test_data.int_regs.return_registers([addr_reg, check_reg, limit_reg, dest_reg, source_reg])
+    test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
 
     return lines
 
 
 def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZaamo_cg", "cp_amo_access_fault"
-    addr_reg, limit_reg, check_reg, dest_reg, source_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    addr_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
@@ -88,7 +87,6 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"    LI(x{limit_reg}, 0)",
-            f"    LI(x{check_reg}, 1)",
             f"    LA(x{addr_reg}, scratch)",
             "",
             f"    LI(x{source_reg}, 0xDEADBEEF)",
@@ -110,7 +108,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
     for i in range(len(ops)):
         op = ops[i]
-        lines.append(f"    LI(x{dest_reg}, 0)")
+        lines.append(f"    LI(x{dest_reg}, 0xBAD)")
         lines.append(test_data.add_testcase(f"amo_access_fault_offset_{op[:-1]}_w", coverpoint, covergroup))
         lines.append(f"    {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})")
         lines.append("     nop")
@@ -122,7 +120,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     )
     for i in range(len(ops)):
         op = ops[i]
-        lines.append(f"         LI(x{dest_reg}, 0)")
+        lines.append(f"         LI(x{dest_reg}, 0xBAD)")
         lines.append(test_data.add_testcase(f"amo_access_fault_offset_{op[:-1]}_d", coverpoint, covergroup))
         lines.append(f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})")
         lines.append("          nop")
@@ -133,7 +131,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([addr_reg, check_reg, limit_reg, dest_reg, source_reg])
+    test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
     return lines
 
 

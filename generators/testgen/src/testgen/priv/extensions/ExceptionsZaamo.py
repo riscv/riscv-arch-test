@@ -18,7 +18,11 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     addr_reg, check_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
-        comment_banner(coverpoint, "amo address misaligned"),
+        comment_banner(
+            coverpoint,
+            "Test amo instructions on misaligned addresses to check for traps\n"
+            "Testing all offsets upto MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE+1",
+        ),
     ]
 
     ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
@@ -78,7 +82,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg, limit_reg, check_reg, dest_reg, source_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
-        comment_banner(coverpoint, "amo access fault"),
+        comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
     ]
 
     lines.extend(

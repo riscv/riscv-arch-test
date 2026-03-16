@@ -8,6 +8,7 @@
 """cp_misalign coverpoint generator."""
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.testcase import TestCase
@@ -80,10 +81,11 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 ]
             )
         elif instr_type == "CILS":
+            asm = test_data.int_regs.consume_registers([2])
             test_lines.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
-                    test_data.int_regs.consume_registers([2]),
+                    *([asm] if asm else []),
                     "LA(sp, scratch) # load base address",
                     f"addi sp, sp, {alignment} # adjust for alignment",
                     test_data.add_testcase(f"{alignment}", coverpoint),
@@ -100,7 +102,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             test_lines.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
-                    "# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests",
+                    f"{INDENT}# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests",
                     f"LA(x{r1}, scratch) # load base address",
                     load_int_reg("testdata_0", r2, 0x44556677, test_data),
                     f"sw x{r2}, 0(x{r1}) # store at offset 0",
@@ -137,9 +139,10 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                     ]
                 )
             elif instr_type == "CSS":
+                asm = test_data.int_regs.consume_registers([2])
                 test_lines.extend(
                     [
-                        test_data.int_regs.consume_registers([2]),
+                        *([asm] if asm else []),
                         "LA(sp, scratch) # load base address",
                         f"addi sp, sp, {alignment} # adjust for alignment",
                         test_data.add_testcase(f"{alignment}", coverpoint),
@@ -150,7 +153,7 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             if test_data.xlen == 32:
                 test_lines.extend(
                     [
-                        "# Check all 16 bytes as signature",
+                        f"{INDENT}# Check all 16 bytes as signature",
                         f"LREG x{r2}, 0(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 4(x{r1})",
@@ -159,16 +162,18 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 12(x{r1})",
                         write_sigupd(r2, test_data, "int"),
+                        "",
                     ]
                 )
             else:  # RV64
                 test_lines.extend(
                     [
-                        "# Check all 16 bytes as signature",
+                        f"{INDENT}# Check all 16 bytes as signature",
                         f"LREG x{r2}, 0(x{r1})",
                         write_sigupd(r2, test_data, "int"),
                         f"LREG x{r2}, 8(x{r1})",
                         write_sigupd(r2, test_data, "int"),
+                        "",
                     ]
                 )
         else:

@@ -49,7 +49,9 @@ def format_cils_type(
     # sp (x2) is used as the base pointer for CILS instructions
     # Ensure sp is allocated
     if params.rd != 2:
-        setup.append(test_data.int_regs.consume_registers([2]))
+        asm = test_data.int_regs.consume_registers([2])
+        if asm:
+            setup.append(asm)
 
     setup.extend(
         [

@@ -80,7 +80,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
     else:
         lines.extend(
             [
-                "#  Read two consecutive times to check if counter increments",
+                "# Read two consecutive times to check if counter increments",
                 f"{instr_name} x{r1}, {cntr}, x0",
                 f"addi x{r2}, x{r1}, 1 # delay a bit",
                 f"addi x{r2}, x{r2}, 1 # delay a bit",
@@ -93,10 +93,11 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
                 f"{instr_name} x{r2}, {cntr}, x0 # read again to increase delay a bit more",
             ]
         )
+    lines.append(f"sub x{r1}, x{r2}, x{r1} # compute difference")
+    if slt:
+        lines.append(slt)
     lines.extend(
         [
-            f"sub x{r1}, x{r2}, x{r1} # compute difference",
-            f"{slt}",
             write_sigupd(r1, test_data, "int"),  # record difference as signature
             "",
         ]

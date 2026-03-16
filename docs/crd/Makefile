@@ -45,11 +45,13 @@ PARAM_DEF_ARGS := $(foreach relative_pname,$(PARAM_DEF_FILES),--param-def $(rela
 CREATE_PARAMS_TOOL := docs-resources/tools/create_params.py
 CREATE_PARAMS_PYTHON := python3 $(CREATE_PARAMS_TOOL)
 
-CREATE_PARAM_APPENDIX_TOOL := ../docs-resources/tools/create_param_appendix.py
+CREATE_PARAM_APPENDIX_TOOL := docs-resources/tools/create_param_appendix.py
 CREATE_PARAM_APPENDIX_PYTHON := python3 $(CREATE_PARAM_APPENDIX_TOOL)
+CREATE_PARAM_APPENDIX_TABLE_LAYOUT := docs-resources/tools/default_param_table.yaml
 
-PARAM_APPENDIX_ADOC_DIR := $(BUILD_DIR)/param-appendix-adoc-includes
-PARAM_APPENDIX_ADOC_STAMP := $(BUILD_DIR)/.param-appendix-adoc.stamp
+PARAM_APPENDIX_DIR := param-appendix
+BUILD_PARAM_APPENDIX_DIR := $(BUILD_DIR)/$(PARAM_APPENDIX_DIR)
+BUILD_PARAM_APPENDIX_STAMP := $(BUILD_DIR)/.param-appendix.stamp
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -67,8 +69,6 @@ OPTIONS := --trace \
            -D build \
            --failure-level=WARN
 REQUIRES :=
-
-#            -v ${PWD}/$(PARAM_APPENDIX_ADOC_DIR):/$(PARAM_APPENDIX_ADOC_DIR):ro${DOCKER_EXTRA_VOL_SUFFIX} \
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
@@ -134,20 +134,20 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build: build-pdf build-html
 
-ALL_SRCS := $(wildcard src/*.adoc) $(wildcard src/ext_defs/*.adoc) $(wildcard src/param_defs/*.adoc)
+ALL_SRCS := $(wildcard src/*.adoc) $(wildcard src/ext_defs/*.adoc) $(wildcard param_defs/*.adoc)
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(PARAM_APPENDIX_ADOC_STAMP)
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_PARAM_APPENDIX_STAMP)
 	$(WORKDIR_SETUP)
-	mkdir -p $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
-	cp $(PARAM_APPENDIX_ADOC_DIR)/*.adoc $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
+	mkdir -p $@.workdir/build/$(PARAM_APPENDIX_DIR)
+	cp -r $(BUILD_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(PARAM_APPENDIX_ADOC_STAMP)
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_PARAM_APPENDIX_STAMP)
 	$(WORKDIR_SETUP)
-	mkdir -p $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
-	cp $(PARAM_APPENDIX_ADOC_DIR)/*.adoc $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)
+	mkdir -p $@.workdir/build/$(PARAM_APPENDIX_DIR)
+	cp -r $(BUILD_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
@@ -174,14 +174,14 @@ $(PARAMS_HTML): $(NORM_RULES_JSON) $(PARAM_DEF_FILES)
 	$(WORKDIR_TEARDOWN)
 
 # Build per-parameter AsciiDoc include files from params JSON.
-$(PARAM_APPENDIX_ADOC_STAMP): $(PARAMS_JSON)
+$(BUILD_PARAM_APPENDIX_STAMP): $(PARAMS_JSON)
 	$(WORKDIR_SETUP)
 	cp -f $(PARAMS_JSON) $@.workdir/$(BUILD_DIR)
-	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --output-dir $(PARAM_APPENDIX_ADOC_DIR) $(DOCKER_QUOTE)
-	mkdir -p $(PARAM_APPENDIX_ADOC_DIR) && cp $@.workdir/$(PARAM_APPENDIX_ADOC_DIR)/* $(PARAM_APPENDIX_ADOC_DIR) && touch $@.workdir/$@
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --param-table $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT) --output-dir $(BUILD_PARAM_APPENDIX_DIR) $(DOCKER_QUOTE)
+	mkdir -p $(BUILD_PARAM_APPENDIX_DIR) && cp -r $@.workdir/$(BUILD_PARAM_APPENDIX_DIR)/* $(BUILD_PARAM_APPENDIX_DIR) && touch $@.workdir/$@
 	$(WORKDIR_TEARDOWN)
 
-param-appendix-adoc: $(PARAM_APPENDIX_ADOC_STAMP)
+param-appendix-adoc: $(BUILD_PARAM_APPENDIX_STAMP)
 
 # Update docker image to latest
 docker-pull-latest:

@@ -207,8 +207,8 @@ include::ext_defs/Zifencei.adoc[]
 include::ext_defs/Zihpm.adoc[]
 
 include::param_appendix.adoc[]
-include::../build/param-appendix-adoc-includes/HPM_COUNTER_SZ.adoc[]
-include::../build/param-appendix-adoc-includes/LRSC_RESERVATION_STRATEGY.adoc[]
-include::../build/param-appendix-adoc-includes/MISALIGNED_LDST_HW_SUPPORT.adoc[]
-include::../build/param-appendix-adoc-includes/TIME_CSR_HW_SUPPORT.adoc[]
+include::../build/param-appendix/counters/HPM_COUNTER_SZ.adoc[]
+include::../build/param-appendix/a-st-ext/LRSC_RESERVATION_STRATEGY.adoc[]
+include::../build/param-appendix/rv32/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::../build/param-appendix/counters/TIME_CSR_HW_SUPPORT.adoc[]
 |===

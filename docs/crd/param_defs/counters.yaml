@@ -19,5 +19,5 @@ parameter_definitions:
     type: boolean
     description: |
       Implementation supports reading of all unprivileged time-related CSRs without triggering an exception.
-      For RV31I the `time` and `timeh` CSRs are the unprivileged time-related CSRs.
+      For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs.
       For RV64I the `time` CSR is the only unprivileged time-related CSR.

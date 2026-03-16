@@ -177,7 +177,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str:  .string "\"test: 1; cp: cp_cfg_L_modify_1\""
 test_2_str:  .string "\"test: 2; cp: cp_cfg_L_modify_2\""
 test_3_str:  .string "\"test: 3; cp: cp_cfg_L_modify_3\""

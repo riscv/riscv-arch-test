@@ -11,12 +11,14 @@
 from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges_branch")
-def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for branch immediate edge values."""
+    tc = test_data.begin_testcase()
     test_lines: list[str] = []
     params = generate_random_params(test_data, instr_type, exclude_regs=[0])
     assert params.rs1 is not None and params.rs2 is not None and params.temp_reg is not None
@@ -84,7 +86,8 @@ def make_cp_imm_edges_branch(instr_name: str, instr_type: str, coverpoint: str, 
         ]
     )
     return_test_regs(test_data, params)
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]
 
 
 def encode_branch(instr_name: str, rs1: int, rs2: int, imm: int) -> int:

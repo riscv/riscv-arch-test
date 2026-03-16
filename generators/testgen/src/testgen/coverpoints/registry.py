@@ -15,6 +15,7 @@ from random import seed
 from testgen.asm.helpers import reproducible_hash
 from testgen.constants import SKIP_COVERPOINTS
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for coverpoint generator functions
@@ -23,8 +24,8 @@ from testgen.exceptions import MissingRegistryItemError
 # - instr_type: str
 # - coverpoint: str
 # - test_data: TestData
-# and returns a list of strings (test lines)
-CoverpointGenerator = Callable[[str, str, str, TestData], list[str]]
+# and returns a list of TestCase objects
+CoverpointGenerator = Callable[[str, str, str, TestData], list[TestCase]]
 
 
 class MissingCoverpointGeneratorError(MissingRegistryItemError):
@@ -98,14 +99,20 @@ def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:
     raise MissingCoverpointGeneratorError(coverpoint, available_patterns)
 
 
-def generate_tests_for_coverpoint(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> str:
+def generate_tests_for_coverpoint(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestCase]:
     """Generate tests for a specific coverpoint."""
     if coverpoint in SKIP_COVERPOINTS:
-        return ""
+        return []
 
     generator = _select_coverpoint_generator(coverpoint)
     hashval = reproducible_hash(instr_name + coverpoint)
     seed(hashval)
-    test_lines = [f"\n\n{coverpoint}_tests:"]
-    test_lines.extend(generator(instr_name, instr_type, coverpoint, test_data))
-    return "\n".join(test_lines)
+    test_cases = generator(instr_name, instr_type, coverpoint, test_data)
+
+    # Prepend section label to first TestCase's code
+    if test_cases:
+        test_cases[0].code = f"\n\n{coverpoint}_tests:\n" + test_cases[0].code
+
+    return test_cases

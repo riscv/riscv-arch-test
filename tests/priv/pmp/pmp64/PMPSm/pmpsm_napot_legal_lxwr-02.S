@@ -263,45 +263,6 @@ main:
     csrw pmpcfg2, x4
 
 //                                            Verification Section
-// Test Case: 1 : L -> 1 and No Permissions given to the PMP Region 5
-
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
-    csrw pmpaddr5, x5
-
-    LI(x4, PMPREGION_LXWR_1000)
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
-
-// Test Case: 2 : L -> 1 and R Permissions given to the PMP Region 4
-
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
-    csrw pmpaddr4, x5
-
-    LI(x4, PMPREGION_LXWR_1001)
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
-
-// Test Case: 3 : L -> 1 and WR Permissions given to the PMP Region 3
-
-    LA(x5, REGIONSTART)
-    srl x5, x5, PMP_SHIFT
-    andi x5, x5, PMP_MASK
-    ori x5, x5, PMP_REGION_SIZE
-    csrw pmpaddr3, x5
-
-    LI(x4, PMPREGION_LXWR_1011)
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
-
 // Test Case: 4 : L -> 1 and X Permissions given to the PMP Region 2
 
     LA(x5, REGIONSTART)
@@ -341,10 +302,9 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
 
-
     j exit                                                        // Verification Complete, exit the test
 
-.align 11
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
@@ -362,7 +322,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str:  .string "\"test: 1;  cp: cp_cfg_A_napot_sb_address\""
 test_2_str:  .string "\"test: 2;  cp: cp_cfg_A_napot_sh_address\""
 test_3_str:  .string "\"test: 3;  cp: cp_cfg_A_napot_sw_address\""

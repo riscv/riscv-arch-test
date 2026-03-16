@@ -9,14 +9,16 @@
 
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 
 
 @add_coverpoint_generator("cp_custom_fence")
-def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for fence coverpoints."""
     if instr_name != "fence":
         raise ValueError(f"cp_custom_fence generator only supports fence instruction, got {instr_name}")
 
+    tc = test_data.begin_testcase()
     # Regular fences
     test_lines = [
         test_data.add_testcase("fence", "cp_custom_fence"),
@@ -55,4 +57,5 @@ def make_custom_fence(instr_name: str, instr_type: str, coverpoint: str, test_da
         ]
     )
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]

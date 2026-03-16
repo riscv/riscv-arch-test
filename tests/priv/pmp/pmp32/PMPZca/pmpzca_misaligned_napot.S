@@ -49,7 +49,11 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define REGION_SIZE  (1<<(RVMODEL_PMP_GRAIN+2))
+#if RVMODEL_PMP_GRAIN !=0
+    #define REGION_SIZE  (1<<(RVMODEL_PMP_GRAIN+2))
+#else
+    #define REGION_SIZE 8
+#endif
 
 .macro VERIFICATION_RWX ADDRESS, TEST_CASE
     \TEST_CASE\()_1:
@@ -140,7 +144,7 @@ main:
 
 .align 13
 TEST_FOR_EXECUTION_1:
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -1)
+    .rept ((REGION_SIZE / 2) -1)
     nop
     .endr
 
@@ -148,7 +152,7 @@ TEST_FOR_EXECUTION_2:
     jalr x0, x1, 0                                              //uncompressed return straddling the start of the second region
 
 TEST_FOR_EXECUTION_3:
-    .rept (((1<<(RVMODEL_PMP_GRAIN+2)) / 2) -2)
+    .rept ((REGION_SIZE / 2) -2)
     nop
     .endr
 
@@ -156,7 +160,7 @@ TEST_FOR_EXECUTION_4:
     jalr x0, x1, 0                                              // Uncompressed return straddling the end of the second region
 
 TEST_FOR_EXECUTION_5:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept REGION_SIZE
     nop
     .endr
 
@@ -173,7 +177,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END

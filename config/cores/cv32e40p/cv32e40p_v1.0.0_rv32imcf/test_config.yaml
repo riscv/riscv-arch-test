@@ -1,8 +1,0 @@
-name: cv32e40p_v1.0.0_rv32imcf
-compiler_exe: riscv64-unknown-elf-gcc
-objdump_exe: riscv64-unknown-elf-objdump
-ref_model_exe: sail_riscv_sim
-ref_model_type: sail
-udb_config: cv32e40p_v1.0.0_rv32imcf.yaml
-linker_script: link.ld
-dut_include_dir: .

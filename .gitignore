@@ -39,6 +39,7 @@ tests/priv/ExceptionsZc/ExceptionsZc-00.S
 # docs
 docs/ctp/mismatch_report.txt
 docs/crd/build
+docs/crd/generated
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters

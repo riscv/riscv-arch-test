@@ -19,6 +19,7 @@
 
 SRC_DIR := src
 BUILD_DIR := build
+GENERATED_DIR := generated
 
 DOCS := rvi20_crd mc100_crd all_params
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
@@ -26,7 +27,7 @@ DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 
 NORM_RULES_JSON := norm-rules.json
 
-PARAMS_JSON := $(BUILD_DIR)/params.json
+PARAMS_JSON := $(GENERATED_DIR)/params.json
 PARAMS_HTML := $(BUILD_DIR)/params.html
 
 PARAM_DEF_DIR := param_defs
@@ -50,7 +51,7 @@ CREATE_PARAM_APPENDIX_TABLE_LAYOUT := docs-resources/tools/default_param_table.y
 CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC := $(DOCS_RESOURCES_DIR)/tools/default_param_table.yaml
 
 PARAM_APPENDIX_DIR := param-appendix
-BUILD_PARAM_APPENDIX_DIR := $(BUILD_DIR)/$(PARAM_APPENDIX_DIR)
+GEN_PARAM_APPENDIX_DIR := $(GENERATED_DIR)/$(PARAM_APPENDIX_DIR)
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -95,8 +96,8 @@ ifneq ($(SKIP_DOCKER),true)
     DOCKER_CMD = \
         ${DOCKER_BIN} run --rm \
             -v ${PWD}/$@.workdir:/build${DOCKER_VOL_SUFFIX} \
-            -v ${PWD}/src:/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
-            -v ${PWD}/param_defs:/param_defs:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/$(SRC_DIR):/src:ro${DOCKER_EXTRA_VOL_SUFFIX} \
+            -v ${PWD}/$(PARAM_DEF_DIR):/param_defs:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../common:/common:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -v ${PWD}/../docs-resources:/docs-resources:ro${DOCKER_EXTRA_VOL_SUFFIX} \
             -w /build \
@@ -135,16 +136,16 @@ build: build-pdf build-html
 
 ALL_SRCS := $(wildcard $(SRC_DIR)/*.adoc) $(wildcard $(SRC_DIR)/ext_defs/*.adoc)
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_PARAM_APPENDIX_DIR)
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_DIR)
 	$(WORKDIR_SETUP)
-	cp -r $(BUILD_PARAM_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(BUILD_PARAM_APPENDIX_DIR)
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_DIR)
 	$(WORKDIR_SETUP)
-	cp -r $(BUILD_PARAM_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
@@ -155,6 +156,7 @@ params: $(PARAMS_JSON) $(PARAMS_HTML)
 # Build params JSON output from generated normative rules JSON and parameter definitions.
 $(PARAMS_JSON): $(NORM_RULES_JSON) $(PARAM_DEF_FILES) $(CREATE_PARAMS_TOOL_SRC)
 	$(WORKDIR_SETUP)
+	mkdir -p $@.workdir/$(GENERATED_DIR)
 	cp -f $(NORM_RULES_JSON) $@.workdir
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAMS_PYTHON) --norm-rules $(NORM_RULES_JSON) $(PARAM_DEF_ARGS) --output $@ $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
@@ -167,13 +169,14 @@ $(PARAMS_HTML): $(NORM_RULES_JSON) $(PARAM_DEF_FILES) $(CREATE_PARAMS_TOOL_SRC)
 	$(WORKDIR_TEARDOWN)
 
 # Build per-parameter AsciiDoc include files from params JSON.
-$(BUILD_PARAM_APPENDIX_DIR): $(PARAMS_JSON) $(CREATE_PARAM_APPENDIX_TOOL_SRC) $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC)
+$(GEN_PARAM_APPENDIX_DIR): $(PARAMS_JSON) $(CREATE_PARAM_APPENDIX_TOOL_SRC) $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC)
 	$(WORKDIR_SETUP)
-	cp -f $(PARAMS_JSON) $@.workdir/$(BUILD_DIR)
-	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --param-table $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT) --output-dir $(BUILD_PARAM_APPENDIX_DIR) $(DOCKER_QUOTE)
+	mkdir -p $@.workdir/$(GENERATED_DIR)
+	cp -f $(PARAMS_JSON) $@.workdir/$(GENERATED_DIR)
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --param-table $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT) --output-dir $(GEN_PARAM_APPENDIX_DIR) $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 
-param-appendix-adoc: $(BUILD_PARAM_APPENDIX_DIR)
+param-appendix-adoc: $(GEN_PARAM_APPENDIX_DIR)
 
 # Update docker image to latest
 docker-pull-latest:
@@ -181,5 +184,5 @@ docker-pull-latest:
 
 clean:
 	@echo "Cleaning up generated files..."
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(GENERATED_DIR)
 	@echo "Cleanup completed."

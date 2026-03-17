@@ -20,7 +20,7 @@
 SRC_DIR := src
 BUILD_DIR := build
 
-DOCS := rvi20_crd mc100_crd
+DOCS := rvi20_crd mc100_crd all_params
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
 DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 

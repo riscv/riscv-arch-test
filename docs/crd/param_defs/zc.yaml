@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for zc.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Zc Extension
+
+parameter_definitions:
+  - name: INTERRUPTS_ALLOWED_IN_PUSHPOP
+    impl-def: INTERRUPTS_ALLOWED_IN_PUSHPOP
+    type: boolean
+
+csr_definitions:
+  - name: JVT_WARL
+    impl-def: JVT_WARL
+  - name: JVT_MODE_WARL
+    impl-def: JVT_MODE_WARL

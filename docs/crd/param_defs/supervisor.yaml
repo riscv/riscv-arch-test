@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: ../../docs-resources/schemas/param-defs-schema.json#
+
+# Used to create normative rules for supervisor.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Supervisor Mode
+
+parameter_definitions:
+  - name: HINT_SXLEN
+    impl-def: HINT_SXLEN
+    type: boolean
+  - name: SIP_SEI_UNIMPL
+    impl-def: SIP_SEI_UNIMPL
+    type: boolean
+  - name: SIE_SEI_UNIMPL
+    impl-def: SIE_SEI_UNIMPL
+    type: boolean
+  - name: SIP_STI_UNIMPL
+    impl-def: SIP_STI_UNIMPL
+    type: boolean
+  - name: SIE_STI_UNIMPL
+    impl-def: SIE_STI_UNIMPL
+    type: boolean
+  - name: SIP_SSI_UNIMPL
+    impl-def: SIP_SSI_UNIMPL
+    type: boolean
+  - name: SIE_SSI_UNIMPL
+    impl-def: SIE_SSI_UNIMPL
+    type: boolean
+  - name: SIP_LCOFIP_UNIMPL
+    impl-def: SIP_LCOFIP_UNIMPL
+    type: boolean
+  - name: SIE_LCOFIP_UNIMPL
+    impl-def: SIE_LCOFIP_UNIMPL
+    type: boolean
+  - name: ASIDLEN
+    impl-def: ASIDLEN
+    type: uint16
+  - name: SATP_MODE_ROZ_SFENCE_ILLEGAL
+    impl-def: SATP_MODE_ROZ_SFENCE_ILLEGAL
+    type: boolean
+
+csr_definitions:
+  - name: SSTATUS_UXL_WARL
+    impl-def: SSTATUS_UXL_WARL
+  - name: SSTATUS_UBE_WARL
+    impl-def: SSTATUS_UBE_WARL
+  - name: SSTATUS_SDT_WARL
+    impl-def: SSTATUS_SDT_WARL
+  - name: STVEC_MODE_WARL
+    impl-def: STVEC_MODE_WARL
+  - name: STVEC_BASE_WARL
+    impl-def: STVEC_BASE_WARL
+  - name: SIP_WARL
+    impl-def: SIP_WARL
+  - name: SIE_WARL
+    impl-def: SIE_WARL
+  - name: SCOUNTEREN_WARL
+    impl-def: SCOUNTEREN_WARL
+  - name: SEPC_ACC_INVALID_WARL
+    impl-def: SEPC_ACC_INVALID_WARL
+  - name: SCAUSE_EXCEPTION_CODE_ACC
+    impl-def: SCAUSE_EXCEPTION_CODE_ACC
+  - name: STVAL_WARL
+    impl-def: STVAL_WARL
+  - name: SENVCFG_CBIE_WARL
+    impl-def: SENVCFG_CBIE_WARL

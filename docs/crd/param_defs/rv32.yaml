@@ -3,9 +3,14 @@
 
 $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
+# Used to create normative rules for rv32.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
 chapter_name: RV32I Base ISA
 
 parameter_definitions:
+  - name: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
+    impl-def: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
+    type: boolean
   - name: MISALIGNED_LDST_HW_SUPPORT
     impl-def: MISALIGNED_LDST_HW_SUPPORT
     type: boolean
@@ -19,3 +24,9 @@ parameter_definitions:
       ! False ! No hardware support for misaligned load/store instructions
       ! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
       !===
+  - name: MISALIGNED_LDST_EXC_TYPE
+    impl-def: MISALIGNED_LDST_EXC_TYPE
+    type: ["address-misaligned", "access-fault"]
+  - name: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
+    impl-def: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
+    type: boolean

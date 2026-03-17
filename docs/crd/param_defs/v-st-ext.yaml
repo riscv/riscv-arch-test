@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+# Georgia Tai         ytai@hmc.edu
+# James Kaden Cassidy kacassidy@hmc.edu
+# 9/24/2025
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for v-st-ext.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: V Extension
+
+parameter_definitions:
+  - name: ELEN
+    impl-def: ELEN
+    type: uint64
+  - name: VLEN
+    impl-def: VLEN
+    type: uint64
+  - name: VILL_IMPLICIT_ENCODING
+    impl-def: VILL_IMPLICIT_ENCODING
+    type: boolean
+  - name: HW_MSTATUS_VS_DIRTY_UPDATE
+    impl-def: HW_MSTATUS_VS_DIRTY_UPDATE
+    type: boolean
+  - name: RESERVED_VILL_SET
+    impl-def: RESERVED_VILL_SET
+    type: boolean
+  - name: MUTABLE_MISA_V
+    impl-def: MUTABLE_MISA_V
+    type: boolean
+  - name: MSTATUS_VS_EXISTS
+    impl-def: MSTATUS_VS_EXISTS
+    type: boolean
+  - name: VSSTATUS_VS_EXISTS
+    impl-def: VSSTATUS_VS_EXISTS
+    type: boolean
+  - name: VECTOR_LS_VSTART
+    impl-def: VECTOR_LS_VSTART
+    type: boolean
+  - name: VECTOR_LS_CONSTANT_STRIDE_X0
+    impl-def: VECTOR_LS_CONSTANT_STRIDE_X0
+    type: uint64
+  - name: VECTOR_LS_OVERWRITE_PAST_TRAP
+    impl-def: VECTOR_LS_OVERWRITE_PAST_TRAP
+    type: boolean
+  - name: VECTOR_FF_PAST_TRAP
+    impl-def: VECTOR_FF_PAST_TRAP
+    type: boolean
+  - name: VECTOR_LS_SEG_PARTIAL_ACCESS
+    impl-def: VECTOR_LS_SEG_PARTIAL_ACCESS
+    type: boolean
+  - name: VECTOR_FF_SEG_PARTIAL_ACCESS
+    impl-def: VECTOR_FF_SEG_PARTIAL_ACCESS
+    type: boolean
+  - name: VECTOR_LS_SEG_FF_OVERLOAD
+    impl-def: VECTOR_LS_SEG_FF_OVERLOAD
+    type: boolean
+  - name: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
+    impl-def: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
+    type: boolean
+  - name: VECTOR_LS_MISSALIGNED_EXCEPTION
+    impl-def: VECTOR_LS_MISSALIGNED_EXCEPTION
+    type: boolean

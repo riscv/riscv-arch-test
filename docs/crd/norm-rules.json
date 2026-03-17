@@ -23209,10 +23209,14 @@
       ]
     },
     {
-      "name": "pmp_entry_count",
+      "name": "PMP_ENTRY_COUNT",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
-      "impl-def-behavior": false,
+      "kind": "extension",
+      "impl-def-behavior": true,
+      "instances": [
+        "Sm"
+      ],
       "summary": "PMP supports up to 64 entries with allowed implementation counts and ordering rules",
       "tags": [
         {

@@ -6,7 +6,6 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: Counters
 
 parameter_definitions:
-  # Zicsr extension
   - name: HPM_COUNTER_SZ
     impl-def: HPM_PLATFORM_SPECIFIC_IMPL
     range: [0, 64]

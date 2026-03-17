@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+
+chapter_name: F Extension
+
+parameter_definitions:
+  - name: FLEN
+    impl-def: FLEN
+    type: [16, 32, 64, 128]

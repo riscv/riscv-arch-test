@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for zihintntl.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Zihintntl (Non-tmp Hint)
+
+parameter_definitions:
+  - name: NTL_TRAP_BEHAVIOR
+    impl-def: NTL_TRAP_BEHAVIOR
+    type: boolean
+    description: >
+      In the event that a trap is taken on the target instruction, implementations are discouraged from applying the NTL to the first instruction in the
+      trap handler.
+      Instead, implementations are recommended to ignore the HINT in this case.

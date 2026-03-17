@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for smctr file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: SmCtr (Ctrl Xfer Records)
+
+parameter_definitions:
+  - name: CTRDATA_CC_SUPPORTED
+    impl-def: CTRDATA_CC_SUPPORTED
+    type: boolean
+    description: ctrdata register may optionally include a count of CPU cycles
+
+csr_definitions:
+  - name: SCTRDEPTH_DEPTH
+    impl-def: SCTRDEPTH_DEPTH
+    description: WARL field encoding CTR buffer depth (16–256, reserved encodings).
+  - name: SCTRDEPTH_WARL
+    impl-def: SCTRDEPTH_WARL
+  - name: SCTRSTATUS_WRPTR_WARL
+    impl-def: SCTRSTATUS_WRPTR_WARL
+  - name: CTRSOURCE_WARL
+    impl-def: CTRSOURCE_WARL
+  - name: CTRTARGET_WARL
+    impl-def: CTRTARGET_WARL

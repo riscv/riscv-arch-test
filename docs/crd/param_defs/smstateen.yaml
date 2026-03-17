@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: State Enable Extension
+
+csr_definitions:
+  - name: STATEEN_WARL_ACCESS
+    impl-def: STATEEN_WARL_ACCESS

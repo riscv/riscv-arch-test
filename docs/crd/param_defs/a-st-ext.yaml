@@ -1,11 +1,14 @@
 ---
 # yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
 
-$schema: "../../docs-resources/schemas/param-defs-schema.json#"
-
 chapter_name: A Extension
 
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
 parameter_definitions:
+  - name: LR_SC_ALIGNMENT
+    impl-def: LR_SC_ALIGNMENT
+    type: boolean
   - name: LRSC_RESERVATION_STRATEGY
     impl-def: LR_RESERVATION_SET_SIZE
     type: [Exact, 64B, 128B, Other]
@@ -21,7 +24,6 @@ parameter_definitions:
       ! 128B ! Reservation set is naturally-aligned 128-byte region
       ! Other ! Reservation set strategy doesn't fit any of the specified choices
       !===
-
   - name: MISALIGNED_ATOMICITY_GRANULE_SIZE
     impl-def: MISALIGNED_ATOMICITY_GRANULE_SIZE
     type: [2,4,8,16,32,64,128,256,512,1024,2048,4096]

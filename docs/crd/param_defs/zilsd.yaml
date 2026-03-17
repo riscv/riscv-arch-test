@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for zilsd.adoc file.
+# tag refer to anchors in any adoc file for any ISA manual.
+chapter_name: Zilsd (RV32 ld/st dbl)
+
+parameter_definitions:
+  - name: ZILSD_ALIGN8_ATOMIC
+    impl-def: ZILSD_ALIGN8_ATOMIC
+    type: boolean

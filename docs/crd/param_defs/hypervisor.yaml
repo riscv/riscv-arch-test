@@ -1,0 +1,87 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: H Extension
+
+parameter_definitions:
+  - name: HSXLEN
+    impl-def: HSXLEN
+    type: [32, 64]
+  - name: VSXLEN
+    impl-def: VSXLEN
+    type: [32, 64]
+  - name: VSXL_RO
+    impl-def: VSXL_RO
+    type: boolean
+  - name: VTW_VIRTINSTR
+    impl-def: VTW_VIRTINSTR
+    type: boolean
+  - name: GEILEN
+    impl-def: GEILEN
+    type: uint6
+  - name: HTVAL_TRAPVAL
+    impl-def: HTVAL_TRAPVAL
+    type: boolean
+  - name: HGATP_VMID
+    impl-def: HGATP_VMID
+    type: uint16
+  - name: VSSTATUS_UBE
+    impl-def: VSSTATUS_UBE
+    type: boolean
+  - name: MTVAL2_TRAPVAL
+    impl-def: MTVAL2_TRAPVAL
+    type: boolean
+
+csr_definitions:
+  - name: HSTATUS_VSXL_64_WARL
+    impl-def: HSTATUS_VSXL_64_WARL
+  - name: HSTATUS_VGEIN_WLRL
+    impl-def: HSTATUS_VGEIN_WLRL
+  - name: HSTATUS_VSBE_WARL
+    impl-def: HSTATUS_VSBE_WARL
+  - name: HEDELEG_WARL
+    impl-def: HEDELEG_WARL
+  - name: HIDELEG_WARL
+    impl-def: HIDELEG_WARL
+  - name: HVIP_WARL
+    impl-def: HVIP_WARL
+  - name: HIP_WARL
+    impl-def: HIP_WARL
+  - name: HIE_WARL
+    impl-def: HIE_WARL
+  - name: HGEIE_WARL
+    impl-def: HGEIE_WARL
+  - name: HCOUNTEREN_WARL
+    impl-def: HCOUNTEREN_WARL
+  - name: HTVAL_WARL
+    impl-def: HTVAL_WARL
+  - name: HTINST_WARL
+    impl-def: HTINST_WARL
+  - name: HGATP_MODE_WARL
+    impl-def: HGATP_MODE_WARL
+  - name: VSSTATUS_UXL_WARL
+    impl-def: VSSTATUS_UXL_WARL
+  - name: VSIP_WARL
+    impl-def: VSIP_WARL
+  - name: VSIE_WARL
+    impl-def: VSIE_WARL
+  - name: VSTVEC_MODE_WARL
+    impl-def: VSTVEC_MODE_WARL
+  - name: VSTVEC_BASE_WARL
+    impl-def: VSTVEC_BASE_WARL
+  - name: VSEPC_WARL
+    impl-def: VSEPC_WARL
+  - name: VSCAUSE_WLRL
+    impl-def: VSCAUSE_WLRL
+  - name: VSTVAL_WARL
+    impl-def: VSTVAL_WARL
+  - name: VSATP_MODE_UNSUPPORTED_V0_WARL
+    impl-def: VSATP_MODE_UNSUPPORTED_V0_WARL
+  - name: MTVAL2_WARL
+    impl-def: MTVAL2_WARL
+  - name: MTINST_WARL
+    impl-def: MTINST_WARL
+  - name: HENVCFG_CBIE_WARL
+    impl-def: HENVCFG_CBIE_WARL

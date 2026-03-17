@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create normative rules for cmo.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Cache Manage Ops
+
+parameter_definitions:
+  - name: CACHE_BLOCK_SIZE
+    impl-def: CACHE_BLOCK_SIZE
+    type: uint64

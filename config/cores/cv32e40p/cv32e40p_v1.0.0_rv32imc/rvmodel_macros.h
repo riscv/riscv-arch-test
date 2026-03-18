@@ -15,14 +15,14 @@
 
 # Perform boot operations. Can be empty.
 # cv32e40p supports both direct (MODE=0) and vectored (MODE=1) mtvec.
-# MTVEC_BASE_ALIGNMENT = 256 bytes — use .align 8 before handler.
+# Direct mode (MODE=0) requires 4-byte alignment only — use .align 2 before handler.
 #define RVMODEL_BOOT                                                     \
   .option push                                                       ;   \
   .option arch, +zicsr                                               ;   \
   la    t0, _cv32e40p_trap_handler                                   ;   \
   csrw  mtvec, t0                                                    ;   \
   j     _cv32e40p_boot_cont                                          ;   \
-  .align 8                                                           ;   \
+  .align 2                                                           ;   \
 _cv32e40p_trap_handler:                                              ;   \
   addi  sp, sp, -12                                                  ;   \
   sw    t0, 0(sp)                                                    ;   \
@@ -53,10 +53,9 @@ _cv32e40p_boot_cont:                                                 ;   \
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
-# TODO: Verify tohost address matches cv32e40p simulation environment.
 #define RVMODEL_HALT_PASS  \
   li x1, 123456789                ;\
-  la x2, tohost           ;\
+  li x2, 0x20000000       ;\
   write_tohost_pass:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\
@@ -66,7 +65,7 @@ _cv32e40p_boot_cont:                                                 ;   \
 # Terminate test with a fail indication.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
-  la x2, tohost           ;\
+  li x2, 0x20000000       ;\
   write_tohost_fail:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\

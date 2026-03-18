@@ -93,7 +93,6 @@ RVTEST_DATA_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 
-canary_mismatch: .string "Testcase signature canary mismatch!"
 tvm_str:   .string "\"Mismatch in mstatus value while setting TVM bit!\""
 test1_str: .string "\"Mismatch in Test Case 1!\""
 test3_str: .string "\"Mismatch in Test Case 3!\""

@@ -1,7 +1,7 @@
 ##################################
-# ExceptionsZicboU.py
+# ExceptionsZicboS.py
 #
-# ExceptionsZicboU privileged extension test generator.
+# ExceptionsZicboS privileged extension test generator.
 # ellyu@g.hmc.edu March 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################

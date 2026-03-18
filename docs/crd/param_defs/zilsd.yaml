@@ -11,3 +11,4 @@ parameter_definitions:
   - name: ZILSD_ALIGN8_ATOMIC
     impl-def: ZILSD_ALIGN8_ATOMIC
     type: boolean
+    description: Does the implementation perform the 8-byte memory access atomically?

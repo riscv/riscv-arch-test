@@ -12,7 +12,5 @@ parameter_definitions:
   - name: NTL_TRAP_BEHAVIOR
     impl-def: NTL_TRAP_BEHAVIOR
     type: boolean
-    description: >
-      In the event that a trap is taken on the target instruction, implementations are discouraged from applying the NTL to the first instruction in the
-      trap handler.
-      Instead, implementations are recommended to ignore the HINT in this case.
+    description: |
+      Does the implementation ignore the NTL hint when the target instruction causes a trap?

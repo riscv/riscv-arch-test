@@ -12,6 +12,7 @@ parameter_definitions:
   - name: INTERRUPTS_ALLOWED_IN_PUSHPOP
     impl-def: INTERRUPTS_ALLOWED_IN_PUSHPOP
     type: boolean
+    description: Can interrupts be taken during the execution of a push/pop instruction?
 
 csr_definitions:
   - name: JVT_WARL

@@ -74,10 +74,21 @@ parameter_definitions:
     impl-def: VSSTATUS_VS_EXISTS
     type: boolean
     description: Does the `vsstatus.VS` field exist even if the `misa.V` bit is hardwired to 0?
-#  - name: VECTOR_LS_VSTART
-#    impl-def: VECTOR_LS_VSTART
-#    type: boolean
-#    note: Isn't clear this is really an implementation-defined behavior and needs a parameter.
+  - name: VECTOR_LS_VSTART
+    impl-def: VECTOR_LS_VSTART
+    type: [Always, Never, Other]
+    description: |
+      Does a vector load/store instruction write the `vstart` CSR with the non-zero index of the element
+      where an exception occurs?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always writes `vstart` with non-zero index when exception occurs
+      ! Never ! Never writes `vstart` with non-zero index when exception occurs
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_LS_CONSTANT_STRIDE_X0
     impl-def: VECTOR_LS_CONSTANT_STRIDE_X0
     type: [Always, Never, Other]
@@ -175,8 +186,22 @@ parameter_definitions:
       !===
   - name: VECTOR_LS_SEG_FF_OVERLOAD
     impl-def: VECTOR_LS_SEG_FF_OVERLOAD
-    note: Emailed Parameter SIG to find out if this is really an implementation-defined behavior and needs a parameter.
-    type: [Always, Never, Other]
+    type: [AlwaysAfterTrap, AlwaysAfterVLTrimmed, NeverOverwrite, Other]
+    description: |
+      Do fault-only-first segment load instructions overwrite destination vector register group elements
+      past the point at which a trap is reported or past the point at which vector length is trimmed?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysAfterTrap ! Always overwrite past the point of the trap
+      ! AlwaysAfterVLTrimmed ! Always overwrite past the point at which vector length is trimmed
+      ! NeverOverwrite ! Never overwrite past the point of the trap or vector length trim
+      ! Other ! Unpredictable behavior
+      !===
+
+
   - name: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
     impl-def: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
     type: [Always, Never, Other]

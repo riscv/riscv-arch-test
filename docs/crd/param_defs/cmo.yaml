@@ -12,3 +12,4 @@ parameter_definitions:
   - name: CACHE_BLOCK_SIZE
     impl-def: CACHE_BLOCK_SIZE
     type: uint64
+    description: The observable size of a cache block, in bytes.

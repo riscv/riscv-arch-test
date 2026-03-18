@@ -13,6 +13,22 @@ parameter_definitions:
       Bit width of each implemented unprivileged hardware performance counter.
       A value of 0 indicates the corresponding counter is not implemented.
 
+  - name: HPM_READ_BEHAVIOR
+    impl-def: HPM_UNIMPLEMENTED_COUNTER_ACCESS
+    type: [AlwaysValue, AlwaysIllegalInstExc, Other]
+    note: Need to make this an array of 29 enums (one per possible HPM counter).
+    description: |
+      Defines the behavior when a particular HPM counter is read.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysValue ! Processor always returns some value
+      ! AlwaysIllegalInstExc ! Processor always raises an illegal instruction exception on unimplemented counter access
+      ! Other ! Sometimes processor raises an illegal instruction exception and sometimes returns a value
+      !===
+
   - name: TIME_CSR_HW_SUPPORT
     impl-def: EE_IMPL_FLEX
     type: boolean

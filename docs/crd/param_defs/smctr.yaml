@@ -13,6 +13,10 @@ parameter_definitions:
     impl-def: CTRDATA_CC_SUPPORTED
     type: boolean
     description: ctrdata register may optionally include a count of CPU cycles
+  - name: CTR_CCOUNTER_IMPL
+    impl-def: CTR_CCOUNTER_IMPL
+    range: [0, 4]
+    description: Implementation can support 0 to 4 exponent bits
 
 csr_definitions:
   - name: SCTRDEPTH_DEPTH

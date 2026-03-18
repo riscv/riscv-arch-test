@@ -15,52 +15,196 @@ chapter_name: V Extension
 parameter_definitions:
   - name: ELEN
     impl-def: ELEN
-    type: uint64
+    type: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+    description: Maximum size of vector element in bits
   - name: VLEN
     impl-def: VLEN
-    type: uint64
-  - name: VILL_IMPLICIT_ENCODING
-    impl-def: VILL_IMPLICIT_ENCODING
-    type: boolean
+    type: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+    description: Maximum size of vector register in bits
   - name: HW_MSTATUS_VS_DIRTY_UPDATE
     impl-def: HW_MSTATUS_VS_DIRTY_UPDATE
-    type: boolean
-  - name: RESERVED_VILL_SET
+    type: [PreciseDirty, Other]
+    description: |
+      Implementations can change mstatus.VS or vsstatus.VS from Initial or Clean to Dirty at any time
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! PreciseDirty ! Only set mstatus.VS or vsstatus.VS to Dirty only when vector state is changed
+      ! Other ! Unpredictable behavior
+      !===
+  - name: VSETVL_WITH_NEW_RATIO_SETS_VILL
     impl-def: RESERVED_VILL_SET
-    type: boolean
+    type: [Always, Never, Other]
+    description: |
+      Will `vsetvl`/`vsetvli` instructions executed with a new SEW/LMUL ratio that changes VLMAX set `vcsr.VILL` to 1?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always set `vcsr.VILL` set to 1 in this case
+      ! Never ! Never set `vcsr.VILL` set to 1 in this case
+      ! Other ! Unpredictable behavior
+      !===
+  - name: VSETVL_WITH_VILL_1_STAY_1
+    impl-def: RESERVED_VILL_SET
+    type: [Always, Never, Other]
+    description: |
+      Will `vsetvl`/`vsetvli` instructions executed when `vcsr.VILL` bit is already 1 keep it set to 1?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always keep `vcsr.VILL` set to 1 in this case
+      ! Never ! Never keep `vcsr.VILL` set to 1 in this case
+      ! Other ! Unpredictable behavior
+      !===
   - name: MUTABLE_MISA_V
     impl-def: MUTABLE_MISA_V
     type: boolean
+    description: Is the `misa.V` bit writeable (AKA mutable)?
   - name: MSTATUS_VS_EXISTS
     impl-def: MSTATUS_VS_EXISTS
     type: boolean
+    description: Does the `mstatus.VS` field exist even if the `misa.V` bit is hardwired to 0?
   - name: VSSTATUS_VS_EXISTS
     impl-def: VSSTATUS_VS_EXISTS
     type: boolean
-  - name: VECTOR_LS_VSTART
-    impl-def: VECTOR_LS_VSTART
-    type: boolean
+    description: Does the `vsstatus.VS` field exist even if the `misa.V` bit is hardwired to 0?
+#  - name: VECTOR_LS_VSTART
+#    impl-def: VECTOR_LS_VSTART
+#    type: boolean
+#    note: Isn't clear this is really an implementation-defined behavior and needs a parameter.
   - name: VECTOR_LS_CONSTANT_STRIDE_X0
     impl-def: VECTOR_LS_CONSTANT_STRIDE_X0
-    type: uint64
+    type: [Always, Never, Other]
+    description: |
+      Do vector load/store constant stride instructions with `rs2 = `x0` perform fewer memory operations
+      than the number of active elements?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always perform fewer memory operations in this case
+      ! Never ! Never perform fewer memory operations in this case
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_LS_OVERWRITE_PAST_TRAP
     impl-def: VECTOR_LS_OVERWRITE_PAST_TRAP
-    type: boolean
+    type: [Always, Never, Other]
+    description: |
+      Do vector unit-stride fault-only-first load instructions overwrite active destination vector register
+      group elements past the element index at which the trap is reported?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always overwrite past the element index of the trap
+      ! Never ! Never overwrite past the element index of the trap
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_FF_PAST_TRAP
     impl-def: VECTOR_FF_PAST_TRAP
-    type: boolean
+    note: |
+      Do we need a more specific definition for what elements are updated past the element that causes
+      the trimming of the vector length?
+    type: [Always, Never, Other]
+    description: |
+      Do fault-only-first vector load instructions update active destination elements past the element that causes
+      trimming of the vector length (but not past the original vector length)?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always update past the trimmed vector length
+      ! Never ! Never update past the trimmed vector length
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_LS_SEG_PARTIAL_ACCESS
     impl-def: VECTOR_LS_SEG_PARTIAL_ACCESS
-    type: boolean
-  - name: VECTOR_FF_SEG_PARTIAL_ACCESS
+    note: Do we need a more specific definition for the subset since it says "some subset"?
+    type: [Always, Never, Other]
+    description: |
+      Can a trap occuring during a vector load/store access to a segment cause
+      some subset of the segment accesses be performed before the trap is taken?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always perform some subset
+      ! Never ! Never perform any subset
+      ! Other ! Unpredictable behavior
+      !===
+  - name: VECTOR_FF_SEG_SUBSET_EXC_ON_ZEROTH
     impl-def: VECTOR_FF_SEG_PARTIAL_ACCESS
-    type: boolean
+    type: [Always, Never, Other]
+    note: Do we need a more specific definition for the subset since it says "some subset"?
+    description: |
+      When an exception is detected partway through accessing the zeroth segment of a fault-only-first segment load
+      and a trap is taken, does the implementation load a subset of the segment?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always load some subset
+      ! Never ! Never load any subset
+      ! Other ! Unpredictable behavior
+      !===
+  - name: VECTOR_FF_SEG_SUBSET_EXC_PAST_ZEROTH
+    impl-def: VECTOR_FF_SEG_PARTIAL_ACCESS
+    type: [Always, Never, Other]
+    description: |
+      When an exception is detected partway through accessing past the zeroth segment of a fault-only-first segment load
+      and a trap is taken, does the implementation load a subset of the segment?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always load some subset
+      ! Never ! Never load any subset
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_LS_SEG_FF_OVERLOAD
     impl-def: VECTOR_LS_SEG_FF_OVERLOAD
-    type: boolean
+    note: Emailed Parameter SIG to find out if this is really an implementation-defined behavior and needs a parameter.
+    type: [Always, Never, Other]
   - name: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
     impl-def: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
-    type: boolean
+    type: [Always, Never, Other]
+    description: |
+      Does the implementation raise a misaligned address exception on whole register vector loads and stores
+      if the base address is not naturally aligned to the larger of the size of the encoded EEW in bytes (EEW/8)
+      or the implementation’s smallest supported SEW size in bytes (SEWMIN/8)?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Always ! Always raise a misaligned address exception in this case
+      ! Never ! Never raise a misaligned address exception in this case
+      ! Other ! Unpredictable behavior
+      !===
   - name: VECTOR_LS_MISSALIGNED_EXCEPTION
     impl-def: VECTOR_LS_MISSALIGNED_EXCEPTION
-    type: boolean
+    type: [MisalignedExc, Transfer, Other]
+    description: |
+      Does the implementation raise a misaligned address exception if an element accessed by a vector memory instruction
+      is not naturally aligned to the size of the element or does it transfer the element successfully?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! MisalignedExc ! Always raise a misaligned address exception in this case
+      ! Transfer ! Never raise a misaligned address exception in this case
+      ! Other ! Unpredictable behavior
+      !===

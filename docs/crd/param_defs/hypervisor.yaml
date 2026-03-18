@@ -20,19 +20,43 @@ parameter_definitions:
     type: boolean
   - name: GEILEN
     impl-def: GEILEN
-    type: uint6
-  - name: HTVAL_TRAPVAL
+    range: [0, 64]
+  - name: HTVAL_GUEST_PAGE_FAULT_TRAPVAL
     impl-def: HTVAL_TRAPVAL
-    type: boolean
-  - name: HGATP_VMID
+    type: [WrZero, WrGuestPA, Other]
+    description: |
+      When a guest-page-fault trap is taken into HS-mode, htval is written with either zero
+      or the shifted guest physical address that faulted (shifted means right by 2 bits here).
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! WrZero ! Always writes zero to htval on guest-page-fault traps
+      ! WrGuestPA ! Always writes the shifted guest physical address on guest-page-fault traps
+      ! Other ! Sometimes writes zero and sometimes writes the shifted guest physical address on guest-page-fault traps
+      !===
+  - name: VMIDLEN
     impl-def: HGATP_VMID
-    type: uint16
+    range: [0, 14]
+    description: The number of implemented VMID bits
   - name: VSSTATUS_UBE
     impl-def: VSSTATUS_UBE
     type: boolean
+    description: |
+      Is the `vstatus.UBE` a read-only copy of `hstatus.VSBE`?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! False ! Not a read-only copy of `hstatus.VSBE`
+      ! True ! Is a read-only copy of `hstatus.VSBE`
+      !===
   - name: MTVAL2_TRAPVAL
     impl-def: MTVAL2_TRAPVAL
-    type: boolean
+    type: [WrZero, WrGuestPA, Other]
+    description: Same as HTVAL_GUEST_PAGE_FAULT_TRAPVAL except for `mtval2` and trap into M-mode
 
 csr_definitions:
   - name: HSTATUS_VSXL_64_WARL

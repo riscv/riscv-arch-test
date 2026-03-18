@@ -52,6 +52,7 @@ CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC := $(DOCS_RESOURCES_DIR)/tools/default_pa
 
 PARAM_APPENDIX_DIR := param-appendix
 GEN_PARAM_APPENDIX_DIR := $(GENERATED_DIR)/$(PARAM_APPENDIX_DIR)
+GEN_PARAM_APPENDIX_READY := $(GENERATED_DIR)/.param-appendix.ready
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -136,14 +137,14 @@ build: build-pdf build-html
 
 ALL_SRCS := $(wildcard $(SRC_DIR)/*.adoc) $(wildcard $(SRC_DIR)/ext_defs/*.adoc)
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_DIR)
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY)
 	$(WORKDIR_SETUP)
 	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_DIR)
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY)
 	$(WORKDIR_SETUP)
 	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
@@ -169,14 +170,16 @@ $(PARAMS_HTML): $(NORM_RULES_JSON) $(PARAM_DEF_FILES) $(CREATE_PARAMS_TOOL_SRC)
 	$(WORKDIR_TEARDOWN)
 
 # Build per-parameter AsciiDoc include files from params JSON.
-$(GEN_PARAM_APPENDIX_DIR): $(PARAMS_JSON) $(CREATE_PARAM_APPENDIX_TOOL_SRC) $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC)
+$(GEN_PARAM_APPENDIX_READY): $(PARAMS_JSON) $(CREATE_PARAM_APPENDIX_TOOL_SRC) $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC)
 	$(WORKDIR_SETUP)
 	mkdir -p $@.workdir/$(GENERATED_DIR)
 	cp -f $(PARAMS_JSON) $@.workdir/$(GENERATED_DIR)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_PARAM_APPENDIX_PYTHON) --input $(PARAMS_JSON) --param-table $(CREATE_PARAM_APPENDIX_TABLE_LAYOUT) --output-dir $(GEN_PARAM_APPENDIX_DIR) $(DOCKER_QUOTE)
+	rm -rf $(GEN_PARAM_APPENDIX_DIR) && mkdir -p $(GENERATED_DIR) && cp -r $@.workdir/$(GEN_PARAM_APPENDIX_DIR) $(GENERATED_DIR)
+	touch $@.workdir/$@
 	$(WORKDIR_TEARDOWN)
 
-param-appendix-adoc: $(GEN_PARAM_APPENDIX_DIR)
+param-appendix-adoc: $(GEN_PARAM_APPENDIX_READY)
 
 # Update docker image to latest
 docker-pull-latest:

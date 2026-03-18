@@ -11,37 +11,54 @@ chapter_name: Supervisor Mode
 parameter_definitions:
   - name: HINT_SXLEN
     impl-def: HINT_SXLEN
+    type: [AlwaysUnchanged, AlwaysOverwritten, Other]
+    description: |
+      Bits SXLEN..XLEN of the destination register can be unchanged or overwritten for some HINT instructions that
+      are encoded as integer computational instructions that overwrite their destination register with its current value.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysUnchanged ! Implementation always leaves bits SXLEN..XLEN of the destination register unchanged
+      ! AlwaysOverwritten ! Implementation always overwrites bits SXLEN..XLEN of the destination register
+      ! Other ! Sometimes implementation leaves bits SXLEN..XLEN unchanged and sometimes overwrites them
+      !===
+  - name: SEI_INTR_IMPL
+    impl-def: SEI_INTR_IMPL
     type: boolean
-  - name: SIP_SEI_UNIMPL
-    impl-def: SIP_SEI_UNIMPL
+    description: Is the SEI interrupt implemented?
+  - name: STI_INTR_IMPL
+    impl-def: STI_INTR_IMPL
     type: boolean
-  - name: SIE_SEI_UNIMPL
-    impl-def: SIE_SEI_UNIMPL
+    description: Is the STI interrupt implemented?
+  - name: SSI_INTR_IMPL
+    impl-def: SSI_INTR_IMPL
     type: boolean
-  - name: SIP_STI_UNIMPL
-    impl-def: SIP_STI_UNIMPL
+    description: Is the SSI interrupt implemented?
+  - name: LCOFI_INTR_IMPL
+    impl-def: LCOFI_INTR_IMPL
     type: boolean
-  - name: SIE_STI_UNIMPL
-    impl-def: SIE_STI_UNIMPL
-    type: boolean
-  - name: SIP_SSI_UNIMPL
-    impl-def: SIP_SSI_UNIMPL
-    type: boolean
-  - name: SIE_SSI_UNIMPL
-    impl-def: SIE_SSI_UNIMPL
-    type: boolean
-  - name: SIP_LCOFIP_UNIMPL
-    impl-def: SIP_LCOFIP_UNIMPL
-    type: boolean
-  - name: SIE_LCOFIP_UNIMPL
-    impl-def: SIE_LCOFIP_UNIMPL
-    type: boolean
+    description: Is the LCOFI interrupt implemented?
   - name: ASIDLEN
     impl-def: ASIDLEN
-    type: uint16
+    description: The number of bits in the ASID field of the `satp` CSR
+    range: [0, 16]
   - name: SATP_MODE_ROZ_SFENCE_ILLEGAL
     impl-def: SATP_MODE_ROZ_SFENCE_ILLEGAL
-    type: boolean
+    type: [AlwaysIllegalInstExc, NeverIllegalInstExc, Other]
+    description: |
+      For implementations that only support the Bare mode, will an SFENCE.VMA instruction raise an
+      illegal-instruction exception?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysIllegalInstExc ! Implementation always raises an illegal-instruction exception in this case
+      ! NeverIllegalInstExc ! Implementation never raises an illegal-instruction exception in this case
+      ! Other ! Sometimes implementation raises an illegal-instruction exception and sometimes it does not
+      !===
 
 csr_definitions:
   - name: SSTATUS_UXL_WARL

@@ -4479,10 +4479,14 @@
       ]
     },
     {
-      "name": "hpm_unimplemented_counter_access",
+      "name": "HPM_UNIMPLEMENTED_COUNTER_ACCESS",
       "def_filename": "normative_rule_defs/counters.yaml",
       "chapter_name": "Counters",
-      "impl-def-behavior": false,
+      "kind": "extension",
+      "impl-def-behavior": true,
+      "instances": [
+        "Zihpm"
+      ],
       "tags": [
         {
           "name": "norm:hpm_unimplemented_counter_access",
@@ -6139,7 +6143,7 @@
       "def_filename": "normative_rule_defs/f-st-ext.yaml",
       "chapter_name": "F Extension",
       "kind": "extension",
-      "impl-def-behavior": true,
+      "impl-def-behavior": false,
       "instances": [
         "F"
       ],
@@ -28553,13 +28557,17 @@
       ]
     },
     {
-      "name": "ENDIANNESS_LITTLE_OR_BIG",
+      "name": "ENDIANNESS",
       "def_filename": "normative_rule_defs/rv32.yaml",
       "chapter_name": "RV32I Base ISA",
-      "impl-def-behavior": false,
+      "kind": "base",
+      "impl-def-behavior": true,
+      "instances": [
+        "Any"
+      ],
       "tags": [
         {
-          "name": "norm:ENDIANNESS_LITTLE_OR_BIG",
+          "name": "norm:ENDIANNESS",
           "context": false,
           "text": "The EEI will define whether the memory system is little-endian or big-endian.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
@@ -31284,7 +31292,7 @@
         {
           "name": "norm:ssccfg_illegal_sireg_cde0",
           "context": false,
-          "text": "* attempts to access any sireg* when menvcfg.CDE = 0;",
+          "text": "attempts to access any sireg* when menvcfg.CDE = 0;",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -31299,7 +31307,7 @@
         {
           "name": "norm:ssccfg_illegal_sireg3_6",
           "context": false,
-          "text": "* attempts to access sireg3 or sireg6;",
+          "text": "attempts to access sireg3 or sireg6;",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -31314,7 +31322,7 @@
         {
           "name": "norm:ssccfg_illegal_sireg4_5_xlen64",
           "context": false,
-          "text": "* attempts to access sireg4 or sireg5 when XLEN = 64;",
+          "text": "attempts to access sireg4 or sireg5 when XLEN = 64;",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -31329,7 +31337,7 @@
         {
           "name": "norm:ssccfg_illegal_sireg_not_delegated",
           "context": false,
-          "text": "* attempts to access sireg* when siselect = 0x41, or when the counter\nselected by siselect is not delegated to S-mode (the corresponding bit\nin mcounteren = 0).",
+          "text": "attempts to access sireg* when siselect = 0x41, or when the counter\nselected by siselect is not delegated to S-mode (the corresponding bit\nin mcounteren = 0).",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -31374,7 +31382,7 @@
         {
           "name": "norm:ssccfg_hyp_m_s_vsireg_illegal",
           "context": false,
-          "text": "* An attempt to access any vsireg* from M or S mode raises an illegal-instruction exception.",
+          "text": "An attempt to access any vsireg* from M or S mode raises an illegal-instruction exception.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -31389,7 +31397,7 @@
         {
           "name": "norm:ssccfg_hyp_vs_access_sireg_conditional",
           "context": false,
-          "text": "* An attempt from VS-mode to access any sireg* (really vsireg*) raises an illegal-instruction exception if menvcfg.CDE = 0, or a virtual-instruction exception if menvcfg.CDE = 1.",
+          "text": "An attempt from VS-mode to access any sireg* (really vsireg*) raises an illegal-instruction exception if menvcfg.CDE = 0, or a virtual-instruction exception if menvcfg.CDE = 1.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -33317,13 +33325,6 @@
           "stds_doc_url": "riscv-privileged.html"
         },
         {
-          "name": "norm:ccounter_impl",
-          "context": false,
-          "text": "An implementation that supports cycle counting must implement CCV and all\nCCM bits, but may implement 0..4 exponent bits in CCE. Unimplemented CCE\nbits are read-only 0. For implementations that support transfer type\nfiltering, it is recommended to implement at least 3 exponent bits. This\nallows capturing the full latency of most functions, when recording only\ncalls and returns.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        },
-        {
           "name": "norm:ccsize0",
           "context": false,
           "text": "4095",
@@ -33369,6 +33370,26 @@
           "name": "norm:ccounter_ccv",
           "context": false,
           "text": "The CC value is valid only when the Cycle Count Valid (CCV) bit is set.  If CCV=0, the CC value might not hold the correct count of elapsed active cycles since the last recorded transfer.  The next record will have CCV=0 after a write to xctrctl, or execution of SCTRCLR, since CtrCycleCounter is reset.  CCV should additionally be cleared after any other implementation-specific scenarios where active cycles might not be counted in CtrCycleCounter.",
+          "tag_filename": "/build/riscv-privileged-norm-tags.json",
+          "stds_doc_url": "riscv-privileged.html"
+        }
+      ]
+    },
+    {
+      "name": "CTR_CCOUNTER_IMPL",
+      "def_filename": "normative_rule_defs/smctr.yaml",
+      "chapter_name": "SmCtr (Ctrl Xfer Records)",
+      "kind": "extension",
+      "impl-def-behavior": true,
+      "instances": [
+        "Smctr"
+      ],
+      "summary": "Implementation can support 0 to 4 exponent bits",
+      "tags": [
+        {
+          "name": "norm:ctr_ccounter_impl",
+          "context": false,
+          "text": "An implementation that supports cycle counting must implement CCV and all\nCCM bits, but may implement 0..4 exponent bits in CCE. Unimplemented CCE\nbits are read-only 0. For implementations that support transfer type\nfiltering, it is recommended to implement at least 3 exponent bits. This\nallows capturing the full latency of most functions, when recording only\ncalls and returns.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -35787,7 +35808,7 @@
       ]
     },
     {
-      "name": "SIP_SEI_UNIMPL",
+      "name": "SEI_INTR_IMPL",
       "def_filename": "normative_rule_defs/supervisor.yaml",
       "chapter_name": "Supervisor Mode",
       "kind": "extension",
@@ -35797,7 +35818,7 @@
       ],
       "tags": [
         {
-          "name": "norm:sip_sie_unimpl",
+          "name": "norm:std_super_intr_impl",
           "context": false,
           "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
@@ -35806,7 +35827,7 @@
       ]
     },
     {
-      "name": "SIE_SEI_UNIMPL",
+      "name": "STI_INTR_IMPL",
       "def_filename": "normative_rule_defs/supervisor.yaml",
       "chapter_name": "Supervisor Mode",
       "kind": "extension",
@@ -35816,7 +35837,7 @@
       ],
       "tags": [
         {
-          "name": "norm:sip_sie_unimpl",
+          "name": "norm:std_super_intr_impl",
           "context": false,
           "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
@@ -35825,7 +35846,7 @@
       ]
     },
     {
-      "name": "SIP_STI_UNIMPL",
+      "name": "SSI_INTR_IMPL",
       "def_filename": "normative_rule_defs/supervisor.yaml",
       "chapter_name": "Supervisor Mode",
       "kind": "extension",
@@ -35835,7 +35856,7 @@
       ],
       "tags": [
         {
-          "name": "norm:sip_sie_unimpl",
+          "name": "norm:std_super_intr_impl",
           "context": false,
           "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
@@ -35844,7 +35865,7 @@
       ]
     },
     {
-      "name": "SIE_STI_UNIMPL",
+      "name": "LCOFI_INTR_IMPL",
       "def_filename": "normative_rule_defs/supervisor.yaml",
       "chapter_name": "Supervisor Mode",
       "kind": "extension",
@@ -35854,83 +35875,7 @@
       ],
       "tags": [
         {
-          "name": "norm:sip_sie_unimpl",
-          "context": false,
-          "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        }
-      ]
-    },
-    {
-      "name": "SIP_SSI_UNIMPL",
-      "def_filename": "normative_rule_defs/supervisor.yaml",
-      "chapter_name": "Supervisor Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "S"
-      ],
-      "tags": [
-        {
-          "name": "norm:sip_sie_unimpl",
-          "context": false,
-          "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        }
-      ]
-    },
-    {
-      "name": "SIE_SSI_UNIMPL",
-      "def_filename": "normative_rule_defs/supervisor.yaml",
-      "chapter_name": "Supervisor Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "S"
-      ],
-      "tags": [
-        {
-          "name": "norm:sip_sie_unimpl",
-          "context": false,
-          "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        }
-      ]
-    },
-    {
-      "name": "SIP_LCOFIP_UNIMPL",
-      "def_filename": "normative_rule_defs/supervisor.yaml",
-      "chapter_name": "Supervisor Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "S"
-      ],
-      "tags": [
-        {
-          "name": "norm:sip_sie_unimpl",
-          "context": false,
-          "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        }
-      ]
-    },
-    {
-      "name": "SIE_LCOFIP_UNIMPL",
-      "def_filename": "normative_rule_defs/supervisor.yaml",
-      "chapter_name": "Supervisor Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "S"
-      ],
-      "tags": [
-        {
-          "name": "norm:sip_sie_unimpl",
+          "name": "norm:std_super_intr_impl",
           "context": false,
           "text": "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented,\nin which case the corresponding interrupt-pending and interrupt-enable\nbits are read-only zeros.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
@@ -43814,7 +43759,7 @@
         {
           "name": "norm:vmul_vmulh_vmulhu_vmulhsu_op",
           "context": false,
-          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low word of the product to the destination register, while the\nmulh versions write the high word of the product to the\ndestination register.",
+          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low half of the product to the destination register, while the\nmulh versions write the high half of the product to the\ndestination register.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
           "stds_doc_url": "riscv-unprivileged.html"
         }
@@ -43829,7 +43774,7 @@
         {
           "name": "norm:vmul_vmulh_vmulhu_vmulhsu_op",
           "context": false,
-          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low word of the product to the destination register, while the\nmulh versions write the high word of the product to the\ndestination register.",
+          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low half of the product to the destination register, while the\nmulh versions write the high half of the product to the\ndestination register.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
           "stds_doc_url": "riscv-unprivileged.html"
         }
@@ -43844,7 +43789,7 @@
         {
           "name": "norm:vmul_vmulh_vmulhu_vmulhsu_op",
           "context": false,
-          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low word of the product to the destination register, while the\nmulh versions write the high word of the product to the\ndestination register.",
+          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low half of the product to the destination register, while the\nmulh versions write the high half of the product to the\ndestination register.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
           "stds_doc_url": "riscv-unprivileged.html"
         }
@@ -43859,7 +43804,7 @@
         {
           "name": "norm:vmul_vmulh_vmulhu_vmulhsu_op",
           "context": false,
-          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low word of the product to the destination register, while the\nmulh versions write the high word of the product to the\ndestination register.",
+          "text": "The single-width multiply instructions perform a SEW-bit*SEW-bit\nmultiply to generate a 2*SEW-bit product, then return one half of the\nproduct in the SEW-bit-wide destination.  The mul versions write\nthe low half of the product to the destination register, while the\nmulh versions write the high half of the product to the\ndestination register.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
           "stds_doc_url": "riscv-unprivileged.html"
         }
@@ -48277,7 +48222,7 @@
         {
           "name": "norm:Zve64_eew64_nsupport_vmulh",
           "context": false,
-          "text": "All Zve* extensions support all vector integer instructions\n(&lt;&lt;sec-vector-integer&gt;&gt;), except that the vmulh integer multiply\nvariants that return the high word of the product (vmulh.vv,\nvmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are\nnot included for EEW=64 in Zve64*.",
+          "text": "All Zve* extensions support all vector integer instructions\n(&lt;&lt;sec-vector-integer&gt;&gt;), except that the vmulh integer multiply\nvariants that return the high half of the product (vmulh.vv,\nvmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are\nnot included for EEW=64 in Zve64*.",
           "tag_filename": "/build/riscv-unprivileged-norm-tags.json",
           "stds_doc_url": "riscv-unprivileged.html"
         }

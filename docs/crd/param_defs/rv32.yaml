@@ -8,9 +8,6 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: RV32I Base ISA
 
 parameter_definitions:
-  - name: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
-    impl-def: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
-    type: boolean
   - name: MISALIGNED_LDST_HW_SUPPORT
     impl-def: MISALIGNED_LDST_HW_SUPPORT
     type: boolean
@@ -26,7 +23,20 @@ parameter_definitions:
       !===
   - name: MISALIGNED_LDST_EXC_TYPE
     impl-def: MISALIGNED_LDST_EXC_TYPE
-    type: ["address-misaligned", "access-fault"]
-  - name: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
-    impl-def: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
-    type: boolean
+    type: [AlwaysMisalignedExc, AlwaysAccessFaultExc, AccessFaultExcDontEmulate, Other]
+    note: Need specific conditions for when access shouldn't be emulated for AccessFaultExcDontEmulate.
+    description: |
+      Type of exception raised by a misaligned integer/float load/store instruction when an implementation
+      raises an exception due to misalignment.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysMisalignedExc ! Implementation always raises a misaligned exception
+      ! AlwaysAccessFaultExc ! Implementation always raises an access fault exception
+      ! AccessFaultExcDontEmulate ! For a memory access that would otherwise be able to complete except for the misalignment,
+          an access-fault exception is raised instead of an address-misaligned exception if the misaligned
+          access should not be emulated by software, e.g., if accesses to the memory region have side effects.
+      ! Other ! Sometimes implementation raises a misaligned exception and sometimes raises an access fault exception
+      !===

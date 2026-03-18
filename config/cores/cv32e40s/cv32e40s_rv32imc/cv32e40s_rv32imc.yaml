@@ -1,0 +1,103 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40s_rv32imc
+description: CV32E40S (CORE-V security-hardened) - RV32IMC configuration DUT
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: Smhpm, version: "= 1.11.0" }
+
+params:
+  # XLEN parameters
+  MXLEN: 32                              # STUB — RV32I base ISA
+  PHYS_ADDR_WIDTH: 32                    # STUB — verify against cv32e40s docs
+
+  # MISA
+  MUTABLE_MISA_M: false                  # STUB — verify (likely RO like cv32e40p)
+  MISA_CSR_IMPLEMENTED: true             # STUB — verify
+
+  # endianness
+  M_MODE_ENDIANNESS: little              # STUB — likely little-endian
+
+  # trap/exception behavior
+  TRAP_ON_ECALL_FROM_M: true             # STUB — verify
+  TRAP_ON_EBREAK: true                   # STUB — verify
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # STUB — verify
+  TRAP_ON_RESERVED_INSTRUCTION: true     # STUB — verify
+  TRAP_ON_UNIMPLEMENTED_CSR: true        # STUB — verify (cv32e40s may differ)
+  TRAP_ON_ILLEGAL_WLRL: false            # STUB — verify
+
+  # MTVAL reporting
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false  # STUB — verify
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false  # STUB — verify
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false  # STUB — verify
+  MTVAL_WIDTH: 0                         # STUB — verify (cv32e40p is 0/hardwired)
+
+  # MTVEC
+  MTVEC_ACCESS: rw                       # STUB — verify
+  MTVEC_MODES: [0, 1]                    # STUB — cv32e40s likely supports direct+vectored
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain   # STUB — verify
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4        # STUB — verify
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256    # STUB — verify
+
+  # PMA
+  PMA_GRANULARITY: 2                     # STUB — verify
+
+  # misaligned
+  MISALIGNED_LDST: true                  # STUB — verify (cv32e40p does two transactions)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low  # STUB — verify
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0  # STUB — verify
+  MISALIGNED_SPLIT_STRATEGY: sequential_bytes  # STUB — verify
+
+  # exceptions
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true   # STUB — verify
+
+  # vendor/arch/imp IDs
+  MARCHID_IMPLEMENTED: true              # STUB — verify
+  MIMPID_IMPLEMENTED: true               # STUB — verify
+  ARCH_ID_VALUE: 21                      # STUB — cv32e40s_pkg.sv MARCHID=32'h15 (21)
+  IMP_ID_VALUE: 0                        # STUB — mimpid_i supplied externally; verify
+  VENDOR_ID_BANK: 12                     # STUB — OpenHW JEDEC bank=0xC=12
+  VENDOR_ID_OFFSET: 2                    # STUB — OpenHW JEDEC offset=0x2=2
+
+  # Zicntr
+  TIME_CSR_IMPLEMENTED: false            # STUB — verify (cv32e40p: false, reads memory-mapped timer)
+
+  # Smhpm — STUB: verify HPM counter count and inhibit support against cv32e40s RTL
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # STUB — verify
+  HPM_COUNTER_EN:
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      true,  # index 3 (MHPMCOUNTER3 — STUB: verify NUM_MHPMCOUNTERS)
+      false, false, false, false, # 4..7
+      false, false, false, false, false, false, false, false, # 8..15
+      false, false, false, false, false, false, false, false, # 16..23
+      false, false, false, false, false, false, false, false, # 24..31
+    ]
+  COUNTINHIBIT_EN:
+    [
+      true,  # index 0 (MCYCLE inhibit) — STUB
+      false, # index 1 (TM — always false per UDB)
+      true,  # index 2 (MINSTRET inhibit) — STUB
+      true,  # index 3 (MHPMCOUNTER3 inhibit) — STUB
+      false, false, false, false, # 4..7
+      false, false, false, false, false, false, false, false, # 8..15
+      false, false, false, false, false, false, false, false, # 16..23
+      false, false, false, false, false, false, false, false, # 24..31
+    ]
+

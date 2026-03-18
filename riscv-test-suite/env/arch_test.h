@@ -1923,6 +1923,42 @@ rvtest_\__MODE__\()end:
 // This section defines the required test format spec macros:
 // RVTEST_[CODE/DATA/SIG]_[BEGIN/END]
 //==============================================================================
+#define CHECK_MISA_AND_SETUP_TRIGGERS() \
+  /* Set mtvec to the address of the trap handler */ \
+  la a0, trap_handler; \
+  csrw mtvec, a0; \
+  /* Read the misa value */ \
+  csrr t2, misa; \
+  RVTEST_SIGUPD(x1,t2); \
+  /* Check if the 18th bit is set in misa */ \
+  li t1, (1 << 18); \
+  and t2, t2, t1; \
+  /* Branch depending on the 18th bit value */ \
+  bnez t2, implement_mie; \
+  beqz t2, implement_tcontrol; \
+  \
+  /* Implement MIE setup if the 18th bit is set */ \
+  implement_mie: \
+    li t1, (1 << 3); /* Set the MIE bit in mstatus */ \
+    csrw mstatus, t1; \
+    csrr t4, mstatus; \
+    j resume_code; \
+  \
+  /* Implement tcontrol setup if the 18th bit is not set */ \
+  implement_tcontrol: \
+    li t3, (1 << 3); /* Set the TCONTROL bit */ \
+    csrw tcontrol, t3; \
+    csrr t4, tcontrol; \
+    j resume_code; \
+  \
+   resume_code: \
+  /* Write 0 to tselect, read back, and append to the signature */ \
+  csrw tselect, zero; \
+  csrr t0, tselect; \
+  RVTEST_SIGUPD(x1, t0); \
+    /* Set tdata1 to zero and read it back */ \
+  csrw tdata1, zero; \
+  csrr a3, tdata1;
 
 
 /**************************** CODE BEGIN w/ TRAP HANDLER START  *********************/

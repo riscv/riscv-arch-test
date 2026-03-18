@@ -91,7 +91,7 @@
     // marchid=0x4 — verified cv32e40p_pkg.sv:528
     "archid": 4,
     // mimpid=0x1 for FPU=1 on v1.8.3 — verified cs_registers.sv:511-513
-    "impid": 0,  // FPU=0 → mimpid=0
+    "impid": 0, // FPU=0 → mimpid=0
     "hartid": 0,
     "cache_block_size_exp": 6,
     "reservation_set_size_exp": 3,
@@ -111,7 +111,6 @@
       "supported": false
     },
     "F": {
-      
       "supported": false
     },
     "D": {
@@ -217,7 +216,6 @@
       "supported": true
     },
     "Zcf": {
-      
       "supported": false
     },
     "Zcd": {

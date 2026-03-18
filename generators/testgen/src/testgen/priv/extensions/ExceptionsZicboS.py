@@ -23,12 +23,12 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
     modes = ["3", "1", "0"]
     menvcfg = ["00", "01", "11"]
     senvcfg = ["00", "01", "11"]
+    lines.extend(["#ifdef __riscv_zicbom"])
     for mode in modes:
         for m_val in menvcfg:
             for s_val in senvcfg:
                 lines.extend(
                     [
-                        "#ifdef __riscv_zicbom",
                         f"    LA(x{addr_reg}, scratch)",
                         f"\tRVTEST_GOTO_MMODE \n    LI(x{envcfg_reg}, {int(m_val, 2) << 4})",
                         f"    csrw  menvcfg, x{envcfg_reg}",
@@ -49,11 +49,9 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
                         test_data.add_testcase(f"cbo.inval_mode{mode}_mval{m_val}_sval{s_val}", coverpoint, covergroup),
                         f"    cbo.inval    0(x{addr_reg})",
                         "    nop",
-                        "#endif",
-                        "",
                     ]
                 )
-
+    lines.extend(["#endif"])
     test_data.int_regs.return_registers([addr_reg, envcfg_reg])
     return lines
 
@@ -68,12 +66,12 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
     modes = ["3", "1", "0"]
     menvcfg = ["0", "1"]
     senvcfg = ["0", "1"]
+    lines.extend(["#ifdef __riscv_zicbom"])
     for mode in modes:
         for m_val in menvcfg:
             for s_val in senvcfg:
                 lines.extend(
                     [
-                        "#ifdef __riscv_zicbom",
                         f"    LA(x{addr_reg}, scratch)",
                         f"\tRVTEST_GOTO_MMODE \n    LI(x{envcfg_reg}, {int(m_val, 2) << 6})",
                         f"    csrw  menvcfg, x{envcfg_reg}",
@@ -97,11 +95,9 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
                         test_data.add_testcase(f"cbo.flush_mode{mode}_mval{m_val}_sval{s_val}", coverpoint, covergroup),
                         f"    cbo.flush    0(x{addr_reg})",
                         "    nop",
-                        "#endif",
-                        "",
                     ]
                 )
-
+    lines.extend(["#endif"])
     test_data.int_regs.return_registers([addr_reg, envcfg_reg])
     return lines
 
@@ -116,12 +112,12 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
     modes = ["3", "1", "0"]
     menvcfg = ["0", "1"]
     senvcfg = ["0", "1"]
+    lines.extend(["#ifdef __riscv_zicboz"])
     for mode in modes:
         for m_val in menvcfg:
             for s_val in senvcfg:
                 lines.extend(
                     [
-                        "#ifdef __riscv_zicboz",
                         f"    LA(x{addr_reg}, scratch)",
                         f"\tRVTEST_GOTO_MMODE \n    LI(x{envcfg_reg}, {int(m_val, 2) << 7})",
                         f"    csrw  menvcfg, x{envcfg_reg}",
@@ -142,11 +138,9 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
                         test_data.add_testcase(f"cbo.zero_mode{mode}_mval{m_val}_sval{s_val}", coverpoint, covergroup),
                         f"    cbo.zero    0(x{addr_reg})",
                         "    nop",
-                        "#endif",
-                        "",
                     ]
                 )
-
+    lines.extend(["#endif"])
     test_data.int_regs.return_registers([addr_reg, envcfg_reg])
     return lines
 

@@ -10,19 +10,20 @@
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.formatters import format_single_test
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_sbox")
-def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests to exercise sbox."""
     if coverpoint == "cp_sbox":
         sbox_vals = range(256)
     else:
         raise ValueError(f"Unknown cp_sbox coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_cases: list[TestCase] = []
     for sbox in sbox_vals:
         # repeat sbox value in each byte
         if test_data.xlen == 32:
@@ -32,7 +33,8 @@ def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=s, rs2val=s)
         desc = f"{coverpoint} = {sbox}"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc, f"b{sbox}", coverpoint))
+        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{sbox}", coverpoint)
+        test_cases.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_cases

@@ -10,11 +10,13 @@
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 
 
 @add_coverpoint_generator("cp_misalign")
-def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
     """Generate tests for misalignment coverpoints."""
+    tc = test_data.begin_testcase()
     if coverpoint == "cp_misalign":
         alignments = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # 8 is not strictly required by coverpoint, but shows wrapping works
     else:
@@ -174,4 +176,5 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     test_data.int_regs.return_registers([r1, r2])
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_testcase()]

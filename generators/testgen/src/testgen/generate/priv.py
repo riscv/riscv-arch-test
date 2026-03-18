@@ -52,6 +52,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Create test data
     test_data = TestData(test_config)
 
+    # Begin a single TestCase for the entire priv test
+    # TODO: Might eventually want to update priv tests to use multiple testcases instead
+    # so they can be split for long priv tests (e.g. Ssstrict)
+    tc = test_data.begin_testcase()
+
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
     test_data.int_regs.consume_registers([1])
 
@@ -65,11 +70,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # Return x1/ra
     test_data.int_regs.return_register(1)
 
+    # Save testcase
+    tc.code = "\n".join(body_lines)
+    test_data.end_testcase()
+
     # Produce actual test file
     extra_defines = [*get_priv_test_defines(testsuite), "#define RVTEST_PRIV_TEST"]
-    write_test_file(
-        test_data,
-        body_lines,
-        output_path,
-        extra_defines=extra_defines,
-    )
+    write_test_file(test_config, None, [tc], output_path, extra_defines=extra_defines)
+    test_data.destroy()

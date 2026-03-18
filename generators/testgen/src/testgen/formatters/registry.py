@@ -16,6 +16,7 @@ from typing import Literal
 
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
+from testgen.data.testcase import TestCase
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
@@ -148,7 +149,7 @@ def format_single_test(
     desc: str,
     bin_name: str,
     coverpoint: str,
-) -> str:
+) -> TestCase:
     """
     Generate a complete single-instruction test with setup and signature update.
 
@@ -167,8 +168,9 @@ def format_single_test(
         bin_name: Coverpoint bin covered by this test case
         coverpoint: Coverpoint name
     Returns:
-        Complete test case as a string
+        TestCase containing the complete test case
     """
+    tc = test_data.begin_testcase()
     test_lines = [f"# Testcase {desc}"]
 
     # Register the testcase label first so SIGUPD references the current test's label
@@ -185,4 +187,5 @@ def format_single_test(
         ]
     )
 
-    return "\n".join(test_lines)
+    tc.code = "\n".join(test_lines)
+    return test_data.end_testcase()

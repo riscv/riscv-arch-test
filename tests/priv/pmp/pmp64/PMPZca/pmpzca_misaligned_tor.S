@@ -162,7 +162,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpzca_misaligned_tor_start\""
 
 RVTEST_DATA_END

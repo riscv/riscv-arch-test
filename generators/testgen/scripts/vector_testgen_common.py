@@ -378,6 +378,8 @@ vvvm_b_type = ["vandn.vv", "vrol.vv", "vror.vv", "vwsll.vv", "vclmul.vv", "vclmu
 vvxm_b_type = ["vandn.vx", "vrol.vx", "vror.vx", "vwsll.vx", "vclmul.vx", "vclmulh.vx"]
 vvim_b_type = ["vror.vi", "vwsll.vi"]
 vvm_b_type = ["vbrev.v", "vbrev8.v", "vrev8.v", "vclz.v", "vctz.v", "vcpop.v"]
+bwvvins = ["vwsll.vv", "vwsll.vx", "vwsll.vi"]
+bimm_31 = ["vwsll.vi", "vror.vi"]
 
 ################################## vector floating point instruction ##################################
 
@@ -442,7 +444,7 @@ vvivtype  = ["vadc.vim", "vmerge.vim", "vmadc.vim"]
 vvvvtype  = ["vadc.vvm", "vsbc.vvm", "vmerge.vvm", "vmadc.vvm", "vmsbc.vvm"]
 vvxvtype  = ["vadc.vxm", "vsbc.vxm", "vmerge.vxm", "vmadc.vxm", "vmsbc.vxm"]
 vvvtype   = ["vmadc.vv", "vmsbc.vv", "vmand.mm", "vmnand.mm", "vmandn.mm", "vmxor.mm", "vmor.mm", "vmnor.mm", "vmorn.mm", "vmxnor.mm", "vcompress.vm"]
-imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"]
+imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"] + bimm_31
 
 vs1ins = vvvmtype + vvrtype + vvvvtype + vvvtype + vvvmrtype
 
@@ -470,7 +472,7 @@ fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "
 fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
 fwwvins = ["vfwadd.wv", "vfwsub.wv"]
 fwwfins = ["vfwadd.wf", "vfwsub.wf"]
-wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins
+wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins + bwvvins
 wvxins  = ["vwadd.vx", "vwaddu.vx", "vwsub.vx", "vwsubu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 wwvins  = ["vwadd.wv", "vwaddu.wv", "vwsub.wv", "vwsubu.wv"] + fwwvins
 wwxins  = ["vwadd.wx", "vwaddu.wx", "vwsub.wx", "vwsubu.wx"]

@@ -68,7 +68,7 @@
   la _R2, tohost       ;   \
   sw _R1, 0(_R2)     ; \
   /* device=1 (terminal), cmd=1 (output) */ \
-  li _R1, UART_BASE_ADDRESS ;\
+  li _R1, UART_BASE_ADDR ;\
   sw _R1, 4(_R2)   ;\
   addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
   j 1b                       ;/* Loop */             \

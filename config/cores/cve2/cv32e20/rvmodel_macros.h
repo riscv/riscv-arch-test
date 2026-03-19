@@ -45,6 +45,8 @@
 
 ##### IO #####
 
+.EQU UART_BASE_ADDR, 0x10000000
+
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
@@ -54,15 +56,15 @@
 # A pointer to the string is passed in _STR_PTR.
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
-1:                           ;                        \
-  lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
-  beqz _R1, 3f               ; /* Exit if null */     \
-2:                           ;                        \
-  li   _R2, 0x10000000       ; /* virtual printer */  \
-  sw   _R1, 0(_R2)           ;                        \
-  addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
-  j 1b                       ; /* Loop */             \
+#define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)  \
+1:                            ;                        \
+  lbu  _R1, 0(_STR_PTR)       ; /* Load byte */        \
+  beqz _R1, 3f                ; /* Exit if null */     \
+2:                            ;                        \
+  li   _R2, UART_BASE_ADDRESS ; /* virtual printer */  \
+  sw   _R1, 0(_R2)            ;                        \
+  addi _STR_PTR, _STR_PTR, 1  ; /* Next char */        \
+  j 1b                        ; /* Loop */             \
 3:
 
 ##### Machine Timer #####

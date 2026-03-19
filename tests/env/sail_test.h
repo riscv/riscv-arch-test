@@ -1,6 +1,6 @@
 # sail_test.h
 # RVMODEL macro definitions for Sail reference model
-# Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
+# Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayanan sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
 #ifndef _COMPLIANCE_MODEL_H
@@ -48,6 +48,8 @@
 
 ##### IO #####
 
+.EQU UART_BASE_ADDR, 0x10000000
+
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
@@ -66,7 +68,7 @@
   la _R2, tohost       ;   \
   sw _R1, 0(_R2)     ; \
   /* device=1 (terminal), cmd=1 (output) */ \
-  li _R1, 0x01010000 ;\
+  li _R1, UART_BASE_ADDRESS ;\
   sw _R1, 4(_R2)   ;\
   addi _STR_PTR, _STR_PTR, 1 ;/* Next char */        \
   j 1b                       ;/* Loop */             \

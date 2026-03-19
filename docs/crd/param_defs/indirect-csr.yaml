@@ -5,8 +5,6 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
 chapter_name: Indirect CSR
 
-parameter_definitions: []
-
 csr_definitions:
   - name: MISELECT_WARL
     impl-def: MISELECT_WARL

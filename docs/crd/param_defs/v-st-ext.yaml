@@ -62,10 +62,6 @@ parameter_definitions:
       ! Never ! Never keep `vcsr.VILL` set to 1 in this case
       ! Other ! Unpredictable behavior
       !===
-  - name: MUTABLE_MISA_V
-    impl-def: MUTABLE_MISA_V
-    type: boolean
-    description: Is the `misa.V` bit writable (AKA mutable)?
   - name: MSTATUS_VS_EXISTS
     impl-def: MSTATUS_VS_EXISTS
     type: boolean

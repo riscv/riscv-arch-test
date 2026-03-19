@@ -11,25 +11,51 @@ parameter_definitions:
   - name: MISA_CSR_IMPLEMENTED
     impl-def: MISA_CSR_IMPLEMENTED
     type: boolean
+    description: |
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! Reading the `misa` CSR returns an informative value
+      ! false ! Reading the `misa` CSR returns zero
+      !===
   - name: MXLEN
     impl-def: MXLEN
     type: [32, 64]
-    description: XLEN in M-mode
+    description: Effective XLEN in M-mode
   - name: MISA_EXTENSIONS_WRITABLE_BITS
-    impl-def: MISA_EXTENSIONS_WRITABLE_BITS
+    impl-defs: [MISA_EXTENSIONS_WRITABLE_BITS, MUTABLE_MISA_V]
     type: boolean
+    array: [0, 25]
+    description: |
+      Array of booleans indicating whether the corresponding bit in `misa.Extensions` CSR field is writable or not.
+      Array index _i_ corresponds to bit _i_ of the Extensions field.
+      For example, index 0 corresponds to Extensions[0] ('A' extension), index 1 corresponds to Extensions[1] ('B' extension), etc.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bit in `misa.Extensions` is writable
+      ! false ! The corresponding bit in `misa.Extensions` is read-only
+      !===
   - name: VENDOR_ID_BANK
     impl-def: VENDOR_ID_BANK
-    type: boolean
+    type: uint
+    width: 25
   - name: VENDOR_ID_OFFSET
     impl-def: VENDOR_ID_OFFSET
-    type: boolean
+    type: uint
+    width: 7
   - name: ARCH_ID
     impl-def: ARCH_ID
-    type: boolean
+    type: uint
+    width: MXLEN
+
   - name: IMP_ID
     impl-def: IMP_ID
-    type: uint64
+    type: uint
+    width: 64
   - name: HART_ID
     impl-def: HART_ID
     type: boolean
@@ -86,12 +112,14 @@ parameter_definitions:
     type: boolean
   - name: MIDELEG_RD1_LOWER_LEVEL
     impl-def: MIDELEG_RD1_LOWER_LEVEL
-    type: uint64
+    type: uint
+    width: 64
   - name: MIP_BITS_WR_OR_RDONLY
     impl-def: MIP_BITS_WR_OR_RDONLY
     type: boolean
   - names: [MIP_MSIP_MAYBE_RDONLY0, MIE_MSIE_MAYBE_RDONLY0]
     type: boolean
+    description: TBD
   - name: MSIP_UPDATE_MAX_TIME
     impl-def: MSIP_UPDATE_MAX_TIME
     type: boolean
@@ -105,8 +133,8 @@ parameter_definitions:
     type: boolean
   - name: MHPMCOUNTER_N_SZ
     impl-def: MHPMCOUNTER_N_SZ
-    type: uint64
-
+    type: uint
+    width: 64
   # CSR mhpmevent[31:3]
   - name: MHPMEVENT_N_RDONLY0
     impl-def: MHPMEVENT_N_RDONLY0
@@ -152,9 +180,11 @@ parameter_definitions:
     type: boolean
   - name: MTIME_TICK_PERIOD
     impl-def: MTIME_TICK_PERIOD
-    type: uint64
+    type: uint
+    width: 64
   - names: [MRET_CLR_LR_RESV, SRET_CLR_LR_RESV]
     type: boolean
+    description: TBD
 
   # WFI instruction
   - name: WFI_OPT_U_MODE
@@ -206,20 +236,32 @@ parameter_definitions:
   - name: NMI_MCAUSE_VAL
     impl-def: NMI_MCAUSE_VAL
     type: boolean
-  - names: [SXLEN, UXLEN]
+  - name: SXLEN
     type: [32, 64]
+    description: Effective XLEN in S-mode
+  - name: UXLEN
+    type: [32, 64]
+    description: Effective XLEN in U-mode
   - name: XLEN_REDUCTION_HINT_OP
     impl-def: XLEN_REDUCTION_HINT_OP
     type: boolean
-  - names: [RST_ADDR, NMI_ADDR]
-    type: uint64
+  - name: RST_ADDR
+    type: uint
+    width: MXLEN
+    description: Base address of the reset vector.
+  - name: NMI_ADDR
+    type: uint
+    width: MXLEN
+    description: Base address of the non-maskable interrupt vector.
   - name: PMP_GRANULARITY
     impl-def: PMP_GRANULARITY
-    type: uint64
+    type: uint
+    width: 64
     description: Minimum PMP region granularity supported by the platform
   - name: PMP_ENTRY_COUNT
     impl-def: PMP_ENTRY_COUNT
-    type: uint64
+    type: uint
+    width: 64
     description: PMP supports up to 64 entries with allowed implementation counts and ordering rules
 
 csr_definitions:

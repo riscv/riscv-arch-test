@@ -11,5 +11,6 @@ chapter_name: Cache Manage Ops
 parameter_definitions:
   - name: CACHE_BLOCK_SIZE
     impl-def: CACHE_BLOCK_SIZE
-    type: uint64
+    type: uint
+    width: 64
     description: The observable size of a cache block, in bytes.

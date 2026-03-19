@@ -95,7 +95,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
 
         # Expand vector extensions into per-SEW variants, replacing the base entry
         sew_variants: list[str] | None = None
-        if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvbc", "Zvkb")):
+        if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
             sew_variants = ["8", "16", "32", "64"]
         elif "Vf" in arch:
             sew_variants = ["16", "32", "64"]  # SEW of 8 is not supported for vector floating point

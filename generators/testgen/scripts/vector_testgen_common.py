@@ -2360,12 +2360,8 @@ def readTestplans(priv=False):
                     for effew in ["16", "32", "64"]:
                         testplans["Vf" + effew] = tp
                     del testplans["Vf"]
-                if (arch == "Zvbb"):
+                if (arch in ["Zvbb", "Zvkb"]):
                     for effew in ["8", "16", "32", "64"]:
-                        testplans["Zvbb" + effew] = tp
-                    del testplans["Zvbb"]
-                if (arch == "Zvkb"):
-                    for effew in ["8", "16", "32", "64"]:
-                        testplans["Zvkb" + effew] = tp
-                    del testplans["Zvkb"]
+                        testplans[arch + effew] = tp
+                    del testplans[arch]
     return testplans

@@ -1,0 +1,91 @@
+{
+    "clint": "0x2000000",
+
+    "address_translation_pmms": [
+        "off",
+        "pm57"
+    ],
+
+    "isa": "rv64imafdcvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvqdot_sdtrig_smaia_smmpm_smnpm_smrnmi_smstateen_ssaia_sscofpmf_ssnpm_ssqosid_sstc_svadu_svinval_svnapot_svpbmt_svvptc_zifencei",
+
+    "all_inst_addr_trigger": "false",
+    "cancel_lr_on_trap": false,
+    "clear_mtval_on_ebreak": false,
+    "clear_mtval_on_illegal_instruction": false,
+    "clear_tinst_on_cbo_flush": false,
+    "clear_tinst_on_cbo_inval": false,
+    "enable_pmp_na4": false,
+    "enable_pmp_tor": true,
+    "guest_interrupt_count": 5,
+    "indexed_nmi": false,
+
+    "memmap": {
+        "pma": [
+            {
+                "attribs": [ ],
+                "high": 1023,
+                "low": 0
+            }
+        ],
+        "consoleio" : "0x10000000",
+        "Comment": "Set physical memory size to be 34-bits",
+        "size": "0x400000000"
+    },
+
+    "csr" : { 
+            "vstart": {
+            "mask": "0xff",
+            "poke_mask": "0xff"
+        }
+    },
+
+    "misaligned_has_priority": false,
+    "num_mmode_perf_regs": 8,
+    "physical_memory_protection_grain": "0x1000",
+    "comment" : "Act4 cannot handle a naturally aligned reservation of size 64.",
+    "reservation_bytes": 64,
+    "reset_vec": "0x80000000",
+
+    "trigger_actions": [
+        "raisebreak",
+        "enterdebug",
+        "starttrace",
+        "stoptrace",
+        "emittrace"
+    ],
+
+    "vector": {
+        "Comment": "Hardware supports 32-bit ELEN plus some widening operations from 32 to 64-bit",
+        "always_mark_dirty": true,
+        "bytes_per_vec": 32,
+        "fp_usum_nan_canonicalize": [
+            "e16",
+            "e32",
+            "e64"
+        ],
+        "legalize_for_egs": false,
+        "legalize_vsetvl_avl": true,
+        "legalize_vsetvli_avl": true,
+        "mask_agnostic_policy": "ones",
+        "max_bytes_per_elem": 8,
+        "max_bytes_per_lmul": {
+            "mf2": 4,
+            "mf4": 2,
+            "mf8": 1
+        },
+        "min_bytes_per_elem": 1,
+        "partial_segment_update": false,
+        "tail_agnostic_policy": "ones",
+        "trap_invalid_vtype": false,
+        "trap_non_zero_vstart": true,
+        "tt_clear_tval_vl_egs": true,
+        "tt_fp_usum_tree_reduction": [
+            "e16",
+            "e32",
+            "e64"
+        ],
+        "update_whole_mask": true
+    },
+
+    "wfi_timeout": 0
+}

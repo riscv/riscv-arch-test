@@ -6,15 +6,8 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: Counters
 
 parameter_definitions:
-  - name: HPM_COUNTER_SZ
-    impl-def: HPM_PLATFORM_SPECIFIC_IMPL
-    range: [0, 64]
-    description: |
-      Bit width of each implemented unprivileged hardware performance counter.
-      A value of 0 indicates the corresponding counter is not implemented.
-
   - name: HPM_READ_BEHAVIOR
-    impl-def: HPM_UNIMPLEMENTED_COUNTER_ACCESS
+    impl-defs: [HPM_PLATFORM_SPECIFIC_IMPL, HPM_UNIMPLEMENTED_COUNTER_ACCESS]
     type: [AlwaysValue, AlwaysIllegalInstExc, Other]
     note: Need to make this an array of 29 enums (one per possible HPM counter).
     description: |
@@ -24,9 +17,9 @@ parameter_definitions:
       !===
       ! Value ! Definition
 
-      ! AlwaysValue ! Processor always returns some value
-      ! AlwaysIllegalInstExc ! Processor always raises an illegal instruction exception on unimplemented counter access
-      ! Other ! Sometimes processor raises an illegal instruction exception and sometimes returns a value
+      ! AlwaysValue ! Implementation always returns some value when read
+      ! AlwaysIllegalInstExc ! Implementation always raises an illegal instruction exception when read
+      ! Other ! Sometimes implementation returns a value or raises an illegal instruction exception
       !===
 
   - name: TIME_CSR_HW_SUPPORT

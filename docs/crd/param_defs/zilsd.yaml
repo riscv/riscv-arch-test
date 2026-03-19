@@ -3,7 +3,7 @@
 
 $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
-# Used to create normative rules for zilsd.adoc file.
+# Used to create parameters for zilsd.adoc file.
 # tag refer to anchors in any adoc file for any ISA manual.
 chapter_name: Zilsd (RV32 ld/st dbl)
 

@@ -7,7 +7,7 @@
 
 $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
-# Used to create normative rules for v-st-ext.adoc file.
+# Used to create parameters for v-st-ext.adoc file.
 # Tags refer to anchors in any adoc file for any ISA manual.
 
 chapter_name: V Extension
@@ -65,7 +65,7 @@ parameter_definitions:
   - name: MUTABLE_MISA_V
     impl-def: MUTABLE_MISA_V
     type: boolean
-    description: Is the `misa.V` bit writeable (AKA mutable)?
+    description: Is the `misa.V` bit writable (AKA mutable)?
   - name: MSTATUS_VS_EXISTS
     impl-def: MSTATUS_VS_EXISTS
     type: boolean
@@ -93,7 +93,7 @@ parameter_definitions:
     impl-def: VECTOR_LS_CONSTANT_STRIDE_X0
     type: [Always, Never, Other]
     description: |
-      Do vector load/store constant stride instructions with `rs2 = `x0` perform fewer memory operations
+      Do vector load/store constant stride instructions with `rs2` = `x0` perform fewer memory operations
       than the number of active elements?
 
       [%autowidth]
@@ -142,7 +142,7 @@ parameter_definitions:
     note: Do we need a more specific definition for the subset since it says "some subset"?
     type: [Always, Never, Other]
     description: |
-      Can a trap occuring during a vector load/store access to a segment cause
+      Can a trap occurring during a vector load/store access to a segment cause
       some subset of the segment accesses be performed before the trap is taken?
 
       [%autowidth]

@@ -7,7 +7,7 @@ See rv32.yaml for a good example of a definition file that includes additional i
 Each definition file provides the information required to create the normative rules for
 its corresponding adoc file. The adoc file contains tags (AKA AsciiDoc anchors with names with a "norm:" prefix) of text associated with normative rules.
 
-In many cases there is a 1:1 mapping between normative rules and tags but not always (1:many, many:1, and many:many also exist). The definition files provide the mapping information to create normative rules from the tags.
+In many cases there is a 1:1 mapping between normative rules and tags but not always (1:many, many:1, and many:many also exist). The definition files provide the mapping information to create parameters from the tags.
 The definition files also contain additional meta-data added to the normative rule definitions.
 
 The Ruby script in docs-resources/tools/create_normative_rules.rb consumes these definition files along with

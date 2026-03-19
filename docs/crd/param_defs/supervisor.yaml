@@ -3,7 +3,7 @@
 
 $schema: ../../docs-resources/schemas/param-defs-schema.json#
 
-# Used to create normative rules for supervisor.adoc file.
+# Used to create parameters for supervisor.adoc file.
 # Tags refer to anchors in any adoc file for any ISA manual.
 
 chapter_name: Supervisor Mode

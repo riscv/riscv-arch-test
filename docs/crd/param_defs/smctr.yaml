@@ -3,7 +3,7 @@
 
 $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
-# Used to create normative rules for smctr file.
+# Used to create parameters for smctr file.
 # Tags refer to anchors in any adoc file for any ISA manual.
 
 chapter_name: SmCtr (Ctrl Xfer Records)

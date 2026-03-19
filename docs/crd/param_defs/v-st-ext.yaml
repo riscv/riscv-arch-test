@@ -78,15 +78,15 @@ parameter_definitions:
     impl-def: VECTOR_LS_VSTART
     type: [Always, Never, Other]
     description: |
-      Does a vector load/store instruction write the `vstart` CSR with the non-zero index of the element
-      where an exception occurs?
+      Does a vector load instruction overwrite the faulting element and subsequent elements when
+      an exception occurs?
 
       [%autowidth]
       !===
       ! Value ! Definition
 
-      ! Always ! Always writes `vstart` with non-zero index when exception occurs
-      ! Never ! Never writes `vstart` with non-zero index when exception occurs
+      ! Always ! Always overwrites
+      ! Never ! Never overwrites
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_CONSTANT_STRIDE_X0

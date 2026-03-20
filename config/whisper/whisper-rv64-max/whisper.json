@@ -1,10 +1,7 @@
 {
   "clint": "0x2000000",
 
-  "address_translation_pmms": [
-    "off",
-    "pm57"
-  ],
+  "address_translation_pmms": ["off", "pm57"],
 
   "isa": "rv64imafdcvhus_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zihintpause_zihpm_zimop_zawrs_zfa_zfbfmin_zfh_zkr_zcb_zcmop_zba_zbb_zbs_zvbb_zvbc_zvfbfmin_zvfbfwma_zvfh_zvkg_zvkned_zvknhb_zvqdot_sdtrig_smaia_smmpm_smnpm_smrnmi_smstateen_ssaia_sscofpmf_ssnpm_ssqosid_sstc_svadu_svinval_svnapot_svpbmt_svvptc_zifencei",
 
@@ -23,17 +20,17 @@
     "pma": [
       {
         // Make address range 0 to 1023 non readable to support ACCESS_FAULT_ADDR in rvtest_config.h
-        "attribs": [ ],
+        "attribs": [],
         "high": 1023,
         "low": 0
       }
     ],
-    "consoleio" : "0x10000000",  // Matches virtual printer address in rvmodel_macros.h
+    "consoleio": "0x10000000", // Matches virtual printer address in rvmodel_macros.h
     "Comment": "Set physical memory size to be 34-bits",
     "size": "0x400000000"
   },
 
-  "csr" : { 
+  "csr": {
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -58,11 +55,7 @@
     "Comment": "Hardware supports 32-bit ELEN plus some widening operations from 32 to 64-bit",
     "always_mark_dirty": true,
     "bytes_per_vec": 32,
-    "fp_usum_nan_canonicalize": [
-      "e16",
-      "e32",
-      "e64"
-    ],
+    "fp_usum_nan_canonicalize": ["e16", "e32", "e64"],
     "legalize_for_egs": false,
     "legalize_vsetvl_avl": true,
     "legalize_vsetvli_avl": true,
@@ -79,11 +72,7 @@
     "trap_invalid_vtype": false,
     "trap_non_zero_vstart": true,
     "tt_clear_tval_vl_egs": true,
-    "tt_fp_usum_tree_reduction": [
-      "e16",
-      "e32",
-      "e64"
-    ],
+    "tt_fp_usum_tree_reduction": ["e16", "e32", "e64"],
     "update_whole_mask": true
   },
 

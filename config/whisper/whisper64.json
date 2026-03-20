@@ -42,7 +42,6 @@
     "misaligned_has_priority": false,
     "num_mmode_perf_regs": 8,
     "physical_memory_protection_grain": "0x1000",
-    "comment" : "Act4 cannot handle a naturally aligned reservation of size 64.",
     "reservation_bytes": 64,
     "reset_vec": "0x80000000",
 

@@ -20,7 +20,7 @@ To build the UDB configuration, coverage files and ELFs run the following
 command from the top of your working copy of this repo:
 
 ```
-$ make CONFIG_FILES=config/whisper/whisper-rv64gc/test_config.yaml
+$ make CONFIG_FILES=config/whisper/whisper-rv64-max/test_config.yaml
 ```
 
 <!--

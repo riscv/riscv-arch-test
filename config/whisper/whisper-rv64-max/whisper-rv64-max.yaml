@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: whisper-rv64gc
-description: The rv64gc configuration of a generic Whisper RISC-V model
+name: whisper-rv64-max
+description: The rv64-max configuration of a generic Whisper RISC-V model
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: A, version: "= 2.1.0" }

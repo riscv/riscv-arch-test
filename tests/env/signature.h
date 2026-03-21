@@ -43,27 +43,6 @@
     .option pop
 #endif
 
-// RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops
-#if __riscv_xlen == 64
-  #define RVTEST_SIGUPD_NOPS \
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop
-#else
-  #define RVTEST_SIGUPD_NOPS \
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop
-#endif
-
 // TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to

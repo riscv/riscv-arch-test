@@ -12,12 +12,40 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shlex
 import subprocess
 import sys
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
+
+_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: Test File ".*": (PASSED|FAILED|SIGRUN)')
+
+# ANSI color codes — disabled when stdout is not a terminal
+USE_COLOR = sys.stdout.isatty()
+
+
+def _color(code: str, text: str) -> str:
+    if USE_COLOR:
+        return f"\033[{code}m{text}\033[0m"
+    return text
+
+
+def red(text: str) -> str:
+    return _color("1;31", text)
+
+
+def green(text: str) -> str:
+    return _color("1;32", text)
+
+
+def bold(text: str) -> str:
+    return _color("1", text)
+
+
+def dim(text: str) -> str:
+    return _color("2", text)
 
 
 def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool, env: dict | None = None) -> bool:
@@ -39,10 +67,49 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool, env: 
             full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False, env=env
         )
 
-    failed = result.returncode != 0
+    # Check exit code
+    exit_failed = result.returncode != 0
 
-    if failed:
-        print(f"\tTest {elf_path.name} failed with exit code {result.returncode}. See log: {log_file}")
+    # Check log for RVCP-SUMMARY lines
+    log_text = log_file.read_text(errors="replace")
+    summaries = _SUMMARY_RE.findall(log_text)
+    summary_failed = "FAILED" in summaries
+    summary_sigrun = "SIGRUN" in summaries
+    no_summary = len(summaries) == 0
+
+    # Overall failure for test
+    failed = exit_failed or summary_failed or summary_sigrun
+
+    # Print failure message for test
+    if summary_sigrun:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
+            f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif exit_failed and no_summary:
+        print(
+            f"  {red('FAIL')} {bold(elf_path.name)} — exit code {result.returncode} indicates failure, no RVCP-SUMMARY line found"
+            f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif exit_failed and summary_failed:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — exit code {result.returncode}"
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif summary_failed and not exit_failed:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports FAILED but exit code {result.returncode} indicates success"
+            f"\n         Likely bug in RVMODEL_HALT_FAIL macro."
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif exit_failed and not summary_failed:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY PASSED but exit code {result.returncode} indicates failure"
+            f"\n         Likely bug in RVMODEL_HALT_PASS macro."
+            f"\n         Log: {dim(str(log_file))}"
+        )
 
     return failed
 
@@ -80,16 +147,22 @@ def main() -> int:
 
     failed = 0
 
-    print(f"\nRunning tests in {elf_dir} with command: {args.command}:")
+    print(f"\n{bold('Running')} {len(elf_files)} tests in {elf_dir}")
+    print(f"  Command: {args.command}\n")
+
+    # Run individual tests
     with Pool(args.jobs) as pool:
         for fail_status in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
 
+    # Print overall results
+    passed = len(elf_files) - failed
+    print()
     if failed:
-        print(f"\t{failed} out of {len(elf_files)} tests failed.")
+        print(red(f"RESULT: {failed} failed, {passed} passed out of {len(elf_files)} tests."))
     else:
-        print(f"\tAll {len(elf_files)} tests passed.")
+        print(green(f"RESULT: All {len(elf_files)} tests passed."))
 
     return 1 if failed else 0
 

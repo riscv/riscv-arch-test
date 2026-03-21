@@ -74,11 +74,12 @@
     #ifdef RVTEST_SELFCHECK
       // Can't use DEFAULT_*_REG macros here because of macro expansion order
       // DEFAULT_SIG_REG = x2, DEFAULT_TEMP_REG = x4, DEFAULT_LINK_REG = x5
-      RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # sig_begin_canary
+      RVTEST_SIGUPD(x2, x5, x4, T1, canary_check, canary_mismatch) # signature_base canary
     #else
       // Increment sig pointer to skip the CANARY
       addi DEFAULT_SIG_REG, DEFAULT_SIG_REG, SIG_STRIDE
-      // nops to ensure the number of instructions executed matches the self-checking test length
+      // NOPs to keep the emitted code size/bytes aligned with the RVTEST_SIGUPD sequence
+      // used in self-check mode (including its embedded pointer words/dwords).
       nop
       nop
       nop
@@ -282,8 +283,8 @@
           #include SIGNATURE_FILE
     #else
       // Canary is the first entry in the signature region; the dynamic canary
-      // check at test start overwrites it with the same value to verify the signature
-      // works correctly.
+      // check at test start reads and verifies this value to ensure the signature
+      // mechanism is functioning correctly.
       signature_base:
         CANARY
         // Initialize remaining signature region to known value for initial pass

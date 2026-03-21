@@ -82,10 +82,11 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             )
         elif instr_type == "CILS":
             asm = test_data.int_regs.consume_registers([2])
+            test_lines.append(f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})")
+            if asm:
+                test_lines.append(asm)
             test_lines.extend(
                 [
-                    f"# Testcase: {coverpoint} (imm[2:0] = {alignment:03b})",
-                    *([asm] if asm else []),
                     "LA(sp, scratch) # load base address",
                     f"addi sp, sp, {alignment} # adjust for alignment",
                     test_data.add_testcase(f"{alignment}", coverpoint),
@@ -140,9 +141,10 @@ def make_misalign(instr_name: str, instr_type: str, coverpoint: str, test_data: 
                 )
             elif instr_type == "CSS":
                 asm = test_data.int_regs.consume_registers([2])
+                if asm:
+                    test_lines.append(asm)
                 test_lines.extend(
                     [
-                        *([asm] if asm else []),
                         "LA(sp, scratch) # load base address",
                         f"addi sp, sp, {alignment} # adjust for alignment",
                         test_data.add_testcase(f"{alignment}", coverpoint),

@@ -214,7 +214,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"LI x{r_mie_val}, {mie_val}",
+                    f"LI(x{r_mie_val}, {mie_val})",
                     f"CSRW(mie, x{r_mie_val})",
                 ]
             )
@@ -282,7 +282,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
                 f"CSRRCI x{r_csr_tmp}, mtvec, 3",
                 f"CSRRSI x{r_csr_tmp}, mtvec, {mode}",
                 f"CSRRSI x{r_csr_tmp}, mstatus, 8",
-                f"LI x{r_mie_all}, 0x888",
+                f"LI(x{r_mie_all}, 0x888)",
                 f"CSRW mie, x{r_mie_all}",
                 "",
             ]
@@ -358,7 +358,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"CSRRW x{r_csr_tmp}, mie, zero",
-                f"LI x{r_mie_mask}, {mie_value}",
+                f"LI(x{r_mie_mask}, {mie_value})",
             ]
         )
 
@@ -427,7 +427,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             mstatus_val = tw_val << 21  # TW bit, MIE=0
             lines.extend(
                 [
-                    f"LI x{r_scratch}, {mstatus_val}",
+                    f"LI(x{r_scratch}, {mstatus_val})",
                     f"csrw mstatus, x{r_scratch}",
                 ]
             )
@@ -435,7 +435,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             # Enable MTIE
             lines.extend(
                 [
-                    f"LI x{r_scratch}, 0x80",
+                    f"LI(x{r_scratch}, 0x80)",
                     f"CSRW mie, x{r_scratch}",
                 ]
             )

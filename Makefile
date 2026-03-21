@@ -96,8 +96,8 @@ qemu-rv64: elfs
 .PHONY: imperasfpm imperasfpm-max-rv32 imperasfpm-max-rv64
 
 # Add --trace to see a trace of the executed instructions for debug
-IMPERASFPM_RV32_CMD := iss.exe -processorvendor riscv.ovpworld.org -processorname riscv --variant RV32GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
-IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org -processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+IMPERASFPM_RV32_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV32GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
 
 imperasfpm: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
 imperasfpm: elfs
@@ -106,7 +106,7 @@ imperasfpm: elfs
 	./run_tests.py "$(IMPERASFPM_RV32_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs || exit_code=1; \
 	exit $$exit_code
 
-# Add --verbose to see the simulator commands
+# Add --verbose to run_tests.py arguments to see the simulator commands
 imperasfpm-rv32: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml
 imperasfpm-rv32: elfs
 	./run_tests.py "$(IMPERASFPM_RV32_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs

@@ -7,7 +7,7 @@
 # Parse UDB configuration file
 ##################################
 
-import os
+import importlib.resources
 import shutil
 import subprocess
 import sys
@@ -17,38 +17,51 @@ import rich
 from ruamel.yaml import YAML
 
 
-def update_udb_submodule() -> None:
-    """Ensure the riscv-unified-db submodule is initialized and up to date."""
-    udb_path = Path("./external/riscv-unified-db/bin/udb")
-
-    if not udb_path.exists():
-        print("riscv-unified-db not found; initializing submodule external/riscv-unified-db...")
-    else:
-        print("Updating riscv-unified-db submodule...")
-
-    try:
-        subprocess.run(["git", "submodule", "update", "--init", "--", "external/riscv-unified-db"], check=True)
-    except subprocess.CalledProcessError as e:
+def _find_gemfile() -> Path:
+    """Locate the Gemfile bundled with the act package."""
+    gemfile_path = Path(str(importlib.resources.files("act"))) / "data" / "Gemfile"
+    if not gemfile_path.exists():
         raise RuntimeError(
-            "Failed to initialize/update riscv-unified-db submodule. Please run 'git submodule update --init' manually and try again."
+            "No Gemfile found in act package data. Install the udb gem with 'gem install udb' or reinstall act."
+        )
+    return gemfile_path
+
+
+def _ensure_udb_installed() -> None:
+    """Ensure the correct version of the UDB gem is installed via bundler.
+
+    Uses `bundle check` to verify that installed gems match Gemfile.lock.
+    If gems are missing or out of date, runs `bundle install` to fix them.
+    """
+    gemfile = _find_gemfile()
+
+    # Check if all gems (including udb) are installed at the correct versions
+    try:
+        subprocess.run(["bundle", "check"], check=True, cwd=gemfile.parent, capture_output=True, text=True)
+        return  # All gems satisfied — correct version is installed
+    except FileNotFoundError as e:
+        raise RuntimeError(
+            "udb command not found and 'bundle' is not available. See the README for installation instructions."
         ) from e
+    except subprocess.CalledProcessError:
+        pass  # Gems missing or wrong version — need to install (done below)
+
+    print("UDB gem missing or out of date; running 'bundle install'...")
+    try:
+        subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("'bundle install' failed. Check Ruby and bundler installation.") from e
+
+    if shutil.which("udb") is None:
+        raise RuntimeError("UDB command still not found after 'bundle install'.")
 
 
 def validate_udb_config(udb_config_file: Path) -> None:
-    validate_udb_config_cmd = [
-        "./external/riscv-unified-db/bin/udb",
-        "validate",
-        "cfg",
-        f"{udb_config_file}",
-        # f"cfgs/{udb_config_file.name}",
-    ]
-    env = os.environ.copy()
-    env["PODMAN"] = "true"
-    env["UDB_CONTAINER_BIND"] = str(udb_config_file.parent.resolve())
+    validate_cmd = ["udb", "validate", "cfg", str(udb_config_file)]
     try:
-        subprocess.run(validate_udb_config_cmd, check=True, env=env)
+        subprocess.run(validate_cmd, check=True)
     except subprocess.CalledProcessError:
-        rich.print(f"[red][bold]UDB configuration validation failed for {udb_config_file.name}.[endc]")
+        rich.print(f"[red][bold]UDB configuration validation failed for {udb_config_file.name}.[/bold][/red]")
         sys.exit(1)
 
 
@@ -63,20 +76,16 @@ def generate_extension_list(udb_config_file: Path, output_dir: Path) -> None:
     extension_list_file = output_dir / "extensions.txt"
     if not extension_list_file.exists() or (extension_list_file.stat().st_mtime < udb_config_file.stat().st_mtime):
         print(f"Generating extension list for {udb_config_file.stem}")
-        generate_extensions_list_cmd = [
-            "./external/riscv-unified-db/bin/udb",
+        generate_cmd = [
+            "udb",
             "list",
             "extensions",
             "--config",
-            f"{udb_config_file}",
+            str(udb_config_file),
             "--output",
-            f"{udb_config_file.stem}_extensions.txt",
+            str(extension_list_file),
         ]
-        env = os.environ.copy()
-        env["PODMAN"] = "true"
-        env["UDB_CONTAINER_BIND"] = str(udb_config_file.parent.resolve())
-        subprocess.run(generate_extensions_list_cmd, check=True, env=env)
-        shutil.move(f"./external/riscv-unified-db/{udb_config_file.stem}_extensions.txt", extension_list_file)
+        subprocess.run(generate_cmd, check=True)
 
 
 def get_implemented_extensions(extension_list_file: Path) -> set[str]:
@@ -88,7 +97,7 @@ def generate_udb_files(udb_config_file: Path, output_dir: Path) -> None:
         not (output_dir / "extensions.txt").exists()
         or (output_dir / "extensions.txt").stat().st_mtime < udb_config_file.stat().st_mtime
     ):
-        update_udb_submodule()
+        _ensure_udb_installed()
         validate_udb_config(udb_config_file)
         generate_extension_list(udb_config_file, output_dir)
 

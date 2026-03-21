@@ -21,8 +21,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Ensure pre-commit checks pass
         run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
@@ -56,8 +56,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Install sail-riscv model
         run: |
@@ -81,7 +81,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
+        run: FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
     name: Spike Regression (${{ matrix.name }})
@@ -121,8 +121,8 @@ jobs:
                                   libboost-regex-dev \
                                   libboost-system-dev
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Install sail-riscv model
         run: |
@@ -171,7 +171,6 @@ jobs:
       - name: Build ELFs
         # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
-          DOCKER=1 \
           FAST=True \
           EXTENSIONS="" \
           EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc \
@@ -245,8 +244,8 @@ jobs:
       - name: Add QEMU to PATH
         run: echo "$GITHUB_WORKSPACE/qemu/bin" >> $GITHUB_PATH
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Install sail-riscv model
         run: |
@@ -262,7 +261,6 @@ jobs:
       - name: Build ELFs
         # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
-          DOCKER=1 \
           FAST=True \
           EXTENSIONS= \
           EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc \
@@ -288,8 +286,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
@@ -300,8 +298,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - run: git submodule update --init docs/docs-resources external/riscv-unified-db
 

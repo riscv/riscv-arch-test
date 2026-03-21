@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tools]
-ruby = "3.2"
+ruby = "3.4.8"
 uv = "latest"

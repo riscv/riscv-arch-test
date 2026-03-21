@@ -32,7 +32,7 @@ The ACTs require several tools to generate and run correctly. Ensure all of the 
 
 #### 1. System Dependencies
 
-The ACT4 framework relies on `make` to orchestrate compilation. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
+The ACT4 framework uses `make` to run top-level commands. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
 
 To install system dependencies:
 
@@ -44,25 +44,33 @@ sudo apt-get install make git
 sudo dnf install make git
 ```
 
-#### 2. Python/uv
+#### 2. `mise` (Tool Manager)
 
-The test generator and framework are written in Python. The recommended way of installing and running Python is using the uv project manager, which will handle Python versions, virtual environments, and dependencies transparently.
+The test generator and framework are written in Python. The recommended way of installing and running Python is using the `uv` project manager, which will handle Python versions, virtual environments, and dependencies transparently.
 
-To install uv:
+The framework also relies on the [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) (UDB) gem, which requires Ruby and Bundler.
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+The recommended way of installing both of these tools (`uv` and Ruby) is using [`mise`](https://mise.jdx.dev/). `mise` handles tool versions and installation automatically — you don't need to install uv, Python, Ruby, or UDB manually.
 
-After installation, verify uv is available:
+To install mise:
 
 ```bash
-uv --version
+curl https://mise.jdx.dev/install.sh | sh
 ```
 
-For more details on uv and alternate installation methods, see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+After installation, verify mise is available:
 
-#### 3. RISC-V Compiler
+```bash
+mise --version
+```
+
+> [!NOTE]
+>
+> For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
+>
+>For alternate installation instructions that do not require mise, see [Advanced Installation - COMING SOON]().
+
+#### 3. RISC-V Compiler (GCC or LLVM)
 
 The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
 Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
@@ -128,32 +136,12 @@ sail_riscv_sim --version
 
 For more details on the RISC-V Sail model and alternate installation methods, see the [sail-riscv README](https://github.com/riscv/sail-riscv).
 
-#### 5. Container Runtime
-
-The ACTs use [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
-
-To install Podman:
-
-```bash
-# On Ubuntu/Debian
-sudo apt-get install podman
-
-# On Fedora/CentOS/RHEL
-sudo dnf install podman
-```
-
-Verify the installation:
-
-```bash
-podman --version
-```
-
 ### Get Source Code
 
-Clone the `riscv-arch-test` repo `act4` branch:
+Clone the `riscv-arch-test` repo:
 
 ```bash
-git clone https://github.com/riscv/riscv-arch-test -b act4
+git clone https://github.com/riscv/riscv-arch-test
 ```
 
 ### Configuration
@@ -285,7 +273,7 @@ Note that the ACT framework first compiles signature-generating versions of the 
 
 > [!NOTE]
 >
-> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `uv` to be installed.
+> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `mise` to be installed.
 
 ### Running Certification Tests
 

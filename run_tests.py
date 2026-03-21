@@ -18,7 +18,7 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: Test File ".*": (PASSED|FAILED)')
+_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: Test File ".*": (PASSED|FAILED|SIGRUN)')
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -36,10 +36,6 @@ def red(text: str) -> str:
 
 def green(text: str) -> str:
     return _color("1;32", text)
-
-
-def yellow(text: str) -> str:
-    return _color("1;33", text)
 
 
 def bold(text: str) -> str:
@@ -71,16 +67,23 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bo
     exit_failed = result.returncode != 0
 
     # Check log for RVCP-SUMMARY lines
-    log_text = log_file.read_text()
+    log_text = log_file.read_text(errors="replace")
     summaries = _SUMMARY_RE.findall(log_text)
     summary_failed = "FAILED" in summaries
+    summary_sigrun = "SIGRUN" in summaries
     no_summary = len(summaries) == 0
 
     # Overall failure for test
-    failed = exit_failed or summary_failed
+    failed = exit_failed or summary_failed or summary_sigrun
 
     # Print failure message for test
-    if exit_failed and no_summary:
+    if summary_sigrun:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
+            f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif exit_failed and no_summary:
         print(
             f"  {red('FAIL')} {bold(elf_path.name)} — exit code {result.returncode} indicates failure, no RVCP-SUMMARY line found"
             f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."

@@ -58,6 +58,7 @@ include::csr_field_types.adoc[]
 
 * https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
 * https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html[Privileged ISA Specification] - Latest version
+* https://lists.riscv.org/g/tech-rvm/topic/118396691[March 2026 groups.io post about RVM Profile]
 
 <<<
 == Base ISA
@@ -81,6 +82,10 @@ None
 
 include::exts_intro.adoc[]
 
+Unpriv extensions are aligned with the RVM Profile TG's latest thinking for its low-end microcontroller profile.
+Priv ISA isn't availabe from the RVM Profile TG yet, but the extensions listed here are commonly supported by
+microcontrollers and are supported by the certification tests.
+
 === Mandatory Extensions
 
 .Mandatory Extensions
@@ -88,9 +93,11 @@ include::exts_intro.adoc[]
 |===
 | Requirement ID | Extension | Version
 
-| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
-| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0
 | REQ-EXT-Sm | <<extension:Sm,Minimal Machine Mode>> | ~> 1.13
+| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Zce | <<extension:Zce,Zce>> | ~> 1.0
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0
+| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 
 |===
 
@@ -102,9 +109,7 @@ include::exts_intro.adoc[]
 | Requirement ID | Extension | Version
 
 | REQ-EXT-A | <<extension:A,A>> | ~> 2.1
-| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
 | REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
-| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
 | REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
 
 |===

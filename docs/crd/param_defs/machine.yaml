@@ -28,7 +28,7 @@ parameter_definitions:
     type: boolean
     array: [0, 25]
     description: |
-      Array of booleans indicating whether the corresponding bit in `misa.Extensions` CSR field is writable or not.
+      Is `misa.Extensions` CSR field writable or not.
       Array index _i_ corresponds to bit _i_ of the Extensions field.
       For example, index 0 corresponds to Extensions[0] ('A' extension), index 1 corresponds to Extensions[1] ('B' extension), etc.
 
@@ -51,94 +51,205 @@ parameter_definitions:
     impl-def: ARCH_ID
     type: uint
     width: MXLEN
-
   - name: IMP_ID
     impl-def: IMP_ID
     type: uint
-    width: 64
+    width: MXLEN
   - name: HART_ID
     impl-def: HART_ID
-    type: boolean
+    type: uint
+    width: MXLEN
   - name: MSTATUS_SXL_RDONLY_MXLEN64
     impl-def: MSTATUS_SXL_RDONLY_MXLEN64
     type: boolean
-  - name: MSTATUS_UXL_LEGAL_VALS_SMODE
-    impl-def: MSTATUS_UXL_LEGAL_VALS_SMODE
-    type: boolean
+    description: Is `mstatus.SXL` read-only?
   - name: MSTATUS_SBE_ROCOPY
     impl-def: MSTATUS_SBE_ROCOPY
     type: boolean
+    description: Does implementation make `mstatus.SBE` a read-only copy of `mstatus.MBE`?
   - name: MSTATUS_UBE_ROCOPY
     impl-def: MSTATUS_UBE_ROCOPY
-    type: boolean
+    type: [ROCopyOfMBE, ROCopyOfSBE, other]
+    description: |
+      Does implementation make `mstatus.UBE` a read-only copy of `mstatus.MBE` or `mstatus.SBE`?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! ROCopyOfMBE ! mstatus.UBE` is a read-only copy of `mstatus.MBE`
+      ! ROCopyOfSBE ! mstatus.UBE` is a read-only copy of `mstatus.SBE`
+      ! other ! mstatus.UBE` is not a read-only copy of either `mstatus.MBE` or `mstatus.SBE`
+      !===
   - name: MSTATUS_TW_TIME_LIMIT
     impl-def: MSTATUS_TW_TIME_LIMIT
-    type: boolean
+    type: int
+    width: 32
+    description: |
+      If `mstatus.TW`=1 and WFI is executed in any less-privileged mode than M-mode
+      the WFI instruction causes an illegal-instruction exception if MSTATUS_TW_TIME_LIMIT cycles have passed since
+      the WFI instruction began execution.
   - name: MSTATUS_TW_ALWAYS_ILLEGAL
     impl-def: MSTATUS_TW_ALWAYS_ILLEGAL
     type: boolean
+    description: |
+      Does the implementation have WFI always raise an illegal-instruction exception in modes less privileged than M when
+      TW=1, even if there are pending globally-disabled interrupts when the instruction is executed?
   - name: MSTATUS_FS_RDONLY0_S_NO_F
     impl-def: MSTATUS_FS_RDONLY0_S_NO_F
     type: boolean
+    description: |
+      Is `mstatus.FS` read-only zero? Only allowed to be read-only zero if S-mode is implemented but the F extension is not.
   - name: MSTATUS_VS_RDONLY0_S_NO_V
     impl-def: MSTATUS_VS_RDONLY0_S_NO_V
     type: boolean
+    description: |
+      Is `mstatus.VS` read-only zero? Only allowed to be read-only zero if S-mode is implemented but the V register are not.
   - name: MSTATUS_FS_IMPRECISE
-    impl-def: MSTATUS_FS_IMPRECISE
-    type: boolean
-  - name: MSTATUS_FS_NO_DIRTY_TRACK
-    impl-def: MSTATUS_FS_NO_DIRTY_TRACK
-    type: boolean
+    impl-defs: [MSTATUS_FS_IMPRECISE, MSTATUS_FS_NO_DIRTY_TRACK]
+    type: [PreciseDirty, Other]
+    description: |
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! PreciseDirty ! Only set `mstatus.FS`` to Dirty only when floating-point state is changed
+      ! NoDirtyTracking ! Dirtiness isn't tracked so the only valid FS states are Off and Dirty,
+                          and an attempt to set `mstatus.FS` to Initial or Clean causes it to be set to Dirty.
+      ! Other ! Unpredictable behavior
+      !===
   - name: MSTATUS_FS_NO_CHANGE_DIRTY
     impl-def: MSTATUS_FS_NO_CHANGE_DIRTY
     type: boolean
-  - name: MSTATUS_VS_IMPRECISE
+    description: |
+      When an instruction explicitly or implicitly writes a floating-point register or the fcsr
+      but does not alter its contents and FS=Initial or FS=Clean, does the implementation transition
+      `mstatus.FS` to Dirty?
+  - name: MSTATUS_VS_SW_DIRTY_UPDATE
     impl-def: MSTATUS_VS_IMPRECISE
-    type: boolean
+    type: [DirtyWhenInitOrClean, Other]
+    description: |
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! DirtyWhenInitOrClean ! Implementation sets `mstatus.VS` to Dirty when software attempts to set VS to Initial or Clean
+      ! Other ! Unpredictable behavior
+      !===
   - name: MSTATUS_VS_NO_CHANGE_DIRTY
     impl-def: MSTATUS_VS_NO_CHANGE_DIRTY
     type: boolean
+    description: |
+      When an instruction that writes a vector register or vector CSR
+      but does not alter its contents and VS=Initial or VS=Clean, does the implementation transition
+      `mstatus.VS` to Dirty?
   - name: MTVEC_RDONLY
     impl-def: MTVEC_RDONLY
     type: boolean
-  - name: MTVEC_BASE_ALIGN_FUNC_MODE
+    description: Is the `mtvec` CSR read-only?
+  - name: MTVEC_BASE_ALIGN_DIRECT_MODE
     impl-def: MTVEC_BASE_ALIGN_FUNC_MODE
-    type: boolean
+    type: [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+    description: |
+      When `mtvec.MODE` is `Direct` (i.e., 0), `mtvec.BASE` is aligned to this value.
+  - name: MTVEC_BASE_ALIGN_VECTORED_MODE
+    impl-def: MTVEC_BASE_ALIGN_FUNC_MODE
+    type: [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+    description: |
+      When `mtvec.MODE` is `Vectored` (i.e., 1), `mtvec.BASE` is aligned to this value.
   - name: MEDELEG_OP
     impl-def: MEDELEG_OP
     type: boolean
+    array: [0, 63]
+    description: |
+      Is a bit in the `medeleg` CSR is writable?
+      Array index _i_ corresponds to bit _i_ of the `medeleg` CSR.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bit in `medeleg` is writable
+      ! false ! The corresponding bit in `medeleg` is not writable
+      !===
   - name: MIDELEG_OP
     impl-def: MIDELEG_OP
     type: boolean
+    array: [0, 63]
+    description: |
+      Is a bit in the `mideleg` CSR is writable?
+      Array index _i_ corresponds to bit _i_ of the `mideleg` CSR.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bit in `mideleg` is writable
+      ! false ! The corresponding bit in `mideleg` is not writable
+      !===
   - name: MIDELEG_RD1_LOWER_LEVEL
     impl-def: MIDELEG_RD1_LOWER_LEVEL
-    type: uint
-    width: 64
+    type: boolean
+    array: [0, 63]
+    description: |
+      Is a bit in the `mideleg` CSR is hardwired to 1?
+      Array index _i_ corresponds to bit _i_ of the `mideleg` CSR.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bit in `mideleg` is hardwired to 1
+      ! false ! The corresponding bit in `mideleg` is not hardwired to 1
+      !===
   - name: MIP_BITS_WR_OR_RDONLY
     impl-def: MIP_BITS_WR_OR_RDONLY
     type: boolean
+    array: [0, 63]
+    description: |
+      Is a bit in the `mip` CSR is writable?
+      Array index _i_ corresponds to bit _i_ of the `mip` CSR.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bit in `mip` is writable
+      ! false ! The corresponding bit in `mip` is not writable (i.e., it is read-only)
+      !===
   - names: [MIP_MSIP_MAYBE_RDONLY0, MIE_MSIE_MAYBE_RDONLY0]
     type: boolean
-    description: TBD
+    description: Are the `mip.MSIP` and `mie.MSIE` both read-only zero?
   - name: MSIP_UPDATE_MAX_TIME
     impl-def: MSIP_UPDATE_MAX_TIME
-    type: boolean
+    type: dword
+    description: |
+      Maximum time in cycles for a store to memory-mapped register `msip` to be reflected in `mip.MSIP`.
 
   # CSR mcycle
   - name: MCYCLE_SHARED
     impl-def: MCYCLE_SHARED
     type: boolean
-  - name: MHPMCOUNTER_N_RDONLY0
-    impl-def: MHPMCOUNTER_N_RDONLY0
-    type: boolean
-  - name: MHPMCOUNTER_N_SZ
-    impl-def: MHPMCOUNTER_N_SZ
-    type: uint
-    width: 64
-  # CSR mhpmevent[31:3]
+    description: |
+      Is the mcycle CSR shared between harts on the same core, in which case writes to mcycle
+      will be visible to those harts.
+
+  # CSR mhpmcounter[31:3] and mhpmevent[31:3]
   - name: MHPMEVENT_N_RDONLY0
     impl-def: MHPMEVENT_N_RDONLY0
     type: boolean
+    array: [3, 31]
+    description: |
+      Is the same bit in the `mhpmcounter[31:3]` and `mhpmevent[31:3]` CSRs read-only zero?
+      Array index _i_ corresponds to bit _i_ of each of the CSRs.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! true ! The corresponding bits in `mhpmcounter` and `mhpmevent` are read-only zero
+      ! false ! The corresponding bits in `mhpmcounter` and `mhpmevent` are not read-only zero
+      !===
 
   # CSR mcounteren
   - name: MCOUNTEREN_CY_RDONLY0

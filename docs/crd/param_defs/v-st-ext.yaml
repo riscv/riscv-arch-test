@@ -21,7 +21,7 @@ parameter_definitions:
     impl-def: VLEN
     type: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
     description: Maximum size of vector register in bits
-  - name: HW_MSTATUS_VS_DIRTY_UPDATE
+  - name: MSTATUS_VS_HW_DIRTY_UPDATE
     impl-def: HW_MSTATUS_VS_DIRTY_UPDATE
     type: [PreciseDirty, Other]
     description: |

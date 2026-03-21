@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-rv32-max
+name: imperasfpm-rv32-max
 description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }

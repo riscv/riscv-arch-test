@@ -8,6 +8,8 @@
 # Run all ELFs for a spike configuration in parallel
 ##################################
 
+from __future__ import annotations
+
 import argparse
 import os
 import shlex
@@ -18,7 +20,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 
-def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bool:
+def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool, env: dict | None = None) -> bool:
     """Run a single ELF and return (elf_path, passed, exit_code)."""
 
     # Create log file path
@@ -34,7 +36,7 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bo
         print(f"{' '.join(full_cmd)}\n", file=f)
         f.flush()
         result = subprocess.run(
-            full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False
+            full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False, env=env
         )
 
     failed = result.returncode != 0
@@ -66,8 +68,15 @@ def main() -> int:
         sys.exit(1)
 
     # Partial function with fixed command and log_dir
-    cmd = shlex.split(args.command)
-    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose)
+    # Strip leading KEY=VALUE tokens (shell env var assignments) from the command
+    tokens = shlex.split(args.command)
+    env_overrides: dict[str, str] = {}
+    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
+        key, _, value = tokens.pop(0).partition("=")
+        env_overrides[key] = value
+    cmd_env = {**os.environ, **env_overrides} if env_overrides else None
+    cmd = tokens
+    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose, env=cmd_env)
 
     failed = 0
 

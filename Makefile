@@ -96,8 +96,13 @@ qemu-rv64: elfs
 .PHONY: imperasfpm imperasfpm-max-rv32 imperasfpm-max-rv64
 
 # Add --trace to see a trace of the executed instructions for debug
-IMPERASFPM_RV32_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV32GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
-IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+#IMPERAS_TOOLS=config/imperasfpm/imperasfpm-rv32-max/imperas.ic
+
+IMPERASFPM_RV32_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-rv32-max/imperas.ic iss.exe --verbose --program
+IMPERASFPM_RV64_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-rv64-max/imperas.ic iss.exe --verbose --program
+#IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+#IMPERASFPM_RV32_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV32GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+#IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org --processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
 
 imperasfpm: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
 imperasfpm: elfs
@@ -113,7 +118,7 @@ imperasfpm-rv32: elfs
 
 imperasfpm-rv64: CONFIG_FILES = config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
 imperasfpm-rv64: elfs
-	./run_tests.py "$(IMPERASFPM_RV64_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs
+	./run_tests.py "$(IMPERASFPM_RV64_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs --verbose
 
 
 

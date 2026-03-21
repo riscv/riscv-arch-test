@@ -29,10 +29,10 @@
 #define RVMODEL_HALT_PASS  \
   li x1, 1                ;\
   la t0, tohost           ;\
-  _test_exit:      ;\
+  _test_exit:             ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
-    j _test_exit   ;\
+    j _test_exit          ;\
 
 
 # Terminate test with a fail indication.
@@ -40,10 +40,7 @@
 #define RVMODEL_HALT_FAIL \
   li x1, 3                ;\
   la t0, tohost           ;\
-  write_tohost_fail:      ;\
-    sw x1, 0(t0)          ;\
-    sw x0, 4(t0)          ;\
-    j write_tohost_fail   ;\
+  j _test_exit            ;\
 
 
 ##### IO #####

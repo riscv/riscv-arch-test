@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+# SPDX-License-Identifier: Apache-2.0
+
+source "https://rubygems.org"
+
+gem "udb", "~> 0.1.1"

@@ -92,6 +92,31 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+##### ImperasFPM test targets #####
+.PHONY: imperasfpm imperasfpm-max-rv32 imperasfpm-max-rv64
+
+# Add --trace to see a trace of the executed instructions for debug
+IMPERASFPM_RV32_CMD := iss.exe -processorvendor riscv.ovpworld.org -processorname riscv --variant RV32GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+IMPERASFPM_RV64_CMD := iss.exe -processorvendor riscv.ovpworld.org -processorname riscv --variant RV64GC --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0 --verbose --program
+
+imperasfpm: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
+imperasfpm: elfs
+	@exit_code=0; \
+	./run_tests.py "$(IMPERASFPM_RV64_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERASFPM_RV32_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+# Add --verbose to see the simulator commands
+imperasfpm-rv32: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml
+imperasfpm-rv32: elfs
+	./run_tests.py "$(IMPERASFPM_RV32_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs
+
+imperasfpm-rv64: CONFIG_FILES = config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
+imperasfpm-rv64: elfs
+	./run_tests.py "$(IMPERASFPM_RV64_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs
+
+
+
 
 ###### Test compilation targets ######
 .PHONY: elfs

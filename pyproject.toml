@@ -10,7 +10,7 @@ members = ["framework", "generators/testgen", "generators/coverage"]
 dev = [
     "pre-commit>=4.5.1",
     "pyright==1.1.408",
-    "ruff==0.15.5",
+    "ruff==0.15.6",
 ]
 
 ###### RUFF CONFIG #####

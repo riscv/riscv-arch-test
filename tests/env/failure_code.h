@@ -304,8 +304,8 @@
         # Get pointer to failure string (loaded from second embedded pointer after jal)
         # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
     #if __riscv_xlen == 64
-        lwu x6, 8(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
-        lw  x7, 12(DEFAULT_LINK_REG)      # load upper 32 bits
+        lwu x6, REGWIDTH(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
+        lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)      # load upper 32 bits
         slli x7, x7, 32
         or x6, x6, x7                     # combine into 64-bit value
     #else

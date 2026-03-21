@@ -48,7 +48,7 @@
 --override cpu*/ecode_mask=0x800000000000000F # for RV64
 
 # Misaligned access (Zicclsm) is supported
---override cpu*/unaligned=T
+--override cpu*/unaligned=F
 --override cpu*/unaligned_low_pri=T
 
 # Timeout

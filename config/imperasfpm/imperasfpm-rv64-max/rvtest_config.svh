@@ -6,7 +6,7 @@
 // It defines which extensions are enabled for that config.
 
 // Define XLEN, used in covergroups
-`define XLEN32
+`define XLEN64
 `define FLEN128
 `define VLEN1024
 
@@ -42,7 +42,6 @@
 `define ZCD_SUPPORTED
 `define ZAAMO_SUPPORTED
 `define ZALRSC_SUPPORTED
-`define ZCF_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

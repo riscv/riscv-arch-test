@@ -45,7 +45,7 @@
 --override cpu*/ecode_mask=0x8000000F  # for RV32
 
 # Misaligned access (Zicclsm) is not supported
---override cpu*/unaligned=F
+--override cpu*/unaligned=T
 
 # PMP Configuration
 --override cpu*/PMP_registers=16

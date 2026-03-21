@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1

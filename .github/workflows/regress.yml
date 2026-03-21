@@ -301,7 +301,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@v2
 
-      - run: git submodule update --init docs/docs-resources external/riscv-unified-db
+      - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
         run: cd docs/ctp && make -j2

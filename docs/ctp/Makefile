@@ -156,7 +156,7 @@ normrules:
 	@echo "Generating normative rule tables...."
 	$(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
 	@echo "Generating parameter rule tables...."
-	$(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --udb $(REPO_ROOT)/external/riscv-unified-db/spec/std/isa/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
+	$(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

@@ -31,6 +31,8 @@ def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bo
         print(f"\nRunning {' '.join(full_cmd)}")
 
     with log_file.open("w") as f:
+        print(f"{' '.join(full_cmd)}\n", file=f)
+        f.flush()
         result = subprocess.run(
             full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False
         )

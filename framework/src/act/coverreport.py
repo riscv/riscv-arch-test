@@ -10,11 +10,24 @@
 import argparse
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 HEADER_LINE = "Covergroup                                             Metric       Goal       Bins    Status"
 TYPE_LINE_PATTERN = re.compile(r"^\s*TYPE\s+(.+?)\s*$")
 COVERGROUP_PREFIX = "/RISCV_coverage_pkg/RISCV_coverage__1/"
+
+
+def _ansi(code: str, text: str) -> str:
+    return f"\033[{code}m{text}\033[0m" if sys.stdout.isatty() else text
+
+
+def _red(text: str) -> str:
+    return _ansi("1;31", text)
+
+
+def _green(text: str) -> str:
+    return _ansi("1;32", text)
 
 
 def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
@@ -41,13 +54,13 @@ def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
     avg_coverage = sum(percentages) / len(percentages) if percentages else 0.0
 
     if partial_lines:
-        print(f" RVCP: {config_name} Coverage FAIL")
+        print(_red(f" RVCP: {config_name} Coverage FAIL"))
         print(f"  {num_covergroups} covergroups, average coverage {avg_coverage:.2f}%")
         print(f"  Partially covered covergroups: {len(partial_lines)}")
         for line in partial_lines:
             print(f"    {line}")
     else:
-        print(f" RVCP: {config_name} Coverage PASS")
+        print(_green(f" RVCP: {config_name} Coverage PASS"))
         print(f"  {num_covergroups} covergroups all with 100% coverage")
 
 

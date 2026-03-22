@@ -53,6 +53,17 @@
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
+--override cpu*/Zk=T
+--override cpu*/Zks=T
+--override cpu*/Zbk=T
+--override cpu*/Zbkb=T
+--override cpu*/Zbkx=T
+--override cpu*/Zknd=T
+--override cpu*/Zkne=T
+--override cpu*/Zknh=T
+--override cpu*/Zksed=T
+--override cpu*/Zksh=T
+
 
 # PMA Settings
 # 'r': read access allowed

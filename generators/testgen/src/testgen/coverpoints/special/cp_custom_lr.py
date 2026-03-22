@@ -10,23 +10,23 @@
 from testgen.asm.helpers import return_test_regs, to_hex, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
-from testgen.formatters import format_single_test
+from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_custom_lr")
-def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for load-reserved coverpoints."""
     if instr_type != "LR":
         raise ValueError(
             f"cp_custom_lr coverpoint generator only supports LR-type instructions, got {instr_type} for {instr_name}."
         )
 
-    test_cases: list[TestCase] = []
+    test_chunks: list[TestChunk] = []
 
-    # cp_custom_aqrl — inline assembly, wrap as single TestCase
-    tc = test_data.begin_testcase()
+    # cp_custom_aqrl — inline assembly, wrap as single TestChunk
+    tc = test_data.begin_test_chunk()
     test_lines: list[str] = []
 
     for suffix in ["", ".aq", ".aqrl"]:
@@ -56,16 +56,16 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
         return_test_regs(test_data, params)
 
     tc.code = "\n".join(test_lines)
-    test_cases.append(test_data.end_testcase())
+    test_chunks.append(test_data.end_test_chunk())
 
-    # cp_custom_rd_edges — uses format_single_test, each produces its own TestCase
+    # cp_custom_rd_edges — uses format_single_testcase, each produces its own TestChunk
     edges = [0, 1, -1]
     for edge_val in edges:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0], temp_val=edge_val)
         desc = f"cp_custom_rd_edges (Test source rs1 value = {test_data.xlen_format_str.format(edge_val)})"
-        test_cases.append(
-            format_single_test(instr_name, instr_type, test_data, params, desc, f"{edge_val}", "cp_custom_rd_edges")
+        test_chunks.append(
+            format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{edge_val}", "cp_custom_rd_edges")
         )
         return_test_regs(test_data, params)
 
-    return test_cases
+    return test_chunks

@@ -11,14 +11,14 @@ from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
-def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for alignment coverpoints."""
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     if coverpoint == "cp_align_byte":
         alignments = [0, 1, 2, 3, 4, 5, 6, 7]
     elif coverpoint == "cp_align_hword":
@@ -143,4 +143,4 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
         return_test_regs(test_data, params)
 
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]

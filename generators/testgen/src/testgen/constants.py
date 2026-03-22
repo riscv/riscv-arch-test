@@ -26,9 +26,8 @@ def indent_asm(line: str) -> str:
 # Test Generation Configuration
 # =============================================================================
 
-# Max testcases per file before splitting. Individual coverpoints won't be split,
-# so if one coverpoint exceeds this, the file will exceed this limit.
-# TODO: Currently only applies to unpriv tests. Should this apply to priv tests too?
+# Max testcases per test file before splitting into multiple files. Individual test
+# chunks won't be split, so if one test chunk exceeds this, the file will exceed this limit.
 TESTCASES_PER_FILE = 1000
 
 # =============================================================================

@@ -78,6 +78,6 @@ def format_cs_type(
         "nop",
         "#endif",
     ]
-    assert test_data.testcase is not None
-    test_data.testcase.sigupd_count += 1
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.sigupd_count += 1
     return (setup, test, check)

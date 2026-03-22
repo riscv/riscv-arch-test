@@ -13,7 +13,7 @@ from pathlib import Path
 from testgen.asm.sections import generate_test_data_section, generate_test_string_section
 from testgen.constants import indent_asm
 from testgen.data.config import TestConfig
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.io.templates import insert_footer_template, insert_header_template
 
 SIGUPD_MARGIN = 10
@@ -22,7 +22,7 @@ SIGUPD_MARGIN = 10
 def write_test_file(
     test_config: TestConfig,
     instr_name: str | None,
-    test_cases: list[TestCase],
+    test_chunks: list[TestChunk],
     output_dir: Path,
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
@@ -33,17 +33,17 @@ def write_test_file(
     Args:
         test_config: Test configuration
         instr_name: Instruction name (None for priv tests)
-        test_cases: List of TestCase objects containing assembly code and data
+        test_chunks: List of TestChunk objects containing assembly code and data
         output_dir: Directory to write the test file to
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
     """
     testsuite = test_config.testsuite
 
-    # Combine data from all test cases
-    data_values = [v for tc in test_cases for v in tc.data_values]
-    data_strings = [s for tc in test_cases for s in tc.data_strings]
-    sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_cases)
+    # Combine data from all test chunks
+    data_values = [v for tc in test_chunks for v in tc.data_values]
+    data_strings = [s for tc in test_chunks for s in tc.data_strings]
+    sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
 
     # Construct filename and paths
     if instr_name is not None:
@@ -57,10 +57,10 @@ def write_test_file(
     # Test header
     header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
 
-    # Main test body: banner comment before coverpoint sections, 1 blank line between testcases
+    # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
     body = ""
-    for i, tc in enumerate(test_cases):
+    for i, tc in enumerate(test_chunks):
         if tc.section_header:
             # Banner comment before coverpoint sections
             body += tc.section_header + "\n\n"

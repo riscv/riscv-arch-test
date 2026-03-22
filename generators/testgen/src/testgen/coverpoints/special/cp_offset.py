@@ -11,14 +11,14 @@ from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_offset")
-def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for backward branch negative offsets."""
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
 
     test_lines: list[str] = ["# Testcase cp_offset negative bin (positive bin is covered by other coverpoints)"]
     if instr_name == "c.jalr":
@@ -110,7 +110,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
 
     return_test_regs(test_data, params)
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]
 
 
 def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> list[str]:

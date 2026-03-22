@@ -18,7 +18,7 @@ from testgen.constants import (
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -73,7 +73,7 @@ def _generate_unpriv_tests_for_instruction(
 ) -> None:
     """
     Generate tests for a specific instruction based on its coverpoints.
-    Splits tests into multiple parts if they exceed TESTCASES_PER_FILE.
+    Splits test chunks into multiple test files if they exceed TESTCASES_PER_FILE.
 
     Args:
         instr_name: Instruction mnemonic (e.g., 'add', 'lw')
@@ -83,45 +83,45 @@ def _generate_unpriv_tests_for_instruction(
         output_dir: Directory to output generated tests
     """
     test_data = TestData(test_config, instr_name)
-    all_testcases: list[TestCase] = []
+    all_test_chunks: list[TestChunk] = []
 
-    # Iterate through each coverpoint and generate tests
+    # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count if mixed with other coverpoints
         if coverpoint == "cp_asm_count" and len(coverpoints) > 1:
             continue
 
-        all_testcases.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
+        all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
-    # Split into files and write
-    test_chunks = _split_testcases(all_testcases, TESTCASES_PER_FILE)
-    for file_idx, test_chunk in enumerate(test_chunks):
-        write_test_file(test_config, instr_name, test_chunk, output_dir, file_idx)
+    # Split into test files and write
+    test_files = _split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
+    for file_idx, test_file_chunks in enumerate(test_files):
+        write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx)
 
     # Clean up (make sure all registers were returned)
     test_data.destroy()
 
 
-def _split_testcases(test_cases: list[TestCase], max_per_file: int) -> list[list[TestCase]]:
-    """Split a list of TestCases into chunks that don't exceed max_per_file testcases each."""
+def _split_test_chunks(test_chunks: list[TestChunk], max_per_file: int) -> list[list[TestChunk]]:
+    """Split a list of TestChunks into groups that don't exceed max_per_file testcases each."""
     # Check for empty list
-    if not test_cases:
-        raise ValueError("No test cases provided!")
+    if not test_chunks:
+        raise ValueError("No test chunks provided!")
 
-    test_chunks: list[list[TestCase]] = []
-    current_chunk: list[TestCase] = []
+    test_files: list[list[TestChunk]] = []
+    current_file_chunks: list[TestChunk] = []
     count = 0
 
-    # Iterate over all testcases and break into chunks
-    for tc in test_cases:
-        if count > 0 and count + tc.num_tests > max_per_file:
-            test_chunks.append(current_chunk)
-            current_chunk = []
+    # Iterate over all test chunks and group into test files
+    for tc in test_chunks:
+        if count > 0 and count + tc.num_testcases > max_per_file:
+            test_files.append(current_file_chunks)
+            current_file_chunks = []
             count = 0
-        current_chunk.append(tc)
-        count += tc.num_tests
+        current_file_chunks.append(tc)
+        count += tc.num_testcases
 
-    # Add final chunk
-    if current_chunk:
-        test_chunks.append(current_chunk)
-    return test_chunks
+    # Add final file
+    if current_file_chunks:
+        test_files.append(current_file_chunks)
+    return test_files

@@ -354,6 +354,7 @@ def gen_coverage_tasks(
     base_dir: Path,
     config_report_dir: Path,
     dut_header_dir: Path,
+    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -425,7 +426,7 @@ def gen_coverage_tasks(
             BuildTask(
                 outputs=(overall_summary,),
                 deps=report_deps,
-                action=PythonAction(fn=merge_summaries, args=(sorted(coverage_reports), overall_summary)),
+                action=PythonAction(fn=merge_summaries, args=(sorted(coverage_reports), overall_summary, config_name)),
             )
         )
 
@@ -590,6 +591,7 @@ def generate_build_plan(
                         config_coverage_dir,
                         config_report_dir,
                         config.dut_include_dir,
+                        config.name,
                     )
                 )
 

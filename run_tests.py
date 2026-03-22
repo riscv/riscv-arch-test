@@ -152,7 +152,7 @@ def main() -> int:
     failed = 0
 
     print(f"\n{bold('Running')} {len(elf_files)} tests in {elf_dir}")
-    print(f"  Command: {args.command}\n")
+    print(f"  Command: {args.command}")
 
     # Run individual tests
     with Pool(args.jobs) as pool:

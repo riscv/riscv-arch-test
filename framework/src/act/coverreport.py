@@ -17,6 +17,40 @@ TYPE_LINE_PATTERN = re.compile(r"^\s*TYPE\s+(.+?)\s*$")
 COVERGROUP_PREFIX = "/RISCV_coverage_pkg/RISCV_coverage__1/"
 
 
+def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
+    """Print a human-readable coverage summary from an _overall_summary.txt file."""
+    lines = overall_summary.read_text().splitlines()
+    data_lines = [l for l in lines[1:] if l.strip()]
+
+    num_covergroups = len(data_lines)
+    percentages: list[float] = []
+    partial_lines: list[str] = []
+
+    for line in data_lines:
+        parts = line.split()
+        if not parts:
+            continue
+        try:
+            pct = float(parts[1].rstrip("%"))
+        except (IndexError, ValueError):
+            continue
+        percentages.append(pct)
+        if pct < 100.0:
+            partial_lines.append(line)
+
+    avg_coverage = sum(percentages) / len(percentages) if percentages else 0.0
+
+    if partial_lines:
+        print(f" RVCP: {config_name} Coverage FAIL")
+        print(f"  {num_covergroups} covergroups, average coverage {avg_coverage:.2f}%")
+        print(f"  Partially covered covergroups: {len(partial_lines)}")
+        for line in partial_lines:
+            print(f"    {line}")
+    else:
+        print(f" RVCP: {config_name} Coverage PASS")
+        print(f"  {num_covergroups} covergroups all with 100% coverage")
+
+
 def remove_duplicates_after_second_header(file_path: Path) -> None:
     """Remove duplicates that appear after the second summary header."""
     unique_lines_before_header: set[str] = set()

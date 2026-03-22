@@ -113,7 +113,7 @@ imperasfpm: elfs
 # Add --verbose to run_tests.py arguments to see the simulator commands
 imperasfpm-rv32: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml
 imperasfpm-rv32: elfs
-	./run_tests.py "$(IMPERASFPM_RV32_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs
+	./run_tests.py "$(IMPERASFPM_RV32_MAX_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs
 
 imperasfpm-rv64: CONFIG_FILES = config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
 imperasfpm-rv64: elfs

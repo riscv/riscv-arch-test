@@ -14,6 +14,28 @@
 # build targets for generating documentation in various formats (PDF, HTML).
 
 REPO_ROOT := $(shell git rev-parse --show-toplevel)
+
+# Tool management — use mise if available, fall back to direct tool detection
+MISE := $(shell command -v mise 2> /dev/null)
+ifneq ($(MISE),)
+  PYTHON_RUNNER := $(MISE) exec -- uv run
+else
+  # Check for uv (needed for Python dependencies if not using mise)
+  UV := $(shell command -v uv 2> /dev/null)
+  ifneq ($(UV),)
+    PYTHON_RUNNER := $(UV) run
+  else
+    PYTHON_RUNNER :=
+    $(warning "Warning: Neither mise nor uv found. Running without uv, but there may be dependency issues. See the README for more information.")
+  endif
+
+  # Check for Ruby/Bundler (needed for UDB gem when not using mise)
+  BUNDLE := $(shell command -v bundle 2> /dev/null)
+  ifeq ($(BUNDLE),)
+    $(error "Error: Neither mise nor bundle found. Ruby and Bundler are required for UDB. See the README for more information.")
+  endif
+endif
+
 DOCS := ctp
 
 DATE ?= $(shell date +%Y-%m-%d)
@@ -146,7 +168,7 @@ testplans: $(TESTPLANS)
 	@echo "Generating test plan tables..."
 	@if [ -d $(REPO_ROOT)/testplans ]; then \
 		rm -rf $(GENERATED_DIR)/testplans; \
-		mise exec -- $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 10; \
+		$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi
@@ -154,9 +176,9 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	mise exec -- $(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
+	$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
 	@echo "Generating parameter rule tables...."
-	mise exec -- $(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
+	$(PYTHON_RUNNER) $(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

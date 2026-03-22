@@ -67,7 +67,7 @@ def extract_extensions(exts_str: str) -> list[str]:
         "S>=0" -> ["S"]
         "(Zicbom>=0 || Zicbop>=0 || Zicboz>=0)" -> ["Zicbom", "Zicbop", "Zicboz"]
     """
-    extensions = re.findall(r"\b([A-Z][A-Za-z0-9_]*)\s*(?:>=|<=|==|>|<)", exts_str)
+    extensions = re.findall(r"\b([A-Z][A-Za-z0-9]*)\s*(?:>=|<=|==|>|<)", exts_str)
 
     # Remove duplicates while preserving order
     seen: set[str] = set()

@@ -52,7 +52,7 @@ else
 
   # Check for Ruby/Bundler (needed for UDB gem when not using mise)
   BUNDLE := $(shell command -v bundle 2> /dev/null)
-  ifndef BUNDLE
+  ifeq ($(BUNDLE),)
     $(error "Error: Neither mise nor bundle found. Ruby and Bundler are required for UDB. See the README for more information.")
   endif
 endif

@@ -68,7 +68,7 @@ mise --version
 >
 > For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
 >
-> For alternate installation instructions that do not require mise, see [Advanced Installation - COMING SOON]().
+> For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
 
 #### 3. RISC-V Compiler (GCC or LLVM)
 

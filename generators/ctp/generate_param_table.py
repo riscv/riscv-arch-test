@@ -173,7 +173,7 @@ def extract_extensions(exts_str: str) -> list[str]:
     """
     # Match extension names: sequences of word characters that start with an uppercase letter,
     # followed by a version comparison operator (>=, <=, ==, >, <)
-    extensions = re.findall(r"\b([A-Z][A-Za-z0-9_]*)\s*(?:>=|<=|==|>|<)", exts_str)
+    extensions = re.findall(r"\b([A-Z][A-Za-z0-9]*)\s*(?:>=|<=|==|>|<)", exts_str)
 
     # Remove duplicates while preserving order
     seen: set[str] = set()

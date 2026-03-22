@@ -21,9 +21,43 @@ import argparse
 import csv
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+
+def _ensure_udb_installed() -> None:
+    """Ensure the UDB gem is installed via bundler, installing if necessary."""
+    if shutil.which("udb") is not None:
+        return
+
+    gemfile = Path(__file__).resolve().parent.parent.parent / "framework" / "src" / "act" / "data" / "Gemfile"
+    if not gemfile.exists():
+        print(
+            "Error: 'udb' command not found and Gemfile not found. Install the udb gem (see README).", file=sys.stderr
+        )
+        sys.exit(2)
+
+    try:
+        subprocess.run(["bundle", "check"], check=True, cwd=gemfile.parent, capture_output=True, text=True)
+    except FileNotFoundError:
+        print(
+            "Error: 'udb' and 'bundle' commands not found. See the README for installation instructions.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+    except subprocess.CalledProcessError:
+        print("UDB gem missing or out of date; running 'bundle install'...")
+        try:
+            subprocess.run(["bundle", "install"], check=True, cwd=gemfile.parent)
+        except subprocess.CalledProcessError:
+            print("Error: 'bundle install' failed. Check Ruby and bundler installation.", file=sys.stderr)
+            sys.exit(2)
+
+    if shutil.which("udb") is None:
+        print("Error: 'udb' command still not found after 'bundle install'.", file=sys.stderr)
+        sys.exit(2)
 
 
 def extract_extensions(exts_str: str) -> list[str]:
@@ -58,6 +92,7 @@ def main() -> None:
     output_csv = args.output
 
     # Load parameters via udb gem CLI
+    _ensure_udb_installed()
     try:
         result = subprocess.run(
             ["udb", "list", "parameters", "-f", "json"],

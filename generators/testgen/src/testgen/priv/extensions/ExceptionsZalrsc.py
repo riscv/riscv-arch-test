@@ -9,6 +9,7 @@
 """Zalrsc extension exception test generator."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -25,18 +26,18 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
-                f"    LA(x{addr_reg}, scratch)",
-                f"    addi x{addr_reg}, x{addr_reg}, {offset}",
-                f"    LI(x{check_reg}, 0xBAD)",
+                f"LA(x{addr_reg}, scratch)",
+                f"addi x{addr_reg}, x{addr_reg}, {offset}",
+                f"LI(x{check_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
-                f"    lr.w x{check_reg}, (x{addr_reg})",
-                "    nop",
+                f"lr.w x{check_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(check_reg, test_data),
                 "#if __riscv_xlen == 64",
-                f"    LI(x{check_reg}, 0xBAD)",
+                f"LI(x{check_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
-                f"    lr.d x{check_reg}, (x{addr_reg})",
-                "    nop",
+                f"lr.d x{check_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(check_reg, test_data),
                 "#endif",
                 "",
@@ -60,48 +61,49 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
-                f"    LA(x{base_reg}, scratch)",
-                f"    addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
-                f"    LI(x{data_reg}, 0xDECAFCAB)",
-                f"    LI(x{temp_reg}, 0xBAD)",
+                f"LA(x{base_reg}, scratch)",
+                f"addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
+                f"LI(x{data_reg}, 0xDECAFCAB)",
+                f"LI(x{temp_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
-                f"    lr.w x{temp_reg}, (x{addr_reg})",  # establish reservation
-                "    nop",
-                f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+                f"lr.w x{temp_reg}, (x{addr_reg})",  # establish reservation
+                "nop",
+                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
                 test_data.add_testcase(f"sc.w_off{offset}", coverpoint, covergroup),
-                f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
-                "    nop",
+                f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(temp_reg, test_data),
                 write_sigupd(rd_reg, test_data),
-                f"    lw x{check_reg}, 0(x{base_reg})",
+                f"{INDENT}# Check scratch region",
+                f"lw x{check_reg}, 0(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 4(x{base_reg})",
+                f"lw x{check_reg}, 4(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 8(x{base_reg})",
+                f"lw x{check_reg}, 8(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 12(x{base_reg})",
+                f"lw x{check_reg}, 12(x{base_reg})",
                 write_sigupd(check_reg, test_data),
                 "#if __riscv_xlen == 64",
-                f"    LI(x{temp_reg}, 0xBAD)",
+                f"LI(x{temp_reg}, 0xBAD)",
                 test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
-                f"    lr.d x{temp_reg}, (x{addr_reg})",  # establish reservation
-                "    nop",
-                f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+                f"lr.d x{temp_reg}, (x{addr_reg})",  # establish reservation
+                "nop",
+                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
                 test_data.add_testcase(f"sc.d_off{offset}", coverpoint, covergroup),
-                f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
-                "    nop",
+                f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(temp_reg, test_data),
                 write_sigupd(rd_reg, test_data),
-                f"    lw x{check_reg}, 0(x{base_reg})",
+                f"{INDENT}# Check scratch region",
+                f"lw x{check_reg}, 0(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 4(x{base_reg})",
+                f"lw x{check_reg}, 4(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 8(x{base_reg})",
+                f"lw x{check_reg}, 8(x{base_reg})",
                 write_sigupd(check_reg, test_data),
-                f"    lw x{check_reg}, 12(x{base_reg})",
+                f"lw x{check_reg}, 12(x{base_reg})",
                 write_sigupd(check_reg, test_data),
                 "#endif",
-                "",
             ]
         )
     test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg, base_reg, temp_reg, check_reg])
@@ -115,17 +117,18 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(coverpoint),
-        f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        f"    LI(x{check_reg}, 0xBAD)",
+        "",
+        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_load_access_fault", coverpoint, covergroup),
-        f"    lr.w x{check_reg}, (x{addr_reg})",
-        "    nop",
+        f"lr.w x{check_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(check_reg, test_data),
         "#if __riscv_xlen == 64",
-        f"    LI(x{check_reg}, 0xBAD)",
+        f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.d_load_access_fault", coverpoint, covergroup),
-        f"    lr.d x{check_reg}, (x{addr_reg})",
-        "    nop",
+        f"lr.d x{check_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(check_reg, test_data),
         "#endif",
         "",
@@ -142,18 +145,19 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
 
     lines = [
         comment_banner(coverpoint),
-        f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        f"    addi x{addr_reg}, x{addr_reg}, 1",
-        f"    LI(x{check_reg}, 0xBAD)",
+        "",
+        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"addi x{addr_reg}, x{addr_reg}, 1",
+        f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
-        f"    lr.w x{check_reg}, (x{addr_reg})",
-        "    nop",
+        f"lr.w x{check_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(check_reg, test_data),
         "#if __riscv_xlen == 64",
-        f"    LI(x{check_reg}, 0xBAD)",
+        f"LI(x{check_reg}, 0xBAD)",
         test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
-        f"    lr.d x{check_reg}, (x{addr_reg})",
-        "    nop",
+        f"lr.d x{check_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(check_reg, test_data),
         "#endif",
         "",
@@ -171,28 +175,29 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     # QEMU issue: https://gitlab.com/qemu-project/qemu/-/issues/3323
     lines = [
         comment_banner(coverpoint),
-        f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        f"    LI(x{data_reg}, 0xADDEDCAB)",
-        f"    LI(x{temp_reg}, 0xBAD)",
+        "",
+        f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        f"LI(x{data_reg}, 0xADDEDCAB)",
+        f"LI(x{temp_reg}, 0xBAD)",
         test_data.add_testcase("lr.w_store_fault", coverpoint, covergroup),
-        f"    lr.w x{temp_reg}, (x{addr_reg})",
-        "    nop",
-        f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+        f"lr.w x{temp_reg}, (x{addr_reg})",
+        "nop",
+        f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
         test_data.add_testcase("sc.w_fault", coverpoint, covergroup),
-        f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
-        "    nop",
+        f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(temp_reg, test_data),
         write_sigupd(rd_reg, test_data),
         "#if __riscv_xlen == 64",
-        f"    LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",
-        f"    LI(x{temp_reg}, 0xBAD)",
+        f"LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",
+        f"LI(x{temp_reg}, 0xBAD)",
         test_data.add_testcase("lr.d_store_fault", coverpoint, covergroup),
-        f"    lr.d x{temp_reg}, (x{addr_reg})",
-        "    nop",
-        f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+        f"lr.d x{temp_reg}, (x{addr_reg})",
+        "nop",
+        f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
         test_data.add_testcase("sc.d_fault", coverpoint, covergroup),
-        f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
-        "    nop",
+        f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
+        "nop",
         write_sigupd(temp_reg, test_data),
         write_sigupd(rd_reg, test_data),
         "#endif",
@@ -212,29 +217,29 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            f"    LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f"    addi x{addr_reg}, x{addr_reg}, 1",
-            f"    LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
-            f"    LI(x{temp_reg}, 0xDECAFCAB)",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"addi x{addr_reg}, x{addr_reg}, 1",
+            f"LI(x{data_reg}, 0xDECAFCAB)",  # Match original value
+            f"LI(x{temp_reg}, 0xDECAFCAB)",
             test_data.add_testcase("lr.w_off1_priority", coverpoint, covergroup),
-            f"    lr.w x{temp_reg}, (x{addr_reg})",
-            "    nop",
-            f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            f"lr.w x{temp_reg}, (x{addr_reg})",
+            "nop",
+            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
             test_data.add_testcase("sc.w_off1_priority", coverpoint, covergroup),
-            f"    sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
-            "    nop",
+            f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
+            "nop",
             write_sigupd(temp_reg, test_data),
             write_sigupd(rd_reg, test_data),
             "#if __riscv_xlen == 64",
-            f"    LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",  # Match original value
-            f"    LI(x{temp_reg}, 0xDECAFCAB)",
+            f"LI(x{data_reg}, 0xDEADBEEFDECAFCAB)",  # Match original value
+            f"LI(x{temp_reg}, 0xDECAFCAB)",
             test_data.add_testcase("lr.d_off1_priority", coverpoint, covergroup),
-            f"    lr.d x{temp_reg}, (x{addr_reg})",
-            "    nop",
-            f"    addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            f"lr.d x{temp_reg}, (x{addr_reg})",
+            "nop",
+            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
             test_data.add_testcase("sc.d_off1_priority", coverpoint, covergroup),
-            f"    sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
-            "    nop",
+            f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
+            "nop",
             write_sigupd(temp_reg, test_data),
             write_sigupd(rd_reg, test_data),
             "#endif",
@@ -253,12 +258,12 @@ def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "# Initialize scratch memory with test data",
-            "    LA(x10, scratch)",
-            "    LI(x11, 0xDEADBEEF)",
-            "    sw x11, 0(x10)",
-            "    sw x11, 4(x10)",
-            "    sw x11, 8(x10)",
-            "    sw x11, 12(x10)",
+            "LA(x10, scratch)",
+            "LI(x11, 0xDEADBEEF)",
+            "sw x11, 0(x10)",
+            "sw x11, 4(x10)",
+            "sw x11, 8(x10)",
+            "sw x11, 12(x10)",
             "",
         ]
     )

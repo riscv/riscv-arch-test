@@ -46,12 +46,17 @@ def format_cfss_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
-    setup = [
-        test_data.int_regs.consume_registers([2]),  # sp (x2) is used as the base pointer for CSS instructions
-        load_float_reg("fs2", params.fs2, params.fs2val, test_data),
-        "LA(sp, scratch) # set sp to scratch space",
-        f"addi sp, sp, {-params.immval}  # adjust for offset",
-    ]
+    setup: list[str] = []
+    asm = test_data.int_regs.consume_registers([2])  # sp (x2) is used as the base pointer for CSS instructions
+    if asm:
+        setup.append(asm)
+    setup.extend(
+        [
+            load_float_reg("fs2", params.fs2, params.fs2val, test_data),
+            "LA(sp, scratch) # set sp to scratch space",
+            f"addi sp, sp, {-params.immval}  # adjust for offset",
+        ]
+    )
 
     test = [f"{instr_name} f{params.fs2}, {params.immval}(sp) # perform store"]
 

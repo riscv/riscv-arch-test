@@ -28,7 +28,6 @@ def make_cr_rs1_rs2_edges_offset(
 
     for edge_val1 in edges1:
         for edge_val2 in edges2:
-            test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
             assert params.rs1val is not None and params.rs2val is not None
@@ -51,6 +50,7 @@ def make_cr_rs1_rs2_edges_offset(
                     "3: # goes here during forward branch if taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 2b # backward branch, definitely taken",
                     "4: # done with test",
+                    "",
                 ]
             )
             return_test_regs(test_data, params)

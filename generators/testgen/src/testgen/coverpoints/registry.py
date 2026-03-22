@@ -12,7 +12,7 @@ from importlib import import_module
 from pathlib import Path
 from random import seed
 
-from testgen.asm.helpers import reproducible_hash
+from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.constants import SKIP_COVERPOINTS
 from testgen.data.state import TestData
 from testgen.data.testcase import TestCase
@@ -111,8 +111,8 @@ def generate_tests_for_coverpoint(
     seed(hashval)
     test_cases = generator(instr_name, instr_type, coverpoint, test_data)
 
-    # Prepend section label to first TestCase's code
+    # Set section banner on first TestCase
     if test_cases:
-        test_cases[0].code = f"\n\n{coverpoint}_tests:\n" + test_cases[0].code
+        test_cases[0].section_header = comment_banner(coverpoint)
 
     return test_cases

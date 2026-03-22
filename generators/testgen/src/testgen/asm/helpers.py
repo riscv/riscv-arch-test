@@ -10,6 +10,7 @@
 
 from typing import Literal
 
+from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 
@@ -55,7 +56,7 @@ def load_int_reg(name: str, reg: int, val: int, test_data: TestData) -> str:
     """Generate assembly to load an integer register with a specific value."""
     assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
     test_data.testcase.data_values.append(val)
-    return f"\tRVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.data_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
+    return f"{INDENT}RVTEST_TESTDATA_LOAD_INT(x{test_data.int_regs.data_reg}, x{reg}) # load {name}: x{reg} = {to_hex(val, test_data.xlen)}"
 
 
 def load_float_reg(
@@ -71,7 +72,7 @@ def load_float_reg(
 
     assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
     test_data.testcase.data_values.append(val)
-    return f"\tRVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
+    return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
 
 
 def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:
@@ -86,9 +87,9 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
     if sig_type == "int":
         test_data.testcase.sigupd_count += 1
         return (
-            f"\t# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
+            f"{INDENT}# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
             f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            f"\tRVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"{INDENT}RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
         )
     elif sig_type == "float":
         if test_data.flen > test_data.xlen:
@@ -96,10 +97,10 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
         else:
             test_data.testcase.sigupd_count += 2
         return (
-            f"\t# Check if f{check_reg} contains the expected result. Also checks fflags. "
+            f"{INDENT}# Check if f{check_reg} contains the expected result. Also checks fflags. "
             f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
             f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
-            f"\tRVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"{INDENT}RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
         )
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")

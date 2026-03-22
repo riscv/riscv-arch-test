@@ -46,21 +46,27 @@ def dim(text: str) -> str:
     return _color("2", text)
 
 
-def run_test(cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool) -> bool:
+def run_test(cmd: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool:
     """Run a single ELF and return True if the test failed."""
 
     # Create log file path
     log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
-    full_cmd = [*cmd, str(elf_path)]
+    full_cmd = f"{cmd} {shlex.quote(str(elf_path))}"
 
     if verbose:
-        print(f"\nRunning {' '.join(full_cmd)}")
+        print(f"\nRunning {full_cmd}")
 
     with log_file.open("w") as f:
         result = subprocess.run(
-            full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False
+            full_cmd,
+            shell=True,
+            stdin=subprocess.DEVNULL,
+            stdout=f,
+            stderr=subprocess.STDOUT,
+            timeout=5 * 60,
+            check=False,
         )
 
     # Check exit code
@@ -131,8 +137,7 @@ def main() -> int:
         sys.exit(1)
 
     # Partial function with fixed command and log_dir
-    cmd = shlex.split(args.command)
-    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose)
+    partial_run_test = partial(run_test, args.command, log_dir, verbose=args.verbose)
 
     failed = 0
 

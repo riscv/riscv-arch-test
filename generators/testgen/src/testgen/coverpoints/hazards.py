@@ -9,15 +9,15 @@
 
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_instruction
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_gpr_hazard", "cp_fpr_hazard")
-def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for register hazards (RAW, WAW, WAR)."""
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     # Extract hazard class from suffix (e.g., cp_gpr_hazard_r -> 'r')
     parts = coverpoint.split("_")
     haz_class = parts[-1] if len(parts) > 3 and parts[-1] in ["r", "w", "rw"] else "rw"
@@ -84,4 +84,4 @@ def make_cp_gpr_hazard(instr_name: str, instr_type: str, coverpoint: str, test_d
             test_data.int_regs.return_registers(params_b.used_int_regs)
 
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]

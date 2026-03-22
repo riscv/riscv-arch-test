@@ -27,8 +27,8 @@ def gen_csr_read_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> s
     Returns:
         Assembly line for the CSR read SIGUPD
     """
-    assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
-    test_data.testcase.sigupd_count += 1
+    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+    test_data.test_chunk.sigupd_count += 1
     return (
         f"{INDENT}# Read {csr_name} into x{check_reg} and check against expected.\n"
         f"RVTEST_SIGUPD_CSR_READ({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
@@ -50,8 +50,8 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     Returns:
         Assembly line for the CSR write SIGUPD
     """
-    assert test_data.testcase is not None, "No active testcase — call begin_testcase() first"
-    test_data.testcase.sigupd_count += 1
+    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+    test_data.test_chunk.sigupd_count += 1
     return (
         f"{INDENT}# Write x{check_reg} to {csr_name}, read back and check against expected.\n"
         f"RVTEST_SIGUPD_CSR_WRITE({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"

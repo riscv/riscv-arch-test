@@ -10,13 +10,13 @@
 from testgen.asm.helpers import write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 
 
 @add_coverpoint_generator("cp_cntr")
-def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for counter coverpoints."""
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     test_lines: list[str] = []
 
     # Allocate some registers for testing.
@@ -52,7 +52,7 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     test_data.int_regs.return_registers([r1, r2, r3])
 
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]
 
 
 def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_data: TestData) -> str:

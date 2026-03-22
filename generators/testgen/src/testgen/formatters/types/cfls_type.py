@@ -42,8 +42,8 @@ def format_cfls_type(
     params.immval = params.immval % (max_val + alignment)
 
     # Add value to load data region
-    assert test_data.testcase is not None
-    test_data.testcase.data_values.append(params.temp_val)
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.data_values.append(params.temp_val)
 
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CFLS instructions

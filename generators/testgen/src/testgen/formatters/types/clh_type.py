@@ -31,8 +31,8 @@ def format_clh_type(
     params.immval &= ~1
 
     # Add value to load data region
-    assert test_data.testcase is not None
-    test_data.testcase.data_values.append(params.temp_val)
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.data_values.append(params.temp_val)
 
     setup = [
         f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",

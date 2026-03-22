@@ -14,7 +14,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile, RegisterFile
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 
 __all__ = [
     "FLOAT_EDGES",
@@ -25,7 +25,7 @@ __all__ = [
     "InstructionParams",
     "IntegerRegisterFile",
     "RegisterFile",
-    "TestCase",
+    "TestChunk",
     "TestConfig",
     "TestData",
     "get_general_edges",

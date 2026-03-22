@@ -16,7 +16,7 @@ from typing import Literal
 
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
@@ -141,7 +141,7 @@ def format_instruction(
     return "\n".join(setup), "\n".join(test), "\n".join(check)
 
 
-def format_single_test(
+def format_single_testcase(
     instr_name: str,
     instr_type: str,
     test_data: TestData,
@@ -149,11 +149,11 @@ def format_single_test(
     desc: str,
     bin_name: str,
     coverpoint: str,
-) -> TestCase:
+) -> TestChunk:
     """
-    Generate a complete single-instruction test with setup and signature update.
+    Generate a complete single-instruction testcase with setup and signature update.
 
-    This is the main entry point for generating a full test case including:
+    This is the main entry point for generating a full testcase including:
     - Test description comment
     - Register initialization
     - The instruction itself
@@ -165,12 +165,12 @@ def format_single_test(
         test_data: Test data context
         params: Instruction parameters
         desc: Test description (e.g., "cp_rd (Test destination rd = x5)")
-        bin_name: Coverpoint bin covered by this test case
+        bin_name: Coverpoint bin covered by this testcase
         coverpoint: Coverpoint name
     Returns:
-        TestCase containing the complete test case
+        TestChunk containing the complete testcase
     """
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     test_lines = [f"# Testcase {desc}"]
 
     # Register the testcase label first so SIGUPD references the current testcase
@@ -190,4 +190,4 @@ def format_single_test(
         test_lines.append(check)
 
     tc.code = "\n".join(test_lines)
-    return test_data.end_testcase()
+    return test_data.end_test_chunk()

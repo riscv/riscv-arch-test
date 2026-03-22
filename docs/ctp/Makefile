@@ -146,7 +146,7 @@ testplans: $(TESTPLANS)
 	@echo "Generating test plan tables..."
 	@if [ -d $(REPO_ROOT)/testplans ]; then \
 		rm -rf $(GENERATED_DIR)/testplans; \
-		$(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 10; \
+		mise exec -- $(REPO_ROOT)/generators/ctp/transpose_csv.py $(REPO_ROOT)/testplans $(GENERATED_DIR)/testplans 10; \
 	else \
 		echo "No test plans directory found in source."; \
 	fi
@@ -154,9 +154,9 @@ testplans: $(TESTPLANS)
 
 normrules:
 	@echo "Generating normative rule tables...."
-	$(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
+	mise exec -- $(REPO_ROOT)/generators/ctp/generate_norm_table.py --yaml $(REPO_ROOT)/coverpoints/norm/ --out $(GENERATED_DIR)/norm --report mismatch_report.txt
 	@echo "Generating parameter rule tables...."
-	$(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
+	mise exec -- $(REPO_ROOT)/generators/ctp/generate_param_table.py --yaml $(REPO_ROOT)/coverpoints/param --norm-dir $(GENERATED_DIR)/norm --out $(GENERATED_DIR)/param/
 
 # Update docker image to latest
 docker-pull-latest:

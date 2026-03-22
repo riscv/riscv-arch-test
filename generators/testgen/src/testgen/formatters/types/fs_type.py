@@ -6,6 +6,7 @@
 ##################################
 
 from testgen.asm.helpers import load_float_reg, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -67,7 +68,7 @@ def format_fs_type(
         "#else",
         f"{instr_name} f{params.fs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
-        "# nops to ensure length matches SELFCHECK",
+        f"{INDENT}# nops to ensure length matches SELFCHECK",
         "nop",
         "nop",
         "nop",

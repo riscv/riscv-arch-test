@@ -48,7 +48,9 @@ def format_cfls_type(
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CFLS instructions
     # Ensure sp is allocated
-    setup.append(test_data.int_regs.consume_registers([2]))
+    asm = test_data.int_regs.consume_registers([2])
+    if asm:
+        setup.append(asm)
 
     setup.extend(
         [

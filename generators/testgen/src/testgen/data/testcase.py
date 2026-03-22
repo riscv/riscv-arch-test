@@ -27,3 +27,4 @@ class TestCase:
     data_strings: list[str] = field(default_factory=list)
     sigupd_count: int = 0
     num_tests: int = 0
+    section_header: str | None = None

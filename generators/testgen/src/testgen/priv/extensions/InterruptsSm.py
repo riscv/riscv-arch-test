@@ -365,9 +365,11 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
                 [
                     f"CSRW mie, x{r_mie_mask}",
                     "RVTEST_IDLE_FOR_INTERRUPT",
+                    "# Clear and disable interrupts to reset for next testcase",
                     "RVTEST_CLR_MEXT_INT",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                     "RVTEST_CLR_MSW_INT",
+                    "CSRW(mie, zero)",
                     "",
                 ]
             )

@@ -11,7 +11,6 @@
 
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
-from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 

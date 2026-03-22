@@ -7,52 +7,12 @@
 # Base configuration
 --processorvendor riscv.ovpworld.org
 --processorname riscv
---variant RV32GCK
+--variant RVI20U32
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
 
-# Bit manipulation
---override cpu*/add_Extensions=B
---override cpu*/misa_B_Zba_Zbb_Zbs=T
-
-# Cache block operations
---override cpu*/Zicbom=T
---override cpu*/Zicbop=T
---override cpu*/Zicboz=T
---override cmomp_bytes=64  # Zic64b
---override cmoz_bytes=64   # Zic64b
---override lr_sc_grain=4   # Za64rs requires <=64; we use native word size
-
-# Virtual memory
---override cpu*/Sv_modes=3 # SV32 supported
---override cpu*/Svadu=T # Enable SVADU hardware update of A/D bits when menvcfg.ADUE=1
---override cpu*/Svinval=T
-
-# Crypto extensions
---override cpu*/Zkr=T # Zkr entropy source and seed register
---override cpu*/Zksed=T # ShangMi Crypto
---override cpu*/Zksh=T # ShangMi Crypto
---override cpu*/mnoise_undefined=T # nonratified mnoise register not implemented
-
-# Miscellaneous extensions
---override cpu*/Zicond=T
---override cpu*/Zfh=T
---override cpu*/Zfa=T
---override cpu*/Zcb=T
---override cpu*/Sstc=T
-
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T
-
-# PMP Configuration
---override cpu*/PMP_registers=16
---override cpu*/PMP_grain=4   # 64-byte grains to match cache line width
---override cpu*/PMP_decompose=T  # unaligned accesses are decomposed into separate aligned accesses
---override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
-
-# More extensions
---override cpu*/Smdbltrp=T
---override cpu*/Ssdbltrp=T
 
 # PMA Settings
 # 'r': read access allowed

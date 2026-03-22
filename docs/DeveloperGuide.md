@@ -532,6 +532,10 @@ For examples of how to write the individual coverpoint helper functions for priv
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
 - Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings.
 - To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
+- Test are automatically formatted as follows:
+  - Pre-processor directives (`#ifdef`, etc.), comments, and labels are unindented.
+  - Code (instructions and macros) is indented by 2 spaces.
+  - If deviations from this help the readability of a test (most often indenting certain comments), use the `INDENT` global at the beginning of the line (e.g. `f"{INDENT}# comment`).
 
 ## Debugging Coverage
 

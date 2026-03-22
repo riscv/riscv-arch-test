@@ -11,8 +11,6 @@ import argparse
 import sys
 from pathlib import Path
 
-from act.coverreport import print_coverage_summary
-
 
 def parse_summary_file(file_path: Path) -> list[tuple[str, str, str, str, str]]:
     """Parse a summary file and return list of entries (excluding header)."""
@@ -68,8 +66,6 @@ def merge_summaries(input_files: list[Path], output_file: Path, config_name: str
     with output_file.open("w", encoding="utf-8") as f:
         f.write(header_line + "\n")
         f.write("\n".join(formatted_rows) + "\n")
-
-    print_coverage_summary(output_file, config_name or output_file.parent.parent.name)
 
 
 def main() -> None:

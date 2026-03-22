@@ -117,7 +117,7 @@ imperasfpm-rv32: elfs
 
 imperasfpm-rv64: CONFIG_FILES = config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
 imperasfpm-rv64: elfs
-	./run_tests.py "$(IMPERASFPM_RV64_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs
+	./run_tests.py "$(IMPERASFPM_RV64_MAX_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs
 
 
 

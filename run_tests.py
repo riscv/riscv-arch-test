@@ -51,7 +51,7 @@ def dim(text: str) -> str:
 def run_test(
     cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool, env: dict | None = None, display_prefix: str = ""
 ) -> bool:
-    """Run a single ELF and return exit_code."""
+    """Run a single ELF and return success indication."""
 
     # Create log file path
     log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name

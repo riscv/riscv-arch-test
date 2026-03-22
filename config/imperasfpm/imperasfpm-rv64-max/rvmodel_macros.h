@@ -21,8 +21,9 @@
 
 ##### TERMINATION #####
 
-// SAIL uses HTIF (Host-Target Interface) to terminate simulation.
+// HTIF (Host-Target Interface) to terminate simulation.
 // Writing to 'tohost' with value 1 indicates success, 3 indicates failure.
+// As of 3/23/26, ImperasFPM does not differentiate success and failure conditions, but just looks for the _test_exit label.
 
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.

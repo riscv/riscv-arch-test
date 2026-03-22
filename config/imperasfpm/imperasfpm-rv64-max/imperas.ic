@@ -33,9 +33,17 @@
 
 # Crypto extensions
 --override cpu*/Zkr=T # Zkr entropy source and seed register
---override cpu*/Zksed=T # ShangMi Crypto
---override cpu*/Zksh=T # ShangMi Crypto
 --override cpu*/mnoise_undefined=T # nonratified mnoise register not implemented
+--override cpu*/Zk=T
+--override cpu*/Zks=T
+--override cpu*/Zbk=T
+--override cpu*/Zbkb=T
+--override cpu*/Zbkx=T
+--override cpu*/Zknd=T
+--override cpu*/Zkne=T
+--override cpu*/Zknh=T
+--override cpu*/Zksed=T
+--override cpu*/Zksh=T
 
 # Miscellaneous extensions
 --override cpu*/Zicond=T
@@ -60,42 +68,3 @@
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/Ssdbltrp=T
---override cpu*/Smdbltrp=T
---override cpu*/Ssdbltrp=T
---override cpu*/Zk=T
---override cpu*/Zks=T
---override cpu*/Zbk=T
---override cpu*/Zbkb=T
---override cpu*/Zbkx=T
---override cpu*/Zknd=T
---override cpu*/Zkne=T
---override cpu*/Zknh=T
---override cpu*/Zksed=T
---override cpu*/Zksh=T
-
-
-# PMA Settings
-# 'r': read access allowed
-# 'w': write access allowed
-# 'x': execute access allowed
-# 'a': aligned access required
-# 'A': atomic instructions NOT allowed (actually USER1 privilege needed)
-# 'P': push/pop instructions NOT allowed (actually USER2 privilege needed)
-# '1': 1-byte accesses allowed
-# '2': 2-byte accesses allowed
-# '4': 4-byte accesses allowed
-# '8': 8-byte accesses allowed
-# '-', space: ignored (use for input string formatting).
-#
-# SVxx Memory 0x0000000000 0x7FFFFFFFFF
-#
-#--callcommand refRoot/cpu/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
-#--callcommand refRoot/cpu/setPMA -lo 0x0000000000 -hi 0x7FFFFFFFFF -attributes " ---a-- ---- " # INITIAL
-#--callcommand refRoot/cpu/setPMA -lo 0x0000001000 -hi 0x0000001FFF -attributes " r-x-A- 1248 " # BOOTROM
-#--callcommand refRoot/cpu/setPMA -lo 0x0000012100 -hi 0x000001211F -attributes " rw-aA- --48 " # SDC
-#--callcommand refRoot/cpu/setPMA -lo 0x0002000000 -hi 0x000200FFFF -attributes " rw-aA- 1248 " # CLINT
-#--callcommand refRoot/cpu/setPMA -lo 0x000C000000 -hi 0x000FFFFFFF -attributes " rw-aA- --4- " # PLIC
-#--callcommand refRoot/cpu/setPMA -lo 0x0010000000 -hi 0x0010000007 -attributes " rw-aA- 1--- " # UART0
-#--callcommand refRoot/cpu/setPMA -lo 0x0010060000 -hi 0x00100600FF -attributes " rw-aA- --4- " # GPIO
-#--callcommand refRoot/cpu/setPMA -lo 0x0010040000 -hi 0x0010040FFF -attributes " rw-aA- --4- " # SPI
-#--callcommand refRoot/cpu/setPMA -lo 0x0080000000 -hi 0x008FFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM

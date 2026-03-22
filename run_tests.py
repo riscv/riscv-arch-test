@@ -48,17 +48,24 @@ def dim(text: str) -> str:
     return _color("2", text)
 
 
-def run_test(
-    cmd: list[str], log_dir: Path, elf_path: Path, verbose: bool, env: dict | None = None, display_prefix: str = ""
-) -> bool:
+def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool:
     """Run a single ELF and return success indication."""
+
+    # Split command, extracting leading KEY=VALUE env var assignments
+    tokens = shlex.split(command)
+    env_overrides: dict[str, str] = {}
+    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
+        key, _, value = tokens.pop(0).partition("=")
+        env_overrides[key] = value
+    env = {**os.environ, **env_overrides} if env_overrides else None
+    cmd = tokens
 
     # Create log file path
     log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     full_cmd = [*cmd, str(elf_path)]
-    display_cmd = f"{display_prefix} {elf_path}".strip()
+    display_cmd = f"{command} {elf_path}"
 
     if verbose:
         print(f"\nRunning {display_cmd}")
@@ -138,16 +145,7 @@ def main() -> int:
         print(f"No ELF files found in {elf_dir}")
         sys.exit(1)
 
-    # Partial function with fixed command and log_dir
-    # Strip leading KEY=VALUE tokens (shell env var assignments) from the command
-    tokens = shlex.split(args.command)
-    env_overrides: dict[str, str] = {}
-    while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
-        key, _, value = tokens.pop(0).partition("=")
-        env_overrides[key] = value
-    cmd_env = {**os.environ, **env_overrides} if env_overrides else None
-    cmd = tokens
-    partial_run_test = partial(run_test, cmd, log_dir, verbose=args.verbose, env=cmd_env, display_prefix=args.command)
+    partial_run_test = partial(run_test, args.command, log_dir, verbose=args.verbose)
 
     failed = 0
 

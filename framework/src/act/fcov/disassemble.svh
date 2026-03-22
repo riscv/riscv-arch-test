@@ -88,6 +88,9 @@ function string disassemble (logic [31:0] instrRaw);
   casez (instr)
     // Hints
     PAUSE:   $sformat(decoded, "pause");
+    PREFETCH_I:   $sformat(decoded, "prefetch.i %d(%s)", immIType, rs1);
+    PREFETCH_R:   $sformat(decoded, "prefetch.r %d(%s)", immIType, rs1);
+    PREFETCH_W:   $sformat(decoded, "prefetch.w %d(%s)", immIType, rs1);
     // No need to decode NTL hints for present coverpoints, and they might confuse testing normal instructions
     // NTL_ALL: $sformat(decoded, "NTL.ALL");
     // NTL_PALL:$sformat(decoded, "NTL.PALL");

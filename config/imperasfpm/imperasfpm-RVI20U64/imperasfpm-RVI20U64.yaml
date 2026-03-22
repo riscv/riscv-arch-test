@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: sail-RVI20U64
+name: imperasfpm-RVI20U64
 description: RVI20U64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }

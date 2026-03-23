@@ -33,7 +33,7 @@ normative_rule_definitions:
   # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
   # encoding:
   - name: cbo-inval_s-mode_op
-    coverpoint: [ExceptionsZicboS_cg/cp_cbie""]
+    coverpoint: ["ExceptionsZicboS_cg/cp_cbie"]
 
   # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
   # to senvcfg. The CBZE field controls execution of the cache block zero

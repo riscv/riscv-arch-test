@@ -193,11 +193,11 @@ coverage: elfs
 
 .PHONY: regression
 regression:
-	make clean
-	make coverage
-	make spike
-	make qemu
-	make imperasfpm
+	$(MAKE) clean
+	$(MAKE) coverage
+	$(MAKE) spike
+	$(MAKE) qemu
+	$(MAKE) imperasfpm
 
 ##### Dev targets #####
 .PHONY: lint

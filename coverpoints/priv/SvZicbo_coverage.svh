@@ -177,6 +177,7 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         `ifdef ZICBOZ_SUPPORTED
             wildcard bins zicboz_ins = {32'b000000000100_?????_010_00000_0001111};
         `endif
+        wildcard bins any_prefetch_ins = {32'b???????_000??_?????_110_00000_0010011};
     }
 
     PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {

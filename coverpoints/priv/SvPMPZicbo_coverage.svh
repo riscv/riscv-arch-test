@@ -66,8 +66,13 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
     }
 
     cbo_ins: coverpoint ins.current.insn {
-        wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
-        wildcard bins zicboz_ins     = {32'b000000000100_?????_010_00000_0001111};
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zicboz_ins = {32'b000000000100_?????_010_00000_0001111};
+        `endif
+        wildcard bins any_prefetch_ins = {32'b???????_000??_?????_110_00000_0010011};
     }
 
     PMP_perm: coverpoint  ins.current.csr[12'h3A0][7:0] {

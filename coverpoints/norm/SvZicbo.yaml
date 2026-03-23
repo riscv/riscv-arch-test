@@ -29,9 +29,9 @@ normative_rule_definitions:
   # During address translation, the instruction also checks the accessed and dirty
   # bits and may either raise an exception or set the bits as required.
   - name: cbz_unperm_translate
-    coverpoint: ["SvZicbo_cg/Dbit_unset_zicbom_s"]
+    coverpoint: ["SvZicbo_cg/{Abit_unset_cbo_s,Dbit_unset_zicbom_s}"]
 
   # During address translation, the instruction does not check the accessed and
   # dirty bits and neither raises an exception nor sets the bits.
   - name: cbp_unperm_translate
-    coverpoint: ["Not tested yet"]
+    coverpoint: ["SvZicbo_cg/{Abit_unset_cbo_s,Dbit_unset_zicbom_s}"]

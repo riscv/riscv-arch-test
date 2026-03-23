@@ -86,11 +86,16 @@ function string disassemble (logic [31:0] instrRaw);
   automatic string  ma    = get_vtype_ma_name(instr[26]);
 
   casez (instr)
-    // Hints
-    PAUSE:   $sformat(decoded, "pause");
-    PREFETCH_I:   $sformat(decoded, "prefetch.i %d(%s)", immIType, rs1);
-    PREFETCH_R:   $sformat(decoded, "prefetch.r %d(%s)", immIType, rs1);
-    PREFETCH_W:   $sformat(decoded, "prefetch.w %d(%s)", immIType, rs1);
+    // Hints: gated by their covergroups so they don't confuse decoding as non-hint instructions
+    `ifdef ZIHINTPAUSE_COVERAGE
+      PAUSE:   $sformat(decoded, "pause");
+    `endif
+    `ifdef ZICBOP_COVERAGE
+      // Zicbop Extension (note these are hints)
+      PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
+      PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
+      PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
+    `endif
     // No need to decode NTL hints for present coverpoints, and they might confuse testing normal instructions
     // NTL_ALL: $sformat(decoded, "NTL.ALL");
     // NTL_PALL:$sformat(decoded, "NTL.PALL");
@@ -178,10 +183,6 @@ function string disassemble (logic [31:0] instrRaw);
     CBO_CLEAN: $sformat(decoded, "cbo.clean (%s)", rs1);
     CBO_FLUSH: $sformat(decoded, "cbo.flush (%s)", rs1);
     CBO_INVAL: $sformat(decoded, "cbo.inval (%s)", rs1);
-    // Zicbop Extension
-    PREFETCH_I: $sformat(decoded, "prefetch.i %0d(%s)", immIType, rs1);
-    PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
-    PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
     // Zicond Extension
     CZERO_EQZ: $sformat(decoded, "czero.eqz %s, %s, %s", rd, rs1, rs2);
     CZERO_NEZ: $sformat(decoded, "czero.nez %s, %s, %s", rd, rs1, rs2);

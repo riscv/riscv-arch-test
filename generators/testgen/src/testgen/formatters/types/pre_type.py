@@ -10,7 +10,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-pre_config = InstructionTypeConfig(required_params={"rs1", "rs1val", "immval"}, imm_bits=7, imm_signed=True)
+pre_config = InstructionTypeConfig(required_params={"rs1", "rs1val", "immval"}, imm_bits=12, imm_signed=True)
 
 
 @add_instruction_formatter("PRE", pre_config)

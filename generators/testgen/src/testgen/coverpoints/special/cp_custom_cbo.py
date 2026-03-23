@@ -27,7 +27,7 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
     tc = test_data.begin_test_chunk()
     test_lines: list[str] = []
 
-    reg1, reg2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    reg1, reg2, reg3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     test_lines.extend(
         [
@@ -40,11 +40,11 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
         test_lines.extend(
             [
                 f"# Testing offset {offset} to check behavior across cache line boundaries",
-                f"addi x{reg2}, x{reg2}, {offset} # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter",
+                f"addi x{reg3}, x{reg2}, {offset} # offset within the scratch region, potentially hitting different lines and checking alignment doesn't matter",
             ]
         )
 
-        for word in range(65):
+        for word in range(33):
             test_lines.extend(
                 [
                     f"LI(x{reg1}, {word * 0x00FEDCBA + 0xD00F})",
@@ -54,11 +54,11 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
 
         test_lines.extend(
             [
-                f"{instr_name} (x{reg2}) # Issue cbo instruction on first line of scratch",
+                f"{instr_name} (x{reg3}) # Issue cbo instruction on first line of scratch or at an offset",
             ]
         )
 
-        for word in range(65):
+        for word in range(33):
             test_lines.extend(
                 [
                     test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),
@@ -69,7 +69,7 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
             )
 
     # Return registers
-    test_data.int_regs.return_registers([reg1, reg2])
+    test_data.int_regs.return_registers([reg1, reg2, reg3])
 
     tc.code = "\n".join(test_lines)
     return [test_data.end_test_chunk()]

@@ -8,13 +8,26 @@
 
 """Package-wide constants for testgen."""
 
+# Assembly indentations
+INDENT = "  "
+
+
+def indent_asm(line: str) -> str:
+    """Add INDENT to an assembly line unless it's already indented, a label, comment, or preprocessor directive."""
+    if not line or line[0] in (" ", "\t", "#", "\n", "/"):
+        return line
+    colon_pos = line.find(":")
+    if colon_pos > 0 and all(c.isalnum() or c == "_" for c in line[:colon_pos]):
+        return line
+    return f"{INDENT}{line}"
+
+
 # =============================================================================
 # Test Generation Configuration
 # =============================================================================
 
-# Max testcases per file before splitting. Individual coverpoints won't be split,
-# so if one coverpoint exceeds this, the file will exceed this limit.
-# TODO: Currently only applies to unpriv tests. Should this apply to priv tests too?
+# Max testcases per test file before splitting into multiple files. Individual test
+# chunks won't be split, so if one test chunk exceeds this, the file will exceed this limit.
 TESTCASES_PER_FILE = 1000
 
 # =============================================================================

@@ -6,6 +6,7 @@
 ##################################
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -57,12 +58,12 @@ def format_csh_type(
         "#else",
         f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
-        "# nops to ensure length matches SELFCHECK",
+        f"{INDENT}# nops to ensure length matches SELFCHECK",
         "nop",
         "nop",
         "nop",
         "#endif",
     ]
-    assert test_data.testcase is not None
-    test_data.testcase.sigupd_count += 1
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.sigupd_count += 1
     return (setup, test, check)

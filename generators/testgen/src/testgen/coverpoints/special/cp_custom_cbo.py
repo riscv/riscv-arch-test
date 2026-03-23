@@ -44,7 +44,7 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
             ]
         )
 
-        for word in range(33):
+        for word in range(65):
             test_lines.extend(
                 [
                     f"LI(x{reg1}, {word * 0x00FEDCBA + 0xD00F})",
@@ -58,7 +58,7 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
             ]
         )
 
-        for word in range(33):
+        for word in range(65):
             test_lines.extend(
                 [
                     test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),

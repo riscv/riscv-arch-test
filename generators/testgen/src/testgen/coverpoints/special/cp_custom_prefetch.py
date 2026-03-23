@@ -31,7 +31,7 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
         ]
     )
 
-    for i in range(33):
+    for i in range(65):
         test_lines.extend(
             [
                 f"LI(x{reg1}, {i * 0x00FEDCBA})",
@@ -45,7 +45,7 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
         ]
     )
 
-    for i in range(33):
+    for i in range(65):
         test_lines.extend(
             [
                 test_data.add_testcase(f"word {i}", "cp_custom_prefetch"),

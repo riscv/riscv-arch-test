@@ -19,8 +19,9 @@
 // Total Expected Faults :: 18
 // --------------------------------------------------------------------------------------------------------------------------------
 
+// Remove NORUN once Sail supports Svnapot
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv39, Svnapot]
+# REQUIRED_EXTENSIONS: [I, Sv39, Svnapot, NORUN]
 # MARCH: rv64i_zicsr
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####

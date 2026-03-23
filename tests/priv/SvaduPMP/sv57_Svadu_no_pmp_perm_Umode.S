@@ -46,8 +46,9 @@
 // Total Expected Faults :: 35
 // --------------------------------------------------------------------------------------------------------------------------------
 
+// Remove NORUN once Sail supports Svadu
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Svadu, Sm]
+# REQUIRED_EXTENSIONS: [I, Sv57, Svadu, Sm, NORUN]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr

@@ -93,7 +93,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    Setup pmpaddr registers

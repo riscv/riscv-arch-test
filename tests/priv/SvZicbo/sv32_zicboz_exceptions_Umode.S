@@ -101,7 +101,7 @@ RVTEST_BEGIN
   RVTEST_GOTO_MMODE
 
   // Signature Update
-  //RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\(), \TEST_CASE\()_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\(), \TEST_CASE\()_str)
 .endm
 
 // This TEST_CASES_RUNNER is used when PA is not a label
@@ -126,12 +126,12 @@ RVTEST_BEGIN
   RVTEST_GOTO_MMODE
 
   // Signature Update
-  //RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\(), \TEST_CASE\()_str)
+  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\(), \TEST_CASE\()_str)
 .endm
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

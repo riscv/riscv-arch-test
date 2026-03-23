@@ -101,7 +101,7 @@ RVTEST_BEGIN
 #define PMP0CFG_X             (((PMP_NAPOT | PMP_X) & 0xFF) << PMP0_CFG_SHIFT)
 
 main:
-  li a2, 0x800                // Test signature initialization
+  LI( a2, 0x800)              // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    Setup pmpaddr registers

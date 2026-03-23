@@ -11,16 +11,16 @@ from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import get_general_edges
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_rs2_edges_offset")
 def make_cr_rs1_rs2_edges_offset(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
-) -> list[TestCase]:
+) -> list[TestChunk]:
     """Generate tests for cross-product of rs1/rs2 edges with branch offset testing."""
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     edges1 = get_general_edges(test_data.xlen)
     edges2 = get_general_edges(test_data.xlen)
 
@@ -28,7 +28,6 @@ def make_cr_rs1_rs2_edges_offset(
 
     for edge_val1 in edges1:
         for edge_val2 in edges2:
-            test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
             assert params.rs1val is not None and params.rs2val is not None
@@ -51,9 +50,10 @@ def make_cr_rs1_rs2_edges_offset(
                     "3: # goes here during forward branch if taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 2b # backward branch, definitely taken",
                     "4: # done with test",
+                    "",
                 ]
             )
             return_test_regs(test_data, params)
 
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]

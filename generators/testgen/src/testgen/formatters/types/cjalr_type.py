@@ -24,7 +24,9 @@ def format_cjalr_type(
     ]
     # Reserve register 1 if it's not already in use
     if params.temp_reg != 1 and params.rs1 != 1:
-        setup.append(test_data.int_regs.consume_registers([1]))
+        asm = test_data.int_regs.consume_registers([1])
+        if asm:
+            setup.append(asm)
     test = [
         f"{instr_name} x{params.rs1} # perform operation",
     ]

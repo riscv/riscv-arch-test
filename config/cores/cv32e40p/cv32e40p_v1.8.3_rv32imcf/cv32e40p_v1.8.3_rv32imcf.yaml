@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
-
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
@@ -63,20 +61,20 @@ params:
 
   #   # Misaligned load/store support (Section 7 — Misaligned Load/Store)
   MISALIGNED_LDST: true # VERIFIED — load_store_unit.rst performed as two bustransactions (this is little confisuing udb asks Does it perform non-atomic misaligned loads/stores.)
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — load_store_unit.rst: never raises exception; DO we need this parameter if above is true? It seems like this is only relevant if above is false, but we can include it for completeness?
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — load_store_unit.rst never raises exception; DO we need this parameter if above is true? It seems like this is only relevant if above is false, but we can include it for completeness?
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — load_store_unit.rst performed as two bustransactions no ato
   MISALIGNED_SPLIT_STRATEGY: custom # FROM MANUAL — load_store_unit.rst; lowest address is performed first from manual, UDB only has two options costume and sequential bytes
 
   #   # CSR / implementation IDs (Section 3 — Implementation IDs) ## these are all verified by checking the manual for the relevant CSRs
-  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst: marchid=0x4
+  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst marchid=0x4
   IMP_ID_VALUE: 0x1 # VERIFIED — cs_registers.sv:511-513: (FPU==1||COREV_PULP==1||COREV_CLUSTER==1)?32'h1:'b0; FPU=1 → mimpid=0x1; core_versions.rst:150-174 confirms
-  VENDOR_ID_BANK: 0xC # VERIFIED — mvendorid 0x602 decoded: bits[31:7]=0xC (JEDEC bank 13)
-  VENDOR_ID_OFFSET: 0x2 # VERIFIED — mvendorid 0x602 decoded: bits[6:0]=0x2 (manufacturer byte)
+  VENDOR_ID_BANK: 0xC # VERIFIED — mvendorid 0x602 decoded bits[31:7]=0xC (JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — mvendorid 0x602 decoded bits[6:0]=0x2 (manufacturer byte)
 
   # MTVEC (Section 4 — mtvec WARL)
   MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst:589 "both direct and vectored supported"
   MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst:577 MODE[0] is RW, rtl confirms writible
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED —  cok v32e40p_cs_registers.sv: line 667 mtvec_mode_n = {1'b0, csr_wdata_int[0]};  // Only direct and vectored mode are supported, though because masking always produces a valid mode (0 or 1), no truly illegal state can ever be stored. The "illegal write" scenario is effectively unreachable.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED —  cok v32e40p_cs_registers.sv line 667 mtvec_mode_n = {1'b0, csr_wdata_int[0]};  // Only direct and vectored mode are supported, though because masking always produces a valid mode (0 or 1), no truly illegal state can ever be stored. The "illegal write" scenario is effectively unreachable.
   MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst:567 "256-byte aligned" also rtl  CSR_MTVEC: csr_rdata_int = {mtvec_q, 6'h0, mtvec_mode_q}; first 8 bits zero = 256 bytes
   MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst:567 same reason as above
 
@@ -100,10 +98,10 @@ params:
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
       true, # index 3 (MHPMCOUNTER3 — only active counter, cs_registers.sv:1432)
+      false, # 4
       false,
       false,
-      false,
-      false, # 4..7 (unimplemented, cs_registers.sv:1438-1439 increment hardwired 0)
+      false, # 4..7
       false,
       false,
       false,
@@ -127,7 +125,7 @@ params:
       false,
       false,
       false,
-      false, # 24..31
+      false, # 4..31 (unimplemented)
     ]
   COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv:1421-1437; indices 0,2,3 inhibitable via mcountinhibit_q; index 1 always false per UDB; unimplemented counters hardwired 0
     [
@@ -135,10 +133,10 @@ params:
       false, # index 1 (TM — always false, mcountinhibit.TM is read-only-0 per UDB)
       true, # index 2 (MINSTRET inhibit — cs_registers.sv:1428-1431: !mcountinhibit_q[2])
       true, # index 3 (MHPMCOUNTER3 inhibit — cs_registers.sv:1434-1437: !mcountinhibit_q[3])
+      false, # 4
       false,
       false,
-      false,
-      false, # 4..7 (unimplemented counters, no inhibit effect)
+      false, # 4..7
       false,
       false,
       false,
@@ -162,6 +160,6 @@ params:
       false,
       false,
       false,
-      false, # 24..31
+      false, # 4..31 (unimplemented)
     ]
 # end

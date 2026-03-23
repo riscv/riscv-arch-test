@@ -1,12 +1,9 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
-
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # UDB Architecture Configuration for the CV32E40P v1.0.0, a configuration of the CORE-V project.
 # RTL Freeze tag: cv32e40p_v1.0.0 (2020-12-10)
 # Certified parameter set: FPU=0, NUM_MHPMCOUNTERS=1, PULP_CLUSTER=0, PULP_XPULP=0, PULP_ZFINX=0
-# Source: Core_repos/cv32e40p_v1.0.0/docs/source/ and Core_repos/cv32e40p_v1.0.0/rtl/
 ---
 $schema: config_schema.json#
 kind: architecture configuration
@@ -35,7 +32,7 @@ params:
   MISA_CSR_IMPLEMENTED: true # VERIFIED — control_status_registers.rst: MISA CSR (0x301) documented and implemented
 
   # endianness
-  M_MODE_ENDIANNESS: little # VERIFIED — intro.rst: CV32E40P is a little-endian architecture (RI5CY heritage, OBI protocol)
+  M_MODE_ENDIANNESS: little # VERIFIED — intro.rst
 
   # trap/exception behavior
   TRAP_ON_ECALL_FROM_M: true # VERIFIED — exceptions_interrupts.rst: ECALL listed in exceptions table (code 11), "cannot be disabled"
@@ -91,10 +88,10 @@ params:
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
       true, # index 3 (MHPMCOUNTER3 — only active counter with NUM_MHPMCOUNTERS=1)
+      false, # 4
       false,
       false,
-      false,
-      false, # 4..7 (unimplemented, increment hardwired 0)
+      false, # 4..7
       false,
       false,
       false,
@@ -118,7 +115,7 @@ params:
       false,
       false,
       false,
-      false, # 24..31
+      false, # 4..31 (unimplemented)
     ]
   COUNTINHIBIT_EN: # VERIFIED — cv32e40p_cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q register; index 1 always false per UDB; unimplemented counters hardwired 0
     [
@@ -126,10 +123,10 @@ params:
       false, # index 1 (TM — always false, mcountinhibit.TM is read-only-0 per UDB)
       true, # index 2 (MINSTRET inhibit — mcountinhibit_q[2] gates instret counter)
       true, # index 3 (MHPMCOUNTER3 inhibit — mcountinhibit_q[3] gates hpmcounter3)
+      false, # 4
       false,
       false,
-      false,
-      false, # 4..7 (unimplemented counters, no inhibit effect)
+      false, # 4..7
       false,
       false,
       false,
@@ -153,6 +150,6 @@ params:
       false,
       false,
       false,
-      false, # 24..31
+      false, # 4..31 (unimplemented)
     ]
 # end

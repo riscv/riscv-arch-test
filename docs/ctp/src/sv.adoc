@@ -55,6 +55,7 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846[Google Sheet Testplan]
 ,===
 
+include::norm/SvZicbo_norm_rules.adoc[]
 
 
 ==== Svinval Memory Management Unit Table Invalidation

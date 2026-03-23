@@ -171,8 +171,12 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     `endif
 
     cbo_ins: coverpoint ins.current.insn {
-        wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
-        wildcard bins zicboz_ins = {32'b000000000100_?????_010_00000_0001111};
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zicboz_ins = {32'b000000000100_?????_010_00000_0001111};
+        `endif
     }
 
     PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {

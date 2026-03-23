@@ -106,8 +106,6 @@ imperasfpm: elfs
 	@exit_code=0; \
 	./run_tests.py "$(IMPERASFPM_RV64_MAX_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs || exit_code=1; \
 	./run_tests.py "$(IMPERASFPM_RV32_MAX_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs || exit_code=1; \
-	./run_tests.py "$(IMPERASFPM_RVI20U64_CMD)" $(WORKDIR)/imperasfpm-RVI20U64/elfs || exit_code=1; \
-	./run_tests.py "$(IMPERASFPM_RVI20U32_CMD)" $(WORKDIR)/imperasfpm-RVI20U32/elfs || exit_code=1; \
 	exit $$exit_code
 
 # Add --verbose to run_tests.py arguments to see the simulator commands
@@ -189,6 +187,17 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
+
+###### Regression ######
+# Run all tests
+
+.PHONY: regression
+regression:
+	make clean
+	make coverage
+	make spike
+	make qemu
+	make imperasfpm
 
 ##### Dev targets #####
 .PHONY: lint

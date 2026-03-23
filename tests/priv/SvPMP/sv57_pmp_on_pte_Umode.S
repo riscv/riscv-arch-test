@@ -33,7 +33,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57]
+# REQUIRED_EXTENSIONS: [I, Sv57, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr

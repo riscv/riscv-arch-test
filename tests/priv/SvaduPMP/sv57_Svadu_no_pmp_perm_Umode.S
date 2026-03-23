@@ -47,7 +47,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv57, Svadu]
+# REQUIRED_EXTENSIONS: [I, Sv57, Svadu, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr

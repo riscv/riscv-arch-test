@@ -21,7 +21,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32]
+# REQUIRED_EXTENSIONS: [I, Sv32, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr

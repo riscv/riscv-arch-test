@@ -10,7 +10,7 @@
 from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 
 
 def encode_addi(rd: int, rs1: int, imm: int) -> int:
@@ -19,12 +19,12 @@ def encode_addi(rd: int, rs1: int, imm: int) -> int:
 
 
 @add_coverpoint_generator("cp_custom_fencei")
-def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for fence.i coverpoints."""
     if instr_name != "fence.i":
         raise ValueError(f"cp_custom_fencei generator only supports fence.i instruction, got {instr_name}")
 
-    tc = test_data.begin_testcase()
+    tc = test_data.begin_test_chunk()
     test_lines: list[str] = []
 
     cases = [
@@ -63,4 +63,4 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
         test_data.int_regs.return_registers([reg1, reg2, reg3])
 
     tc.code = "\n".join(test_lines)
-    return [test_data.end_testcase()]
+    return [test_data.end_test_chunk()]

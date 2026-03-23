@@ -42,14 +42,16 @@ def format_cils_type(
     params.immval = params.immval % (max_val + alignment)
 
     # Add value to load data region
-    assert test_data.testcase is not None
-    test_data.testcase.data_values.append(params.temp_val)
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.data_values.append(params.temp_val)
 
     setup: list[str] = []
     # sp (x2) is used as the base pointer for CILS instructions
     # Ensure sp is allocated
     if params.rd != 2:
-        setup.append(test_data.int_regs.consume_registers([2]))
+        asm = test_data.int_regs.consume_registers([2])
+        if asm:
+            setup.append(asm)
 
     setup.extend(
         [

@@ -1,0 +1,15 @@
+# imperas.ic
+# Initialization file for rv32gc ImperasDV lock step simulation
+# David_Harris@hmc.edu 15 August 2024
+# jcarlin@hmc.edu 19 March 2025
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# Base configuration
+--processorvendor riscv.ovpworld.org
+--processorname riscv
+--variant RVI20U32
+# defines printing via write to  0x10010000 and termination at symbol _test_exit
+--extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
+
+# Misaligned access (Zicclsm)
+--override cpu*/unaligned=T

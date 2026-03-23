@@ -11,13 +11,13 @@ from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import MEMORY_EDGES
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
-from testgen.formatters import format_single_test
+from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_memval")
-def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for memory value edge cases."""
     if coverpoint == "cp_memval_byte":
         memvals = MEMORY_EDGES.byte
@@ -30,7 +30,7 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         raise ValueError(f"Unknown cp_memval coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_cases: list[TestCase] = []
+    test_chunks: list[TestChunk] = []
     for val in memvals:
         if instr_type == "S":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs2val=val)
@@ -39,8 +39,8 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         else:
             raise ValueError(f"cp_memval coverpoint not supported for instruction type: {instr_type} in {instr_name}")
         desc = f"{coverpoint} (memory value = {val:#x})"
-        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"{val:#x}", coverpoint)
-        test_cases.append(tc)
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{val:#x}", coverpoint)
+        test_chunks.append(tc)
         return_test_regs(test_data, params)
 
-    return test_cases
+    return test_chunks

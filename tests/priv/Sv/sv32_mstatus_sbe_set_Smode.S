@@ -10,6 +10,7 @@
 // Total Expected Faults :: 0
 // --------------------------------------------------------------------------------------------------------------------------------
 
+// Remove NORUN once Sail supports Big Endian
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, NORUN]
 # MARCH: rv32i_zicsr

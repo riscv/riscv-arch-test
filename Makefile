@@ -92,6 +92,35 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+##### ImperasFPM test targets #####
+.PHONY: imperasfpm imperasfpm-rv32 imperasfpm-rv64
+
+# Add --trace before --program to see a trace of the executed instructions for debug
+IMPERASFPM_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-rv32-max/imperas.ic iss.exe --verbose --program
+IMPERASFPM_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-rv64-max/imperas.ic iss.exe --verbose --program
+IMPERASFPM_RVI20U32_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-RVI20U32/imperas.ic iss.exe --verbose --program
+IMPERASFPM_RVI20U64_CMD := IMPERAS_TOOLS=config/imperasfpm/imperasfpm-RVI20U64/imperas.ic iss.exe --verbose --program
+
+imperasfpm: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml config/imperasfpm/imperasfpm-rv64-max/test_config.yaml config/imperasfpm/imperasfpm-RVI20U64/test_config.yaml config/imperasfpm/imperasfpm-RVI20U32/test_config.yaml
+imperasfpm: elfs
+	@exit_code=0; \
+	./run_tests.py "$(IMPERASFPM_RV64_MAX_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERASFPM_RV32_MAX_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERASFPM_RVI20U64_CMD)" $(WORKDIR)/imperasfpm-RVI20U64/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERASFPM_RVI20U32_CMD)" $(WORKDIR)/imperasfpm-RVI20U32/elfs || exit_code=1; \
+	exit $$exit_code
+
+# Add --verbose to run_tests.py arguments to see the simulator commands
+imperasfpm-rv32: CONFIG_FILES = config/imperasfpm/imperasfpm-rv32-max/test_config.yaml
+imperasfpm-rv32: elfs
+	./run_tests.py "$(IMPERASFPM_RV32_MAX_CMD)" $(WORKDIR)/imperasfpm-rv32-max/elfs
+
+imperasfpm-rv64: CONFIG_FILES = config/imperasfpm/imperasfpm-rv64-max/test_config.yaml
+imperasfpm-rv64: elfs
+	./run_tests.py "$(IMPERASFPM_RV64_MAX_CMD)" $(WORKDIR)/imperasfpm-rv64-max/elfs
+
+
+
 
 ###### Test compilation targets ######
 .PHONY: elfs

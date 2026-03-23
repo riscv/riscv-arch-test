@@ -75,8 +75,7 @@ def add_testcase_string(cp: str, instr_name: str) -> None:
   )
 
 def generate_testcase_string_section() -> str:
-  lines = ['canary_mismatch: .string "Testcase signature canary mismatch!"']
-  lines.extend(testcase_strings)
+  lines = list(testcase_strings)
   return "\n".join(lines)
 
 ##################################

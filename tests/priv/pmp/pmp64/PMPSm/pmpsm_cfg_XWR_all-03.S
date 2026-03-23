@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_cfg_XWR_all-03.S"
+#define TEST_FILE "pmpsm_cfg_XWR_all-02.S"
 #define SIGUPD_COUNT 400
 
 // Enable trap handler
@@ -168,144 +168,90 @@ main:
     .endr
 
 //                                            Verification Section
-// Test Case: 1 -- XWR Permissions given to the PMP Region 14
+// Test Case: 16 -- XR Permissions given to the PMP Region 14
 
-    LI(x4, (PMPREGION_XWR_111 << PMP6_CFG_SHIFT))
+    LI(x4, (PMPREGION_XWR_101 << PMP6_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_1
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_16
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 2 -- R Permissions given to the PMP Region 13
+// Test Case: 17 -- WR Permissions given to the PMP Region 13
 
-    LI(x4, (PMPREGION_XWR_001 << PMP5_CFG_SHIFT))
+    LI(x4, (PMPREGION_XWR_011 << PMP5_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_2
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_17
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 3 -- XR Permissions given to the PMP Region 12
+// Test Case: 18 -- XWR Permissions given to the PMP Region 12
 
-    LI(x4, (PMPREGION_XWR_101 << PMP4_CFG_SHIFT))
+    LI(x4, (PMPREGION_XWR_111 << PMP4_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_3
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_18
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 4 -- R Permissions given to the PMP Region 11
+// Test Case: 19 -- No Permissions given to the PMP Region 11
 
-    LI(x4, (PMPREGION_XWR_001 << PMP3_CFG_SHIFT))
+    LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_4
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_19
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 5 -- X Permissions given to the PMP Region 10
+// Test Case: 20 -- X Permissions given to the PMP Region 10
 
     LI(x4, (PMPREGION_XWR_100 << PMP2_CFG_SHIFT))
     csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_5
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_20
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 6 -- No Permissions given to the PMP Region 9
-
-    LI(x4, (PMPREGION_XWR_000 << PMP1_CFG_SHIFT))
-    csrw pmpcfg2, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_6
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 7 -- XWR Permissions given to the PMP Region 8
-
-    LI(x4, (PMPREGION_XWR_111 << PMP0_CFG_SHIFT))
-    csrw pmpcfg2, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_7
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 8 -- R Permissions given to the PMP Region 7
-
-    LI(x4, (PMPREGION_XWR_001 << PMP7_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_8
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 9 -- XR Permissions given to the PMP Region 6
-
-    LI(x4, (PMPREGION_XWR_101 << PMP6_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_9
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 10 -- R Permissions given to the PMP Region 5
-
-    LI(x4, (PMPREGION_XWR_001 << PMP5_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_10
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 11 -- XR Permissions given to the PMP Region 4
-
-    LI(x4, (PMPREGION_XWR_101 << PMP4_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_11
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 12 -- No Permissions given to the PMP Region 3
-
-    LI(x4, (PMPREGION_XWR_000 << PMP3_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_12
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 13 -- XWR Permissions given to the PMP Region 2
-
-    LI(x4, (PMPREGION_XWR_111 << PMP2_CFG_SHIFT))
-    csrw pmpcfg0, x4
-
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_13
-
-    RVTEST_GOTO_MMODE
-
-// Test Case: 14 -- R Permissions given to the PMP Region 1
+// Test Case: 21 -- R Permissions given to the PMP Region 9
 
     LI(x4, (PMPREGION_XWR_001 << PMP1_CFG_SHIFT))
-    csrw pmpcfg0, x4
+    csrw pmpcfg2, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_14
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_21
 
     RVTEST_GOTO_MMODE
 
-// Test Case: 15 -- XR Permissions given to the PMP Region 0
+// Test Case: 22 -- XR Permissions given to the PMP Region 8
 
     LI(x4, (PMPREGION_XWR_101 << PMP0_CFG_SHIFT))
+    csrw pmpcfg2, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_22
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 23 -- WR Permissions given to the PMP Region 7
+
+    LI(x4, (PMPREGION_XWR_011 << PMP7_CFG_SHIFT))
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_15
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_23
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 24 -- XWR Permissions given to the PMP Region 6
+
+    LI(x4, (PMPREGION_XWR_111 << PMP6_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_24
 
     RVTEST_GOTO_MMODE
 
     j exit                                                        // Verification Complete, exit the test
 
-.align 11
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
@@ -324,7 +270,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_XWR_all_sb\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_XWR_all_sh\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_XWR_all_sw\""

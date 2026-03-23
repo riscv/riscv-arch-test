@@ -10,14 +10,15 @@
 from testgen.asm.helpers import to_hex, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 
 
 @add_coverpoint_generator("cp_custom_chint")
-def make_custom_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_custom_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for c.hint coverpoints."""
-    return [
-        "# TODO: The cp_custom_chint tests need more work to figure out how to detect the appropriate instruction.  Jordan recommends merging them into the relevant compressed instructions as a custom coverpoint, so they are decoded.  The decoder will have to stop excluding the hints.  ZihintntlZca should have some named instructions, as with Zihintntl."
-    ]
+    tc = test_data.begin_test_chunk()
+    tc.code = "# TODO: The cp_custom_chint tests need more work to figure out how to detect the appropriate instruction.  Jordan recommends merging them into the relevant compressed instructions as a custom coverpoint, so they are decoded.  The decoder will have to stop excluding the hints.  ZihintntlZca should have some named instructions, as with Zihintntl."
+    return [test_data.end_test_chunk()]
     if instr_name != "c.hint":
         raise ValueError(f"cp_custom_chint generator only supports c.hint instruction, got {instr_name}")
 

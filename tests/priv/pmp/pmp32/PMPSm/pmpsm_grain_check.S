@@ -90,7 +90,6 @@ main:
         # Read pmpaddr0 into x7 and check against expected.
         RVTEST_SIGUPD_CSR_READ(pmpaddr0, x7, test_2, test_2_str)
 
-    RVTEST_GOTO_MMODE
 
     j exit                                                      // Verification Complete, exit the test
 
@@ -113,7 +112,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
 test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 

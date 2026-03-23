@@ -13,12 +13,12 @@
 //               the PMP settings are correctly applied and that the system
 //               behaves as expected when accessing this region.
 //
-// Coverpoints :  cp_misaligned_tor for PMPM is fully covered in this test file.
+// Coverpoints :  cp_misaligned_napot for PMPM is fully covered in this test file.
 //
-// Test Cases  :  Checking that misaligned read/write that crosses a TOR PMP
-//                boundary fails. We Set up standard region with L={0/1},XWR=111
-//                and attempt misaligned {lw, lh, lhu, sw, sh} stradding each
-//                offset partially in start and end of region.
+// Test Cases  :  Checking that misaligned read/write that crosses a NAPOT PMP
+//                boundary fails. We Set up standard NAPOT region with L = {0/1},
+//                XWR=111 and attempt misaligned {lw, lh, lhu, sw, sh} stradding
+//                each offset partially in start and end of region.
 // --------------------------------------------------------------------------------
 
 #define SKIP_MEPC
@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_mislaigned_tor.S"
+#define TEST_FILE "pmpsm_mislaigned_napot.S"
 #define SIGUPD_COUNT 50
 
 // Enable trap handler
@@ -45,7 +45,12 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-#define g (1<<(RVMODEL_PMP_GRAIN+2))
+#if RVMODEL_PMP_GRAIN != 0
+  #define g   (1 << (RVMODEL_PMP_GRAIN + 2))
+#else
+  #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
+#endif
+
 
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
@@ -170,25 +175,33 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
+
 #define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP7_CFG_SHIFT))  // Background region with RWX enable.
-#define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP3_CFG_SHIFT))
-#define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_TOR)  &0xFF) << PMP3_CFG_SHIFT))
+#define PMPREGION_LXWR      ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
+#define PMPREGION_XWR       ((((      PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
+#define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
+#define REGIONSTART            TEST_FOR_EXECUTION        // RAM_BASE_ADDR + PROGRAM_SIZE
+#if RVMODEL_PMP_GRAIN != 0
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#else
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
+#endif
 
-    LA(x4, -1)                     // All memory region
+    LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4
 
     //Lock the Background region.
     LI(x4, PMP_REGION_GLOBAL)
     csrw pmpcfg2, x4
 
-    LA(x4, TEST_FOR_EXECUTION)
-    addi    x5, x4, g
-    srl x4, x4, PMP_SHIFT
+    LA(x5, REGIONSTART)
     srl x5, x5, PMP_SHIFT
-
-    csrw     pmpaddr2, x4
-    csrw     pmpaddr3, x5
+    andi x5, x5, PMP_MASK
+    ori x5, x5, PMP_REGION_SIZE
+    csrw     pmpaddr0, x5
 
 //                                            Verification Section
 // Test Case: 1 -- XWR Permissions given to the PMP Region.
@@ -196,14 +209,14 @@ main:
     LI(x4, PMPREGION_XWR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_1
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
 
 // Test Case: 2 -- LXWR Permissions given to the PMP Region.
 
     LI(x4, PMPREGION_LXWR)
     csrw pmpcfg0, x4
 
-    VERIFICATION_RWX    TEST_FOR_EXECUTION,test_2
+    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
 
     RVTEST_GOTO_MMODE
 
@@ -228,7 +241,6 @@ RVTEST_DATA_BEGIN
 .align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str:  .string "\"test: 1;  cp: pmpm_misaligned_napot_sh_address-1\""
 test_2_str:  .string "\"test: 2;  cp: pmpm_misaligned_napot_lh_address-1\""
 test_3_str:  .string "\"test: 3;  cp: pmpm_misaligned_napot_lhu_address-1\""

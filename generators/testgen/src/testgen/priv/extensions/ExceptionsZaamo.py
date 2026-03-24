@@ -29,7 +29,8 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     for offset in range(32):
         lines.extend(
             [
-                f"\n# Offset {offset} (LSBs: {offset:03b})",
+                "",
+                f"# Offset {offset} (LSBs: {offset:03b})",
                 f"    LI(x{limit_reg}, {offset})",
                 f"    LA(x{addr_reg}, scratch)",
                 "",
@@ -40,36 +41,58 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"    sw      x{source_reg}, 8(x{addr_reg})",
                 f"    sw      x{source_reg}, 12(x{addr_reg})",
                 "",
-                "    # Update scratch address to be misaligned based a0 argument",
+                f"    # Update scratch address to be misaligned based {limit_reg} argument",
                 f"    add     x{addr_reg}, x{limit_reg}, x{addr_reg}",
                 "",
                 f"    LI(x{source_reg}, 1)",
             ]
         )
-        for i in range(len(ops)):
-            op = ops[i]
-            lines.append(f"      LI(x{dest_reg}, 0xBAD)")
-            lines.append(test_data.add_testcase(f"{op[:-1]}_w_offset_{offset}", coverpoint, covergroup))
-            lines.append(f"      {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})")
-            lines.append("       nop")
-            lines.append(write_sigupd(dest_reg, test_data))
-        lines.extend(
-            [
-                "       #if __riscv_xlen == 64",
-            ]
-        )
-        for i in range(len(ops)):
-            op = ops[i]
-            lines.append(f"         LI(x{dest_reg}, 0xBAD)")
-            lines.append(test_data.add_testcase(f"{op[:-1]}_d_offset_{offset}", coverpoint, covergroup))
-            lines.append(f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})")
-            lines.append("          nop")
-            lines.append(write_sigupd(dest_reg, test_data))
-        lines.extend(
-            [
-                "      #endif",
-            ]
-        )
+        for op in ops:
+            lines.extend(
+                [
+                    f"      LI(x{dest_reg}, 0xBAD)",
+                    test_data.add_testcase(f"{op[:-1]}_w_offset_{offset}", coverpoint, covergroup),
+                    f"      {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "       nop",
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+
+        lines.append("       #if __riscv_xlen == 64")
+        for op in ops:
+            lines.extend(
+                [
+                    f"      LI(x{dest_reg}, 0xBAD)",
+                    test_data.add_testcase(f"{op[:-1]}_d_offset_{offset}", coverpoint, covergroup),
+                    f"      {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "       nop",
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+        lines.append("      #endif")
+
+        lines.append("       #ifdef ZABHA_SUPPORTED")
+        for op in ops:
+            lines.extend(
+                [
+                    f"      LI(x{dest_reg}, 0xBAD)",
+                    test_data.add_testcase(f"{op[:-1]}_h_offset_{offset}", coverpoint, covergroup),
+                    f"      {op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "       nop",
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+        for op in ops:
+            lines.extend(
+                [
+                    f"      LI(x{dest_reg}, 0xBAD)",
+                    test_data.add_testcase(f"{op[:-1]}_b_offset_{offset}", coverpoint, covergroup),
+                    f"      {op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "       nop",
+                    write_sigupd(dest_reg, test_data),
+                ]
+            )
+        lines.append("      #endif")
 
     test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
 
@@ -96,7 +119,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
             f"    sw      x{source_reg}, 8(x{addr_reg})",
             f"    sw      x{source_reg}, 12(x{addr_reg})",
             "",
-            "    # Update scratch address to be misaligned based a0 argument",
+            f"    # Update scratch address to be misaligned based {limit_reg} argument",
             f"    add     x{addr_reg}, x{limit_reg}, x{addr_reg}",
             "",
             f"    LI(x{source_reg}, 1)",
@@ -106,37 +129,60 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     )
 
     ops = ["amoswap.", "amoadd.", "amoxor.", "amoand.", "amoor.", "amomin.", "amomax.", "amominu.", "amomaxu."]
-    for i in range(len(ops)):
-        op = ops[i]
-        lines.append(f"    LI(x{dest_reg}, 0xBAD)")
-        lines.append(test_data.add_testcase(f"amo_access_fault_offset_{op[:-1]}_w", coverpoint, covergroup))
-        lines.append(f"    {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})")
-        lines.append("     nop")
-        lines.append(write_sigupd(dest_reg, test_data))
-    lines.extend(
-        [
-            "      #if __riscv_xlen == 64",
-        ]
-    )
-    for i in range(len(ops)):
-        op = ops[i]
-        lines.append(f"         LI(x{dest_reg}, 0xBAD)")
-        lines.append(test_data.add_testcase(f"amo_access_fault_offset_{op[:-1]}_d", coverpoint, covergroup))
-        lines.append(f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})")
-        lines.append("          nop")
-        lines.append(write_sigupd(dest_reg, test_data))
-    lines.extend(
-        [
-            "      #endif",
-        ]
-    )
+    for op in ops:
+        lines.extend(
+            [
+                f"         LI(x{dest_reg}, 0xBAD)",
+                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_w", coverpoint, covergroup),
+                f"         {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "          nop",
+                write_sigupd(dest_reg, test_data),
+            ]
+        )
+    lines.append("      #if __riscv_xlen == 64")
+    for op in ops:
+        lines.extend(
+            [
+                f"         LI(x{dest_reg}, 0xBAD)",
+                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_d", coverpoint, covergroup),
+                f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "          nop",
+                write_sigupd(dest_reg, test_data),
+            ]
+        )
+    lines.append("      #endif")
+
+    lines.append("      #ifdef ZABHA_SUPPORTED")
+    for op in ops:
+        lines.extend(
+            [
+                f"         LI(x{dest_reg}, 0xBAD)",
+                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_h", coverpoint, covergroup),
+                f"         {op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "          nop",
+                write_sigupd(dest_reg, test_data),
+            ]
+        )
+    for op in ops:
+        lines.extend(
+            [
+                f"         LI(x{dest_reg}, 0xBAD)",
+                test_data.add_testcase(f"amo_access_fault_{op[:-1]}_b", coverpoint, covergroup),
+                f"         {op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "          nop",
+                write_sigupd(dest_reg, test_data),
+            ]
+        )
+    lines.append("      #endif")
 
     test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
     return lines
 
 
 @add_priv_test_generator(
-    "ExceptionsZaamo", required_extensions=["I", "Zicsr", "Zaamo", "Sm"], march_extensions=["I", "Zicsr", "A", "Zaamo"]
+    "ExceptionsZaamo",
+    required_extensions=["I", "Zicsr", "Zaamo", "Sm"],
+    march_extensions=["I", "Zicsr", "A", "Zaamo", "Zabha"],
 )
 def make_exceptionszaamo(test_data: TestData) -> list[str]:
     """Main entry point for Zaamo exception test generation."""

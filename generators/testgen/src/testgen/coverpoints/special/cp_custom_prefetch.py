@@ -7,7 +7,7 @@
 
 """cp_custom_prefetch coverpoint generator."""
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -34,7 +34,7 @@ def make_custom_prefetch(instr_name: str, instr_type: str, coverpoint: str, test
     for i in range(65):
         test_lines.extend(
             [
-                f"LI(x{reg1}, {i * 0x00FEDCBA})",
+                load_int_reg("rs1", reg1, i * 0x00FEDCBA + 0xD00F, test_data),
                 f"sw x{reg1}, {i * 4}(x{reg2})",
             ]
         )

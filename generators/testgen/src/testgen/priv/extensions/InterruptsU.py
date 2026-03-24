@@ -10,7 +10,7 @@
 """InterruptsU privileged extension test generator for user-mode interrupts."""
 
 from testgen.asm.helpers import comment_banner
-from testgen.asm.interrupts import clr_mtimer_int, indent, set_mtimer_int, set_mtimer_int_soon
+from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -39,18 +39,8 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             mie_name = f"mie_{mstatus_mie}"
             binname = f"{mode_name}_{mie_name}"
 
-            lines.extend(
-                [
-                    "",
-                    "# Setup mstatus and mtvec",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
-                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
-                ]
-            )
-
-            # Set mtvec.MODE if needed
             if mtvec_mode:
-                lines.append("csrsi mtvec, 1")  # Set mtvec.MODE to vectored (01)
+                lines.append("csrsi mtvec, 1")
 
             lines.extend(
                 [
@@ -255,9 +245,6 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
 
             # Enable MTIE
             lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
-
-            # Set timer to fire soon
-            lines.extend(indent(set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2)))
 
             # WFI - label right before
             lines.extend(

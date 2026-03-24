@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# DUT-specific macro definitions for ImperasFPM
+# DUT-specific macro definitions for Imperas ISS
 # Jordan Carlin jcarlin@hmc.edu Jan 2026 and David_Harris@hmc.edu March 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -23,7 +23,7 @@
 
 // HTIF (Host-Target Interface) to terminate simulation.
 // Writing to 'tohost' with value 1 indicates success, 3 indicates failure.
-// As of 3/23/26, ImperasFPM does not differentiate success and failure conditions, but just looks for the _test_exit label.
+// As of 3/23/26, Imperas ISS does not differentiate success and failure conditions, but just looks for the _test_exit label.
 
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.

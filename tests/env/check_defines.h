@@ -13,6 +13,10 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
+#ifndef TRAP_SIGUPD_COUNT
+  #define TRAP_SIGUPD_COUNT 15000
+#endif
+
 ########## GLOBAL XLEN CHECK  ##########
 #ifndef __riscv_xlen
   #error "__riscv_xlen not defined."

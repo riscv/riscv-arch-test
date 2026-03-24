@@ -291,7 +291,7 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   # Smpmp params
   NUM_PMP_ENTRIES: 16
-  PMP_GRANULARITY: 4
+  PMP_GRANULARITY: 2
   # Smhpm params
   HPM_COUNTER_EN:
     [

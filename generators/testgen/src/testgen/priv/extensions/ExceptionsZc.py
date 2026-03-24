@@ -153,7 +153,10 @@ def _add_load_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
+        t_lines.append(
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
+        )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
@@ -162,8 +165,9 @@ def _add_load_fault(
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
-            f"{INDENT}# Load access will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
         )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
 
@@ -194,7 +198,10 @@ def _add_store_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
+        t_lines.append(
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
+        )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
@@ -203,8 +210,9 @@ def _add_store_fault(
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
-            f"{INDENT}# Store access will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
         )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
 

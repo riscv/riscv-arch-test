@@ -10,7 +10,7 @@
 """InterruptsU privileged extension test generator for user-mode interrupts."""
 
 from testgen.asm.helpers import comment_banner
-from testgen.asm.interrupts import clr_mtimer_int, indent, set_mtimer_int, set_mtimer_int_soon
+from testgen.asm.interrupts import clr_mtimer_int, set_mtimer_int, set_mtimer_int_soon
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -20,7 +20,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0, 2])
 
     lines = [
         comment_banner(
@@ -39,43 +39,36 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             mie_name = f"mie_{mstatus_mie}"
             binname = f"{mode_name}_{mie_name}"
 
-            lines.extend(
-                [
-                    "",
-                    "# Setup mstatus and mtvec",
-                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
-                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
-                ]
-            )
-
-            # Set mtvec.MODE if needed
             if mtvec_mode:
-                lines.append("csrsi mtvec, 1")  # Set mtvec.MODE to vectored (01)
+                lines.append("csrsi mtvec, 1")
 
-            # Set mstatus.MPIE (not MIE) because mret copies MPIE→MIE when transitioning to U-mode.
-            # Setting MIE directly would be overwritten by mret's automatic MPIE restoration.
             lines.extend(
                 [
-                    f"LI(x{r_scratch}, 0x80)",  # mstatus.MPIE bit mask (bit 7)
+                    f"LI(x{r_scratch}, 0x80)",
                     f"{'CSRS' if mstatus_mie else 'CSRC'}(mstatus, x{r_scratch})",
-                    f"LI(x{r_scratch}, 0x80)",  # Enable MTIE
+                    f"LI(x{r_scratch}, 0x80)",
                     f"CSRW(mie, x{r_scratch})",
-                    "RVTEST_GOTO_LOWER_MODE Umode",  # Go to U-mode
+                    "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
+                    *set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2),
                 ]
             )
 
-            lines.extend(indent(set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2)))
+            # lines.extend(*set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
+
+            for _ in range(5000):
+                lines.append("    nop")
 
             lines.extend(
                 [
                     "RVTEST_IDLE_FOR_INTERRUPT",
-                    "RVTEST_GOTO_MMODE",  # Return to M-mode and cleanup
+                    "RVTEST_GOTO_MMODE",
                     "nop",
+                    *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )
 
-            lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
+            # lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch])
     return lines
@@ -124,6 +117,14 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "RVTEST_SET_MSW_INT",
+                ]
+            )
+
+            for _ in range(5000):
+                lines.append("    nop")
+
+            lines.extend(
+                [
                     "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
@@ -239,20 +240,19 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
             # Enable MTIE
             lines.extend([f"LI(x{r_scratch}, 0x80)", f"CSRW(mie, x{r_scratch})", "RVTEST_GOTO_LOWER_MODE Umode"])
 
-            # Set timer to fire soon
-            lines.extend(indent(set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2)))
-
             # WFI - label right before
             lines.extend(
                 [
+                    *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "    wfi",
                     "    nop",
                     "    RVTEST_GOTO_MMODE",
+                    *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )
 
-            lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
+            # lines.extend(*clr_mtimer_int(r_temp, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch])
     return lines

@@ -8,4 +8,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Smstateen_cg = new();         Smstateen.set_inst_name("obj_Smstateen");
+    Smstateen_cg = new();         Smstateen_cg.set_inst_name("obj_Smstateen");

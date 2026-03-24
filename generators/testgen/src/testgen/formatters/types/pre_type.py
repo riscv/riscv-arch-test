@@ -23,7 +23,6 @@ def format_pre_type(
         load_int_reg("rs1", params.rs1, params.rs1val, test_data),
     ]
     test = [
-        # f"{instr_name} {(((params.immval + 64) % 128) - 64)*32}(x{params.rs1}) # perform operation",
-        f"{instr_name} {(int(params.immval / 32)) * 32}(x{params.rs1}) # perform operation",
+        f"{instr_name} {(int(params.immval / 32)) * 32}(x{params.rs1}) # align to multiple of 32",
     ]
     return (setup, test, [""])

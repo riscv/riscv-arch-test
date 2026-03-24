@@ -92,6 +92,31 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+##### imperas test targets #####
+.PHONY: imperas imperas-rv32 imperas-rv64
+
+# Add --trace --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
+IMPERAS_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose --program
+IMPERAS_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv64-max/imperas.ic iss.exe --verbose --program
+
+imperas: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml config/imperas/imperas-rv64-max/test_config.yaml
+imperas: elfs
+	@exit_code=0; \
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+# Add --verbose to run_tests.py arguments to see the simulator commands
+imperas-rv32: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml
+imperas-rv32: elfs
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs
+
+imperas-rv64: CONFIG_FILES = config/imperas/imperas-rv64-max/test_config.yaml
+imperas-rv64: elfs
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs
+
+
+
 
 ###### Test compilation targets ######
 .PHONY: elfs

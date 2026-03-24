@@ -351,9 +351,9 @@
 // Interrupt Macros
 // Idle for interrupt latency
 #define RVTEST_IDLE_FOR_INTERRUPT \
-   .rept RVMODEL_INTERRUPT_LATENCY; \
-       nop; \
-   .endr
+  .rept RVMODEL_INTERRUPT_LATENCY; \
+      nop; \
+  .endr
 
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.

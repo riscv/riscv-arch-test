@@ -3,8 +3,8 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: imperasfpm-RVI20U32
-description: RVI20U32 with all optional extensions
+name: imperas-RVI20U64
+description: RVI20U64 with all optional extensions
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -21,7 +21,6 @@ implemented_extensions:
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
-  - { name: Zcf, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 
@@ -46,7 +45,7 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # Sm params
-  MXLEN: 32
+  MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
@@ -72,10 +71,10 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  MTVAL_WIDTH: 32
+  MTVAL_WIDTH: 64
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 3
-  PHYS_ADDR_WIDTH: 32
+  PHYS_ADDR_WIDTH: 57
   M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true
   MTVEC_ACCESS: rw

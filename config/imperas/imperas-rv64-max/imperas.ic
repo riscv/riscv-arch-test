@@ -1,7 +1,6 @@
 # imperas.ic
-# Initialization file for rv64gc ImperasDV lock step simulation
-# David_Harris@hmc.edu 15 August 2024
-# jcarlin@hmc.edu 19 March 2025
+# Initialization file for Imperas ISS
+# David_Harris@hmc.edu 23 March 2026
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 # Base configuration
@@ -10,6 +9,8 @@
 --variant RVA23S64
 # defines printing via write to  0x10010000 and termination at symbol _test_exit
 --extlib iss/cpu0/cc=riscv.ovpworld.org/intercept/customControl/1.0
+--override iss/cpu0/simulateexceptions=T
+--override iss/cpu0/defaultsemihost=F
 
 # Bit manipulation
 --override cpu*/add_Extensions=B
@@ -66,5 +67,5 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # More extensions
---override cpu*/Smdbltrp=T
---override cpu*/Ssdbltrp=T
+#--override cpu*/Smdbltrp=T
+#--override cpu*/Ssdbltrp=T

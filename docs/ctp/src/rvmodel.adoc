@@ -17,7 +17,7 @@ Most macros are implemented in config/cores/<core>/<version>/rvmodel_macros.h.  
 
 === Macros
 
-The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The Mode column indicates the privilege mode from which the macro is called.
+The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty.The Mode column indicates the privilege mode from which the macro is called.
 
 [[t-rvmodel]]
 .RVMODEL DUT-Specific Macros
@@ -25,26 +25,26 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The Mode column indi
 [cols="2, 3, 1", options=header]
 [%AUTOWIDTH]
 |===
-|Macro|Description|Mode
-|RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state. Cannot clobber `x1`/`ra`, but any other registers may be trashed. | Machine
-|RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation. | Any
-|RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation. | Any
-|RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro. | Machine
-|RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string. | Any
-|RVMODEL_SET_MEXT_INT(_R1, _R2)|Sets the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.| Machine or Supervisor
-|RVMODEL_CLR_MEXT_INT(_R1, _R2)|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_SET_MSW_INT(_R1, _R2)|Sets the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_CLR_MSW_INT(_R1, _R2)|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_SET_SEXT_INT(_R1, _R2)|Sets the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_CLR_SEXT_INT(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_SET_SSW_INT(_R1, _R2)|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_CLR_SSW_INT(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, as applicable. _R1 and _R2 are temporary registers that may be trashed by the macro. | Machine or Supervisor
-|RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures handler completes before test continues. | n/a
-|RVMODEL_ACCESS_FAULT_ADDRESS|The base address of a region of at least 128 bytes that causes an access fault when any part of the region is read or written. This is used to test exceptions. | n/a
-|RVMODEL_MTIME_ADDRESS|The address of the memory-mapped `mtime` register, used for timer accesses and interrupts. | n/a
-|RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts. | n/a
-|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in cycles) before a timer interrupt fires when using `set_mtimer_int_soon()`. Sets `mtimecmp = mtime + delay`. | n/a
-|RVMODEL_DATA_SECTION|Model-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  Macro can be empty if not needed. | n/a
+|Macro|Description|Required?|Mode
+|RVMODEL_BOOT|Perform boot operations, such as turning on a phase-locked loop or DRAM controller or initializing custom state. Cannot clobber `x1`/`ra`, but any other registers may be trashed.|If no boot operations are needed, or a separate DUT-specific executable is used for booting before loading and invoking the test ELF.| Machine
+|RVMODEL_HALT_PASS|Terminate test with a pass indication.  When the test is run in simulation, this should end the simulation.|No | Any
+|RVMODEL_HALT_FAIL|Terminate test with a fail indication.  When the test is run in simulation, this should end the simulation.|No | Any
+|RVMODEL_IO_INIT(_R1, _R2, _R3)|Initialization steps needed prior to writing to the console. _R1, _R2, and _R3 are temporary registers that may be trashed by the macro.|If no I/O initialization is needed. | Machine
+|RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)|Write a null-terminated ASCII string to the console, where _R1, _R2, and _R3 are temporary registers that may be trashed by the macro and _STR_PTR is a register containing the address of the first byte of the string.|If the console is unavailable and the user implements an alternate way to signal success (such as test bench reporting or colored LEDs controlled by RVMODEL_HALT). However, a console is required for certification. | Any
+|RVMODEL_SET_MEXT_INT(_R1, _R2)|Sets the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode external interrupts are not tested.| Machine or Supervisor
+|RVMODEL_CLR_MEXT_INT(_R1, _R2)|Clears the Machine External Interrupt `mip.MEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode external interrupts are not tested. | Machine or Supervisor
+|RVMODEL_SET_MSW_INT(_R1, _R2)|Sets the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode software interrupts are not tested. | Machine or Supervisor
+|RVMODEL_CLR_MSW_INT(_R1, _R2)|Clears the Machine Software Interrupt `mip.MSIP` using a memory-mapped control register. _R1 and _R2 are temporary registers that may be trashed by the macro.|If M-mode software interrupts are not tested. | Machine or Supervisor
+|RVMODEL_SET_SEXT_INT(_R1, _R2)|Sets the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode external interrupts are not tested.  | Machine or Supervisor
+|RVMODEL_CLR_SEXT_INT(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode external interrupts are not tested.  | Machine or Supervisor
+|RVMODEL_SET_SSW_INT(_R1, _R2)|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
+|RVMODEL_CLR_SSW_INT(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, as applicable. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
+|RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures handler completes before test continues.|Can be 0 if interrupt controller adds no delay. | n/a
+|RVMODEL_ACCESS_FAULT_ADDRESS|The base physical address of a region of at least 128 bytes that causes an access fault when any part of the region is read or written. This is used to test exceptions.|No.| n/a
+|RVMODEL_MTIME_ADDRESS|The address of the memory-mapped `mtime` register, used for timer accesses and interrupts.|If timer interrupts are not tested. | n/a
+|RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts.| If Machine timer interrupts are not tested. | n/a
+|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in cycles) before a timer interrupt fires when using `set_mtimer_int_soon()`. Sets `mtimecmp = mtime + delay`.| If Machine timer interrupts are not tested. | n/a
+|RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
 |===
 
 [NOTE]
@@ -60,6 +60,8 @@ The RVMODEL_BOOT macro may be empty for a simple DUT.
 For a complex SoC, the macro may need to perform initialization steps such as turning on a phase-locked loop or DRAM controller or initializing custom state.  It must not clobber `x1`/`ra`, but any other registers may be trashed.
 
 At the end of RVMODEL_BOOT, the system should be in conforming machine mode, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE).
+
+Alternatively, DUT might run a separate proprietary bootloader executable file that initializes the system, then loads the test ELF and jumps to `rvtest_entry_point`. Or the DUT could modify link.ld to link proprietary bootloader code into the test ELF and jump to `rvtest_entry_point`. In these cases, RVMODEL_BOOT can be empty.
 
 === RVMODEL Macros for Spike and SAIL
 
@@ -84,4 +86,4 @@ If you have a complex DUT, you presumably have a team of sophisticated verificat
 [[linker-script]]
 === Linker Script
 
-Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.

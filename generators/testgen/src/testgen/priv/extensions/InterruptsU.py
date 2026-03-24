@@ -54,8 +54,6 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-            # lines.extend(*set_mtimer_int(r_mtime, r_mtimecmp, r_temp, r_temp2))
-
             for _ in range(5000):
                 lines.append("    nop")
 
@@ -67,8 +65,6 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )
-
-            # lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch])
     return lines
@@ -251,8 +247,6 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )
-
-            # lines.extend(*clr_mtimer_int(r_temp, r_mtimecmp))
 
     test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch])
     return lines

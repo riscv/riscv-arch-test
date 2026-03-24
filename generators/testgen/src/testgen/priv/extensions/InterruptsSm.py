@@ -384,7 +384,6 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    # FIX 1: 7 registers (remove unused r_csr_tmp), simple exclude
     r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[0])
 
     lines = [
@@ -402,12 +401,10 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"# Testcase: WFI with mie = {mie_val}, tw = {tw_val}",
-                    "CSRW(mie, zero)",  # FIX 2: Macro with parentheses
-                    # FIX 3: Clear specific bits, not whole mstatus
+                    "CSRW(mie, zero)",
                     f"LI(x{r_scratch}, 0x200008)",
                     f"CSRC(mstatus, x{r_scratch})",
                     "# Set MIE if needed",
-                    # FIX 4: Use MPIE bit (0x80) with CSRS/CSRC pattern
                     f"LI(x{r_scratch}, 0x80)",
                     f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                     "# Set TW if needed",
@@ -426,13 +423,12 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                 [
                     "# Enable MTIE",
                     f"LI(x{r_scratch}, 0x80)",
-                    f"CSRW(mie, x{r_scratch})",  # FIX 5: Parentheses for macro
+                    f"CSRW(mie, x{r_scratch})",
                     # Set timer
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "wfi",
                     "nop",
-                    # FIX 6: Clear timer AFTER wfi
                     *clr_mtimer_int(r_t0, r_mtimecmp),
                     "",
                 ]

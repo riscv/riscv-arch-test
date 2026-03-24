@@ -9,6 +9,7 @@
 """Ssnpm pointer masking extension test generator."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -29,15 +30,15 @@ def _set_pmm(pmm_val: int, pmm_reg: int, pmm_tmp: int) -> list[str]:
     """Set senvcfg.PMM = pmm_val via read-modify-write from S-mode."""
 
     return [
-        f"\tCSRR(x{pmm_tmp}, senvcfg) ",
-        f"\tLI(x{pmm_reg}, 0x3)  ",
-        f"\tslli x{pmm_reg}, x{pmm_reg}, 32 ",
-        f"\tnot x{pmm_reg}, x{pmm_reg}  ",
-        f"\tand x{pmm_tmp}, x{pmm_tmp}, x{pmm_reg}  ",
-        f"\tLI(x{pmm_reg}, {pmm_val})  ",
-        f"\tslli x{pmm_reg}, x{pmm_reg}, 32 ",
-        f"\tor x{pmm_tmp}, x{pmm_tmp}, x{pmm_reg} ",
-        f"\tCSRW(senvcfg, x{pmm_tmp})   ",
+        f"CSRR(x{pmm_tmp}, senvcfg)",
+        f"LI(x{pmm_reg}, 0x3)",
+        f"slli x{pmm_reg}, x{pmm_reg}, 32",
+        f"not x{pmm_reg}, x{pmm_reg}",
+        f"and x{pmm_tmp}, x{pmm_tmp}, x{pmm_reg}",
+        f"LI(x{pmm_reg}, {pmm_val})",
+        f"slli x{pmm_reg}, x{pmm_reg}, 32",
+        f"or x{pmm_tmp}, x{pmm_tmp}, x{pmm_reg}",
+        f"CSRW(senvcfg, x{pmm_tmp})",
     ]
 
 
@@ -47,13 +48,13 @@ def _set_satp_mode(mode: str, reg: int) -> list[str]:
     mode_val = SATP_MODE_ENCODINGS[mode]
     if mode == "bare":
         return [
-            "\tCSRW(satp, zero)   ",
+            "CSRW(satp, zero)",
         ]
     return [
-        f"\tLI(x{reg}, {mode_val}) ",
-        f"\tslli x{reg}, x{reg}, 60  ",
-        f"\tCSRW(satp, x{reg})   ",
-        "\tsfence.vma   ",
+        f"LI(x{reg}, {mode_val})",
+        f"slli x{reg}, x{reg}, 60",
+        f"CSRW(satp, x{reg})",
+        "sfence.vma",
     ]
 
 
@@ -73,11 +74,11 @@ def _setup_address_regions(addr_a: int, addr_b: int, addr_c: int, tmp: int) -> l
     """Set addr_a=scratch, addr_b=scratch+4KB, addr_c=scratch+8KB."""
     return [
         "",
-        f"\tLA(x{addr_a}, scratch)  ",
-        f"\tLI(x{tmp}, {PAGE_SIZE}) ",
-        f"\tadd x{addr_b}, x{addr_a}, x{tmp} ",
-        f"\tslli x{tmp}, x{tmp}, 1    ",
-        f"\tadd x{addr_c}, x{addr_a}, x{tmp}  ",
+        f"LA(x{addr_a}, scratch)",
+        f"LI(x{tmp}, {PAGE_SIZE})",
+        f"add x{addr_b}, x{addr_a}, x{tmp}",
+        f"slli x{tmp}, x{tmp}, 1",
+        f"add x{addr_c}, x{addr_a}, x{tmp}",
         "",
     ]
 
@@ -106,13 +107,13 @@ def _generate_pmlen_masking_tests(test_data: TestData) -> list[str]:
             lines.extend(_set_satp_mode(satp_mode, tmp_reg))
 
             # Enter U-mode
-            lines.append("\tRVTEST_GOTO_LOWER_MODE Umode")
+            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
             lines.extend(
                 [
-                    f"\tLA(x{addr_reg}, scratch) ",
-                    f"\tLI(x{masked_reg}, {upper_mask:#018x})",
-                    f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg} # A_masked = A with upper bits flipped",
+                    f"LA(x{addr_reg}, scratch)",
+                    f"LI(x{masked_reg}, {upper_mask:#018x})",
+                    f"xor x{masked_reg}, x{addr_reg}, x{masked_reg} # A_masked = A with upper bits flipped",
                 ]
             )
 
@@ -121,9 +122,9 @@ def _generate_pmlen_masking_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_write, covergroup),
-                        f"\tLI(x{data_reg}, 0xAB) ",
-                        f"\t{winstr} x{data_reg}, 0(x{addr_reg}) ",
-                        "\tnop  ",
+                        f"LI(x{data_reg}, 0xAB)",
+                        f"{winstr} x{data_reg}, 0(x{addr_reg})",
+                        "nop",
                     ]
                 )
 
@@ -132,16 +133,16 @@ def _generate_pmlen_masking_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_read, covergroup),
-                        f"\t{rinstr} x{data_reg}, 0(x{masked_reg})        # load from A_masked",
-                        "\tnop ",
+                        f"{rinstr} x{data_reg}, 0(x{masked_reg})        # load from A_masked",
+                        "nop",
                         write_sigupd(data_reg, test_data),
                     ]
                 )
 
             lines.extend(
                 [
-                    "\tRVTEST_GOTO_MMODE",
-                    "\tRVTEST_GOTO_LOWER_MODE Smode",
+                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_GOTO_LOWER_MODE Smode",
                 ]
             )
             lines.append(_asm_ifdef_guard_close(satp_mode))
@@ -193,14 +194,14 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
             # S-mode setup
             lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
             lines.extend(_set_satp_mode(satp_mode, tmp_reg))
-            lines.append("\tRVTEST_GOTO_LOWER_MODE Umode")
+            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
             # Build A and A_masked
             lines.extend(
                 [
-                    f"\tLA(x{addr_reg}, scratch) ",
-                    f"\tLI(x{masked_reg}, {upper_mask:#018x}) ",
-                    f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg} ",
+                    f"LA(x{addr_reg}, scratch)",
+                    f"LI(x{masked_reg}, {upper_mask:#018x})",
+                    f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
                 ]
             )
 
@@ -212,15 +213,15 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_amo, covergroup),
-                        f"\tLI(x{src_reg}, {K}) ",
-                        f"\tsw x{src_reg}, 0(x{addr_reg}) ",
-                        "\tnop  ",
-                        f"\tLI(x{src_reg}, {V}) ",
-                        f"\t{amo} x{dest_reg}, x{src_reg}, (x{masked_reg})  ",
-                        "\tnop  ",
+                        f"LI(x{src_reg}, {K})",
+                        f"sw x{src_reg}, 0(x{addr_reg})",
+                        "nop",
+                        f"LI(x{src_reg}, {V})",
+                        f"{amo} x{dest_reg}, x{src_reg}, (x{masked_reg})",
+                        "nop",
                         write_sigupd(dest_reg, test_data),
-                        f"\tlw x{dest_reg}, 0(x{masked_reg}) ",
-                        "\tnop   ",
+                        f"lw x{dest_reg}, 0(x{masked_reg})",
+                        "nop",
                         write_sigupd(dest_reg, test_data),
                     ]
                 )
@@ -233,23 +234,23 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_amo, covergroup),
-                        f"\tLI(x{src_reg}, {K})  ",
-                        f"\tsd x{src_reg}, 0(x{addr_reg})  ",
-                        "\tnop  ",
-                        f"\tLI(x{src_reg}, {V})  ",
-                        f"\t{amo} x{dest_reg}, x{src_reg}, (x{masked_reg}) ",
-                        "\tnop   ",
+                        f"LI(x{src_reg}, {K})",
+                        f"sd x{src_reg}, 0(x{addr_reg})",
+                        "nop",
+                        f"LI(x{src_reg}, {V})",
+                        f"{amo} x{dest_reg}, x{src_reg}, (x{masked_reg})",
+                        "nop",
                         write_sigupd(dest_reg, test_data),
-                        f"\tld x{dest_reg}, 0(x{masked_reg}) ",
-                        "\tnop   ",
+                        f"ld x{dest_reg}, 0(x{masked_reg})",
+                        "nop",
                         write_sigupd(dest_reg, test_data),
                     ]
                 )
 
             lines.extend(
                 [
-                    "\tRVTEST_GOTO_MMODE",
-                    "\tRVTEST_GOTO_LOWER_MODE Smode",
+                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_GOTO_LOWER_MODE Smode",
                 ]
             )
             lines.append(_asm_ifdef_guard_close(satp_mode))
@@ -264,14 +265,14 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
 
         lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
         lines.extend(_set_satp_mode("bare", tmp_reg))
-        lines.append("\tRVTEST_GOTO_LOWER_MODE Umode")
+        lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
         binname_jal_low = f"pmm_{pmm_val:02b}_bare_jal_pa_low"
         lines.extend(
             [
                 test_data.add_testcase(binname_jal_low, cp_fetch, covergroup),
-                f"\tjal x0, fetch_jal_low_{lbl}  ",
-                "\tnop  ",
+                f"jal x0, fetch_jal_low_{lbl}",
+                "nop",
                 f"fetch_jal_low_{lbl}:",
                 "",
             ]
@@ -281,9 +282,9 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(binname_jalr_low, cp_fetch, covergroup),
-                f"\tLA(x{addr_reg}, fetch_jalr_low_{lbl})  ",
-                f"\tjalr x0, 0(x{addr_reg})   ",
-                "\tnop  ",
+                f"LA(x{addr_reg}, fetch_jalr_low_{lbl})",
+                f"jalr x0, 0(x{addr_reg})",
+                "nop",
                 f"fetch_jalr_low_{lbl}:",
                 "",
             ]
@@ -293,11 +294,11 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 test_data.add_testcase(binname_jalr_high, cp_fetch, covergroup),
-                f"\tLA(x{addr_reg}, fetch_jalr_high_{lbl}) ",
-                f"\tLI(x{masked_reg}, {upper_mask:#018x})  ",
-                f"\tor x{addr_reg}, x{addr_reg}, x{masked_reg}  ",
-                f"\tjalr x0, 0(x{addr_reg}) ",
-                "\tnop ",
+                f"LA(x{addr_reg}, fetch_jalr_high_{lbl})",
+                f"LI(x{masked_reg}, {upper_mask:#018x})",
+                f"or x{addr_reg}, x{addr_reg}, x{masked_reg}",
+                f"jalr x0, 0(x{addr_reg})",
+                "nop",
                 f"fetch_jalr_high_{lbl}:",
                 "",
             ]
@@ -305,8 +306,8 @@ def _generate_effective_address_tests(test_data: TestData) -> list[str]:
 
         lines.extend(
             [
-                "\tRVTEST_GOTO_MMODE",
-                "\tRVTEST_GOTO_LOWER_MODE Smode",
+                "RVTEST_GOTO_MMODE",
+                "RVTEST_GOTO_LOWER_MODE Smode",
                 "",
             ]
         )
@@ -344,14 +345,14 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
 
             lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
             lines.extend(_set_satp_mode(satp_mode, tmp_reg))
-            lines.append("\tRVTEST_GOTO_LOWER_MODE Umode    ")
+            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
             # sign_val = 0: low-half canonical VA
             lines.extend(
                 [
-                    f"\tLA(x{addr_reg}, scratch)",
-                    f"\tLI(x{masked_reg}, {upper_mask:#018x})",
-                    f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg}",
+                    f"LA(x{addr_reg}, scratch)",
+                    f"LI(x{masked_reg}, {upper_mask:#018x})",
+                    f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
                 ]
             )
 
@@ -360,9 +361,9 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_write, covergroup),
-                        f"\tLI(x{data_reg}, 0xCD)   ",
-                        f"\t{winstr} x{data_reg}, 0(x{addr_reg}) ",
-                        "\tnop ",
+                        f"LI(x{data_reg}, 0xCD)",
+                        f"{winstr} x{data_reg}, 0(x{addr_reg})",
+                        "nop",
                     ]
                 )
 
@@ -371,8 +372,8 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_read, covergroup),
-                        f"\t{rinstr} x{data_reg}, 0(x{masked_reg})         # read from A_masked (non-canonical); masking -> A",
-                        "\tnop  ",
+                        f"{rinstr} x{data_reg}, 0(x{masked_reg})         # read from A_masked (non-canonical); masking -> A",
+                        "nop",
                         write_sigupd(data_reg, test_data),
                     ]
                 )
@@ -381,11 +382,11 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
             se_mask = sign_ext_masks[satp_mode]
             lines.extend(
                 [
-                    f"\tLA(x{addr_reg}, scratch)",
-                    f"\tLI(x{tmp_reg}, {se_mask:#018x})",
-                    f"\tor x{addr_reg}, x{addr_reg}, x{tmp_reg}",
-                    f"\tLI(x{masked_reg}, {upper_mask:#018x})",
-                    f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg}",
+                    f"LA(x{addr_reg}, scratch)",
+                    f"LI(x{tmp_reg}, {se_mask:#018x})",
+                    f"or x{addr_reg}, x{addr_reg}, x{tmp_reg}",
+                    f"LI(x{masked_reg}, {upper_mask:#018x})",
+                    f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
                 ]
             )
 
@@ -394,9 +395,9 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_write, covergroup),
-                        f"\tLI(x{data_reg}, 0xCD)  ",
-                        f"\t{winstr} x{data_reg}, 0(x{addr_reg})  ",
-                        "\tnop ",
+                        f"LI(x{data_reg}, 0xCD)",
+                        f"{winstr} x{data_reg}, 0(x{addr_reg})",
+                        "nop",
                     ]
                 )
 
@@ -405,16 +406,16 @@ def _generate_va_sign_extension_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_read, covergroup),
-                        f"\t{rinstr} x{data_reg}, 0(x{masked_reg}) ",
-                        "\tnop   ",
+                        f"{rinstr} x{data_reg}, 0(x{masked_reg})",
+                        "nop",
                         write_sigupd(data_reg, test_data),
                     ]
                 )
 
             lines.extend(
                 [
-                    "\tRVTEST_GOTO_MMODE  ",
-                    "\tRVTEST_GOTO_LOWER_MODE Smode ",
+                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_GOTO_LOWER_MODE Smode",
                 ]
             )
 
@@ -444,13 +445,13 @@ def _generate_pa_zero_extension_tests(test_data: TestData) -> list[str]:
 
         lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
         lines.extend(_set_satp_mode("bare", tmp_reg))
-        lines.append("\tRVTEST_GOTO_LOWER_MODE Umode ")
+        lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
         lines.extend(
             [
-                f"\tLA(x{addr_reg}, scratch) ",
-                f"\tLI(x{masked_reg}, {upper_mask:#018x}) ",
-                f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg} ",
+                f"LA(x{addr_reg}, scratch)",
+                f"LI(x{masked_reg}, {upper_mask:#018x})",
+                f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
             ]
         )
 
@@ -459,9 +460,9 @@ def _generate_pa_zero_extension_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     test_data.add_testcase(binname, cp_write, covergroup),
-                    f"\tLI(x{data_reg}, 0xEF)   ",
-                    f"\t{winstr} x{data_reg}, 0(x{addr_reg}) ",
-                    "\tnop   ",
+                    f"LI(x{data_reg}, 0xEF)",
+                    f"{winstr} x{data_reg}, 0(x{addr_reg})",
+                    "nop",
                 ]
             )
 
@@ -470,16 +471,16 @@ def _generate_pa_zero_extension_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     test_data.add_testcase(binname, cp_read, covergroup),
-                    f"\t{rinstr} x{data_reg}, 0(x{masked_reg})    ",
-                    "\tnop  ",
+                    f"{rinstr} x{data_reg}, 0(x{masked_reg})",
+                    "nop ",
                     write_sigupd(data_reg, test_data),
                 ]
             )
 
         lines.extend(
             [
-                "\tRVTEST_GOTO_MMODE   ",
-                "\tRVTEST_GOTO_LOWER_MODE Smode ",
+                "RVTEST_GOTO_MMODE",
+                "RVTEST_GOTO_LOWER_MODE Smode",
                 "",
             ]
         )
@@ -512,16 +513,16 @@ def _generate_mask_priv_mode_only_tests(test_data: TestData) -> list[str]:
 
             lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
             lines.extend(_set_satp_mode(satp_mode, tmp_reg))
-            lines.append("\tRVTEST_GOTO_LOWER_MODE Umode")
+            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
             lines.extend(_setup_address_regions(addr_a, addr_b, addr_c, tmp_reg))
 
             for pat_label, pat_reg in [("A", addr_a), ("B", addr_b), ("C", addr_c)]:
                 lines.extend(
                     [
-                        f"\t# Pattern {pat_label} — different VPN, masking must apply uniformly",
-                        f"\tLI(x{masked_reg}, {upper_mask:#018x})",
-                        f"\txor x{masked_reg}, x{pat_reg}, x{masked_reg}  ",
+                        f"{INDENT}# Pattern {pat_label} — different VPN, masking must apply uniformly",
+                        f"LI(x{masked_reg}, {upper_mask:#018x})",
+                        f"xor x{masked_reg}, x{pat_reg}, x{masked_reg}",
                     ]
                 )
 
@@ -530,9 +531,9 @@ def _generate_mask_priv_mode_only_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             test_data.add_testcase(binname, cp_write, covergroup),
-                            f"\tLI(x{data_reg}, 0x12)",
-                            f"\t{winstr} x{data_reg}, 0(x{pat_reg})       ",
-                            "\tnop",
+                            f"LI(x{data_reg}, 0x12)",
+                            f"{winstr} x{data_reg}, 0(x{pat_reg})",
+                            "nop",
                         ]
                     )
 
@@ -541,16 +542,16 @@ def _generate_mask_priv_mode_only_tests(test_data: TestData) -> list[str]:
                     lines.extend(
                         [
                             test_data.add_testcase(binname, cp_read, covergroup),
-                            f"\t{rinstr} x{data_reg}, 0(x{masked_reg})  ",
-                            "\tnop",
+                            f"{rinstr} x{data_reg}, 0(x{masked_reg})",
+                            "nop",
                             write_sigupd(data_reg, test_data),
                         ]
                     )
 
             lines.extend(
                 [
-                    "\tRVTEST_GOTO_MMODE",
-                    "\tRVTEST_GOTO_LOWER_MODE Smode",
+                    "RVTEST_GOTO_MMODE",
+                    "RVTEST_GOTO_LOWER_MODE Smode",
                 ]
             )
             lines.append(_asm_ifdef_guard_close(satp_mode))
@@ -588,19 +589,19 @@ def _generate_mxr_disable_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"\tLI(x{tmp_reg}, {1 << 19})  ",
-                    f"\tCSRS(sstatus, x{tmp_reg})   # set sstatus.MXR = 1",
+                    f"LI(x{tmp_reg}, {1 << 19})",
+                    f"CSRS(sstatus, x{tmp_reg})   # set sstatus.MXR = 1",
                 ]
             )
 
             lines.extend(_set_satp_mode(satp_mode, tmp_reg))
-            lines.append("\tRVTEST_GOTO_LOWER_MODE Umode ")
+            lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
             lines.extend(
                 [
-                    f"\tLA(x{addr_reg}, scratch)  ",
-                    f"\tLI(x{masked_reg}, {upper_mask:#018x}) ",
-                    f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg} ",
+                    f"LA(x{addr_reg}, scratch)",
+                    f"LI(x{masked_reg}, {upper_mask:#018x})",
+                    f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
                 ]
             )
 
@@ -609,9 +610,9 @@ def _generate_mxr_disable_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_write, covergroup),
-                        f"\tLI(x{data_reg}, 0x34) ",
-                        f"\t{winstr} x{data_reg}, 0(x{addr_reg})  ",
-                        "\tnop ",
+                        f"LI(x{data_reg}, 0x34)",
+                        f"{winstr} x{data_reg}, 0(x{addr_reg})",
+                        "nop",
                     ]
                 )
 
@@ -620,19 +621,19 @@ def _generate_mxr_disable_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         test_data.add_testcase(binname, cp_read, covergroup),
-                        f"\tLI(x{data_reg}, 0xBAD) ",
-                        f"\t{rinstr} x{data_reg}, 0(x{masked_reg})  ",
-                        "\tnop    ",
+                        f"LI(x{data_reg}, 0xBAD)",
+                        f"{rinstr} x{data_reg}, 0(x{masked_reg})",
+                        "nop",
                         write_sigupd(data_reg, test_data),
                     ]
                 )
 
             lines.extend(
                 [
-                    "\tRVTEST_GOTO_MMODE  ",
-                    f"\tLI(x{tmp_reg}, {1 << 19}) ",
-                    f"\tCSRC(sstatus, x{tmp_reg})   # clear sstatus.MXR",
-                    "\tRVTEST_GOTO_LOWER_MODE Smode  ",
+                    "RVTEST_GOTO_MMODE",
+                    f"LI(x{tmp_reg}, {1 << 19})",
+                    f"CSRC(sstatus, x{tmp_reg})   # clear sstatus.MXR",
+                    "RVTEST_GOTO_LOWER_MODE Smode",
                 ]
             )
 
@@ -705,13 +706,13 @@ def _generate_misaligned_tests(test_data: TestData) -> list[str]:
 
                 lines.extend(_set_pmm(pmm_val, tmp_reg, pmm_tmp))
                 lines.extend(_set_satp_mode(satp_mode, tmp_reg))
-                lines.append("\tRVTEST_GOTO_LOWER_MODE Umode ")
+                lines.append("RVTEST_GOTO_LOWER_MODE Umode")
 
                 lines.extend(
                     [
-                        f"\tLA(x{addr_reg}, scratch)  ",
-                        f"\tLI(x{masked_reg}, {upper_mask:#018x}) ",
-                        f"\txor x{masked_reg}, x{addr_reg}, x{masked_reg} ",
+                        f"LA(x{addr_reg}, scratch)",
+                        f"LI(x{masked_reg}, {upper_mask:#018x})",
+                        f"xor x{masked_reg}, x{addr_reg}, x{masked_reg}",
                     ]
                 )
 
@@ -724,9 +725,9 @@ def _generate_misaligned_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 test_data.add_testcase(binname, cp_write, covergroup),
-                                f"\tLI(x{data_reg}, {write_pattern:#04x})   ",
-                                f"\t{winstr} x{data_reg}, {offset}(x{addr_reg})  ",
-                                "\tnop  ",
+                                f"LI(x{data_reg}, {write_pattern:#04x})",
+                                f"{winstr} x{data_reg}, {offset}(x{addr_reg})",
+                                "nop",
                             ]
                         )
 
@@ -735,19 +736,19 @@ def _generate_misaligned_tests(test_data: TestData) -> list[str]:
                         lines.extend(
                             [
                                 test_data.add_testcase(binname, cp_read, covergroup),
-                                f"\t{rinstr} x{data_reg}, {offset}(x{masked_reg})  ",
-                                "\tnop     ",
+                                f"{rinstr} x{data_reg}, {offset}(x{masked_reg})",
+                                "nop",
                                 write_sigupd(data_reg, test_data),
-                                f"\t{rinstr} x{ref_reg}, {offset}(x{addr_reg})  ",
-                                "\tnop   ",
+                                f"{rinstr} x{ref_reg}, {offset}(x{addr_reg})",
+                                "nop",
                                 write_sigupd(ref_reg, test_data),
                             ]
                         )
 
                 lines.extend(
                     [
-                        "\tRVTEST_GOTO_MMODE",
-                        "\tRVTEST_GOTO_LOWER_MODE Smode",
+                        "RVTEST_GOTO_MMODE",
+                        "RVTEST_GOTO_LOWER_MODE Smode",
                     ]
                 )
 
@@ -777,14 +778,14 @@ def make_ssnpm(test_data: TestData) -> list[str]:
     init_addr, init_data, stride_reg = test_data.int_regs.get_registers(3, exclude_regs=[0, 2])
     lines.extend(
         [
-            f"\tLA(x{init_addr}, test_data_region) ",
-            f"\tLI(x{init_data}, 0)  ",
-            f"\tLI(x{stride_reg}, 4096)  ",
-            f"\tsd x{init_data}, 0(x{init_addr}) ",
-            f"\tadd x{init_addr}, x{init_addr}, x{stride_reg} ",
-            f"\tsd x{init_data}, 0(x{init_addr}) ",
-            f"\tadd x{init_addr}, x{init_addr}, x{stride_reg}  ",
-            f"\tsd x{init_data}, 0(x{init_addr})  ",
+            f"LA(x{init_addr}, test_data_region)",
+            f"LI(x{init_data}, 0)",
+            f"LI(x{stride_reg}, 4096)",
+            f"sd x{init_data}, 0(x{init_addr})",
+            f"add x{init_addr}, x{init_addr}, x{stride_reg}",
+            f"sd x{init_data}, 0(x{init_addr})",
+            f"add x{init_addr}, x{init_addr}, x{stride_reg}",
+            f"sd x{init_data}, 0(x{init_addr})",
             "",
         ]
     )

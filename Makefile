@@ -9,7 +9,7 @@ CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= Zicbom,Zicboz,Zicbop#I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
@@ -194,7 +194,10 @@ coverage: elfs
 .PHONY: regression
 regression:
 	$(MAKE) clean
-	$(MAKE) coverage spike qemu imperas
+	$(MAKE) coverage
+	$(MAKE) spike
+	$(MAKE) qemu
+	$(MAKE) imperas
 
 ##### Dev targets #####
 .PHONY: lint

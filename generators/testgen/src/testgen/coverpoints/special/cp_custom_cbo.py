@@ -7,7 +7,7 @@
 
 """cp_custom_cbo coverpoint generator."""
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -16,12 +16,7 @@ from testgen.data.test_chunk import TestChunk
 @add_coverpoint_generator("cp_custom_cbo")
 def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cbo coverpoints."""
-    if (
-        instr_name != "cbo.inval"
-        and instr_name != "cbo.clean"
-        and instr_name != "cbo.flush"
-        and instr_name != "cbo.zero"
-    ):
+    if instr_name not in ["cbo.inval", "cbo.clean", "cbo.flush", "cbo.zero"]:
         raise ValueError(f"cp_custom_cbo generator only supports cbo instructions, got {instr_name}")
 
     tc = test_data.begin_test_chunk()
@@ -47,7 +42,7 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
         for word in range(65):
             test_lines.extend(
                 [
-                    f"LI(x{reg1}, {word * 0x00FEDCBA + 0xD00F})",
+                    load_int_reg("rs1", reg1, word * 0x00FEDCBA + 0xD00F, test_data),
                     f"sw x{reg1}, {word * 4}(x{reg2})",
                 ]
             )

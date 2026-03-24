@@ -153,7 +153,9 @@ def _add_load_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 6 bytes; Three c.nops provide 6 bytes")
+        t_lines.append(
+            f"{INDENT}# Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary; Three c.nops provide 6 bytes buffer"
+        )
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
@@ -196,7 +198,9 @@ def _add_store_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 6 bytes; Three c.nops provide 6 bytes")
+        t_lines.append(
+            f"{INDENT}# Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary; Three c.nops provide 6 bytes buffer"
+        )
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")

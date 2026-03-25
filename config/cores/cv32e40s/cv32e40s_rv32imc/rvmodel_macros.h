@@ -2,10 +2,8 @@
 # RVMODEL macro definitions for CV32E40S core
 # SPDX-License-Identifier: Apache-2.0
 #
-# STUB: Copied from cv32e40p. Verify before use:
-#   - HTIF tohost address (0x20000000) — check cv32e40s simulation environment
-#   - CLINT base (0x02000000) — check cv32e40s platform config
-#   - Trap handler labels renamed to cv32e40s
+# HTIF tohost at 0x20000000; CLINT base at 0x02000000
+# Trap handler adjusts mepc by 2 (compressed) or 4 (32-bit) instruction bytes
 
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H

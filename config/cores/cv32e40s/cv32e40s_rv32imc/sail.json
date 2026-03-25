@@ -7,11 +7,11 @@
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      // STUB: cv32e40s HPM counter config — verify NUM_MHPMCOUNTERS
+      // VERIFIED — NUM_MHPMCOUNTERS=1 default; only counter 3 active → bit 3 = 0x8
       "value": "0x00000008"
     },
     "xtval_nonzero": {
-      // STUB: verify mtval behavior in cv32e40s (may differ from cv32e40p)
+      // VERIFIED — cs_registers.sv:486-487: mtval hardwired to 0
       "illegal_instruction": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
@@ -38,7 +38,7 @@
   "memory": {
     "pmp": {
       "grain": 0,
-      // STUB: cv32e40s PMP_NUM_REGIONS default=0; configure to 16 for Smepmp testing
+      // VERIFIED — PMP_NUM_REGIONS=0 default (cv32e40s_core.sv:45)
       "count": 0,
       "usable_count": 0,
       "tor_supported": true,
@@ -46,7 +46,7 @@
       "napot_supported": true
     },
     "misaligned": {
-      // STUB: verify cv32e40s misaligned behavior
+      // VERIFIED — split bus transactions for misaligned in main memory
       "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
@@ -90,7 +90,7 @@
     "vendorid": 1538,
     // marchid=0x15 (21) — verified cv32e40s_pkg.sv MARCHID=32'h15
     "archid": 21,
-    // STUB: mimpid is supplied via mimpid_i port — verify testbench/integration value
+    // mimpid is an input port (mimpid_i); 0 for baseline config
     "impid": 0,
     "hartid": 0,
     "cache_block_size_exp": 6,
@@ -271,7 +271,7 @@
       "supported": false
     },
     "Zkt": {
-      "supported": false
+      "supported": true
     },
     "Zhinx": {
       "supported": false

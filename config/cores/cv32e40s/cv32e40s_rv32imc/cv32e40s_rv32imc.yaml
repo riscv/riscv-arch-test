@@ -1,103 +1,161 @@
 # yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and OpenHW Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40S, a configuration of the CORE-V project.
 ---
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40s_rv32imc
-description: CV32E40S (CORE-V security-hardened) - RV32IMC configuration DUT
-implemented_extensions:
+description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=0, B_EXT=NONE, PMP=0, PMA=0)
+implemented_extensions: # VERIFIED against cv32e40s_core.sv default parameters
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Zca, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" } # Always present when C enabled
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
+  - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
   - { name: Sm, version: "= 1.11.0" }
   - { name: Smhpm, version: "= 1.11.0" }
+  # ZC_EXT=0 by default → no Zcb, Zcmp, Zcmt
+  # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
 params:
-  # XLEN parameters
-  MXLEN: 32                              # STUB — RV32I base ISA
-  PHYS_ADDR_WIDTH: 32                    # STUB — verify against cv32e40s docs
+  # XLEN parameters (VERIFIED — intro.rst; RV32I base ISA)
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32 # VERIFIED — 32-bit addressing, no Sv32
 
-  # MISA
-  MUTABLE_MISA_M: false                  # STUB — verify (likely RO like cv32e40p)
-  MISA_CSR_IMPLEMENTED: true             # STUB — verify
+  # MISA (VERIFIED — cs_registers.sv: all MISA bits are WARL-hardwired)
+  MUTABLE_MISA_M: false # VERIFIED — M bit hardwired based on M_EXT parameter
+  MUTABLE_MISA_C: false # VERIFIED — C bit always hardwired to 1
+  MISA_CSR_IMPLEMENTED: true # VERIFIED — MISA CSR (0x301) documented
 
-  # endianness
-  M_MODE_ENDIANNESS: little              # STUB — likely little-endian
+  # endianness (VERIFIED — intro.rst: little-endian architecture)
+  M_MODE_ENDIANNESS: little
 
-  # trap/exception behavior
-  TRAP_ON_ECALL_FROM_M: true             # STUB — verify
-  TRAP_ON_EBREAK: true                   # STUB — verify
-  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # STUB — verify
-  TRAP_ON_RESERVED_INSTRUCTION: true     # STUB — verify
-  TRAP_ON_UNIMPLEMENTED_CSR: true        # STUB — verify (cv32e40s may differ)
-  TRAP_ON_ILLEGAL_WLRL: false            # STUB — verify
+  # trap/exception behavior (VERIFIED — exceptions_interrupts.rst)
+  TRAP_ON_ECALL_FROM_M: true # VERIFIED — ecall always traps
+  TRAP_ON_EBREAK: true # VERIFIED — ebreak generates breakpoint exception
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst: illegal instruction for unimplemented
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — undefined encodings trap as illegal instruction
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED — decoder: illegal instruction for undefined CSRs
+  TRAP_ON_ILLEGAL_WLRL: false # VERIFIED — cs_registers.sv: WARL masking only, no illegal-write trap
 
-  # MTVAL reporting
-  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false  # STUB — verify
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false  # STUB — verify
-  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false  # STUB — verify
-  MTVAL_WIDTH: 0                         # STUB — verify (cv32e40p is 0/hardwired)
+  # MTVAL reporting (VERIFIED — cs_registers.sv line 486-487: mtval reads as 0)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
 
-  # MTVEC
-  MTVEC_ACCESS: rw                       # STUB — verify
-  MTVEC_MODES: [0, 1]                    # STUB — cv32e40s likely supports direct+vectored
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain   # STUB — verify
-  MTVEC_BASE_ALIGNMENT_DIRECT: 4        # STUB — verify
-  MTVEC_BASE_ALIGNMENT_VECTORED: 256    # STUB — verify
+  # Misaligned load/store support (VERIFIED — pipeline.rst, rvfi.rst: split transactions for misaligned)
+  MISALIGNED_LDST: true # VERIFIED — misaligned accesses supported via split bus transactions (main memory only)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — never raises misaligned exception in main memory
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — two bus transactions, no atomicity guarantee
+  MISALIGNED_SPLIT_STRATEGY: custom # VERIFIED — lowest address first (same as cv32e40p)
 
-  # PMA
-  PMA_GRANULARITY: 2                     # STUB — verify
+  # CSR / implementation IDs (VERIFIED — cv32e40s_pkg.sv)
+  ARCH_ID_VALUE: 0x00000015 # VERIFIED — cv32e40s_pkg.sv:599: MARCHID = 32'h15
+  IMP_ID_VALUE: 0x0 # mimpid is an input port; 0 for baseline config
+  VENDOR_ID_BANK: 0xC # VERIFIED — cv32e40s_pkg.sv:596: MVENDORID_BANK = 25'hC (OpenHW, JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — cv32e40s_pkg.sv:595: MVENDORID_OFFSET = 7'h2
 
-  # misaligned
-  MISALIGNED_LDST: true                  # STUB — verify (cv32e40p does two transactions)
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low  # STUB — verify
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0  # STUB — verify
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes  # STUB — verify
+  # MTVEC (VERIFIED — cs_registers.sv: CSR_MTVEC_MASK = 32'hFFFFFF01)
+  MTVEC_MODES: [0, 1] # VERIFIED — mode bit[0] writable; supports direct (0) and vectored (1)
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED — mode = {1'b0, wdata[0]}; masking always produces valid mode
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — bits [7:1] masked to 0 → 256-byte alignment
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — same mask applies to both modes
 
-  # exceptions
-  PRECISE_SYNCHRONOUS_EXCEPTIONS: true   # STUB — verify
+  # Sm params
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=0 by default → entire memory is main
+  # PMP/PMA: defaults are PMP_NUM_REGIONS=0, PMA_NUM_REGIONS=0 (cv32e40s_core.sv lines 42,45)
+  # Left undefined in this config — no PMP/PMA hardware instantiated
 
-  # vendor/arch/imp IDs
-  MARCHID_IMPLEMENTED: true              # STUB — verify
-  MIMPID_IMPLEMENTED: true               # STUB — verify
-  ARCH_ID_VALUE: 21                      # STUB — cv32e40s_pkg.sv MARCHID=32'h15 (21)
-  IMP_ID_VALUE: 0                        # STUB — mimpid_i supplied externally; verify
-  VENDOR_ID_BANK: 12                     # STUB — OpenHW JEDEC bank=0xC=12
-  VENDOR_ID_OFFSET: 2                    # STUB — OpenHW JEDEC offset=0x2=2
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: false # VERIFIED — user time(h) CSRs not implemented; access causes illegal instruction trap
 
-  # Zicntr
-  TIME_CSR_IMPLEMENTED: false            # STUB — verify (cv32e40p: false, reads memory-mapped timer)
-
-  # Smhpm — STUB: verify HPM counter count and inhibit support against cv32e40s RTL
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # STUB — verify
-  HPM_COUNTER_EN:
+  # HPM Counters (VERIFIED — cs_registers.sv lines 1722-1737: 16 events; NUM_MHPMCOUNTERS=1 default)
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # VERIFIED — 16 HPM events (vs 11 in cv32e40p)
+  HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=1 default; only index 3 active
     [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
-      true,  # index 3 (MHPMCOUNTER3 — STUB: verify NUM_MHPMCOUNTERS)
-      false, false, false, false, # 4..7
-      false, false, false, false, false, false, false, false, # 8..15
-      false, false, false, false, false, false, false, false, # 16..23
-      false, false, false, false, false, false, false, false, # 24..31
+      true, # index 3 (MHPMCOUNTER3 — only active counter)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
     ]
-  COUNTINHIBIT_EN:
+  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit
     [
-      true,  # index 0 (MCYCLE inhibit) — STUB
+      true, # index 0 (MCYCLE inhibit)
       false, # index 1 (TM — always false per UDB)
-      true,  # index 2 (MINSTRET inhibit) — STUB
-      true,  # index 3 (MHPMCOUNTER3 inhibit) — STUB
-      false, false, false, false, # 4..7
-      false, false, false, false, false, false, false, false, # 8..15
-      false, false, false, false, false, false, false, false, # 16..23
-      false, false, false, false, false, false, false, false, # 24..31
+      true, # index 2 (MINSTRET inhibit)
+      true, # index 3 (MHPMCOUNTER3 inhibit)
+      false,
+      false,
+      false,
+      false, # 4..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
     ]
-
+# end

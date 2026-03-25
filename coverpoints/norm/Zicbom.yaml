@@ -1,27 +1,68 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction
-  # Enable) field to senvcfg to control execution of the CBO.CLEAN and CBO.FLUSH
-  # instructions in U-mode. Execution of these instructions in U-mode is enabled
-  # only if execution of these instructions is enabled for use in S-mode and CBCFE
-  # is set to 1; otherwise, an illegal-instruction exception is raised. When the
-  # Zicbom extension is not implemented, CBCFE is read-only zero.
-  - name: senvcfg_cbcfe
-    coverpoint: [""]
+  # if a precedes b in program order, then a will precede b in the global memory
+  # order if: a is an invalidate, clean, or flush, b is a load, and a and b access
+  # overlapping memory addresses
+  - name: PPO_overlap
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
 
-  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable)
-  # WARL field to senvcfg to control execution of the CBO.INVAL instruction in
-  # U-mode. The encoding 10b is reserved. When the Zicbom extension is not
-  # implemented, CBIE is read-only zero. Execution of CBO.INVAL in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBIE is
-  # set to 01b or 11b; otherwise, an illegal-instruction exception is raised.
-  - name: senvcfg_cbie
-    coverpoint: [""]
+  # If no clean or flush operations on x precede i in the global memory order,
+  # either the initial value of x or the value of any store to x that precedes i If
+  # no store to x precedes a clean or flush operation on x in the global memory
+  # order and if the clean or flush operation on x precedes i in the global memory
+  # order, either the initial value of x or the value of any store to x that
+  # precedes i If a store to x precedes a clean or flush operation on x in the
+  # global memory order and if the clean or flush operation on x precedes i in the
+  # global memory order, either the value of the latest store to x that precedes the
+  # latest clean or flush operation on x or the value of any store to x that both
+  # precedes i and succeeds the latest clean or flush operation on x that precedes i
+  # The value of any store to x by a non-coherent agent regardless of the above
+  # conditions
+  - name: cmo_invalidate_load_values
+    coverpoint:
+      ["Not testable on a single core without DMA or other non-coherent agents"]
 
-  # If CBO.INVAL is enabled in S-mode to perform a flush operation, then when the
-  # instruction is enabled in U-mode it performs a flush operation, even if CBIE is
-  # set to 11b. Otherwise, the instruction behaves as follows, depending on the CBIE
-  # encoding:
-  - name: cbo-inval_s-mode_op
-    coverpoint: [""]
+  # The PMP access control bits shall be the same for all physical addresses in the
+  # cache block, and if write permission is granted by the PMP access control bits,
+  # read permission shall also be granted The PMAs shall be the same for all
+  # physical addresses in the cache block, and if write permission is granted by the
+  # supported access type PMAs, read permission shall also be granted If the above
+  # constraints are not met, the behavior of a CBO instruction is UNSPECIFIED.
+  - name: cbo_physical_address_constraints
+    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+
+  # For the purposes of writing the mtinst or htinst register on a trap, the
+  # following standard transformation is defined for cache-block management
+  # instructions and cache-block zero instructions:
+  - name: h_trans_cache
+    coverpoint: ["TODO: Hypervisor tests"]
+
+  # A cbo.clean instruction performs a clean operation on the cache block whose
+  # effective address is the base address specified in rs1.
+  - name: cbo-clean_op
+    coverpoint: ["Zicbom_cbo_clean_cg/cp_custom_cbo"]
+
+  # The offset operand may be omitted; otherwise, any expression that computes the
+  # offset shall evaluate to zero.
+  - name: cbo-clean_offset
+    coverpoint: ["Assembler information, not a normative rule"]
+
+  # A cbo.flush instruction performs a flush operation on the cache block whose that
+  # contains the address specified in rs1.
+  - name: cbo-flush_op
+    coverpoint: ["Zicbom_cbo_flush_cg/cp_custom_cbo"]
+
+  # It is not required that rs1 is aligned to the size of a cache block.
+  - name: cbo-flush_unaligned
+    coverpoint: ["Zicbom_cbo_flush_cg/cp_custom_cbo"]
+
+  # A cbo.inval instruction performs an invalidate operation on the cache block that
+  # contains the address specified in rs1.
+  - name: cbo-inval_op
+    coverpoint: ["Zicbom_cbo_inval_cg/cp_custom_cbo"]
+
+  # It is not required that rs1 is aligned to the size of a cache block.
+  - name: cbo-inval_unaligned
+    coverpoint: ["Zicbom_cbo_inval_cg/cp_custom_cbo"]

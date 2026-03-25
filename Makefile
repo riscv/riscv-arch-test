@@ -186,6 +186,17 @@ coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
 
+###### Regression ######
+# Run all tests
+
+.PHONY: regression
+regression:
+	$(MAKE) clean
+	$(MAKE) coverage
+	$(MAKE) spike
+	$(MAKE) qemu
+	$(MAKE) imperas
+
 ##### Dev targets #####
 .PHONY: lint
 lint:

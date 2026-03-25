@@ -15,7 +15,9 @@ parameter_definitions:
     description: Can interrupts be taken during the execution of a push/pop instruction?
 
 csr_definitions:
-  - name: JVT_WARL
+  - reg-name: jvt
+    field-name: BASE
     impl-def: JVT_WARL
-  - name: JVT_MODE_WARL
+  - reg-name: jvt
+    field-name: MODE
     impl-def: JVT_MODE_WARL

@@ -17,16 +17,32 @@ parameter_definitions:
     impl-def: CTR_CCOUNTER_IMPL
     range: [0, 4]
     description: Implementation can support 0 to 4 exponent bits
-
-csr_definitions:
   - name: SCTRDEPTH_DEPTH
     impl-def: SCTRDEPTH_DEPTH
-    description: WARL field encoding CTR buffer depth (16–256, reserved encodings).
-  - name: SCTRDEPTH_WARL
-    impl-def: SCTRDEPTH_WARL
-  - name: SCTRSTATUS_WRPTR_WARL
+    range: [0, 4]
+    description: |
+      Depth of the control transfer record buffer, in entries.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! 0 ! 16 entries
+      ! 1 ! 32 entries
+      ! 2 ! 64 entries
+      ! 3 ! 128 entries
+      ! 4 ! 256 entries
+      ! 5-7 ! Reserved
+      !===
+
+csr_definitions:
+  - reg-name: sctrdepth
+    field-name: DEPTH
+    impl-def: SCTRDEPTH_DEPTH_WARL
+  - reg-name: sctrstatus
+    field-name: WRPTR
     impl-def: SCTRSTATUS_WRPTR_WARL
-  - name: CTRSOURCE_WARL
+  - reg-name: ctrsource
     impl-def: CTRSOURCE_WARL
-  - name: CTRTARGET_WARL
+  - reg-name: ctrtarget
     impl-def: CTRTARGET_WARL

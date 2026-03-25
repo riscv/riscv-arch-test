@@ -364,6 +364,8 @@ parameter_definitions:
     type: uint
     width: MXLEN
     description: Base address of the non-maskable interrupt vector.
+
+  # PMP (Physical Memory Protection)
   - name: PMP_GRANULARITY
     impl-def: PMP_GRANULARITY
     type: uint
@@ -376,79 +378,94 @@ parameter_definitions:
     description: PMP supports up to 64 entries with allowed implementation counts and ordering rules
 
 csr_definitions:
-  - name: MISA_WARL
+  - reg-name: misa
     impl-def: MISA_WARL
-  - name: MISA_EXTENSIONS_WARL
+  - reg-name: misa
+    field-name: EXTENSIONS
     impl-def: MISA_EXTENSIONS_WARL
-  - name: MSTATUS_XPP_WARL
+  - reg-name: mstatus
+    field-name: XPP
     impl-def: MSTATUS_XPP_WARL
-  - name: MSTATUS_MDT_WARL
+  - reg-name: mstatus
+    field-name: MDT
     impl-def: MSTATUS_MDT_WARL
-  - name: MSTATUS_SXL_WARL
+  - reg-name: mstatus
+    field-name: SXL
     impl-def: MSTATUS_SXL_WARL
-  - name: MSTATUS_UXL_WARL
+  - reg-name: mstatus
+    field-name: UXL
     impl-def: MSTATUS_UXL_WARL
-  - name: MSTATUS_MBE_WARL
+  - reg-name: mstatus
+    field-name: MBE
     impl-def: MSTATUS_MBE_WARL
-  - name: MSTATUS_SBE_WARL
+  - reg-name: mstatus
+    field-name: SBE
     impl-def: MSTATUS_SBE_WARL
-  - name: MSTATUS_UBE_WARL
+  - reg-name: mstatus
+    field-name: UBE
     impl-def: MSTATUS_UBE_WARL
-  - name: MSTATUSH_MBE_WARL
+  - reg-name: mstatush
+    field-name: MBE
     impl-def: MSTATUSH_MBE_WARL
-  - name: MSTATUSH_SBE_WARL
+  - reg-name: mstatush
+    field-name: SBE
     impl-def: MSTATUSH_SBE_WARL
-  - name: MSTATUSH_UBE_WARL
+  - reg-name: mstatush
+    field-name: UBE
     impl-def: MSTATUSH_UBE_WARL
-  - name: MSTATUS_TVM_WARL
+  - reg-name: mstatus
+    field-name: TVM
     impl-def: MSTATUS_TVM_WARL
-  - name: MSTATUS_TW_WARL
+  - reg-name: mstatus
+    field-name: TW
     impl-def: MSTATUS_TW_WARL
-  - name: MSTATUS_TSR_WARL
+  - reg-name: mstatus
+    field-name: TSR
     impl-def: MSTATUS_TSR_WARL
-  - name: MSTATUS_FS_WARL
+  - reg-name: mstatus
+    field-name: FS
     impl-def: MSTATUS_FS_WARL
-  - name: MSTATUS_VS_WARL
+  - reg-name: mstatus
+    field-name: VS
     impl-def: MSTATUS_VS_WARL
-  - name: MTVEC_WARL
+  - reg-name: mtvec
     impl-def: MTVEC_WARL
-  - name: MEDELEG_WARL
+  - reg-name: medeleg
     impl-def: MEDELEG_WARL
-  - name: MIDELEG_WARL
+  - reg-name: mideleg
     impl-def: MIDELEG_WARL
-  - name: MHPMCOUNTER_WARL
+  - reg-name: mhpmcounter
     impl-def: MHPMCOUNTER_WARL
-  - name: MHPMEVENT_WARL
+  - reg-name: mhpmevent
     impl-def: MHPMEVENT_WARL
-  - name: MCOUNTEREN_FLDS_WARL
+  - reg-name: mcounteren
+    field-name: FLDS
     impl-def: MCOUNTEREN_FLDS_WARL
-  - name: MCOUNTINHIBIT_WARL
+  - reg-name: mcountinhibit
     impl-def: MCOUNTINHIBIT_WARL
-  - name: MEPC_WARL
+  - reg-name: mepc
     impl-def: MEPC_WARL
-  - name: MCAUSE_EXCCODE_WLRL
+  - reg-name: mcause
+    field-name: EXCCODE
     impl-def: MCAUSE_EXCCODE_WLRL
-  - name: MTVAL_WARL
+  - reg-name: mtval
     impl-def: MTVAL_WARL
-  - name: MENVCFG_CBIE_WARL
+  - reg-name: menvcfg
+    field-name: CBIE
     impl-def: MENVCFG_CBIE_WARL
-  - name: MSECCFG_RLB_WARL
+  - reg-name: mseccfg
+    field-name: RLB
     impl-def: MSECCFG_RLB_WARL
-  - name: MSECCFG_MMWP_WARL
+  - reg-name: mseccfg
+    field-name: MMWP
     impl-def: MSECCFG_MMWP_WARL
-  - name: MSECCFG_MML_WARL
+  - reg-name: mseccfg
+    field-name: MML
     impl-def: MSECCFG_MML_WARL
-  - name: MSECCFG_PMM_WARL
+  - reg-name: mseccfg
+    field-name: PMM
     impl-def: MSECCFG_PMM_WARL
-
-    # Zicfilp extension additions to mseccfg
-  - name: WARL_RST
-    impl-def: WARL_RST
-  - name: PMP_CSRS_WARL_ACCESS
-    impl-def: PMP_CSRS_WARL_ACCESS
-    description: PMP CSRs are WARL, may read as zero, and are accessible only in M-mode
-  - name: PMP_ADDR_WARL
-    impl-def: PMP_ADDR_WARL
-    description: PMP address registers are WARL due to optional physical address bits
-  - name: PMP_RWX_WARL
-    impl-def: PMP_RWX_WARL
+  - reg-name: pmpcfg
+    impl-def: PMPCFG_WARL
+  - reg-name: pmpaddr
+    impl-def: PMPADDR_WARL

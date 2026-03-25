@@ -6,5 +6,5 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: State Enable Extension
 
 csr_definitions:
-  - name: STATEEN_WARL_ACCESS
+  - reg-name: stateen
     impl-def: STATEEN_WARL_ACCESS

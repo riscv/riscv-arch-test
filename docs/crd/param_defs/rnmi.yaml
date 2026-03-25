@@ -9,9 +9,9 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: Smrnmi Extension for Resumable Non-Maskable Interrupts
 
 csr_definitions:
-  - name: MNEPC_WARL
+  - reg-name: mnepc
     impl-def: MNEPC_WARL
-  - name: MNCAUSE_WARL
+  - reg-name: mncause
     impl-def: MNCAUSE_WARL
-  - name: MNSTATUS_WARL
+  - reg-name: mnstatus
     impl-def: MNSTATUS_WARL

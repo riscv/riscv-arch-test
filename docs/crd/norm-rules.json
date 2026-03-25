@@ -21768,15 +21768,9 @@
       ]
     },
     {
-      "name": "WARL_RST",
+      "name": "warl_rst",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "Sm"
-      ],
-      "impl-def-category": "WARL",
       "tags": [
         {
           "name": "norm:warl_rst",
@@ -23233,7 +23227,7 @@
       ]
     },
     {
-      "name": "PMP_CSRS_WARL_ACCESS",
+      "name": "PMPCFG_WARL",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
       "kind": "extension",
@@ -23248,6 +23242,13 @@
           "name": "norm:pmp_csrs_warl_access",
           "context": false,
           "text": "All\nPMP CSR fields are WARL and may be read-only zero.",
+          "tag_filename": "/build/riscv-privileged-norm-tags.json",
+          "stds_doc_url": "riscv-privileged.html"
+        },
+        {
+          "name": "norm:pmp_rwx_warl",
+          "context": false,
+          "text": "The R,\nW, and X fields form a collective WARL field for which the combinations with R=0 and W=1 are reserved.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -23334,7 +23335,7 @@
       ]
     },
     {
-      "name": "PMP_ADDR_WARL",
+      "name": "PMPADDR_WARL",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
       "kind": "extension",
@@ -23365,26 +23366,6 @@
           "name": "norm:pmp_cfg_permissions",
           "context": false,
           "text": "&lt;&lt;pmpcfg&gt;&gt; shows the layout of a PMP configuration\nregister. The R, W, and X bits, when set, indicate that the PMP entry\npermits read, write, and instruction execution, respectively. When one\nof these bits is clear, the corresponding access type is denied.",
-          "tag_filename": "/build/riscv-privileged-norm-tags.json",
-          "stds_doc_url": "riscv-privileged.html"
-        }
-      ]
-    },
-    {
-      "name": "PMP_RWX_WARL",
-      "def_filename": "normative_rule_defs/machine.yaml",
-      "chapter_name": "Machine Mode",
-      "kind": "extension",
-      "impl-def-behavior": true,
-      "instances": [
-        "Sm"
-      ],
-      "impl-def-category": "WARL",
-      "tags": [
-        {
-          "name": "norm:pmp_rwx_warl",
-          "context": false,
-          "text": "The R,\nW, and X fields form a collective WARL field for which the combinations with R=0 and W=1 are reserved.",
           "tag_filename": "/build/riscv-privileged-norm-tags.json",
           "stds_doc_url": "riscv-privileged.html"
         }
@@ -32316,8 +32297,7 @@
       "instances": [
         "Smctr"
       ],
-      "impl-def-category": "WARL",
-      "summary": "WARL field encoding CTR buffer depth (16–256, reserved encodings).",
+      "summary": "Encodes CTR buffer depth",
       "tags": [
         {
           "name": "norm:sctrdepth_depth_op0",
@@ -32343,7 +32323,7 @@
       ]
     },
     {
-      "name": "SCTRDEPTH_WARL",
+      "name": "SCTRDEPTH_DEPTH_WARL",
       "def_filename": "normative_rule_defs/smctr.yaml",
       "chapter_name": "SmCtr (Ctrl Xfer Records)",
       "kind": "extension",

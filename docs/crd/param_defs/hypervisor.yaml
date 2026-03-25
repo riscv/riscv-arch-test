@@ -59,53 +59,62 @@ parameter_definitions:
     description: Same as HTVAL_GUEST_PAGE_FAULT_TRAPVAL except for `mtval2` and trap into M-mode
 
 csr_definitions:
-  - name: HSTATUS_VSXL_64_WARL
+  - reg-name: hstatus
+    field-name: VSXL
     impl-def: HSTATUS_VSXL_64_WARL
-  - name: HSTATUS_VGEIN_WLRL
+  - reg-name: hstatus
+    field-name: VGEIN
     impl-def: HSTATUS_VGEIN_WLRL
-  - name: HSTATUS_VSBE_WARL
+  - reg-name: hstatus
+    field-name: VSBE
     impl-def: HSTATUS_VSBE_WARL
-  - name: HEDELEG_WARL
+  - reg-name: hedeleg
     impl-def: HEDELEG_WARL
-  - name: HIDELEG_WARL
+  - reg-name: hideleg
     impl-def: HIDELEG_WARL
-  - name: HVIP_WARL
+  - reg-name: hvip
     impl-def: HVIP_WARL
-  - name: HIP_WARL
+  - reg-name: hip
     impl-def: HIP_WARL
-  - name: HIE_WARL
+  - reg-name: hie
     impl-def: HIE_WARL
-  - name: HGEIE_WARL
+  - reg-name: hgeie
     impl-def: HGEIE_WARL
-  - name: HCOUNTEREN_WARL
+  - reg-name: hcounteren
     impl-def: HCOUNTEREN_WARL
-  - name: HTVAL_WARL
+  - reg-name: htval
     impl-def: HTVAL_WARL
-  - name: HTINST_WARL
+  - reg-name: htinst
     impl-def: HTINST_WARL
-  - name: HGATP_MODE_WARL
+  - reg-name: hgainp
+    field-name: MODE
     impl-def: HGATP_MODE_WARL
-  - name: VSSTATUS_UXL_WARL
+  - reg-name: vsstatus
+    field-name: UXL
     impl-def: VSSTATUS_UXL_WARL
-  - name: VSIP_WARL
+  - reg-name: vsip
     impl-def: VSIP_WARL
-  - name: VSIE_WARL
+  - reg-name: vsie
     impl-def: VSIE_WARL
-  - name: VSTVEC_MODE_WARL
+  - reg-name: vstvec
+    field-name: MODE
     impl-def: VSTVEC_MODE_WARL
-  - name: VSTVEC_BASE_WARL
+  - reg-name: vstvec
+    field-name: BASE
     impl-def: VSTVEC_BASE_WARL
-  - name: VSEPC_WARL
+  - reg-name: vsepc
     impl-def: VSEPC_WARL
-  - name: VSCAUSE_WLRL
+  - reg-name: vscause
     impl-def: VSCAUSE_WLRL
-  - name: VSTVAL_WARL
+  - reg-name: vstval
     impl-def: VSTVAL_WARL
-  - name: VSATP_MODE_UNSUPPORTED_V0_WARL
+  - reg-name: vsatp
+    field-name: MODE
     impl-def: VSATP_MODE_UNSUPPORTED_V0_WARL
-  - name: MTVAL2_WARL
+  - reg-name: mtval2
     impl-def: MTVAL2_WARL
-  - name: MTINST_WARL
+  - reg-name: mtinst
     impl-def: MTINST_WARL
-  - name: HENVCFG_CBIE_WARL
+  - reg-name: henvcfg
+    field-name: CBIE
     impl-def: HENVCFG_CBIE_WARL

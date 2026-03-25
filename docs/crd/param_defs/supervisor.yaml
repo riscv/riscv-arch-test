@@ -61,27 +61,34 @@ parameter_definitions:
       !===
 
 csr_definitions:
-  - name: SSTATUS_UXL_WARL
+  - reg-name: sstatus
+    field-name: UXL
     impl-def: SSTATUS_UXL_WARL
-  - name: SSTATUS_UBE_WARL
+  - reg-name: sstatus
+    field-name: UBE
     impl-def: SSTATUS_UBE_WARL
-  - name: SSTATUS_SDT_WARL
+  - reg-name: sstatus
+    field-name: SDT
     impl-def: SSTATUS_SDT_WARL
-  - name: STVEC_MODE_WARL
+  - reg-name: stvec
+    field-name: MODE
     impl-def: STVEC_MODE_WARL
-  - name: STVEC_BASE_WARL
+  - reg-name: stvec
+    field-name: BASE
     impl-def: STVEC_BASE_WARL
-  - name: SIP_WARL
+  - reg-name: sip
     impl-def: SIP_WARL
-  - name: SIE_WARL
+  - reg-name: sie
     impl-def: SIE_WARL
-  - name: SCOUNTEREN_WARL
+  - reg-name: scounteren
     impl-def: SCOUNTEREN_WARL
-  - name: SEPC_ACC_INVALID_WARL
+  - reg-name: sepc
     impl-def: SEPC_ACC_INVALID_WARL
-  - name: SCAUSE_EXCEPTION_CODE_ACC
+  - reg-name: scause
+    field-name: EXCEPTION_CODE
     impl-def: SCAUSE_EXCEPTION_CODE_ACC
-  - name: STVAL_WARL
+  - reg-name: stval
     impl-def: STVAL_WARL
-  - name: SENVCFG_CBIE_WARL
+  - reg-name: senvcfg
+    field-name: CBIE
     impl-def: SENVCFG_CBIE_WARL

@@ -7,6 +7,7 @@
 ##################################
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -48,7 +49,9 @@ def format_css_type(
     # sp (x2) is used as the base pointer for CSS instructions
     # Ensure sp is allocated
     if params.rs2 != 2:
-        setup.append(test_data.int_regs.consume_registers([2]))
+        asm = test_data.int_regs.consume_registers([2])
+        if asm:
+            setup.append(asm)
 
     setup.extend(
         [
@@ -68,14 +71,14 @@ def format_css_type(
         "addi sp, sp, SIG_STRIDE # increment signature pointer in sp",
         f"{instr_name} x{params.rs2}, 0(sp) # repeat store so it is available for checking",
         f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, SIG_STRIDE # increment signature pointer",
-        "# nops to ensure length matches SELFCHECK",
+        f"{INDENT}# nops to ensure length matches SELFCHECK",
         "nop",
         "nop",
         "#endif",
     ]
 
-    assert test_data.testcase is not None
-    test_data.testcase.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.sigupd_count += 1  # Extra sigupd that doesn't use the write_sigupd helper
 
     if params.rs2 != 2:
         # Return sp if it was allocated specially for this testcase

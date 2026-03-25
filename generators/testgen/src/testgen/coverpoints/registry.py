@@ -12,10 +12,10 @@ from importlib import import_module
 from pathlib import Path
 from random import seed
 
-from testgen.asm.helpers import reproducible_hash
+from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.constants import SKIP_COVERPOINTS
 from testgen.data.state import TestData
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for coverpoint generator functions
@@ -24,8 +24,8 @@ from testgen.exceptions import MissingRegistryItemError
 # - instr_type: str
 # - coverpoint: str
 # - test_data: TestData
-# and returns a list of TestCase objects
-CoverpointGenerator = Callable[[str, str, str, TestData], list[TestCase]]
+# and returns a list of TestChunk objects
+CoverpointGenerator = Callable[[str, str, str, TestData], list[TestChunk]]
 
 
 class MissingCoverpointGeneratorError(MissingRegistryItemError):
@@ -101,18 +101,18 @@ def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:
 
 def generate_tests_for_coverpoint(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
-) -> list[TestCase]:
-    """Generate tests for a specific coverpoint."""
+) -> list[TestChunk]:
+    """Generate test chunks for a specific coverpoint."""
     if coverpoint in SKIP_COVERPOINTS:
         return []
 
     generator = _select_coverpoint_generator(coverpoint)
     hashval = reproducible_hash(instr_name + coverpoint)
     seed(hashval)
-    test_cases = generator(instr_name, instr_type, coverpoint, test_data)
+    test_chunks = generator(instr_name, instr_type, coverpoint, test_data)
 
-    # Prepend section label to first TestCase's code
-    if test_cases:
-        test_cases[0].code = f"\n\n{coverpoint}_tests:\n" + test_cases[0].code
+    # Set section banner on first TestChunk
+    if test_chunks:
+        test_chunks[0].section_header = comment_banner(coverpoint)
 
-    return test_cases
+    return test_chunks

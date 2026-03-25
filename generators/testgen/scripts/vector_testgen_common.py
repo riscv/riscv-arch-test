@@ -511,10 +511,12 @@ vrgatherins = ["vrgather.vv", "vrgather.vx", "vrgather.vi", "vrgatherei16.vv"]
 vcompressins = ["vcompress.vm"]
 vupgatherins = vslideupins + vrgatherins
 # mask logical
-vmlogicalins = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m"]
+vmlogicalins = ["vmsbf.m", "vmsif.m", "vmsof.m"]
+viotains = ["viota.m"]
 vfredins = ["vfredosum.vs", "vfwredosum.vs", "vfredusum.vs", "vfwredusum.vs", "vfredmax.vs", "vfredmin.vs"]
 vredins  = ["vredsum.vs", "vwredsumu.vs", "vwredsum.vs", "vredmaxu.vs", "vredmax.vs", "vredminu.vs", "vredmin.vs", "vredand.vs", "vredor.vs", "vredxor.vs"] + vfredins
 maskprodins = mmins + vmlogicalins + maskins
+maskopins = mmins + vmlogicalins + viotains  # instructions that take mask operands
 
 ls_not_maskable = [
   "vl1re8.v",  "vl2re8.v",  "vl4re8.v",  "vl8re8.v",
@@ -1154,7 +1156,7 @@ def genVtestdata(test, sew):
         test_data += genRandomVector(test, sew, vs="vs1")
       if (test in vextins):
         test_data += genVsedges(test, sew, test[-2:])
-      elif (test in mmins) or (test in xvmtype) or (test in vmlogicalins):
+      elif (test in xvmtype) or (test in maskopins):
         test_data += genVsedges(test, sew, "eew1")
       elif (test in vfloattypes):
         test_data += genVsedgesFP(test, sew, "1")
@@ -1698,7 +1700,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
 
     if (test in vd_widen_ins) or (test in wvsins):
       writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
-    elif (test in maskins) or (test in vmlogicalins) or (test in mmins):
+    elif (test in maskprodins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
     elif (test in xvtype) or (test in xvmtype):
       writeSIGUPD(inst_ptr, rd)
@@ -2205,8 +2207,9 @@ def getVectorEmulMultipliers(instruction):
   if instruction in mmins or instruction in vmlogicalins: # instructions operate with EEW = 1
     vector_register_data['vs1_reg_type']        = "mask"
     vector_register_data['vs2_reg_type']        = "mask"
-    if instruction != "viota.m":
-      vector_register_data['vd_reg_type']       = "mask"
+    vector_register_data['vd_reg_type']         = "mask"
+  if instruction in viotains:
+    vector_register_data['vs2_reg_type']        = "mask"
   if instruction in maskins: # instructions operate with vd EEW = 1
     vector_register_data[ 'vd_reg_type']        = "mask"
   if instruction in vredins:
@@ -2229,6 +2232,7 @@ def getInstructionRegisterOverlapConstraints (instruction, sew, lmul):
   if   instruction in wvvins          : no_overlap = [['vd_bottom', 'vs2'], ['vd_bottom', 'vs1']]
   elif instruction in vupgatherins    : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']]
   elif instruction in vmlogicalins    : no_overlap = [['vd',        'vs2']                      ]
+  elif instruction in viotains        : no_overlap = [['vd',        'vs2']                      ]
   elif instruction in wvxins          : no_overlap = [['vd_bottom', 'vs2']                      ]
   elif instruction in fwvfins         : no_overlap = [['vd_bottom', 'vs2']                      ]
   elif instruction in mv_ins          : no_overlap = [['vd',        'vs2'], ['vd',        'vs1']] # mv_ins can never be masked

@@ -98,9 +98,7 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   "vlseg4e32.v",
   "vsseg3e64.v",
   "vsseg3e32.v",
-  "vwredusum.vs",
-  "vwredsum.vs",
-  "vwredsumu.vs",
+  "vwredusum.vs"
 
 ]
 
@@ -715,18 +713,18 @@ def make_custom_allVdOverlapTopVs1_vd_vs1(instruction, sew, lmul):
 def make_custom_vreductionw_vd_vs1_emul_16(instruction, sew):
   description = "cp_custom_vreductionw_vd_vs1_emul_16"
   cp = "cp_custom_vreductionw_vd_vs1_emul_16"
-  instruction_data  = randomizeVectorInstructionData(instruction, sew, getBaseSuiteTestCount(), suite="base", lmul = 8) # requires lmul = 8
+  instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", lmul = 8) # requires lmul = 8
 
-  writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=8)
-  incrementBasetestCount()
-  vsAddressCount()
+  writeTest(description, instruction, cp, instruction_data, sew=sew, lmul=8, suite="length")
+  incrementLengthtestCount()
+  vsAddressCount("length")
 
 def make_custom_element0Masked(instruction, sew):
   no_overlap = [['vd', 'vs1'], ['vd', 'v0'], ['vs1', 'v0'], ['vs2', 'v0']]
 
   description = "cp_custom_element0Masked"
   cp = "cp_custom_element0Masked"
-  instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="base", additional_no_overlap=no_overlap)
+  instruction_data  = randomizeVectorInstructionData(instruction, sew, getLengthSuiteTestCount(), suite="length", additional_no_overlap=no_overlap)
 
   writeTest(description, instruction, cp, instruction_data, sew=sew, vl="vlmax", maskval="ones", suite="length")
   incrementBasetestCount()

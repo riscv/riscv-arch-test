@@ -1212,7 +1212,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
-        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(500000)) # TODO: change this to a dynamic value
+        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(800000)) # TODO: change this to a dynamic value
         .replace("@CONFIG_DEPENDENT@", "true")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
@@ -1292,6 +1292,8 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
 
     if (avl == "random" or avl == "vlmax" or testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr))):
       avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
+    elif ("vwred" in inst_ptr):
+      avl = avl * 2
     if (avl == 1):
       sigupd_count += avl * 2  # Increment counter on each call
     else:
@@ -1698,7 +1700,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
       writeSIGUPD(fcsrsaveReg)
 
-    if (test in vd_widen_ins) or (test in wvsins):
+    if (test in vd_widen_ins) and (test not in wvsins):
       writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked)  # EEW of vd = 2 * SEW for widening
     elif (test in maskprodins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked)      # EEW of vd = 1 for mask
@@ -1937,17 +1939,12 @@ def writeTest(description, instruction, cp, instruction_data,
 
     # --- special handling: preload vd at VLMAX for length-suite tests ---
     vd_preloaded = False
-    if suite == "length" and (instruction not in xvtype and instruction not in xvmtype):
+    if (suite == "length" and (instruction not in xvtype and instruction not in xvmtype)) or (suite == "base" and instruction in wvsins):
       # pick temporary regs avoiding conflicts
-      tempVlmax = 7
-      while tempVlmax in scalar_registers_used:
-        tempVlmax = randint(1,31)
-      scalar_registers_used.append(tempVlmax)
-
-      tempReg2 = 5
-      while tempReg2 in scalar_registers_used:
-        tempReg2 = randint(1,31)
-      scalar_registers_used.append(tempReg2)
+      tempReg = 7
+      while tempReg in scalar_registers_used:
+        tempReg = randint(1,31)
+      scalar_registers_used.append(tempReg)
 
       # set vtype to VLMAX for vd load
       if lmul < 1 and instruction not in vd_widen_ins:
@@ -1960,9 +1957,15 @@ def writeTest(description, instruction, cp, instruction_data,
         lmulflag = getLmulFlag(lmul)
 
       if lmul < 1 and instruction in vd_widen_ins:
-        writeLine(f"vsetvli x{tempVlmax}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening")
+        writeLine(f"vsetvli x{tempReg}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening")
+      elif (instruction in wvsins): # edge case for wvsins in base suite since vwred instructions writes to a widened scalar vd
+        if (suite == "base"):
+          writeLine(f"li x{tempReg}, 1", "# load vl=1 for widening register for base suite of vwred instructions for vd initialization")
+          writeLine(f"vsetvli x0, x{tempReg}, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vl=1 and sew to widened for vd load, since vd is scalar")
+        else:
+          writeLine(f"vsetvli x{tempReg}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening for length suite")
       else:
-        writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
+        writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
       # actually perform load for vd (pass through loadVecReg)
       scalar_registers_used = loadVecReg(instruction, 'vd', vector_register_data, sew, lmul, *scalar_registers_used)
       vd_preloaded = True

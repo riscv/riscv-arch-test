@@ -164,10 +164,10 @@
 //   `define SEW8_SUPPORTED
 // `endif
 
-`define SEW8_SUPPORTED
-`define SEW16_SUPPORTED
-`define SEW32_SUPPORTED
-`define SEW64_SUPPORTED
+// `define SEW8_SUPPORTED
+// `define SEW16_SUPPORTED
+// `define SEW32_SUPPORTED
+// `define SEW64_SUPPORTED
 
 // ELEN (max SEW) definition
 // `ifdef VX64_COVERAGE

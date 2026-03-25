@@ -39,6 +39,14 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             mie_name = f"mie_{mstatus_mie}"
             binname = f"{mode_name}_{mie_name}"
 
+            lines.extend(
+                [
+                    "",
+                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
+                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
+                ]
+            )
+
             if mtvec_mode:
                 lines.append("csrsi mtvec, 1")
 
@@ -54,8 +62,13 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-            for _ in range(5000):
-                lines.append("    nop")
+            lines.extend(
+                [
+                    f"    LI(x{r_scratch}, 2500)",  # 2500 iterations × 2 instructions = 5000 cycles
+                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                    f"    bnez x{r_scratch}, 1b",
+                ]
+            )
 
             lines.extend(
                 [
@@ -116,8 +129,13 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-            for _ in range(5000):
-                lines.append("    nop")
+            lines.extend(
+                [
+                    f"    LI(x{r_scratch}, 2500)",  # 2500 iterations × 2 instructions = 5000 cycles
+                    f"1:  addi x{r_scratch}, x{r_scratch}, -1",
+                    f"    bnez x{r_scratch}, 1b",
+                ]
+            )
 
             lines.extend(
                 [
@@ -325,11 +343,7 @@ def make_interruptsu(test_data: TestData) -> list[str]:
     r_temp, r_mtimecmp = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     # Initial setup - clear any pending timer
-    lines.extend(
-        [
-            "CSRW(mideleg, zero)",
-        ]
-    )
+    lines.append("CSRW(mideleg, zero)")
     lines.extend(clr_mtimer_int(r_temp, r_mtimecmp))
     lines.append("")
 

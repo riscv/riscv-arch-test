@@ -38,6 +38,9 @@ def generate_cmp_testcase(
         rs1val=rs1_val,
     )
 
+    if params.rd is None or params.rs1 is None or params.rs2 is None:
+        raise ValueError("Could not allocate registers for CAS instruction")
+
     rd, rs1, rs2 = params.rd, params.rs1, params.rs2
 
     # Begin testcase
@@ -47,7 +50,7 @@ def generate_cmp_testcase(
     # Add coverage bin label
     label_line = test_data.add_testcase(bin_name, coverpoint)
 
-    # load value into rd register (Optinal for sign ext case)
+    # load value into rd register (Only for sign ext case)
     if load_rd:
         lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 
@@ -72,7 +75,7 @@ def generate_cmp_testcase(
     return tc
 
 
-def generate_masked_values(rd_val: int, mask: int, all_ones: int, equal_case: bool):
+def generate_masked_values(rd_val: int, mask: int, all_ones: int, equal_case: bool) -> int:
     """Generate rs1_val such that masked bits match or mismatch rd_val."""
 
     rd_masked = rd_val & mask  # Extract the masked bits
@@ -170,7 +173,7 @@ def make_cmp_rd_rs1_val_hw(instr_name: str, instr_type: str, coverpoint: str, te
 def make_cmp_rd_rs1_val_w(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate CAS tests where the least significant word of rd value is equal to or not equal to the least significant word of the memory value (rs1)."""
 
-    test_chunks: list[TestCase] = []
+    test_chunks = []
     all_ones = (1 << test_data.xlen) - 1
     mask = 0xFFFFFFFF
 

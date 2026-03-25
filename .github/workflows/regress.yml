@@ -201,22 +201,18 @@ jobs:
           - name: rv64-max
             config_file: config/qemu/qemu-rv64-max/test_config.yaml
             config_name: qemu-rv64-max
-            exclude_extensions: Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS
             run_cmd: qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
           - name: rv32-max
             config_file: config/qemu/qemu-rv32-max/test_config.yaml
             config_name: qemu-rv32-max
-            exclude_extensions: Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS
             run_cmd: qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
           - name: RVI20U64
             config_file: config/qemu/qemu-RVI20U64/test_config.yaml
             config_name: qemu-RVI20U64
-            exclude_extensions: Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsSm
             run_cmd: qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu rv64,zicsr=true,zifencei=true,zicntr=true,pmu-mask=0xfffffff8 -bios
           - name: RVI20U32
             config_file: config/qemu/qemu-RVI20U32/test_config.yaml
             config_name: qemu-RVI20U32
-            exclude_extensions: Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsSm
             run_cmd: qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu rv32,zicsr=true,zifencei=true,zicntr=true,pmu-mask=0xfffffff8 -bios
     steps:
       - name: Checkout code
@@ -264,7 +260,7 @@ jobs:
           DOCKER=1 \
           FAST=True \
           EXTENSIONS= \
-          EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
       - name: Run QEMU Tests

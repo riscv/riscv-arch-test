@@ -5,3 +5,4 @@ ref_model_exe: sail_riscv_sim # executable name on $PATH or full path to executa
 udb_config: qemu-RVI20U64.yaml
 linker_script: link.ld
 dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header
+include_priv_tests: False

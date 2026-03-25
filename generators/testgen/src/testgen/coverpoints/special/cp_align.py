@@ -8,14 +8,17 @@
 """cp_align coverpoint generator."""
 
 from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_align")
-def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for alignment coverpoints."""
+    tc = test_data.begin_test_chunk()
     if coverpoint == "cp_align_byte":
         alignments = [0, 1, 2, 3, 4, 5, 6, 7]
     elif coverpoint == "cp_align_hword":
@@ -59,7 +62,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.temp_reg is not None, "temp_reg must be provided for S-type instructions"
             assert params.immval is not None, "immval must be provided for S-type instructions"
 
-            test_data.sigupd_count += 3  # extra space in signature region is needed
+            tc.sigupd_count += 3  # extra space in signature region is needed
             offset = 8
             test_lines.extend(
                 [
@@ -71,15 +74,22 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     "#ifdef RVTEST_SELFCHECK",
                     f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
                     write_sigupd(params.temp_reg, test_data),
-                    # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
-                    f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking"
-                    if test_data.xlen == 32
-                    else "",
-                    write_sigupd(params.temp_reg, test_data) if test_data.xlen == 32 else "",
+                ]
+            )
+            # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
+            if test_data.xlen == 32:
+                test_lines.extend(
+                    [
+                        f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
+                        write_sigupd(params.temp_reg, test_data),
+                    ]
+                )
+            test_lines.extend(
+                [
                     "#else",
                     f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # repeat store so it is available for checking",
                     f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # adjust base address for offset",
-                    "# nops to ensure length matches SELFCHECK",
+                    f"{INDENT}# nops to ensure length matches SELFCHECK",
                     "nop",
                     "nop",
                     "nop",
@@ -112,6 +122,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
             test_lines.extend(
                 [
+                    f"# Testcase: {coverpoint} (address[2:0] = {alignment:03b})",
                     load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     f"LA(x{params.rs1}, scratch) # load base address into rs1",
@@ -122,6 +133,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     write_sigupd(params.rd, test_data, "int"),
                     f"{load_instr} x{params.rs1}, 0(x{params.rs1}) # Load the updated value from memory",
                     write_sigupd(params.rs1, test_data, "int"),
+                    "",
                 ]
             )
 
@@ -130,4 +142,5 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
 
         return_test_regs(test_data, params)
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_test_chunk()]

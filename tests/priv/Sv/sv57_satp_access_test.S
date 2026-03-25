@@ -107,7 +107,6 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 
-canary_mismatch:  .string "Testcase signature canary mismatch!"
 test1_sv57_str:   .string "\"Mismatch on setting satp.MODE=Sv57 in Test Case 1!\""
 test2_zeros_str:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 2!\""
 test2_ones_str:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 2!\""

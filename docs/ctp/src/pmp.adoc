@@ -59,11 +59,11 @@ https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1Ohd
 
 [[t-PMPZicbo-coverpoints]]
 .PMPZicbo Coverpoints
-
 ,===
 https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
 ,===
 
+include::norm/PMPZicbo_norm_rules.adoc[]
 
 ==== PMPZaamo
 

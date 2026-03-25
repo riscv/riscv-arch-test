@@ -19,8 +19,7 @@ import pyjson5
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config
-from act.coverreport import generate_report
-from act.merge_summaries import merge_summaries
+from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
@@ -354,6 +353,7 @@ def gen_coverage_tasks(
     base_dir: Path,
     config_report_dir: Path,
     dut_header_dir: Path,
+    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -590,6 +590,7 @@ def generate_build_plan(
                         config_coverage_dir,
                         config_report_dir,
                         config.dut_include_dir,
+                        config.name,
                     )
                 )
 

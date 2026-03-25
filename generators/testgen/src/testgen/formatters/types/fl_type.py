@@ -27,7 +27,8 @@ def format_fl_type(
     )
 
     # Add value to load data region
-    test_data.add_test_data_value(params.temp_fval)
+    assert test_data.test_chunk is not None
+    test_data.test_chunk.data_values.append(params.temp_fval)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:

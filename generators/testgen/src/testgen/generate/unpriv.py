@@ -18,6 +18,7 @@ from testgen.constants import (
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
 
@@ -72,7 +73,7 @@ def _generate_unpriv_tests_for_instruction(
 ) -> None:
     """
     Generate tests for a specific instruction based on its coverpoints.
-    Splits tests into multiple parts if they exceed TESTCASES_PER_FILE.
+    Splits test chunks into multiple test files if they exceed TESTCASES_PER_FILE.
 
     Args:
         instr_name: Instruction mnemonic (e.g., 'add', 'lw')
@@ -81,52 +82,46 @@ def _generate_unpriv_tests_for_instruction(
         test_config: Test configuration
         output_dir: Directory to output generated tests
     """
-    current_test_data = TestData(test_config, instr_name)
-    current_body_lines: list[str] = []
-    file_idx = 0
+    test_data = TestData(test_config, instr_name)
+    all_test_chunks: list[TestChunk] = []
 
-    # Iterate through each coverpoint and generate tests
+    # Iterate through each coverpoint and generate test chunks
     for coverpoint in coverpoints:
         # Skip cp_asm_count if mixed with other coverpoints
         if coverpoint == "cp_asm_count" and len(coverpoints) > 1:
             continue
 
-        # Create a copy of the current state to try generating the next coverpoint
-        temp_test_data = current_test_data.copy()
+        all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
-        # Generate code for this coverpoint using the temporary state
-        cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, temp_test_data)
+    # Split into test files and write
+    test_files = _split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
+    for file_idx, test_file_chunks in enumerate(test_files):
+        write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx)
 
-        # Check if we should split
-        # Split if adding this coverpoint would exceed the limit AND we have content already
-        if current_test_data.test_count > 0 and (temp_test_data.test_count > TESTCASES_PER_FILE):
-            # Write current file
-            write_test_file(
-                current_test_data,
-                current_body_lines,
-                output_dir,
-                file_idx,
-            )
+    # Clean up (make sure all registers were returned)
+    test_data.destroy()
 
-            # Start new file
-            file_idx += 1
-            current_test_data = TestData(test_config, instr_name)
-            current_body_lines = []
 
-            # Regenerate code for this coverpoint using the NEW state
-            # TODO: This is not the most efficient and could be optimized to avoid regenerating,
-            # but is not currently a bottleneck and this is simpler for now.
-            cp_code = generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, current_test_data)
-        else:
-            # If we didn't split, commit the temporary state to the current state
-            current_test_data = temp_test_data
+def _split_test_chunks(test_chunks: list[TestChunk], max_per_file: int) -> list[list[TestChunk]]:
+    """Split a list of TestChunks into groups that don't exceed max_per_file testcases each."""
+    # Check for empty list
+    if not test_chunks:
+        raise ValueError("No test chunks provided!")
 
-        current_body_lines.append(cp_code)
+    test_files: list[list[TestChunk]] = []
+    current_file_chunks: list[TestChunk] = []
+    count = 0
 
-    # Write the last file
-    write_test_file(
-        current_test_data,
-        current_body_lines,
-        output_dir,
-        file_idx,
-    )
+    # Iterate over all test chunks and group into test files
+    for tc in test_chunks:
+        if count > 0 and count + tc.num_testcases > max_per_file:
+            test_files.append(current_file_chunks)
+            current_file_chunks = []
+            count = 0
+        current_file_chunks.append(tc)
+        count += tc.num_testcases
+
+    # Add final file
+    if current_file_chunks:
+        test_files.append(current_file_chunks)
+    return test_files

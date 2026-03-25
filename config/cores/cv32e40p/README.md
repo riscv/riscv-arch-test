@@ -7,10 +7,10 @@ SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 Three configurations are provided:
 
-| Config | ISA | Notes |
-|--------|-----|-------|
-| `cv32e40p_v1.0.0_rv32imc` | RV32IMC | Original v1.0.0 release |
-| `cv32e40p_v1.8.3_rv32imc` | RV32IMC | Latest release, integer-only |
+| Config                     | ISA      | Notes                             |
+| -------------------------- | -------- | --------------------------------- |
+| `cv32e40p_v1.0.0_rv32imc`  | RV32IMC  | Original v1.0.0 release           |
+| `cv32e40p_v1.8.3_rv32imc`  | RV32IMC  | Latest release, integer-only      |
 | `cv32e40p_v1.8.3_rv32imcf` | RV32IMCF | Latest release with FPU (F + Zcf) |
 
 v1.0.0 and v1.8.3 (without FPU) should behave identically for integer

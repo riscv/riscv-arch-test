@@ -55,6 +55,8 @@ E_EXTENSION_TESTS = frozenset(
 CONFIG_DEPENDENT_EXTENSIONS = frozenset(
     {
         "Zicntr",  # Depends on TIME_CSR_IMPLEMENTED
+        "Zicboz",  # depends on cache line size
+        "Zicbom",  # depends on cache line size and invalidation behavior
     }
 )
 

@@ -13,8 +13,12 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations.
+# CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
+# cycle/instret increment as Zicntr tests expect.
+# Raw encoding: .word 0x32005073 = csrwi mcountinhibit, 0
+#define RVMODEL_BOOT \
+  .word 0x32005073 ;
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000

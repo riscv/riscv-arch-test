@@ -11,7 +11,7 @@
 """Top-level command-line interface for test generation."""
 
 import os
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated
@@ -114,15 +114,14 @@ def generate_all_tests(
                     continue
                 tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
 
-    for testsuite in sorted(priv_ext_list):
-        tasks.append(PrivTask(testsuite, output_test_dir))
+    tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:
         futures = [executor.submit(_dispatch_test_gen, task) for task in tasks]
 
         # Process completed tasks with progress tracking
-        for future in track(futures, description="[cyan]Generating tests...", total=len(futures)):
+        for future in track(as_completed(futures), description="[cyan]Generating tests...", total=len(futures)):
             future.result()  # Re-raise any exceptions
 
 
@@ -142,7 +141,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             output_test_dir=task.output_test_dir,
         )
     else:
-        raise ValueError("Invalid task type.")
+        raise TypeError("Invalid task type.")
 
 
 def main() -> None:

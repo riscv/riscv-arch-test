@@ -1,0 +1,4 @@
+=== OUT-OF-SCOPE Parameters
+
+There are no restrictions on the values of OUT-OF-SCOPE parameters for certification purposes because the certificate
+doesn't cover the behavior associated with the parameter.

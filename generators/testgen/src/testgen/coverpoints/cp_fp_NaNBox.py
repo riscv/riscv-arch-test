@@ -10,24 +10,26 @@
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.formatters import format_single_test
+from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_NaNBox")
-def make_NaNBox(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_NaNBox(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate test for NaN-Box values."""
     if coverpoint.endswith("_D_S"):
         load_size = "single"
-    elif coverpoint.endswith("D_H") or coverpoint.endswith("S_H"):
+    elif coverpoint.endswith(("D_H", "S_H")):
         load_size = "half"
     else:
         raise ValueError(f"Unsupported coverpoint for NaN-Box test: {coverpoint} for instr {instr_name}.")
 
-    test_lines = [test_data.add_testcase("NaNBox", coverpoint)]
+    test_chunks: list[TestChunk] = []
     params = generate_random_params(test_data, instr_type, exclude_regs=[0], fp_load_type=load_size)
     desc = f"{coverpoint} (Test NaN-Boxed inputs)"
-    test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+    tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, "NaNBox", coverpoint)
+    test_chunks.append(tc)
     return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks

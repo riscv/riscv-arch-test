@@ -10,12 +10,13 @@
 from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
-from testgen.formatters import format_single_test
+from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cmp_rd_rs1")
-def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests where rd = rs1."""
     # Determine which rd registers to test based on coverpoint variant
     is_pair = False
@@ -34,25 +35,27 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
     else:
         raise ValueError(f"Unknown cmp_rd_rs1 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
-            test_lines.append(test_data.int_regs.consume_register_pair(reg))
+            asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
-            test_lines.append(test_data.int_regs.consume_registers([reg]))
+            asm_setup = test_data.int_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg)
         desc = f"{coverpoint} (Test rd = rs1 = x{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_chunks.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks
 
 
 @add_coverpoint_generator("cmp_rd_rs2")
-def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests where rd = rs2."""
     # Determine which rd registers to test based on coverpoint variant
     is_pair = False
@@ -71,25 +74,27 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
     else:
         raise ValueError(f"Unknown cmp_rd_rs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
-            test_lines.append(test_data.int_regs.consume_register_pair(reg))
+            asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
-            test_lines.append(test_data.int_regs.consume_registers([reg]))
+            asm_setup = test_data.int_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, rd=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs2 = x{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_chunks.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks
 
 
 @add_coverpoint_generator("cmp_rs1_rs2")
-def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests where rs1 = rs2."""
     # Determine which rd registers to test based on coverpoint variant
     is_pair = False
@@ -108,25 +113,27 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
     else:
         raise ValueError(f"Unknown cmp_rs1_rs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
-            test_lines.append(test_data.int_regs.consume_register_pair(reg))
+            asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
-            test_lines.append(test_data.int_regs.consume_registers([reg]))
+            asm_setup = test_data.int_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rs1 = rs2 = x{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_chunks.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks
 
 
 @add_coverpoint_generator("cmp_rd_rs1_rs2")
-def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests where rd = rs1 = rs2."""
     # Determine which rd registers to test based on coverpoint variant
     is_pair = False
@@ -143,18 +150,20 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
     else:
         raise ValueError(f"Unknown cmp_rd_rs1_rs2 coverpoint variant: {coverpoint} for {instr_name}")
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     for reg in regs:
-        test_lines.append(test_data.add_testcase(f"b{reg}", coverpoint))
         if is_pair:
-            test_lines.append(test_data.int_regs.consume_register_pair(reg))
+            asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
-            test_lines.append(test_data.int_regs.consume_registers([reg]))
+            asm_setup = test_data.int_regs.consume_registers([reg])
         params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs1 = rs2 = x{reg})"
-        test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
+        if asm_setup:
+            tc.code = asm_setup + "\n" + tc.code
+        test_chunks.append(tc)
         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks

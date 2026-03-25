@@ -22,6 +22,8 @@ The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified co
 
 These coverpoints do not yet certify that floating-point operations conform to the IEEE 754 standard.  More robust coverpoints based on the IBM suite are under development.
 
+cr_fs1_fs2_edges_frm includes cases that affect all of the flags in each rounding mode.
+
 ==== F Single-Precision FP
 
 include::{testplansdir}/F.adoc[]

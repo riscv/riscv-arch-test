@@ -89,6 +89,17 @@
   #define RVTEST_WORD_PTR .word
 #endif
 
+// PMP macros
+#define PMP0_CFG_SHIFT  0
+#define PMP1_CFG_SHIFT  8
+#define PMP2_CFG_SHIFT  16
+#define PMP3_CFG_SHIFT  24
+#define PMP4_CFG_SHIFT  32
+#define PMP5_CFG_SHIFT  40
+#define PMP6_CFG_SHIFT  48
+#define PMP7_CFG_SHIFT  56
+#define NOP              0x13
+#define DOUBLE_NOP       (0x13<<32)+0x13
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
@@ -336,3 +347,79 @@
 #define SET_MSB(_R) \
     LI(_R, 0x80000000)
 #endif
+
+// Interrupt Macros
+// Idle for interrupt latency
+#define RVTEST_IDLE_FOR_INTERRUPT \
+  .rept RVMODEL_INTERRUPT_LATENCY; \
+      nop; \
+  .endr
+
+
+// Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
+// This allows tests to be portable across different platforms with different interrupt implementations.
+#define RVTEST_SET_MSW_INT \
+  jal rvtest_set_msw_int     /* Trigger machine software interrupt */
+
+#define RVTEST_CLR_MSW_INT \
+  jal rvtest_clr_msw_int     /* Clear machine software interrupt */
+
+#define RVTEST_SET_MEXT_INT \
+  jal rvtest_set_mext_int     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT \
+  jal rvtest_clr_mext_int     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSW_INT \
+  jal rvtest_set_ssw_int     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT \
+  jal rvtest_clr_ssw_int     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT \
+  jal rvtest_set_sext_int     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT \
+  jal rvtest_clr_sext_int     /* Clear supervisor external interrupt */
+
+
+// V-mode interrupts not yet supported in Sail reference model
+// Define as empty to prevent assembly errors
+#define RVTEST_SET_VSW_INT
+#define RVTEST_CLR_VSW_INT
+#define RVTEST_SET_VEXT_INT
+#define RVTEST_CLR_VEXT_INT
+
+// Timer interrupts (no parameters)
+#define RVTEST_CLR_STIMER_INT
+#define RVTEST_CLR_VTIMER_INT
+
+// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
+#define RVTEST_INTERRUPTS \
+  rvtest_set_msw_int: ; \
+    RVMODEL_SET_MSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_msw_int: ; \
+    RVMODEL_CLR_MSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_set_mext_int: ; \
+    RVMODEL_SET_MEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_mext_int: ; \
+    RVMODEL_CLR_MEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_set_ssw_int: ; \
+    RVMODEL_SET_SSW_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_ssw_int: ; \
+    RVMODEL_CLR_SSW_INT(T2, T5) ; \
+    csrci sip, 2 ; \
+    ret ; \
+  rvtest_set_sext_int: ; \
+    RVMODEL_SET_SEXT_INT(T2, T5) ; \
+    ret ; \
+  rvtest_clr_sext_int: ; \
+    RVMODEL_CLR_SEXT_INT(T2, T5) ; \
+    LI(T3, 512) ; \
+    csrc sip, T3 ; \
+    ret

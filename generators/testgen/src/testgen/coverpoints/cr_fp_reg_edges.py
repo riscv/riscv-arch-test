@@ -11,12 +11,13 @@ from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import FLOAT_EDGES
 from testgen.data.state import TestData
-from testgen.formatters import format_single_test
+from testgen.data.test_chunk import TestChunk
+from testgen.formatters import format_single_testcase
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_fs1_fs2_edges")
-def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cross-product of fs1 and fs2 edge values."""
     if coverpoint.endswith("_D"):
         edges1 = FLOAT_EDGES.double
@@ -35,35 +36,25 @@ def make_cr_fs1_fs2_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
             for frm_mode in frm_modes:
-                test_lines.append(
-                    test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}, frm={frm_mode}", coverpoint)
-                )
                 params = generate_random_params(
                     test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs2val=edge_val2, frm=frm_mode
                 )
+                bin_name = f"fs1val={edge_val1:#x}, fs2val={edge_val2:#x}, frm={frm_mode}"
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
-                test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+                tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                test_chunks.append(tc)
                 return_test_regs(test_data, params)
-            # Dynamic rounding modes
-            # if cross_frm:
-            #     for frm_mode in (4, 3, 2, 1, 0):  # csr frm modes 0-4, end at 0 so the rest of the test continues in rne
-            #         test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}, frm_dyn={frm_mode}", coverpoint)
-            #         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
-            #         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-            #         desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs2 = {test_data.flen_format_str.format(edge_val2)}, fcsr.frm = {frm_mode})"
-            #         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-            #         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks
 
 
 @add_coverpoint_generator("cr_fs1_fs3_edges")
-def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for cross-product of fs1 and fs3 edge values."""
     if coverpoint.endswith("_D"):
         edges1 = FLOAT_EDGES.double
@@ -82,28 +73,18 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
 
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup") if cross_frm else [None]
 
-    test_lines: list[str] = []
+    test_chunks: list[TestChunk] = []
     for edge_val1 in edges1:
         for edge_val2 in edges2:
             # Explicit rounding modes (if needed)
             for frm_mode in frm_modes:
-                test_lines.append(
-                    test_data.add_testcase(f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_mode}", coverpoint)
-                )
                 params = generate_random_params(
                     test_data, instr_type, exclude_regs=[0], fs1val=edge_val1, fs3val=edge_val2, frm=frm_mode
                 )
                 desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}{f', frm = {frm_mode}' if frm_mode is not None else ''})"
-                test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
+                bin_name = f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm={frm_mode}"
+                tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+                test_chunks.append(tc)
                 return_test_regs(test_data, params)
-            # Dynamic rounding modes
-            # if cross_frm:
-            #     for frm_mode in (4, 3, 2, 1, 0):  # csr frm modes 0-4, end at 0 so the rest of the test continues in rne
-            #         test_data.add_testcase(f"fs1val={edge_val1:#x}, fs3val={edge_val2:#x}, frm_dyn={frm_mode}", coverpoint)
-            #         test_lines.append(f"\nfsrmi 0x{frm_mode:x} # set fcsr.frm to mode {frm_mode}\n")
-            #         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-            #         desc = f"{coverpoint} (Test source fs1 = {test_data.flen_format_str.format(edge_val1)} fs3 = {test_data.flen_format_str.format(edge_val2)}, fcsr.frm = {frm_mode})"
-            #         test_lines.append(format_single_test(instr_name, instr_type, test_data, params, desc))
-            #         return_test_regs(test_data, params)
 
-    return test_lines
+    return test_chunks

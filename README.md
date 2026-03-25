@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
 
 ## Table of Contents
 
@@ -64,7 +64,10 @@ For more details on uv and alternate installation methods, see the [uv installat
 
 #### 3. RISC-V Compiler
 
-The ACT framework is compatible with GCC or LLVM/Clang. This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
+The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
+Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
+
+This guide uses GCC, but if you prefer LLVM you just need to set the path for the compiler appropriately when [creating your config file](#act-framework-configuration-file). See [config/sail/sail-rv64-max-clang/test_config.yaml](./config/sail/sail-rv64-max-clang/test_config.yaml) for an example.
 
 > [!NOTE]
 >
@@ -182,6 +185,7 @@ It should contain the following fields:
 - `udb_config`: Path to UDB YAML file; interpreted relative to framework config file
 - `linker_script`: Path to linker script; interpreted relative to framework config file
 - `dut_include_dir`: Directory containing `rvmodel_macros.h`; interpreted relative to framework config file (use `.` for same directory as config file)
+- `include_priv_tests`: Optional; defaults to `True`; if set to `False`, all tests that rely on privilege modes will be skipped
 
 See [test_config.yaml](./config/cores/cvw/cvw-rv64gc/test_config.yaml) for an example framework config file.
 
@@ -193,7 +197,7 @@ See [cvw-rv64gc.yaml](./config/cores/cvw/cvw-rv64gc/cvw-rv64gc.yaml) for an exam
 
 #### `rvmodel_macros.h` DUT-Specific Macro Implementation
 
-The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/#_Macros).
+The ACT Framework uses a selection of assembly macros to run DUT-specific code to boot the DUT, print to a console, terminate the test, and trigger interrupts. These macros are defined and explained in detail in the [CTP](https://riscv.github.io/riscv-arch-test/ctp.html#rvmodel-macros).
 
 **Required Macros**:
 
@@ -215,17 +219,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 - `RVMODEL_MTIME_ADDRESS`
 - `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
 
-- `RVMODEL_SET_MEXT_INT`
-- `RVMODEL_CLR_MEXT_INT`
-- `RVMODEL_SET_MSW_INT`
-- `RVMODEL_CLR_MSW_INT`
-- `RVMODEL_SET_SEXT_INT`
-- `RVMODEL_CLR_SEXT_INT`
-- `RVMODEL_SET_SSW_INT`
-- `RVMODEL_CLR_SSW_INT`
+- `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_MSW_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SSW_INT(_R1, _R2)`
+- `RVMODEL_CLR_SSW_INT(_R1, _R2)`
+- `RVMODEL_INTERRUPT_LATENCY`
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).
 
@@ -234,10 +240,11 @@ Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc
 A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
 
 - The `ENTRY` point must be `rvtest_entry_point`.
-  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else. It should not be directly called by the `ENTRY` point.
-- There must be a `.text` section.
-- There must be a `.data` section.
-- There must be a `.bss` section.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else.
+- There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
+- There must be another `.text` output section that contains at least the `.text.rvtest` input section (i.e. `.text : { *(.text) *(.text.*) }`). This must follow the `.text.init` section.
+- There must be a `.bss` output section (i.e. `.bss : { *(.bss) }`). This should follow the `.text` section.
+- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.bss` section.
 
 For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
 

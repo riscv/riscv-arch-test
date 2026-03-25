@@ -1,6 +1,6 @@
-= RVI20 Certification Requirements Document (rev 0.3)
-include::adoc_common.adoc[]
+= RVI20 Certification Requirements Document (rev 1.0)
 :description: RVI20 CRD (Certificate Requirements Document)
+include::../../common/adoc_common.adoc[]
 
 _Contributors to all versions of the spec in alphabetical order_
 
@@ -17,6 +17,36 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 1.0 - Voted on and approved by the CSC Requirements WG on this date
+a| * Set allowed values for MISALIGNED_LDST_HW_SUPPORT to be "Any" to be consistent with other parameters.
+   * Moved HPM_COUNTER_SZ to IN-SCOPE parameters and add "and will not trap if read." to its parameter definition.
+
+| Mar 10, 2026
+| 0.8
+a| * Extension and Parameter appendices now only list things mentioned in the CRD.
+   * The c.ebreak instruction only exists if the C extension is present.
+
+| Mar 9, 2026
+| 0.7
+a| * Added "Dependent Extensions" section to list extensions that are only required if certain other extensions are present
+
+| Mar 5, 2026
+| 0.6
+a| * Removed MISALIGNED_ATOMICITY_GRANULE_SIZE parameter due to https://github.com/riscv/riscv-isa-manual/issues/2726
+
+| Mar 4, 2026
+| 0.5
+a| * Added note and link to GitHub issue that MISALIGNED_ATOMICITY_GRANULE_SIZE might be removed from this CRD
+
+| Mar 3, 2026
+| 0.4
+a| * Incorporated feedback from CSC Requirements WG meeting on Feb 27, 2026
+   ** Removed WARL/WLRL handling section since there are no CSRs with WARL/WLRL fields in RVI20
+   ** Preliminary parameters now link to normative rules
+   * Added Extensions and Parameters appendices
+   * Added link to RFC2119 in glossary and use RFC2119 keywords in uppercase throughout the document
 
 | Feb 23, 2026
 | 0.3
@@ -67,20 +97,19 @@ include::crd_common.adoc[]
 
 === Exclusions
 
-As per the unprivileged architecture specification, the ecall
+As per the unprivileged architecture specification, the `ecall`
 instruction causes a requested trap to the execution environment.
 Since the RVI profile family doesn't define any execution environments
-the ecall instruction is OUT-OF-SCOPE for the RVI20 certificate.
+the `ecall` instruction is OUT-OF-SCOPE for the RVI20 certificate.
 
-Similarly the ebreak and c.ebreak instructions are OUT-OF-SCOPE for the RVI20 certificate
+Similarly the `ebreak` and `c.ebreak` instructions are OUT-OF-SCOPE for the RVI20 certificate
 since they cause a breakpoint exception and the RVI profile family doesn't define any
 execution environments to handle such exceptions.
 
 <<<
 == Extensions
 
-Any RISC-V extensions not listed in this section are OUT-OF-SCOPE
-and the RVI20 certificate doesn't cover their behaviors.
+include::exts_intro.adoc[]
 
 === Mandatory Extensions
 
@@ -89,151 +118,97 @@ None
 === Optional Extensions
 
 .Optional Extensions
-[cols="2,1,1,4,4"]
+[%autowidth]
 |===
-| Requirement ID | Extension | Version | Long Name | Note
+| Requirement ID | Extension | Version
 
-| REQ-EXT-A
-| A
-| ~> 2.1
-| Atomic instructions
-| Comprised of instructions from the Zaamo and Zalrsc extensions
+| REQ-EXT-A | <<extension:A,A>> | ~> 2.1
+| REQ-EXT-C | <<extension:C,C>> | ~> 2.0
+| REQ-EXT-D | <<extension:D,D>> | ~> 2.2
+| REQ-EXT-F | <<extension:F,F>> | ~> 2.2
+| REQ-EXT-M | <<extension:M,M>> | ~> 2.0
+| REQ-EXT-Zicntr | <<extension:Zicntr,Zicntr>> | ~> 2.0
+| REQ-EXT-Zifencei | <<extension:Zifencei,Zifencei>> | ~> 2.0
+| REQ-EXT-Zihpm | <<extension:Zihpm,Zihpm>> | ~> 2.0
+|===
 
-| REQ-EXT-C
-| C
-| ~> 2.0
-| Compressed instructions
-| Always includes Zca, includes Zcf if F is present (RV32 only), and includes Zcd if D is present
+=== Dependent Extensions
 
-| REQ-EXT-D
-| D
-| ~> 2.2
-| Double-precision floating-point
-|
+.Dependent Extensions
+[%autowidth]
+|===
+| Requirement ID | Extension | Version | Dependency
 
-| REQ-EXT-F
-| F
-| ~> 2.2
-| Single-precision floating-point
-|
-
-| REQ-EXT-M
-| M
-| ~> 2.0
-| Integer multiply and divide
-|
-
-| REQ-EXT-Zicntr
-| Zicntr
-| ~> 2.0
-| Base Counters and Timers
-|
-
-| REQ-EXT-Zifencei
-| Zifencei
-| ~> 2.0
-| Instruction fence
-|
-
-| REQ-EXT-Zihpm
-| Zihpm
-| ~> 2.0
-| Hardware Performance Counters
-| The number of counters is platform-specific.
+| REQ-EXT-Zicsr | <<extension:Zicsr,Zicsr>> | ~> 2.0 | Required if Zicntr or F extensions are present
 
 |===
 
 <<<
-== Parameters
-
-Parameters are implementation-defined options supported by RISC-V standards.
-Many parameters are not named in RISC-V standards but a golden list of parameters
-is maintained separately by RISC-V International and this section uses those names.
-
-NOTE: The golden list of parameters is still under development so the parameters in this document
-are "preliminary parameters" and subject to change as the golden list is finalized.
+== Parameter Values
 
 This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the RVI20 certificate.
 
-=== IN-SCOPE Parameters
+Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
 
-An implementation must abide by the "Allowed Value(s)" of IN-SCOPE parameters to obtain a certificate.
-If the "Allowed Value(s)" is "Any" then any value allowed by the parameter is acceptable.
+include::in_scope_param_intro.adoc[]
 
 .IN-SCOPE Parameters
-[cols="3,1,1,1,3,2"]
-|===
-| Parameter | Type | Allowed Value(s) | ISA Feature | Definition | Impact on Certificate Scope
-
-| MISALIGNED_LDST
-| Boolean
-| Any
-| RV32I/RV64I Base ISA
-| Implementation supports misaligned load/store instructions (potentially with restrictions expressed by other parameters). Excludes atomic instructions which are covered by the MISALIGNED_ATOMIC parameter.
-| Misaligned load/store instructions are only in-scope if this parameter is true.
-
-| TIME_CSR_IMPLEMENTED
-| Boolean
-| Any
-| Zicntr
-| Implementation supports reading of all unprivileged time-related CSRs without triggering an exception. For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs. For RV64I the `time` CSR is the only unprivileged time-related CSR.
-| Reading time-related CSRs is only in-scope if this parameter is true.
-
-| LRSC_RESERVATION_STRATEGY
-| Enum (Exact, 64B, 128B, Other)
-| Exact, 64B, 128B
-| Atomic (Zalrsc extension)
-a| Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
-
 [%autowidth]
-!===
-! Value ! Definition
+|===
+| Parameter | Allowed Value(s) | Impact on Certificate Scope
 
-! Exact ! Reservation set is exactly enough to cover the access and no more
-! 64B ! Reservation set is naturally-aligned 64-byte region
-! 128B ! Reservation set is naturally-aligned 128-byte region
-! Other ! Reservation set strategy doesn't fit any of the specified choices
-!===
-| The load-reserved/store-conditional instructions are only in-scope if this parameter is not "Other".
-
-| LRSC_FAIL_ON_NON_EXACT_LRSC
-| Boolean
+| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
 | Any
-| Atomic (Zalrsc extension)
-| Does a Store Conditional instruction fail if its physical address and size do not
-  exactly match the physical address and size of the last Load Reserved in program order
-  (independent of whether or not the Store Conditional is in the current reservation set).
-| None
+| Only counters with a size of 0 are IN-SCOPE since the behavior of HPM counters is implementation-specific.
+
+| <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
+| Any
+| The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
+
+| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
+| Any
+| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
+and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+
+| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
+| Any
+| Reading time-related CSRs is only IN-SCOPE if this parameter is true
 
 |===
 
-=== OUT-OF-SCOPE Parameters
-
-There are no restrictions on the values of OUT-OF-SCOPE parameters for certification purposes because the certificate
-doesn't cover the behavior associated with the parameter.
+include::out_of_scope_param_intro.adoc[]
 
 .OUT-OF-SCOPE Parameters
 [%autowidth]
 |===
-| Parameter | Type | ISA Feature | Definition
+| Parameter
 
-| HPM_COUNTER_SZ
-| Array[3:31] of Integer 0 to 64
-| Zicntr
-a| Bit width of each implemented unprivileged hardware performance counter.
-A value of 0 indicates the corresponding counter is not implemented.
-
-| MISALIGNED_ATOMIC
-| Boolean
-| Atomic
-a| Implementation supports misaligned atomic instructions (potentially with restrictions expressed by other parameters). Includes all types of RISC-V atomic instructions supported by the implementation.
+| None
 
 |===
 
-=== CSR WARL Fields
+== CSR WARL Fields
 
 There are no CSRs in RVI20 with WARL fields.
 
-=== CSR WLRL Fields
+== CSR WLRL Fields
 
 There are no CSRs in RVI20 with WLRL fields.
+
+include::ext_appendix.adoc[]
+include::ext_defs/A.adoc[]
+include::ext_defs/C.adoc[]
+include::ext_defs/D.adoc[]
+include::ext_defs/F.adoc[]
+include::ext_defs/M.adoc[]
+include::ext_defs/Zicntr.adoc[]
+include::ext_defs/Zicsr.adoc[]
+include::ext_defs/Zifencei.adoc[]
+include::ext_defs/Zihpm.adoc[]
+
+include::param_appendix.adoc[]
+include::param_defs/HPM_COUNTER_SZ.adoc[]
+include::param_defs/LRSC_RESERVATION_STRATEGY.adoc[]
+include::param_defs/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::param_defs/TIME_CSR_HW_SUPPORT.adoc[]
+|===

@@ -8,8 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_RV32PMP
-`define COVER_RV64PMP
+`define COVER_PMPSM
 
 covergroup PMPSM_cg with function sample(
                     ins_t ins,
@@ -374,11 +373,11 @@ covergroup PMPSM_cg with function sample(
     bins zero = {0};
   }
 
-  pmpaddr0_for_cp_grain_check: coverpoint ins.prev.rs1_val {
+  value_to_write: coverpoint ins.current.rs1_val {
     bins one = {{(`XLEN){1'b1}}};
   }
 
-  csrw_to_pmpaddr0: coverpoint ins.prev.insn {
+  csrw_to_pmpaddr0: coverpoint ins.current.insn {
     wildcard bins csrrw  = {32'b001110110000_?????_001_?????_1110011}; // A write is being performed to pmpaddr[0]
   }
 
@@ -1157,7 +1156,8 @@ covergroup PMPSM_cg with function sample(
     cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
   `endif
 
-  cp_grain_check: cross priv_mode_m, pmpcfg_for_cp_grain_check, pmpaddr0_for_cp_grain_check, csrw_to_pmpaddr0, csrr_to_pmpaddr0;
+  cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
+  cp_grain_check_read: cross priv_mode_m, pmpcfg_for_cp_grain_check, csrr_to_pmpaddr0;
 
   //crosses boundary for napot region at the start of the region.
   cp_misaligned_napot_start_r: cross priv_mode_m, pmpaddr_for_napot_misaligned, pmpcfg_for_napot_misaligned, addr_for_misaligned_straddling_start, read_instr_for_misaligned;

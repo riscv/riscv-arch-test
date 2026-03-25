@@ -17,7 +17,7 @@ Usage:
 Defaults:
     json: coverpoints/norm/norm-rules.json
     yaml: coverpoints/norm
-    out:  docs/ctp/src/norm/
+    out:  docs/ctp/build/generated/norm/
 
 The script writes an .adoc file containing a table with columns:
   - normative rule name
@@ -55,7 +55,7 @@ def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[st
                     cache.parent.mkdir(parents=True, exist_ok=True)
                     cache.write_text(text, encoding="utf-8")
                 return json.loads(text)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             raise RuntimeError(f"Failed to download JSON from {path}: {e}") from e
     # Load from local file
     text = Path(path).read_text(encoding="utf-8")
@@ -294,21 +294,31 @@ def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str |
     if base:
         lines.extend([f"[[t-{base}-normative-rules]]", f".{base} Normative Rules"])
 
-    lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
+    if not rows:
+        lines.append("No normative rules found for this section.")
+        lines.append("")
+    else:
+        lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
 
     for name, text, cp in rows:
         n = name.replace("|", "&#124;")
         t = (text or "").replace("|", "&#124;")
         c = normalize_coverpoint(cp)
 
-        # Use multi-paragraph cell only for plain text with newlines
-        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t):
+        # Use multi-paragraph cell only for plain text with newlines.
+        # Avoid 'a|' when the text contains link: macros — asciidoctor
+        # fails to parse multi-line 'a|' cells that contain inline link
+        # macros, producing "dropping cells from incomplete row" errors.
+        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t or "link:" in t):
             lines.append(f"|{n} |a|{t} |{c}")
         else:
+            # Collapse any remaining newlines so the row stays on one line
+            t = t.replace("\n", " ")
             lines.append(f"|{n} |{t} |{c}")
         lines.append("")
 
-    lines.extend(["|===", ""])
+    if rows:
+        lines.extend(["|===", ""])
     # Append link to corresponding parameters table if base is provided
     if base:
         # norm files live in src/norm and parameters in src/param, so use ../param
@@ -435,8 +445,7 @@ def build_rows_from_groups(
 
         # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
         chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
-        for n, c in zip(names, chosen_cps, strict=False):
-            cover_map[n] = c
+        cover_map.update({n: c for n, c in zip(names, chosen_cps, strict=False)})
 
         if len(names) == 1:
             n = names[0]
@@ -500,7 +509,9 @@ def main() -> None:
         help="Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)",
     )
     p.add_argument(
-        "--out", default="docs/ctp/src/norm/", help="Output directory for ASCIIDoc files (default: docs/ctp/src/norm/)"
+        "--out",
+        default="docs/ctp/build/generated/norm/",
+        help="Output directory for ASCIIDoc files (default: docs/ctp/build/generated/norm/)",
     )
     p.add_argument(
         "--report",
@@ -556,7 +567,7 @@ def main() -> None:
     if args.always_fetch:
         try:
             jdata = load_json(canonical_json_url, cache_path=cache_path)
-        except Exception as e:
+        except (RuntimeError, OSError, json.JSONDecodeError) as e:
             print(f"Error: failed to fetch canonical JSON ({canonical_json_url}): {e}", file=sys.stderr)
             sys.exit(2)
     else:
@@ -610,6 +621,10 @@ def main() -> None:
             url = f"{base}#{frag}"
             # Prepare display text: collapse whitespace and remove surrounding newlines
             disp = " ".join(str(tag_text).split())
+            # Strip asciidoctor image macros (e.g. image:path/stem-xxx.svg[...])
+            # that reference pre-rendered math from the ISA manual build.
+            # These images don't exist in the CTP build context.
+            disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by
@@ -716,7 +731,7 @@ def main() -> None:
             rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
             # record per-yaml missing-in-json
-            missing_in_json = sorted(list(yaml_names - json_names))
+            missing_in_json = sorted(yaml_names - json_names)
             base = yfile.stem
             per_yaml_missing[base] = missing_in_json
 
@@ -731,7 +746,7 @@ def main() -> None:
 
         # After processing all YAMLs, create a single combined mismatch report
         # missing_in_yaml = JSON names that did not appear in any YAML
-        missing_in_yaml = sorted(list(json_names - all_yaml_names))
+        missing_in_yaml = sorted(json_names - all_yaml_names)
 
         report_lines = []
         report_lines.append("Mismatch report")
@@ -763,8 +778,7 @@ def main() -> None:
 
             for chap in sorted(chapter_map.keys()):
                 report_lines.append(f"Chapter: {chap}")
-                for n in sorted(chapter_map[chap]):
-                    report_lines.append("  " + n)
+                report_lines.extend("  " + n for n in sorted(chapter_map[chap]))
                 report_lines.append("")
         else:
             report_lines.append("  (none)")
@@ -789,8 +803,8 @@ def main() -> None:
     # Build a name->coverpoint map and the set of yaml names for mismatch reporting
     rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
 
-    missing_in_json = sorted(list(yaml_names - json_names))
-    missing_in_yaml = sorted(list(json_names - yaml_names))
+    missing_in_json = sorted(yaml_names - json_names)
+    missing_in_yaml = sorted(json_names - yaml_names)
 
     # Always treat --out as a directory
     out_dir = out_path

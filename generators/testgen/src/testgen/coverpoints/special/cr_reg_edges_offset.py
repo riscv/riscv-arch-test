@@ -11,12 +11,16 @@ from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import get_general_edges
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.formatters.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_rs2_edges_offset")
-def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[str]:
+def make_cr_rs1_rs2_edges_offset(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
     """Generate tests for cross-product of rs1/rs2 edges with branch offset testing."""
+    tc = test_data.begin_test_chunk()
     edges1 = get_general_edges(test_data.xlen)
     edges2 = get_general_edges(test_data.xlen)
 
@@ -24,18 +28,16 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
 
     for edge_val1 in edges1:
         for edge_val2 in edges2:
-            test_lines.append("")
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=edge_val1, rs2val=edge_val2)
             assert params.rs1 is not None and params.rs2 is not None
             assert params.rs1val is not None and params.rs2val is not None
             test_lines.extend(
                 [
-                    test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}", coverpoint),
                     f"# {coverpoint} (Test source rs1 = {test_data.xlen_format_str.format(edge_val1)} rs2 = {test_data.xlen_format_str.format(edge_val2)})",
                     load_int_reg("rs1", params.rs1, params.rs1val, test_data),
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     "0: # destination for backwards branch that is never taken",
-                    f"test_{test_data.test_count}:",
+                    test_data.add_testcase(f"rs1val={edge_val1:#x}, rs2val={edge_val2:#x}", coverpoint),
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 3f # forward branch, if taken",
                     "1: # goes here if not taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 0b # backward branch, never taken",
@@ -48,8 +50,10 @@ def make_cr_rs1_rs2_edges_offset(instr_name: str, instr_type: str, coverpoint: s
                     "3: # goes here during forward branch if taken",
                     f"{instr_name} x{params.rs1}, x{params.rs2}, 2b # backward branch, definitely taken",
                     "4: # done with test",
+                    "",
                 ]
             )
             return_test_regs(test_data, params)
 
-    return test_lines
+    tc.code = "\n".join(test_lines)
+    return [test_data.end_test_chunk()]

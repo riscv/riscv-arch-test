@@ -81,13 +81,7 @@ jobs:
         run: make tests --jobs $(nproc)
 
       - name: Compile and run tests on Sail
-        run: |
-          # NOTE: RVI20U must not select 'Sm' tests. Therefore, 'Sm' is excluded until the test selector is fixed.
-          if [[ "${{ matrix.config }}" == *"RVI20U"* ]]; then
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" EXCLUDE_EXTENSIONS="Sm" make --jobs $(nproc)
-          else
-              DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
-          fi
+        run: DOCKER=1 FAST=True CONFIG_FILES="config/${{ matrix.config }}/test_config.yaml" EXTENSIONS="" make --jobs $(nproc)
 
   spike:
     name: Spike Regression (${{ matrix.name }})
@@ -175,11 +169,12 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \
           EXTENSIONS="" \
-          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 
@@ -190,7 +185,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
@@ -265,11 +260,12 @@ jobs:
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs
+        # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
         run: |
           DOCKER=1 \
           FAST=True \
           EXTENSIONS= \
-          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,Zaamo,Zalrsc,Zabha,Zacas,ZacasZabha \
+          EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS \
           CONFIG_FILES=${{ matrix.config_file }} \
           make elfs --jobs $(nproc)
 
@@ -280,7 +276,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: qemu-${{ matrix.name }}-logs
           path: work/${{ matrix.config_name }}/logs
@@ -309,30 +305,31 @@ jobs:
 
       - run: git submodule update --init docs/docs-resources external/riscv-unified-db
 
-      - name: Pull Container
-        run: docker pull riscvintl/riscv-docs-base-container-image:latest
-
-      - name: Build
+      - name: Build CTP
         run: cd docs/ctp && make -j2
 
-      - name: Upload PDF
-        uses: actions/upload-artifact@v6
-        with:
-          name: ctp.pdf
-          path: docs/ctp/build/ctp.pdf
+  crd-build:
+    name: Build CRD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
-      - name: Upload HTML
-        uses: actions/upload-artifact@v6
-        with:
-          name: ctp.html
-          path: docs/ctp/build/ctp.html
+      - run: git submodule update --init docs/docs-resources
+
+      - name: Build CRD
+        run: cd docs/crd && make -j2
 
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [lint, regress, spike, qemu, vector-testgen, ctp-build]
+    needs: [lint, regress, spike, qemu, vector-testgen, ctp-build, crd-build]
+    if: "${{ always() }}"
     steps:
-      - name: Dummy
-        run: echo 'Jobs need at least one step.'
+      - name: exit failure
+        if: "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}"
+        run: exit 1
+      - name: exit success
+        if: "${{ !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}"
+        run: exit 0

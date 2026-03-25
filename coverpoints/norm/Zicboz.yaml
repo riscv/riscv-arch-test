@@ -1,11 +1,24 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field
-  # to senvcfg. The CBZE field controls execution of the cache block zero
-  # instruction (CBO.ZERO) in U-mode. Execution of CBO.ZERO in U-mode is enabled
-  # only if execution of the instruction is enabled for use in S-mode and CBZE is
-  # set to 1; otherwise, an illegal-instruction exception is raised. When the Zicboz
-  # extension is not implemented, CBZE is read-only zero.
-  - name: senvcfg-cbze
-    coverpoint: [""]
+  - name: CACHE_BLOCK_SIZE
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # A cbo.zero instruction performs stores of zeros to the full set of bytes
+  # corresponding to the cache block that contains the address specified in rs1.
+  - name: cbo-zero_op
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # It is not required that rs1 is aligned to the size of a cache block.
+  - name: cbo-zero_unaligned
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # The assembly offset operand may be omitted. If it isn&#8217;t then any
+  # expression that computes the offset shall evaluate to zero.
+  - name: cbo-zero_offset
+    coverpoint: ["Assembler information, not a normative rule"]
+
+  # These instructions operate on the cache block, or the memory locations
+  # corresponding to the cache block, whose effective address is specified in rs1.
+  - name: cbo-zero_specified_block
+    coverpoint: ["Zicboz_cbo_zero_cg/cp_custom_cbo"]

@@ -22,6 +22,10 @@ SRCDIR32E      := $(TESTDIR)/rv32e
 PRIVDIR        := $(TESTDIR)/priv
 PRIVHEADERSDIR := $(PRIVDIR)/headers
 
+COVERPOINT_DIR         := coverpoints
+UNPRIV_COVERPOINTS_DIR := $(COVERPOINT_DIR)/unpriv
+COVERAGE_HELPERS_DIR   := $(COVERPOINT_DIR)/coverage
+
 TEMPLATEDIR := templates
 TESTGEN_SRC_DIR := generators/testgen
 COVERGROUPGEN_SRC_DIR := generators/coverage
@@ -88,16 +92,36 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+##### imperas test targets #####
+.PHONY: imperas imperas-rv32 imperas-rv64
+
+# Add --trace --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
+IMPERAS_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose --program
+IMPERAS_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv64-max/imperas.ic iss.exe --verbose --program
+
+imperas: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml config/imperas/imperas-rv64-max/test_config.yaml
+imperas: elfs
+	@exit_code=0; \
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+# Add --verbose to run_tests.py arguments to see the simulator commands
+imperas-rv32: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml
+imperas-rv32: elfs
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs
+
+imperas-rv64: CONFIG_FILES = config/imperas/imperas-rv64-max/test_config.yaml
+imperas-rv64: elfs
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs
+
+
+
 
 ###### Test compilation targets ######
 .PHONY: elfs
-elfs: generate-makefiles Makefile
-	$(MAKE) -C $(WORKDIR) compile
-
-.PHONY: generate-makefiles
-generate-makefiles: # too many dependencies to track; always regenerate Makefile
-	$(MAKE) tests
-	$(UV_RUN) act $(CONFIG_FILES) \
+elfs: tests
+	@$(UV_RUN) act $(CONFIG_FILES) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
@@ -117,13 +141,13 @@ clean: clean-tests
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
 $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/coverage/covergroupgen.py
+	@$(UV_RUN) covergroupgen testplans $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen
@@ -136,11 +160,11 @@ $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-test
 privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
 
 $(STAMP_DIR)/csrtests.stamp: generators/testgen/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/csrtests.py
+	@$(UV_RUN) generators/testgen/scripts/csrtests.py
 	@touch $@
 
 $(STAMP_DIR)/illegalinstrtests.stamp: generators/testgen/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
+	@$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
 	@touch $@
 
 .PHONY: tests
@@ -149,18 +173,29 @@ tests: covergroupgen testgen privheaders
 .PHONY: clean-tests
 clean-tests:
 	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR)
-	rm -rf fcov/unpriv/*
+	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
 	rm -rf $(STAMP_DIR)
 
 $(PRIVHEADERSDIR) $(STAMP_DIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 ###### Coverage targets ######
+# Just sets some variables and then runs the standard elfs target
 .PHONY: coverage
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
-coverage: generate-makefiles Makefile
-	$(MAKE) -C $(WORKDIR) coverage
+coverage: elfs
+
+###### Regression ######
+# Run all tests
+
+.PHONY: regression
+regression:
+	$(MAKE) clean
+	$(MAKE) coverage
+	$(MAKE) spike
+	$(MAKE) qemu
+	$(MAKE) imperas
 
 ##### Dev targets #####
 .PHONY: lint

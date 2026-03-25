@@ -1,0 +1,22 @@
+normative_rule_definitions:
+  # Mapping of normative rules to coverpoints for a test suite
+
+  # If access to the cache block is not permitted, a cache-block management
+  # instruction raises a store page-fault or store guest-page-fault exception if
+  # address translation does not permit any access or raises a store access-fault
+  # exception otherwise.
+  - name: cbm_unperm_fault
+    coverpoint: ["PMPZicbo_cg/cp_cbo_{inval, flush, clean}"]
+
+  # If access to the cache block is not permitted, a cache-block zero instruction
+  # raises a store page-fault or store guest-page-fault exception if address
+  # translation does not permit write access or raises a store access-fault
+  # exception otherwise.
+  - name: cbz_unperm_fault
+    coverpoint: ["PMPZicbo_cg/cp_cbo_zero"]
+
+  # If access to the cache block is not permitted, a cache-block prefetch
+  # instruction does not raise any exceptions and shall not access any caches or
+  # memory.
+  - name: cbp_unperm_noexcep
+    coverpoint: ["PMPZicbo_cg/cp_prefetch_{w, r, i}"]

@@ -178,30 +178,38 @@ Compressed Zihintntl instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.n
 include::norm/ZihintntlZca_norm_rules.adoc[]
 
 
+==== Zicboz Cache Block Zero
+
+The `cbo.zero` instruction zeros a cache line.  The cache line size may vary from one machine to another.
+
+[[t-Zicbo-coverpoint-definition]]
+.Zicbo Coverpoint Definition
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+|cp_custom_cbo|65*2|Writes 65 words (260 bytes) of arbitrary data to scratch memory, executes `cbo` instruction at the aligned start of scratch, and then reads back all 260 bytes and stores them to the signature.  The first cache line (often 64 bytes) of data should be zeroed and the rest unchanged.  It repeats this operation with an offset of 255 bytes.  The instruction ignores the offset within a cache line, so for 64-byte lines, this would zero bytes 192-255 and leave the others unchanged.
+|===
+
+include::{testplansdir}/Zicboz.adoc[]
+
+include::norm/Zicboz_norm_rules.adoc[]
+
 
 ==== Zicbom Cache Block Flush/Invalidate
 
-[[t-Zicbom-coverpoints]]
-.Zicbom Instruction Coverpoints
-//,===
-//include::{testplansdir}/Zicbom.adoc[]
-//,===
+Zicbom runs the same tests as Zicboz.  `cbo.flush` and `cbo.clean` should have no architecturally visible effect.  `cbo.inval` could discard the cache block, leaving the initial value of 0s.  This may be difficult to match against a reference model, so perhaps this test needs to accept both the original data and 0s as correct answers.  TODO - adjust if any machines need this.
 
-==== Zicboz Cache Block Zero
+include::{testplansdir}/Zicbom.adoc[]
 
-[[t-Zicboz-coverpoints]]
-.Zicboz Instruction Coverpoints
-//,===
-//include::{testplansdir}/Zicboz.adoc[]
-//,===
+include::norm/Zicbom_norm_rules.adoc[]
 
 ==== Zicbop Cache Block Prefetch
 
-[[t-Zicbop-coverpoints]]
-.Zicbop Instruction Coverpoints
-//,===
-//include::{testplansdir}/Zicbop.adoc[]
-//,===
+The Zicbop prefetch instructions are hints that do not have to do anything.  They are tested by being executed with a variety of rs1 values and offsets to ensure that they are decoded and executed without trapping, but no specific behavior is required or checked except that the 65 words written to scratch are still read back correctly.
+
+include::{testplansdir}/Zicbop.adoc[]
+
+include::norm/Zicbop_norm_rules.adoc[]
 
 ==== Za64rs Max 64B Reservation Set
 

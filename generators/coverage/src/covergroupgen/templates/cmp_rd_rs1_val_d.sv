@@ -3,4 +3,3 @@
         bins rd_eqval_d_rs1  = {1}; // Cases where the least significant 64 bits of rd and rs1 are equal
         bins rd_neval_d_rs1  = {0}; // Cases where the least significant 64 bits of rd and rs1 are not equal
     }
-    

@@ -33,7 +33,7 @@ def format_ap_type(
     setup = [
         load_int_reg("value in memory", params.temp_reg, params.rs1val, test_data),
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-        load_int_reg("rd compare value", params.rd , params.rdval, test_data),
+        load_int_reg("rd compare value", params.rd, params.rdval, test_data),
         f"LA(x{params.rs1}, scratch) # load base address into rs1",
         f"SREG x{params.temp_reg}, 0(x{params.rs1}) # store value into memory at address in rs1",
     ]

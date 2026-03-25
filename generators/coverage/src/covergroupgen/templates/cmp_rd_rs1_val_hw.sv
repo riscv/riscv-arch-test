@@ -3,4 +3,3 @@
         bins rd_eqval_hw_rs1  = {1}; // Cases where the least significant 16 bits of rd and rs1 are equal
         bins rd_neval_hw_rs1  = {0}; // Cases where the least significant 16 bits of rd and rs1 are not equal
     }
-    

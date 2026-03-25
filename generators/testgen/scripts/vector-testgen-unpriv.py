@@ -1212,7 +1212,7 @@ if __name__ == '__main__':
       basepathname = pathname
       includeVData = " "
 
-      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$']:
+      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
         match = re.search(pattern, pathname)
         if match:
             sew = int(match.group(1))

@@ -89,7 +89,7 @@ Where:
 |===
 | Term | Meaning
 
-| REQ-<ID> | A requirement that applies to both RVI20-32 and RVI20-64
-| REQ32-<ID> | A requirement that applies to only RVI20-32
-| REQ64-<ID> | A requirement that applies to only RVI20-64
+| REQ-<ID> | A requirement that applies to both RV32 and RV64
+| REQ32-<ID> | A requirement that applies to only RV32
+| REQ64-<ID> | A requirement that applies to only RV64
 |===

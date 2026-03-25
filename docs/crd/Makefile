@@ -17,7 +17,7 @@
 # Install by running:
 #		make docker-pull-latest
 
-DOCS := rvi20_crd mc100_crd
+DOCS := rvi20_crd mc100_crd all_impldefs
 
 DOCKER_BIN ?= docker
 SKIP_DOCKER ?= $(shell if command -v ${DOCKER_BIN}  >/dev/null 2>&1 ; then echo false; else echo true; fi)
@@ -110,7 +110,7 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build: build-pdf build-html
 
-ALL_SRCS := $(wildcard src/*.adoc)
+ALL_SRCS := $(shell find src -name "*.adoc")
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)

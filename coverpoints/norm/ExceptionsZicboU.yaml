@@ -1,1 +1,67 @@
+# Mapping of normative rules to coverpoints for a test suite
+
 normative_rule_definitions:
+  - name: menvcfg_cbze_op
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbze"]
+
+  - name: menvcfg_cbcfe_op
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbcfe"]
+
+  - name: menvcfg_cbie_op
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+
+  - name: menvcfg_cbie_cbo-inval_op
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+
+  # A CBO.INVAL instruction executes or raises either an illegal-instruction
+  # exception or a virtual-instruction exception based on the state of the
+  # xenvcfg.CBIE fields:
+  - name: cbo-inval
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbie"]
+
+  # A CBO.CLEAN or CBO.FLUSH instruction executes or raises an illegal-instruction
+  # or virtual-instruction exception based on the state of the xenvcfg.CBCFE bits:
+  - name: cbo-clean_cbo-flush
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbcfe"]
+
+  # Finally, a CBO.ZERO instruction executes or raises an illegal-instruction or
+  # virtual-instruction exception based on the state of the xenvcfg.CBZE bits:
+  - name: cbo-zero_basedon_xenvcfg-CBZE
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbze"]
+
+  # When a page-fault, guest-page-fault, or access-fault exception is taken, the
+  # relevant *tval CSR is written with the faulting effective address (i.e. the
+  # value of rs1).
+  - name: fault_excep_csr
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access"]
+
+  # CMO instructions do not generate address-misaligned exceptions.
+  - name: no_addr_misaligned_excep
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_misaligned"]
+
+  # A cache-block management instruction is permitted to access the specified cache
+  # block whenever a load instruction or store instruction is permitted to access
+  # the corresponding physical addresses.
+  - name: cbm_access
+    coverpoint: ["spot tested with Zicbom_cbo_clean_cg/cp_custom_cbo"]
+
+  # If access to the cache block is not permitted, a cache-block management
+  # instruction raises a store page-fault or store guest-page-fault exception if
+  # address translation does not permit any access or raises a store access-fault
+  # exception otherwise.
+  - name: cbm_unperm_fault
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access"]
+
+  # A cache-block zero instruction is permitted to access the specified cache block
+  # whenever a store instruction is permitted to access the corresponding physical
+  # addresses and when the PMAs indicate that cache-block zero instructions are a
+  # supported access type.
+  - name: cbz_access
+    coverpoint: ["spot tested with Zicboz_cbo_zero_cg/cp_custom_cbo"]
+
+  # If access to the cache block is not permitted, a cache-block zero instruction
+  # raises a store page-fault or store guest-page-fault exception if address
+  # translation does not permit write access or raises a store access-fault
+  # exception otherwise.
+  - name: cbz_unperm_fault
+    coverpoint: ["ExceptionsZicboU_cg/cp_cbo_access"]

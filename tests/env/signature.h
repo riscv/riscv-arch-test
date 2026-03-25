@@ -43,47 +43,30 @@
     .option pop
 #endif
 
-// RVTEST_SIGUPD_NOPS is the same length as RVTEST_SIGUPD but is filled with nops
-#if __riscv_xlen == 64
-  #define RVTEST_SIGUPD_NOPS \
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop
-#else
-  #define RVTEST_SIGUPD_NOPS \
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop ;\
-    nop
-#endif
-
-// TRAP_SIGUPD(tempreg, sigreg, offset)
+// TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
-// test_failure in case of a mismatch.
-// If not in Self Check mode, just store the signatures to the signature region
+// failedtest_trap_x7_x9 in case of a mismatch.
+// In failedtest_trap_x7_x9, x7/T2 is LINK_REG & x9/T4 is TEMP_REG
+// If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
-  // #define TRAP_SIGUPD(_TMPREG, _R, _OFF)  \ ***TODO: Uncomment after implementing self-check support for priv signatures
-  //   LREG _TMPREG, _OFF*REGWIDTH(T1)      ;\
-  //   beq  _TMPREG, _R, 2f                 ;\
-  //   jal  T2, failedtest_x5_x4            ;\
-  //   2:                                   ;
-  #define TRAP_SIGUPD(_TMPREG, _R, _OFF)                     \
-    nop                                                     ;\
-    nop                                                     ;\
-    nop                                                     ;
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
+    beq  _TMPREG, _R, 2f                                        ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
 #else
-  #define TRAP_SIGUPD(_TMPREG, _R, _OFF)                     \
-    SREG _R, _OFF*REGWIDTH(T1)                              ;\
-    nop                                                     ;\
-    nop                                                     ;
+  #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
+    SREG _R, _OFF*REGWIDTH(T1)                                  ;\
+    beq  x0, x0, 2f                                             ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
 #endif
 
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, instptr, strptr)
@@ -593,11 +576,19 @@
       0x6F5CA309E7D4B281
   #define CANARY \
       .dword CANARY_VALUE
+  #define TRAP_CANARY_VALUE \
+      0xD3A91F6C8B47E25D
+  #define TRAP_CANARY \
+      .dword TRAP_CANARY_VALUE
 #else
   #define CANARY_VALUE \
       0x6F5CA309
   #define CANARY \
       .word CANARY_VALUE
+  #define TRAP_CANARY_VALUE \
+      0xD3A91F6C
+  #define TRAP_CANARY \
+      .word TRAP_CANARY_VALUE
 #endif
 
 // Read _CSR into _R and record/check the signature

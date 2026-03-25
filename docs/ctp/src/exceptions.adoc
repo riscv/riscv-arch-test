@@ -113,7 +113,6 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 include::norm/ExceptionsZc_norm_rules.adoc[]
 
 
-
 ==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
 
 [[t-ExceptionsZicboS-coverpoints]]
@@ -122,6 +121,8 @@ include::norm/ExceptionsZc_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=927893239#gid=927893239[Google Sheet Testplan]
 ,===
 
+include::norm/ExceptionsZicboS_norm_rules.adoc[]
+
 ==== ExceptionsZicboU User-Mode CBO Exceptions
 
 [[t-ExceptionsZicboU-coverpoints]]
@@ -129,6 +130,8 @@ https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXP
 ,===
 https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=1054505393#gid=1054505393[Google Sheet Testplan]
 ,===
+
+include::norm/ExceptionsZicboU_norm_rules.adoc[]
 
 ==== ExceptionsSv Virtual Memory Exceptions
 

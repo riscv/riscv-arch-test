@@ -37,17 +37,16 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
-*** config file determines whether to run cbom/cboz/both
-
 [[t-SvZicbo-coverpoints]]
 .SvZicbo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429[Google Sheet Testplan]
 ,===
 
-==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
+include::norm/SvZicbo_norm_rules.adoc[]
 
-*** config file determines whether to run cbom/cboz/both
+
+==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 
 [[t-SvPMPZicbo-coverpoints]]
 .SvPMPZicbo Coverpoints
@@ -55,6 +54,7 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846[Google Sheet Testplan]
 ,===
 
+include::norm/SvPMPZicbo_norm_rules.adoc[]
 
 
 ==== Svinval Memory Management Unit Table Invalidation

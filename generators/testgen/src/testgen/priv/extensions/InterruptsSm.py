@@ -402,18 +402,19 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                 [
                     f"# Testcase: WFI with mie = {mie_val}, tw = {tw_val}",
                     "CSRW(mie, zero)",
+                    "# Clear TW (bit 21, 0x200000) and MIE (bit 3, 0x8)",
                     f"LI(x{r_scratch}, 0x200008)",
                     f"CSRC(mstatus, x{r_scratch})",
                     "# Set MIE if needed",
                     f"LI(x{r_scratch}, 0x80)",
                     f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
-                    "# Set TW if needed",
                 ]
             )
 
             if tw_val:
                 lines.extend(
                     [
+                        "# Set TW",
                         f"LI(x{r_scratch}, 0x200000)",
                         f"CSRS(mstatus, x{r_scratch})",
                     ]

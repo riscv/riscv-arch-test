@@ -39,6 +39,14 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
             mie_name = f"mie_{mstatus_mie}"
             binname = f"{mode_name}_{mie_name}"
 
+            lines.extend(
+                [
+                    "",
+                    "csrci mstatus, 8",  # Clear mstatus.MIE (bit 3)
+                    "csrci mtvec, 3",  # Clear mtvec.MODE (bits 1:0)
+                ]
+            )
+
             if mtvec_mode:
                 lines.append("csrsi mtvec, 1")
 

@@ -379,10 +379,13 @@ parameter_definitions:
 
 csr_definitions:
   - reg-name: misa
+    field-name: MXL
     impl-def: MISA_WARL
+    type: ro-mask
   - reg-name: misa
     field-name: EXTENSIONS
-    impl-def: MISA_EXTENSIONS_WARL
+    impl-defs: [MISA_WARL, MISA_EXTENSIONS_WARL]
+    type: ro-mask
   - reg-name: mstatus
     field-name: XPP
     impl-def: MSTATUS_XPP_WARL

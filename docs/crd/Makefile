@@ -21,7 +21,7 @@ SRC_DIR := src
 BUILD_DIR := build
 GENERATED_DIR := generated
 
-DOCS := rvi20_crd mc100_crd all_params
+DOCS := rvi20_crd mc100_crd all_params all_warl_wlrl_csrs
 DOCS_PDF := $(addprefix $(BUILD_DIR)/, $(addsuffix .pdf, $(DOCS)))
 DOCS_HTML := $(addprefix $(BUILD_DIR)/, $(addsuffix .html, $(DOCS)))
 
@@ -50,9 +50,19 @@ CREATE_PARAM_APPENDIX_PYTHON := python3 $(CREATE_PARAM_APPENDIX_TOOL)
 CREATE_PARAM_APPENDIX_TABLE_LAYOUT := docs-resources/tools/default_param_table.yaml
 CREATE_PARAM_APPENDIX_TABLE_LAYOUT_SRC := $(DOCS_RESOURCES_DIR)/tools/default_param_table.yaml
 
+CREATE_CSR_APPENDIX_TOOL := docs-resources/tools/create_csr_appendix.py
+CREATE_CSR_APPENDIX_TOOL_SRC := $(DOCS_RESOURCES_DIR)/tools/create_csr_appendix.py
+CREATE_CSR_APPENDIX_PYTHON := python3 $(CREATE_CSR_APPENDIX_TOOL)
+CREATE_CSR_APPENDIX_TABLE_LAYOUT := docs-resources/tools/default_csr_table.yaml
+CREATE_CSR_APPENDIX_TABLE_LAYOUT_SRC := $(DOCS_RESOURCES_DIR)/tools/default_csr_table.yaml
+
 PARAM_APPENDIX_DIR := param-appendix
 GEN_PARAM_APPENDIX_DIR := $(GENERATED_DIR)/$(PARAM_APPENDIX_DIR)
 GEN_PARAM_APPENDIX_READY := $(GENERATED_DIR)/.param-appendix.ready
+
+CSR_APPENDIX_DIR := csr-appendix
+GEN_CSR_APPENDIX_DIR := $(GENERATED_DIR)/$(CSR_APPENDIX_DIR)
+GEN_CSR_APPENDIX_READY := $(GENERATED_DIR)/.csr-appendix.ready
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -120,7 +130,7 @@ WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
     rm -rf $@.workdir
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check param-appendix-adoc
+.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check param-appendix-adoc csr-appendix-adoc
 
 all: build
 
@@ -137,16 +147,18 @@ build: build-pdf build-html
 
 ALL_SRCS := $(wildcard $(SRC_DIR)/*.adoc) $(wildcard $(SRC_DIR)/ext_defs/*.adoc)
 
-$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY)
+$(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY) $(GEN_CSR_APPENDIX_READY)
 	$(WORKDIR_SETUP)
 	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
-$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY)
+$(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY) $(GEN_CSR_APPENDIX_READY)
 	$(WORKDIR_SETUP)
 	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/build
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
@@ -180,6 +192,18 @@ $(GEN_PARAM_APPENDIX_READY): $(PARAMS_JSON) $(CREATE_PARAM_APPENDIX_TOOL_SRC) $(
 	$(WORKDIR_TEARDOWN)
 
 param-appendix-adoc: $(GEN_PARAM_APPENDIX_READY)
+
+# Build per-CSR AsciiDoc include files from params JSON.
+$(GEN_CSR_APPENDIX_READY): $(PARAMS_JSON) $(CREATE_CSR_APPENDIX_TOOL_SRC) $(CREATE_CSR_APPENDIX_TABLE_LAYOUT_SRC)
+	$(WORKDIR_SETUP)
+	mkdir -p $@.workdir/$(GENERATED_DIR)
+	cp -f $(PARAMS_JSON) $@.workdir/$(GENERATED_DIR)
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(CREATE_CSR_APPENDIX_PYTHON) --input $(PARAMS_JSON) --csr-table $(CREATE_CSR_APPENDIX_TABLE_LAYOUT) --output-dir $(GEN_CSR_APPENDIX_DIR) $(DOCKER_QUOTE)
+	rm -rf $(GEN_CSR_APPENDIX_DIR) && mkdir -p $(GENERATED_DIR) && cp -r $@.workdir/$(GEN_CSR_APPENDIX_DIR) $(GENERATED_DIR)
+	touch $@.workdir/$@
+	$(WORKDIR_TEARDOWN)
+
+csr-appendix-adoc: $(GEN_CSR_APPENDIX_READY)
 
 # Update docker image to latest
 docker-pull-latest:

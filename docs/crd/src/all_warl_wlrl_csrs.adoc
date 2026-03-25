@@ -1,0 +1,11 @@
+= All WARL/WLRL CSRs
+:description: All WARL/WLRL CSRs
+include::../../common/adoc_common.adoc[]
+
+_This document is released under a Creative Commons Attribution 4.0 International License._
+
+== WARL/WLRL CSR Definitions (A-Z)
+include::../build/csr-appendix/all_csrs_a_to_z.adoc[]
+
+== WARL/WLRL CSR Definitions (by Chapter)
+include::../build/csr-appendix/all_csrs_by_chapter.adoc[]

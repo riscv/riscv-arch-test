@@ -9,19 +9,21 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40s_rv32imc
-description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=0, B_EXT=NONE, PMP=0, PMA=0)
-implemented_extensions: # VERIFIED against cv32e40s_core.sv default parameters
+description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=0)
+implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40s master @ 9d9cae78)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zca, version: "= 1.0.0" } # Always present when C enabled
+  - { name: Zcb, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
+  - { name: Zcmp, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
+  - { name: Zcmt, version: "= 1.0.0" } # VERIFIED — ZC_EXT=1 hardcoded localparam in cv32e40s_core.sv
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
   - { name: Sm, version: "= 1.11.0" }
   - { name: Smhpm, version: "= 1.11.0" }
-  # ZC_EXT=0 by default → no Zcb, Zcmp, Zcmt
   # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
 params:
@@ -83,21 +85,26 @@ params:
   # PMP/PMA: defaults are PMP_NUM_REGIONS=0, PMA_NUM_REGIONS=0 (cv32e40s_core.sv lines 42,45)
   # Left undefined in this config — no PMP/PMA hardware instantiated
 
+  # Zcmt params (VERIFIED — cv32e40s_pkg.sv: CSR_JVT_MASK=0xFFFFFFC0, JVT_RESET_VAL=0)
+  JVT_BASE_TYPE: mask # VERIFIED — upper 26 bits writable via mask
+  JVT_READ_ONLY: false # VERIFIED — jvt is writable
+  JVT_BASE_MASK: 0x7FFFFFC0 # RTL mask is 0xFFFFFFC0 but UDB requires < 0xFFFFFFC0 for RV32; bit 31 excluded
+
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false # VERIFIED — user time(h) CSRs not implemented; access causes illegal instruction trap
 
-  # HPM Counters (VERIFIED — cs_registers.sv lines 1722-1737: 16 events; NUM_MHPMCOUNTERS=1 default)
-  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # VERIFIED — 16 HPM events (vs 11 in cv32e40p)
-  HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=1 default; only index 3 active
+  # HPM Counters (VERIFIED — cv32e40s_pkg.sv: NUM_HPM_EVENTS=2; cv32e40s_core.sv: NUM_MHPMCOUNTERS=0)
+  HPM_EVENTS: [0, 1] # VERIFIED — 2 HPM events (cycle, instret)
+  HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=0; no HPM counters instantiated
     [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
-      true, # index 3 (MHPMCOUNTER3 — only active counter)
       false,
       false,
       false,
-      false, # 4..7
+      false,
+      false, # 3..7
       false,
       false,
       false,
@@ -123,16 +130,16 @@ params:
       false,
       false, # 24..31
     ]
-  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit
+  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: only indices 0,2 (mcycle, minstret) inhibitable
     [
       true, # index 0 (MCYCLE inhibit)
       false, # index 1 (TM — always false per UDB)
       true, # index 2 (MINSTRET inhibit)
-      true, # index 3 (MHPMCOUNTER3 inhibit)
       false,
       false,
       false,
-      false, # 4..7
+      false,
+      false, # 3..7
       false,
       false,
       false,

@@ -1,9 +1,6 @@
 # rvmodel_macros.h
 # RVMODEL macro definitions for CV32E40S core
 # SPDX-License-Identifier: Apache-2.0
-#
-# HTIF tohost at 0x20000000; CLINT base at 0x02000000
-# Trap handler adjusts mepc by 2 (compressed) or 4 (32-bit) instruction bytes
 
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
@@ -16,39 +13,12 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-# cv32e40s supports both direct (MODE=0) and vectored (MODE=1) mtvec.
-# Direct mode (MODE=0) requires 4-byte alignment only — use .align 2 before handler.
-#define RVMODEL_BOOT                                                     \
-  .option push                                                       ;   \
-  .option arch, +zicsr                                               ;   \
-  la    t0, _cv32e40s_trap_handler                                   ;   \
-  csrw  mtvec, t0                                                    ;   \
-  j     _cv32e40s_boot_cont                                          ;   \
-  .align 2                                                           ;   \
-_cv32e40s_trap_handler:                                              ;   \
-  addi  sp, sp, -12                                                  ;   \
-  sw    t0, 0(sp)                                                    ;   \
-  sw    t1, 4(sp)                                                    ;   \
-  sw    t2, 8(sp)                                                    ;   \
-  csrr  t0, mepc                                                     ;   \
-  lhu   t1, 0(t0)                                                    ;   \
-  andi  t1, t1, 3                                                    ;   \
-  li    t2, 3                                                        ;   \
-  beq   t1, t2, _cv32e40s_trap_32bit                                 ;   \
-  addi  t0, t0, 2                                                    ;   \
-  j     _cv32e40s_trap_done                                          ;   \
-_cv32e40s_trap_32bit:                                                ;   \
-  addi  t0, t0, 4                                                    ;   \
-_cv32e40s_trap_done:                                                 ;   \
-  csrw  mepc, t0                                                     ;   \
-  lw    t0, 0(sp)                                                    ;   \
-  lw    t1, 4(sp)                                                    ;   \
-  lw    t2, 8(sp)                                                    ;   \
-  addi  sp, sp, 12                                                   ;   \
-  mret                                                               ;   \
-_cv32e40s_boot_cont:                                                 ;   \
-  .option pop
+# Perform boot operations.
+# CV32E40S resets mcountinhibit=0x5 (cycle+instret inhibited). Clear it so
+# cycle/instret increment as Zicntr tests expect.
+# Raw encoding: .word 0x32005073 = csrwi mcountinhibit, 0
+#define RVMODEL_BOOT \
+  .word 0x32005073 ;
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000

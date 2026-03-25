@@ -7,8 +7,8 @@
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      // VERIFIED — NUM_MHPMCOUNTERS=1 default; only counter 3 active → bit 3 = 0x8
-      "value": "0x00000008"
+      // VERIFIED — NUM_MHPMCOUNTERS=0 (cv32e40s_core.sv); no HPM counters
+      "value": "0x00000000"
     },
     "xtval_nonzero": {
       // VERIFIED — cs_registers.sv:486-487: mtval hardwired to 0
@@ -222,7 +222,7 @@
       "supported": false
     },
     "Zcb": {
-      "supported": false
+      "supported": true
     },
     "Zcmop": {
       "supported": false

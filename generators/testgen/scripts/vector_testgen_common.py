@@ -26,7 +26,7 @@ ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", ".
 ##################################
 
 # Define VLEN, ELEN and SEWMIN as extremes which these tests support
-maxVLEN = 512   # TODO: change to 2048 later, save as 512 for now for smaller files
+maxVLEN = 4096   # TODO: change to 2048 later, save as 512 for now for smaller files
 maxELEN = 64
 minSEW_MIN = 8
 
@@ -1201,7 +1201,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@PARAMS@", f"params:\n#   MXLEN: {xlen}")
         .replace("@TEST_DATA@", test_data)
         .replace("@TEST_FILE_NAME@", f"{test}.S")
-        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(50000)) # TODO: change this to a dynamic value
+        .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(500000)) # TODO: change this to a dynamic value
         .replace("@CONFIG_DEPENDENT@", "true")  # TODO: Make this configurable for some tests (e.g. Zimop)
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
@@ -1296,7 +1296,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
     tempReg = linkReg - 1
 
     maskReg = randint(1,31)
-    while maskReg == sigReg or maskReg == tempReg:
+    while maskReg == sigReg or maskReg == tempReg or maskReg == linkReg:
       maskReg = randint(1,31)
 
     # -------------------------------------------------
@@ -1463,6 +1463,8 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
         register_sew = getInstructionEEW(instruction) # vs2 uses eew
       else:
         register_sew = sew # registers are read with sew and lmul in vtype csr
+    elif instruction in vextins and register_argument_name == 'vs2':
+      register_sew = int(sew) # for vextins vs2 uses the sew of the destination register which is determined by sew, lmul, and size multiplier
     else                                   : register_sew = int(register_data['size_multiplier'] * sew)
 
     # need to handle loading to mask and scalar registers which can be off group
@@ -1945,7 +1947,11 @@ def writeTest(description, instruction, cp, instruction_data,
         lmulflag = getLmulFlag(1) # for vredins vd is always a single register
       else:
         lmulflag = getLmulFlag(lmul)
-      writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
+
+      if lmul < 1 and instruction in vd_widen_ins:
+        writeLine(f"vsetvli x{tempVlmax}, x0, e{2*sew}, m{getLmulFlag(1)}, tu, mu", "# set vtype to VLMAX for vd load with widening")
+      else:
+        writeLine(f"vsetvli x{tempVlmax}, x0, e{sew}, m{lmulflag}, tu, mu", "# set vtype to VLMAX for vd load")
       # actually perform load for vd (pass through loadVecReg)
       scalar_registers_used = loadVecReg(instruction, 'vd', vector_register_data, sew, lmul, *scalar_registers_used)
       vd_preloaded = True
@@ -2575,8 +2581,6 @@ def readTestplans(priv=False):
                                     cps.append(key)
                         tp[instr] = cps
                 testplans[arch] = tp
-                if (arch == "VxTemp"):
-                  del testplans["VxTemp"]
                 if (arch == "Vx"):
                     for effew in ["8", "16", "32", "64"]:
                         testplans["Vx" + effew] = tp

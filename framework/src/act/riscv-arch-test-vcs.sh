@@ -3,6 +3,9 @@
 #
 # RISC-V Architectural Functional Coverage Testbench (VCS)
 #
+# Copyright (C) 2026 Harvey Mudd College
+# Written: Jordan Carlin jcarlin@hmc.edu March 2026
+#
 # SPDX-License-Identifier: Apache-2.0
 #
 ####################################################################################

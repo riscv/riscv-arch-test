@@ -4,7 +4,7 @@
 # jcarlin@hmc.edu 9 May 2025
 # SPDX-License-Identifier: Apache-2.0
 #
-# Generate txt coverage reports from UCDB file
+# Generate txt coverage reports from coverage database
 ##################################
 
 import re
@@ -250,7 +250,8 @@ def _collect_uncovered_sections(grpinfo_file: Path, uncovered_groups: set[str]) 
         end = starts[idx + 1].start() if idx + 1 < len(starts) else len(content)
         section = content[start:end]
         header_line = section.splitlines()[0] if section.splitlines() else ""
-        full_name = header_line.split("Group :", 1)[1].strip() if "Group :" in header_line else ""
+        header_match = re.match(r"^Group\s*:\s*(.*?)$", header_line)
+        full_name = header_match.group(1).strip() if header_match else ""
         if full_name.split("::")[-1] in uncovered_groups:
             sections.append(section.rstrip())
     return "\n\n".join(sections)

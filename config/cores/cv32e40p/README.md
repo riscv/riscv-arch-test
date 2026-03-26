@@ -13,14 +13,7 @@ Three configurations are provided:
 | `cv32e40p_v1.8.3_rv32imc`  | RV32IMC  | Latest release, integer-only      |
 | `cv32e40p_v1.8.3_rv32imcf` | RV32IMCF | Latest release with FPU (F + Zcf) |
 
-v1.0.0 and v1.8.3 (without FPU) should behave identically for integer
-instructions. The v1.8.3 release added the optional FPU and PULP custom
-extensions but did not change the base RV32IMC behavior. Both configs
-exist so that certification can be run against either RTL version.
-
-The v1.8.3 IMCF config adds the F extension and Zcf (compressed
-floating-point loads/stores), which requires the FPU parameter enabled
-at synthesis.
+This specific behavior and the rules governing the differences (or lack thereof) between these versions are explained in the [CV32E40P User Manual (v1.8.3)](https://docs.openhwgroup.org/projects/cv32e40p-user-manual/en/latest/core_versions.html). Both configs exist so that certification can be run against either RTL version.
 
 To build the UDB configuration, coverage files and ELFs run the following
 command from the top of your working copy of this repo:

@@ -60,7 +60,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800                // Test signature initialization
+  LI( a2, 0x800)              // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test case 1: Set mstatus.MPRV and set mstatus.MPP to S Mode

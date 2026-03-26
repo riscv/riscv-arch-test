@@ -11,6 +11,7 @@
 // Total Expected Faults :: 3
 // --------------------------------------------------------------------------------------------------------------------------------
 
+// Remove NORUN once Sail supports Svnapot
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, NORUN]
 # MARCH: rv64i_zicsr
@@ -68,7 +69,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

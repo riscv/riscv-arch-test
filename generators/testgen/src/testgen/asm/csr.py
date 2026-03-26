@@ -8,6 +8,7 @@
 
 """CSR test utilities for privileged test generation."""
 
+from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 
@@ -180,4 +181,63 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
 
     lines.append(f"CSRW({csr_name}, x{save_reg})            # restore CSR")
     test_data.int_regs.return_registers([save_reg, temp_reg, walk_reg, check_reg])
+    return lines
+
+
+def cntr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpoint: str) -> list[str]:
+    """
+    Generate a counter access test: write nonzero, write all 0s, set nonzero, clear all.
+    Readback checks that the read value is withn 0x100000 of the written value to account for counter increments.
+
+    Args:
+        test_data: TestData object to track signature updates
+        csr_name: Name of the CSR to test
+        covergroup: Covergroup name for testcase strings
+        coverpoint: Coverpoint name for testcase strings
+
+    Returns:
+        List of assembly lines for the access test
+    """
+    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+
+    lines = [
+        f"\n# CSR Access Tests for {csr_name}",
+        f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
+        "#ifdef __riscv_xlen == 64",
+        f"LI(x{temp_reg}, 0x123456789ABCFFFF)   # x{temp_reg} = 64-bit pattern",
+        "#else",
+        f"LI(x{temp_reg}, 0x1234FFFF)           # x{temp_reg} = 32-bit pattern",
+        "#endif",
+        test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
+        f"CSRW({csr_name}, x{temp_reg})     # Write nonzero to CSR",
+        f"CSRR(x{check_reg}, {csr_name})    # Read back CSR to check",
+        f"sub x{check_reg}, x{check_reg}, x{temp_reg}   # Difference between read value and written value",
+        f"sltiu x{check_reg}, x{check_reg}, 0x000007FF  # Check difference < 0x7FF to allow for counter increments",
+        write_sigupd(check_reg, test_data),
+        "",
+        test_data.add_testcase(f"{csr_name}_csrrw0", coverpoint, covergroup),
+        f"CSRW({csr_name}, zero)   # Write all 0s to CSR",
+        f"CSRR(x{check_reg}, {csr_name})    # Read back CSR to check",
+        f"sub x{check_reg}, x{check_reg}, x{temp_reg}   # Difference between read value and written value",
+        f"sltiu x{check_reg}, x{check_reg}, 0x000007FF  # Check difference < 0x7FF to allow for counter increments",
+        write_sigupd(check_reg, test_data),
+        "",
+        test_data.add_testcase(f"{csr_name}_csrs_some", coverpoint, covergroup),
+        f"CSRS({csr_name}, x{temp_reg})    # Set some CSR bits",
+        f"CSRR(x{check_reg}, {csr_name})    # Read back CSR to check",
+        f"sub x{check_reg}, x{check_reg}, x{temp_reg}   # Difference between read value and written value",
+        f"sltiu x{check_reg}, x{check_reg}, 0x000007FF  # Check difference < 0x7FF to allow for counter increments",
+        write_sigupd(check_reg, test_data),
+        "",
+        test_data.add_testcase(f"{csr_name}_csrrc_all", coverpoint, covergroup),
+        f"LI(x{temp_reg}, -1)              # all 1s",
+        f"CSRC({csr_name}, x{temp_reg})    # Clear all CSR bits",
+        f"CSRR(x{check_reg}, {csr_name})    # Read back CSR to check",
+        f"sub x{check_reg}, x{check_reg}, x{temp_reg}   # Difference between read value and written value",
+        f"sltiu x{check_reg}, x{check_reg}, 0x000007FF  # Check difference < 0x7FF to allow for counter increments",
+        write_sigupd(check_reg, test_data),
+        "",
+        f"CSRW({csr_name}, x{save_reg})       # Restore CSR",
+    ]
+    test_data.int_regs.return_registers([save_reg, temp_reg, check_reg])
     return lines

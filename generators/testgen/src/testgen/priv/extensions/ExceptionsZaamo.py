@@ -31,68 +31,68 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
             [
                 "",
                 f"# Offset {offset} (LSBs: {offset:03b})",
-                f"    LI(x{limit_reg}, {offset})",
-                f"    LA(x{addr_reg}, scratch)",
+                f"LI(x{limit_reg}, {offset})",
+                f"LA(x{addr_reg}, scratch)",
                 "",
-                f"    LI(x{source_reg}, 0xDEADBEEF)",
+                f"LI(x{source_reg}, 0xDEADBEEF)",
                 "",
-                f"    sw      x{source_reg}, 0(x{addr_reg})",
-                f"    sw      x{source_reg}, 4(x{addr_reg})",
-                f"    sw      x{source_reg}, 8(x{addr_reg})",
-                f"    sw      x{source_reg}, 12(x{addr_reg})",
+                f"sw x{source_reg}, 0(x{addr_reg})",
+                f"sw x{source_reg}, 4(x{addr_reg})",
+                f"sw x{source_reg}, 8(x{addr_reg})",
+                f"sw x{source_reg}, 12(x{addr_reg})",
                 "",
-                f"    # Update scratch address to be misaligned based {limit_reg} argument",
-                f"    add     x{addr_reg}, x{limit_reg}, x{addr_reg}",
+                f"# Update scratch address to be misaligned with offset {offset}",
+                f"add x{addr_reg}, x{limit_reg}, x{addr_reg}",
                 "",
-                f"    LI(x{source_reg}, 1)",
+                f"LI(x{source_reg}, 1)",
             ]
         )
         for op in ops:
             lines.extend(
                 [
-                    f"      LI(x{dest_reg}, 0xBAD)",
+                    f"LI(x{dest_reg}, 0xBAD)",
                     test_data.add_testcase(f"{op[:-1]}_w_offset_{offset}", coverpoint, covergroup),
-                    f"      {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    "       nop",
+                    f"{op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "nop",
                     write_sigupd(dest_reg, test_data),
                 ]
             )
 
-        lines.append("       #if __riscv_xlen == 64")
+        lines.append("#if __riscv_xlen == 64")
         for op in ops:
             lines.extend(
                 [
-                    f"      LI(x{dest_reg}, 0xBAD)",
+                    f"LI(x{dest_reg}, 0xBAD)",
                     test_data.add_testcase(f"{op[:-1]}_d_offset_{offset}", coverpoint, covergroup),
-                    f"      {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    "       nop",
+                    f"{op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "nop",
                     write_sigupd(dest_reg, test_data),
                 ]
             )
-        lines.append("      #endif")
+        lines.append("#endif")
 
-        lines.append("       #ifdef ZABHA_SUPPORTED")
+        lines.append("#ifdef ZABHA_SUPPORTED")
         for op in ops:
             lines.extend(
                 [
-                    f"      LI(x{dest_reg}, 0xBAD)",
+                    f"LI(x{dest_reg}, 0xBAD)",
                     test_data.add_testcase(f"{op[:-1]}_h_offset_{offset}", coverpoint, covergroup),
-                    f"      {op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    "       nop",
+                    f"{op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "nop",
                     write_sigupd(dest_reg, test_data),
                 ]
             )
         for op in ops:
             lines.extend(
                 [
-                    f"      LI(x{dest_reg}, 0xBAD)",
+                    f"LI(x{dest_reg}, 0xBAD)",
                     test_data.add_testcase(f"{op[:-1]}_b_offset_{offset}", coverpoint, covergroup),
-                    f"      {op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                    "       nop",
+                    f"{op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                    "nop",
                     write_sigupd(dest_reg, test_data),
                 ]
             )
-        lines.append("      #endif")
+        lines.append("#endif")
 
     test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
 
@@ -101,7 +101,7 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
 
 def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZaamo_cg", "cp_amo_access_fault"
-    addr_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    addr_reg, dest_reg, source_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
@@ -109,22 +109,9 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            f"    LI(x{limit_reg}, 0)",
-            f"    LA(x{addr_reg}, scratch)",
+            f"LI(x{source_reg}, 1)",
             "",
-            f"    LI(x{source_reg}, 0xDEADBEEF)",
-            "",
-            f"    sw      x{source_reg}, 0(x{addr_reg})",
-            f"    sw      x{source_reg}, 4(x{addr_reg})",
-            f"    sw      x{source_reg}, 8(x{addr_reg})",
-            f"    sw      x{source_reg}, 12(x{addr_reg})",
-            "",
-            f"    # Update scratch address to be misaligned based {limit_reg} argument",
-            f"    add     x{addr_reg}, x{limit_reg}, x{addr_reg}",
-            "",
-            f"    LI(x{source_reg}, 1)",
-            "",
-            f"    LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         ]
     )
 
@@ -132,50 +119,51 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     for op in ops:
         lines.extend(
             [
-                f"         LI(x{dest_reg}, 0xBAD)",
+                f"LI(x{dest_reg}, 0xBAD)",
                 test_data.add_testcase(f"amo_access_fault_{op[:-1]}_w", coverpoint, covergroup),
-                f"         {op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                "          nop",
+                f"{op}w x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(dest_reg, test_data),
             ]
         )
-    lines.append("      #if __riscv_xlen == 64")
+    lines.append("#if __riscv_xlen == 64")
     for op in ops:
         lines.extend(
             [
-                f"         LI(x{dest_reg}, 0xBAD)",
+                f"LI(x{dest_reg}, 0xBAD)",
                 test_data.add_testcase(f"amo_access_fault_{op[:-1]}_d", coverpoint, covergroup),
-                f"         {op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                "          nop",
+                f"{op}d x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(dest_reg, test_data),
             ]
         )
-    lines.append("      #endif")
+    lines.append("#endif")
 
-    lines.append("      #ifdef ZABHA_SUPPORTED")
+    # Zabha
+    lines.append("#ifdef ZABHA_SUPPORTED")
     for op in ops:
         lines.extend(
             [
-                f"         LI(x{dest_reg}, 0xBAD)",
+                f"LI(x{dest_reg}, 0xBAD)",
                 test_data.add_testcase(f"amo_access_fault_{op[:-1]}_h", coverpoint, covergroup),
-                f"         {op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                "          nop",
+                f"{op}h x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(dest_reg, test_data),
             ]
         )
     for op in ops:
         lines.extend(
             [
-                f"         LI(x{dest_reg}, 0xBAD)",
+                f"LI(x{dest_reg}, 0xBAD)",
                 test_data.add_testcase(f"amo_access_fault_{op[:-1]}_b", coverpoint, covergroup),
-                f"         {op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
-                "          nop",
+                f"{op}b x{dest_reg}, x{source_reg}, (x{addr_reg})",
+                "nop",
                 write_sigupd(dest_reg, test_data),
             ]
         )
-    lines.append("      #endif")
+    lines.append("#endif")
 
-    test_data.int_regs.return_registers([addr_reg, limit_reg, dest_reg, source_reg])
+    test_data.int_regs.return_registers([addr_reg, dest_reg, source_reg])
     return lines
 
 

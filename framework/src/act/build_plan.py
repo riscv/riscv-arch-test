@@ -18,7 +18,7 @@ from typing import TypedDict
 import pyjson5
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import CompilerType, Config
+from act.config import CompilerType, Config, CoverageSimulator
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -353,6 +353,7 @@ def gen_coverage_tasks(
     base_dir: Path,
     config_report_dir: Path,
     dut_header_dir: Path,
+    coverage_simulator: CoverageSimulator,
     config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
@@ -443,6 +444,7 @@ def generate_build_plan(
     coverpoint_dir: Path,
     workdir: Path,
     coverage_enabled: bool,
+    coverage_simulator: CoverageSimulator,
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
@@ -590,6 +592,7 @@ def generate_build_plan(
                         config_coverage_dir,
                         config_report_dir,
                         config.dut_include_dir,
+                        coverage_simulator,
                         config.name,
                     )
                 )

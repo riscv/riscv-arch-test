@@ -39,6 +39,13 @@ class CompilerType(str, Enum):
     GCC = "gcc"
 
 
+class CoverageSimulator(str, Enum):
+    """Coverage simulator backends."""
+
+    QUESTA = "questa"
+    VCS = "vcs"
+
+
 class Config(BaseModel):
     """Configuration for the RISC-V architecture verification framework."""
 

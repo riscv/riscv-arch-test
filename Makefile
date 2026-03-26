@@ -13,6 +13,7 @@ EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions 
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
@@ -128,7 +129,8 @@ elfs: tests
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
-		$(if $(COVERAGE),--coverage)
+		$(if $(COVERAGE),--coverage) \
+		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
 .PHONY: clean
 clean: clean-tests

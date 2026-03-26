@@ -147,7 +147,7 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         bins no_exception = {32'd0};
     }
 
-    ins: coverpoint ins.current.insn {
+    cp_ins: coverpoint ins.current.insn {
         wildcard bins csrrs = {32'b000110000000_?????_010_?????_1110011};
         wildcard bins csrrw = {32'b000110000000_?????_001_?????_1110011};
         wildcard bins csrrc = {32'b000110000000_?????_011_?????_1110011};
@@ -158,7 +158,7 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
     access_u: cross priv_mode_u, Mcause, tvm_mstatus { //sat.1
         ignore_bins ig1 = binsof(Mcause.no_exception);
     }
-    access_m_s: cross priv_mode_m_s, ins, Mcause, tvm_mstatus { //sat.1
+    access_m_s: cross priv_mode_m_s, cp_ins, Mcause, tvm_mstatus { //sat.1
         ignore_bins ig1 = binsof(Mcause.illegal_ins);
     }
 endgroup
@@ -211,7 +211,7 @@ endgroup
 
 covergroup Sv_sfence_cg with function sample(ins_t ins); //sf.1
     option.per_instance = 0;
-    ins: coverpoint ins.current.insn {
+    cp_ins: coverpoint ins.current.insn {
         wildcard bins sfence = {32'b0001001_?????_?????_000_00000_1110011};
     }
 endgroup
@@ -226,14 +226,14 @@ covergroup Sv_mstatus_mprv_cg with function sample(ins_t ins);
     Mcause: coverpoint ins.current.csr[12'h342][31:0] {
         bins illegal_ins = {32'd2};
     }
-    ins: coverpoint ins.current.insn {
+    cp_ins: coverpoint ins.current.insn {
         wildcard bins csrrs  = {32'b000110000000_?????_010_?????_1110011};
         wildcard bins csrrw  = {32'b000110000000_?????_001_?????_1110011};
         wildcard bins csrrc  = {32'b000110000000_?????_011_?????_1110011};
         wildcard bins sfence = {32'b0001001_?????_?????_000_00000_1110011};
     }
 
-    tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, ins; //ms.1
+    tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, cp_ins; //ms.1
 
     mprv_mstatus: coverpoint ins.current.csr[12'h300][17] {
         bins set = {1};

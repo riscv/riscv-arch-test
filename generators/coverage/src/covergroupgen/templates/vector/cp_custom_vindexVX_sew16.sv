@@ -11,8 +11,8 @@
         bins true = {1'b1};
     }
 
-    vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0] {
-        wildcard bins sew16     = {[32'b????????_????????_11111111_11111111:32'b????????_????????_00000000_00000001]};
+    vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
+        wildcard bins sew16     = {[16'b1111111_11111111:16'b00000000_00000001]};
     }
 
     `ifdef XLEN32

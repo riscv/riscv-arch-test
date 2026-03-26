@@ -7,7 +7,7 @@
 # Generate txt coverage reports from UCDB file
 ##################################
 
-import argparse
+import os
 import re
 import subprocess
 import sys
@@ -212,12 +212,4 @@ def generate_report(ucdb: Path, report_prefix: Path) -> None:
         subprocess.run(uncovered_report_cmd, check=True, capture_output=True)
         remove_duplicates_after_second_header(uncovered_report)
 
-    report_to_summary(full_report, summary_report)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate coverage reports from a UCDB file.")
-    parser.add_argument("ucdb", help="Input UCDB file", type=Path)
-    parser.add_argument("report_prefix", help="Output report prefix", type=Path)
-    args = parser.parse_args()
-    generate_report(args.ucdb, args.report_prefix)
+        report_to_summary(full_report, summary_report)

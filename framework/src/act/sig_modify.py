@@ -7,7 +7,6 @@
 # Update signature file to be compatible with assembler
 ##################################
 
-import argparse
 from pathlib import Path
 
 
@@ -25,12 +24,3 @@ def process_signature_file(sig_file: Path, xlen: int) -> None:
                 outfile.write(f"{datatype} 0x{line}\n")
                 if trap_canary in line:
                     outfile.write("mtrap_sigptr:\n")
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Modify signature file for assembly compatibility")
-    parser.add_argument("sig_file", type=Path, help="Path to the signature file")
-    parser.add_argument("xlen", type=int, choices=[32, 64], help="XLEN value (32 or 64)")
-    args = parser.parse_args()
-
-    process_signature_file(args.sig_file, args.xlen)

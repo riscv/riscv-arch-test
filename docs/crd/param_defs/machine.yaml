@@ -8,68 +8,41 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 chapter_name: Machine Mode
 
 parameter_definitions:
-  - name: MISA_CSR_IMPLEMENTED
-    impl-def: MISA_CSR_IMPLEMENTED
-    type: boolean
-    description: |
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! Reading the `misa` CSR returns an informative value
-      ! false ! Reading the `misa` CSR returns zero
-      !===
   - name: MXLEN
     impl-def: MXLEN
     type: [32, 64]
     description: Effective XLEN in M-mode
-  - name: MISA_EXTENSIONS_WRITABLE_BITS
-    impl-defs: [MISA_EXTENSIONS_WRITABLE_BITS, MUTABLE_MISA_V]
-    type: boolean
-    array: [0, 25]
-    description: |
-      Is `misa.Extensions` CSR field writable or not.
-      Array index _i_ corresponds to bit _i_ of the Extensions field.
-      For example, index 0 corresponds to Extensions[0] ('A' extension), index 1 corresponds to Extensions[1] ('B' extension), etc.
 
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! The corresponding bit in `misa.Extensions` is writable
-      ! false ! The corresponding bit in `misa.Extensions` is read-only
-      !===
-  - name: VENDOR_ID_BANK
+  # Information CSRs
+  - name: MVENDOR_ID_BANK
     impl-def: VENDOR_ID_BANK
     type: uint
     width: 25
-  - name: VENDOR_ID_OFFSET
+  - name: MVENDOR_ID_OFFSET
     impl-def: VENDOR_ID_OFFSET
     type: uint
     width: 7
-  - name: ARCH_ID
+  - name: MARCHID
     impl-def: ARCH_ID
     type: uint
     width: MXLEN
-  - name: IMP_ID
+  - name: MIPMPID
     impl-def: IMP_ID
     type: uint
     width: MXLEN
-  - name: HART_ID
+  - name: MHARTID
     impl-def: HART_ID
     type: uint
     width: MXLEN
-  - name: MSTATUS_SXL_RDONLY_MXLEN64
-    impl-def: MSTATUS_SXL_RDONLY_MXLEN64
-    type: boolean
-    description: Is `mstatus.SXL` read-only?
+
+  # mstatus CSR
   - name: MSTATUS_SBE_ROCOPY
     impl-def: MSTATUS_SBE_ROCOPY
     type: boolean
     description: Does implementation make `mstatus.SBE` a read-only copy of `mstatus.MBE`?
   - name: MSTATUS_UBE_ROCOPY
     impl-def: MSTATUS_UBE_ROCOPY
-    type: [ROCopyOfMBE, ROCopyOfSBE, other]
+    type: [ROCopyOfMBE, ROCopyOfSBE, Other]
     description: |
       Does implementation make `mstatus.UBE` a read-only copy of `mstatus.MBE` or `mstatus.SBE`?
 
@@ -79,7 +52,7 @@ parameter_definitions:
 
       ! ROCopyOfMBE ! mstatus.UBE` is a read-only copy of `mstatus.MBE`
       ! ROCopyOfSBE ! mstatus.UBE` is a read-only copy of `mstatus.SBE`
-      ! other ! mstatus.UBE` is not a read-only copy of either `mstatus.MBE` or `mstatus.SBE`
+      ! Other ! mstatus.UBE` is not a read-only copy of either `mstatus.MBE` or `mstatus.SBE`
       !===
   - name: MSTATUS_TW_TIME_LIMIT
     impl-def: MSTATUS_TW_TIME_LIMIT
@@ -95,16 +68,6 @@ parameter_definitions:
     description: |
       Does the implementation have WFI always raise an illegal-instruction exception in modes less privileged than M when
       TW=1, even if there are pending globally-disabled interrupts when the instruction is executed?
-  - name: MSTATUS_FS_RDONLY0_S_NO_F
-    impl-def: MSTATUS_FS_RDONLY0_S_NO_F
-    type: boolean
-    description: |
-      Is `mstatus.FS` read-only zero? Only allowed to be read-only zero if S-mode is implemented but the F extension is not.
-  - name: MSTATUS_VS_RDONLY0_S_NO_V
-    impl-def: MSTATUS_VS_RDONLY0_S_NO_V
-    type: boolean
-    description: |
-      Is `mstatus.VS` read-only zero? Only allowed to be read-only zero if S-mode is implemented but the V register are not.
   - name: MSTATUS_FS_IMPRECISE
     impl-defs: [MSTATUS_FS_IMPRECISE, MSTATUS_FS_NO_DIRTY_TRACK]
     type: [PreciseDirty, Other]
@@ -147,79 +110,7 @@ parameter_definitions:
     impl-def: MTVEC_RDONLY
     type: boolean
     description: Is the `mtvec` CSR read-only?
-  - name: MTVEC_BASE_ALIGN_DIRECT_MODE
-    impl-def: MTVEC_BASE_ALIGN_FUNC_MODE
-    type: [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
-    description: |
-      When `mtvec.MODE` is `Direct` (i.e., 0), `mtvec.BASE` is aligned to this value.
-  - name: MTVEC_BASE_ALIGN_VECTORED_MODE
-    impl-def: MTVEC_BASE_ALIGN_FUNC_MODE
-    type: [4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
-    description: |
-      When `mtvec.MODE` is `Vectored` (i.e., 1), `mtvec.BASE` is aligned to this value.
-  - name: MEDELEG_OP
-    impl-def: MEDELEG_OP
-    type: boolean
-    array: [0, 63]
-    description: |
-      Is a bit in the `medeleg` CSR is writable?
-      Array index _i_ corresponds to bit _i_ of the `medeleg` CSR.
 
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! The corresponding bit in `medeleg` is writable
-      ! false ! The corresponding bit in `medeleg` is not writable
-      !===
-  - name: MIDELEG_OP
-    impl-def: MIDELEG_OP
-    type: boolean
-    array: [0, 63]
-    description: |
-      Is a bit in the `mideleg` CSR is writable?
-      Array index _i_ corresponds to bit _i_ of the `mideleg` CSR.
-
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! The corresponding bit in `mideleg` is writable
-      ! false ! The corresponding bit in `mideleg` is not writable
-      !===
-  - name: MIDELEG_RD1_LOWER_LEVEL
-    impl-def: MIDELEG_RD1_LOWER_LEVEL
-    type: boolean
-    array: [0, 63]
-    description: |
-      Is a bit in the `mideleg` CSR is hardwired to 1?
-      Array index _i_ corresponds to bit _i_ of the `mideleg` CSR.
-
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! The corresponding bit in `mideleg` is hardwired to 1
-      ! false ! The corresponding bit in `mideleg` is not hardwired to 1
-      !===
-  - name: MIP_BITS_WR_OR_RDONLY
-    impl-def: MIP_BITS_WR_OR_RDONLY
-    type: boolean
-    array: [0, 63]
-    description: |
-      Is a bit in the `mip` CSR is writable?
-      Array index _i_ corresponds to bit _i_ of the `mip` CSR.
-
-      [%autowidth]
-      !===
-      ! Value ! Definition
-
-      ! true ! The corresponding bit in `mip` is writable
-      ! false ! The corresponding bit in `mip` is not writable (i.e., it is read-only)
-      !===
-  - names: [MIP_MSIP_MAYBE_RDONLY0, MIE_MSIE_MAYBE_RDONLY0]
-    type: boolean
-    description: Are the `mip.MSIP` and `mie.MSIE` both read-only zero?
   - name: MSIP_UPDATE_MAX_TIME
     impl-def: MSIP_UPDATE_MAX_TIME
     type: dword
@@ -234,42 +125,60 @@ parameter_definitions:
       Is the mcycle CSR shared between harts on the same core, in which case writes to mcycle
       will be visible to those harts.
 
-  # CSR mhpmcounter[31:3] and mhpmevent[31:3]
-  - name: MHPMEVENT_N_RDONLY0
-    impl-def: MHPMEVENT_N_RDONLY0
-    type: boolean
-    array: [3, 31]
+  # CSR mepc
+  - name: MEPC_INV_ADDR_CONV
+    impl-def: MEPC_INV_ADDR_CONV
+    type: [NoInvAddrConv, Other]
     description: |
-      Is the same bit in the `mhpmcounter[31:3]` and `mhpmevent[31:3]` CSRs read-only zero?
-      Array index _i_ corresponds to bit _i_ of each of the CSRs.
+      `mepc` can hold all valid virtual addresses but not necessarily
+      all invalid virtual addresses. If an implementation needs to  convert
+      an invalid address into some other value that `mepc` can hold,
+      how is this done?
 
       [%autowidth]
       !===
       ! Value ! Definition
 
-      ! true ! The corresponding bits in `mhpmcounter` and `mhpmevent` are read-only zero
-      ! false ! The corresponding bits in `mhpmcounter` and `mhpmevent` are not read-only zero
+      ! NoInvAddrConv ! No conversion of invalid virtual addresses is performed
+      ! Other ! Converts invalid virtual addresses in some unknown way
       !===
 
-  # CSR mcounteren
-  - name: MCOUNTEREN_CY_RDONLY0
-    impl-def: MCOUNTEREN_CY_RDONLY0
-    type: boolean
-  - name: MCOUNTEREN_TM_RDONLY0
-    impl-def: MCOUNTEREN_TM_RDONLY0
-    type: boolean
-  - name: MCOUNTEREN_IR_RDONLY0
-    impl-def: MCOUNTEREN_IR_RDONLY0
-    type: boolean
-  - name: MCOUNTEREN_HPM_N_RDONLY0
-    impl-def: MCOUNTEREN_HPM_N_RDONLY0
-    type: boolean
-  - name: MEPC_INV_ADDR_CONV
-    impl-def: MEPC_INV_ADDR_CONV
-    type: boolean
+  # CSR mcause
+  - name: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
+    impl-def: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
+    type: [MisalignedAlwaysHigher, MisalignedAlwaysLower, Other]
+    description: |
+      An implementation may treat address-misaligned exceptions with higher or
+      lower priority than page-fault/access-fault exceptions.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! MisalignedAlwaysHigher ! Address-misaligned exceptions have higher priority than page-fault/access-fault exceptions
+      ! MisalignedAlwaysLower ! Address-misaligned exceptions have lower priority than page-fault/access-fault exceptions
+      ! Other ! Sometimes higher and sometimes lower depending on the implementation
+      !===
+
+  # CSR mtval
   - name: MTVAL_PER_EXC_BEHAVIOR
     impl-def: MTVAL_PER_EXC_BEHAVIOR
-    type: boolean
+    type: [Informative, Zero, Other]
+    array: [0, 19]
+    description: |
+      Specifies on a per-exception code basis whether `mtval` holds an
+      "informative" value such as the faulting address, sets it to zero, or
+      some other unknown behavior.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Informative ! Holds an "informative" value such as the faulting address
+      ! Zero ! Sets it to zero
+      ! Other ! Some other unknown behavior
+      !===
+
   - name: MTVAL_RDONLY0
     impl-def: MTVAL_RDONLY0
     type: boolean
@@ -278,7 +187,20 @@ parameter_definitions:
     type: boolean
   - name: MTVAL_INV_ADDR_CONV
     impl-def: MTVAL_INV_ADDR_CONV
-    type: boolean
+    type: [NoInvAddrConv, Other]
+    description: |
+      `mtval` can hold all valid virtual addresses but not necessarily
+      all invalid virtual addresses. If an implementation needs to  convert
+      an invalid address into some other value that `mtval` can hold,
+      how is this done?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! NoInvAddrConv ! No conversion of invalid virtual addresses is performed
+      ! Other ! Converts invalid virtual addresses in some unknown way
+      !===
 
   # CSR mconfigptr
   - name: MCONFIGPTR_VAL
@@ -380,77 +302,121 @@ parameter_definitions:
 csr_definitions:
   - reg-name: misa
     field-name: MXL
-    impl-def: MISA_WARL
-    type: ro-mask
+    impl-defs: [MISA_WARL, MISA_CSR_IMPLEMENTED]
+    type: ConstMask
   - reg-name: misa
     field-name: EXTENSIONS
-    impl-defs: [MISA_WARL, MISA_EXTENSIONS_WARL]
-    type: ro-mask
+    impl-defs:
+      - MISA_WARL
+      - MISA_EXTENSIONS_WARL
+      - MISA_CSR_IMPLEMENTED
+      - MISA_EXTENSIONS_WRITABLE_BITS
+      - MUTABLE_MISA_V
+    type: ConstMask
   - reg-name: mstatus
-    field-name: XPP
+    field-name: MPP
     impl-def: MSTATUS_XPP_WARL
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: SPP
+    impl-def: MSTATUS_XPP_WARL
+    type: ConstMask
   - reg-name: mstatus
     field-name: MDT
     impl-def: MSTATUS_MDT_WARL
+    type: ConstMask
   - reg-name: mstatus
     field-name: SXL
-    impl-def: MSTATUS_SXL_WARL
+    impl-defs: [MSTATUS_SXL_WARL, MSTATUS_SXL_RDONLY_MXLEN64]
+    type: ConstMask
   - reg-name: mstatus
     field-name: UXL
     impl-def: MSTATUS_UXL_WARL
+    type: ConstMask
   - reg-name: mstatus
     field-name: MBE
-    impl-def: MSTATUS_MBE_WARL
+    impl-defs: [MSTATUS_MBE_WARL, MSTATUSH_MBE_WARL]
+    type: ConstMask
   - reg-name: mstatus
     field-name: SBE
-    impl-def: MSTATUS_SBE_WARL
+    impl-defs: [MSTATUS_SBE_WARL, MSTATUSH_SBE_WARL]
+    type: ConstMask
   - reg-name: mstatus
     field-name: UBE
-    impl-def: MSTATUS_UBE_WARL
-  - reg-name: mstatush
-    field-name: MBE
-    impl-def: MSTATUSH_MBE_WARL
-  - reg-name: mstatush
-    field-name: SBE
-    impl-def: MSTATUSH_SBE_WARL
-  - reg-name: mstatush
-    field-name: UBE
-    impl-def: MSTATUSH_UBE_WARL
+    impl-defs: [MSTATUS_UBE_WARL, MSTATUSH_UBE_WARL]
+    type: ConstMask
   - reg-name: mstatus
     field-name: TVM
+    type: ConstMask
     impl-def: MSTATUS_TVM_WARL
   - reg-name: mstatus
     field-name: TW
     impl-def: MSTATUS_TW_WARL
+    type: ConstMask
   - reg-name: mstatus
     field-name: TSR
     impl-def: MSTATUS_TSR_WARL
+    type: ConstMask
   - reg-name: mstatus
     field-name: FS
-    impl-def: MSTATUS_FS_WARL
+    impl-defs: [MSTATUS_FS_WARL, MSTATUS_FS_RDONLY0_S_NO_F]
+    type: ConstMask
   - reg-name: mstatus
     field-name: VS
-    impl-def: MSTATUS_VS_WARL
+    impl-defs: [MSTATUS_VS_WARL, MSTATUS_VS_RDONLY0_S_NO_V]
+    type: ConstMask
+
+  #
+  # Various CSRs
+  #
+
+  # The mtvec.BASE alignement can be a function of the mtvec.MODE value.
+  # This is too complicated to capture using the currently available
+  # types so using the "Other" type and describing the behavior
+  # using dedicated parameters instead.
   - reg-name: mtvec
-    impl-def: MTVEC_WARL
+    impl-defs: [MTVEC_WARL, MTVEC_BASE_ALIGN_FUNC_MODE]
+    type: LegalEnum
+    func-of-field-name: MODE
+  - reg-name: mip
+    impl-defs: [MIP_WARL, MIP_BITS_WR_OR_RDONLY]
+    type: ConstMask
+  - reg-name: mie
+    impl-def: MIE_WARL
+    type: ConstMask
   - reg-name: medeleg
     impl-def: MEDELEG_WARL
+    type: ConstMask
   - reg-name: mideleg
-    impl-def: MIDELEG_WARL
+    impl-defs: [MIDELEG_WARL, MIDELEG_RD1_LOWER_LEVEL]
+    type: ConstMask
   - reg-name: mhpmcounter
-    impl-def: MHPMCOUNTER_WARL
+    impl-defs: [MHPMCOUNTER_WARL, MHPMEVENT_N_RDONLY0]
+    type: ConstMask
   - reg-name: mhpmevent
-    impl-def: MHPMEVENT_WARL
+    impl-defs: [MHPMEVENT_WARL, MHPMEVENT_N_RDONLY0]
+    type: ConstMask
   - reg-name: mcounteren
-    field-name: FLDS
-    impl-def: MCOUNTEREN_FLDS_WARL
+    impl-defs:
+      - MCOUNTEREN_FLDS_WARL
+      - MCOUNTEREN_CY_RDONLY0
+      - MCOUNTEREN_TM_RDONLY0
+      - MCOUNTEREN_IR_RDONLY0
+      - MCOUNTEREN_HPM_N_RDONLY0
+    type: ConstMask
   - reg-name: mcountinhibit
     impl-def: MCOUNTINHIBIT_WARL
+    type: ConstMask
   - reg-name: mepc
     impl-def: MEPC_WARL
+    type: ConstMask
+
   - reg-name: mcause
     field-name: EXCCODE
     impl-def: MCAUSE_EXCCODE_WLRL
+    type: LegalEnum
+    func-of-field-name: INTR
+
   - reg-name: mtval
     impl-def: MTVAL_WARL
   - reg-name: menvcfg

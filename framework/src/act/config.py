@@ -112,10 +112,15 @@ class Config(BaseModel):
         return "\n".join(lines)
 
 
+# Minimum required tool versions
+REQUIRED_SAIL_VERSION = "0.10"
+REQUIRED_GCC_MAJOR_VERSION = 15
+REQUIRED_CLANG_MAJOR_VERSION = 21
+
+
 def check_ref_model_version(config: Config) -> None:
     """Check that the reference model version is compatible."""
     if config.ref_model_type == RefModelType.SAIL:
-        required_version = "0.10"
         try:
             result = subprocess.run(
                 [str(config.ref_model_exe), "--version"],
@@ -125,15 +130,49 @@ def check_ref_model_version(config: Config) -> None:
                 timeout=5,
             )
             version = result.stdout.strip()
-            if version != required_version:
+            if version != REQUIRED_SAIL_VERSION:
                 raise ValueError(
-                    f"Sail reference model version mismatch. ACT4 requires version {required_version}, but {version} was found. "
-                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-sail-golden-reference-model",
+                    f"Sail reference model version mismatch. ACT4 requires version {REQUIRED_SAIL_VERSION}, but {version} was found. "
+                    "Refer to the ACT4 README for installation instructions: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#4-risc-v-sail-reference-model",
                 )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to check Sail version: {e}") from e
         except subprocess.TimeoutExpired as e:
             raise RuntimeError(f"Timeout while checking Sail version: {e}") from e
+
+
+def check_compiler_version(config: Config) -> None:
+    """Check that the compiler version is compatible."""
+    try:
+        result = subprocess.run(
+            [str(config.compiler_exe), "-dumpversion"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=5,
+        )
+        version_str = result.stdout.strip()
+        try:
+            major_version = int(version_str.split(".")[0])
+        except ValueError:
+            raise RuntimeError(f"Unable to parse compiler version from: {version_str!r}")
+
+        if config.compiler_type == CompilerType.GCC:
+            required_major = REQUIRED_GCC_MAJOR_VERSION
+            compiler_name = "GCC"
+        else:
+            required_major = REQUIRED_CLANG_MAJOR_VERSION
+            compiler_name = "Clang"
+
+        if major_version < required_major:
+            raise ValueError(
+                f"Compiler version mismatch. ACT4 requires {compiler_name} {required_major} or later, but {version_str} was found. "
+                "Refer to the ACT4 README for details: https://github.com/riscv/riscv-arch-test/tree/act4?tab=readme-ov-file#3-risc-v-compiler",
+            )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to check compiler version: {e}") from e
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError(f"Timeout while checking compiler version: {e}") from e
 
 
 def load_config(config_file: Path) -> Config:
@@ -150,4 +189,5 @@ def load_config(config_file: Path) -> Config:
 
     config = Config.model_validate(yaml_data, context={"config_file_dir": config_file.parent})
     check_ref_model_version(config)
+    check_compiler_version(config)
     return config

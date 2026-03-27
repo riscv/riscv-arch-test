@@ -32,8 +32,6 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  - { name: Smhpm, version: "= 1.13.0" }
-  - { name: Smpmp, version: "= 1.13.0" }
   - { name: Smrnmi, version: "= 1.0.0" }
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
@@ -283,10 +281,8 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smpmp params
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 2
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,

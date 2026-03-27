@@ -36,7 +36,6 @@ implemented_extensions:
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Ssu64xl, version: "= 1.0.0" }
   - { name: Sv48, version: "= 1.12.0" }
-  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # A params
@@ -163,7 +162,6 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,

@@ -59,8 +59,6 @@ implemented_extensions:
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
-  - { name: Smpmp, version: "= 1.12.0" }
-  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # A params
@@ -192,10 +190,8 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smpmp params
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 4
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,

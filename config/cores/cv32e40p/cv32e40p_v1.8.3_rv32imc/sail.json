@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Eclipse Foundation
+// SPDX-License-Identifier: Apache-2.0
 {
   "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
@@ -101,7 +103,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true
+    "wfi_is_nop": false
   },
   "extensions": {
     "M": {

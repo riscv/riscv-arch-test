@@ -12,12 +12,13 @@
         .popsection;
 
 ##### STARTUP #####
-
-# Perform boot operations.
-# CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
-# cycle/instret increment as Zicntr tests expect.
-# .option arch, +zicsr is needed because I tests compile with -march=rv32i
-# which does not include Zicsr (binutils >= 2.38).
+/*
+ * Perform boot operations.
+ * CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
+ * cycle/instret increment as Zicntr tests expect.
+ * .option arch, +zicsr is needed because I tests compile with -march=rv32i
+ * which does not include Zicsr (binutils >= 2.38).
+ */
 #define RVMODEL_BOOT \
   .option push           ;\
   .option arch, +zicsr   ;\
@@ -33,7 +34,7 @@
 #define RVMODEL_HALT_PASS  \
   li x1, 123456789                ;\
   li x2, 0x20000000       ;\
-  write_tohost_pass:      ;\
+  write_halt_pass:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\
   self_loop_pass:         ;\
@@ -43,7 +44,7 @@
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
   li x2, 0x20000000       ;\
-  write_tohost_fail:      ;\
+  write_halt_fail:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\
   self_loop_fail:         ;\
@@ -65,9 +66,19 @@
 3:
 
 ##### Machine Timer #####
-
-#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
+/*
+ * NOTE: The following parameters are intentionally left empty.
+ *
+ * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
+ * will FAIL because these platform-level memory-mapped registers are
+ * not defined. This is a temporary state.
+ *
+ * To properly run the suite by excluding these specific tests (the recommended
+ * workaround), refer to the instructions here:
+ * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
+ */
+#define RVMODEL_MTIME_ADDRESS
+#define RVMODEL_MTIMECMP_ADDRESS
 
 ##### Machine Interrupts #####
 

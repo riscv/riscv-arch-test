@@ -92,7 +92,7 @@ params:
       false, # 4
       false,
       false,
-      false, # 4..7
+      false, # 7
       false,
       false,
       false,
@@ -116,7 +116,7 @@ params:
       false,
       false,
       false,
-      false, # 4..31 (unimplemented)
+      false, # 24..31 (unimplemented)
     ]
   COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q
     [
@@ -127,7 +127,7 @@ params:
       false, # 4
       false,
       false,
-      false, # 4..7
+      false, # 7
       false,
       false,
       false,
@@ -151,6 +151,6 @@ params:
       false,
       false,
       false,
-      false, # 4..31 (unimplemented)
+      false, # 24..31 (unimplemented)
     ]
 # end

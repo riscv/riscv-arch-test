@@ -91,7 +91,7 @@ params:
       false, # 4
       false,
       false,
-      false, # 4..7
+      false, # 7
       false,
       false,
       false,
@@ -115,7 +115,7 @@ params:
       false,
       false,
       false,
-      false, # 4..31 (unimplemented)
+      false, # 24..31 (unimplemented)
     ]
   COUNTINHIBIT_EN: # VERIFIED — cv32e40p_cs_registers.sv: indices 0,2,3 inhibitable via mcountinhibit_q register; index 1 always false per UDB; unimplemented counters hardwired 0
     [
@@ -126,7 +126,7 @@ params:
       false, # 4
       false,
       false,
-      false, # 4..7
+      false, # 7
       false,
       false,
       false,
@@ -150,6 +150,6 @@ params:
       false,
       false,
       false,
-      false, # 4..31 (unimplemented)
+      false, # 24..31 (unimplemented)
     ]
 # end

@@ -18,9 +18,8 @@ from typing import TypedDict
 import pyjson5
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import CompilerType, Config
-from act.coverreport import generate_report
-from act.merge_summaries import merge_summaries
+from act.config import CompilerType, Config, CoverageSimulator
+from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
@@ -354,6 +353,8 @@ def gen_coverage_tasks(
     base_dir: Path,
     config_report_dir: Path,
     dut_header_dir: Path,
+    coverage_simulator: CoverageSimulator,
+    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -364,9 +365,10 @@ def gen_coverage_tasks(
         coverage_dir = base_dir / coverage_group
         base_name = coverage_dir / coverage_group.stem
         tracelist_file = base_name.with_suffix(".tracelist")
-        ucdb_file = base_name.with_suffix(".ucdb")
-        ucdb_log = base_name.with_suffix(".ucdb.log")
-        work_dir = base_name.parent / "ucdb_work"
+        coverage_db_ext = "ucdb" if coverage_simulator == CoverageSimulator.QUESTA else "vdb"
+        simulator_artifact = base_name.with_suffix(f".{coverage_db_ext}")
+        simulator_log = base_name.with_suffix(f".{coverage_db_ext}.log")
+        work_dir = base_name.parent / f"{coverage_db_ext}_work"
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
 
@@ -378,22 +380,39 @@ def gen_coverage_tasks(
             + "\n".join(str(trace) for trace in sorted(traces))
         )
 
-        # UCDB generation (vsim)
-        with (
-            importlib.resources.path("act", "fcov") as fcov_path,
-            importlib.resources.path("act", "riscv-arch-test.do") as vsim_do_path,
-        ):
-            do_script = (
-                f"do {vsim_do_path.absolute()} "
-                f"{tracelist_file} "
-                f"{ucdb_file} "
-                f"{work_dir} "
-                f"{fcov_path.absolute()} "
-                f"{coverpoint_dir} "
-                f"{dut_header_dir} "
-                f"{{{coverage_group.stem.upper()}_COVERAGE}}"
-            )
-            vsim_cmd = ["vsim", "-c", "-do", do_script]
+        # Coverage collection task
+        if coverage_simulator == CoverageSimulator.QUESTA:
+            with (
+                importlib.resources.path("act", "fcov") as fcov_path,
+                importlib.resources.path("act", "riscv-arch-test.do") as vsim_do_path,
+            ):
+                do_script = (
+                    f"do {vsim_do_path.absolute()} "
+                    f"{tracelist_file} "
+                    f"{simulator_artifact} "
+                    f"{work_dir} "
+                    f"{fcov_path.absolute()} "
+                    f"{coverpoint_dir} "
+                    f"{dut_header_dir} "
+                    f"{{{coverage_group.stem.upper()}_COVERAGE}}"
+                )
+                coverage_cmd = ["vsim", "-c", "-do", do_script]
+        else:
+            with (
+                importlib.resources.path("act", "fcov") as fcov_path,
+                importlib.resources.path("act", "riscv-arch-test-vcs.sh") as vcs_script_path,
+            ):
+                coverage_cmd = [
+                    "bash",
+                    str(vcs_script_path.absolute()),
+                    str(tracelist_file),
+                    str(simulator_artifact),
+                    str(work_dir),
+                    str(fcov_path.absolute()),
+                    str(coverpoint_dir),
+                    str(dut_header_dir),
+                    f"{coverage_group.stem.upper()}_COVERAGE",
+                ]
 
         # Deps: all rvvi traces for this coverage group must be done
         # The rvvi traces have the same stems as the traces list but with .rvvi suffix
@@ -401,9 +420,9 @@ def gen_coverage_tasks(
 
         tasks.append(
             BuildTask(
-                outputs=(ucdb_file,),
+                outputs=(simulator_artifact,),
                 deps=rvvi_deps,
-                action=SubprocessAction(cmd=vsim_cmd, stdout_file=ucdb_log, cwd=coverage_dir),
+                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
             )
         )
 
@@ -412,8 +431,10 @@ def gen_coverage_tasks(
         tasks.append(
             BuildTask(
                 outputs=(summary_file,),
-                deps=(ucdb_file,),
-                action=PythonAction(fn=generate_report, args=(ucdb_file, report_file_base)),
+                deps=(simulator_artifact,),
+                action=PythonAction(
+                    fn=generate_report, args=(simulator_artifact, report_file_base, coverage_simulator)
+                ),
             )
         )
 
@@ -443,6 +464,7 @@ def generate_build_plan(
     coverpoint_dir: Path,
     workdir: Path,
     coverage_enabled: bool,
+    coverage_simulator: CoverageSimulator,
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
@@ -590,6 +612,8 @@ def generate_build_plan(
                         config_coverage_dir,
                         config_report_dir,
                         config.dut_include_dir,
+                        coverage_simulator,
+                        config.name,
                     )
                 )
 

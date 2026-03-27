@@ -7,6 +7,8 @@
 # Main entry point for RISC-V architecture verification framework
 ##################################
 
+from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
@@ -16,7 +18,8 @@ import typer
 
 from act.build import build
 from act.build_plan import ConfigData, generate_build_plan
-from act.config import load_config
+from act.config import CoverageSimulator, load_config
+from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
@@ -60,6 +63,10 @@ def run_act(
     dry_run: Annotated[
         bool, typer.Option("--dry-run", "-n", help="Show what would be built without executing")
     ] = False,
+    coverage_simulator: Annotated[
+        CoverageSimulator,
+        typer.Option(help="Coverage simulator backend", case_sensitive=False),
+    ] = CoverageSimulator.QUESTA,
 ) -> None:
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
@@ -108,6 +115,7 @@ def run_act(
         coverpoint_dir.absolute(),
         workdir.absolute(),
         coverage,
+        coverage_simulator,
         debug,
         fast,
     )
@@ -130,6 +138,15 @@ def run_act(
         for error in result.errors:
             print(f"  - {error.task_name}", file=sys.stderr)
         sys.exit(1)
+
+    # Always print coverage summaries when coverage is enabled, even if up-to-date
+    if coverage:
+        for config_data in configs:
+            config = config_data["config"]
+            overall_summary = workdir.absolute() / config.name / "reports" / "_overall_summary.txt"
+            if overall_summary.exists():
+                print()
+                print_coverage_summary(overall_summary, config.name)
 
 
 def main() -> None:

@@ -51,7 +51,8 @@ def format_jr_type(
     ]
     check = [
         f"addi x{params.temp_reg}, x{params.temp_reg}, -4 # should not execute",
-        f"1: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute",
+        "1:",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute",
         write_sigupd(params.temp_reg, test_data, "int"),
         f"auipc x{params.temp_reg}, 0 # get current PC",
         f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract current PC to make position-independent",

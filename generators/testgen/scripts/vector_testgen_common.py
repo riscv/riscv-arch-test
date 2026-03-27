@@ -372,6 +372,15 @@ type_vsx = [
     "vsm.v"
 ]
 
+################################## vector bit manipulation and crypto ##################################
+
+vvvm_b_type = ["vandn.vv", "vrol.vv", "vror.vv", "vwsll.vv", "vclmul.vv", "vclmulh.vv"]
+vvxm_b_type = ["vandn.vx", "vrol.vx", "vror.vx", "vwsll.vx", "vclmul.vx", "vclmulh.vx"]
+vvim_b_type = ["vror.vi", "vwsll.vi"]
+vvm_b_type = ["vbrev.v", "vbrev8.v", "vrev8.v", "vclz.v", "vctz.v", "vcpop.v"]
+bwvvins = ["vwsll.vv", "vwsll.vx", "vwsll.vi"]
+bimm_31 = ["vwsll.vi", "vror.vi"]
+
 ################################## vector floating point instruction ##################################
 
 vvvm_f_type  = ["vfadd.vv", "vfwadd.vv", "vfwadd.wv", "vfsub.vv", "vfwsub.vv", "vfwsub.wv",
@@ -404,25 +413,26 @@ vvvmtype  = ["vadd.vv", "vwadd.vv", "vwaddu.vv", "vsub.vv", "vwsub.vv", "vwsubu.
              "vmul.vv", "vmulh.vv", "vmulhu.vv", "vmulhsu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vdiv.vv", "vdivu.vv", "vrem.vv", "vremu.vv",
              "vsadd.vv", "vsaddu.vv", "vssub.vv", "vssubu.vv", "vaadd.vv", "vaaddu.vv", "vasub.vv", "vasubu.vv", "vsmul.vv", "vssrl.vv", "vssra.vv", "vnclip.wv", "vnclipu.wv",
              "vredsum.vs", "vwredsum.vs", "vwredsumu.vs", "vredmax.vs", "vredmaxu.vs", "vredmin.vs", "vredminu.vs", "vredand.vs", "vredor.vs", "vredxor.vs",
-             "vrgather.vv", "vrgatherei16.vv"] + vvvm_f_type
+             "vrgather.vv", "vrgatherei16.vv"] + vvvm_f_type + vvvm_b_type
 
 vvxmtype  = ["vadd.vx", "vwadd.vx", "vwaddu.vx", "vsub.vx", "vwsub.vx", "vwsubu.vx", "vrsub.vx", "vwadd.wx", "vwsub.wx", "vwaddu.wx", "vwsubu.wx",
              "vmadc.vx", "vmsbc.vx", "vand.vx", "vor.vx", "vxor.vx", "vsll.vx", "vsrl.vx", "vsra.vx", "vnsra.wx", "vnsrl.wx",
              "vmseq.vx", "vmsne.vx", "vmslt.vx", "vmsltu.vx", "vmsle.vx", "vmsleu.vx", "vmsgt.vx", "vmsgtu.vx", "vmin.vx", "vminu.vx", "vmax.vx", "vmaxu.vx",
              "vmul.vx", "vmulh.vx", "vmulhu.vx", "vmulhsu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vdiv.vx", "vdivu.vx", "vrem.vx", "vremu.vx",
              "vsadd.vx", "vsaddu.vx", "vssub.vx", "vssubu.vx", "vaadd.vx", "vaaddu.vx", "vasub.vx", "vasubu.vx", "vsmul.vx", "vssrl.vx", "vssra.vx", "vnclip.wx", "vnclipu.wx",
-             "vslideup.vx", "vslidedown.vx", "vslide1up.vx", "vslide1down.vx", "vrgather.vx"]
+             "vslideup.vx", "vslidedown.vx", "vslide1up.vx", "vslide1down.vx", "vrgather.vx"] + vvxm_b_type
 
 vvimtype  = ["vadd.vi", "vrsub.vi", "vmadc.vi",
              "vand.vi", "vor.vi", "vxor.vi", "vsll.vi", "vsrl.vi", "vsra.vi", "vnsra.wi", "vnsrl.wi",
              "vmseq.vi", "vmsne.vi", "vmsle.vi", "vmsleu.vi", "vmsgt.vi", "vmsgtu.vi",
              "vsadd.vi", "vsaddu.vi", "vssrl.vi", "vssra.vi", "vnclip.wi", "vnclipu.wi",
-             "vslideup.vi", "vslidedown.vi", "vrgather.vi"]
+             "vslideup.vi", "vslidedown.vi", "vrgather.vi"] + vvim_b_type
 
 xvmtype   = ["vcpop.m", "vfirst.m"]
 
 vvvmrtype = ["vmacc.vv", "vnmsac.vv", "vmadd.vv", "vnmsub.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + vvvmr_f_type
-vvmtype   = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m", "vzext.vf2", "vzext.vf4", "vzext.vf8", "vsext.vf2", "vsext.vf4", "vsext.vf8"] + vvm_f_type
+vvmtype   = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m", "vzext.vf2", "vzext.vf4",
+             "vzext.vf8", "vsext.vf2", "vsext.vf4", "vsext.vf8"] + vvm_f_type + vvm_b_type
 vxvmtype  = ["vmacc.vx", "vnmsac.vx", "vmadd.vx", "vnmsub.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 vvrtype   = ["vmv.v.v"]
 vxtype    = ["vmv.s.x", "vmv.v.x"]
@@ -434,7 +444,7 @@ vvivtype  = ["vadc.vim", "vmerge.vim", "vmadc.vim"]
 vvvvtype  = ["vadc.vvm", "vsbc.vvm", "vmerge.vvm", "vmadc.vvm", "vmsbc.vvm"]
 vvxvtype  = ["vadc.vxm", "vsbc.vxm", "vmerge.vxm", "vmadc.vxm", "vmsbc.vxm"]
 vvvtype   = ["vmadc.vv", "vmsbc.vv", "vmand.mm", "vmnand.mm", "vmandn.mm", "vmxor.mm", "vmor.mm", "vmnor.mm", "vmorn.mm", "vmxnor.mm", "vcompress.vm"]
-imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"]
+imm_31 = ["vnclip.wi", "vnclipu.wi", "vnsra.wi","vnsrl.wi", "vrgather.vi", "vslidedown.vi", "vslideup.vi", "vsll.vi", "vsra.vi", "vsrl.vi","vssra.vi", "vssrl.vi"] + bimm_31
 
 vs1ins = vvvmtype + vvrtype + vvvvtype + vvvtype + vvvmrtype
 
@@ -462,7 +472,7 @@ fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "
 fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
 fwwvins = ["vfwadd.wv", "vfwsub.wv"]
 fwwfins = ["vfwadd.wf", "vfwsub.wf"]
-wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins
+wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins + bwvvins
 wvxins  = ["vwadd.vx", "vwaddu.vx", "vwsub.vx", "vwsubu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 wwvins  = ["vwadd.wv", "vwaddu.wv", "vwsub.wv", "vwsubu.wv"] + fwwvins
 wwxins  = ["vwadd.wx", "vwaddu.wx", "vwsub.wx", "vwsubu.wx"]
@@ -2318,7 +2328,7 @@ def readTestplans(priv=False):
     for file in os.listdir(coverplanDir):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
-            if (arch == "ExceptionsV" or arch.startswith("V")):
+            if (arch == "ExceptionsV" or arch.startswith("V") or arch.startswith("Zv")):
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)
                     tp = dict()
@@ -2352,4 +2362,8 @@ def readTestplans(priv=False):
                     for effew in ["16", "32", "64"]:
                         testplans["Vf" + effew] = tp
                     del testplans["Vf"]
+                if (arch in ["Zvbb", "Zvkb"]):
+                    for effew in ["8", "16", "32", "64"]:
+                        testplans[arch + effew] = tp
+                    del testplans[arch]
     return testplans

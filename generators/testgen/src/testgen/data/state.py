@@ -12,7 +12,7 @@ from typing import Literal
 
 from testgen.data.config import TestConfig
 from testgen.data.registers import FloatRegisterFile, IntegerRegisterFile
-from testgen.data.testcase import TestCase
+from testgen.data.test_chunk import TestChunk
 
 # Pre-compiled regex patterns for label normalization in add_testcase()
 _LABEL_INVALID_CHARS = re.compile(r"[^a-zA-Z0-9_]")
@@ -24,7 +24,7 @@ class TestData:
     Context and state for test generation. Created per test file (instruction for unpriv, feature for priv).
 
     This class manages mutable state during test generation, including register
-    file allocation and the active TestCase. The immutable configuration
+    file allocation and the active TestChunk. The immutable configuration
     (xlen, flen, etc.) is stored in a TestConfig object.
 
     Attributes:
@@ -33,7 +33,7 @@ class TestData:
         int_regs: Integer register file for allocation
         float_regs: Floating-point register file for allocation
         test_count: Running count of testcases generated
-        testcase: Active TestCase for generated code/sigupds/etc.
+        test_chunk: Active TestChunk for generated code/sigupds/etc.
     """
 
     def __init__(self, test_config: TestConfig, instr_name: str | None = None) -> None:
@@ -51,7 +51,7 @@ class TestData:
         self._test_count = 0
         self._current_testcase_label = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
-        self.testcase: TestCase | None = None
+        self.test_chunk: TestChunk | None = None
 
     def __repr__(self) -> str:
         return f"TestData(config={self._config}, int_regs={self._int_regs}, float_regs={self._float_regs}, test_count={self._test_count})"
@@ -144,16 +144,16 @@ class TestData:
         """Increment the test count by 1."""
         self._test_count += 1
 
-    def begin_testcase(self) -> TestCase:
-        """Create and set a new active TestCase."""
-        self.testcase = TestCase()
-        return self.testcase
+    def begin_test_chunk(self) -> TestChunk:
+        """Create and set a new active TestChunk."""
+        self.test_chunk = TestChunk()
+        return self.test_chunk
 
-    def end_testcase(self) -> TestCase:
-        """Return the completed TestCase and clear the active one."""
-        assert self.testcase is not None, "No active testcase to end"
-        tc = self.testcase
-        self.testcase = None
+    def end_test_chunk(self) -> TestChunk:
+        """Return the completed TestChunk and clear the active one."""
+        assert self.test_chunk is not None, "No active test chunk to end"
+        tc = self.test_chunk
+        self.test_chunk = None
         return tc
 
     def add_testcase(self, bin_name: str, coverpoint: str, covergroup: str | None = None) -> str:
@@ -182,12 +182,12 @@ class TestData:
         label = _LABEL_MULTI_UNDERSCORE.sub("_", label)  # Collapse consecutive underscores
         label = label.strip("_")
 
-        # Add testcase string to the active TestCase
-        assert self.testcase is not None, "No active testcase — call begin_testcase() first"
-        self.testcase.data_strings.append(
+        # Add testcase string to the active TestChunk
+        assert self.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+        self.test_chunk.data_strings.append(
             f'{label}_str: .string "\\"test: {self.test_count}; cg: {covergroup}; cp: {coverpoint}; bin: {bin_name}\\""'
         )
-        self.testcase.num_tests += 1
+        self.test_chunk.num_testcases += 1
 
         # Return label
         self._current_testcase_label = label

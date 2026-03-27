@@ -9,6 +9,7 @@
 """Exceptions Sm test generator."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -39,7 +40,7 @@ def _generate_instr_adr_misaligned_branch_tests(test_data: TestData) -> list[str
         lines.extend(
             [
                 f"{branch} {rs1}, {rs2}, .+6",
-                "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
+                f"{INDENT}# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                 "addi x0, x2, 0",
                 "nop",
             ]
@@ -86,7 +87,7 @@ def _generate_instr_adr_misaligned_jal_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint, "Instruction Address Misaligned JAL"),
         test_data.add_testcase("jal_misaligned", coverpoint, covergroup),
         "jal x0, .+6",
-        "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
+        f"{INDENT}# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
         "addi x0, x2, 0",
         "nop",
     ]
@@ -130,7 +131,7 @@ def _generate_instr_adr_misaligned_jalr_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
+                    f"{INDENT}# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                     "addi x0, x2, 0",
                 ]
             )
@@ -149,7 +150,7 @@ def _generate_instr_access_fault_tests(test_data: TestData) -> list[str]:
         "LI(x4, 0xACCE)",  # trap handler checks x4 value and determines to use x1 (ra) as return address instead of mepc
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
-        " nop",
+        "nop",
     ]
 
     test_data.int_regs.return_registers([addr_reg])
@@ -180,17 +181,17 @@ def _generate_illegal_instruction_seed_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(coverpoint, "Illegal Instruction Seed"),
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
-        f" csrrs x{dest_regs[0]}, seed, x0",
-        " nop",
+        f"csrrs x{dest_regs[0]}, seed, x0",
+        "nop",
         test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
-        f" csrrc x{dest_regs[1]}, seed, x0",
-        " nop",
+        f"csrrc x{dest_regs[1]}, seed, x0",
+        "nop",
         test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
-        f" csrrsi x{dest_regs[2]}, seed, 0",
-        " nop",
+        f"csrrsi x{dest_regs[2]}, seed, 0",
+        "nop",
         test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
-        f" csrrci x{dest_regs[3]}, seed, 0",
-        " nop",
+        f"csrrci x{dest_regs[3]}, seed, 0",
+        "nop",
     ]
 
     test_data.int_regs.return_registers(dest_regs)
@@ -220,6 +221,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     for op in load_ops:
         lines.extend(
             [
+                f"\n# Testcase: {op} access fault",
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{check_reg}, 0(x{addr_reg})",
@@ -229,15 +231,19 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
+            "",
             "#if __riscv_xlen == 64",
-            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            "\n# Testcase: lwu access fault",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("lwu_fault", coverpoint, covergroup),
-            f" lwu x{check_reg}, 0(x{addr_reg})",
-            " nop",
-            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"lwu x{check_reg}, 0(x{addr_reg})",
+            "nop",
+            "\n# Testcase: ld access fault",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             test_data.add_testcase("ld_fault", coverpoint, covergroup),
-            f" ld x{check_reg}, 0(x{addr_reg})",
-            " nop",
+            f"ld x{check_reg}, 0(x{addr_reg})",
+            "nop",
+            "",
             "#endif",
         ]
     )
@@ -308,12 +314,13 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
     load_ops = ["lb", "lbu", "lh", "lhu", "lw"]
 
     for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b})")
         for op in load_ops:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
             lines.extend(_add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
 
         lines.append("#if __riscv_xlen == 64")
         for op in ["lwu", "ld"]:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
             lines.extend(_add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
         lines.append("#endif")
 
@@ -328,13 +335,14 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     store_ops = ["sb", "sh", "sw"]
 
     for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b})")
         for op in store_ops:
+            lines.append(f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b})")
             lines.extend(_add_store_misaligned_test(op, offset, test_data, coverpoint, covergroup))
 
-        lines.append("#if __riscv_xlen == 64")
+        lines.append("\n#if __riscv_xlen == 64")
+        lines.append(f"\n# Testcase: sd with offset {offset} (LSBs: {offset:03b})")
         lines.extend(_add_store_misaligned_test("sd", offset, test_data, coverpoint, covergroup))
-        lines.append("#endif")
+        lines.append("\n#endif")
 
     return lines
 
@@ -351,22 +359,26 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     for op in store_ops:
         lines.extend(
             [
+                f"\n# Testcase: {op} access fault",
                 f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"LI(x{data_reg}, {test_values[op]})",
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{data_reg}, 0(x{addr_reg})",
-                " nop",
+                "nop",
             ]
         )
 
     lines.extend(
         [
+            "",
             "#if __riscv_xlen == 64",
+            "\n# Testcase: sd access fault",
             f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"LI(x{data_reg}, {test_values['sd']})",
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
             f"sd x{data_reg}, 0(x{addr_reg})",
             "nop",
+            "",
             "#endif",
         ]
     )
@@ -398,28 +410,29 @@ def _generate_misaligned_priority_load_tests(test_data: TestData) -> list[str]:
     lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
 
     for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned")
         lines.append(f"addi x{temp_reg}, x{addr_reg}, {offset}")
 
         for op in load_ops_base:
             lines.extend(
                 [
+                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                     "nop",
                 ]
             )
 
-        lines.append("#if __riscv_xlen == 64")
+        lines.append("\n#if __riscv_xlen == 64")
         for op in load_ops_64:
             lines.extend(
                 [
+                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{check_reg}, 0(x{temp_reg})",
                     "nop",
                 ]
             )
-        lines.append("#endif")
+        lines.append("\n#endif\n")
 
     test_data.int_regs.return_registers([temp_reg, addr_reg, check_reg])
     return lines
@@ -433,7 +446,6 @@ def _generate_misaligned_priority_store_tests(test_data: TestData) -> list[str]:
     store_ops_base = ["sb", "sh", "sw"]
 
     for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned")
         lines.extend(
             [
                 f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
@@ -445,6 +457,7 @@ def _generate_misaligned_priority_store_tests(test_data: TestData) -> list[str]:
         for op in store_ops_base:
             lines.extend(
                 [
+                    f"\n# Testcase: {op} with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                     test_data.add_testcase(f"{op}_off{offset}_priority", coverpoint, covergroup),
                     f"{op} x{data_reg}, 0(x{addr_reg})",
                     "nop",
@@ -453,11 +466,15 @@ def _generate_misaligned_priority_store_tests(test_data: TestData) -> list[str]:
 
         lines.extend(
             [
+                "",
                 "#if __riscv_xlen == 64",
+                f"\n#Testcase: sd with offset {offset} (LSBs: {offset:03b}) - Access fault Misaligned",
                 test_data.add_testcase(f"sd_off{offset}_priority", coverpoint, covergroup),
                 f"sd x{data_reg}, 0(x{addr_reg})",
                 "nop",
+                "",
                 "#endif",
+                "",
             ]
         )
 
@@ -541,12 +558,12 @@ def make_exceptionssm(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "# Initialize scratch memory with test data",
-            " LA(x10, scratch)",
-            " LI(x11, 0xDEADBEEF)",
-            " sw x11, 0(x10)",
-            " sw x11, 4(x10)",
-            " sw x11, 8(x10)",
-            " sw x11, 12(x10)",
+            "LA(x10, scratch)",
+            "LI(x11, 0xDEADBEEF)",
+            "sw x11, 0(x10)",
+            "sw x11, 4(x10)",
+            "sw x11, 8(x10)",
+            "sw x11, 12(x10)",
             "",
         ]
     )

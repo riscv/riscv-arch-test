@@ -13,6 +13,12 @@ EXTENSIONS  ?= I,M,F,D,Zca,Zcf,Zcd,Zaamo,Zalrsc,Zifencei,Zicntr,Sm # Extensions 
 EXCLUDE_EXTENSIONS ?= # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
 FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+
+# Number of parallel build jobs for test compilation.
+# Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.
+# 0 (default) = auto-detect CPU count.
+JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
@@ -104,6 +110,31 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+##### imperas test targets #####
+.PHONY: imperas imperas-rv32 imperas-rv64
+
+# Add --trace --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
+IMPERAS_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose --program
+IMPERAS_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv64-max/imperas.ic iss.exe --verbose --program
+
+imperas: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml config/imperas/imperas-rv64-max/test_config.yaml
+imperas: elfs
+	@exit_code=0; \
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+# Add --verbose to run_tests.py arguments to see the simulator commands
+imperas-rv32: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml
+imperas-rv32: elfs
+	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs
+
+imperas-rv64: CONFIG_FILES = config/imperas/imperas-rv64-max/test_config.yaml
+imperas-rv64: elfs
+	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs
+
+
+
 
 ###### Test compilation targets ######
 .PHONY: elfs
@@ -111,11 +142,13 @@ elfs: tests
 	@$(UV_RUN) act $(CONFIG_FILES) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
+		--jobs $(JOBS) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
-		$(if $(COVERAGE),--coverage)
+		$(if $(COVERAGE),--coverage) \
+		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
 .PHONY: clean
 clean: clean-tests
@@ -134,7 +167,7 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	@$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen
@@ -172,6 +205,17 @@ $(PRIVHEADERSDIR) $(STAMP_DIR):
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
+
+###### Regression ######
+# Run all tests
+
+.PHONY: regression
+regression:
+	$(MAKE) clean
+	$(MAKE) coverage
+	$(MAKE) spike
+	$(MAKE) qemu
+	$(MAKE) imperas
 
 ##### Dev targets #####
 .PHONY: lint

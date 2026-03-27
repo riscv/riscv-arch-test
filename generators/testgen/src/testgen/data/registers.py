@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import random
 
+from testgen.constants import INDENT
+
 
 class RegisterFile:
     """Class to represent a register file and provide methods to select registers."""
@@ -234,13 +236,13 @@ class IntegerRegisterFile(RegisterFile):
         Returns:
             The assembly code needed to move the values back to the default registers.
         """
-        asm_code = ""
+        lines: list[str] = []
         # Reset signature register
         if self._sig_reg != self.default_sig_reg:
-            asm_code += self.move_sig_reg(self.default_sig_reg) + "\n"
+            lines.append(self.move_sig_reg(self.default_sig_reg))
         # Reset data register
         if self._data_reg != self.default_data_reg:
-            asm_code += self.move_data_reg(self.default_data_reg) + "\n"
+            lines.append(self.move_data_reg(self.default_data_reg))
         # Reset link and temp registers
         if self._temp_reg != self.default_temp_reg:
             old_temp_reg = self._temp_reg
@@ -251,13 +253,11 @@ class IntegerRegisterFile(RegisterFile):
             self._link_reg = self.default_temp_reg + 1
             # Use super to avoid recursive checking for special reg conflicts
             super().consume_registers([self._link_reg, self._temp_reg])
-            asm_code += (
-                f"mv x{self._temp_reg}, x{old_temp_reg} # reset temp register to default\n"
-                f"mv x{self._link_reg}, x{old_link_reg} # reset link register to default\n"
-            )
-        if asm_code != "":
-            asm_code = "# Reset special registers to default locations\n" + asm_code
-        return asm_code
+            lines.append(f"{INDENT}mv x{self._temp_reg}, x{old_temp_reg} # reset temp register to default")
+            lines.append(f"{INDENT}mv x{self._link_reg}, x{old_link_reg} # reset link register to default")
+        if lines:
+            lines.insert(0, "# Reset special registers to default locations")
+        return "\n".join(lines)
 
     def consume_registers(self, regs: list[int]) -> str:
         """Mark registers as used/unavailable, handling special register conflicts.
@@ -266,7 +266,7 @@ class IntegerRegisterFile(RegisterFile):
         this method will automatically relocate the special registers and return the necessary
         assembly code to perform the move.
         """
-        asm_code = ""
+        lines: list[str] = []
 
         # Check for conflicts with special registers
         sig_conflict = self._sig_reg in regs
@@ -299,12 +299,14 @@ class IntegerRegisterFile(RegisterFile):
         # Reallocate special registers to new locations
         if sig_conflict:
             self._sig_reg = self.get_register(exclude_regs=[0, *self.link_temp_regs])
-            asm_code += f"\nmv x{self._sig_reg}, x{old_sig_reg} # switch signature pointer register to avoid conflict with test\n"
+            lines.append(
+                f"mv x{self._sig_reg}, x{old_sig_reg} # switch signature pointer register to avoid conflict with test"
+            )
 
         if data_conflict:
             self._data_reg = self.get_register(exclude_regs=[0, *self.link_temp_regs])
-            asm_code += (
-                f"\nmv x{self._data_reg}, x{old_data_reg} # switch data pointer register to avoid conflict with test\n"
+            lines.append(
+                f"mv x{self._data_reg}, x{old_data_reg} # switch data pointer register to avoid conflict with test"
             )
 
         if temp_conflict or link_conflict:
@@ -314,12 +316,12 @@ class IntegerRegisterFile(RegisterFile):
             self._link_reg = self._temp_reg + 1  # temp register is always the next register after the link register
             # Use super to avoid recursive checking for special reg conflicts
             super().consume_registers([self._link_reg])
-            asm_code += (
-                f"\nmv x{self._temp_reg}, x{old_temp_reg} # switch temp register to avoid conflict with test\n"
-                f"\nmv x{self._link_reg}, x{old_link_reg} # switch link pointer register to avoid conflict with test\n"
+            lines.append(f"mv x{self._temp_reg}, x{old_temp_reg} # switch temp register to avoid conflict with test")
+            lines.append(
+                f"mv x{self._link_reg}, x{old_link_reg} # switch link pointer register to avoid conflict with test"
             )
 
-        return asm_code
+        return "\n".join(lines)
 
 
 class FloatRegisterFile(RegisterFile):

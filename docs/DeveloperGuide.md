@@ -8,6 +8,7 @@ Each is described below.
 ## Table of Contents
 
 - [Certification Test Plan](#certification-test-plan)
+- [Test Hierarchy](#test-hierarchy)
 - [Table-Driven Unprivileged Coverpoints and Tests](#table-driven-unprivileged-coverpoints-and-tests)
   - [Creating New CSV Testplans](#creating-new-csv-testplans)
   - [Adding New Coverpoints](#adding-new-coverpoints)
@@ -58,6 +59,25 @@ Similar YAML files in coverpoints/param are used to make a list of the UDB param
 The `generate_param_table.py` script turns these into .adoc files in ctp/src/param listing the parameter name, description (from UDB), coverpoints it applies to, and effect on the coverpoints. If there is a yaml for normative rules but not for parameters, the parameter adoc just indicates no parameters. The script also makes a summary.adoc table listing all of the UDB parameters used anywhere in the test plan, and UDB parameters not yet mentioned in the test plan.
 
 This script is also run automatically when making the CTP. Hence, all the developer must do is create YAML files in `coverpoints/param` for test suites with parameters.
+
+## Test Hierarchy
+
+The testgen package organizes generated tests into four levels:
+
+```
+test suite
+└── test file
+    └── test chunk
+        └── testcase
+```
+
+- **Testcase**: The smallest unit of testing. Each testcase checks a single bin of a coverpoint. In the generated assembly, a testcase corresponds to one call to `test_data.add_testcase()`, which creates a label and debug string for that specific bin. For example, testing that `add` writes to `x5` is one testcase of the `cp_rd` coverpoint.
+
+- **Test chunk** (`TestChunk`): An unsplittable group of one or more testcases. A test chunk is the building block of test files. Test chunks are never split across multiple files. Standard coverpoint generators (e.g., `cp_rd`, `cp_imm_edges`) produce one chunk per testcase via `format_single_testcase()`. Special coverpoint generators and privileged tests bundle multiple testcases into a single chunk using `test_data.begin_test_chunk()` / `test_data.end_test_chunk()`, typically because the testcases share setup code.
+
+- **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index.
+
+- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite typically contains a single test file covering all coverpoints for that feature.
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 
@@ -137,14 +157,14 @@ The following applies to all coverpoint test generators:
 - All coverpoint generator functions must use the following signature:
 
   ```py
-  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+  def make_cp_name(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
   ```
 
   - `instr_name` is the instruction currently being tested. This allows coverpoint test generators to be reused for multiple instructions.
   - `instr_type` is the type of the instruction currently being tested. This allows the correct instruction formatter (see below) to be selected.
   - `coverpoint` is the full name of the coverpoint, including any variant suffix. Coverpoint test generators can match multiple variants of a coverpoint. This argument allows different values, registers, etc. to be selected based on the variant.
-  - `test_data` is the generation context that is passed to all parts of the test generation process and manages register allocation, test counting, and the active `TestCase`.
-  - The generator must return a list of `TestCase` objects. Each `TestCase` holds its own assembly code, data values, debug strings, and signature update count. The framework uses these to split tests across files and combine them into the final output.
+  - `test_data` is the generation context that is passed to all parts of the test generation process and manages register allocation, test counting, and the active `TestChunk`.
+  - The generator must return a list of `TestChunk` objects. Each `TestChunk` is an unsplittable group of one or more testcases. It holds its own assembly code, data values, debug strings, and signature update count. The framework uses these to split test chunks across test files and combine their data for the final output.
 
 Coverpoint test generators can largely be broken into two categories: standard and special.
 Standard generators use the [instruction formatters](#python-instruction-formatters) and can be applied to a wide range
@@ -166,7 +186,7 @@ It is also included below with many additional comments added to explain how it 
 # which coverpoints they apply to.
 @add_coverpoint_generator("cp_rd")
 # Coverpoint generators all use the standard signature described above.
-def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestCase]:
+def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for destination register coverpoints."""
     # Determine which rd registers to test based on the coverpoint variant.
     # Multiple variants can match to the same generator. This is useful when
@@ -182,8 +202,8 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # to make debugging easy.
         raise ValueError(f"Unknown cp_rd coverpoint variant: {coverpoint} for {instr_name}")
 
-    # Initialize a list of TestCase objects to collect results
-    test_cases: list[TestCase] = []
+    # Initialize a list of TestChunk objects to collect results
+    test_chunks: list[TestChunk] = []
 
     # Generate tests
     # A common pattern is to use a loop to iterate over some value that is being tested
@@ -200,22 +220,22 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         # will get random values.
         params = generate_random_params(test_data, instr_type, rd=rd)
         desc = f"{coverpoint} (Test destination rd = x{rd})"
-        # format_single_test is the key part of standard coverpoint generators. It takes
-        # the provided instruction parameters (created above) and produces a TestCase object
+        # format_single_testcase is the key part of standard coverpoint generators. It takes
+        # the provided instruction parameters (created above) and produces a TestChunk object
         # containing the assembly code and associated data. It also calls test_data.add_testcase
         # to add a label and debugging string.
-        tc = format_single_test(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint)
-        # If consume_registers returned setup code (register moves), prepend it to the TestCase
+        tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{rd}", coverpoint)
+        # If consume_registers returned setup code (register moves), prepend it to the TestChunk
         if asm_setup:
             tc.code = asm_setup + "\n" + tc.code
-        test_cases.append(tc)
+        test_chunks.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
         return_test_regs(test_data, params)
 
-    # Return the list of TestCase objects. The framework will use these to split tests
-    # across files (based on num_tests counts) and combine their data for the final output.
-    return test_cases
+    # Return the list of TestChunk objects. The framework will use these to split test chunks
+    # across test files (based on num_testcases counts) and combine their data for the final output.
+    return test_chunks
 ```
 
 Additional documentation for all of these functions (and many other helper functions) is
@@ -232,16 +252,16 @@ cases each individual instruction).
 
 Special coverpoint generators vary widely, so it is impossible to provide a complete guide,
 but they usually follow the same initial flow as a standard coverpoint and then diverge
-where the call to `format_single_test` would be. Instead of calling `format_single_test`,
-special coverpoint generators use `test_data.begin_testcase()` and `test_data.end_testcase()`
-to wrap their inline assembly in a single `TestCase`. The typical pattern is:
+where the call to `format_single_testcase` would be. Instead of calling `format_single_testcase`,
+special coverpoint generators use `test_data.begin_test_chunk()` and `test_data.end_test_chunk()`
+to wrap their inline assembly in a single `TestChunk`. The typical pattern is:
 
 ```py
-tc = test_data.begin_testcase()
+tc = test_data.begin_test_chunk()
 test_lines: list[str] = []
 # ... build assembly lines, call test_data.add_testcase(), load_int_reg(), write_sigupd(), etc. ...
 tc.code = "\n".join(test_lines)
-return [test_data.end_testcase()]
+return [test_data.end_test_chunk()]
 ```
 
 While most of this code is handwritten, you are still encouraged to use helper Python
@@ -532,6 +552,10 @@ For examples of how to write the individual coverpoint helper functions for priv
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
 - Include a call to `test_data.add_testcase` at the beginning of each testcase within a coverpoint. This creates the appropriate labels and debug strings.
 - To the extent possible, reuse functions and define new helper functions if a snippet of assembly seems like it will be useful in multiple tests. See [`csr.py`](../generators/testgen/src/testgen/asm/csr.py) for a few examples including `gen_csr_read_sigupd`, `gen_csr_write_sigupd`, and `csr_walk_test`.
+- Test are automatically formatted as follows:
+  - Pre-processor directives (`#ifdef`, etc.), comments, and labels are unindented.
+  - Code (instructions and macros) is indented by 2 spaces.
+  - If deviations from this help the readability of a test (most often indenting certain comments), use the `INDENT` global at the beginning of the line (e.g. `f"{INDENT}# comment`).
 
 ## Debugging Coverage
 

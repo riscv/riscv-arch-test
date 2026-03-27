@@ -11,7 +11,10 @@ chapter_name: Smrnmi Extension for Resumable Non-Maskable Interrupts
 csr_definitions:
   - reg-name: mnepc
     impl-def: MNEPC_WARL
+    type: Other #TBD
   - reg-name: mncause
     impl-def: MNCAUSE_WARL
+    type: Other #TBD
   - reg-name: mnstatus
     impl-def: MNSTATUS_WARL
+    type: Other #TBD

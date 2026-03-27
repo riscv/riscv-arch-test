@@ -141,14 +141,6 @@ include::in_scope_param_intro.adoc[]
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
 
-| <<param:MISALIGNED_ATOMICITY_GRANULE_SIZE,MISALIGNED_ATOMICITY_GRANULE_SIZE>>
-| Any
-a|
-Zero:: Misaligned AMO instructions are OUT-OF-SCOPE.
-Non-zero:: Misaligned AMO atomic instructions and
-misaligned load/store instructions are IN-SCOPE if within the NAPOT byte region assuming that
-any restrictions on misaligned supported expressed by other parameters are met.
-
 | <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
 | Any
 | Reading time-related CSRs is only IN-SCOPE if this parameter is true
@@ -190,6 +182,5 @@ include::param_appendix.adoc[]
 include::../build/param-appendix/counters/HPM_READ_BEHAVIOR.adoc[]
 include::../build/param-appendix/a-st-ext/LRSC_RESERVATION_STRATEGY.adoc[]
 include::../build/param-appendix/rv32/MISALIGNED_LDST_HW_SUPPORT.adoc[]
-include::../build/param-appendix/a-st-ext/MISALIGNED_ATOMICITY_GRANULE_SIZE.adoc[]
 include::../build/param-appendix/counters/TIME_CSR_HW_SUPPORT.adoc[]
 |===

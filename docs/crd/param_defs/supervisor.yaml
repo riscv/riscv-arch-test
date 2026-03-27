@@ -64,31 +64,43 @@ csr_definitions:
   - reg-name: sstatus
     field-name: UXL
     impl-def: SSTATUS_UXL_WARL
+    type: Other #TBD
   - reg-name: sstatus
     field-name: UBE
     impl-def: SSTATUS_UBE_WARL
+    type: Other #TBD
   - reg-name: sstatus
     field-name: SDT
     impl-def: SSTATUS_SDT_WARL
+    type: Other #TBD
   - reg-name: stvec
     field-name: MODE
     impl-def: STVEC_MODE_WARL
+    type: Other #TBD
   - reg-name: stvec
     field-name: BASE
     impl-def: STVEC_BASE_WARL
+    type: Other #TBD
   - reg-name: sip
     impl-def: SIP_WARL
+    type: Other #TBD
   - reg-name: sie
     impl-def: SIE_WARL
+    type: Other #TBD
   - reg-name: scounteren
     impl-def: SCOUNTEREN_WARL
+    type: Other #TBD
   - reg-name: sepc
     impl-def: SEPC_ACC_INVALID_WARL
+    type: Other #TBD
   - reg-name: scause
     field-name: EXCEPTION_CODE
     impl-def: SCAUSE_EXCEPTION_CODE_ACC
+    type: Other #TBD
   - reg-name: stval
     impl-def: STVAL_WARL
+    type: Other #TBD
   - reg-name: senvcfg
     field-name: CBIE
     impl-def: SENVCFG_CBIE_WARL
+    type: Other #TBD

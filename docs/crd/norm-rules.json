@@ -33647,13 +33647,13 @@
       ]
     },
     {
-      "name": "smstateen_mmode_rv64_csrs",
+      "name": "mstateen_rv64_csrs",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_mmode_rv64_csrs",
+          "name": "norm:mstateen_rv64_csrs",
           "context": false,
           "text": "For RV64 harts, this extension adds four new 64-bit CSRs at machine level: mstateen0 (Machine State Enable 0), mstateen1, mstateen2, and mstateen3.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33662,13 +33662,13 @@
       ]
     },
     {
-      "name": "smstateen_smode_rv64_csrs",
+      "name": "sstateen_rv64_csrs",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_smode_rv64_csrs",
+          "name": "norm:sstateen_rv64_csrs",
           "context": false,
           "text": "If supervisor mode is implemented, another four CSRs are defined at supervisor level: sstateen0, sstateen1, sstateen2, and sstateen3.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33677,13 +33677,13 @@
       ]
     },
     {
-      "name": "smstateen_hypervisor_rv64_csrs",
+      "name": "hstateen_rv64_csrs",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_hypervisor_rv64_csrs",
+          "name": "norm:hstateen_rv64_csrs",
           "context": false,
           "text": "And if the hypervisor extension is implemented, another set of CSRs is added: hstateen0, hstateen1, hstateen2, and hstateen3.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33692,13 +33692,13 @@
       ]
     },
     {
-      "name": "smstateen_rv32_upper_bits_csrs",
+      "name": "stateen_rv32_upper_bits_csrs",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_rv32_upper_bits_csrs",
+          "name": "norm:stateen_rv32_upper_bits_csrs",
           "context": false,
           "text": "For RV32, there are CSR addresses for accessing the upper 32 bits of corresponding machine-level and hypervisor CSRs: mstateen0h, mstateen1h, mstateen2h, mstateen3h, hstateen0h, hstateen1h, hstateen2h, and hstateen3h.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33722,28 +33722,28 @@
       ]
     },
     {
-      "name": "smstateen_illegal_state_access",
+      "name": "stateen_illegal_state_access",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_illegal_state_access",
+          "name": "norm:stateen_illegal_state_access",
           "context": false,
-          "text": "Just\nas with the counteren CSRs, when a stateen CSR prevents access to state by\nless-privileged levels, an attempt in one of those privilege modes to execute\nan instruction that would read or write the protected state raises an illegal-instruction\nexception, or, if executing in VS or VU mode and the circumstances\nfor a virtual-instruction  exception apply, raises a virtual-instruction\nexception instead of an illegal-instruction exception.",
+          "text": "Just as with the counteren CSRs,\nwhen a stateen CSR prevents access to state by\nless-privileged levels, an attempt in one of those privilege modes to execute\nan instruction that would read or write the protected state raises an illegal-instruction\nexception, or, if executing in VS or VU mode and the circumstances\nfor a virtual-instruction  exception apply, raises a virtual-instruction\nexception instead of an illegal-instruction exception.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
           "stds_doc_url": "riscv-spec.html"
         }
       ]
     },
     {
-      "name": "smstateen_implicit_state_update",
+      "name": "stateen_implicit_state_update",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:smstateen_implicit_state_update",
+          "name": "norm:stateen_implicit_state_update",
           "context": false,
           "text": "When a stateen CSR prevents access to state for a privilege mode, attempting to execute in that privilege mode an instruction that implicitly updates the state without reading it may or may not raise an illegal-instruction or virtual-instruction exception. Such cases must be disambiguated by being explicitly specified one way or the other.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33782,13 +33782,13 @@
       ]
     },
     {
-      "name": "sstateen_bit_correspondence",
+      "name": "mstateen_bit_correspondence",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
       "impl-def-behavior": false,
       "tags": [
         {
-          "name": "norm:sstateen_bit_correspondence",
+          "name": "norm:mstateen_bit_correspondence",
           "context": false,
           "text": "For every bit with a defined purpose in an sstateen CSR, the same bit is\ndefined in the matching mstateen CSR to control access below machine level to\nthe same state.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
@@ -33892,6 +33892,21 @@
       ]
     },
     {
+      "name": "mstateen_lower_priv_roz",
+      "def_filename": "normative_rule_defs/smstateen.yaml",
+      "chapter_name": "State Enable Extension",
+      "impl-def-behavior": false,
+      "tags": [
+        {
+          "name": "norm:mstateen_lower_priv_roz",
+          "context": false,
+          "text": "For every bit in an mstateen CSR that is zero\n(whether read-only zero or set to zero), the same bit appears as read-only zero in the\nmatching hstateen and sstateen CSRs.",
+          "tag_filename": "/build/riscv-spec-norm-tags.json",
+          "stds_doc_url": "riscv-spec.html"
+        }
+      ]
+    },
+    {
       "name": "stateen_reserved_roz",
       "def_filename": "normative_rule_defs/smstateen.yaml",
       "chapter_name": "State Enable Extension",
@@ -33915,7 +33930,7 @@
         {
           "name": "norm:sstateen_vsmode_access_roz",
           "context": false,
-          "text": "For every\nbit in an hstateen CSR that is zero (whether read-only zero or set to zero),\nthe same bit appears as read-only zero in sstateen when accessed in VS-mode.",
+          "text": "For every bit in an hstateen CSR that is zero\n(whether read-only zero or set to zero), the same bit appears as read-only zero in\nsstateen when accessed in VS-mode.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
           "stds_doc_url": "riscv-spec.html"
         }

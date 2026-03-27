@@ -8,3 +8,4 @@ chapter_name: Indirect CSR
 csr_definitions:
   - reg-name: miselect
     impl-def: MISELECT_WARL
+    type: Other #TBD

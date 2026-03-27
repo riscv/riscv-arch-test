@@ -39,10 +39,14 @@ csr_definitions:
   - reg-name: sctrdepth
     field-name: DEPTH
     impl-def: SCTRDEPTH_DEPTH_WARL
+    type: Other #TBD
   - reg-name: sctrstatus
     field-name: WRPTR
     impl-def: SCTRSTATUS_WRPTR_WARL
+    type: Other #TBD
   - reg-name: ctrsource
     impl-def: CTRSOURCE_WARL
+    type: Other #TBD
   - reg-name: ctrtarget
     impl-def: CTRTARGET_WARL
+    type: Other #TBD

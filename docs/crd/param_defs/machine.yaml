@@ -418,7 +418,7 @@ csr_definitions:
     func-of-field-name: INTR
 
   - reg-name: mtval
-    impl-defs: [MTVAL_WARL, MVTVAL_RDONLY0]
+    impl-defs: [MTVAL_WARL, MTVAL_RDONLY0]
     type: ConstMask
 
   - reg-name: menvcfg

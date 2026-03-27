@@ -62,59 +62,84 @@ csr_definitions:
   - reg-name: hstatus
     field-name: VSXL
     impl-def: HSTATUS_VSXL_64_WARL
+    type: Other #TBD
   - reg-name: hstatus
     field-name: VGEIN
     impl-def: HSTATUS_VGEIN_WLRL
+    type: Other #TBD
   - reg-name: hstatus
     field-name: VSBE
     impl-def: HSTATUS_VSBE_WARL
+    type: Other #TBD
   - reg-name: hedeleg
     impl-def: HEDELEG_WARL
+    type: Other #TBD
   - reg-name: hideleg
     impl-def: HIDELEG_WARL
+    type: Other #TBD
   - reg-name: hvip
     impl-def: HVIP_WARL
+    type: Other #TBD
   - reg-name: hip
     impl-def: HIP_WARL
+    type: Other #TBD
   - reg-name: hie
     impl-def: HIE_WARL
+    type: Other #TBD
   - reg-name: hgeie
     impl-def: HGEIE_WARL
+    type: Other #TBD
   - reg-name: hcounteren
     impl-def: HCOUNTEREN_WARL
+    type: Other #TBD
   - reg-name: htval
     impl-def: HTVAL_WARL
+    type: Other #TBD
   - reg-name: htinst
     impl-def: HTINST_WARL
+    type: Other #TBD
   - reg-name: hgainp
     field-name: MODE
     impl-def: HGATP_MODE_WARL
+    type: Other #TBD
   - reg-name: vsstatus
     field-name: UXL
     impl-def: VSSTATUS_UXL_WARL
+    type: Other #TBD
   - reg-name: vsip
     impl-def: VSIP_WARL
+    type: Other #TBD
   - reg-name: vsie
     impl-def: VSIE_WARL
+    type: Other #TBD
   - reg-name: vstvec
     field-name: MODE
     impl-def: VSTVEC_MODE_WARL
+    type: Other #TBD
   - reg-name: vstvec
     field-name: BASE
     impl-def: VSTVEC_BASE_WARL
+    type: Other #TBD
   - reg-name: vsepc
     impl-def: VSEPC_WARL
+    type: Other #TBD
   - reg-name: vscause
     impl-def: VSCAUSE_WLRL
+    type: Other #TBD
   - reg-name: vstval
     impl-def: VSTVAL_WARL
+    type: Other #TBD
   - reg-name: vsatp
     field-name: MODE
     impl-def: VSATP_MODE_UNSUPPORTED_V0_WARL
+    type: Other #TBD
   - reg-name: mtval2
     impl-def: MTVAL2_WARL
+    type: Other #TBD
   - reg-name: mtinst
     impl-def: MTINST_WARL
+    type: Other #TBD
   - reg-name: henvcfg
     field-name: CBIE
     impl-def: HENVCFG_CBIE_WARL
+    type: Other #TBD

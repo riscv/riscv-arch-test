@@ -16989,7 +16989,11 @@
       "name": "MIP_WARL",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
+      "kind": "extension",
       "impl-def-behavior": true,
+      "instances": [
+        "Sm"
+      ],
       "impl-def-category": "WARL",
       "tags": [
         {
@@ -17027,7 +17031,11 @@
       "name": "MIE_WARL",
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
+      "kind": "extension",
       "impl-def-behavior": true,
+      "instances": [
+        "Sm"
+      ],
       "impl-def-category": "WARL",
       "tags": [
         {
@@ -19250,7 +19258,19 @@
           "text": "If an instruction may raise multiple synchronous exceptions, the\ndecreasing priority order of &lt;&lt;norm:exc_priority&gt;&gt; indicates which\nexception is taken and reported in mcause.",
           "tag_filename": "/build/riscv-spec-norm-tags.json",
           "stds_doc_url": "riscv-spec.html"
-        },
+        }
+      ]
+    },
+    {
+      "name": "MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI",
+      "def_filename": "normative_rule_defs/machine.yaml",
+      "chapter_name": "Machine Mode",
+      "kind": "extension",
+      "impl-def-behavior": true,
+      "instances": [
+        "Sm"
+      ],
+      "tags": [
         {
           "name": "norm:mcause_exccode_pri2",
           "context": false,
@@ -20167,6 +20187,26 @@
       "def_filename": "normative_rule_defs/machine.yaml",
       "chapter_name": "Machine Mode",
       "impl-def-behavior": false,
+      "tags": [
+        {
+          "name": "norm:menvcfg_pmm_enc",
+          "context": false,
+          "text": "Value|Description\n===\n00|Pointer masking is disabled (PMLEN = 0)¶01|Reserved¶10|Pointer masking is enabled with PMLEN = XLEN - 57 (PMLEN = 7 on RV64)¶11|Pointer masking is enabled with PMLEN = XLEN - 48 (PMLEN = 16 on RV64)\n===",
+          "tag_filename": "/build/riscv-spec-norm-tags.json",
+          "stds_doc_url": "riscv-spec.html"
+        }
+      ]
+    },
+    {
+      "name": "MENVCFG_PMM_WARL",
+      "def_filename": "normative_rule_defs/machine.yaml",
+      "chapter_name": "Machine Mode",
+      "kind": "extension",
+      "impl-def-behavior": true,
+      "instances": [
+        "Sm"
+      ],
+      "impl-def-category": "WARL",
       "tags": [
         {
           "name": "norm:menvcfg_pmm_enc",

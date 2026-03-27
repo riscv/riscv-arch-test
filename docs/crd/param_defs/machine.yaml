@@ -178,13 +178,6 @@ parameter_definitions:
       ! Zero ! Sets it to zero
       ! Other ! Some other unknown behavior
       !===
-
-  - name: MTVAL_RDONLY0
-    impl-def: MTVAL_RDONLY0
-    type: boolean
-  - name: MTVAL_VARLEN_WR
-    impl-def: MTVAL_VARLEN_WR
-    type: boolean
   - name: MTVAL_INV_ADDR_CONV
     impl-def: MTVAL_INV_ADDR_CONV
     type: [NoInvAddrConv, Other]
@@ -211,13 +204,20 @@ parameter_definitions:
   - name: MENVCFG_FIOM_RDONLY0_OK
     impl-def: MENVCFG_FIOM_RDONLY0_OK
     type: boolean
+
+  # CSR mtime
   - name: MTIME_TICK_PERIOD
     impl-def: MTIME_TICK_PERIOD
     type: uint
     width: 64
-  - names: [MRET_CLR_LR_RESV, SRET_CLR_LR_RESV]
+
+  # MRET/SRET instructions and LR/SC atomic behavior
+  - name: MRET_CLR_LR_RESV
+    impl-def: MRET_CLR_LR_RESV
     type: boolean
-    description: TBD
+  - name: SRET_CLR_LR_RESV
+    impl-def: SRET_CLR_LR_RESV
+    type: boolean
 
   # WFI instruction
   - name: WFI_OPT_U_MODE
@@ -418,23 +418,49 @@ csr_definitions:
     func-of-field-name: INTR
 
   - reg-name: mtval
-    impl-def: MTVAL_WARL
+    impl-defs: [MTVAL_WARL, MVTVAL_RDONLY0]
+    type: ConstMask
+
   - reg-name: menvcfg
     field-name: CBIE
     impl-def: MENVCFG_CBIE_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
+  - reg-name: menvcfg
+    field-name: PMM
+    impl-def: MENVCFG_PMM_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
   - reg-name: mseccfg
     field-name: RLB
     impl-def: MSECCFG_RLB_WARL
+    type: ConstMask
+
   - reg-name: mseccfg
     field-name: MMWP
     impl-def: MSECCFG_MMWP_WARL
+    type: ConstMask
+
   - reg-name: mseccfg
     field-name: MML
     impl-def: MSECCFG_MML_WARL
+    type: ConstMask
+
   - reg-name: mseccfg
     field-name: PMM
     impl-def: MSECCFG_PMM_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
   - reg-name: pmpcfg
     impl-def: PMPCFG_WARL
+    type: Other
+
   - reg-name: pmpaddr
     impl-def: PMPADDR_WARL
+    type: ConstMask

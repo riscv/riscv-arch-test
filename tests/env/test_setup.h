@@ -57,7 +57,7 @@
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)
         CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-        #ifdef S_SUPPORTED
+        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
           sfence.vma
         #endif
       #endif

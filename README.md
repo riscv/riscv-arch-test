@@ -281,6 +281,8 @@ WORKDIR=</path/to/workdir> CONFIG_FILES=<your_config_directory>/test_config.yaml
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
+By default, the framework generates tests for all extensions listed in your UDB config file. To create tests for only a subset of the extensions that your DUT supports, set `EXTENSIONS` or `EXCLUDE_EXTENSIONS` when running `make`.
+
 Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]

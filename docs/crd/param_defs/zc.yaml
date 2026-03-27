@@ -18,6 +18,9 @@ csr_definitions:
   - reg-name: jvt
     field-name: BASE
     impl-def: JVT_WARL
+    type: ConstMask
+
   - reg-name: jvt
     field-name: MODE
     impl-def: JVT_MODE_WARL
+    type: LegalEnum

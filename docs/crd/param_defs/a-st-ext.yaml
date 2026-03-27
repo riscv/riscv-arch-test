@@ -35,6 +35,3 @@ parameter_definitions:
       ! 128B ! Reservation set is naturally-aligned 128-byte region
       ! Other ! Reservation set strategy doesn't fit any of the specified choices
       !===
-  - name: MISALIGNED_ATOMICITY_GRANULE_SIZE
-    impl-def: MISALIGNED_ATOMICITY_GRANULE_SIZE
-    type: [2,4,8,16,32,64,128,256,512,1024,2048,4096]

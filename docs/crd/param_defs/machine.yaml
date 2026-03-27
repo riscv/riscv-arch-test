@@ -457,10 +457,16 @@ csr_definitions:
     description: |
       If list of legal write values is empty, then this field is read-only zero.
 
-  - reg-name: pmpcfg
+  - reg-name: pmpcfgN
+    field-name: pmpMcfg
     impl-def: PMPCFG_WARL
     type: Other
+    description: |
+      There are up to 64 PMP entries (M=0 to 63) each with an 8-bit WARL field.
+      RV32 has 4 pmpcfg fields per CSR (N=0 to 15) and RV64 has 8 pmpcfg fields per CSR (N=0 to 15, even values).
+      The WARL behavior of all fields is the same.
 
-  - reg-name: pmpaddr
+  - reg-name: pmpaddrN
     impl-def: PMPADDR_WARL
     type: ConstMask
+    description: There are up to 64 PMP address registers (N=0 to 63) with the same WARL behavior.

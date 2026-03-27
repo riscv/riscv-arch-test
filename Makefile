@@ -15,6 +15,11 @@ DEBUG       ?= # Set to True to generate debug output (signature objdump and tra
 FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 
+# Number of parallel build jobs for test compilation.
+# Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.
+# 0 (default) = auto-detect CPU count.
+JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
+
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
 SRCDIR64E      := $(TESTDIR)/rv64e
@@ -125,6 +130,7 @@ elfs: tests
 	@$(UV_RUN) act $(CONFIG_FILES) \
 		--workdir $(WORKDIR) \
 		--test-dir $(TESTDIR) \
+		--jobs $(JOBS) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
@@ -149,7 +155,7 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
 $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	@$(UV_RUN) testgen testplans -o tests $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen

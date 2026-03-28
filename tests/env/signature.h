@@ -249,8 +249,9 @@
 // Assumptions:
 //   - For mask producing instructions, the default SEW is 8.
 //   - vfirst.m returns -1 if no bits are set and >=0 otherwise.
-//   - Base suite only test for vl = 1 with ta and ma, so the macro only
-//     checks for mismatches in the first element for simplicity.
+//   - The definition of base suite is testing for the first element of the vector,
+//     as explained in https://github.com/riscv/riscv-arch-test/blob/act4/docs/ctp/src/v.adoc#vector-coverpoints,
+//     so the macro only checks for mismatches in the first element for simplicity.
 //
 // Parameters:
 //   _CMP        - Vector comparison instruction producing mismatch mask
@@ -270,12 +271,12 @@
         _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
         .option push                                                ;\
         .option norvc                                               ;\
-        vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)                         ;\
+        vle##_SEW.v _VTMP, 0(_SIG_PTR)                              ;\
         _CMP _MTMP, _VREG, _VTMP                                    ;\
         vfirst.m _TEMP_REG, _MTMP                                   ;\
         blt _TEMP_REG, x0, 2f                                       ;\
-        LREG _TEMP_REG, 0(_SIG_PTR)                                 ;\
-        beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
+        LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
+        beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
@@ -288,12 +289,12 @@
         _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
         .option push                                                ;\
         .option norvc                                               ;\
-        vse ## _SEW ##.v _VREG, 0(_SIG_PTR)                         ;\
+        vse##_SEW.v _VREG, 0(_SIG_PTR)                              ;\
         nop                                                         ;\
         nop                                                         ;\
         beq x0, x0, 2f                                              ;\
-        LREG _TEMP_REG, 0(_SIG_PTR)                                 ;\
-        beq  _TEMP_REG, _TEMP_REG, 1f                               ;\
+        LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
+        beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
         jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
@@ -357,6 +358,7 @@
 //   _OFFSET        - Signature stride, calculated in vector-testgen.py (function writeSIGUPD_V)
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
+//   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
@@ -367,23 +369,23 @@
         csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                                    \
+        vsetvli     _LINK_REG, x0, e##_SEW, m##_LMUL, ta, ma ;                                                      \
         /* Load reference from signature and compute mismatch mask */                                               \
-        li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
         vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
         vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
-        beq         x0, x0, 2f               ;   /* Unconditional skip data vector comparison to active check */    \
+        j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
     1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vle ## _SEW ##.v _VTMP, 0(_SIG_PTR)  ;                                                                      \
+        vle##_SEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                      \
         vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
         vmsltu.vx   _MTMP2, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
-        li          _LINK_REG, _MASKED_FLAG  ;   /* Load whether instr was masked (0 = unmasked) */                 \
+        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
         beqz        _LINK_REG, 3f            ;   /* If unmasked, skip mask filtering */                             \
         vmand.mm    _MTMP2, _MTMP2, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
     3:                                                                                                              \
@@ -393,19 +395,19 @@
         bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build tail element mask (i >= vl) */                                                                     \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
-        vmsltu.vx    _VTMP, _VTMP, _TEMP_REG ;   /* VTMP[i] = (i < original vl) */                                  \
-        vmnand.mm    _VTMP, _VTMP, _VTMP     ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
+        vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* VTMP[i] = (i < original vl) */                                  \
+        vmnand.mm   _VTMP, _VTMP, _VTMP      ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
         /* Extract and check vta policy */                                                                          \
         srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
         beqz        _LINK_REG, 5f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
-        /* Load reference from signature and compute mismatch mask */                                               \
-        li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
+        /* Check whether instr is a mask-producing instruction */                                                   \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-        beq         x0, x0, 5f               ;   /* Unconditional skip data vec agnostic handling to tail check */  \
+        j           5f                       ;   /* Unconditional skip data vec agnostic handling to tail check */  \
     4:                                                                                                              \
         /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
@@ -421,7 +423,7 @@
         vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
         bge         _LINK_REG, x0, 10f       ;   /* If >=0, mismatch found → FAIL */                                \
         /* Build mask inactive mask */                                                                              \
-        li          _LINK_REG, _MASKED_FLAG  ;   /* Load whether instr was masked (0 = unmasked) */                 \
+        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
         beqz        _LINK_REG, 12f           ;   /* If unmasked, no mask inactive → all checks have passed */       \
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
         vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* MTMP2[i] = (i < original vl) */                                 \
@@ -431,12 +433,12 @@
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
         beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
         /* Load reference from signature and compute mismatch mask */                                               \
-        li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 7f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Mask vector mask agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+        /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
         vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-        beq         x0, x0, 8f               ;   /* Unconditional skip data vec agnostic to inactive check */       \
+        j           8f                       ;   /* Unconditional skip data vec agnostic to inactive check */       \
     7:                                                                                                              \
         /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
         vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
@@ -474,28 +476,28 @@
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                                    \
         /* Load reference from signature and compute mismatch mask */                                               \
-        li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 1f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
         vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
         nop                                  ;                                                                      \
-        beq         x0, x0, 2f               ;   /* Unconditional skip data vector comparison to active check */    \
+        j           2f                       ;   /* Unconditional skip data vector comparison to active check */    \
     1:                                                                                                              \
         /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
-        vse ## _SEW ##.v _VR, 0(_SIG_PTR)    ;                                                                      \
+        vse##_SEW##.v _VR, 0(_SIG_PTR)       ;                                                                      \
         nop                                  ;                                                                      \
     2:                                                                                                              \
         /* Build active element mask (i < vl && v0[i] == 1) */                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        li          _LINK_REG, _MASKED_FLAG  ;   /* Load whether instr was masked (0 = unmasked) */                 \
+        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Load whether instr was masked (0 = unmasked) */                 \
         beqz        _LINK_REG, 3f            ;   /* If unmasked, skip mask filtering */                             \
         nop                                  ;                                                                      \
     3:                                                                                                              \
         /* Check active elements mismatch */                                                                        \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        bge         x0, x0, 12f              ;   /* Unconditional set to PASS for non-selfcheck */                  \
+        j           12f                      ;   /* Unconditional set to PASS for non-selfcheck */                  \
         /* Build tail element mask (i >= vl) */                                                                     \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -505,7 +507,7 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Load reference from signature and compute mismatch mask */                                               \
-        li          _LINK_REG, _MASKPROD_FLAG;   /* Load whether instr is a mask-producing instruction */           \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
@@ -526,7 +528,7 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Build mask inactive mask */                                                                              \
-        nop                                  ;                                                                      \
+        LI(_LINK_REG, _MASKED_FLAG)          ;   /* Dummy instruction */                                            \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -536,9 +538,9 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         /* Load reference from signature and compute mismatch mask */                                               \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Dummy instruction */                                            \
         nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        /* Mask vector mask agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+        /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \

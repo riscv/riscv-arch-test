@@ -432,7 +432,7 @@
         srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
         beqz        _LINK_REG, 8f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
-        /* Load reference from signature and compute mismatch mask */                                               \
+        /* Check whether instr is a mask-producing instruction */                                                   \
         LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 7f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
@@ -506,7 +506,7 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        /* Load reference from signature and compute mismatch mask */                                               \
+        /* Check whether instr is a mask-producing instruction */                                                   \
         LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
         beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
@@ -537,7 +537,7 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        /* Load reference from signature and compute mismatch mask */                                               \
+        /* Check whether instr is a mask-producing instruction */                                                   \
         LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Dummy instruction */                                            \
         nop                                  ;                                                                      \
         /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \

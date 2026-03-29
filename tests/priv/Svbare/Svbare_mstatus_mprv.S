@@ -65,7 +65,7 @@ main:
   #endif
 
   CSRW(satp, a0)              // Set satp.MODE = Bare
-  
+
   satp_bare:
   RVTEST_SIGUPD_CSR_READ(satp, a4, satp_bare, satp_bare_str)
 

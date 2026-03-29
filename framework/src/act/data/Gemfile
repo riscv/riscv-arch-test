@@ -4,4 +4,4 @@
 
 source "https://rubygems.org"
 
-gem "udb", "~> 0.1.4"
+gem "udb", "~> 0.1.5"

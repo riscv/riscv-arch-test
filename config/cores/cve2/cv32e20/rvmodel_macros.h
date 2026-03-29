@@ -24,9 +24,9 @@
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
-  li x1, 123456789                ;\
+  li x1, 123456789        ;\
   li t0, 0x20000000       ;\
-  write_tohost_pass:      ;\
+  write_halt_pass:        ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_pass:         ;\
@@ -37,7 +37,7 @@
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
   li t0, 0x20000000       ;\
-  write_tohost_fail:      ;\
+  write_halt_fail:        ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_fail:         ;\
@@ -66,7 +66,17 @@
 3:
 
 ##### Machine Timer #####
-
+/*
+ * NOTE: The following parameters are intentionally left empty.
+ *
+ * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
+ * will FAIL because these platform-level memory-mapped registers are
+ * not defined. This is a temporary state.
+ *
+ * To properly run the suite by excluding these specific tests (the recommended
+ * workaround), refer to the instructions here:
+ * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
+ */
 #define RVMODEL_MTIME_ADDRESS  /* unimplemented */
 
 #define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */

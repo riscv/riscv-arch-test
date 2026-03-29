@@ -15,30 +15,6 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
     `ifdef XLEN64
-        mode_supported: coverpoint ins.current.csr[12'h180][63:60] { //sat.2
-            `ifdef SV57
-                bins sv57 = {4'b1010};
-            `endif
-            `ifdef SV48
-                bins sv48 = {4'b1001};
-            `endif
-            `ifdef SV39
-                bins sv39 = {4'b1000};
-            `endif
-        }
-        bare_mode: coverpoint ins.current.csr[12'h180][63:60] { //bare.1
-            bins bare   = {4'b0000};
-        }
-    `else
-        mode_supported: coverpoint ins.current.csr[12'h180][31] {
-            bins sv32 = {1'b1};
-        }
-        bare_mode: coverpoint ins.current.csr[12'h180][31] {
-            bins bare = {1'b0};
-        }
-    `endif
-
-    `ifdef XLEN64
         satp_PPN: coverpoint ins.current.csr[12'h180][43:0] { //sat.4
             bins all_zeros  = {44'b00000000000000000000000000000000000000000000};
             bins walking_0  = {44'b00000000000000000000000000000000000000000001};
@@ -153,8 +129,6 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         wildcard bins csrrc = {32'b000110000000_?????_011_?????_1110011};
     }
 
-    satp_bare: cross bare_mode, satp_asid_PPN;
-
     access_u: cross priv_mode_u, Mcause, tvm_mstatus { //sat.1
         ignore_bins ig1 = binsof(Mcause.no_exception);
     }
@@ -263,12 +237,10 @@ covergroup Sv_mstatus_mprv_cg with function sample(ins_t ins);
             `ifdef SV39
                 bins sv39 = {4'b1000};
             `endif
-            bins bare = {4'b0000};
         }
     `else
         satp_mode: coverpoint ins.current.csr[12'h180][31] {
             bins sv32 = {1'b1};
-            bins bare = {1'b0};
         }
     `endif
 

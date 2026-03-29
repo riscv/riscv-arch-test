@@ -59,26 +59,26 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
     }
 
     PageType_i: coverpoint ins.current.page_type_i {
-        `ifdef SV48
+        `ifdef SV48_SUPPORTED
             bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
         `endif
-        `ifdef SV39
+        `ifdef SV39_SUPPORTED
             bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
         `endif
     }
     PageType_d: coverpoint ins.current.page_type_d {
-        `ifdef SV48
+        `ifdef SV48_SUPPORTED
             bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
         `endif
-        `ifdef SV39
+        `ifdef SV39_SUPPORTED
             bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);

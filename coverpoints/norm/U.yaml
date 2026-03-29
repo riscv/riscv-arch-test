@@ -2,3 +2,46 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # The top two bits (csr[11:10]) indicate whether the register is read/write
+  # (00,01, or 10) or read-only (11).
+  - name: Zicsr_rw
+    coverpoint: ["U_ucsr_cg/cp_csr_ro"]
+
+  # The next two bits (csr[9:8]) encode the lowest privilege level that can access
+  # the CSR.
+  - name: Zicsr_access
+    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+
+  # Attempts to access a CSR without appropriate privilege level raise
+  # illegal-instruction exceptions or, as described in &lt;&lt;sec:hcauses&gt;&gt;,
+  # virtual-instruction exceptions.
+  - name: Zicsr_illegal_mode
+    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+
+  # Attempts to write a read-only register raise illegal-instruction exceptions.
+  - name: Zicsr_illegal_acc
+    coverpoint: ["U_ucsr_cg/cp_csr_ro"]
+
+  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
+  # illegal-instruction exceptions on machine-mode access to the latter set of
+  # registers.
+  - name: Zicsr_debug-illegal
+    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
+
+  # The ECALL instruction is used to make a service request to the execution
+  # environment.
+  - name: ecall_op
+    coverpoint: ["U_privinst_cg/cp_uprivinst ecall bin"]
+
+  # The EBREAK instruction is used to return control to a debugging environment.
+  - name: ebreak_op
+    coverpoint: ["U_privinst_cg/cp_uprivinst ebreak bin"]
+
+  - name: sret_in_S_mode
+    coverpoint: ["U_privinst_cg/cp_sprivinst mret bin"]
+
+  - name: sret_in_U_mode
+    coverpoint: ["U_privinst_cg/cp_uprivinst sret bin"]
+
+  - name: sret_presence
+    coverpoint: ["U_privinst_cg/cp_sprivinst sret bin"]

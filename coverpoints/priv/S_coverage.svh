@@ -114,6 +114,8 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
         bins ecall  = {ECALL};
         bins ebreak = {EBREAK};
         bins mret   = {MRET};
+        bins sret   = {SRET};
+        bins sfence_vma = {SFENCE_VMA};
     }
     mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};

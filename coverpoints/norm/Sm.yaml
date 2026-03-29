@@ -568,7 +568,7 @@ normative_rule_definitions:
   - name: mstatus_fs_vs_xs_off_op
     coverpoint:
       [
-        "mF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO: some moved to UF; TODO for Vector",
+        "SmF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO: some moved to UF; TODO for Vector",
       ]
 
   # When the status is Initial, the corresponding state should have an initial

@@ -1,5 +1,5 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for OpenHW CV32E20 core
+# RVMODEL macro definitions for CV32E40P core
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _COMPLIANCE_MODEL_H
@@ -12,9 +12,18 @@
         .popsection;
 
 ##### STARTUP #####
-
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+/*
+ * Perform boot operations.
+ * CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
+ * cycle/instret increment as Zicntr tests expect.
+ * .option arch, +zicsr is needed because I tests compile with -march=rv32i
+ * which does not include Zicsr (binutils >= 2.38).
+ */
+#define RVMODEL_BOOT \
+  .option push           ;\
+  .option arch, +zicsr   ;\
+  csrwi mcountinhibit, 0 ;\
+  .option pop            ;
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
@@ -22,38 +31,29 @@
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
-# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
-  li x1, 123456789        ;\
-  li t0, 0x20000000       ;\
-  write_halt_pass:        ;\
-    sw x1, 0(t0)          ;\
-    sw x0, 4(t0)          ;\
+  li x1, 123456789                ;\
+  li x2, 0x20000000       ;\
+  write_halt_pass:      ;\
+    sw x1, 0(x2)          ;\
+    sw x0, 4(x2)          ;\
   self_loop_pass:         ;\
     j self_loop_pass      ;\
 
 # Terminate test with a fail indication.
-# When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
-  li t0, 0x20000000       ;\
-  write_halt_fail:        ;\
-    sw x1, 0(t0)          ;\
-    sw x0, 4(t0)          ;\
+  li x2, 0x20000000       ;\
+  write_halt_fail:      ;\
+    sw x1, 0(x2)          ;\
+    sw x0, 4(x2)          ;\
   self_loop_fail:         ;\
     j self_loop_fail      ;\
 
 ##### IO #####
 
-# Initialization steps needed prior to writing to the console
-# _R1, _R2, and _R3 can be used as temporary registers if needed.
-# Do not modify any other registers (or make sure to restore them).
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
-# Prints a null-terminated string using a DUT specific mechanism.
-# A pointer to the string is passed in _STR_PTR.
-# _R1, _R2, and _R3 can be used as temporary registers if needed.
-# Do not modify any other registers (or make sure to restore them).
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
 1:                           ;                        \
   lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
@@ -77,27 +77,21 @@
  * workaround), refer to the instructions here:
  * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
  */
-#define RVMODEL_MTIME_ADDRESS  /* unimplemented */
+#define RVMODEL_MTIME_ADDRESS
+#define RVMODEL_MTIMECMP_ADDRESS
 
-#define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
-
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)
-
 #define RVMODEL_SET_MSW_INT(_R1, _R2)
-
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)
 
 ##### Supervisor Interrupts #####
 
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)
-
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)
-
 #define RVMODEL_SET_SSW_INT(_R1, _R2)
-
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
 #endif // _COMPLIANCE_MODEL_H

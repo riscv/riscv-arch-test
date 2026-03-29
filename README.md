@@ -93,6 +93,9 @@ cd riscv-gnu-toolchain
 ./configure --prefix=</path/to/install> --with-multilib-generator="rv32e-ilp32e--;rv32i-ilp32--;rv32im-ilp32--;rv32iac-ilp32--;rv32imac-ilp32--;rv32imafc-ilp32f--;rv32imafdc-ilp32d--;rv64i-lp64--;rv64ic-lp64--;rv64iac-lp64--;rv64imac-lp64--;rv64imafdc-lp64d--;rv64im-lp64--;"
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
+> **Note for Local/Non-Root Installations:**
+> If you are setting up the ACT framework on a personal machine and want to avoid using `sudo` or modifying root directories, you can install the tools locally in your home directory. 
+> Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv-tools/riscv-gnu-toolchain`) and run `make` without `sudo`.
 
 **Important**: Add the toolchain to your `PATH` by adding this line to your `~/.bashrc`:
 
@@ -119,6 +122,9 @@ curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-
 ```
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
+
+> **Note:** Similarly, for local installations, you can extract the Sail model into your home directory without `sudo` by specifying a local path:
+> `curl --location <url> | tar xvz --directory=$HOME/riscv-tools/sail-riscv --strip-components=1`
 
 Verify the installation:
 

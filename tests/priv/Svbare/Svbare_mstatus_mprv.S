@@ -58,13 +58,7 @@ RVTEST_BEGIN
 main:
   LI( a2, 0x800)              // Test signature initialization
 
-  #if __riscv_xlen == 64
-    LI( a0, 0x0123456789ABCDEF)
-  #else
-    LI( a0, 0x789ABCDE)
-  #endif
-
-  CSRW(satp, a0)              // Set satp.MODE = Bare
+  CSRW(satp, x0)              // Set satp.MODE = Bare
 
   satp_bare:
   RVTEST_SIGUPD_CSR_READ(satp, a4, satp_bare, satp_bare_str)

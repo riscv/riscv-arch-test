@@ -41,25 +41,13 @@ covergroup Svbare_cg with function sample(ins_t ins);
         }
     `endif
 
-    `ifdef XLEN64
-        satp_asid_ppn: coverpoint ins.current.csr[12'h180][59:0] {
-            bins all_zero = {60'b0};
-            bins not_zero = {[1:$]};
-        }
-    `else
-        satp_asid_ppn: coverpoint ins.current.csr[12'h180][30:0] {
-            bins all_zero = {31'b0};
-            bins not_zero = {[1:$]};
-        }
-    `endif
 
-    satp_bare_mode:       cross satp_bare, satp_asid_ppn;
-    satp_bare_mprv_load:  cross satp_bare, mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m;
-    satp_bare_mprv_store: cross satp_bare, mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m;
-    satp_bare_mprv_exec:  cross satp_bare, mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m;
-    satp_bare_load:       cross satp_bare, read_acc, priv_mode_s_u;
-    satp_bare_store:      cross satp_bare, write_acc, priv_mode_s_u;
-    satp_bare_exec:       cross satp_bare, exec_acc, priv_mode_s_u;
+    cp_satp_bare_mprv_load:  cross satp_bare, mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m;
+    cp_satp_bare_mprv_store: cross satp_bare, mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m;
+    cp_satp_bare_mprv_exec:  cross satp_bare, mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m;
+    cp_satp_bare_load:       cross satp_bare, read_acc, priv_mode_s_u;
+    cp_satp_bare_store:      cross satp_bare, write_acc, priv_mode_s_u;
+    cp_satp_bare_exec:       cross satp_bare, exec_acc, priv_mode_s_u;
 
 endgroup
 

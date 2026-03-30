@@ -212,6 +212,8 @@ def _generate_questa_report(ucdb: Path, report_prefix: Path) -> None:
             capture_output=True,
         )
         _remove_questa_duplicates(uncovered_report)
+    elif uncovered_report.exists():
+        uncovered_report.unlink()
 
     _questa_report_to_summary(full_report, summary_report)
 

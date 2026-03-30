@@ -31,17 +31,17 @@ normative_rule_definitions:
   # The ECALL instruction is used to make a service request to the execution
   # environment.
   - name: ecall_op
-    coverpoint: ["U_privinst_cg/cp_uprivinst ecall bin"]
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst ecall bin"]
 
   # The EBREAK instruction is used to return control to a debugging environment.
   - name: ebreak_op
-    coverpoint: ["U_privinst_cg/cp_uprivinst ebreak bin"]
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst ebreak bin"]
 
   - name: sret_in_S_mode
-    coverpoint: ["U_privinst_cg/cp_sprivinst mret bin"]
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst mret bin"]
 
   - name: sret_in_U_mode
-    coverpoint: ["U_privinst_cg/cp_uprivinst sret bin"]
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst sret bin"]
 
   - name: sret_presence
-    coverpoint: ["U_privinst_cg/cp_sprivinst sret bin"]
+    coverpoint: ["U_uprivinst_cg/cp_uprivinst sret bin"]

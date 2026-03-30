@@ -1027,7 +1027,7 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39_SUPPORTED_SUPPORTED
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }

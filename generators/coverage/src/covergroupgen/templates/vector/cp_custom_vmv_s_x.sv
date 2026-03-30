@@ -1,11 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_voffgroup_vd_lmul8
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_voffgroup_vd_lmul2/4/8
     //////////////////////////////////////////////////////////////////////////////////
 
     // Custom coverpoints for vmv.s.x
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
 
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
@@ -36,4 +44,4 @@
     cp_custom_voffgroup_vd_lmul4:     cross std_vec, vtype_lmul_4, vd_all_reg_unaligned_lmul_4;
     cp_custom_voffgroup_vd_lmul8:     cross std_vec, vtype_lmul_8, vd_all_reg_unaligned_lmul_8;
 
-    //// end cp_custom_voffgroup_vd_lmul8////////////////////////////////////////////////
+    //// end cp_custom_voffgroup_vd_lmul2/4/8 ////////////////////////////////////////////////

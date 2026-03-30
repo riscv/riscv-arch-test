@@ -93,9 +93,10 @@ cd riscv-gnu-toolchain
 ./configure --prefix=</path/to/install> --with-multilib-generator="rv32e-ilp32e--;rv32i-ilp32--;rv32im-ilp32--;rv32iac-ilp32--;rv32imac-ilp32--;rv32imafc-ilp32f--;rv32imafdc-ilp32d--;rv64i-lp64--;rv64ic-lp64--;rv64iac-lp64--;rv64imac-lp64--;rv64imafdc-lp64d--;rv64im-lp64--;"
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
+
 > [!NOTE]
->  for Local/Non-Root Installations:**
-> If you don't have sudo access, you can install the tools locally in your home directory. 
+> for Local/Non-Root Installations:\*\*
+> If you don't have sudo access, you can install the tools locally in your home directory.
 > Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
 
 **Important**: Add the toolchain to your `PATH` by adding this line to your `~/.bashrc`:

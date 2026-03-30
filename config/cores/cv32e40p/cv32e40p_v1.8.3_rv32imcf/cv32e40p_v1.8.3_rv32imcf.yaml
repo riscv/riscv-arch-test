@@ -18,7 +18,6 @@ implemented_extensions: # VERIFIED — manual documents these extensions as impl
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Sm, version: "= 1.11.0" }
-  - { name: Smhpm, version: "= 1.11.0" }
   - { name: F, version: "= 2.2.0" } # FPU=1, ZFINX=0 — standard F with dedicated f0-f31 registers
 
 params:
@@ -161,5 +160,77 @@ params:
       false,
       false,
       false, # 24..31 (unimplemented)
+    ]
+  NUM_PMP_ENTRIES: 0
+  PMP_GRANULARITY: 2
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  SCOUNTENABLE_EN: # Needed until https://github.com/riscv/riscv-unified-db/pull/1773 is merged
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
 # end

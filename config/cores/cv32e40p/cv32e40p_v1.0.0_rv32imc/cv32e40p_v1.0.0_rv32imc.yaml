@@ -19,7 +19,6 @@ implemented_extensions: # VERIFIED — intro.rst: standard extensions table
   - { name: Zifencei, version: "= 2.0" } # intro.rst: "Zifencei: Instruction-Fetch Fence, 2.0, always enabled"
   - { name: Zicntr, version: "= 2.0" } # intro.rst: "Zicount: Performance Counters, 2.0, always enabled" (renamed Zicntr in ratified spec)
   - { name: Sm, version: "= 1.11.0" } # intro.rst: "CV32E40P implements the Machine ISA version 1.11"; M-Mode, trap handling, CSRs
-  - { name: Smhpm, version: "= 1.11.0" } # perf_counters.rst: mcycle, minstret, mhpmcounterX implemented; NUM_MHPMCOUNTERS=1 default
 
 params:
   # XLEN parameters
@@ -151,5 +150,77 @@ params:
       false,
       false,
       false, # 24..31 (unimplemented)
+    ]
+  NUM_PMP_ENTRIES: 0
+  PMP_GRANULARITY: 2
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  SCOUNTENABLE_EN: # Needed until https://github.com/riscv/riscv-unified-db/pull/1773 is merged
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
 # end

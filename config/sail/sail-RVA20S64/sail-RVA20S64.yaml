@@ -268,3 +268,5 @@ params:
       true,
       true,
     ]
+  NUM_PMP_ENTRIES: 0
+  PMP_GRANULARITY: 2

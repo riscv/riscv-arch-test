@@ -37,7 +37,7 @@ normative_rule_definitions:
   - name: ebreak_op
     coverpoint: ["U_uprivinst_cg/cp_uprivinst ebreak bin"]
 
-  - name: sret_in_S_mode
+  - name: mret_in_U_mode
     coverpoint: ["U_uprivinst_cg/cp_uprivinst mret bin"]
 
   - name: sret_in_U_mode

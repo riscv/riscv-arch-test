@@ -70,8 +70,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN git clone --depth 1 https://github.com/riscv/riscv-gnu-toolchain /tmp/riscv-gnu-toolchain \
  && cd /tmp/riscv-gnu-toolchain \
+ && sed -i 's/c,c++/c/g' Makefile.in \
+ && sed -i 's/c,c++,fortran/c/g' Makefile.in \
  && ./configure \
         --prefix="${RISCV_TOOLCHAIN_PREFIX}" \
+        --disable-gdb \
+        --disable-qemu \
+        --disable-linux \
+        --disable-nls \
+        --enable-strip \
         --with-multilib-generator="\
 rv32e-ilp32e--;\
 rv32i-ilp32--;\
@@ -85,7 +92,18 @@ rv64ic-lp64--;\
 rv64iac-lp64--;\
 rv64imafdc-lp64d--;\
 rv64im-lp64--;" \
- && make -j"$(nproc)" \
+ && GCC_EXTRA_CONFIGURE_FLAGS="\
+--enable-languages=c \
+--disable-gcov \
+--disable-lto \
+--disable-libgomp \
+--disable-libssp \
+--disable-libquadmath \
+--disable-decimal-float \
+--disable-libsanitizer \
+--disable-libvtv" \
+    BINUTILS_TARGET_FLAGS_EXTRA="--disable-gprof --disable-gprofng" \
+    make -j"$(nproc)" \
  && rm -rf /tmp/riscv-gnu-toolchain
 
 # Stage 2: fetch sail-riscv binary

@@ -1214,7 +1214,7 @@ spcl_\__MODE__\()chk4ecall:
 .else
    .ifc \__MODE__ , S
      #ifdef rvtest_htrap_routine
-        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-HS<-S)
+        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S)
      #else
         .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save area    (M<-S)
      #endif

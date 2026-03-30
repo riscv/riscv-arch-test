@@ -1,0 +1,165 @@
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32E40P, a configuration of the CORE-V project.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32e40p_v1.8.3_rv32imcf
+description: CV32E40P v1.8.3 (CORE-V small) - RV32IMCF configuration DUT (FPU=1, ZFINX=0, mimpid=1)
+implemented_extensions: # VERIFIED — manual documents these extensions as implemented
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcf, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: Smhpm, version: "= 1.11.0" }
+  - { name: F, version: "= 2.2.0" } # FPU=1, ZFINX=0 — standard F with dedicated f0-f31 registers
+
+params:
+  # XLEN parameters (VERIFIED)
+  MXLEN: 32 # VERIFIED — intro.rst line 72; RV32I base ISA
+  #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
+  PHYS_ADDR_WIDTH: 32 # VERIFIED — control_status_registers.rst; 32-bit addressing
+
+  # MISA (VERIFIED)
+  MUTABLE_MISA_M: false # VERIFIED — M bit is RO per control_status_registers.rst table
+  MUTABLE_MISA_C: false # VERIFIED — C bit is RO per control_status_registers.rst table
+  MUTABLE_MISA_F: false # VERIFIED — control_status_registers.rst:1444,1457: F bit is RO; writes ignored; value = FPU&&!ZFINX (not runtime-mutable)
+  MISA_CSR_IMPLEMENTED: true # VERIFIED — MISA CSR (0x301) documented
+
+  # endianness (VERIFIED)
+  M_MODE_ENDIANNESS: little # VERIFIED — intro.rst line 77 (little-endian architecture)
+  #U_MODE_ENDIANNESS: little
+
+  # trap/exception behavior (Section 5 — Trap & Exception Behavior)
+  #TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_ECALL_FROM_M: true # VERIFIED — exceptions_interrupts.rst:122 "cannot be disabled"
+  TRAP_ON_EBREAK: true # VERIFIED — exceptions_interrupts.rst Exception part has table with excepropm code breakpoint
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst:122–125 "cannot be disabled"
+  TRAP_ON_RESERVED_INSTRUCTION: true # VERIFIED — exceptions_interrupts.rst does mention this implicitly with FPU disabled, rtl shows that it also traps on PULP extensions, undefined opcodes, and any instruction not explicitly decoded
+  TRAP_ON_UNIMPLEMENTED_CSR: true # VERIFIED - rtl code from decoder.sv shows case statement for illegal instructions (if we configure it without FPU for example), there is default case (this is our situation!)
+  TRAP_ON_ILLEGAL_WLRL:
+    false # VERIFIED - checked decoder.sv it only traps illegal csrs, cs_registers.sv does only masking
+
+
+    # MTVAL reporting (Section 6 — mtval CSR)
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false # VERIFIED — registers.sv: mtval is hardwired to 0
+  MTVAL_WIDTH: 32 # 32-bit field, RO hardwired to 0 — all REPORT_* flags are false
+
+  #   # Misaligned load/store support (Section 7 — Misaligned Load/Store)
+  MISALIGNED_LDST: true # VERIFIED — load_store_unit.rst performed as two bustransactions (this is little confisuing udb asks Does it perform non-atomic misaligned loads/stores.)
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low # VERIFIED — load_store_unit.rst never raises exception; DO we need this parameter if above is true? It seems like this is only relevant if above is false, but we can include it for completeness?
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # VERIFIED — load_store_unit.rst performed as two bustransactions no ato
+  MISALIGNED_SPLIT_STRATEGY: custom # FROM MANUAL — load_store_unit.rst; lowest address is performed first from manual, UDB only has two options costume and sequential bytes
+
+  #   # CSR / implementation IDs (Section 3 — Implementation IDs) ## these are all verified by checking the manual for the relevant CSRs
+  ARCH_ID_VALUE: 0x00000004 # VERIFIED — control_status_registers.rst marchid=0x4
+  IMP_ID_VALUE: 0x1 # VERIFIED — cs_registers.sv:511-513: (FPU==1||COREV_PULP==1||COREV_CLUSTER==1)?32'h1:'b0; FPU=1 → mimpid=0x1; core_versions.rst:150-174 confirms
+  VENDOR_ID_BANK: 0xC # VERIFIED — mvendorid 0x602 decoded bits[31:7]=0xC (JEDEC bank 13)
+  VENDOR_ID_OFFSET: 0x2 # VERIFIED — mvendorid 0x602 decoded bits[6:0]=0x2 (manufacturer byte)
+
+  # MTVEC (Section 4 — mtvec WARL)
+  MTVEC_MODES: [0, 1] # VERIFIED — control_status_registers.rst:589 "both direct and vectored supported"
+  MTVEC_ACCESS: rw # VERIFIED — control_status_registers.rst:577 MODE[0] is RW, rtl confirms writible
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom # VERIFIED —  cok v32e40p_cs_registers.sv line 667 mtvec_mode_n = {1'b0, csr_wdata_int[0]};  // Only direct and vectored mode are supported, though because masking always produces a valid mode (0 or 1), no truly illegal state can ever be stored. The "illegal write" scenario is effectively unreachable.
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256 # VERIFIED — control_status_registers.rst:567 "256-byte aligned" also rtl  CSR_MTVEC: csr_rdata_int = {mtvec_q, 6'h0, mtvec_mode_q}; first 8 bits zero = 256 bytes
+  MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst:567 same reason as above
+
+  #   # Sm params (Section 9 — Sm Parameters)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED —exceptions_interrupts.rst:26: "core sets mepc to the current program counter" — implies precision
+  MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst: marchid (0xF12) is implemented
+  MIMPID_IMPLEMENTED: true # VERIFIED — core_versions.rst:117 mimpid=0 is a deliberate version encoding for baseline config; RTL non-FPU path groups it with mtval as "unimplemented" (misleading comment) but FPU path cs_registers.sv:511-512 confirms it is implemented with conditional value
+  PMA_GRANULARITY: 2 # QUESTIONABLE — no PMA hardware exists in RTL (no PMA checker, no PMA table, zero occurrences of "PMA" in RTL or docs); schema minimum is 2 (=4 bytes); OBI bus is 32-bit with byte enables (load_store_unit.sv:41 data_be_o[3:0]) making 4 bytes the natural minimum transaction granule
+  # Zicntr params
+  TIME_CSR_IMPLEMENTED: false # VERIFIED — perf_counters.rst:130-133: "user mode time(h) registers are not implemented, any access will cause an illegal instruction trap"
+
+  # F extension params (defined by F + Sm)
+  HW_MSTATUS_FS_DIRTY_UPDATE: imprecise # VERIFIED — cs_registers.sv:1034: marks FS=DIRTY on fregs_we_i OR fflags_we_i; fflags_we_i fires for ops like FCVT.W.S (writes INT reg, not FP reg) → not strictly precise; control_status_registers.rst:483: "to simplify... any F instructions except FSW"
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3] # VERIFIED — cs_registers.sv:964: mstatus_fs_n = FS_t'(csr_wdata_int[...]) with no masking; cv32e40p_pkg.sv:580-583: FS_OFF=0, FS_INITIAL=1, FS_CLEAN=2, FS_DIRTY=3; control_status_registers.rst:448-456: all 4 states documented as RW
+
+  # HPM Counters (Section 8 — HPM Counters)
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # VERIFIED — cs_registers.sv:1327-1342: 16 events defined (hpm_events[0..15]); for baseline config (no COREV_CLUSTER, no APU/FPU) events 0-10 are active, events 11-15 are hardwired 0
+  HPM_COUNTER_EN: # VERIFIED — cs_registers.sv:41 NUM_MHPMCOUNTERS=1 default; line 1432: only index 3 active when NUM_MHPMCOUNTERS=1; UDB requires first 3 entries false
+    [
+      false, # index 0 (CY — must be false per UDB schema)
+      false, # index 1 (TM — must be false per UDB schema)
+      false, # index 2 (IR — must be false per UDB schema)
+      true, # index 3 (MHPMCOUNTER3 — only active counter, cs_registers.sv:1432)
+      false, # 4
+      false,
+      false,
+      false, # 7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31 (unimplemented)
+    ]
+  COUNTINHIBIT_EN: # VERIFIED — cs_registers.sv:1421-1437; indices 0,2,3 inhibitable via mcountinhibit_q; index 1 always false per UDB; unimplemented counters hardwired 0
+    [
+      true, # index 0 (MCYCLE inhibit — cs_registers.sv:1423-1425: !mcountinhibit_q[0])
+      false, # index 1 (TM — always false, mcountinhibit.TM is read-only-0 per UDB)
+      true, # index 2 (MINSTRET inhibit — cs_registers.sv:1428-1431: !mcountinhibit_q[2])
+      true, # index 3 (MHPMCOUNTER3 inhibit — cs_registers.sv:1434-1437: !mcountinhibit_q[3])
+      false, # 4
+      false,
+      false,
+      false, # 7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31 (unimplemented)
+    ]
+# end

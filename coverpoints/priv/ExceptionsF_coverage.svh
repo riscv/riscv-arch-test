@@ -63,12 +63,46 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
             wildcard bins fmvp         = {32'b1011001_?????_?????_000_?????_1010011};
         `endif
     }
+    loadops: coverpoint ins.current.insn {
+        wildcard bins flw = {FLW};
+        `ifdef ZFH_SUPPORTED
+            wildcard bins flh = {FLH};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fld = {FLD};
+        `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins flq = {FLQ};
+        `endif
+    }
+    storeops: coverpoint ins.current.insn {
+        wildcard bins fsw = {FSW};
+        `ifdef ZFH_SUPPORTED
+            wildcard bins fsh = {FSH};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fsd = {FSD};
+        `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins fsq = {FSQ};
+        `endif
+    }
+    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+    }
+    adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[3:0]  {
+        // auto fills 0000 through 1111
+    }
+
 
     // main coverpoints
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
-    // cp_mstatus_fs_csr_write:  redundant, covered by cp_mstatus_fs_illegal_instr
-    cp_badfrm: cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
-    cp_mstatus_fs_legal: cross instrs, mstatus_FS_status, frm_legal;
+    cp_badfrm:                   cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
+    cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
+    cp_load_address_misaligned:  cross loadops, adr_LSBs;
+    cp_load_access_fault:        cross loadops, illegal_address;
+    cp_store_address_misaligned: cross storeops, adr_LSBs;
+    cp_store_access_fault:       cross storeops, illegal_address;
 endgroup
 
 function void exceptionsf_sample(int hart, int issue, ins_t ins);

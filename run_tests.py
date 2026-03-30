@@ -20,7 +20,7 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: Test File ".*": (PASSED|FAILED|SIGRUN)')
+_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -111,13 +111,13 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
         )
     elif summary_failed and not exit_failed:
         print(
-            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports FAILED but exit code {result.returncode} indicates success"
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {result.returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
             f"\n         Log: {dim(str(log_file))}"
         )
     elif exit_failed and not summary_failed:
         print(
-            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY PASSED but exit code {result.returncode} indicates failure"
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {result.returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
             f"\n         Log: {dim(str(log_file))}"
         )

@@ -642,16 +642,16 @@
         // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
         // clang does not allow implicit string concatenation with .string directives
         #ifdef RVTEST_SELFCHECK
-            .ascii "\nRVCP-SUMMARY PASSED: Test File \""
+            .ascii "\nRVCP-SUMMARY: TEST PASSED - Test File \""
             .ascii TEST_FILE
             .asciz "\"\n\n"
         #else
-            .ascii "\nRVCP-SUMMARY SIGRUN: Test File \""
+            .ascii "\nRVCP-SUMMARY: TEST SIGRUN - Test File \""
             .ascii TEST_FILE
             .asciz "\"\n"
         #endif
     failstr:
-        .ascii "\nRVCP-SUMMARY FAILED: Test File \""
+        .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE
         .asciz "\"\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:

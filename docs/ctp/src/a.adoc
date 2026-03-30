@@ -45,7 +45,7 @@ include::{testplansdir}/Zalrsc.adoc[]
 
 include::norm/Zalrsc_norm_rules.adoc[]
 
-The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether a `sc` would succeed or fail on every DUT.  We anticipate most DUTs will make reasonable choices that align with reference models, and that reference models can be extended with parameters to match all behaviors that are commercially important.  However, waivers may be required on unusual DUTs that do not match any reasonable reference model.
+The spec imposes no requirements on reservation set form, including alignment, NAPOT, or even being contiguous.  Therefore, it is not practical to build reference models that reliably predict whether a `sc` would succeed or fail on every DUT.  Current profiles require Za64rs or Za1284s, which can be supported by reference models. However, unusual DUTs that do not match any reasonable reference model may not be able to pass this test suite.
 
 TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as

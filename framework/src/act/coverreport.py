@@ -112,7 +112,7 @@ def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
     avg = total_pct / parsed if parsed else 0.0
 
     if partial:
-        print(_red(f" RVCP FAIL: {config_name} Coverage "))
+        print(_red(f" RVCP COVERAGE INCOMPLETE: {config_name}"))
         print(f"  {len(entries)} covergroups, average coverage {avg:.2f}%")
         print(f"  Partially covered covergroups: {len(partial)}")
         for name, metric, goal, bins, status in partial:
@@ -121,7 +121,7 @@ def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
             uncovered_str = f"  {uncovered}" if uncovered.exists() else ""
             print(f"    {name} {metric} {uncovered_str}")
     else:
-        print(_green(f" RVCP PASS: {config_name} Coverage "))
+        print(_green(f" RVCP COVERAGE COMPLETE: {config_name}"))
         print(f"  {len(entries)} covergroups all with 100% coverage")
 
 

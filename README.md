@@ -295,8 +295,8 @@ All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on 
 
 Each test will print one of the following to the console:
 
-- **PASSED**: `RVCP-SUMMARY PASSED: Test File "<test_name.S>"`
-- **FAILED**: `RVCP-SUMMARY FAILED: Test File "<test_name.S>"`
+- **PASSED**: `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`
+- **FAILED**: `RVCP-SUMMARY: TEST FAILED - Test File "<test_name.S>"`
 
 ### Troubleshooting
 

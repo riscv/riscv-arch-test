@@ -170,7 +170,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
 @add_priv_test_generator(
     "ExceptionsZaamo",
     required_extensions=["I", "Zicsr", "Zaamo", "Sm"],
-    march_extensions=["I", "Zicsr", "A", "Zaamo", "Zabha"],
+    march_extensions=["I", "Zicsr", "Zaamo", "Zabha"],
 )
 def make_exceptionszaamo(test_data: TestData) -> list[str]:
     """Main entry point for Zaamo exception test generation."""

@@ -18,7 +18,7 @@ import typer
 
 from act.build import build
 from act.build_plan import ConfigData, generate_build_plan
-from act.config import load_config
+from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
@@ -63,6 +63,10 @@ def run_act(
     dry_run: Annotated[
         bool, typer.Option("--dry-run", "-n", help="Show what would be built without executing")
     ] = False,
+    coverage_simulator: Annotated[
+        CoverageSimulator,
+        typer.Option(help="Coverage simulator backend", case_sensitive=False),
+    ] = CoverageSimulator.QUESTA,
 ) -> None:
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
@@ -111,6 +115,7 @@ def run_act(
         coverpoint_dir.absolute(),
         workdir.absolute(),
         coverage,
+        coverage_simulator,
         debug,
         fast,
     )

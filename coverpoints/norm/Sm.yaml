@@ -391,6 +391,18 @@ normative_rule_definitions:
   - name: mstatus_mprv_clr_mret_sret_less_priv
     coverpoint: ["{Sm_mprivinst_cg/S_sprivinst_cg}/{cp_mret, cp_sret}"]
 
+  - name: mret_op
+    coverpoint: ["Sm_mprivinst_cg/cp_mret"]
+
+  - name: sret_presence
+    coverpoint: ["Sm_mprivinst_cg/cp_sret"]
+
+  - name: sret_ill_inst_exc_rst
+    coverpoint: ["TODO"]
+
+  - name: sret_in_M_mode
+    coverpoint: ["Sm_mprivinst_cg/cp_sret"]
+
   # When MXR=0, only loads from pages marked readable (R=1 in
   # &lt;&lt;sv32pte&gt;&gt;) will succeed. When MXR=1, loads from pages marked
   # either readable or executable (R=1 or X=1) will succeed. MXR has no effect when
@@ -556,13 +568,16 @@ normative_rule_definitions:
   - name: mstatus_fs_vs_xs_off_op
     coverpoint:
       [
-        "SmF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO for Vector",
+        "SmF_cg/{cp_fcsrwalk, cp_frm_walk, cp_fflags_walk, cp_mstatus_FS_transition}, TODO: some moved to UF; TODO for Vector",
       ]
 
   # When the status is Initial, the corresponding state should have an initial
   # constant value.
   - name: mstatus_fs_vs_xs_initial_op
-    coverpoint: ["TODO: test with float, vector"]
+    coverpoint:
+      [
+        "untested because initial constant value is not specified and can be changed by software",
+      ]
 
   # When the status is Clean, the corresponding state is potentially different from
   # the initial value, but matches the last value stored on a context swap.
@@ -1254,3 +1269,37 @@ normative_rule_definitions:
       [
         "Untested; S-mode handler does not have access to M-mode CSRs and changing to M-mode disturbs CSRs",
       ]
+
+  # Attempts to write a read-only register raise illegal-instruction exceptions.
+  - name: Zicsr_illegal_acc
+    coverpoint: ["Sm_mcsr_cg/cp_csr_ro"]
+
+  # Attempts to access a CSR without appropriate privilege level raise
+  # illegal-instruction exceptions or, as described in &lt;&lt;sec:hcauses&gt;&gt;,
+  # virtual-instruction exceptions.
+  - name: Zicsr_illegal_mode
+    coverpoint: ["Sm_mcsr_cg/cp_csr_insufficient_priv"]
+
+  # A read/write register might also contain some bits that are read-only, in which
+  # case writes to the read-only bits are ignored.
+  - name: Zicsr_write_ro
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access (e.g. misa.MXL)"]
+
+  # For forward compatibility, implementations that do not furnish these fields must
+  # make them read-only zero. These fields are labeled WPRI in the register
+  # descriptions.
+  - name: Zicsr_wpri_roz
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access (e.g. mstatus)"]
+
+  # Software should not write anything other than legal values to such a field, and
+  # should not assume a read will return a legal value unless the last write was of
+  # a legal value, or the register has not been written since another operation
+  # (e.g., reset) set the register to a legal value. These fields are labeled WLRL
+  # in the register descriptions.
+  - name: Zicsr_wlrl
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access mcause"]
+
+  # Implementations will not raise an exception on writes of unsupported values to a
+  # WARL field.
+  - name: Zicsr_warl
+    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access"]

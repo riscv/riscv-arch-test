@@ -112,13 +112,16 @@ def print_coverage_summary(overall_summary: Path, config_name: str) -> None:
     avg = total_pct / parsed if parsed else 0.0
 
     if partial:
-        print(_red(f" RVCP: {config_name} Coverage FAIL"))
+        print(_red(f" RVCP COVERAGE INCOMPLETE: {config_name}"))
         print(f"  {len(entries)} covergroups, average coverage {avg:.2f}%")
         print(f"  Partially covered covergroups: {len(partial)}")
         for name, metric, goal, bins, status in partial:
-            print(f"    {name} {metric} {goal} {bins} {status}")
+            stem = name.split("_")[0]
+            uncovered = overall_summary.parent / f"{stem}_uncovered.txt"
+            uncovered_str = f"  {uncovered}" if uncovered.exists() else ""
+            print(f"    {name} {metric} {uncovered_str}")
     else:
-        print(_green(f" RVCP: {config_name} Coverage PASS"))
+        print(_green(f" RVCP COVERAGE COMPLETE: {config_name}"))
         print(f"  {len(entries)} covergroups all with 100% coverage")
 
 
@@ -209,6 +212,8 @@ def _generate_questa_report(ucdb: Path, report_prefix: Path) -> None:
             capture_output=True,
         )
         _remove_questa_duplicates(uncovered_report)
+    elif uncovered_report.exists():
+        uncovered_report.unlink()
 
     _questa_report_to_summary(full_report, summary_report)
 

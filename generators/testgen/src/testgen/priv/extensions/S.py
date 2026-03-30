@@ -166,7 +166,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "# Testcase: sfence.vma instruction",
         test_data.add_testcase("sfence_vma", coverpoint, covergroup),
         "sfence.vma          # test sfence.vma instruction",
-        "nop                 # trap handler skips following instruction so this should not be executed",
+        "nop                 # might be skipped",
     ]
 
     return lines

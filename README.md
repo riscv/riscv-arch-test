@@ -95,8 +95,6 @@ sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
 > [!NOTE]
-> for Local/Non-Root Installations:
-> 
 > If you don't have sudo access, you can install the tools locally in your home directory.
 > Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
 
@@ -127,7 +125,6 @@ curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
 
 > [!NOTE]
-> 
 > If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
 > `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
 

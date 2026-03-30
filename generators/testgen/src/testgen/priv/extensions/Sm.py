@@ -8,7 +8,7 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -443,7 +443,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "Read, write all 1s, write all 0s, set all 1s, set all 0s, restore all M-mode counters",
+            "Read, write nonzero, write all 0s, set nonzero, set all 0s, restore all M-mode counters",
         ),
     )
 
@@ -515,7 +515,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
         "mhpmcounter31h",
     ]
     for csr in cntrs:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        lines.extend(cntr_access_test(test_data, csr, covergroup, coverpoint))
 
     lines.extend(
         [
@@ -525,7 +525,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
         ]
     )
     for csr in cntrsh:
-        lines.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        lines.extend(cntr_access_test(test_data, csr, covergroup, coverpoint))
 
     lines.append("#endif")
 

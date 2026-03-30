@@ -435,5 +435,5 @@ normative_rule_definitions:
   - name: sret_op
     coverpoint: ["S_privinst_cg/cp_privinst sret bin"]
 
-  - name: sfence_fma_op
+  - name: sfence_vma_op
     coverpoint: ["S_privinst_cg/cp_sprivinst sfence_vma bin"]

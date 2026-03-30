@@ -20,7 +20,7 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-_SUMMARY_RE = re.compile(r'RVCP-SUMMARY (PASSED|FAILED|SIGRUN): Test File ".*"')
+_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -84,7 +84,7 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
     # Check log for RVCP-SUMMARY lines
     log_text = log_file.read_text(errors="replace")
     summaries = _SUMMARY_RE.findall(log_text)
-    summary_failed = "TEST FAILED" in summaries
+    summary_failed = "FAILED" in summaries
     summary_sigrun = "SIGRUN" in summaries
     no_summary = len(summaries) == 0
 

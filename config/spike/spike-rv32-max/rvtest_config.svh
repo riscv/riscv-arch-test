@@ -8,7 +8,7 @@
 // Define XLEN, used in covergroups
 `define XLEN32
 `define FLEN128
-`define VLEN1024
+`define VLEN128
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)

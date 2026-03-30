@@ -126,7 +126,7 @@ Add `/path/to/install/bin` to your `PATH` if you used a different directory than
 
 > [!NOTE]
 > If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
-> `curl --location <url> | tar xvz --directory=$HOME/riscv/sail-riscv --strip-components=1`
+> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
 
 Verify the installation:
 

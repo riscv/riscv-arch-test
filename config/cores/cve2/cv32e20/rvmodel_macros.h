@@ -5,7 +5,7 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-#define RVMODEL_DATA_SECTION 
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 

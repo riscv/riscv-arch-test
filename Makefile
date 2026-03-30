@@ -10,10 +10,10 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 
 WORKDIR     ?= work
 EXTENSIONS  ?= # Extensions to generate tests for. Leave blank to generate for all tests.
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,Svbare # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 # Exclusion Reasons:
 #  - Sm, S: Insufficient WARL configuration options.
-#  - Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,Svbare: sail-riscv missing support for Svade/Svadu causes mismatches. Resolved in upcoming sail-riscv release.
+#  - Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo: sail-riscv missing support for Svade/Svadu causes mismatches. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.

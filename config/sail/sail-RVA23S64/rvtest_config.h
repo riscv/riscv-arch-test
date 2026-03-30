@@ -4,7 +4,7 @@
 #define D_SUPPORTED
 #define ZFA_SUPPORTED
 #define F_SUPPORTED
-#define ZFH_SUPPORTED
+#define ZFHMIN_SUPPORTED
 #define ZBB_SUPPORTED
 #define ZBA_SUPPORTED
 #define ZBS_SUPPORTED

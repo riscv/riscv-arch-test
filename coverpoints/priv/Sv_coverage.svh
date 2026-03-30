@@ -162,13 +162,13 @@ covergroup Sv_VA_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         mode_supported: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -228,13 +228,13 @@ covergroup Sv_mstatus_mprv_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         satp_mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -257,26 +257,26 @@ covergroup Sv_mstatus_mprv_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -463,26 +463,26 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -501,23 +501,23 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         misaligned_PPN_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_i[26:0] != 27'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_i[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
                 bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_i[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
             `endif
         }
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
                 bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
             `endif
@@ -534,13 +534,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef XLEN64
         mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -763,36 +763,36 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     }
 
     cp_PTE_DAU_nleaf_read_s: cross PTE_DAU_d, PageType_d, load_page_fault, priv_mode_s {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
     cp_PTE_DAU_nleaf_read_u: cross PTE_DAU_d, PageType_d, load_page_fault, priv_mode_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
 
     cp_PTE_DAU_nleaf_write_s: cross PTE_DAU_d, PageType_d, store_page_fault, priv_mode_s {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
     cp_PTE_DAU_nleaf_write_u: cross PTE_DAU_d, PageType_d, store_page_fault, priv_mode_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
 
     cp_PTE_DAU_nleaf_exec_s: cross PTE_DAU_i, PageType_i, ins_page_fault, priv_mode_s {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_i.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_i.sv32_kilo); `endif
     }
     cp_PTE_DAU_nleaf_exec_u: cross PTE_DAU_i, PageType_i, ins_page_fault, priv_mode_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_i.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_i.sv32_kilo); `endif
     }
 
     cp_misaligned_exec_s: cross PTE_RWX_i, misaligned_PPN_i, ins_page_fault, exec_acc  { //pte.16
@@ -818,26 +818,26 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         canonical_page_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_canonical = {2'b11} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
                 bins sv48_giga_canonical = {2'b10} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
                 bins sv48_mega_canonical = {2'b01} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
                 bins sv48_kilo_canonical = {2'b00} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_canonical = {2'b10} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
                 bins sv39_mega_canonical = {2'b01} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
                 bins sv39_kilo_canonical = {2'b00} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
             `endif
         }
         canonical_page_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_canonical = {2'b11} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
                 bins sv48_giga_canonical = {2'b10} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
                 bins sv48_mega_canonical = {2'b01} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
                 bins sv48_kilo_canonical = {2'b00} iff ((ins.current.csr[12'h180][63:60] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_canonical = {2'b10} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
                 bins sv39_mega_canonical = {2'b01} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
                 bins sv39_kilo_canonical = {2'b00} iff ((ins.current.csr[12'h180][63:60] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
@@ -876,13 +876,13 @@ covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -906,26 +906,26 @@ covergroup Sv_res_global_pte_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_i: coverpoint ins.current.page_type_i {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             `endif
         }
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -1021,13 +1021,13 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         }
 
         mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }

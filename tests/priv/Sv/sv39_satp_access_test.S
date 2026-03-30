@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-//  1. Accessing satp in M and S mode -> Successful
-//  2. Accessing satp in U mode -> 3 Illegal Instruction exception
-//  3. Set satp.MODE to Sv39 and Bare -> Successful
-//  4. All zeros, ones and walking ones on the PPN field of satp when satp.MODE=Sv39 -> Successful
-//  5. All zeros, ones and walking ones on the ASID field of satp when satp.MODE=Sv39 -> Successful
-//  6. All zeros and random value to satp[59:0] when satp.MODE=Bare -> Successful
+//  1. Accessing satp in M mode -> Successful
+//  2. Accessing satp in S mode -> Successful
+//  3. Accessing satp in U mode -> 3 Illegal Instruction exceptions
+//  4. Set satp.MODE to Sv39 -> Successful
+//  5. All zeros, ones and walking ones on the PPN field of satp when satp.MODE=Sv39 -> Successful
+//  6. All zeros, ones and walking ones on the ASID field of satp when satp.MODE=Sv39 -> Successful
 //
 // Total Expected Faults :: 3
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -99,18 +99,13 @@ main:
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Test case 4: Set satp.MODE to Sv39 and Bare | Expected: Successful
+// Test case 4: Set satp.MODE to Sv39 | Expected: Successful
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(a0, SATP_MODE_SV39<<60)      // satp.MODE = 4'b1000 (Sv39)
   CSRW(satp, a0)
   test4_sv39:
   RVTEST_SIGUPD_CSR_READ(satp, a4, test4_sv39, test4_sv39_str)
-
-  li a0, 0                        // satp.MODE = 4'b0000 (Bare)
-  CSRW(satp, a0)
-  test4_bare:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test4_bare, test4_bare_str)
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -176,21 +171,6 @@ main:
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Test case 7: Zeros and random value in satp[59:0] when satp.MODE = Bare | Expected: Successful
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  li a0, 0                        // satp.MODE = Bare
-  CSRW(satp, a0)
-  test7_zeros:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test7_zeros, test7_zeros_str)
-
-  LI(a0, 0x0123456789ABCDEF)      // satp[59:0]=Random value, satp.MODE=Bare
-  CSRW(satp, a0)
-  test7_random:
-  RVTEST_SIGUPD_CSR_READ(satp, a4, test7_random, test7_random_str)
-
-
-//---------------------------------------------------------------------------------------------------------------------------------
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
@@ -203,15 +183,12 @@ test2_csrs_str:   .string "\"Mismatch on csrs in Test Case 2!\""
 test2_csrc_str:   .string "\"Mismatch on csrc in Test Case 2!\""
 test3_str:        .string "\"Mismatch in Test Case 3!\""
 test4_sv39_str:   .string "\"Mismatch on setting satp.MODE=Sv39 in Test Case 4!\""
-test4_bare_str:   .string "\"Mismatch on setting satp.MODE=Bare in Test Case 4!\""
 test5_zeros_str:  .string "\"Mismatch on setting satp.PPN=Zeros in Test Case 5!\""
 test5_ones_str:   .string "\"Mismatch on setting satp.PPN=Ones in Test Case 5!\""
 test5_walk_str:   .string "\"Mismatch on walking ones in satp.PPN in Test Case 5!\""
 test6_zeros_str:  .string "\"Mismatch on setting satp.ASID=Zeros in Test Case 6!\""
 test6_ones_str:   .string "\"Mismatch on setting satp.ASID=Ones in Test Case 6!\""
 test6_walk_str:   .string "\"Mismatch on walking ones in satp.ASID in Test Case 6!\""
-test7_zeros_str:  .string "\"Mismatch on setting satp[59:0]=Zeros when satp.MODE=Bare in Test Case 7!\""
-test7_random_str: .string "\"Mismatch on setting satp[59:0]=Random value when satp.MODE=Bare in Test Case 7!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

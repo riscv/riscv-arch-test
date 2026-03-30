@@ -1,12 +1,10 @@
 // --------------------------------------------------------------------------------------------------------------------------------
-// Developed by: Umer Shahid, Muhammad Zain, Hamza Ali, Muhammad Abdullah and Muhammad Ahmed
+// Developed by: Umer Shahid & Muhammad Zain
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-// 1. mstatus.MPRV set, mstatus.MPP = S-mode and virtualization is not enabled (Bare Mode):
-//        Then, in M-Mode, Load, Store & Execute is performed --> required: No Fault
-// 2. mstatus.MPRV set, mstatus.MPP = U-mode and virtualization is not enabled (Bare Mode):
-//        Then, in M-Mode, Load, Store & Execute is performed --> required: No Fault
+// 1. mstatus.MPRV set, mstatus.MPP = S-mode and virtualization is disabled (satp.MODE = Bare):
+// 2. mstatus.MPRV set, mstatus.MPP = U-mode and virtualization is disabled (satp.MODE = Bare):
 //
 // Total Expected Faults :: 0
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -17,7 +15,7 @@
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "mprv_vm_bare_mode.S"
+#define TEST_FILE "Svbare_mstatus_mprv.S"
 #define SIGUPD_COUNT 15
 #define TRAP_SIGUPD_COUNT 10
 #define rvtest_mtrap_routine
@@ -32,8 +30,7 @@ RVTEST_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
 .macro VERIFICATION_RWX TEST_CASE
-  // As we are in bare mode, we will test using physical address
-  LA(  a5, rvtest_data_1)
+  LA(  a5, rvtest_data_1)     // Load Physical Address
   addi a2, a2, 16
 
   // Test store permission
@@ -47,7 +44,6 @@ RVTEST_BEGIN
   nop
 
   // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
   \TEST_CASE\()_exec:
   jalr ra, a5, 0
   nop
@@ -62,8 +58,13 @@ RVTEST_BEGIN
 main:
   LI( a2, 0x800)              // Test signature initialization
 
+  CSRW(satp, x0)              // Set satp.MODE = Bare
+
+  satp_bare:
+  RVTEST_SIGUPD_CSR_READ(satp, a4, satp_bare, satp_bare_str)
+
 //---------------------------------------------------------------------------------------------------------------------------------
-// Test case 1: Set mstatus.MPRV and set mstatus.MPP to S Mode
+// Test case 1: Set mstatus.MPRV and set mstatus.MPP to S-Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(   t0, MSTATUS_MPRV)
@@ -76,13 +77,12 @@ main:
   test1_mstatus:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, test1_mstatus, test1_mstatus_str)
 
-  // Verify Load, Store & Execute in Bare mode
   VERIFICATION_RWX test1
 
   RVTEST_GOTO_MMODE
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Test case 2: Set mstatus.MPRV and set mstatus.MPP to U Mode
+// Test case 2: Set mstatus.MPRV and set mstatus.MPP to U-Mode
 //---------------------------------------------------------------------------------------------------------------------------------
 
   LI(   s7, MSTATUS_MPRV)
@@ -93,7 +93,6 @@ main:
   test2_mstatus:
   RVTEST_SIGUPD_CSR_READ(mstatus, a4, test2_mstatus, test2_mstatus_str)
 
-  // Verify Load, Store & Execute in Bare mode
   VERIFICATION_RWX test2
 
   RVTEST_GOTO_MMODE
@@ -119,6 +118,7 @@ rvtest_data_1:
 
 //---------------------------------------------------------------------------------------------------------------------------------
 
+satp_bare_str:     .string "\"Mismatch in satp value!\""
 test1_mstatus_str: .string "\"Mismatch in mstatus value in Test Case 1!\""
 test1_store_str:   .string "\"Mismatch during sw in Test Case 1!\""
 test1_load_str:    .string "\"Mismatch during lw in Test Case 1!\""

@@ -1,11 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4
     //////////////////////////////////////////////////////////////////////////////////
 
     // Custom coverpoints for Vector shift and clip instructions with wi operands
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
 
     vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
@@ -52,4 +60,4 @@
     cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2: cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vd_eq_vs2, vs2_reg_aligned_lmul_4;
     cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4: cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vd_eq_vs2, vs2_reg_aligned_lmul_8;
 
-    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4////////////////////////////////////////////////
+    //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////

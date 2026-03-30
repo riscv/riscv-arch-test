@@ -94,6 +94,10 @@ cd riscv-gnu-toolchain
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
+> [!NOTE]
+> If you don't have sudo access, you can install the tools locally in your home directory.
+> Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
+
 **Important**: Add the toolchain to your `PATH` by adding this line to your `~/.bashrc`:
 
 ```bash
@@ -119,6 +123,10 @@ curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-
 ```
 
 Add `/path/to/install/bin` to your `PATH` if you used a different directory than for the `riscv-gnu-toolchain`.
+
+> [!NOTE]
+> If you don't have `sudo` access, you can extract the Sail model into your home directory by specifying a local path:
+> `curl --location <url> | tar xvz --directory=$HOME/riscv/--strip-components=1`
 
 Verify the installation:
 
@@ -281,6 +289,8 @@ WORKDIR=</path/to/workdir> CONFIG_FILES=<your_config_directory>/test_config.yaml
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
+By default, the framework generates tests for all extensions listed in your UDB config file. To create tests for only a subset of the extensions that your DUT supports, set `EXTENSIONS` or `EXCLUDE_EXTENSIONS` when running `make`.
+
 Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]
@@ -293,8 +303,8 @@ All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on 
 
 Each test will print one of the following to the console:
 
-- **PASSED**: `RVCP-SUMMARY: Test File "<test_name.S>": PASSED`
-- **FAILED**: `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`
+- **PASSED**: `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`
+- **FAILED**: `RVCP-SUMMARY: TEST FAILED - Test File "<test_name.S>"`
 
 ### Troubleshooting
 

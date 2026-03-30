@@ -31,7 +31,7 @@ def gen_csr_read_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> s
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.sigupd_count += 1
     return (
-        f"{INDENT}# Read {csr_name} into x{check_reg} and check against expected.\n"
+        f"{INDENT}# Read {csr_name} into x{check_reg} and check against expected."
         f"RVTEST_SIGUPD_CSR_READ({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
     )
 
@@ -54,7 +54,7 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.sigupd_count += 1
     return (
-        f"{INDENT}# Write x{check_reg} to {csr_name}, read back and check against expected.\n"
+        f"{INDENT}# Write x{check_reg} to {csr_name}, read back and check against expected."
         f"RVTEST_SIGUPD_CSR_WRITE({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
     )
 
@@ -75,7 +75,8 @@ def csr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpo
     save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
-        f"\n# CSR Access Tests for {csr_name}",
+        "",
+        f"# CSR Access Tests for {csr_name}",
         f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
         f"li x{temp_reg}, -1           # x{temp_reg} = all 1s",
         test_data.add_testcase(f"{csr_name}_csrrw1", coverpoint, covergroup),
@@ -201,7 +202,8 @@ def cntr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverp
     save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
-        f"\n# CSR Access Tests for {csr_name}",
+        "",
+        f"# Counter Access Tests for {csr_name}",
         f"CSRR(x{save_reg}, {csr_name})    # Save CSR",
         "#if __riscv_xlen == 64",
         f"LI(x{temp_reg}, 0x123456789ABCFFFF)   # x{temp_reg} = 64-bit pattern",

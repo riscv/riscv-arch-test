@@ -13,3 +13,4 @@
     SPMPSm_perm_cg = new();          SPMPSm_perm_cg.set_inst_name("obj_SPMPSm_perm");
     SPMPSm_addr_cg = new();          SPMPSm_addr_cg.set_inst_name("obj_SPMPSm_addr");
     SPMPSm_paging_cg = new();        SPMPSm_paging_cg.set_inst_name("obj_SPMPSm_paging");
+    SPMPSm_spmpen_cg = new();        SPMPSm_spmpen_cg.set_inst_name("obj_SPMPSm_spmpen");

@@ -1,0 +1,22 @@
+# Parameter mappings for the SPMPSm test suite
+
+parameter_definitions:
+  - name: NUM_SPMP_ENTRIES
+    coverpoint: ["all SPMP coverpoints"]
+    effect: ["Determines the number of available SPMP entries (1-64). Tests adapt to the implemented count."]
+
+  - name: SPMP_GRAIN
+    coverpoint: ["cp_addr_match_na4, cp_addr_match_napot"]
+    effect: ["Minimum granularity of SPMP regions. NA4 is only available when grain is 0."]
+
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["cp_mpmpdeleg_pmpnum"]
+    effect: ["Total number of PMP entries in the implementation, determines delegation range."]
+
+  - name: MXLEN
+    coverpoint: ["all tests"]
+    effect: ["Implicitly tested by XLEN-dependent tests (e.g., spmpen/spmpenh on RV32)."]
+
+  - name: SXLEN
+    coverpoint: ["cp_spmpaddr_write, cp_spmpcfg_write"]
+    effect: ["Determines width of spmpcfg and spmpaddr registers."]

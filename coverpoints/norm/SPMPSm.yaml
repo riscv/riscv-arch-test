@@ -1,0 +1,167 @@
+# Mapping of normative rules to coverpoints for the SPMP test suite (Sspmp + Sm)
+
+normative_rule_definitions:
+  ##############################################
+  # Section 2.1: Extension Dependencies
+  ##############################################
+  - name: sspmp_dep_sscsrind
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_indirect_access"]
+
+  - name: sspmp_dep_sum_writable
+    coverpoint: ["SPMPSm_perm_cg/cp_sum_effect"]
+
+  - name: sspmp_dep_mxr_writable
+    coverpoint: ["SPMPSm_perm_cg/cp_mxr_effect"]
+
+  ##############################################
+  # Section 2.2: SPMP CSRs
+  ##############################################
+  - name: spmpaddr_format_rv32
+    coverpoint: ["SPMPSm_csr_cg/cp_spmpaddr_write"]
+
+  - name: spmpaddr_format_rv64
+    coverpoint: ["SPMPSm_csr_cg/cp_spmpaddr_write"]
+
+  - name: spmpcfg_rwx_bits
+    coverpoint: ["SPMPSm_perm_cg/{cp_smode_rule, cp_umode_rule, cp_shared_rule}"]
+
+  - name: spmpcfg_a_field
+    coverpoint: ["SPMPSm_addr_cg/{cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot}"]
+
+  - name: spmpcfg_lock_bit
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_lock"]
+
+  - name: spmpcfg_lock_write_ignored
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_lock_write_ignored"]
+
+  - name: spmpcfg_lock_tor_prev_addr
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_lock_tor_prevaddr"]
+
+  - name: spmpcfg_u_bit
+    coverpoint: ["SPMPSm_perm_cg/{cp_smode_rule, cp_umode_rule}"]
+
+  - name: spmpcfg_shared_bit
+    coverpoint: ["SPMPSm_perm_cg/cp_shared_rule"]
+
+  ##############################################
+  # Section 2.3: Address Matching
+  ##############################################
+  - name: addr_match_off
+    coverpoint: ["SPMPSm_addr_cg/cp_addr_match_off"]
+
+  - name: addr_match_tor
+    coverpoint: ["SPMPSm_addr_cg/cp_addr_match_tor"]
+
+  - name: addr_match_na4
+    coverpoint: ["SPMPSm_addr_cg/cp_addr_match_na4"]
+
+  - name: addr_match_napot
+    coverpoint: ["SPMPSm_addr_cg/cp_addr_match_napot"]
+
+  - name: addr_match_tor_entry0
+    coverpoint: ["SPMPSm_addr_cg/cp_addr_match_tor"]
+
+  ##############################################
+  # Section 2.4: Permission Encoding
+  ##############################################
+  - name: smode_rule_enforce
+    coverpoint: ["SPMPSm_perm_cg/cp_smode_rule"]
+
+  - name: umode_rule_enforce
+    coverpoint: ["SPMPSm_perm_cg/cp_umode_rule"]
+
+  - name: umode_rule_sum_effect
+    coverpoint: ["SPMPSm_perm_cg/cp_sum_effect"]
+
+  - name: umode_rule_enforceNoX
+    coverpoint: ["SPMPSm_perm_cg/cp_sum_effect"]
+
+  - name: shared_rule_enforce
+    coverpoint: ["SPMPSm_perm_cg/cp_shared_rule"]
+
+  - name: shared_rule_sum_ignored
+    coverpoint: ["SPMPSm_perm_cg/cp_shared_rule"]
+
+  - name: rwx_010_reserved
+    coverpoint: ["SPMPSm_perm_cg/cp_reserved_encoding"]
+
+  - name: rwx_011_reserved
+    coverpoint: ["SPMPSm_perm_cg/cp_reserved_encoding"]
+
+  ##############################################
+  # Section 2.5: Matching Logic
+  ##############################################
+  - name: match_priority
+    coverpoint: ["SPMPSm_addr_cg/cp_priority_match"]
+
+  - name: match_all_bytes
+    coverpoint: ["SPMPSm_addr_cg/cp_partial_match_fault"]
+
+  - name: no_match_deny
+    coverpoint: ["SPMPSm_perm_cg/cp_no_match_deny"]
+
+  - name: match_irrespective_perm_bits
+    coverpoint: ["SPMPSm_addr_cg/cp_priority_match"]
+
+  ##############################################
+  # Section 2.6: SPMP and Paging
+  ##############################################
+  - name: spmp_paging_mutual_exclusion
+    coverpoint: ["SPMPSm_paging_cg/cp_satp_bare_spmp"]
+
+  ##############################################
+  # Section 2.7: Access Method (siselect/sireg)
+  ##############################################
+  - name: siselect_spmpaddr_mapping
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_indirect_access"]
+
+  - name: siselect_spmpcfg_mapping
+    coverpoint: ["SPMPSm_csr_cg/cp_spmpcfg_write"]
+
+  - name: siselect_oob_read_zero
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_oob_access"]
+
+  - name: siselect_oob_write_ignored
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_oob_access"]
+
+  - name: sfence_vma_ordering
+    coverpoint: ["SPMPSm_csr_cg/cp_sfence_ordering"]
+
+  ##############################################
+  # Section 2.8: Exceptions
+  ##############################################
+  - name: spmp_instr_page_fault
+    coverpoint: ["SPMPSm_perm_cg/cp_spmp_fault_instr"]
+
+  - name: spmp_load_page_fault
+    coverpoint: ["SPMPSm_perm_cg/cp_spmp_fault_load"]
+
+  - name: spmp_store_page_fault
+    coverpoint: ["SPMPSm_perm_cg/cp_spmp_fault_store"]
+
+  ##############################################
+  # Section 4.1: Resource Sharing (Smpmpdeleg)
+  ##############################################
+  - name: mpmpdeleg_pmpnum_field
+    coverpoint: ["SPMPSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+
+  - name: mpmpdeleg_pmpnum_zero_delegates_all
+    coverpoint: ["SPMPSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+
+  - name: mpmpdeleg_no_delegation_disables
+    coverpoint: ["SPMPSm_csr_cg/cp_mpmpdeleg_pmpnum"]
+
+  - name: mpmpdeleg_locked_pmp_constraint
+    coverpoint: ["SPMPSm_csr_cg/cp_mpmpdeleg_locked"]
+
+  ##############################################
+  # Section 4.2: M-mode Access to SPMP CSRs
+  ##############################################
+  - name: miselect_spmp_access
+    coverpoint: ["SPMPSm_csr_cg/cp_mmode_indirect_access"]
+
+  - name: mmode_mem_access_bypasses_spmp
+    coverpoint: ["SPMPSm_perm_cg/cp_mmode_bypass"]
+
+  - name: lock_clear_via_miselect
+    coverpoint: ["SPMPSm_csr_cg/cp_spmp_lock_clear_mmode"]

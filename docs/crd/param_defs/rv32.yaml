@@ -9,6 +9,7 @@ chapter_name: RV32I Base ISA
 
 parameter_definitions:
   - name: MISALIGNED_LDST_HW_SUPPORT
+    long-name: MISALIGNED_LDST_HW_SUPPORT-TBD
     impl-def: MISALIGNED_LDST_HW_SUPPORT
     type: boolean
     description: |
@@ -22,6 +23,7 @@ parameter_definitions:
       ! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
       !===
   - name: MISALIGNED_LDST_EXC_TYPE
+    long-name: MISALIGNED_LDST_EXC_TYPE-TBD
     impl-def: MISALIGNED_LDST_EXC_TYPE
     type: [AlwaysMisalignedExc, AlwaysAccessFaultExc, AccessFaultExcDontEmulate, Other]
     note: Need specific conditions for when access shouldn't be emulated for AccessFaultExcDontEmulate.

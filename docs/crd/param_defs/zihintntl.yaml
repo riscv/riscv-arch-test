@@ -10,6 +10,7 @@ chapter_name: Zihintntl (Non-tmp Hint)
 
 parameter_definitions:
   - name: NTL_TRAP_BEHAVIOR
+    long-name: NTL_TRAP_BEHAVIOR-TBD
     impl-def: NTL_TRAP_BEHAVIOR
     type: boolean
     description: |

@@ -10,6 +10,7 @@ chapter_name: Supervisor Mode
 
 parameter_definitions:
   - name: HINT_SXLEN
+    long-name: HINT_SXLEN-TBD
     impl-def: HINT_SXLEN
     type: [AlwaysUnchanged, AlwaysOverwritten, Other]
     description: |
@@ -25,26 +26,32 @@ parameter_definitions:
       ! Other ! Sometimes implementation leaves bits SXLEN..XLEN unchanged and sometimes overwrites them
       !===
   - name: SEI_INTR_IMPL
+    long-name: SEI_INTR_IMPL-TBD
     impl-def: SEI_INTR_IMPL
     type: boolean
     description: Is the SEI interrupt implemented?
   - name: STI_INTR_IMPL
+    long-name: STI_INTR_IMPL-TBD
     impl-def: STI_INTR_IMPL
     type: boolean
     description: Is the STI interrupt implemented?
   - name: SSI_INTR_IMPL
+    long-name: SSI_INTR_IMPL-TBD
     impl-def: SSI_INTR_IMPL
     type: boolean
     description: Is the SSI interrupt implemented?
   - name: LCOFI_INTR_IMPL
+    long-name: LCOFI_INTR_IMPL-TBD
     impl-def: LCOFI_INTR_IMPL
     type: boolean
     description: Is the LCOFI interrupt implemented?
   - name: ASIDLEN
+    long-name: ASIDLEN-TBD
     impl-def: ASIDLEN
     description: The number of bits in the ASID field of the `satp` CSR
     range: [0, 16]
   - name: SATP_MODE_ROZ_SFENCE_ILLEGAL
+    long-name: SATP_MODE_ROZ_SFENCE_ILLEGAL-TBD
     impl-def: SATP_MODE_ROZ_SFENCE_ILLEGAL
     type: [AlwaysIllegalInstExc, NeverIllegalInstExc, Other]
     description: |

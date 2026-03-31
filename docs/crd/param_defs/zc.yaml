@@ -10,6 +10,7 @@ chapter_name: Zc Extension
 
 parameter_definitions:
   - name: INTERRUPTS_ALLOWED_IN_PUSHPOP
+    long-name: INTERRUPTS_ALLOWED_IN_PUSHPOP-TBD
     impl-def: INTERRUPTS_ALLOWED_IN_PUSHPOP
     type: boolean
     description: Can interrupts be taken during the execution of a push/pop instruction?

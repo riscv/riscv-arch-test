@@ -7,21 +7,23 @@ chapter_name: H Extension
 
 parameter_definitions:
   - name: HSXLEN
+    long-name: Effective XLEN in HS-mode
     impl-def: HSXLEN
     type: [32, 64]
   - name: VSXLEN
+    long-name: Effective XLEN in VS-mode
     impl-def: VSXLEN
     type: [32, 64]
-  - name: VSXL_RO
-    impl-def: VSXL_RO
-    type: boolean
   - name: VTW_VIRTINSTR
+    long-name: VTW_VIRTINSTR-TBD
     impl-def: VTW_VIRTINSTR
     type: boolean
   - name: GEILEN
+    long-name: GEILEN-TBD
     impl-def: GEILEN
     range: [0, 64]
   - name: HTVAL_GUEST_PAGE_FAULT_TRAPVAL
+    long-name: HTVAL_GUEST_PAGE_FAULT_TRAPVAL-TBD
     impl-def: HTVAL_TRAPVAL
     type: [WrZero, WrGuestPA, Other]
     description: |
@@ -37,10 +39,12 @@ parameter_definitions:
       ! Other ! Sometimes writes zero and sometimes writes the shifted guest physical address on guest-page-fault traps
       !===
   - name: VMIDLEN
+    long-name: VMIDLEN-TBD
     impl-def: HGATP_VMID
     range: [0, 14]
     description: The number of implemented VMID bits
   - name: VSSTATUS_UBE
+    long-name: VSSTATUS_UBE-TBD
     impl-def: VSSTATUS_UBE
     type: boolean
     description: |
@@ -54,6 +58,7 @@ parameter_definitions:
       ! True ! Is a read-only copy of `hstatus.VSBE`
       !===
   - name: MTVAL2_TRAPVAL
+    long-name: MTVAL2_TRAPVAL-TBD
     impl-def: MTVAL2_TRAPVAL
     type: [WrZero, WrGuestPA, Other]
     description: Same as HTVAL_GUEST_PAGE_FAULT_TRAPVAL except for `mtval2` and trap into M-mode
@@ -61,8 +66,8 @@ parameter_definitions:
 csr_definitions:
   - reg-name: hstatus
     field-name: VSXL
-    impl-def: HSTATUS_VSXL_64_WARL
-    type: Other #TBD
+    impl-defs: [HSTATUS_VSXL_64_WARL, VSXL_RO]
+    type: ConstMask
   - reg-name: hstatus
     field-name: VGEIN
     impl-def: HSTATUS_VGEIN_WLRL

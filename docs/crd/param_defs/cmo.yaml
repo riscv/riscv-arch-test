@@ -10,6 +10,7 @@ chapter_name: Cache Manage Ops
 
 parameter_definitions:
   - name: CACHE_BLOCK_SIZE
+    long-name: Cache Block Size
     impl-def: CACHE_BLOCK_SIZE
     type: uint
     width: 64

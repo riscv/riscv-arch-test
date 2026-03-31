@@ -10,14 +10,17 @@ chapter_name: SmCtr (Ctrl Xfer Records)
 
 parameter_definitions:
   - name: CTRDATA_CC_SUPPORTED
+    long-name: CTRDATA_CC_SUPPORTED-TBD
     impl-def: CTRDATA_CC_SUPPORTED
     type: boolean
     description: ctrdata register may optionally include a count of CPU cycles
   - name: CTR_CCOUNTER_IMPL
+    long-name: CTR_CCOUNTER_IMPL-TBD
     impl-def: CTR_CCOUNTER_IMPL
     range: [0, 4]
     description: Implementation can support 0 to 4 exponent bits
   - name: SCTRDEPTH_DEPTH
+    long-name: SCTRDEPTH_DEPTH-TBD
     impl-def: SCTRDEPTH_DEPTH
     range: [0, 4]
     description: |

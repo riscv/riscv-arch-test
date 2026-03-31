@@ -7,6 +7,7 @@ $schema: "../../docs-resources/schemas/param-defs-schema.json#"
 
 parameter_definitions:
   - name: LRSC_ALIGNMENT
+    long-name: Atomic LR/SC Alignment Behavior
     impl-def: LR_SC_ALIGNMENT
     type: [AlwaysMisalignedExc, AlwaysAccessFaultExc, Other]
     description: |
@@ -21,6 +22,7 @@ parameter_definitions:
       ! Other ! Sometimes implementation raises a misaligned exception and sometimes raises an access fault exception
       !===
   - name: LRSC_RESERVATION_STRATEGY
+    long-name: Atomic LR/SC Reservation Set Strategy
     impl-def: LR_RESERVATION_SET_SIZE
     type: [Exact, 64B, 128B, Other]
     description: |

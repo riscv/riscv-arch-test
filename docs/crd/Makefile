@@ -123,7 +123,7 @@ endif
 
 WORKDIR_SETUP = \
     rm -rf $@.workdir && \
-    mkdir -p $@.workdir $@.workdir/build && \
+    mkdir -p $@.workdir $@.workdir/build $@.workdir/generated && \
     ln -sfn ../../$(SRC_DIR) ../../../common ../../../docs-resources ../../$(PARAM_DEF_DIR) $@.workdir/
 
 WORKDIR_TEARDOWN = \
@@ -149,16 +149,16 @@ ALL_SRCS := $(wildcard $(SRC_DIR)/*.adoc) $(wildcard $(SRC_DIR)/ext_defs/*.adoc)
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY) $(GEN_CSR_APPENDIX_READY)
 	$(WORKDIR_SETUP)
-	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
-	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/$(GEN_PARAM_APPENDIX_DIR)
+	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/$(GEN_CSR_APPENDIX_DIR)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_PDF) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'
 
 $(BUILD_DIR)/%.html: $(SRC_DIR)/%.adoc $(ALL_SRCS) $(GEN_PARAM_APPENDIX_READY) $(GEN_CSR_APPENDIX_READY)
 	$(WORKDIR_SETUP)
-	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/build
-	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/build
+	cp -r $(GEN_PARAM_APPENDIX_DIR) $@.workdir/$(GEN_PARAM_APPENDIX_DIR)
+	cp -r $(GEN_CSR_APPENDIX_DIR) $@.workdir/$(GEN_CSR_APPENDIX_DIR)
 	$(DOCKER_CMD) $(DOCKER_QUOTE) $(ASCIIDOCTOR_HTML) $(OPTIONS) $(REQUIRES) $< $(DOCKER_QUOTE)
 	$(WORKDIR_TEARDOWN)
 	@echo -e '\n  Built \e]8;;file://$(abspath $@)\e\\$@\e]8;;\e\\\n'

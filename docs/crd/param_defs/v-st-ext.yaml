@@ -14,14 +14,17 @@ chapter_name: V Extension
 
 parameter_definitions:
   - name: ELEN
+    long-name: ELEN-TBD
     impl-def: ELEN
     type: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
     description: Maximum size of vector element in bits
   - name: VLEN
+    long-name: VLEN-TBD
     impl-def: VLEN
     type: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
     description: Maximum size of vector register in bits
   - name: MSTATUS_VS_HW_DIRTY_UPDATE
+    long-name: MSTATUS_VS_HW_DIRTY_UPDATE-TBD
     impl-def: HW_MSTATUS_VS_DIRTY_UPDATE
     type: [PreciseDirty, Other]
     description: |
@@ -35,6 +38,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VSETVL_WITH_NEW_RATIO_SETS_VILL
+    long-name: VSETVL_WITH_NEW_RATIO_SETS_VILL-TBD
     impl-def: RESERVED_VILL_SET
     type: [Always, Never, Other]
     description: |
@@ -49,6 +53,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VSETVL_WITH_VILL_1_STAY_1
+    long-name: VSETVL_WITH_VILL_1_STAY_1-TBD
     impl-def: RESERVED_VILL_SET
     type: [Always, Never, Other]
     description: |
@@ -63,14 +68,17 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: MSTATUS_VS_EXISTS
+    long-name: MSTATUS_VS_EXISTS-TBD
     impl-def: MSTATUS_VS_EXISTS
     type: boolean
     description: Does the `mstatus.VS` field exist even if the `misa.V` bit is hardwired to 0?
   - name: VSSTATUS_VS_EXISTS
+    long-name: VSSTATUS_VS_EXISTS-TBD
     impl-def: VSSTATUS_VS_EXISTS
     type: boolean
     description: Does the `vsstatus.VS` field exist even if the `misa.V` bit is hardwired to 0?
   - name: VECTOR_LS_VSTART
+    long-name: VECTOR_LS_VSTART-TBD
     impl-def: VECTOR_LS_VSTART
     type: [Always, Never, Other]
     description: |
@@ -86,6 +94,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_CONSTANT_STRIDE_X0
+    long-name: VECTOR_LS_CONSTANT_STRIDE_X0-TBD
     impl-def: VECTOR_LS_CONSTANT_STRIDE_X0
     type: [Always, Never, Other]
     description: |
@@ -101,6 +110,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_OVERWRITE_PAST_TRAP
+    long-name: VECTOR_LS_OVERWRITE_PAST_TRAP-TBD
     impl-def: VECTOR_LS_OVERWRITE_PAST_TRAP
     type: [Always, Never, Other]
     description: |
@@ -116,6 +126,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_FF_PAST_TRAP
+    long-name: VECTOR_FF_PAST_TRAP-TBD
     impl-def: VECTOR_FF_PAST_TRAP
     note: |
       Do we need a more specific definition for what elements are updated past the element that causes
@@ -134,6 +145,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_SEG_PARTIAL_ACCESS
+    long-name: VECTOR_LS_SEG_PARTIAL_ACCESS-TBD
     impl-def: VECTOR_LS_SEG_PARTIAL_ACCESS
     note: Do we need a more specific definition for the subset since it says "some subset"?
     type: [Always, Never, Other]
@@ -150,6 +162,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_FF_SEG_SUBSET_EXC_ON_ZEROTH
+    long-name: VECTOR_FF_SEG_SUBSET_EXC_ON_ZEROTH-TBD
     impl-def: VECTOR_FF_SEG_PARTIAL_ACCESS
     type: [Always, Never, Other]
     note: Do we need a more specific definition for the subset since it says "some subset"?
@@ -166,6 +179,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_FF_SEG_SUBSET_EXC_PAST_ZEROTH
+    long-name: VECTOR_FF_SEG_SUBSET_EXC_PAST_ZEROTH-TBD
     impl-def: VECTOR_FF_SEG_PARTIAL_ACCESS
     type: [Always, Never, Other]
     description: |
@@ -181,6 +195,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_SEG_FF_OVERLOAD
+    long-name: VECTOR_LS_SEG_FF_OVERLOAD-TBD
     impl-def: VECTOR_LS_SEG_FF_OVERLOAD
     type: [AlwaysAfterTrap, AlwaysAfterVLTrimmed, NeverOverwrite, Other]
     description: |
@@ -199,6 +214,7 @@ parameter_definitions:
 
 
   - name: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
+    long-name: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION-TBD
     impl-def: VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION
     type: [Always, Never, Other]
     description: |
@@ -215,6 +231,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: VECTOR_LS_MISSALIGNED_EXCEPTION
+    long-name: VECTOR_LS_MISSALIGNED_EXCEPTION-TBD
     impl-def: VECTOR_LS_MISSALIGNED_EXCEPTION
     type: [MisalignedExc, Transfer, Other]
     description: |

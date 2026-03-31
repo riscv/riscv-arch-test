@@ -9,38 +9,46 @@ chapter_name: Machine Mode
 
 parameter_definitions:
   - name: MXLEN
+    long-name: MXLEN-TBD
     impl-def: MXLEN
     type: [32, 64]
     description: Effective XLEN in M-mode
 
   # Information CSRs
   - name: MVENDOR_ID_BANK
+    long-name: MVENDOR_ID_BANK-TBD
     impl-def: VENDOR_ID_BANK
     type: uint
     width: 25
   - name: MVENDOR_ID_OFFSET
+    long-name: MVENDOR_ID_OFFSET-TBD
     impl-def: VENDOR_ID_OFFSET
     type: uint
     width: 7
   - name: MARCHID
+    long-name: MARCHID-TBD
     impl-def: ARCH_ID
     type: uint
     width: MXLEN
   - name: MIPMPID
+    long-name: MIPMPID-TBD
     impl-def: IMP_ID
     type: uint
     width: MXLEN
   - name: MHARTID
+    long-name: MHARTID-TBD
     impl-def: HART_ID
     type: uint
     width: MXLEN
 
   # mstatus CSR
   - name: MSTATUS_SBE_ROCOPY
+    long-name: MSTATUS_SBE_ROCOPY-TBD
     impl-def: MSTATUS_SBE_ROCOPY
     type: boolean
     description: Does implementation make `mstatus.SBE` a read-only copy of `mstatus.MBE`?
   - name: MSTATUS_UBE_ROCOPY
+    long-name: MSTATUS_UBE_ROCOPY-TBD
     impl-def: MSTATUS_UBE_ROCOPY
     type: [ROCopyOfMBE, ROCopyOfSBE, Other]
     description: |
@@ -55,6 +63,7 @@ parameter_definitions:
       ! Other ! mstatus.UBE` is not a read-only copy of either `mstatus.MBE` or `mstatus.SBE`
       !===
   - name: MSTATUS_TW_TIME_LIMIT
+    long-name: MSTATUS_TW_TIME_LIMIT-TBD
     impl-def: MSTATUS_TW_TIME_LIMIT
     type: int
     width: 32
@@ -63,12 +72,14 @@ parameter_definitions:
       the WFI instruction causes an illegal-instruction exception if MSTATUS_TW_TIME_LIMIT cycles have passed since
       the WFI instruction began execution.
   - name: MSTATUS_TW_ALWAYS_ILLEGAL
+    long-name: MSTATUS_TW_ALWAYS_ILLEGAL-TBD
     impl-def: MSTATUS_TW_ALWAYS_ILLEGAL
     type: boolean
     description: |
       Does the implementation have WFI always raise an illegal-instruction exception in modes less privileged than M when
       TW=1, even if there are pending globally-disabled interrupts when the instruction is executed?
   - name: MSTATUS_FS_IMPRECISE
+    long-name: MSTATUS_FS_IMPRECISE-TBD
     impl-defs: [MSTATUS_FS_IMPRECISE, MSTATUS_FS_NO_DIRTY_TRACK]
     type: [PreciseDirty, Other]
     description: |
@@ -82,6 +93,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: MSTATUS_FS_NO_CHANGE_DIRTY
+    long-name: MSTATUS_FS_NO_CHANGE_DIRTY-TBD
     impl-def: MSTATUS_FS_NO_CHANGE_DIRTY
     type: boolean
     description: |
@@ -89,6 +101,7 @@ parameter_definitions:
       but does not alter its contents and FS=Initial or FS=Clean, does the implementation transition
       `mstatus.FS` to Dirty?
   - name: MSTATUS_VS_SW_DIRTY_UPDATE
+    long-name: MSTATUS_VS_SW_DIRTY_UPDATE-TBD
     impl-def: MSTATUS_VS_IMPRECISE
     type: [DirtyWhenInitOrClean, Other]
     description: |
@@ -100,6 +113,7 @@ parameter_definitions:
       ! Other ! Unpredictable behavior
       !===
   - name: MSTATUS_VS_NO_CHANGE_DIRTY
+    long-name: MSTATUS_VS_NO_CHANGE_DIRTY-TBD
     impl-def: MSTATUS_VS_NO_CHANGE_DIRTY
     type: boolean
     description: |
@@ -107,11 +121,13 @@ parameter_definitions:
       but does not alter its contents and VS=Initial or VS=Clean, does the implementation transition
       `mstatus.VS` to Dirty?
   - name: MTVEC_RDONLY
+    long-name: MTVEC_RDONLY-TBD
     impl-def: MTVEC_RDONLY
     type: boolean
     description: Is the `mtvec` CSR read-only?
 
   - name: MSIP_UPDATE_MAX_TIME
+    long-name: MSIP_UPDATE_MAX_TIME-TBD
     impl-def: MSIP_UPDATE_MAX_TIME
     type: dword
     description: |
@@ -119,6 +135,7 @@ parameter_definitions:
 
   # CSR mcycle
   - name: MCYCLE_SHARED
+    long-name: MCYCLE_SHARED-TBD
     impl-def: MCYCLE_SHARED
     type: boolean
     description: |
@@ -127,6 +144,7 @@ parameter_definitions:
 
   # CSR mepc
   - name: MEPC_INV_ADDR_CONV
+    long-name: MEPC_INV_ADDR_CONV-TBD
     impl-def: MEPC_INV_ADDR_CONV
     type: [NoInvAddrConv, Other]
     description: |
@@ -145,6 +163,7 @@ parameter_definitions:
 
   # CSR mcause
   - name: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
+    long-name: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI-TBD
     impl-def: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
     type: [MisalignedAlwaysHigher, MisalignedAlwaysLower, Other]
     description: |
@@ -162,6 +181,7 @@ parameter_definitions:
 
   # CSR mtval
   - name: MTVAL_PER_EXC_BEHAVIOR
+    long-name: MTVAL_PER_EXC_BEHAVIOR-TBD
     impl-def: MTVAL_PER_EXC_BEHAVIOR
     type: [Informative, Zero, Other]
     array: [0, 19]
@@ -179,6 +199,7 @@ parameter_definitions:
       ! Other ! Some other unknown behavior
       !===
   - name: MTVAL_INV_ADDR_CONV
+    long-name: MTVAL_INV_ADDR_CONV-TBD
     impl-def: MTVAL_INV_ADDR_CONV
     type: [NoInvAddrConv, Other]
     description: |
@@ -197,103 +218,130 @@ parameter_definitions:
 
   # CSR mconfigptr
   - name: MCONFIGPTR_VAL
+    long-name: MCONFIGPTR_VAL-TBD
     impl-def: MCONFIGPTR_VAL
     type: boolean
 
   # CSR menvcfg
   - name: MENVCFG_FIOM_RDONLY0_OK
+    long-name: MENVCFG_FIOM_RDONLY0_OK-TBD
     impl-def: MENVCFG_FIOM_RDONLY0_OK
     type: boolean
 
   # CSR mtime
   - name: MTIME_TICK_PERIOD
+    long-name: MTIME_TICK_PERIOD-TBD
     impl-def: MTIME_TICK_PERIOD
     type: uint
     width: 64
 
   # MRET/SRET instructions and LR/SC atomic behavior
   - name: MRET_CLR_LR_RESV
+    long-name: MRET_CLR_LR_RESV-TBD
     impl-def: MRET_CLR_LR_RESV
     type: boolean
   - name: SRET_CLR_LR_RESV
+    long-name: SRET_CLR_LR_RESV-TBD
     impl-def: SRET_CLR_LR_RESV
     type: boolean
 
   # WFI instruction
   - name: WFI_OPT_U_MODE
+    long-name: WFI_OPT_U_MODE-TBD
     impl-def: WFI_OPT_U_MODE
     type: boolean
   - name: WFI_RESUME_REASON
+    long-name: WFI_RESUME_REASON-TBD
     impl-def: WFI_RESUME_REASON
     type: boolean
   - name: MCAUSE_RST_VAL
+    long-name: MCAUSE_RST_VAL-TBD
     impl-def: MCAUSE_RST_VAL
     type: boolean
   - name: PMP_A_L_RST
+    long-name: PMP_A_L_RST-TBD
     impl-def: PMP_A_L_RST
     type: boolean
   - name: MSECCFG_MML_MMWP_RLB_RST
+    long-name: MSECCFG_MML_MMWP_RLB_RST-TBD
     impl-def: MSECCFG_MML_MMWP_RLB_RST
     type: boolean
   - name: MSECCFG_USEED_SSEED_RST
+    long-name: MSECCFG_USEED_SSEED_RST-TBD
     impl-def: MSECCFG_USEED_SSEED_RST
     type: boolean
   - name: MCAUSE_RST_ALIAS_OK
+    long-name: MCAUSE_RST_ALIAS_OK-TBD
     impl-def: MCAUSE_RST_ALIAS_OK
     type: boolean
 
   # PMAs (Physical Memory Attributes)
   - name: PMA_MM_IFETCH
+    long-name: PMA_MM_IFETCH-TBD
     impl-def: PMA_MM_IFETCH
     type: boolean
   - name: PMA_CACHE_MM_ALL_ATOMICS
+    long-name: PMA_CACHE_MM_ALL_ATOMICS-TBD
     impl-def: PMA_CACHE_MM_ALL_ATOMICS
     type: boolean
   - name: PMA_MAG_OP_LDST
+    long-name: PMA_MAG_OP_LDST-TBD
     impl-def: PMA_MAG_OP_LDST
     type: boolean
   - name: PMA_MAG_EXC
+    long-name: PMA_MAG_EXC-TBD
     impl-def: PMA_MAG_EXC
     type: boolean
   - name: PMA_MO_DYN
+    long-name: PMA_MO_DYN-TBD
     impl-def: PMA_MO_DYN
     type: boolean
   - name: PMA_IDP_IMPLICIT_SZ
+    long-name: PMA_IDP_IMPLICIT_SZ-TBD
     impl-def: PMA_IDP_IMPLICIT_SZ
     type: boolean
 
   # Traps - Mechanism for handling exceptions and interrupts)
   - name: CRITICAL_ERROR
+    long-name: CRITICAL_ERROR-TBD
     impl-def: CRITICAL_ERROR
     type: boolean
   - name: NMI_MCAUSE_VAL
+    long-name: NMI_MCAUSE_VAL-TBD
     impl-def: NMI_MCAUSE_VAL
     type: boolean
   - name: SXLEN
+    long-name: SXLEN-TBD
     type: [32, 64]
     description: Effective XLEN in S-mode
   - name: UXLEN
+    long-name: UXLEN-TBD
     type: [32, 64]
     description: Effective XLEN in U-mode
   - name: XLEN_REDUCTION_HINT_OP
+    long-name: XLEN_REDUCTION_HINT_OP-TBD
     impl-def: XLEN_REDUCTION_HINT_OP
     type: boolean
   - name: RST_ADDR
+    long-name: RST_ADDR-TBD
     type: uint
     width: MXLEN
     description: Base address of the reset vector.
   - name: NMI_ADDR
+    long-name: NMI_ADDR-TBD
     type: uint
     width: MXLEN
     description: Base address of the non-maskable interrupt vector.
 
   # PMP (Physical Memory Protection)
   - name: PMP_GRANULARITY
+    long-name: PMP_GRANULARITY-TBD
     impl-def: PMP_GRANULARITY
     type: uint
     width: 64
     description: Minimum PMP region granularity supported by the platform
   - name: PMP_ENTRY_COUNT
+    long-name: PMP_ENTRY_COUNT-TBD
     impl-def: PMP_ENTRY_COUNT
     type: uint
     width: 64
@@ -316,11 +364,11 @@ csr_definitions:
   - reg-name: mstatus
     field-name: MPP
     impl-def: MSTATUS_XPP_WARL
-    type: ConstMask
+    type: LegalEnum
   - reg-name: mstatus
     field-name: SPP
     impl-def: MSTATUS_XPP_WARL
-    type: ConstMask
+    type: LegalEnum
   - reg-name: mstatus
     field-name: MDT
     impl-def: MSTATUS_MDT_WARL
@@ -370,14 +418,15 @@ csr_definitions:
   # Various CSRs
   #
 
-  # The mtvec.BASE alignement can be a function of the mtvec.MODE value.
-  # This is too complicated to capture using the currently available
-  # types so using the "Other" type and describing the behavior
-  # using dedicated parameters instead.
   - reg-name: mtvec
-    impl-defs: [MTVEC_WARL, MTVEC_BASE_ALIGN_FUNC_MODE]
+    field-name: MODE
+    impl-def: MTVEC_WARL
     type: LegalEnum
-    func-of-field-name: MODE
+  - reg-name: mtvec
+    field-name: BASE
+    impl-defs: [MTVEC_WARL, MTVEC_BASE_ALIGN_FUNC_MODE]
+    type: ConstMask
+    func-of-field-name: MODE # The mtvec.BASE alignment can be a function of mtvec.MODE.
   - reg-name: mip
     impl-defs: [MIP_WARL, MIP_BITS_WR_OR_RDONLY]
     type: ConstMask

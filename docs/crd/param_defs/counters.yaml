@@ -7,6 +7,7 @@ chapter_name: Counters
 
 parameter_definitions:
   - name: HPM_READ_BEHAVIOR
+    long-name: Performance Counter Read Behavior
     impl-defs: [HPM_PLATFORM_SPECIFIC_IMPL, HPM_UNIMPLEMENTED_COUNTER_ACCESS]
     type: [AlwaysValue, AlwaysIllegalInstExc, Other]
     array: [3, 31]
@@ -23,6 +24,7 @@ parameter_definitions:
       !===
 
   - name: TIME_CSR_HW_SUPPORT
+    long-name: Time CSR Hardware Support
     impl-def: EE_IMPL_FLEX
     type: boolean
     description: |

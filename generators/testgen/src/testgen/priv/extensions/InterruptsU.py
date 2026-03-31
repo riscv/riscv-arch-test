@@ -20,7 +20,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0, 2])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -72,7 +72,6 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
@@ -139,7 +138,6 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    "RVTEST_IDLE_FOR_INTERRUPT",
                     "RVTEST_GOTO_MMODE",
                     "nop",
                     "RVTEST_CLR_MSW_INT",
@@ -259,9 +257,9 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
                 [
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_temp, r_t1, r_t2, r_temp2),  # Set timer to fire soon
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    "    wfi",
-                    "    nop",
-                    "    RVTEST_GOTO_MMODE",
+                    "wfi",
+                    "nop",
+                    "RVTEST_GOTO_MMODE",
                     *clr_mtimer_int(r_temp, r_mtimecmp),
                 ]
             )

@@ -90,13 +90,13 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef XLEN64
         mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -108,13 +108,13 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -133,12 +133,12 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
                 bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
             `endif
@@ -276,15 +276,15 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
     // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
     nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
     }
 
     PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
 
 endgroup

@@ -1,0 +1,14 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The status fields will also be updated during execution of instructions,
+  # regardless of privilege mode.
+  - name: mstatus_fs_vs_xs_update_indep_priv
+    coverpoint: ["TODO.  *** also for S-mode"]
+
+  # For forward compatibility, implementations that do not furnish these fields must
+  # make them read-only zero. These fields are labeled WPRI in the register
+  # descriptions.
+  - name: Zicsr_wpri_roz
+    coverpoint: ["UF_cg/cp_ufcsrwalk"]

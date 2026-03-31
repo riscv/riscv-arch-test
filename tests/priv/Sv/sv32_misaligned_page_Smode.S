@@ -76,14 +76,14 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800                // Test signature initialization
+  LI( a2, 0x800)              // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Virtual Address of Test section (rvtest_data_1)
-  .set va_data,               0x90407000
+  .set va_data,               0x90400000
 
   // Virtual Address for code region
   .set va_rvtest_code_begin,  0x30000000

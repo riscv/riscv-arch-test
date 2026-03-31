@@ -1,4 +1,4 @@
-# Parameter mappings for the SPMPSm test suite
+# Parameter mappings for the SspmpSm test suite
 
 parameter_definitions:
   - name: NUM_SPMP_ENTRIES

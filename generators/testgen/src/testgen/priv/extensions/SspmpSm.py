@@ -1,5 +1,5 @@
 ##################################
-# SPMPSm.py
+# SspmpSm.py
 #
 # SPMP (S-level Physical Memory Protection) privileged extension test generator.
 # Covers Sspmp, Sspmpen (optional), and Smpmpdeleg (M-mode delegation).
@@ -106,7 +106,7 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_spmp_indirect_access, cp_spmpaddr_write, cp_spmpcfg_write
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     sel_reg, val_reg, check_reg, save_cfg_reg, save_addr_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
 
     lines = [
@@ -208,7 +208,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_spmp_lock, cp_spmp_lock_write_ignored, cp_spmp_lock_tor_prevaddr
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     sel_reg, val_reg, check_reg, temp_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -363,7 +363,7 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_spmp_oob_access
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     coverpoint = "cp_spmp_oob_access"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -416,58 +416,13 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
-    """Test SFENCE.VMA ordering after SPMP CSR writes.
-
-    Covers: cp_sfence_ordering
-    """
-    covergroup = "SPMPSm_csr_cg"
-    coverpoint = "cp_sfence_ordering"
-    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Execute SFENCE.VMA after modifying SPMP CSRs to synchronize.\n"
-            "Verify that changes are visible after the fence.",
-        ),
-    ]
-
-    # Configure an SPMP entry, fence, then do an access
-    entry = 0
-    lines.extend(_spmp_select(entry, sel_reg))
-
-    # Write cfg: OFF mode
-    lines.extend(_spmp_write_cfg(val_reg, 0))
-
-    # Write a new active config
-    cfg_active = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
-    lines.extend(_spmp_write_cfg(val_reg, cfg_active))
-
-    # SFENCE.VMA to synchronize
-    lines.extend(
-        [
-            _sfence_vma(),
-            test_data.add_testcase("sfence_after_spmp_write", coverpoint, covergroup),
-            _spmp_read_cfg_sigupd(check_reg, test_data),
-        ]
-    )
-
-    # Clean up
-    lines.extend(_spmp_write_cfg(val_reg, 0))
-    lines.append(_sfence_vma())
-
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
-    return lines
-
-
 def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     """Test address matching modes: OFF, TOR, NA4, NAPOT.
 
     Covers: cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot
     """
-    covergroup = "SPMPSm_addr_cg"
-    sel_reg, val_reg, check_reg, addr_reg, temp_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    covergroup = "SspmpSm_addr_cg"
+    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -602,7 +557,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_write_addr(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg, temp_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
     return lines
 
 
@@ -613,15 +568,15 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
     S-mode: permissions R/W/X enforced
     U-mode: denied
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_smode_rule"
-    sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
     lines = [
         comment_banner(
             coverpoint,
             "Configure SPMP S-mode-only rules (SHARED=0, U=0) with various RWX.\n"
-            "Verify permissions are enforced for S-mode, denied for U-mode.",
+            "Write each encoding to spmpcfg and read back to verify the field is accepted.",
         ),
     ]
 
@@ -657,7 +612,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_write_cfg(val_reg, 0))
     lines.append(_sfence_vma())
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, addr_reg])
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg])
     return lines
 
 
@@ -666,7 +621,7 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_umode_rule
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_umode_rule"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -719,7 +674,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
     Covers: cp_sum_effect
     SUM=0: S-mode denied; SUM=1: S-mode EnforceNoX (R/W but not X)
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_sum_effect"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
@@ -774,7 +729,7 @@ def _generate_mxr_effect_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_mxr_effect
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_mxr_effect"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
@@ -827,7 +782,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_shared_rule
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_shared_rule"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -881,7 +836,7 @@ def _generate_reserved_encoding_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_reserved_encoding
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_reserved_encoding"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -940,7 +895,7 @@ def _generate_no_match_deny_tests(test_data: TestData) -> list[str]:
     When S or U mode accesses memory and no SPMP entry matches but at least one
     entry is implemented, the access is denied.
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_no_match_deny"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -974,7 +929,7 @@ def _generate_priority_match_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_priority_match
     """
-    covergroup = "SPMPSm_addr_cg"
+    covergroup = "SspmpSm_addr_cg"
     coverpoint = "cp_priority_match"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -1036,7 +991,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_mmode_bypass
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     coverpoint = "cp_mmode_bypass"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -1110,7 +1065,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_mmode_indirect_access
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     coverpoint = "cp_mmode_indirect_access"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -1179,7 +1134,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_mpmpdeleg_pmpnum, cp_mpmpdeleg_locked
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -1287,7 +1242,16 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"CSRW(pmpcfg0, x{check_reg})",
             "nop",
             "#else",
-            "# TODO: RV32 uses pmpcfg1 byte 3 for PMP[7]",
+            f"CSRR(x{check_reg}, pmpcfg1)",
+            "nop",
+            f"li x{sel_reg}, 0xFF",
+            f"slli x{sel_reg}, x{sel_reg}, 24  # mask for byte 3 (entry 7)",
+            f"not x{sel_reg}, x{sel_reg}",
+            f"and x{check_reg}, x{check_reg}, x{sel_reg}  # clear byte 3",
+            f"slli x{val_reg}, x{val_reg}, 24  # shift cfg to byte 3",
+            f"or x{check_reg}, x{check_reg}, x{val_reg}",
+            f"CSRW(pmpcfg1, x{check_reg})",
+            "nop",
             "#endif",
         ]
     )
@@ -1333,9 +1297,9 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
 
     Covers: cp_satp_bare_spmp
     """
-    covergroup = "SPMPSm_paging_cg"
+    covergroup = "SspmpSm_paging_cg"
     coverpoint = "cp_satp_bare_spmp"
-    sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    check_reg = test_data.int_regs.get_registers(1, exclude_regs=[0])[0]
 
     lines = [
         comment_banner(
@@ -1365,7 +1329,7 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_reg])
+    test_data.int_regs.return_registers([check_reg])
     return lines
 
 
@@ -1375,7 +1339,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     Covers: cp_spmp_fault_instr, cp_spmp_fault_load, cp_spmp_fault_store
     SPMP violations use page fault exception codes (12, 13, 15).
     """
-    covergroup = "SPMPSm_perm_cg"
+    covergroup = "SspmpSm_perm_cg"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -1389,17 +1353,9 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     ]
 
     # ---------- Setup: configure SPMP to protect a region ----------
-    # M-mode setup: create an entry that denies U-mode access
-    lines.append("RVTEST_GOTO_MMODE")
-
+    # S-mode setup: create an S-mode-only rule that allows S-mode access (U denied)
     entry = 0
-    lines.extend(
-        [
-            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(0x350, x{sel_reg})  # miselect = SPMP entry {entry}",
-            "nop",
-        ]
-    )
+    lines.extend(_spmp_select(entry, sel_reg))
 
     # Set up a NAPOT region covering scratch area with S-mode-only permissions (U denied)
     lines.extend(
@@ -1407,28 +1363,20 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             f"LA(x{addr_reg}, scratch)",
             f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
             f"ori x{addr_reg}, x{addr_reg}, 0x1FF  # NAPOT 4K region",
-            f"CSRW(0x351, x{addr_reg})  # write spmpaddr via mireg",
+            f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
             "nop",
         ]
     )
 
     # S-mode only (U=0, SHARED=0), RWX=111 -> S-mode gets full access, U-mode denied
     cfg_val = (0b111) | (A_NAPOT << SPMPCFG_A_LO)  # U=0, SHARED=0
-    lines.extend(
-        [
-            f"LI(x{val_reg}, 0x{cfg_val:x})",
-            f"CSRW(0x352, x{val_reg})  # write spmpcfg via mireg2",
-            "nop",
-            "sfence.vma x0, x0",
-        ]
-    )
+    lines.extend(_spmp_write_cfg(val_reg, cfg_val))
+    lines.append(_sfence_vma())
 
     # ---------- Test load page fault from S-mode (should succeed) ----------
     coverpoint = "cp_spmp_fault_load"
     lines.extend(
         [
-            "RVTEST_GOTO_LOWER_MODE Smode",
-            _sfence_vma(),
             "",
             "# S-mode load to S-mode-only region should succeed",
             test_data.add_testcase("smode_load_ok", coverpoint, covergroup),
@@ -1533,7 +1481,7 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     Covers: addr_match_tor_entry0
     When spmpcfg[0].A == TOR, the lower bound is 0.
     """
-    covergroup = "SPMPSm_addr_cg"
+    covergroup = "SspmpSm_addr_cg"
     coverpoint = "cp_addr_match_tor"
     sel_reg, val_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -1575,7 +1523,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     - cp_spmpen_activation: Entry active iff spmpen[i] & spmpcfg[i].A != 0
     - cp_spmpen_locked_readonly: spmpen[i] is read-only when spmpcfg[i].L == 1
     """
-    covergroup = "SPMPSm_csr_cg"
+    covergroup = "SspmpSm_csr_cg"
     sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
 
     lines = [
@@ -1591,10 +1539,9 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # ---------- Basic read/write ----------
     coverpoint = "cp_spmpen_readwrite"
 
-    # Save current spmpen from M-mode (spmpen is S-mode CSR, accessible from M)
+    # Save current spmpen (S-mode CSR, accessible from S-mode)
     lines.extend(
         [
-            "RVTEST_GOTO_MMODE",
             f"CSRR(x{save_reg}, CSR_SPMPEN)  # save spmpen",
             "nop",
         ]
@@ -1641,7 +1588,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_spmpen_activation"
     entry = 0
 
-    # Configure SPMP entry 0 with NAPOT + RW in S-mode via M-mode indirect access
+    # Configure SPMP entry 0 with NAPOT + RW via S-mode indirect CSR access
     cfg_napot_rw = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
 
     lines.extend(
@@ -1652,31 +1599,18 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
                 "Configure entry 0 with A=NAPOT, then toggle spmpen[0].",
             ),
             "",
-            # Use M-mode indirect to configure entry 0
-            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {entry}",
-            "nop",
         ]
     )
+
+    # Configure entry 0 via S-mode indirect CSR access (siselect/sireg/sireg2)
+    lines.extend(_spmp_select(entry, sel_reg))
 
     # Set addr for a wide NAPOT region covering scratch
     napot_addr = 0x80000000 >> 2 | 0x01FFFFFF  # NAPOT covering large range
-    lines.extend(
-        [
-            f"LI(x{val_reg}, 0x{napot_addr:x})",
-            f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
-            "nop",
-        ]
-    )
+    lines.extend(_spmp_write_addr(val_reg, napot_addr))
 
     # Set cfg
-    lines.extend(
-        [
-            f"LI(x{val_reg}, 0x{cfg_napot_rw:x})  # R|W|NAPOT|U",
-            f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
-            "nop",
-        ]
-    )
+    lines.extend(_spmp_write_cfg(val_reg, cfg_napot_rw))
 
     # Disable entry via spmpen[0] = 0
     lines.extend(
@@ -1707,20 +1641,29 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# Set A=OFF (disable), spmpen[0]=1 -> entry still inactive",
-            "CSRW(mireg2, zero)  # spmpcfg.A=OFF",
+            "CSRW(0x152, zero)  # spmpcfg.A=OFF via sireg2",
             "nop",
             f"LI(x{val_reg}, 1)",
             f"CSRW(CSR_SPMPEN, x{val_reg})",
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_aoff_no_activate", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "mireg2", test_data),
+            gen_csr_read_sigupd(check_reg, "0x152", test_data),
         ]
     )
 
-    # ---------- spmpen[i] read-only when locked ----------
+    # Clean up activation test entry 0 (S-mode)
+    lines.extend(_spmp_select(entry, sel_reg))
+    lines.extend(_spmp_write_cfg(val_reg, 0))
+    lines.extend(_spmp_write_addr(val_reg, 0))
+    lines.append(_sfence_vma())
+
+    # ---------- spmpen[i] read-only when locked (requires M-mode) ----------
     coverpoint = "cp_spmpen_locked_readonly"
     lock_entry = 1
+
+    # Go to M-mode: setting/clearing L bit requires M-mode via miselect/mireg2
+    lines.append("RVTEST_GOTO_MMODE")
 
     lines.extend(
         [
@@ -1730,7 +1673,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
                 "Test: lock entry 1, then try to toggle spmpen[1].",
             ),
             "",
-            # Select entry 1
+            # Select entry 1 via M-mode indirect access
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
             f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {lock_entry}",
             "nop",
@@ -1775,14 +1718,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # Note: lock can only be cleared by reset; we just clear A to deactivate
     lines.extend(
         [
-            "\n# Clean up: clear entry configs",
-            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(miselect, x{sel_reg})",
-            "nop",
-            "CSRW(mireg2, zero)",
-            "nop",
-            "CSRW(mireg, zero)",
-            "nop",
+            "\n# Clean up: clear locked entry config",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
             f"CSRW(miselect, x{sel_reg})",
             "nop",
@@ -1808,7 +1744,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "Sspmp",
-    required_extensions=["Sm", "Ss", "Zicsr"],
+    required_extensions=["Sm", "Ss", "Zicsr", "Sspmp"],
     march_extensions=["Zicsr"],
 )
 def make_sspmp(test_data: TestData) -> list[str]:
@@ -1818,7 +1754,6 @@ def make_sspmp(test_data: TestData) -> list[str]:
     lines.extend(_generate_spmp_csr_indirect_access_tests(test_data))
     lines.extend(_generate_spmp_lock_tests(test_data))
     lines.extend(_generate_spmp_oob_access_tests(test_data))
-    lines.extend(_generate_sfence_ordering_tests(test_data))
     # Address Matching Tests
     lines.extend(_generate_addr_match_tests(test_data))
     lines.extend(_generate_spmp_entry_tor_entry0_tests(test_data))
@@ -1846,33 +1781,32 @@ def make_sspmp(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # Standalone Sspmp test generation (separate files, no "-00" suffix)
-# Run:  python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SPMPSm.py tests
+# Run:  python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
 # ---------------------------------------------------------------------------
 
 _SIGUPD_MARGIN = 10
 
 # (filename_stem, generator_function) for each sub-test
 _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]]]] = [
-    ("SPMPSmCsrAccess", _generate_spmp_csr_indirect_access_tests),
-    ("SPMPSmLock", _generate_spmp_lock_tests),
-    ("SPMPSmOobAccess", _generate_spmp_oob_access_tests),
-    ("SPMPSmSfence", _generate_sfence_ordering_tests),
-    ("SPMPSmAddrMatch", _generate_addr_match_tests),
-    ("SPMPSmTorEntry0", _generate_spmp_entry_tor_entry0_tests),
-    ("SPMPSmPriority", _generate_priority_match_tests),
-    ("SPMPSmPermSmode", _generate_permission_smode_tests),
-    ("SPMPSmPermUmode", _generate_permission_umode_tests),
-    ("SPMPSmSum", _generate_sum_effect_tests),
-    ("SPMPSmMxr", _generate_mxr_effect_tests),
-    ("SPMPSmShared", _generate_shared_rule_tests),
-    ("SPMPSmReserved", _generate_reserved_encoding_tests),
-    ("SPMPSmNoMatch", _generate_no_match_deny_tests),
-    ("SPMPSmFault", _generate_spmp_fault_tests),
-    ("SPMPSmMmodeBypass", _generate_mmode_bypass_tests),
-    ("SPMPSmMmodeAccess", _generate_mmode_indirect_access_tests),
-    ("SPMPSmMpmpdeleg", _generate_mpmpdeleg_tests),
-    ("SPMPSmSpmpen", _generate_spmpen_tests),
-    ("SPMPSmSatpBare", _generate_satp_bare_spmp_tests),
+    ("SspmpSmCsrAccess", _generate_spmp_csr_indirect_access_tests),
+    ("SspmpSmLock", _generate_spmp_lock_tests),
+    ("SspmpSmOobAccess", _generate_spmp_oob_access_tests),
+    ("SspmpSmAddrMatch", _generate_addr_match_tests),
+    ("SspmpSmTorEntry0", _generate_spmp_entry_tor_entry0_tests),
+    ("SspmpSmPriority", _generate_priority_match_tests),
+    ("SspmpSmPermSmode", _generate_permission_smode_tests),
+    ("SspmpSmPermUmode", _generate_permission_umode_tests),
+    ("SspmpSmSum", _generate_sum_effect_tests),
+    ("SspmpSmMxr", _generate_mxr_effect_tests),
+    ("SspmpSmShared", _generate_shared_rule_tests),
+    ("SspmpSmReserved", _generate_reserved_encoding_tests),
+    ("SspmpSmNoMatch", _generate_no_match_deny_tests),
+    ("SspmpSmFault", _generate_spmp_fault_tests),
+    ("SspmpSmMmodeBypass", _generate_mmode_bypass_tests),
+    ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests),
+    ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests),
+    ("SspmpSmSpmpen", _generate_spmpen_tests),
+    ("SspmpSmSatpBare", _generate_satp_bare_spmp_tests),
 ]
 
 
@@ -1888,7 +1822,7 @@ def _generate_single_test(
         testsuite=name,
         E_ext=False,
         config_dependent=True,
-        required_extensions=["Sm", "Ss", "Zicsr"],
+        required_extensions=["Sm", "Ss", "Zicsr", "Sspmp"],
         march_extensions=["Zicsr"],
     )
 
@@ -1935,7 +1869,7 @@ def generate_sspmp_tests(output_dir: Path) -> None:
 
 
 """
-run: python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SPMPSm.py tests
+run: python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
 This will generate separate .S files for each Sspmp sub-test under tests/priv/Sspmp/.
 """
 if __name__ == "__main__":

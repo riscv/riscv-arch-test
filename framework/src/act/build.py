@@ -7,6 +7,7 @@
 # Python-native DAG build executor using graphlib.TopologicalSorter
 ##################################
 
+import os
 import subprocess
 from collections.abc import Callable
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
@@ -168,7 +169,8 @@ def execute_task(task: BuildTask) -> BuildError | None:
     elif isinstance(action, SymlinkAction):
         try:
             action.dst.unlink(missing_ok=True)
-            action.dst.symlink_to(action.src)
+            relative_src = os.path.relpath(action.src, action.dst.parent)
+            action.dst.symlink_to(relative_src)
         except OSError as e:
             return BuildError(
                 task_name=task.name,
@@ -349,5 +351,6 @@ def _task_str(task: BuildTask) -> str:
     if isinstance(action, PythonAction):
         return f"{action.fn.__name__}({', '.join(str(a) for a in action.args)})"
     if isinstance(action, SymlinkAction):
-        return f"ln -sf {action.src} {action.dst}"
+        relative_src = os.path.relpath(action.src, action.dst.parent)
+        return f"ln -sf {relative_src} {action.dst}"
     return "unknown action"

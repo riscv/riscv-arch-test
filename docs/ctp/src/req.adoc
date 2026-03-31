@@ -13,7 +13,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 ** Expected values may be produced by the RISC-V Sail reference model or the test code itself, and must account for relevant parameters
 *** Alternate reference model may be used for development until RISC-V Sail is sufficiently mature
 ** Only test features whose behavior is specified for the given parameters (e.g. only test unimplemented instructions if Ssstrict is supported)
-** Calls `RVMODEL_BOOT` for DUT-specific boot code before starting the test
+** Calls `RVMODEL_BOOT` for DUT-specific boot code (can be empty) before starting the test
 ** Test begins in machine mode, if any privileged modes are implemented
 ** Terminate with `RVMODEL_HALT_PASS` or `RVMODEL_HALT_FAIL` to indicate success
 ** Print meaningful information to localize a failure with `RVMODEL_IO_WRITE_STR`, including:
@@ -22,13 +22,13 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 *** Name of coverpoint and bin that failed, if practical
 ** Tests should not contain loops over multiple bins.  Each bin of each coverpoint should be tested by a unique instruction so that a failing bin can be uniquely identified from the program counter.  Loops should go in the test generator instead of the test itself.
 
-* Tests are organized in a highly granular way so that each ISA feature can be tested independently of other features
+* Tests are organized in a granular way so that each ISA feature can be tested independently of other features
 
 * All tests are written in assembly or C and work with the latest release of both GCC and Clang
 ** The latest release is typically needed because new extensions are rapidly being added to these compilers
 ** Certificates will be tied to specific compiler versions to ensure consistency
 
-* Each test runs on the RISC-V Sail reference model, Spike, and Whisper for at least one choice of parameters
+* Qualifying each test includes running on the RISC-V Sail reference model, Spike, and Whisper for at least one choice of parameters
 ** Exceptions can be made for specific tests when there are known bugs or unimplemented extensions
 
 * Tests are for certification, not verification
@@ -56,5 +56,5 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 
 === For discussion:
 
-* Testing of WARL, WLRL, WPRI fields, and the necessary parameters to define what fields should be tested and behaviors should be expected
+* Testing of WARL, WLRL, WPRI fields, and the necessary parameters to define what fields should be tested and behaviors should be expected, in collaboration with the Parameters Working Group
 * Regression requirements, including multiple parameters

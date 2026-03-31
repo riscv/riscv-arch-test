@@ -62,8 +62,9 @@ def generate_all_tests(
         str, typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation")
     ] = "",
     jobs: Annotated[
-        int | None, typer.Option("--jobs", "-j", show_default="number of CPU cores", help="Number of parallel jobs")
-    ] = None,
+        int,
+        typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
+    ] = 0,
 ) -> None:
     """
     Generate riscv-arch-test tests.
@@ -71,7 +72,7 @@ def generate_all_tests(
     For unprivileged tests, uses the CSV testplan files in `testplan_dir`.
     """
     # Set number of parallel jobs to CPU count if not specified
-    if jobs is None:
+    if jobs <= 0:
         jobs = os.cpu_count() or 1
 
     # Get available extensions

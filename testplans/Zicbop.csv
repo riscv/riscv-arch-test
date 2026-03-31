@@ -1,0 +1,4 @@
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_custom
+prefetch.i,PRE,x,x,x,x,prefetch
+prefetch.r,PRE,x,x,x,x,prefetch
+prefetch.w,PRE,x,x,x,x,prefetch

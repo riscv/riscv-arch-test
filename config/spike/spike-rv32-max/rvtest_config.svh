@@ -8,7 +8,7 @@
 // Define XLEN, used in covergroups
 `define XLEN32
 `define FLEN128
-`define VLEN1024
+`define VLEN128
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -41,8 +41,12 @@
 `define ZCB_SUPPORTED
 `define ZCD_SUPPORTED
 `define ZAAMO_SUPPORTED
+`define ZABHA_SUPPORTED
 `define ZALRSC_SUPPORTED
 `define ZCF_SUPPORTED
+`define ZICBOZ_SUPPORTED
+`define ZICBOM_SUPPORTED
+`define ZICBOP_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

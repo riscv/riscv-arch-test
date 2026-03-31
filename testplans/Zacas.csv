@@ -1,5 +1,5 @@
-Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs2_edges,cmp_rs1_rs2,cmp_rd_rs1,cmp_rd_rs2,cmp_rd_rs1_rs2,cp_align,cmp_rd_rs1_val_eq,cmp_rd_rs1_val_lsb,cmp_rd_rs1_val_hw,cmp_rd_rs1_val_w,cmp_rd_rs1_val_d,cmp_rd_rs1_pair_full_val,cmp_rd_rs1_pair_partial_val,cmp_rd_rs1_sign_ext
-amocas.w,A,x,x,x,nx0,x,x,x,nx0,nx0,x,nx0,word,x,x,x,,,,,x
-amocas.d,A,,x,x,nx0,x,x,x,nx0,nx0,x,nx0,,x,x,x,x,,,,
-amocas.d,AP,x,,x,nx0,pair,pair,x,nx0_pair,nx0_pair,pair,nx0_pair,,x,x,x,x,,x,x,
-amocas.q,AP,,x,x,nx0,pair,pair,x,nx0_pair,nx0_pair,pair,nx0_pair,,x,x,x,,x,x,x,
+Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs2_edges,cmp_rs1_rs2,cmp_rd_rs1,cmp_rd_rs2,cmp_rd_rs1_rs2,cp_align,cmp_rd_rs1_val_eq,cmp_rd_rs1_val_lsb,cmp_rd_rs1_val_hw,cmp_rd_rs1_val_w,cmp_rd_rs1_val_d,cmp_rd_rs1_pair_partial_val,cmp_rd_rs1_sign_ext
+amocas.w,A,x,x,x,nx0,x,x,x,nx0,nx0,x,nx0,word,x,x,x,,,,x
+amocas.d,A,,x,x,nx0,x,x,x,nx0,nx0,x,nx0,,x,x,x,x,,,
+amocas.d,AP,x,,x,nx0,pair,pair,x,nx0_pair,nx0_pair,pair,nx0_pair,,x,x,x,x,,x,
+amocas.q,AP,,x,x,nx0,pair,pair,x,nx0_pair,nx0_pair,pair,nx0_pair,,x,x,x,x,x,x,

@@ -1,4 +1,4 @@
 Instruction,Type,RV32,RV64,cp_asm_count,cp_rs1,cp_rd,cp_rs1_edges
-mop.r.0,R,x,x,x,x,x,x
-mop.r.1,R,x,x,x,x,x,x
-mop.r.2,R,x,x,x,x,x,x
+mop.r.0,I1,x,x,x,x,x,x
+mop.r.1,I1,x,x,x,x,x,x
+mop.r.2,I1,x,x,x,x,x,x

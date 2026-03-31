@@ -100,8 +100,10 @@
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
     // Enable floating-point with mstatus.FS if applicable
-    #ifdef RVTEST_FP
-      RVTEST_FP_ENABLE(T1)
+    #ifdef F_SUPPORTED
+      #ifdef RVTEST_FP
+        RVTEST_FP_ENABLE(T1)
+      #endif
     #endif
 
     // Enable vector extension with mstatus.VS if applicable

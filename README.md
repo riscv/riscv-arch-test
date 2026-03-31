@@ -94,8 +94,7 @@ cd riscv-gnu-toolchain
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
-> [!NOTE]
-> for Local/Non-Root Installations:\*\*
+> [!NOTE]*
 > If you don't have sudo access, you can install the tools locally in your home directory.
 > Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
 
@@ -304,8 +303,8 @@ All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on 
 
 Each test will print one of the following to the console:
 
-- **PASSED**: `RVCP-SUMMARY: Test File "<test_name.S>": PASSED`
-- **FAILED**: `RVCP-SUMMARY: Test File "<test_name.S>": FAILED`
+- **PASSED**: `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`
+- **FAILED**: `RVCP-SUMMARY: TEST FAILED - Test File "<test_name.S>"`
 
 ### Troubleshooting
 

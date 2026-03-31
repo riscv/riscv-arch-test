@@ -24,7 +24,7 @@ parameter_definitions:
   - name: LRSC_RESERVATION_STRATEGY
     long-name: Atomic LR/SC Reservation Set Strategy
     impl-def: LR_RESERVATION_SET_SIZE
-    type: [Exact, 64B, 128B, Other]
+    type: [Exact, 2B, 4B, 8B, 16B, 32B, 64B, 128B, 256B, 512B, 1024B, 2048B, 4096B, Other]
     description: |
       Defines the reservation strategy for load-reserved/store-conditional (LR/SC) atomic instructions:
 
@@ -33,7 +33,17 @@ parameter_definitions:
       ! Value ! Definition
 
       ! Exact ! Reservation set is exactly enough to cover the access and no more
+      ! 2B ! Reservation set is naturally-aligned 2-byte region
+      ! 4B ! Reservation set is naturally-aligned 4-byte region
+      ! 8B ! Reservation set is naturally-aligned 8-byte region
+      ! 16B ! Reservation set is naturally-aligned 16-byte region
+      ! 32B ! Reservation set is naturally-aligned 32-byte region
       ! 64B ! Reservation set is naturally-aligned 64-byte region
       ! 128B ! Reservation set is naturally-aligned 128-byte region
+      ! 256B ! Reservation set is naturally-aligned 256-byte region
+      ! 512B ! Reservation set is naturally-aligned 512-byte region
+      ! 1024B ! Reservation set is naturally-aligned 1024-byte region
+      ! 2048B ! Reservation set is naturally-aligned 2048-byte region
+      ! 4096B ! Reservation set is naturally-aligned 4096-byte region
       ! Other ! Reservation set strategy doesn't fit any of the specified choices
       !===

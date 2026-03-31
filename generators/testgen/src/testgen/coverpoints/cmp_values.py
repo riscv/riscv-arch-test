@@ -29,6 +29,20 @@ def generate_cmp_testcase(
 ) -> TestChunk:
     """Generate a generic compare test case for CAS instructions"""
 
+    # Check if this instruction uses register pairs (value is 2 * XLEN)
+    is_pair = (instr_name == "amocas.q" and test_data.xlen == 64) or (instr_name == "amocas.d" and test_data.xlen == 32)
+
+    # Split values if dealing with a register pair
+    mask = (1 << test_data.xlen) - 1
+
+    if not is_pair:
+        rd_val &= mask
+        rs1_val &= mask
+    else:
+        pair_mask = (1 << (2 * test_data.xlen)) - 1
+        rd_val &= pair_mask
+        rs1_val &= pair_mask
+
     # Allocate registers and generate params
     params = generate_random_params(
         test_data,
@@ -43,18 +57,19 @@ def generate_cmp_testcase(
 
     rd, rs1, rs2 = params.rd, params.rs1, params.rs2
 
-    # Check if this instruction uses register pairs (value is 2 * XLEN)
-    is_pair = (instr_name == "amocas.q" and test_data.xlen == 64) or (instr_name == "amocas.d" and test_data.xlen == 32)
-
-    # Split values if dealing with a register pair
-    mask = (1 << test_data.xlen) - 1
-
     # Initialize to 0 for non-pair instructions
     rd_lo = rd_hi = rs1_lo = rs1_hi = 0
 
     if is_pair:
         rd_lo, rd_hi = rd_val & mask, (rd_val >> test_data.xlen) & mask
         rs1_lo, rs1_hi = rs1_val & mask, (rs1_val >> test_data.xlen) & mask
+
+    if is_pair:
+        params.rdval = rd_lo
+        params.rs1val = rs1_lo
+    else:
+        params.rdval = rd_val
+        params.rs1val = rs1_val
 
     # Begin testcase
     tc = test_data.begin_test_chunk()

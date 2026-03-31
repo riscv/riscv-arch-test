@@ -277,7 +277,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     # Standard M-mode CSRs
     csrs = [
         "mstatus",
-        "misa",
         "medeleg",
         "mideleg",
         "mie",
@@ -428,6 +427,68 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 f"CSRW(0x{csr:03x}, t0)    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
             ]
         )
+
+    ######################################
+    coverpoint = "cp_misa_mxl"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Set, clear, write misa.MXL.  Should not change",
+        ),
+    )
+
+    rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(4, exclude_regs=[0])
+
+    lines.extend(
+        [
+            "# Load 1s into msb and msb-1 correspondding to misa.MXL bitfields",
+            f"LI(x{rmsb}, -1)           # all 1s",
+            f"srli x{rmsb}, x{rmsb}, 1  # all 1s except msb = 0",
+            f"not x{rmsb}, x{rmsb}      # 1 in msb (works regardless of XLEN",
+            f"srli x{rmsb2}, x{rmsb}, 1 # 1s in msb-1",
+            f"or x{rboth}, x{rmsb}, x{rmsb2} # 1s in both msb and msb-1",
+            "",
+            test_data.add_testcase("csrc_11", coverpoint, covergroup),
+            f"csrc misa, x{rboth}       # attempt to clear both MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrs_11", coverpoint, covergroup),
+            f"csrs misa, x{rboth}       # attempt to set both MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_00", coverpoint, covergroup),
+            "csrw misa, zero           # attempt to write 00 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_01", coverpoint, covergroup),
+            f"csrw misa, x{rmsb2}       # attempt to write 01 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_10", coverpoint, covergroup),
+            f"csrw misa, x{rmsb}        # attempt to write 10 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+            "",
+            test_data.add_testcase("csrw_11", coverpoint, covergroup),
+            f"csrw misa, x{rboth}       # attempt to write 11 to MXL bits",
+            f"csrr x{rr}, misa          # read misa to check MXL bits are unchanged",
+            f"and x{rr}, x{rr}, x{rboth} # mask off bits below MXL",
+            write_sigupd(rr, test_data),
+        ]
+    )
+
+    test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
 
     return lines
 

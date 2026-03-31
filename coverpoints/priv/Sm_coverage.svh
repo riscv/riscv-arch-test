@@ -174,7 +174,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
-        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -352,16 +351,33 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
     `endif
 
+    misa: coverpoint ins.current.insn[31:20] {
+        bins misa = {CSR_MISA};
+    }
+    // only check MISA.MXL.  The other bits are allowed to be 0s even if a feature is not implemented.
+    misa_mxl_accesses : coverpoint ins.current.insn {
+        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b00); // clear misa.MXL
+        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b01); // clear misa.MXL
+        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b10); // clear misa.MXL
+        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrr     = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
-    cp_csr_insufficient_priv:   cross priv_mode_m, csrr,   csr_debug, nonzerord;
-    cp_csr_ro:                  cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
+    cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
+    cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
     cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
     cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+
+    // misa
+    cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written

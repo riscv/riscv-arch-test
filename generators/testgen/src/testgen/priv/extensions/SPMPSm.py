@@ -21,6 +21,7 @@ from testgen.constants import INDENT, indent_asm
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
 from testgen.io.templates import insert_footer_template, insert_header_template
+from testgen.priv.registry import add_priv_test_generator
 
 # SPMP CSR addresses used via indirect access
 # siselect values for SPMP entries: 0x100 + entry_index
@@ -1197,9 +1198,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_mpmpdeleg_pmpnum"
 
     # Read and save current mpmpdeleg
-    # mpmpdeleg is an M-mode CSR; its CSR number is implementation-specific
-    # We use a placeholder address 0x3A0 (a reserved M-mode CSR space)
-    mpmpdeleg_csr = "0x3A0"
+    mpmpdeleg_csr = "CSR_MPMPDELEG"
 
     lines.extend(
         [
@@ -1568,8 +1567,286 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_spmpen_tests(test_data: TestData) -> list[str]:
+    """Test spmpen CSR (Sspmpen extension) for per-entry enable control.
+
+    Covers:
+    - cp_spmpen_readwrite: Basic read/write of spmpen
+    - cp_spmpen_activation: Entry active iff spmpen[i] & spmpcfg[i].A != 0
+    - cp_spmpen_locked_readonly: spmpen[i] is read-only when spmpcfg[i].L == 1
+    """
+    covergroup = "SPMPSm_csr_cg"
+    sel_reg, val_reg, check_reg, save_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+
+    lines = [
+        comment_banner(
+            "Sspmpen: spmpen CSR tests",
+            "Test the spmpen register (Sspmpen extension).\n"
+            "spmpen[i] controls whether SPMP entry i is active.\n"
+            "An entry is active only when spmpen[i] & spmpcfg[i].A != 0.\n"
+            "When spmpcfg[i].L == 1, spmpen[i] becomes read-only.",
+        ),
+    ]
+
+    # ---------- Basic read/write ----------
+    coverpoint = "cp_spmpen_readwrite"
+
+    # Save current spmpen from M-mode (spmpen is S-mode CSR, accessible from M)
+    lines.extend(
+        [
+            "RVTEST_GOTO_MMODE",
+            f"CSRR(x{save_reg}, CSR_SPMPEN)  # save spmpen",
+            "nop",
+        ]
+    )
+
+    # Write all-ones and read back (WARL)
+    lines.extend(
+        [
+            "\n# Write all-ones to spmpen, read back (WARL register)",
+            f"LI(x{val_reg}, -1)  # all ones",
+            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            "nop",
+            test_data.add_testcase("spmpen_write_allones", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Write zero and read back
+    lines.extend(
+        [
+            "\n# Write zero to spmpen (disable all entries)",
+            "CSRW(CSR_SPMPEN, zero)",
+            "nop",
+            test_data.add_testcase("spmpen_write_zero", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Write specific bit patterns
+    for bit in [0, 1, 2, 3]:
+        mask = 1 << bit
+        lines.extend(
+            [
+                f"\n# Enable only entry {bit}",
+                f"LI(x{val_reg}, {mask})",
+                f"CSRW(CSR_SPMPEN, x{val_reg})",
+                "nop",
+                test_data.add_testcase(f"spmpen_bit{bit}", coverpoint, covergroup),
+                gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+            ]
+        )
+
+    # ---------- Activation logic: entry active iff spmpen[i] & A != 0 ----------
+    coverpoint = "cp_spmpen_activation"
+    entry = 0
+
+    # Configure SPMP entry 0 with NAPOT + RW in S-mode via M-mode indirect access
+    cfg_napot_rw = (1 << SPMPCFG_R) | (1 << SPMPCFG_W) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+
+    lines.extend(
+        [
+            comment_banner(
+                coverpoint,
+                "Verify entry activation depends on spmpen[i] & spmpcfg[i].A.\n"
+                "Configure entry 0 with A=NAPOT, then toggle spmpen[0].",
+            ),
+            "",
+            # Use M-mode indirect to configure entry 0
+            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
+            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {entry}",
+            "nop",
+        ]
+    )
+
+    # Set addr for a wide NAPOT region covering scratch
+    napot_addr = 0x80000000 >> 2 | 0x01FFFFFF  # NAPOT covering large range
+    lines.extend(
+        [
+            f"LI(x{val_reg}, 0x{napot_addr:x})",
+            f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
+            "nop",
+        ]
+    )
+
+    # Set cfg
+    lines.extend(
+        [
+            f"LI(x{val_reg}, 0x{cfg_napot_rw:x})  # R|W|NAPOT|U",
+            f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
+            "nop",
+        ]
+    )
+
+    # Disable entry via spmpen[0] = 0
+    lines.extend(
+        [
+            "\n# Disable entry 0 via spmpen[0] = 0",
+            "CSRW(CSR_SPMPEN, zero)",
+            "nop",
+            "sfence.vma x0, x0",
+            test_data.add_testcase("spmpen_entry0_disabled", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Enable entry via spmpen[0] = 1
+    lines.extend(
+        [
+            "\n# Enable entry 0 via spmpen[0] = 1",
+            f"LI(x{val_reg}, 1)",
+            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            "nop",
+            "sfence.vma x0, x0",
+            test_data.add_testcase("spmpen_entry0_enabled", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Verify: when A=OFF, spmpen[0]=1 should still not activate entry
+    lines.extend(
+        [
+            "\n# Set A=OFF (disable), spmpen[0]=1 -> entry still inactive",
+            "CSRW(mireg2, zero)  # spmpcfg.A=OFF",
+            "nop",
+            f"LI(x{val_reg}, 1)",
+            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            "nop",
+            "sfence.vma x0, x0",
+            test_data.add_testcase("spmpen_aoff_no_activate", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "mireg2", test_data),
+        ]
+    )
+
+    # ---------- spmpen[i] read-only when locked ----------
+    coverpoint = "cp_spmpen_locked_readonly"
+    lock_entry = 1
+
+    lines.extend(
+        [
+            comment_banner(
+                coverpoint,
+                "When spmpcfg[i].L == 1, spmpen[i] becomes read-only.\n"
+                "Test: lock entry 1, then try to toggle spmpen[1].",
+            ),
+            "",
+            # Select entry 1
+            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
+            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {lock_entry}",
+            "nop",
+        ]
+    )
+
+    # Configure entry 1 with L=1 (locked), A=NAPOT, R
+    cfg_locked = (1 << SPMPCFG_L) | (1 << SPMPCFG_R) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
+    lines.extend(
+        [
+            f"LI(x{val_reg}, 0x{cfg_locked:x})  # L=1, R, NAPOT, U",
+            f"CSRW(mireg2, x{val_reg})",
+            "nop",
+        ]
+    )
+
+    # Enable spmpen[1]
+    lines.extend(
+        [
+            "\n# Set spmpen[1] = 1, then read back",
+            f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
+            f"CSRS(CSR_SPMPEN, x{val_reg})",
+            "nop",
+            test_data.add_testcase("spmpen_locked_set", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Try to clear spmpen[1] (should be rejected since L=1)
+    lines.extend(
+        [
+            "\n# Try to clear spmpen[1] (locked, should be rejected)",
+            f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
+            f"CSRC(CSR_SPMPEN, x{val_reg})",
+            "nop",
+            test_data.add_testcase("spmpen_locked_clear_rejected", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # ---------- Clean up: unlock via reset (clear lock from M-mode) ----------
+    # Note: lock can only be cleared by reset; we just clear A to deactivate
+    lines.extend(
+        [
+            "\n# Clean up: clear entry configs",
+            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
+            f"CSRW(miselect, x{sel_reg})",
+            "nop",
+            "CSRW(mireg2, zero)",
+            "nop",
+            "CSRW(mireg, zero)",
+            "nop",
+            f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
+            f"CSRW(miselect, x{sel_reg})",
+            "nop",
+            "CSRW(mireg2, zero)  # try to clear (may be ignored if locked)",
+            "nop",
+            "CSRW(mireg, zero)",
+            "nop",
+            f"CSRW(CSR_SPMPEN, x{save_reg})  # restore spmpen",
+            "nop",
+            "sfence.vma x0, x0",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+        ]
+    )
+
+    test_data.int_regs.return_registers([sel_reg, val_reg, check_reg, save_reg])
+    return lines
+
+
 # ---------------------------------------------------------------------------
-# Standalone Sspmp test generation
+# Framework integration: register Sspmp so ``testgen testplans --extensions Sspmp`` works.
+# ---------------------------------------------------------------------------
+
+
+@add_priv_test_generator(
+    "Sspmp",
+    required_extensions=["Sm", "Ss", "Zicsr"],
+    march_extensions=["Zicsr"],
+)
+def make_sspmp(test_data: TestData) -> list[str]:
+    """Generate all SPMP sub-tests (combined into one file by the framework)."""
+    lines: list[str] = []
+    # CSR Access Tests
+    lines.extend(_generate_spmp_csr_indirect_access_tests(test_data))
+    lines.extend(_generate_spmp_lock_tests(test_data))
+    lines.extend(_generate_spmp_oob_access_tests(test_data))
+    lines.extend(_generate_sfence_ordering_tests(test_data))
+    # Address Matching Tests
+    lines.extend(_generate_addr_match_tests(test_data))
+    lines.extend(_generate_spmp_entry_tor_entry0_tests(test_data))
+    lines.extend(_generate_priority_match_tests(test_data))
+    # Permission Tests
+    lines.extend(_generate_permission_smode_tests(test_data))
+    lines.extend(_generate_permission_umode_tests(test_data))
+    lines.extend(_generate_sum_effect_tests(test_data))
+    lines.extend(_generate_mxr_effect_tests(test_data))
+    lines.extend(_generate_shared_rule_tests(test_data))
+    lines.extend(_generate_reserved_encoding_tests(test_data))
+    lines.extend(_generate_no_match_deny_tests(test_data))
+    # Fault Tests
+    lines.extend(_generate_spmp_fault_tests(test_data))
+    # M-mode Tests
+    lines.extend(_generate_mmode_bypass_tests(test_data))
+    lines.extend(_generate_mmode_indirect_access_tests(test_data))
+    lines.extend(_generate_mpmpdeleg_tests(test_data))
+    # Sspmpen Tests
+    lines.extend(_generate_spmpen_tests(test_data))
+    # Paging Tests
+    lines.extend(_generate_satp_bare_spmp_tests(test_data))
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# Standalone Sspmp test generation (separate files, no "-00" suffix)
+# Run:  python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SPMPSm.py tests
 # ---------------------------------------------------------------------------
 
 _SIGUPD_MARGIN = 10
@@ -1594,6 +1871,7 @@ _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]]]] = [
     ("SPMPSmMmodeBypass", _generate_mmode_bypass_tests),
     ("SPMPSmMmodeAccess", _generate_mmode_indirect_access_tests),
     ("SPMPSmMpmpdeleg", _generate_mpmpdeleg_tests),
+    ("SPMPSmSpmpen", _generate_spmpen_tests),
     ("SPMPSmSatpBare", _generate_satp_bare_spmp_tests),
 ]
 
@@ -1656,6 +1934,10 @@ def generate_sspmp_tests(output_dir: Path) -> None:
     print(f"Generated {len(_SSPMP_SUB_TESTS)} Sspmp test files in {sspmp_dir}")
 
 
+"""
+run: python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SPMPSm.py tests
+This will generate separate .S files for each Sspmp sub-test under tests/priv/Sspmp/.
+"""
 if __name__ == "__main__":
     output = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("tests")
     generate_sspmp_tests(output)

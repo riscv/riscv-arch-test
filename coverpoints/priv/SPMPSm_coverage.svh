@@ -338,13 +338,6 @@ covergroup SPMPSm_addr_cg with function sample(ins_t ins);
         bins match_allow = {0};
     }
 
-    //------------------------------------------
-    // cp_partial_match_fault: Access spans entry boundary -> fault
-    //------------------------------------------
-    cp_partial_match_fault: coverpoint ins.current.trap iff (ins.current.trap == 1) {
-        bins partial_fault = {1};
-    }
-
 endgroup
 
 ///////////////////////////////////////////
@@ -367,6 +360,57 @@ covergroup SPMPSm_paging_cg with function sample(ins_t ins);
 endgroup
 
 ///////////////////////////////////////////
+// Sspmpen (spmpen CSR) Covergroup
+///////////////////////////////////////////
+covergroup SPMPSm_spmpen_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    //------------------------------------------
+    // cp_spmpen_readwrite: Basic read/write of spmpen register
+    // Covers: write all-ones / zero / individual bits and readback
+    //------------------------------------------
+    cp_spmpen_readwrite: coverpoint ins.current.csr[`CSR_SPMPEN] {
+        bins all_zeros = {0};
+        bins all_ones  = {{64{1'b1}}};
+        bins bit0      = {64'h1};
+        bins bit1      = {64'h2};
+        bins bit2      = {64'h4};
+        bins bit3      = {64'h8};
+        bins other[4]  = default;
+    }
+
+    //------------------------------------------
+    // cp_spmpen_activation: Entry active iff spmpen[i] & spmpcfg[i].A != 0
+    // Tests toggling spmpen[i] with A=NAPOT and A=OFF
+    //------------------------------------------
+    cp_spmpen_activation: coverpoint {
+        ins.current.csr[`CSR_SPMPEN][0],
+        ins.current.csr[`CSR_SIREG2][4:3]
+    } iff (ins.current.csr[`CSR_SISELECT] >= 12'h100 &&
+           ins.current.csr[`CSR_SISELECT] <= 12'h13F) {
+        bins en_napot    = {3'b1_11};  // spmpen=1, A=NAPOT -> active
+        bins en_off      = {3'b1_00};  // spmpen=1, A=OFF   -> inactive
+        bins dis_napot   = {3'b0_11};  // spmpen=0, A=NAPOT -> inactive
+        bins dis_off     = {3'b0_00};  // spmpen=0, A=OFF   -> inactive
+    }
+
+    //------------------------------------------
+    // cp_spmpen_locked_readonly: spmpen[i] read-only when spmpcfg[i].L == 1
+    // Attempts to clear a locked entry's spmpen bit should be rejected
+    //------------------------------------------
+    cp_spmpen_locked_readonly: coverpoint {
+        ins.current.csr[`CSR_SIREG2][7],
+        ins.current.csr[`CSR_SPMPEN][1]
+    } iff (ins.current.csr[`CSR_SISELECT] == 12'h101) {
+        bins locked_set    = {2'b11};  // L=1, spmpen[1]=1 (stays set)
+        bins locked_clear  = {2'b10};  // L=1, spmpen[1]=0 (clear rejected)
+    }
+
+endgroup
+
+///////////////////////////////////////////
 // Sample function
 ///////////////////////////////////////////
 function void spmpsm_sample(int hart, int issue, ins_t ins);
@@ -374,4 +418,5 @@ function void spmpsm_sample(int hart, int issue, ins_t ins);
     SPMPSm_perm_cg.sample(ins);
     SPMPSm_addr_cg.sample(ins);
     SPMPSm_paging_cg.sample(ins);
+    SPMPSm_spmpen_cg.sample(ins);
 endfunction

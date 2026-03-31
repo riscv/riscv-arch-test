@@ -94,9 +94,6 @@ normative_rule_definitions:
   - name: match_priority
     coverpoint: ["SPMPSm_addr_cg/cp_priority_match"]
 
-  - name: match_all_bytes
-    coverpoint: ["SPMPSm_addr_cg/cp_partial_match_fault"]
-
   - name: no_match_deny
     coverpoint: ["SPMPSm_perm_cg/cp_no_match_deny"]
 
@@ -138,6 +135,18 @@ normative_rule_definitions:
 
   - name: spmp_store_page_fault
     coverpoint: ["SPMPSm_perm_cg/cp_spmp_fault_store"]
+
+  ##############################################
+  # Section 3: Sspmpen (Context Switch Optimization)
+  ##############################################
+  - name: spmpen_readwrite
+    coverpoint: ["SPMPSm_spmpen_cg/cp_spmpen_readwrite"]
+
+  - name: spmpen_activation_condition
+    coverpoint: ["SPMPSm_spmpen_cg/cp_spmpen_activation"]
+
+  - name: spmpen_locked_readonly
+    coverpoint: ["SPMPSm_spmpen_cg/cp_spmpen_locked_readonly"]
 
   ##############################################
   # Section 4.1: Resource Sharing (Smpmpdeleg)

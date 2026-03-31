@@ -38,55 +38,55 @@ RVTEST_BEGIN
 //   Entries >= pmpnum are delegated as SPMP entries.
 /////////////////////////////////
   RVTEST_GOTO_MMODE
-  CSRR(x16, 0x3A0)  # save mpmpdeleg
+  CSRR(x16, CSR_MPMPDELEG)  # save mpmpdeleg
   nop
 
 # pmpnum = 0 (delegate all PMP entries as SPMP)
-  CSRW(0x3A0, zero)
+  CSRW(CSR_MPMPDELEG, zero)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_0_str)
 
 # pmpnum = 8
   LI(x30, 8)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_8_str)
 
 # pmpnum = 16
   LI(x30, 16)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_16_str)
 
 # pmpnum = 32
   LI(x30, 32)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_32_str)
 
 # pmpnum = 64 (no delegation, SPMP disabled)
   LI(x30, 64)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_64_str)
 
 # pmpnum = 100 (should clamp to number of writable entries)
   LI(x30, 100)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp, SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp_str)
 
 
 /////////////////////////////////
@@ -113,20 +113,20 @@ SPMPSm_csr_cg_cp_mpmpdeleg_pmpnum_pmpnum_100_clamp:
 #endif
 
   LI(x30, 16)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_16_ok_str)
 
   LI(x30, 4)
-  CSRW(0x3A0, x30)
+  CSRW(CSR_MPMPDELEG, x30)
   nop
 SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected:
-  # Read 0x3A0 into x23 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(0x3A0, x23, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str)
+  # Read CSR_MPMPDELEG into x23 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(CSR_MPMPDELEG, x23, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected, SPMPSm_csr_cg_cp_mpmpdeleg_locked_locked_pmpnum_4_rejected_str)
 
-  CSRW(0x3A0, x16)  # restore mpmpdeleg
+  CSRW(CSR_MPMPDELEG, x16)  # restore mpmpdeleg
   nop
   RVTEST_GOTO_LOWER_MODE Smode
 

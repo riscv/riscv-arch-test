@@ -162,6 +162,16 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
 
+    // counters keep incrementing, so don't write the maximum value that will roll over
+    // tests should check value read back is within some tolerance of value written
+    cntraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all  = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0     = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw_some = {CSRRW} iff (ins.current.rs1_val != '0); // csrw some ones
+        wildcard bins csrrs_some = {CSRRS} iff (ins.current.rs1_val != '0); // csrs some ones
+        wildcard bins csrr       = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
+
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
         bins misa       = {CSR_MISA};
@@ -349,7 +359,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_csr_ro:                  cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
 
     // counters
-    cp_cntr_access :            cross priv_mode_m, mcounters, csraccesses;
+    cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
     cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
     cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
 

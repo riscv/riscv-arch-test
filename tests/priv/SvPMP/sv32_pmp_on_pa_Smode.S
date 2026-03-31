@@ -19,7 +19,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32]
+# REQUIRED_EXTENSIONS: [I, Sv32, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr
@@ -93,7 +93,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    Setup pmpaddr registers

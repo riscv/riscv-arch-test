@@ -144,82 +144,271 @@ def set_mtimer_int_soon(
     ]
 
 
-def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int) -> list[str]:
+# def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int) -> list[str]:
+#     """Set supervisor timer interrupt.
+
+#     Checks menvcfg.STCE at runtime:
+#     - If STCE=1: Use Sstc method (write stimecmp from S-mode)
+#     - If STCE=0: Use legacy method (write mip.STIP from M-mode)
+#     """
+#     return [
+#         f"{INDENT}# Set supervisor timer interrupt",
+#         f"{INDENT}# Check if Sstc is enabled",
+#         f"CSRR x{r_scratch}, menvcfg",
+#         "#if __riscv_xlen == 64",
+#         f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+#         "#else",
+#         f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31 on RV32
+#         "#endif",
+#         f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+#         f"BEQZ x{r_scratch}, 1f # If STCE=0, use non sstc method",
+#         "",
+#         f"{INDENT}# Sstc method: Write stimecmp",
+#         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+#         f"LREG x{r_temp}, 0(x{r_mtime})",
+#         f"csrw stimecmp, x{r_temp}",
+#         "nop",
+#         "#if __riscv_xlen == 32",
+#         f"LI(x{r_temp}, -1)",
+#         f"csrw stimecmp, x{r_temp}",
+#         f"lw x{r_temp2}, 4(x{r_mtime})",
+#         f"lw x{r_temp}, 0(x{r_mtime})",
+#         f"csrw stimecmph, x{r_temp2}",
+#         f"csrw stimecmp, x{r_temp}",
+#         "nop",
+#         "#endif",
+#         "j 2f",
+#         "",
+#         "1: # Legacy method: Set mip.STIP from M-mode",
+#         f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
+#         f"csrrs x{r_temp}, mip, x{r_temp}",
+#         "",
+#         "2: # Continue",
+#     ]
+
+# def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_stce: int = None) -> list[str]:
+#     """Set supervisor timer interrupt.
+
+#     Args:
+#         r_stce: Optional - register containing pre-read menvcfg.STCE value (0 or 1)
+#                 If None, will read menvcfg in M-mode
+
+#     If STCE=1: Use Sstc method (write stimecmp - works in S-mode)
+#     If STCE=0: Use legacy method (write mip.STIP - requires M-mode)
+#     """
+#     lines = [
+#         f"{INDENT}# Set supervisor timer interrupt",
+#     ]
+
+#     # If STCE not pre-read, read menvcfg (assumes M-mode)
+#     if r_stce is None:
+#         lines.extend([
+#             f"{INDENT}# Check if Sstc is enabled",
+#             f"CSRR x{r_scratch}, menvcfg",
+#             "#if __riscv_xlen == 64",
+#             f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+#             "#else",
+#             f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+#             "#endif",
+#             f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+#         ])
+#         check_reg = r_scratch
+#     else:
+#         check_reg = r_stce
+
+#     lines.extend([
+#         f"BEQZ x{check_reg}, 1f # If STCE=0, use legacy method",
+#         "",
+#         f"{INDENT}# Sstc method: Write stimecmp (works in S-mode)",
+#         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+#         f"LREG x{r_temp}, 0(x{r_mtime})",
+#         f"csrw stimecmp, x{r_temp}",
+#         "nop",
+#         "#if __riscv_xlen == 32",
+#         f"LI(x{r_temp}, -1)",
+#         f"csrw stimecmp, x{r_temp}",
+#         f"lw x{r_temp2}, 4(x{r_mtime})",
+#         f"lw x{r_temp}, 0(x{r_mtime})",
+#         f"csrw stimecmph, x{r_temp2}",
+#         f"csrw stimecmp, x{r_temp}",
+#         "nop",
+#         "#endif",
+#         "j 2f",
+#         "",
+#         "1: # Legacy method: Set mip.STIP (requires M-mode)",
+#         "RVTEST_GOTO_MMODE",
+#         f"LI(x{r_temp}, 0x20)",  # STIP bit
+#         f"csrrs x{r_temp}, mip, x{r_temp}",
+#         "# Clear MPIE to prevent MIE=1 after mret back to S-mode",
+#         f"LI(x{r_temp}, 0x80)",  # MPIE bit (bit 7)
+#         f"csrc mstatus, x{r_temp}",
+#         "RVTEST_GOTO_LOWER_MODE Smode",
+#         "",
+#         "2: # Continue",
+#     ])
+
+#     return lines
+
+
+def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int, r_stce: int) -> list[str]:
     """Set supervisor timer interrupt.
 
-    Checks menvcfg.STCE at runtime:
-    - If STCE=1: Use Sstc method (write stimecmp from S-mode)
-    - If STCE=0: Use legacy method (write mip.STIP from M-mode)
+    Args:
+        r_stce: Optional - register containing pre-read menvcfg.STCE value (0 or 1)
+                If None, will read menvcfg in M-mode
+
+    If STCE=1: Use Sstc method (write stimecmp - works in S-mode)
+    If STCE=0: Use legacy method (write mip.STIP - requires M-mode)
     """
-    return [
+    lines = [
         f"{INDENT}# Set supervisor timer interrupt",
-        f"{INDENT}# Check if Sstc is enabled",
-        f"CSRR x{r_scratch}, menvcfg",
-        "#if __riscv_xlen == 64",
-        f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
-        "#else",
-        f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31 on RV32
-        "#endif",
-        f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
-        f"BEQZ x{r_scratch}, 1f # If STCE=0, use non sstc method",
-        "",
-        f"{INDENT}# Sstc method: Write stimecmp",
-        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS) # NOTE: This will need to be replaced by a SBI call because MTIME might not exist or be accessible",
-        f"LREG x{r_temp}, 0(x{r_mtime})",
-        f"csrw stimecmp, x{r_temp}",
-        "nop",
-        "#if __riscv_xlen == 32",
-        f"LI(x{r_temp}, -1)",
-        f"csrw stimecmp, x{r_temp}",
-        f"lw x{r_temp2}, 4(x{r_mtime})",
-        f"lw x{r_temp}, 0(x{r_mtime})",
-        f"csrw stimecmph, x{r_temp2}",
-        f"csrw stimecmp, x{r_temp}",
-        "nop",
-        "#endif",
-        "j 2f",
-        "",
-        "1: # Legacy method: Set mip.STIP from M-mode",
-        f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
-        f"csrrs x{r_temp}, mip, x{r_temp}",
-        "",
-        "2: # Continue",
     ]
 
+    # If STCE not pre-read, read menvcfg (assumes M-mode)
+    if r_stce is None:
+        lines.extend(
+            [
+                f"{INDENT}# Check if Sstc is enabled",
+                f"CSRR x{r_scratch}, menvcfg",
+                "#if __riscv_xlen == 64",
+                f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+                "#else",
+                f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+                "#endif",
+                f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+            ]
+        )
+        check_reg = r_scratch
+    else:
+        check_reg = r_stce
 
-def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int) -> list[str]:
+    lines.extend(
+        [
+            f"BEQZ x{check_reg}, 1f # If STCE=0, use legacy method",
+            "",
+            f"{INDENT}# Sstc method: Write stimecmp (works in S-mode)",
+            f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+            f"LREG x{r_temp}, 0(x{r_mtime})",
+            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay
+            f"csrw stimecmp, x{r_temp}",
+            "nop",
+            "#if __riscv_xlen == 32",
+            f"LI(x{r_temp}, -1)",
+            f"csrw stimecmp, x{r_temp}",
+            f"lw x{r_temp2}, 4(x{r_mtime})",
+            f"lw x{r_temp}, 0(x{r_mtime})",
+            f"addi x{r_temp}, x{r_temp}, 100",  # Add 100 cycle delay to low word
+            f"sltu x{r_scratch}, x{r_temp}, x{r_temp}",  # Check for overflow
+            f"add x{r_temp2}, x{r_temp2}, x{r_scratch}",  # Add carry to high word
+            f"csrw stimecmph, x{r_temp2}",
+            f"csrw stimecmp, x{r_temp}",
+            "nop",
+            "#endif",
+            "j 2f",
+            "",
+            "1: # Legacy method: Set mip.STIP (requires M-mode)",
+            "RVTEST_GOTO_MMODE",
+            f"LI(x{r_temp}, 0x20)",  # STIP bit
+            f"csrrs x{r_temp}, mip, x{r_temp}",
+            "# Clear MPIE to prevent MIE=1 after mret back to S-mode",
+            f"LI(x{r_temp}, 0x80)",  # MPIE bit (bit 7)
+            f"csrc mstatus, x{r_temp}",
+            "RVTEST_GOTO_LOWER_MODE Smode",
+            "",
+            "2: # Continue",
+        ]
+    )
+
+    return lines
+
+
+# def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int) -> list[str]:
+#     """Clear supervisor timer interrupt.
+
+
+#     Checks menvcfg.STCE at runtime:
+#     - If STCE=1: Use Sstc method (write stimecmp = -1)
+#     - If STCE=0: Use legacy method (clear mip.STIP from M-mode)
+#     """
+#     return [
+#         f"{INDENT}# Clear supervisor timer interrupt",
+#         f"{INDENT}# Check if Sstc is enabled",
+#         f"CSRR x{r_scratch}, menvcfg",
+#         "#if __riscv_xlen == 64",
+#         f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+#         "#else",
+#         f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31 on RV32
+#         "#endif",
+#         f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+#         f"BEQZ x{r_scratch}, 1f # If STCE=0, use non sstc method",
+#         "",
+#         f"{INDENT}# Sstc method: Write stimecmp = -1 (max value)",
+#         f"LI(x{r_temp}, -1)",
+#         f"csrw stimecmp, x{r_temp}",
+#         "#if __riscv_xlen == 32",
+#         f"csrw stimecmph, x{r_temp}",  # Also clear high word
+#         "#endif",
+#         "j 2f",
+#         "",
+#         "1: # Legacy method: Clear mip.STIP from M-mode",
+#         f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
+#         f"csrrc x{r_temp}, mip, x{r_temp}",
+#         "",
+#         "2: # Continue",
+#     ]
+def clr_stimer_int(r_temp: int, r_stimecmp: int, r_scratch: int, r_stce: int) -> list[str]:
     """Clear supervisor timer interrupt.
 
-    Checks menvcfg.STCE at runtime:
-    - If STCE=1: Use Sstc method (write stimecmp = -1)
-    - If STCE=0: Use legacy method (clear mip.STIP from M-mode)
+    Args:
+        r_stce: Optional - register containing pre-read menvcfg.STCE value (0 or 1)
+                If None, will read menvcfg (assumes M-mode)
+
+    If STCE=1: Use Sstc method (write stimecmp = -1)
+    If STCE=0: Use legacy method (clear mip.STIP - requires M-mode)
     """
-    return [
+    lines = [
         f"{INDENT}# Clear supervisor timer interrupt",
-        f"{INDENT}# Check if Sstc is enabled",
-        f"CSRR x{r_scratch}, menvcfg",
-        "#if __riscv_xlen == 64",
-        f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
-        "#else",
-        f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31 on RV32
-        "#endif",
-        f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
-        f"BEQZ x{r_scratch}, 1f # If STCE=0, use non sstc method",
-        "",
-        f"{INDENT}# Sstc method: Write stimecmp = -1 (max value)",
-        f"LI(x{r_temp}, -1)",
-        f"csrw stimecmp, x{r_temp}",
-        "#if __riscv_xlen == 32",
-        f"csrw stimecmph, x{r_temp}",  # Also clear high word
-        "#endif",
-        "j 2f",
-        "",
-        "1: # Legacy method: Clear mip.STIP from M-mode",
-        f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
-        f"csrrc x{r_temp}, mip, x{r_temp}",
-        "",
-        "2: # Continue",
     ]
+
+    # If STCE not pre-read, read menvcfg (assumes M-mode)
+    if r_stce is None:
+        lines.extend(
+            [
+                f"{INDENT}# Check if Sstc is enabled",
+                f"CSRR x{r_scratch}, menvcfg",
+                "#if __riscv_xlen == 64",
+                f"SRLI x{r_scratch}, x{r_scratch}, 63",  # STCE is bit 63
+                "#else",
+                f"SRLI x{r_scratch}, x{r_scratch}, 31",  # STCE is bit 31
+                "#endif",
+                f"ANDI x{r_scratch}, x{r_scratch}, 0x1",
+            ]
+        )
+        check_reg = r_scratch
+    else:
+        check_reg = r_stce
+
+    lines.extend(
+        [
+            f"BEQZ x{check_reg}, 1f # If STCE=0, use legacy method",
+            "",
+            f"{INDENT}# Sstc method: Write stimecmp = -1 (max value)",
+            f"LI(x{r_temp}, -1)",
+            f"csrw stimecmp, x{r_temp}",
+            "#if __riscv_xlen == 32",
+            f"csrw stimecmph, x{r_temp}",  # Also clear high word
+            "#endif",
+            "j 2f",
+            "",
+            "1: # Legacy method: Clear mip.STIP (must be in M-mode)",
+            f"LI(x{r_temp}, 0x20)",  # STIP = bit 5
+            f"csrrc x{r_temp}, mip, x{r_temp}",
+            "",
+            "2: # Continue",
+        ]
+    )
+
+    return lines
 
 
 def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int) -> list[str]:

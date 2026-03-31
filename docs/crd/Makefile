@@ -56,6 +56,10 @@ CREATE_CSR_APPENDIX_PYTHON := python3 $(CREATE_CSR_APPENDIX_TOOL)
 CREATE_CSR_APPENDIX_TABLE_LAYOUT := docs-resources/tools/default_csr_table.yaml
 CREATE_CSR_APPENDIX_TABLE_LAYOUT_SRC := $(DOCS_RESOURCES_DIR)/tools/default_csr_table.yaml
 
+EXPORT_PARAMS_TO_UDB_TOOL := docs-resources/tools/export_params_to_udb.py
+EXPORT_PARAMS_TO_UDB_TOOL_SRC := $(DOCS_RESOURCES_DIR)/tools/export_params_to_udb.py
+EXPORT_PARAMS_TO_UDB_PYTHON := python3 $(EXPORT_PARAMS_TO_UDB_TOOL)
+
 PARAM_APPENDIX_DIR := param-appendix
 GEN_PARAM_APPENDIX_DIR := $(GENERATED_DIR)/$(PARAM_APPENDIX_DIR)
 GEN_PARAM_APPENDIX_READY := $(GENERATED_DIR)/.param-appendix.ready
@@ -63,6 +67,10 @@ GEN_PARAM_APPENDIX_READY := $(GENERATED_DIR)/.param-appendix.ready
 CSR_APPENDIX_DIR := csr-appendix
 GEN_CSR_APPENDIX_DIR := $(GENERATED_DIR)/$(CSR_APPENDIX_DIR)
 GEN_CSR_APPENDIX_READY := $(GENERATED_DIR)/.csr-appendix.ready
+
+UDB_PARAM_DIR := udb-parameters
+GEN_UDB_PARAM_DIR := $(GENERATED_DIR)/$(UDB_PARAM_DIR)
+GEN_UDB_PARAM_READY := $(GENERATED_DIR)/.udb-parameters.ready
 
 ENV := LANG=C.utf8
 XTRA_ADOC_OPTS :=
@@ -130,7 +138,8 @@ WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \
     rm -rf $@.workdir
 
-.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html docker-pull-latest submodule-check param-appendix-adoc csr-appendix-adoc
+.PHONY: all build clean build-container build-no-container build-docs build-pdf build-html build-udb-parameters
+.PHONY: docker-pull-latest submodule-check param-appendix-adoc csr-appendix-adoc udb-parameters
 
 all: build
 
@@ -141,9 +150,10 @@ ifeq ("$(wildcard ../docs-resources/global-config.adoc)","")
   $(shell git submodule update --init --recursive)
 endif
 
+build: build-pdf build-html build-udb-parameters
 build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
-build: build-pdf build-html
+build-udb-parameters: $(GEN_UDB_PARAM_READY)
 
 ALL_SRCS := $(wildcard $(SRC_DIR)/*.adoc) $(wildcard $(SRC_DIR)/ext_defs/*.adoc)
 
@@ -205,6 +215,17 @@ $(GEN_CSR_APPENDIX_READY): $(PARAMS_JSON) $(CREATE_CSR_APPENDIX_TOOL_SRC) $(CREA
 
 csr-appendix-adoc: $(GEN_CSR_APPENDIX_READY)
 
+# Export parameters to UDB
+$(GEN_UDB_PARAM_READY): $(PARAMS_JSON) $(EXPORT_PARAMS_TO_UDB_TOOL_SRC)
+	$(WORKDIR_SETUP)
+	mkdir -p $@.workdir/$(GENERATED_DIR)
+	cp -f $(PARAMS_JSON) $@.workdir/$(GENERATED_DIR)
+	$(DOCKER_CMD) $(DOCKER_QUOTE) $(EXPORT_PARAMS_TO_UDB_PYTHON) --input $(PARAMS_JSON) --output-dir $(UDB_PARAM_DIR) $(DOCKER_QUOTE)
+	rm -rf $(UDB_PARAM_DIR) && mkdir -p $(GENERATED_DIR) && cp -r $@.workdir/$(UDB_PARAM_DIR) $(GENERATED_DIR)
+	touch $@.workdir/$@
+	$(WORKDIR_TEARDOWN)
+
+param-appendix-adoc: $(GEN_PARAM_APPENDIX_READY)
 # Update docker image to latest
 docker-pull-latest:
 	${DOCKER_BIN} pull ${DOCKER_IMG}

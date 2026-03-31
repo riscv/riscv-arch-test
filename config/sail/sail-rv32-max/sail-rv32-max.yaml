@@ -118,6 +118,7 @@ implemented_extensions:
   - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
   - { name: Zmmul, version: "= 1.0.0" }
+  - { name: Zvabd, version: "= 0.7" }
   - { name: Zvbb, version: "= 1.0.0" }
   - { name: Zvbc, version: "= 1.0.0" }
   - { name: Zve32f, version: "= 1.0.0" }

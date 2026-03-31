@@ -101,6 +101,20 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
 
 ]
 
+
+def matches_extension_filter(arch: str, filters: set[str] | None) -> bool:
+  if filters is None:
+    return True
+
+  for ext in filters:
+    if arch == ext:
+      return True
+
+    if arch.startswith(ext) and arch[len(ext):].isdigit():
+      return True
+
+  return False
+
 def writeLine(argument: str, comment = ""):
   comment_distance = 50
   tab_size = 4
@@ -1113,6 +1127,17 @@ if __name__ == '__main__':
   for xlen in xlens:
     # extensions = getExtensions() # find all extensions in
     testplans = readTestplans()
+    include_extensions = {
+      ext.strip() for ext in os.environ.get("EXTENSIONS", "").split(",") if ext.strip()
+    } or None
+    exclude_extensions = {
+      ext.strip() for ext in os.environ.get("EXCLUDE_EXTENSIONS", "").split(",") if ext.strip()
+    }
+    testplans = {
+      arch: tp for arch, tp in testplans.items()
+      if matches_extension_filter(arch, include_extensions)
+      and not matches_extension_filter(arch, exclude_extensions)
+    }
     extensions = list(testplans.keys())
     maxreg = 31 # I uses registers x0-x31
 
@@ -1160,7 +1185,7 @@ if __name__ == '__main__':
       basepathname = pathname
       includeVData = " "
 
-      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$']:
+      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/Zvabd(\d+)$']:
         match = re.search(pattern, pathname)
         if match:
             sew = int(match.group(1))
@@ -1209,7 +1234,7 @@ if __name__ == '__main__':
           float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
           f.write(float_en)
 
-        for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$']:
+        for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/Zvabd(\d+)$']:
           sew_match = re.search(pattern, pathname)
           if sew_match:
               sew = int(sew_match.group(1))

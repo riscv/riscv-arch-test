@@ -1,0 +1,6 @@
+Instruction,Type,RV32,RV64,EFFEW8,EFFEW16,EFFEW32,EFFEW64,cp_asm_count,cp_vd,cp_rd,cp_vs2,cp_rs2,cp_vs1,cp_rs1,cp_imm_5bit,cp_vs3,cmp_vd_vs2,cmp_vd_vs1,cmp_vs1_vs2,cmp_vd_vs1_vs2,cp_vs2_edges,cp_vs1_edges,cr_vs2_vs1_edges,cr_vxrm_vs2_vs1_edges,cp_rs1_edges,cr_vs2_rs1_edges,cr_vxrm_vs2_rs1_edges,cr_vs2_imm_edges,cr_vxrm_vs2_imm_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,cp_custom
+vabs.v,VVM,x,x,x,x,x,x,x,x,,x,,,,,,x,,,,x,,,,,,,,,x,x,x,x,
+vabd.vv,VVVM,x,x,x,x,,,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,
+vabdu.vv,VVVM,x,x,x,x,,,x,x,,x,,x,,,,x,x,x,x,x,x,x,,,,,,,x,x,x,x,
+vwabda.vv,VVVM,x,x,x,x,,,x,emul2,,x,,x,,,,,,x,,x,x,x,,,,,,,x,lmul4max,lmul4max,x,wvv
+vwabdau.vv,VVVM,x,x,x,x,,,x,emul2,,x,,x,,,,,,x,,x,x,x,,,,,,,x,lmul4max,lmul4max,x,wvv

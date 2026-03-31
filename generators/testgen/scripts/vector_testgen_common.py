@@ -403,6 +403,7 @@ vvvmtype  = ["vadd.vv", "vwadd.vv", "vwaddu.vv", "vsub.vv", "vwsub.vv", "vwsubu.
              "vmseq.vv", "vmsne.vv", "vmslt.vv", "vmsltu.vv", "vmsle.vv", "vmsleu.vv", "vmin.vv", "vminu.vv", "vmax.vv", "vmaxu.vv",
              "vmul.vv", "vmulh.vv", "vmulhu.vv", "vmulhsu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vdiv.vv", "vdivu.vv", "vrem.vv", "vremu.vv",
              "vsadd.vv", "vsaddu.vv", "vssub.vv", "vssubu.vv", "vaadd.vv", "vaaddu.vv", "vasub.vv", "vasubu.vv", "vsmul.vv", "vssrl.vv", "vssra.vv", "vnclip.wv", "vnclipu.wv",
+             "vabd.vv", "vabdu.vv", "vwabda.vv", "vwabdau.vv",
              "vredsum.vs", "vwredsum.vs", "vwredsumu.vs", "vredmax.vs", "vredmaxu.vs", "vredmin.vs", "vredminu.vs", "vredand.vs", "vredor.vs", "vredxor.vs",
              "vrgather.vv", "vrgatherei16.vv"] + vvvm_f_type
 
@@ -422,7 +423,7 @@ vvimtype  = ["vadd.vi", "vrsub.vi", "vmadc.vi",
 xvmtype   = ["vcpop.m", "vfirst.m"]
 
 vvvmrtype = ["vmacc.vv", "vnmsac.vv", "vmadd.vv", "vnmsub.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + vvvmr_f_type
-vvmtype   = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m", "vzext.vf2", "vzext.vf4", "vzext.vf8", "vsext.vf2", "vsext.vf4", "vsext.vf8"] + vvm_f_type
+vvmtype   = ["vmsbf.m", "viota.m", "vmsif.m", "vmsof.m", "vzext.vf2", "vzext.vf4", "vzext.vf8", "vsext.vf2", "vsext.vf4", "vsext.vf8", "vabs.v"] + vvm_f_type
 vxvmtype  = ["vmacc.vx", "vnmsac.vx", "vmadd.vx", "vnmsub.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 vvrtype   = ["vmv.v.v"]
 vxtype    = ["vmv.s.x", "vmv.v.x"]
@@ -447,7 +448,8 @@ fvvins = ["vfadd.vv", "vfsub.vv", "vfmul.vv", "vfdiv.vv", "vfmin.vv", "vfmax.vv"
 fvfins = ["vfadd.vf", "vfsub.vf", "vfrsub.vf", "vfmul.vf", "vfdiv.vf", "vfrdiv.vf", "vfmin.vf", "vfmax.vf", "vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf", "vfmadd.vf", "vfnmadd.vf",
           "vfmsub.vf", "vfnmsub.vf", "vfsgnj.vf", "vfsgnjn.vf", "vfsgnjx.vf"]
 vvins  = ["vadd.vv", "vsub.vv", "vand.vv", "vor.vv", "vxor.vv", "vsll.vv", "vsrl.vv", "vsra.vv", "vmin.vv", "vminu.vv", "vmax.vv", "vmaxu.vv", "vmul.vv", "vmulh.vv", "vmulhu.vv", "vmulhsu.vv",
-          "vdiv.vv", "vdivu.vv", "vrem.vv", "vremu.vv", "vsadd.vv", "vsaddu.vv", "vssub.vv", "vssubu.vv", "vaadd.vv", "vaaddu.vv", "vasub.vv", "vasubu.vv", "vsmul.vv", "vssrl.vv", "vssra.vv"] + fvvins
+          "vdiv.vv", "vdivu.vv", "vrem.vv", "vremu.vv", "vsadd.vv", "vsaddu.vv", "vssub.vv", "vssubu.vv", "vaadd.vv", "vaaddu.vv", "vasub.vv", "vasubu.vv", "vsmul.vv", "vssrl.vv", "vssra.vv",
+          "vabd.vv", "vabdu.vv"] + fvvins
 vxins  = ["vadd.vx", "vsub.vx", "vrsub.vx", "vand.vx", "vor.vx", "vxor.vx", "vsll.vx", "vsrl.vx", "vsra.vx", "vmin.vx", "vminu.vx", "vmax.vx", "vmaxu.vx", "vmul.vx", "vmulh.vx", "vmulhu.vx", "vmulhsu.vx",
           "vdiv.vx", "vdivu.vx", "vrem.vx", "vremu.vx", "vsadd.vx", "vsaddu.vx", "vssub.vx", "vssubu.vx", "vaadd.vx", "vaaddu.vx", "vasub.vx", "vasubu.vx", "vsmul.vx", "vssrl.vx", "vssra.vx"]
 viins  = ["vadd.vi", "vrsub.vi", "vand.vi", "vor.vi", "vxor.vi", "vsll.vi", "vsrl.vi", "vsra.vi", "vsadd.vi", "vsaddu.vi", "vssrl.vi", "vssra.vi"]
@@ -462,7 +464,7 @@ fwvvins = ["vfwadd.vv", "vfwsub.vv", "vfwmul.vv", "vfwmacc.vv", "vfwnmacc.vv", "
 fwvfins = ["vfwadd.vf", "vfwsub.vf", "vfwmul.vf", "vfwmacc.vf", "vfwnmacc.vf", "vfwmsac.vf", "vfwnmsac.vf"]
 fwwvins = ["vfwadd.wv", "vfwsub.wv"]
 fwwfins = ["vfwadd.wf", "vfwsub.wf"]
-wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv"] + fwvvins
+wvvins  = ["vwadd.vv", "vwaddu.vv", "vwsub.vv", "vwsubu.vv", "vwmul.vv", "vwmulu.vv", "vwmulsu.vv", "vwmacc.vv", "vwmaccu.vv", "vwmaccsu.vv", "vwabda.vv", "vwabdau.vv"] + fwvvins
 wvxins  = ["vwadd.vx", "vwaddu.vx", "vwsub.vx", "vwsubu.vx", "vwmul.vx", "vwmulu.vx", "vwmulsu.vx", "vwmacc.vx", "vwmaccu.vx", "vwmaccsu.vx", "vwmaccus.vx"]
 wwvins  = ["vwadd.wv", "vwaddu.wv", "vwsub.wv", "vwsubu.wv"] + fwwvins
 wwxins  = ["vwadd.wx", "vwaddu.wx", "vwsub.wx", "vwsubu.wx"]
@@ -2318,7 +2320,7 @@ def readTestplans(priv=False):
     for file in os.listdir(coverplanDir):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
-            if (arch == "ExceptionsV" or arch.startswith("V")):
+            if (arch == "ExceptionsV" or arch.startswith("V") or arch == "Zvabd"):
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)
                     tp = dict()
@@ -2352,4 +2354,8 @@ def readTestplans(priv=False):
                     for effew in ["16", "32", "64"]:
                         testplans["Vf" + effew] = tp
                     del testplans["Vf"]
+                if (arch == "Zvabd"):
+                    for effew in ["8", "16", "32", "64"]:
+                        testplans["Zvabd" + effew] = tp
+                    del testplans["Zvabd"]
     return testplans

@@ -36,7 +36,7 @@ SEW_DEPENDENT_CPS = {
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
 # Subset of vector prefixes that support widening instructions.
-VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
+VECTOR_WIDEN_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
 
 ##################################
@@ -50,7 +50,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
     Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
-      - Vector extensions (Vx, Vls, Zvkb) are expanded to per-SEW variants (Vx8, Vx16, ...)
+      - Vector extensions (Vx, Vls, Zvkb, Zvabd) are expanded to per-SEW variants (Vx8, Vx16, ...)
       - Floating-point vector extensions (Vf) are expanded to SEW 16/32/64
     """
     testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
@@ -95,7 +95,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
 
         # Expand vector extensions into per-SEW variants, replacing the base entry
         sew_variants: list[str] | None = None
-        if any(prefix in arch for prefix in ("Vx", "Vls", "Zvkb")):
+        if any(prefix in arch for prefix in ("Vx", "Vls", "Zvkb", "Zvabd")):
             sew_variants = ["8", "16", "32", "64"]
         elif "Vf" in arch:
             sew_variants = ["16", "32", "64"]  # SEW of 8 is not supported for vector floating point
@@ -114,8 +114,23 @@ def _filter_testplans(
 ) -> dict[str, dict[tuple[str, str], list[str]]]:
     """Filter testplans by comma-separated include/exclude extension lists.
 
-    Matches against post-expansion keys (e.g. Vx8, not Vx).
+    Matches exact post-expansion keys (e.g. Vx8), and also allows vector base names
+    such as Vx, Zvkb, or Zvabd to match their per-SEW variants.
     """
+
+    def matches_filter(arch: str, filters: set[str] | None) -> bool:
+        if filters is None:
+            return True
+
+        for ext in filters:
+            if arch == ext:
+                return True
+
+            if arch.startswith(ext) and arch[len(ext) :].isdigit():
+                return True
+
+        return False
+
     include_set: set[str] | None = None
     if extensions != "all":
         include_set = {ext.strip() for ext in extensions.split(",") if ext.strip()}
@@ -126,7 +141,7 @@ def _filter_testplans(
     return {
         arch: tp
         for arch, tp in test_plans.items()
-        if (include_set is None or arch in include_set) and arch not in exclude_set
+        if matches_filter(arch, include_set) and not matches_filter(arch, exclude_set)
     }
 
 

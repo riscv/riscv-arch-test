@@ -1323,6 +1323,9 @@ function string disassemble (logic [31:0] instrRaw);
     VSETIVLI:         $sformat(decoded, "vsetivli %s, %s, %s, %s, %s, %s", rd, uimm5, eSEW, mLMUL, ta, ma);
     VSETVL:           $sformat(decoded, "vsetvl %s, %s, %s",              rd, rs1, rs2);
 
+    VABS_V:      $sformat(decoded, "vabs.v %s, %s%s", vd, vs2, vm);
+    VABD_VV:     $sformat(decoded, "vabd.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VABDU_VV:    $sformat(decoded, "vabdu.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VANDN_VV:    $sformat(decoded, "vandn.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VANDN_VX:    $sformat(decoded, "vandn.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VBREV_V:     $sformat(decoded, "vbrev.v %s, %s%s", vd, vs2, vm);
@@ -1336,6 +1339,8 @@ function string disassemble (logic [31:0] instrRaw);
     VROR_VV:     $sformat(decoded, "vror.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VROR_VX:     $sformat(decoded, "vror.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VROR_VI:     $sformat(decoded, "vror.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);
+    VWABDA_VV:   $sformat(decoded, "vwabda.vv %s, %s, %s%s", vd, vs2, vs1, vm);
+    VWABDAU_VV:  $sformat(decoded, "vwabdau.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VWSLL_VV:    $sformat(decoded, "vwsll.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VWSLL_VX:    $sformat(decoded, "vwsll.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VWSLL_VI:    $sformat(decoded, "vwsll.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);

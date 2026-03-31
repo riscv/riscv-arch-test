@@ -168,6 +168,10 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvfbfmin|Vector BF16 Convert|<<t-Zvfbfmin-coverpoints>>||||o|o
 |Zvfbfwma|Vector BF16 MAC|<<t-Zvfbfwma-coverpoints>>||||o|o
 |ZfaZvfh|fli for Vector Half|<<t-ZfaZvfh-coverpoints>>||||o|o
+|Zvabd8|Vector Abs/AbsDiff 8-bit|<<t-Zvabd-coverpoints>>||||o|o
+|Zvabd16|Vector Abs/AbsDiff 16-bit|<<t-Zvabd-coverpoints>>||||o|o
+|Zvabd32|Vector Abs/AbsDiff 32-bit|<<t-Zvabd-coverpoints>>||||o|o
+|Zvabd64|Vector Abs/AbsDiff 64-bit|<<t-Zvabd-coverpoints>>||||o|o
 |Zvbb8|Vector Bit Manip 8-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb16|Vector Bit Manip 16-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb32|Vector Bit Manip 32-bit|<<t-Zvbb-coverpoints>>||||o|x

@@ -153,7 +153,7 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
+	@EXTENSIONS='$(EXTENSIONS)' EXCLUDE_EXTENSIONS='$(EXCLUDE_EXTENSIONS)' $(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
 	touch $@
 
 .PHONY: privheaders

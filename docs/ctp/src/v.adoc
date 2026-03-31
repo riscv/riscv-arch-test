@@ -235,7 +235,12 @@ include::norm/Zvfbfwma_norm_rules.adoc[]
 
 === Zvb* Vector Bit Manipulation Extension
 
-Vector bit manipulation extensions include Zvbb and Zvbc.
+Vector bit manipulation extensions include Zvabd, Zvbb, and Zvbc.
+
+==== Zvabd Vector Absolute Value and Absolute Difference Extension
+[[t-Zvabd-coverpoints]]
+.Zvabd Instruction Coverpoints
+// include::{testplansdir}/Zvabd.adoc[]
 
 ==== Zvbb Vector Basic Bit Manipulation Extension
 [[t-Zvbb-coverpoints]]

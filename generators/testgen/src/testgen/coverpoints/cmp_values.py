@@ -50,7 +50,7 @@ def generate_cmp_testcase(
     # Add coverage bin label
     label_line = test_data.add_testcase(bin_name, coverpoint)
 
-    # load value into rd register (Only for sign ext case)
+    # load value into rd register (Not for sign ext case)
     if load_rd:
         lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 

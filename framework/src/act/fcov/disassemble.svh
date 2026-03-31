@@ -140,6 +140,14 @@ function string disassemble (logic [31:0] instrRaw);
     MOP_R_29: $sformat(decoded, "mop.r.29 %s, %s", rd, rs1);
     MOP_R_30: $sformat(decoded, "mop.r.30 %s, %s", rd, rs1);
     MOP_R_31: $sformat(decoded, "mop.r.31 %s, %s", rd, rs1);
+    MOP_RR_0: $sformat(decoded, "mop.rr.0 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_1: $sformat(decoded, "mop.rr.1 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_2: $sformat(decoded, "mop.rr.2 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_3: $sformat(decoded, "mop.rr.3 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_4: $sformat(decoded, "mop.rr.4 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_5: $sformat(decoded, "mop.rr.5 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_6: $sformat(decoded, "mop.rr.6 %s, %s, %s", rd, rs1, rs2);
+    MOP_RR_7: $sformat(decoded, "mop.rr.7 %s, %s, %s", rd, rs1, rs2);
     // Base Instructions
     ADD:     $sformat(decoded, "add %s, %s, %s", rd, rs1, rs2);
     SUB:     $sformat(decoded, "sub %s, %s, %s", rd, rs1, rs2);

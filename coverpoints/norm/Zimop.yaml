@@ -1,9 +1,23 @@
-Zimop_instruction_format:
+Zimop_r_instruction_format:
   description: >
-    Test that all mop.r instructions execute correctly and
-    handle various edge cases for their source and destination registers.
+    Test that all mop.r instructions execute correctly, write 0 to rd,
+    and handle various edge cases for their source and destination registers.
   coverpoints:
     - cp_asm_count
     - cp_rs1
     - cp_rd
     - cp_rs1_edges
+    - cp_val_rd
+
+Zimop_rr_instruction_format:
+  description: >
+    Test that all mop.rr instructions execute correctly, write 0 to rd,
+    and handle various edge cases for their source and destination registers.
+  coverpoints:
+    - cp_asm_count
+    - cp_rs1
+    - cp_rs2
+    - cp_rd
+    - cp_rs1_edges
+    - cp_rs2_edges
+    - cp_val_rd

@@ -479,7 +479,7 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
         "ecall",
         "nop",
         "\tRVTEST_GOTO_MMODE",
-        f"LI(x{mask_reg}, 0x88)",
+        f"LI(x{mask_reg}, 0x80)",
         f"csrrs x0, mstatus, x{mask_reg}",
         "\tRVTEST_GOTO_LOWER_MODE Umode",
         test_data.add_testcase("ecall_mie_1", coverpoint, covergroup),

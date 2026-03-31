@@ -43,22 +43,52 @@ def generate_cmp_testcase(
 
     rd, rs1, rs2 = params.rd, params.rs1, params.rs2
 
+    # Check if this instruction uses register pairs (value is 2 * XLEN)
+    is_pair = (instr_name == "amocas.q" and test_data.xlen == 64) or \
+              (instr_name == "amocas.d" and test_data.xlen == 32)
+
+    # Split values if dealing with a register pair
+    mask = (1 << test_data.xlen) - 1
+    if is_pair:
+        rd_lo, rd_hi = rd_val & mask, (rd_val >> test_data.xlen) & mask
+        rs1_lo, rs1_hi = rs1_val & mask, (rs1_val >> test_data.xlen) & mask
+
     # Begin testcase
     tc = test_data.begin_test_chunk()
     lines = [f"# Testcase {desc}"]
-
-    # Add coverage bin label
     label_line = test_data.add_testcase(bin_name, coverpoint)
 
-    # load value into rd register (Not for sign ext case)
+    # Load value into rd register(s)
     if load_rd:
-        lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
+        if is_pair:
+            # Load lower half into rd, upper half into rd+1
+            lines.append(load_int_reg("rd compare lo", rd, rd_lo, test_data))
+            lines.append(load_int_reg("rd compare hi", rd + 1, rd_hi, test_data))
+        else:
+            lines.append(load_int_reg("rd compare value", rd, rd_val, test_data))
 
-    # Allocate a temporary register for memory initialization
-    temp = test_data.int_regs.get_register(exclude_regs=[rd, rs1, rs2, 0])
-    lines.append(load_int_reg("memory init", temp, rs1_val, test_data))
+    # Initialize memory
     lines.append(f"\tLA(x{rs1}, scratch)")
-    lines.append(f"\tSREG x{temp}, 0(x{rs1})")
+    
+    # We must exclude rd+1 from temp allocators if it's a pair!
+    exclusions = [rd, rs1, rs2, 0] + ([rd + 1] if is_pair else [])
+    temp = test_data.int_regs.get_register(exclude_regs=exclusions)
+
+    if is_pair:
+        # We need a second temp register for the upper memory store
+        temp2 = test_data.int_regs.get_register(exclude_regs=exclusions + [temp])
+        
+        lines.append(load_int_reg("mem init lo", temp, rs1_lo, test_data))
+        lines.append(f"\tSREG x{temp}, 0(x{rs1})")
+        
+        lines.append(load_int_reg("mem init hi", temp2, rs1_hi, test_data))
+        offset = test_data.xlen // 8  # e.g., 8 bytes for RV64, 4 bytes for RV32
+        lines.append(f"\tSREG x{temp2}, {offset}(x{rs1})")
+        
+        test_data.int_regs.return_register(temp2)
+    else:
+        lines.append(load_int_reg("memory init", temp, rs1_val, test_data))
+        lines.append(f"\tSREG x{temp}, 0(x{rs1})")
 
     # Generate instruction, setup, test, and check lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)

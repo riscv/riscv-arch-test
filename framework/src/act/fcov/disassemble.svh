@@ -107,7 +107,7 @@ function string disassemble (logic [31:0] instrRaw);
     // C_NTL_S1: $sformat(decoded, "C.NTL.S1");
     // NOP
     NOP:     $sformat(decoded, "nop");
-    //Zimop Extension
+    // Zimop Extension
     MOP_R_0: $sformat(decoded, "mop.r.0 %s, %s", rd, rs1);
     MOP_R_1: $sformat(decoded, "mop.r.1 %s, %s", rd, rs1);
     MOP_R_2: $sformat(decoded, "mop.r.2 %s, %s", rd, rs1);

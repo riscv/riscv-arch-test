@@ -2,7 +2,7 @@
 //
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: Corey Hickson chickson@hmc.edu 16 Feb 2025
+// Written: Corey Hickson chickson@hmc.edu 16 Feb 2025, Modified: Sadhvi Narayanan sanarayanan@hmc.edu
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
@@ -16,11 +16,17 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    mstatus_mie: coverpoint ins.current.csr[12'h300][3]  {
+
+    // Uses ins.prev instead of ins.current because RVVI updates CSRs after instruction retirement,
+    // so ins.current shows post-trap state while ins.prev shows pre-trap state.
+    mstatus_mie: coverpoint ins.prev.csr[12'h300][3]  {
         // autofill 0/1
     }
     mstatus_tw:  coverpoint ins.current.csr[12'h300][21] {
         // autofill 0/1
+    }
+    mstatus_tw_one: coverpoint ins.current.csr[12'h300][21] {
+        bins one = {1};  // Only TW=1
     }
     mideleg_ones_zeros: coverpoint ins.current.csr[12'h303] {
         wildcard bins ones  = {16'b????1???1???1???}; //  ones in every field that is not tied to zero
@@ -28,6 +34,9 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     }
     mie_msie_one: coverpoint ins.current.csr[12'h304][3] {
         bins one = {1};
+    }
+    mie_mtie: coverpoint ins.current.csr[12'h304][7] {
+        // autofill 0/1
     }
     mie_mtie_one: coverpoint ins.current.csr[12'h304][7] {
         bins one = {1};
@@ -51,28 +60,32 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {32'b0001000_00101_00000_000_00000_1110011};
     }
-    timeout: coverpoint ins.current.csr[12'h344][7] iff (ins.trap == 1) {
-        bins no_timer_int = {0};
-    }
-    m_ext_intr: coverpoint ins.current.m_ext_intr {
-        bins mei = {1};
-    }
-    m_timer_intr: coverpoint ins.current.m_timer_intr {
-        bins mti = {1};
-    }
-    m_soft_intr: coverpoint ins.current.m_soft_intr {
-        bins msi = {1};
-    }
 
-    // main coverpoints
-    cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, m_timer_intr, mip_mtip;
-    cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one, m_soft_intr,  mip_msip;
-    cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one, m_ext_intr,   mip_meip;
-    cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, m_timer_intr;
-    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one, timeout;
+
+    cp_user_mti:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_mtie_one, mip_mtip;
+    cp_user_msi:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_msie_one,  mip_msip;
+
+    // Note: External interrupts (MEI) not supported in Sail simulator yet
+    cp_user_mei:    cross priv_mode_u, mtvec_mode, mstatus_mie, mie_meie_one,   mip_meip;
+    cp_wfi:         cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw, mie_mtie_one;
+    cp_wfi_timeout: cross priv_mode_u, wfi,        mstatus_mie, mstatus_tw_one, mie_mtie;
 
 endgroup
 
 function void interruptsu_sample(int hart, int issue, ins_t ins);
     InterruptsU_cg.sample(ins);
+
+    // $display("=== InterruptsU Debug ===");
+    // $display("PC: %h Instr: %s", ins.current.pc_rdata, ins.current.disass);
+    // $display("  mstatus.MIE=%b mstatus.TW=%b mode: %b, vector: %b",
+    //             ins.prev.csr[12'h300][3], ins.current.csr[12'h300][21], {ins.prev.mode_virt, ins.prev.mode}, {ins.current.csr[12'h305][1:0]});
+    // $display("  mie: MEIE=%b MTIE=%b MSIE=%b (full=%h)",
+    //             ins.current.csr[12'h304][11], ins.current.csr[12'h304][7],
+    //             ins.current.csr[12'h304][3], ins.current.csr[12'h304][15:0]);
+    // $display("  mip: MEIP=%b MTIP=%b MSIP=%b (full=%h)",
+    //             ins.current.csr[12'h344][11], ins.current.csr[12'h344][7],
+    //             ins.current.csr[12'h344][3], ins.current.csr[12'h344]);
+    // if (ins.current.trap)
+    //     $display("  TRAP! mcause=%h", ins.current.csr[12'h342]);
+    // $display("");
 endfunction

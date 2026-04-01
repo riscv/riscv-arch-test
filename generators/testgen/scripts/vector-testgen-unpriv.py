@@ -1152,7 +1152,7 @@ if __name__ == '__main__':
   # TODO: auipc missing, check whatelse is missing in ^these^ types
 
   author = "kacassidy@g.hmc.edu"
-  xlens = [32]
+  xlens = [32, 64]
   numrand = 3
   edges = []
 

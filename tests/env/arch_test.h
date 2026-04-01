@@ -1220,7 +1220,7 @@ spcl_\__MODE__\()chk4ecall:
      #endif
    .else
       .ifc \__MODE__ , V
-        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-S<-HS<-VS))
+        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-S<-HS<-VS)
       .endif
     .endif
 .endif

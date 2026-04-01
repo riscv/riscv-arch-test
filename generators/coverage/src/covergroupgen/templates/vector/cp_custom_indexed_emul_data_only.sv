@@ -5,7 +5,14 @@
     // Verify EMUL*NFIELDS <= 8 constraint applies to data group only, not index group
     // Test at LMUL*NFIELDS = 8 boundary; index EMUL*NFIELDS may exceed 8
 
-
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
     // NFIELDS from nf field (bits [31:29]), NFIELDS = nf + 1
     nf_8: coverpoint ins.current.insn[31:29] {

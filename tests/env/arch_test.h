@@ -1213,10 +1213,14 @@ spcl_\__MODE__\()chk4ecall:
         .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save areas   (M<-HS)
 .else
    .ifc \__MODE__ , S
-        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S)
+     #ifdef rvtest_htrap_routine
+        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S<-HS)
+     #else
+        .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save area    (M<-S)
+     #endif
    .else
       .ifc \__MODE__ , V
-        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-HS<-VS))
+        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-S<-HS<-VS)
       .endif
     .endif
 .endif

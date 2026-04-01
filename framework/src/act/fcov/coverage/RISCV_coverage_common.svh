@@ -169,6 +169,26 @@
 // `define SEW32_SUPPORTED
 // `define SEW64_SUPPORTED
 
+`ifdef VFCUSTOM64_COVERAGE
+  `define SEW64_SUPPORTED
+`endif
+`ifdef VFCUSTOM32_COVERAGE
+  `define SEW32_SUPPORTED
+`endif
+`ifdef VFCUSTOM16_COVERAGE
+  `define SEW16_SUPPORTED
+`endif
+
+`ifdef VLSCUSTOM64_COVERAGE
+  `define SEW64_SUPPORTED
+`endif
+`ifdef VLSCUSTOM32_COVERAGE
+  `define SEW32_SUPPORTED
+`endif
+`ifdef VLSCUSTOM16_COVERAGE
+  `define SEW16_SUPPORTED
+`endif
+
 // ELEN (max SEW) definition
 // `ifdef VX64_COVERAGE
 //   `define ELEN64
@@ -197,6 +217,9 @@
 //     `endif
 //   `endif
 // `endif
+
+`define ELEN64
+
 
 // edge cases
 `ifdef VLEN64

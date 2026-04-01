@@ -346,6 +346,29 @@ function logic[63:0] get_vr_element_zero(int hart, int issue, `VLEN_BITS val);
 
 endfunction
 
+// Like get_vr_element_zero but extracts at 2*SEW for widening instructions
+// where the operand (e.g. vs1 accumulator in vfwredosum) is at double width.
+function logic[63:0] get_vr_element_zero_widen(int hart, int issue, `VLEN_BITS val);
+    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+
+    case (vsew)
+    `ifdef SEW8_SUPPORTED
+    2'b00:  return {48'b0, val[15:0]};   // 2*SEW = 16
+    `endif
+    `ifdef SEW16_SUPPORTED
+    2'b01:  return {32'b0, val[31:0]};   // 2*SEW = 32
+    `endif
+    `ifdef SEW32_SUPPORTED
+    2'b10:  return val[63:0];            // 2*SEW = 64
+    `endif
+    default: begin
+      $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW for widening: %s", vsew);
+      $fatal(1);
+    end
+  endcase
+  return 0;
+
+endfunction
 
 typedef enum {
     mask_zero,

@@ -209,7 +209,6 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
 
                 lines.extend(
                     [
-                        "CSRW(mie, zero)",  # disable interrupts
                         "# Testcase: " + binname,
                         test_data.add_testcase(binname, coverpoint, covergroup),
                     ]
@@ -224,7 +223,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("RVTEST_SET_MSW_INT")
 
                 # More settling
-                lines.extend([f"CSRW(mie, x{r_mie_val})", "RVTEST_IDLE_FOR_INTERRUPT"])
+                lines.append("RVTEST_IDLE_FOR_INTERRUPT")
 
                 # Clear to prevent leakage
                 if int_pending == "meip":
@@ -349,7 +348,6 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
         for mip_bits in range(8):
             lines.extend(
                 [
-                    "CSRW(mie, zero)",  # disable interrupts
                     f"# Testcase: mie: {mie_bits:03b}, mip: {mip_bits:03b}",
                     test_data.add_testcase(f"mie_{mie_bits:03b}_mip_{mip_bits:03b}", coverpoint, covergroup),
                 ]
@@ -384,7 +382,9 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[0])
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch, r_csr_tmp = test_data.int_regs.get_registers(
+        8, exclude_regs=[0, 2, 7, 30]
+    )
 
     lines = [
         comment_banner(
@@ -401,31 +401,25 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"# Testcase: WFI with mie = {mie_val}, tw = {tw_val}",
-                    "CSRW(mie, zero)",
-                    "# Clear TW (bit 21, 0x200000) and MIE (bit 3, 0x8)",
-                    f"LI(x{r_scratch}, 0x200008)",
-                    f"CSRC(mstatus, x{r_scratch})",
-                    "# Set MIE if needed",
+                    "CSRW mie, zero",
+                    "CSRW mstatus, zero",
+                    *clr_mtimer_int(r_t0, r_mtimecmp),
+                    "# Set TW if needed",
+                    f"LI(x{r_scratch}, {tw_val << 21})",  # TW bit, MIE=0
+                    f"csrw mstatus, x{r_scratch}",
+                    "# Enable MTIE",
                     f"LI(x{r_scratch}, 0x80)",
-                    f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
+                    f"CSRW mie, x{r_scratch}",
                 ]
             )
 
-            if tw_val:
-                lines.extend(
-                    [
-                        "# Set TW",
-                        f"LI(x{r_scratch}, 0x200000)",
-                        f"CSRS(mstatus, x{r_scratch})",
-                    ]
-                )
+            # Enable MIE if needed, this is set here to avoid a premature interrupt before we go into wfi
+            if mie_val:
+                lines.append("csrsi mstatus, 8")
 
+            # Set timer
             lines.extend(
                 [
-                    "# Enable MTIE",
-                    f"LI(x{r_scratch}, 0x80)",
-                    f"CSRW(mie, x{r_scratch})",
-                    # Set timer
                     *set_mtimer_int_soon(r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3),
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     "wfi",
@@ -435,7 +429,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                 ]
             )
 
-    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch])
+    test_data.int_regs.return_registers([r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch, r_csr_tmp])
     return lines
 
 

@@ -1,11 +1,13 @@
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_FpRecipEst_flag_edges
     //////////////////////////////////////////////////////////////////////////////////
+
+`ifndef COVER_VFCUSTOM64
     fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
             bins clear = {0};
     }
 
-    vs1_0_recip7_edges : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1) {
+    vs2_0_recip7_edges : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
             bins vs1_0_neg_inf        = {64'h0000_0000_0000_FC00}; // -∞
             bins vs1_0_neg_zero       = {64'h0000_0000_0000_8000}; // -0.0
@@ -28,8 +30,7 @@
 
             bins vs1_0_qNaN           = {64'h0000_0000_0000_7E00}; // qNaN input (canonical)
             bins vs1_0_sNaN           = {64'h0000_0000_0000_7D00}; // sNaN input (example)
-        `endif
-        `ifdef COVER_VFCUSTOM32
+        `elsif COVER_VFCUSTOM32
             bins vs1_0_neg_inf        = {64'h0000_0000_FF80_0000}; // -∞
             bins vs1_0_neg_zero       = {64'h0000_0000_8000_0000}; // -0.0
 
@@ -52,7 +53,17 @@
             bins vs1_0_qNaN           = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical)
             bins vs1_0_sNaN           = {64'h0000_0000_7FA0_0000}; // sNaN input (example)
         `endif
-        `ifdef COVER_VFCUSTOM64
+    }
+
+
+    cp_custom_FpRecipEst_flag_edges: cross std_vec, vs2_0_recip7_edges, fp_flags_clear;
+`else
+    `ifdef FLEN64
+    fp_flags_clear : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags") {
+            bins clear = {0};
+    }
+
+    vs2_0_recip7_edges : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
             bins vs1_0_neg_inf        = {64'hFFF0_0000_0000_0000}; // -∞
             bins vs1_0_neg_zero       = {64'h8000_0000_0000_0000}; // -0.0
 
@@ -74,10 +85,11 @@
 
             bins vs1_0_qNaN           = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical)
             bins vs1_0_sNaN           = {64'h7FF0_0000_0000_0001}; // sNaN input (example)
-        `endif
     }
 
 
-    cp_custom_FpRecSqrtEst_flag_edges: cross std_vec, vs1_0_recip7_edges, fp_flags_clear;
+    cp_custom_FpRecipEst_flag_edges: cross std_vec, vs2_0_recip7_edges, fp_flags_clear;
+    `endif
+`endif
 
     //// end cp_custom_FpRecipEst_flag_edges////////////////////////////////////////////////

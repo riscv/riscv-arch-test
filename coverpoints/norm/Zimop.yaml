@@ -1,23 +1,11 @@
-Zimop_r_instruction_format:
-  description: >
-    Test that all mop.r instructions execute correctly, write 0 to rd,
-    and handle various edge cases for their source and destination registers.
-  coverpoints:
-    - cp_asm_count
-    - cp_rs1
-    - cp_rd
-    - cp_rs1_edges
-    - cp_val_rd
-
-Zimop_rr_instruction_format:
-  description: >
-    Test that all mop.rr instructions execute correctly, write 0 to rd,
-    and handle various edge cases for their source and destination registers.
-  coverpoints:
-    - cp_asm_count
-    - cp_rs1
-    - cp_rs2
-    - cp_rd
-    - cp_rs1_edges
-    - cp_rs2_edges
-    - cp_val_rd
+# Mapping of normative rules to coverpoints for a test suite
+normative_rule_definitions:
+  - name: mop_r_op
+    # mop.r.n writes the value zero to rd. rs1 is ignored architecturally.
+    coverpoint: ["Zimop_mop_r_cg/{cp_asm_count, cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: mop_rr_op
+    # mop.rr.n writes the value zero to rd. rs1 and rs2 are ignored architecturally.
+    coverpoint:
+      [
+        "Zimop_mop_rr_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cp_rs1_edges, cp_rs2_edges, cr_rs1_rs2_edges}",
+      ]

@@ -1,12 +1,5 @@
 # CHANGELOG
 
-## [3.10.1] - 2026-04-01
-
-- Add Zimop unprivileged test suite for ACT4 framework
-- Add testplan CSV for all 40 MOP instructions (mop.r.0..31, mop.rr.0..7)
-- Add coverpoint YAML with groups for mop.r and mop.rr instruction formats
-- Add disassembler support for all 40 Zimop instructions in disassemble.svh
-
 ## [3.10.0] - 2024-11-04
 
 - Add support for Zvk\* extensions

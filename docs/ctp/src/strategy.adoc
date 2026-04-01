@@ -46,12 +46,12 @@ https://docs.google.com/spreadsheets/d/1tFGLbocTp1YNn11aN8JTmvxL_23e7x8SlBNJfOPR
 
 A partially-configured UDB description of each profile is given in:
 
-* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVI20U32.yaml[RVI20U32]
-* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVI20U64.yaml[RVI20U64]
-* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/mc100-32-full-example.yaml[MC100]
-* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVA22S64.yaml[RVA22S64]
-* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVB23S64.yaml[RVB23S64]
-* https://riscv.github.io/riscv-unified-db/resolved_arch/profile/RVA23S64.yaml[RVA23S64]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/profile/RVI20U32.yaml[RVI20U32]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/profile/RVI20U64.yaml[RVI20U64]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/MC100-32.yaml[MC100]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/profile/RVA22S64.yaml[RVA22S64]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/profile/RVB23S64.yaml[RVB23S64]
+* https://github.com/riscv/riscv-unified-db/blob/main/cfgs/profile/RVA23S64.yaml[RVA23S64]
 
 *** add minimal and maximal fully configured flavors of these profiles in riscv-arch-test, with no and all optional features, and suitable parameters.
 

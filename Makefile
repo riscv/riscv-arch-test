@@ -9,7 +9,7 @@ CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
 WORKDIR     ?= work
-EXTENSIONS  ?= Vf16,Vf32,Vf64,Vx8,Vx16,Vx32,Vx64# Extensions to generate tests for. Leave blank to generate for all tests.
+EXTENSIONS  ?= # Extensions to generate tests for. Leave blank to generate for all tests.
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
 # Exclusion Reasons:
 #  - Sm, S: Insufficient WARL configuration options.
@@ -18,7 +18,7 @@ EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,P
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
-FAST        ?= True# Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
+FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 
 # Number of parallel build jobs for test compilation.

@@ -21,8 +21,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    // Uses ins.prev instead of ins.current because Sail tracer updates CSRs after instruction retirement, so .current shows
-    // post-trap state. May revert to .current depending on implementation consensus
+    // Uses ins.prev instead of ins.current because RVVI updates CSRs after instruction retirement,
+    // so ins.current shows post-trap state while ins.prev shows pre-trap state.
     mstatus_mie_one: coverpoint ins.prev.csr[12'h300][3] {
         bins one = {1};
     }
@@ -88,6 +88,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // main coverpoints
     cp_trigger_mti:      cross priv_mode_m, mstatus_mie, mie_ones, mip_mtip_one;
     cp_trigger_msi:      cross priv_mode_m, mstatus_mie, mie_ones, mip_msip_one;
+
+    // Note: External interrupts (MEI) not supported in Sail simulator yet
     cp_trigger_mei:      cross priv_mode_m, mstatus_mie, mie_ones, mip_meip_one;
     cp_interrupts:       cross priv_mode_m, mstatus_mie, mtvec_direct, mip_walking, mie_walking;
     cp_vectored:         cross priv_mode_m, mstatus_mie_one, mtvec_vectored, mip_walking, mie_ones;

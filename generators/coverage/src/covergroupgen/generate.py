@@ -263,7 +263,12 @@ def _gen_instrs(
             init_lines.append(customize_template(templates, "init", arch, instr))
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
-        for cp in cps:
+        # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
+        # Some templates embed cross definitions (for example, *_frm templates), so prioritize
+        # cp_frm_* declarations first, then regular coverpoints, then explicit cross templates.
+        frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
+        ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
+        for cp in ordered_cps:
             if cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}:
                 continue
 

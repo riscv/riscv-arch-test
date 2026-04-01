@@ -57,7 +57,13 @@
         CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
         LI(t0, -1)
         CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-        sfence.vma
+        // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
+        // memory system and any PMP or address translation caches. sfence.vma should not be
+        // performed in a system that does not support virtual memory because it might raise
+        // an illegal instruction.
+        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+          sfence.vma
+        #endif
       #endif
     #endif
 
@@ -94,8 +100,10 @@
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
 
     // Enable floating-point with mstatus.FS if applicable
-    #ifdef RVTEST_FP
-      RVTEST_FP_ENABLE(T1)
+    #ifdef F_SUPPORTED
+      #ifdef RVTEST_FP
+        RVTEST_FP_ENABLE(T1)
+      #endif
     #endif
 
     // Enable vector extension with mstatus.VS if applicable

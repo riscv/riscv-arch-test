@@ -1336,8 +1336,9 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
 def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     """Test SPMP fault exception codes.
 
-    Covers: cp_spmp_fault_instr, cp_spmp_fault_load, cp_spmp_fault_store
-    SPMP violations use page fault exception codes (12, 13, 15).
+    Covers: cp_spmp_fault_load, cp_spmp_fault_store
+    SPMP violations use page fault exception codes (13, 15).
+    Note: instruction page fault (12) requires a custom trap handler and is not tested here.
     """
     covergroup = "SspmpSm_perm_cg"
     sel_reg, val_reg, check_reg, addr_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
@@ -1680,6 +1681,16 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         ]
     )
 
+    # First, set spmpen[1] = 1 BEFORE locking, so we can verify read-only behavior
+    lines.extend(
+        [
+            "\n# Pre-set spmpen[1] = 1 before locking",
+            f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
+            f"CSRS(CSR_SPMPEN, x{val_reg})",
+            "nop",
+        ]
+    )
+
     # Configure entry 1 with L=1 (locked), A=NAPOT, R
     cfg_locked = (1 << SPMPCFG_L) | (1 << SPMPCFG_R) | (A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U)
     lines.extend(
@@ -1690,26 +1701,23 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         ]
     )
 
-    # Enable spmpen[1]
+    # Try to clear spmpen[1] (should be rejected since L=1, value stays 1)
     lines.extend(
         [
-            "\n# Set spmpen[1] = 1, then read back",
-            f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
-            f"CSRS(CSR_SPMPEN, x{val_reg})",
-            "nop",
-            test_data.add_testcase("spmpen_locked_set", coverpoint, covergroup),
-            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
-        ]
-    )
-
-    # Try to clear spmpen[1] (should be rejected since L=1)
-    lines.extend(
-        [
-            "\n# Try to clear spmpen[1] (locked, should be rejected)",
+            "\n# Try to clear spmpen[1] (locked, should be rejected -> stays 1)",
             f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
             f"CSRC(CSR_SPMPEN, x{val_reg})",
             "nop",
             test_data.add_testcase("spmpen_locked_clear_rejected", coverpoint, covergroup),
+            gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
+        ]
+    )
+
+    # Try to set another bit via CSRS (should also be ignored for locked entry)
+    lines.extend(
+        [
+            "\n# Verify spmpen[1] is still 1 (read-only when locked)",
+            test_data.add_testcase("spmpen_locked_still_set", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, "CSR_SPMPEN", test_data),
         ]
     )

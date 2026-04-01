@@ -9,7 +9,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40s_rv32imc
-description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=0)
+description: CV32E40S (CORE-V secure) - RV32IMC PMA-enabled configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=1)
 implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40s master @ 9d9cae78)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -81,7 +81,7 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
   MARCHID_IMPLEMENTED: true
   MIMPID_IMPLEMENTED: true
-  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=0 by default → entire memory is main
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
   NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
   PMP_GRANULARITY: 2 # VERIFIED — RTL default PMP_GRANULARITY=0 (G=0); UDB PMP_GRANULARITY = G+2 = 2
   

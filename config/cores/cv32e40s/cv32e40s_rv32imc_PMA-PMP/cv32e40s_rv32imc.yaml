@@ -9,7 +9,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: cv32e40s_rv32imc
-description: CV32E40S (CORE-V secure) - RV32IMC default configuration (ZC_EXT=1, B_EXT=NONE, PMP=0, PMA=0)
+description: CV32E40S (CORE-V secure) - RV32IMC PMA+PMP configuration (ZC_EXT=1, B_EXT=NONE, PMP=16, PMA=1)
 implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40s master @ 9d9cae78)
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
@@ -22,7 +22,7 @@ implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
   - { name: Sm, version: "= 1.11.0" }
-  - { name: Smpmp, version: "= 1.11.0" } # VERIFIED — SECURE=1 hardcoded → PMP CSRs always accessible; PMP_NUM_REGIONS=0 default
+  - { name: Smpmp, version: "= 1.11.0" } # VERIFIED — SECURE=1 hardcoded → PMP CSRs always accessible; PMP_NUM_REGIONS=16
   - { name: Smhpm, version: "= 1.11.0" }
   # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
@@ -81,8 +81,8 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — mepc set to current PC on exception
   MARCHID_IMPLEMENTED: true
   MIMPID_IMPLEMENTED: true
-  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=0 by default → entire memory is main
-  NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
+  PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
+  NUM_PMP_ENTRIES: 16 # PMP_NUM_REGIONS=16; 16 PMP regions with full CSR access
   PMP_GRANULARITY: 2 # VERIFIED — RTL default PMP_GRANULARITY=0 (G=0); UDB PMP_GRANULARITY = G+2 = 2
   
   # Zcmt params (VERIFIED — cv32e40s_pkg.sv: CSR_JVT_MASK=0xFFFFFFC0, JVT_RESET_VAL=0)

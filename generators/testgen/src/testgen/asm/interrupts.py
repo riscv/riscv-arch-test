@@ -49,7 +49,7 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
         r_mtimecmp: Register number to hold MTIMECMP address
     """
     return [
-        f"{INDENT} # Clear machine timer interrupt",
+        f"{INDENT}# Clear machine timer interrupt",
         f"LI(x{r_temp}, -1)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",

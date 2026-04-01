@@ -18,6 +18,11 @@ This file lists:
 * all of the supported extensions
 * all of the parameters required to describe the behavior of the extensions
 
+[NOTE]
+====
+When an extension implies sub-extensions (e.g. `C` implies `Zca`/`Zcf`/`Zcd`; `A` implies `Zaamo`/`Zalrsc`), the `implemented_extensions` list must include *both the superset and all applicable sub-extensions*.  UDB validates this, and the test framework selects test suites by sub-extension name.
+====
+
 The DUT also needs to know how to boot the core, terminate a test with a success code, send a message to a console, and cause interrupts.  These DUT-specific behaviors are defined by <<rvmodel-macros, RVMODEL DUT-Specific Macros>>, which are an assembly-language library implementing an API using DUT-specific hardware.
 
 === Unified Database

@@ -94,7 +94,7 @@ cd riscv-gnu-toolchain
 sudo make  # sudo may be required depending on the selected `prefix`
 ```
 
-> [!NOTE]\*
+> [!NOTE]
 > If you don't have sudo access, you can install the tools locally in your home directory.
 > Simply replace `</path/to/install>` with a local directory (e.g., `$HOME/riscv`) and run `make` without `sudo`.
 

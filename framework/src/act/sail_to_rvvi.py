@@ -71,18 +71,3 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 output_line = output_line.format(mode_num=prev_mode_num)
                 outfile.write(output_line)
                 output_line = next_output
-
-
-def main() -> None:
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Convert a Sail log file into a trace format for use with RVVI")
-    parser.add_argument("input_file", type=Path, help="Input Sail log file to parse")
-    parser.add_argument("output_file", type=Path, help="Output trace file for RVVI")
-    args = parser.parse_args()
-
-    sailLog2Trace(args.input_file, args.output_file)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,11 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vmask_write_v0_masked
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_maskwrite_masked
     //////////////////////////////////////////////////////////////////////////////////
 
     // Custom coverpoints for Vector mask producing/writing operations where masked CAN be enabled
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
 
     vtype_all_lmulge1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
@@ -31,4 +39,4 @@
     cp_custom_vmask_write_lmulge1:      cross std_vec, vtype_all_lmulge1, vl_max;
     cp_custom_vmask_write_v0_masked:    cross std_vec, vd_v0, mask_enabled;
 
-    //// end cp_custom_vmask_write_v0_masked////////////////////////////////////////////////
+    //// end cp_custom_maskwrite_masked ////////////////////////////////////////////////

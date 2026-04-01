@@ -1,9 +1,9 @@
 
     // All (EEW, LMUL, SEW) tuples where EMUL = (EEW/SEW)*LMUL is fractional (< 1)
     // width[14:12] encodes EEW: 000=8, 101=16, 110=32, 111=64
-    vtype_lmul_sew_width_frac_emul : coverpoint {ins.current.insn[14:12],
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0]} {
+    vtype_lmul_sew_width_frac_emul : {coverpoint ins.current.insn[14:12],
+                                       coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                                       coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0]} {
         // EEW=8 (width=000): EMUL = (8/SEW)*LMUL
         bins eew8_sew16_lmul1  = {3'b000, 3'b000, 2'b01};  // EMUL = 1/2
         bins eew8_sew32_lmul1  = {3'b000, 3'b000, 2'b10};  // EMUL = 1/4

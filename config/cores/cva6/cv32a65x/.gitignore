@@ -1,0 +1,12 @@
+build/
+logs/
+*.log
+*.o
+*.out
+*.elf
+*.bin
+*.vcd
+*.wlf
+*.fst
+*.swp
+__pycache__/

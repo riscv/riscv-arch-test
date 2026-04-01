@@ -1,0 +1,9 @@
+name: cv32a65x
+compiler_exe: /home/lpt-10xe-2/riscv32/bin/riscv32-unknown-elf-gcc # executable name on $PATH or full path to executable
+objdump_exe: /home/lpt-10xe-2/riscv32/bin/riscv32-unknown-elf-objdump  # executable name on $PATH or full path to executable, optional
+ref_model_exe: /opt/sail-riscv/bin/sail_riscv_sim # executable name on $PATH or full path to executable
+udb_config: cv32a65x.yaml
+linker_script: link.ld
+dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header
+include_priv_tests: False
+

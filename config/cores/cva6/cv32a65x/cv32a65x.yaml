@@ -1,0 +1,109 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32a65x
+description: OpenHW Group CVA6 cv32a65x configuration;
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zcb, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Sm, version: "= 1.12.0" }
+
+params:
+  # Base & ISA mutability
+  MXLEN: 32
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+
+  # Addressing & Memory
+  PHYS_ADDR_WIDTH: 32          # AxiAddrWidth=64 in design (even though XLEN=32)
+  M_MODE_ENDIANNESS: little    # Default RISC-V + CVA6 behaviour
+  PMA_GRANULARITY: 4         # No programmable PMA unit (fixed by system bus)
+  
+  # Privilege & Modes
+  # RVS (Supervisor) and RVU (User) are False 
+  # Therefore, only Machine Mode (Sm) is active
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  MISALIGNED_LDST: false
+
+  # Exceptions & Traps(precise in-order pipeline)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MTVAL_WIDTH: 0                  # TvalEn=False -> hardwired zero
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  
+  # mtval and trap reporting behavior (all false per TvalEN= False)
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false  
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+ 
+ 
+  # Trap Handling (only direct mode (0) is supported for MTVEC)
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0] 
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  
+  # Identification (CVA6 Specifics)
+  CONFIG_PTR_ADDRESS: 0x0
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 0x3         
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x0   
+  MISA_CSR_IMPLEMENTED: true   
+  VENDOR_ID_BANK: 0xC         
+  VENDOR_ID_OFFSET: 0x2       
+  
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

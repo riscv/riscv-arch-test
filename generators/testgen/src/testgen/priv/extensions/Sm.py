@@ -443,10 +443,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "# Load 1s into msb and msb-1 correspondding to misa.MXL bitfields",
+            "# Load 1s into msb and msb-1 corresponding to misa.MXL bitfields",
             f"LI(x{rmsb}, -1)           # all 1s",
             f"srli x{rmsb}, x{rmsb}, 1  # all 1s except msb = 0",
-            f"not x{rmsb}, x{rmsb}      # 1 in msb (works regardless of XLEN",
+            f"not x{rmsb}, x{rmsb}      # 1 in msb (works regardless of XLEN)",
             f"srli x{rmsb2}, x{rmsb}, 1 # 1s in msb-1",
             f"or x{rboth}, x{rmsb}, x{rmsb2} # 1s in both msb and msb-1",
             "",

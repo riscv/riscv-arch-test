@@ -1247,44 +1247,47 @@ def writeSIGUPD_F(fd):
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
     writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr})", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
-def writeSIGUPD_V_old(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
-    global sigupd_count        # Allow modification of global variable
-    if (avl == "random" or avl == "vlmax"):
-      avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
-    if (avl == 1):
-      sigupd_count += avl * 2  # Increment counter on each call
-    else:
-      sigupd_count += avl
+# old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
 
-    tempReg = 6
-    while tempReg == sigReg:
-      tempReg = randint(1,31)
+# def writeSIGUPD_V(vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False):
+#     global sigupd_count        # Allow modification of global variable
+#     if (avl == "random" or avl == "vlmax"):
+#       avl = maxVLEN            # set to max possible vl since SIGUPD_V needs AVL to be a compile-time constant
+#     if (avl == 1):
+#       sigupd_count += avl * 2  # Increment counter on each call
+#     else:
+#       sigupd_count += avl
 
-    offset = (int((avl) * (sew) / 8 + 4 + 7) & ~7)
-    offsetRem = offset % 2047
-    fullOffsets = offset // 2047
+#     tempReg = 6
+#     while tempReg == sigReg:
+#       tempReg = randint(1,31)
 
-    if ("SEWMIN" in str(sew)):
-      if sig_whole_register_store:
-        writeLine(f"vsetvli x{tempReg}, x0, SEWSIZE, m{sig_lmul}, ta, ma",       f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
+#     offset = (int((avl) * (sew) / 8 + 4 + 7) & ~7)
+#     offsetRem = offset % 2047
+#     fullOffsets = offset // 2047
 
-      if offset > 2047:
-        writeLine(f"RVTEST_SIGUPD_V_SEWMIN(x{sigReg}, x{tempReg}, {offsetRem}, v{vd})",  f"# stores v{vd} (sew = SEWMIN, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
-        for x in range(fullOffsets):
-          writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
-      else:
-        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+#     if ("SEWMIN" in str(sew)):
+#       if sig_whole_register_store:
+#         writeLine(f"vsetvli x{tempReg}, x0, SEWSIZE, m{sig_lmul}, ta, ma",       f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
 
-    else:
-      if sig_whole_register_store:
-        writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
+#       if offset > 2047:
+#         writeLine(f"RVTEST_SIGUPD_V_SEWMIN(x{sigReg}, x{tempReg}, {offsetRem}, v{vd})",  f"# stores v{vd} (sew = SEWMIN, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+#         for x in range(fullOffsets):
+#           writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
+#       else:
+#         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
 
-      if offset > 2047:
-        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offsetRem}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
-        for x in range(fullOffsets):
-          writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
-      else:
-        writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+#     else:
+#       if sig_whole_register_store:
+#         writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{sig_lmul}, ta, ma",        f"# change lmul to {sig_lmul} and set vl to vlmax to store register(s) (offgroup)")
+
+#       if offset > 2047:
+#         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offsetRem}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+#         for x in range(fullOffsets):
+#           writeLine(f"addi x{sigReg}, x{sigReg}, 2047", f"# calculate effective address for SIGUPD_V with large offset")
+#       else:
+#         writeLine(f"RVTEST_SIGUPD_V(x{sigReg}, x{tempReg}, {sew}, {offset}, v{vd})", f"# stores v{vd} (sew = {sew}, AVL = {avl}) in signature with base (x{sigReg}) and helper (x{tempReg}) register")
+
 
 def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = None, sig_whole_register_store = False, vd_mask = False, testtype = "base", masked = False):
 
@@ -1436,7 +1439,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
         else:
           writeLine(
           f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, {offset}, v{vd}, {inst_ptr}, {str_ptr})",
-          f"# compare v{vd} (sew={sew}, AVL={avl})")
+          f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
 
 
 

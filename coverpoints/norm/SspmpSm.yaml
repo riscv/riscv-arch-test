@@ -23,10 +23,14 @@ normative_rule_definitions:
     coverpoint: ["SspmpSm_csr_cg/cp_spmpaddr_write"]
 
   - name: spmpcfg_rwx_bits
-    coverpoint: ["SspmpSm_perm_cg/{cp_smode_rule, cp_umode_rule, cp_shared_rule}"]
+    coverpoint:
+      ["SspmpSm_perm_cg/{cp_smode_rule, cp_umode_rule, cp_shared_rule}"]
 
   - name: spmpcfg_a_field
-    coverpoint: ["SspmpSm_addr_cg/{cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot}"]
+    coverpoint:
+      [
+        "SspmpSm_addr_cg/{cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot}",
+      ]
 
   - name: spmpcfg_lock_bit
     coverpoint: ["SspmpSm_csr_cg/cp_spmp_lock"]

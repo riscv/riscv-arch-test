@@ -136,91 +136,6 @@
   `endif
 `endif
 
-
-// supported SEWs based on what coverages are enabled
-// `ifdef VX64_COVERAGE
-//   `define SEW64_SUPPORTED
-// `endif
-// `ifdef VX32_COVERAGE
-//   `define SEW32_SUPPORTED
-// `endif
-// `ifdef VX16_COVERAGE
-//   `define SEW16_SUPPORTED
-// `endif
-// `ifdef VX8_COVERAGE
-//   `define SEW8_SUPPORTED
-// `endif
-
-// `ifdef VLS64_COVERAGE
-//   `define SEW64_SUPPORTED
-// `endif
-// `ifdef VLS32_COVERAGE
-//   `define SEW32_SUPPORTED
-// `endif
-// `ifdef VLS16_COVERAGE
-//   `define SEW16_SUPPORTED
-// `endif
-// `ifdef VLS8_COVERAGE
-//   `define SEW8_SUPPORTED
-// `endif
-
-// `define SEW8_SUPPORTED
-// `define SEW16_SUPPORTED
-// `define SEW32_SUPPORTED
-// `define SEW64_SUPPORTED
-
-`ifdef VFCUSTOM64_COVERAGE
-  `define SEW64_SUPPORTED
-`endif
-`ifdef VFCUSTOM32_COVERAGE
-  `define SEW32_SUPPORTED
-`endif
-`ifdef VFCUSTOM16_COVERAGE
-  `define SEW16_SUPPORTED
-`endif
-
-`ifdef VLSCUSTOM64_COVERAGE
-  `define SEW64_SUPPORTED
-`endif
-`ifdef VLSCUSTOM32_COVERAGE
-  `define SEW32_SUPPORTED
-`endif
-`ifdef VLSCUSTOM16_COVERAGE
-  `define SEW16_SUPPORTED
-`endif
-
-// ELEN (max SEW) definition
-// `ifdef VX64_COVERAGE
-//   `define ELEN64
-// `else
-//   `ifdef VX32_COVERAGE
-//     `define ELEN32
-//   `else
-//     `ifdef VX16_COVERAGE
-//       `define ELEN16
-//     `else
-//       `define ELEN8
-//     `endif
-//   `endif
-// `endif
-
-// `ifdef VLS64_COVERAGE
-//   `define ELEN64
-// `else
-//   `ifdef VLS32_COVERAGE
-//     `define ELEN32
-//   `else
-//     `ifdef VLS16_COVERAGE
-//       `define ELEN16
-//     `else
-//       `define ELEN8
-//     `endif
-//   `endif
-// `endif
-
-`define ELEN64
-
-
 // edge cases
 `ifdef VLEN64
   `ifdef ELEN64
@@ -241,6 +156,16 @@
   `ifdef ELEN8
     `define ELEN_EQ_VLEN
   `endif
+`endif
+
+`ifdef SEW64_SUPPORTED
+  `define ELEN64
+`elsif SEW32_SUPPORTED
+  `define ELEN32
+`elsif SEW16_SUPPORTED
+  `define ELEN16
+`elsif SEW8_SUPPORTED
+  `define ELEN8
 `endif
 
 // Minimum supported LMUL

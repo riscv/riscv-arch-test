@@ -697,6 +697,10 @@
     #define GOTO_M_OP   ecall  // default; this must be called with x3=0
 #endif
 
+#ifndef GOTO_S_OP
+    #define GOTO_S_OP   ecall  // default; this must be called with x3=0
+#endif
+
 #ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
     #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
     #define ALT_GOTO_M_OP    .insn 0
@@ -729,6 +733,21 @@
 
     ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
                                   return to op after illegal op, else handles trap normally */
+    mv   x3, t0
+  #endif
+  .option pop
+.endm
+
+// Return from U-mode to S-mode when U-mode ecall (bit 8) is delegated to S-mode
+.macro  RVTEST_GOTO_SMODE
+  .option push
+  .option norvc
+  #ifdef  rvtest_strap_routine
+    mv   t0, x3
+    li   x3, 0
+
+    GOTO_S_OP
+
     mv   x3, t0
   #endif
   .option pop
@@ -1173,6 +1192,15 @@ spcl_\__MODE__\()chk4ecall:
 \__MODE__\()goto_mchk:                          // is ECALL, but not failure type; see if its goto_m_mode
         beqz    x3, \__MODE__\()rtn2mmode       // return in mmode if it is, else fall thru to normal trap signature
 .endif
+
+.ifc \__MODE__ ,  S                             // RVTEST_GOTO_SMODE U-mode ecall w/ x3=0 returns in S-mode
+\__MODE__\()goto_schk:
+        LI(T4,(1<<(XLEN-1))+((1<<12)-1))        // make a mask of int bit and cause(11:0)
+        and     T4, T4, T5                      // keep only int bit and cause[11:0]
+        addi    T3, T4, -CAUSE_USER_ECALL       // check for U-mode ecall
+        bnez    T3, \__MODE__\()trapsig_ptr_upd // if not a U-mode ecall, handle normally
+        beqz    x3, \__MODE__\()rtn2smode       // return to S-mode
+.endif
 //------normal trap rtn; pre-update trap_sig pointer so handlers can themselves trap-----
 \__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. exception, interrupt type, and h mode
         li      T2, 4*REGWIDTH                  // standard entry length
@@ -1214,13 +1242,13 @@ spcl_\__MODE__\()chk4ecall:
 .else
    .ifc \__MODE__ , S
      #ifdef rvtest_htrap_routine
-        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S)
+        .set sv_area_off, (-1*sv_area_sz)       // get trapsig_ptr val  up 2 save areas   (M<-S<-HS)
      #else
         .set sv_area_off, ( 0*sv_area_sz)       // get trapsig_ptr val  up 1 save area    (M<-S)
      #endif
    .else
       .ifc \__MODE__ , V
-        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-HS<-VS))
+        .set sv_area_off, (-2*sv_area_sz)       // get trapsig ptr val  up 3 save areas,  (M<-S<-HS<-VS)
       .endif
     .endif
 .endif
@@ -1854,6 +1882,21 @@ rtn_fm_mmode:
         jr      4(T2)                   /* return after GOTO_MMODE in M-mode    */
 
 //****FIXME GOTO_MMODE macro must have an lpad(0) following the GOTO_MMODE for cfiplp
+
+.endif
+
+// Returning from RVTEST_GOTO_SMODE
+// Used when U-mode ecall (bit 8) is delegated to S-mode
+
+.ifc \__MODE__ , S
+
+\__MODE__\()rtn2smode:
+        csrr    T3, CSR_XEPC                    // sepc = address of ecall in U-mode
+        addi    T3, T3, 4                       // skip ecall
+        csrw    CSR_XEPC, T3                    // returns to instruction after ecall
+        LI(T3, SSTATUS_SPP)                     // T3 = 0x100
+        csrs    CSR_XSTATUS, T3                 // set SPP=1 to return to S-mode
+        j       resto_\__MODE__\()rtn
 
 .endif
 .option pop

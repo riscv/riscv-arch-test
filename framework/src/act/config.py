@@ -7,8 +7,6 @@
 # Parse test framework configuration files
 ##################################
 
-from __future__ import annotations
-
 import shutil
 import subprocess
 from enum import Enum
@@ -105,11 +103,6 @@ class Config(BaseModel):
             raise ValueError("Unable to resolve relative paths.")
         config_file_dir: Path = context["config_file_dir"]
         return config_file_dir.absolute() / path
-
-    @property
-    def compiler_string(self) -> str:
-        """Return the compiler executable as a string for Makefile generation."""
-        return str(self.compiler_exe)
 
     def __str__(self) -> str:
         """Pretty print configuration."""

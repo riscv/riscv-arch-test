@@ -214,16 +214,16 @@ include::param_appendix.adoc[]
 
 === A Extension Parameters
 include::param_table_header.adoc[]
-include::../generated/param-appendix/a-st-ext/LRSC_RESERVATION_STRATEGY.adoc[]
+include::../generated/param-appendix/a-st-ext/params/LRSC_RESERVATION_STRATEGY.adoc[]
 |===
 
 === Counters Parameters
 include::param_table_header.adoc[]
-include::../generated/param-appendix/counters/HPM_READ_BEHAVIOR.adoc[]
-include::../generated/param-appendix/counters/TIME_CSR_HW_SUPPORT.adoc[]
+include::../generated/param-appendix/counters/params/HPM_READ_BEHAVIOR.adoc[]
+include::../generated/param-appendix/counters/params/TIME_CSR_HW_SUPPORT.adoc[]
 |===
 
 === RV32 Parameters
 include::param_table_header.adoc[]
-include::../generated/param-appendix/rv32/MISALIGNED_LDST_HW_SUPPORT.adoc[]
+include::../generated/param-appendix/rv32/params/MISALIGNED_LDST_HW_SUPPORT.adoc[]
 |===

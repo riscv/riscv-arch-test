@@ -37,14 +37,14 @@
   write_tohost_pass:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\
-  self_loop_pass:         ;\
+  self_halt_pass:         ;\
     j self_loop_pass      ;\
 
 # Terminate test with a fail indication.
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
   li x2, 0x20000000       ;\
-  write_tohost_fail:      ;\
+  write_halt_fail:      ;\
     sw x1, 0(x2)          ;\
     sw x0, 4(x2)          ;\
   self_loop_fail:         ;\

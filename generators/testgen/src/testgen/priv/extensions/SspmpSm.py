@@ -462,7 +462,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_select(0, sel_reg))
     base_addr = 0x80000000
     lines.extend(_spmp_write_addr(val_reg, base_addr >> 2))
-    lines.extend(_spmp_write_cfg(val_reg, 0))  # entry 0 cfg doesnt matter for TOR match
+    lines.extend(_spmp_write_cfg(val_reg, 0))  # entry 0 cfg does not matter for TOR match
 
     # Set entry 1 with TOR mode
     lines.extend(_spmp_select(1, sel_reg))
@@ -1868,10 +1868,8 @@ def generate_sspmp_tests(output_dir: Path) -> None:
     print(f"Generated {len(_SSPMP_SUB_TESTS)} Sspmp test files in {sspmp_dir}")
 
 
-"""
-run: python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
-This will generate separate .S files for each Sspmp sub-test under tests/priv/Sspmp/.
-"""
+# run: python3 -m uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
+# This will generate separate .S files for each Sspmp sub-test under tests/priv/Sspmp/.
 if __name__ == "__main__":
     output = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("tests")
     generate_sspmp_tests(output)

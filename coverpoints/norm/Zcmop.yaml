@@ -1,0 +1,25 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # This section defines the "Zcmop" extension, which defines eight 16-bit MOP
+  # instructions named C.MOP.n, where n is an odd integer between 1 and 15,
+  # inclusive.
+  - name: Zcmop_op
+    coverpoint: [""]
+
+  # C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI xn, 0,
+  # as shown in &lt;&lt;norm:c-mop_enc&gt;&gt;.
+  - name: Zcmop_enc
+    coverpoint: [""]
+
+  # Mnemonic|Encoding|Redefinable to read register ===
+  # C.MOP.1|0110000010000001|x1¶C.MOP.3|0110000110000001|x3¶C.MOP.5|0110001010000001|x5¶C.MOP.7|0110001110000001|x7¶C.MOP.9|0110010010000001|x9¶C.MOP.11|0110010110000001|x11¶C.MOP.13|0110011010000001|x13¶C.MOP.15|0110011110000001|x15
+  # ===
+  - name: Zcmop_enc_table
+    coverpoint: [""]
+
+  # Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions are
+  # defined to not write any register.
+  - name: Zcmop_instr_write
+    coverpoint: [""]

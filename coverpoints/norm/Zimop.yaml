@@ -1,0 +1,21 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The Zimop extension defines 32 MOP instructions named MOP.R.n, where n is an
+  # integer between 0 and 31, inclusive. Unless redefined by another extension,
+  # these instructions simply write 0 to x[rd].
+  - name: Zimop_mop-r_op
+    coverpoint: [""]
+
+  - name: Zimop_mop-r_enc
+    coverpoint: [""]
+
+  # The Zimop extension additionally defines 8 MOP instructions named MOP.RR.n,
+  # where n is an integer between 0 and 7, inclusive. Unless redefined by another
+  # extension, these instructions simply write 0 to x[rd].
+  - name: Zimop_mop-rr_op
+    coverpoint: [""]
+
+  - name: Zimop_mop-rr_enc
+    coverpoint: [""]

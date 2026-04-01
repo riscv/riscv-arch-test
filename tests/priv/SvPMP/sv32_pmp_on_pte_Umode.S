@@ -21,7 +21,7 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32]
+# REQUIRED_EXTENSIONS: [I, Sv32, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr
@@ -93,7 +93,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    Setup pmpaddr registers
@@ -156,7 +156,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Test case 1: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test1

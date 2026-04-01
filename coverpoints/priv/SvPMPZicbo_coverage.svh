@@ -23,13 +23,13 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -42,32 +42,17 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
         }
     `endif
 
-    // satp.mode for coverage of SV32, SV39, SV48 & SV57
-        `ifdef XLEN64
-        mode: coverpoint  ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
-                bins sv57 = {4'b1010};
-            `endif
-            `ifdef SV48
-                bins sv48 = {4'b1001};
-            `endif
-            `ifdef SV39
-                bins sv39 = {4'b1000};
-            `endif
-        }
-    `else
-        mode: coverpoint  ins.current.csr[12'h180][31] {
-            bins sv32 = {1'b1};
-        }
-    `endif
-
     store_acc_fault: coverpoint  ins.current.csr[12'h342] {
         bins store_acc_fault = {64'd7};
     }
 
     cbo_ins: coverpoint ins.current.insn {
-        wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
-        wildcard bins zicboz_ins     = {32'b000000000100_?????_010_00000_0001111};
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zicboz_ins = {CBO_ZERO};
+        `endif
     }
 
     PMP_perm: coverpoint  ins.current.csr[12'h3A0][7:0] {
@@ -75,10 +60,10 @@ covergroup SvPMPZicbo_cg with function sample(ins_t ins);
     }
 
 
-    PA_PMP_rw_unset_cbo_s:  cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
-    PA_PMP_rw_unset_cbo_u:  cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
-    PTE_PMP_rw_unset_cbo_s: cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
-    PTE_PMP_rw_unset_cbo_u: cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
+    cp_PA_PMP_rw_unset_cbo_s:  cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
+    cp_PA_PMP_rw_unset_cbo_u:  cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
+    cp_PTE_PMP_rw_unset_cbo_s: cross PTE_s, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_s;
+    cp_PTE_PMP_rw_unset_cbo_u: cross PTE_u, PageType_d, PMP_perm, cbo_ins, store_acc_fault, priv_mode_u;
 
 endgroup
 

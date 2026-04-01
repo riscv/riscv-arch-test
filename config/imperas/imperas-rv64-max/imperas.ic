@@ -67,5 +67,7 @@
 --override cpu*/PMP_undefined=T # access to unimplemented PMP registers cause illegal instruction exception
 
 # More extensions
+--override cpu*/Zimop=T
+--override cpu*/Zcmop=T
 #--override cpu*/Smdbltrp=T
 #--override cpu*/Ssdbltrp=T

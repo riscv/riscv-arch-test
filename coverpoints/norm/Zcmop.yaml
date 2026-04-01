@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2024 RISC-V International
+
+Zcmop_instruction_format:
+  description: >
+    Verify that all c.mop.n instructions correctly execute
+    as May-Be-Operations. They must not write to any register,
+    and must not raise an illegal-instruction exception.
+  coverpoints:
+    - cp_asm_count

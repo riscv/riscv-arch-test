@@ -397,21 +397,21 @@
         vid.v       _VTMP                    ;   /* Recompute element indices */                                    \
         vmsltu.vx   _VTMP, _VTMP, _TEMP_REG  ;   /* VTMP[i] = (i < original vl) */                                  \
         vmnand.mm   _VTMP, _VTMP, _VTMP      ;   /* VTMP[i] = !(i < original vl) = (i >= original vl) */            \
+        /* Check whether instr is a mask-producing instruction */                                                   \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
+        bnez        _LINK_REG, 4f            ;   /* If mask-producing, tails are always treated as agnostic */      \
         /* Extract and check vta policy */                                                                          \
         srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
         andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
         beqz        _LINK_REG, 5f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
-        /* Check whether instr is a mask-producing instruction */                                                   \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
-        /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-        vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
-        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
-        j           5f                       ;   /* Unconditional skip data vec agnostic handling to tail check */  \
-    4:                                                                                                              \
         /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == -1) → mismatch with all 1s */     \
+        j           5f                       ;   /* Unconditional skip data vec agnostic handling to tail check */  \
+    4:                                                                                                              \
+        /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+        vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+        vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
     5:                                                                                                              \
         /* Check tail elements mismatches */                                                                        \
         vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \

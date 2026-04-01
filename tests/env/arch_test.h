@@ -1201,6 +1201,7 @@ spcl_\__MODE__\()chk4ecall:
         bnez    T3, \__MODE__\()trapsig_ptr_upd // if not a U-mode ecall, handle normally
         beqz    x3, \__MODE__\()rtn2smode       // return to S-mode
 .endif
+
 //------normal trap rtn; pre-update trap_sig pointer so handlers can themselves trap-----
 \__MODE__\()trapsig_ptr_upd:                    // calculate entry size based on int vs. exception, interrupt type, and h mode
         li      T2, 4*REGWIDTH                  // standard entry length
@@ -1897,7 +1898,6 @@ rtn_fm_mmode:
         LI(T3, SSTATUS_SPP)                     // T3 = 0x100
         csrs    CSR_XSTATUS, T3                 // set SPP=1 to return to S-mode
         j       resto_\__MODE__\()rtn
-
 .endif
 .option pop
 .endm                                   // end of HANDLER

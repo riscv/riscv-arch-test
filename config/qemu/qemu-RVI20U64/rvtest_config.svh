@@ -6,7 +6,7 @@
 // It defines which extensions are enabled for that config.
 
 // Define XLEN, used in covergroups
-`define XLEN32
+`define XLEN64
 `define FLEN64
 
 // Define relevant addresses

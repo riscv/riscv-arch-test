@@ -32,7 +32,7 @@
       // The configuration option determines how to handle the reserved behavior `amocas_odd_registers`.
       // "AMOCAS_Fatal"  – raise a Sail exception, stopping execution.
       // "AMOCAS_Illegal" – treat it as an illegal instruction.
-      "amocas_odd_register": "AMOCAS_Illegal",
+      "amocas_odd_register": "AMOCAS_Fatal",
       // The configuration option determines how to handle execution of a floating-point
       // instruction with DYN (dynamic) rounding mode when `fcsr.FRM` contains a
       // reserved value (0b101, 0b110, 0b111).
@@ -40,11 +40,11 @@
       // reserved rounding mode statically encoded in the instruction.
       // "Fcsr_RM_Fatal"  – raise a Sail exception, stopping execution.
       // "Fcsr_RM_Illegal" – treat it as an illegal instruction.
-      "fcsr_rm": "Fcsr_RM_Illegal",
+      "fcsr_rm": "Fcsr_RM_Fatal",
       // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
       // "PMP_Fatal"  – raise a Sail exception, stopping execution.
       // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
-      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "pmpcfg_write_only": "PMP_Fatal",
       // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
       // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
       // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
@@ -52,7 +52,7 @@
       // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
       // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
       // "Zdinx_Illegal" – treat it as an illegal instruction.
-      "rv32zdinx_odd_register": "Zdinx_Illegal"
+      "rv32zdinx_odd_register": "Zdinx_Fatal"
     }
   },
   "memory": {
@@ -60,11 +60,11 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 16,
+      "count": 0,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 16,
+      "usable_count": 0,
       "tor_supported": true,
       "na4_supported": true,
       "napot_supported": true
@@ -73,7 +73,7 @@
     // checked before address translation. `misaligned_fault` in
     // `regions` is checked after address translation.
     "misaligned": {
-      "supported": true,
+      "supported": false,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0
@@ -195,6 +195,17 @@
       "supported": true
     },
     "V": {
+      // `support_level` must be one of the below strings:
+      // . "Disabled" for no vector extension support
+      // . "Integer" for Zve*x support
+      // . "Float_single" for Zve*f support
+      // . "Float_double" for Zve*d support
+      // . "Full" for the full V extension
+      // Note that `support_level` requires compatible
+      // values for `vlen_exp` and `elen_exp` below.
+      // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
+      // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
+      // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
       "support_level": "Disabled",
       "vlen_exp": 8,
       "elen_exp": 6,
@@ -221,6 +232,9 @@
     "Zicboz": {
       "supported": false
     },
+    // This extension just asserts that the cache block size is 64 bytes.
+    // If you enable this you also need to ensure `platform.cache_block_size_exp`
+    // is 6, otherwise you will get a config validation error.
     "Zic64b": {
       "supported": false
     },
@@ -246,7 +260,7 @@
       "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false
@@ -411,6 +425,8 @@
     "Sstc": {
       "supported": false
     },
+    // Enabling Sstvala requires that the exceptions specified in the extension
+    // have their appropriate settings under `base.xtval_nonzero`.
     "Sstvala": {
       "supported": false
     },

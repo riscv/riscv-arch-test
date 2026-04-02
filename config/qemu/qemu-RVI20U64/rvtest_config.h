@@ -9,4 +9,3 @@
 #define ZIHPM_SUPPORTED
 #define ZCA_SUPPORTED
 #define ZCD_SUPPORTED
-#define ZCF_SUPPORTED

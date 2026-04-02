@@ -65,11 +65,11 @@
       {
         "base": {
           "len": 64,
-          "value": "0x0"
+          "value": "0x00000080"
         },
         "size": {
           "len": 64,
-          "value": "0x80000000"
+          "value": "0x7FFFFF80"
         },
         "attributes": {
           "cacheable": true,

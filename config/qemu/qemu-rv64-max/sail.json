@@ -207,7 +207,7 @@
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
       "support_level": "Full",
-      "vlen_exp": 10,
+      "vlen_exp": 7,
       "elen_exp": 6,
       "vl_use_ceil": false
     },

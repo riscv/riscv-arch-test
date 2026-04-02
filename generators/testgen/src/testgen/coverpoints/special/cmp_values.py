@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################
 
-"""Compare register values coverpoint generators (cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_val_d, cmp_rd_rs1_pair_full_val, cmp_rd_rs1_pair_partial_val, cmp_rd_rs1_sign_ext)."""
+"""Compare register values coverpoint generators (cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_val_d, cmp_rd_rs1_pair_partial_val, cmp_rd_rs1_sign_ext)."""
 
 from testgen.asm.helpers import load_int_reg, return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
@@ -64,12 +64,8 @@ def generate_cmp_testcase(
         rd_lo, rd_hi = rd_val & mask, (rd_val >> test_data.xlen) & mask
         rs1_lo, rs1_hi = rs1_val & mask, (rs1_val >> test_data.xlen) & mask
 
-    if is_pair:
-        params.rdval = rd_lo
-        params.rs1val = rs1_lo
-    else:
-        params.rdval = rd_val
-        params.rs1val = rs1_val
+    params.rdval = rd_val
+    params.rs1val = rs1_val
 
     # Begin testcase
     tc = test_data.begin_test_chunk()

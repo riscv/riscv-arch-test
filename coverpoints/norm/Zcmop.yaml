@@ -2,4 +2,4 @@
 
 normative_rule_definitions:
   - name: c_mop_op
-    coverpoint: ["Zcmop_c_mop_cg/cp_asm_count}"]
+    coverpoint: ["Zcmop_c_mop_cg/{cp_asm_count}"]

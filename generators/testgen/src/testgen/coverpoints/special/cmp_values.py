@@ -269,6 +269,7 @@ def make_cmp_rd_rs1_val_d(instr_name: str, instr_type: str, coverpoint: str, tes
 
     return test_chunks
 
+
 @add_coverpoint_generator("cmp_rd_rs1_pair_partial_val")
 def make_cmp_rd_rs1_pair_partial_val(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData

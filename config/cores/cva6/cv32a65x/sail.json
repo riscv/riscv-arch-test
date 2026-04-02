@@ -271,7 +271,7 @@
       "vl_use_ceil": false
     },
     "B": {
-      "supported": true
+      "supported": false
     },
     "S": {
       "supported": false

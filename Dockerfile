@@ -196,12 +196,14 @@ ENV CONTAINERS_STORAGE_CONF=/etc/containers/storage.conf
 # Runtime deps only:
 #   - python3: needed by uv-managed venvs and the ACT4 framework
 #   - ca-certificates / make / git: needed to drive the ACT4 Makefile
+#   - fuse-overlayfs: userspace overlayfs implementation for Podman
 #   - podman: required by ACT4 for riscv-unified-db
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     git \
     make \
     podman \
+    fuse-overlayfs \
     python3 \
  && rm -rf /var/lib/apt/lists/*
 
@@ -211,7 +213,7 @@ COPY --from=uv-fetcher        /root/.local                /root/.local
 
 # Podman configuration for running inside Docker (--privileged).
 #
-#   storage.conf - vfs avoids stacking overlays on top of Docker's own overlay mount
+#   storage.conf - userspace overlayfs that works inside container
 #   containers.conf:
 #     cgroup_manager = cgroupfs   don't try to delegate via systemd
 #     events_logger  = file       journald unavailable inside Docker
@@ -221,7 +223,11 @@ COPY --from=uv-fetcher        /root/.local                /root/.local
 #                                 "write cgroup.subtree_control: device or resource busy"
 RUN cat > /etc/containers/storage.conf <<'EOF'
 [storage]
-driver = "vfs"
+driver = "overlay"
+
+[storage.options.overlay]
+mount_program = "/usr/bin/fuse-overlayfs"
+mountopt = "nodev,metacopy=on"
 EOF
 
 RUN cat > /etc/containers/containers.conf <<'EOF'

@@ -30,7 +30,7 @@ Should write 0 to rd unless implemented.
 [[t-Zimop-coverpoints]]
 .Zimop Coverpoints
 //,===
-//include::{testplansdir}/Zimop.adoc[]
+include::{testplansdir}/Zimop.adoc[]
 //,===
 
 ==== Zcmop Compressed Maybe-Ops

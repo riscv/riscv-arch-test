@@ -220,7 +220,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
         ),
     ]
 
-    # Use entries 2 and 3 for lock tests (entry 3 is TOR using entry 2's addr)
+    # Use entries 1 and 2 for lock tests (entry 2 is TOR using entry 1's addr)
     test_entry = 2
     prev_entry = test_entry - 1
 
@@ -1279,6 +1279,9 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     )
 
     # Restore mpmpdeleg
+    # Note: PMP[7].L cannot be cleared except by reset. In the combined test file,
+    # PMP[7] remains locked for subsequent sub-tests. This is acceptable because
+    # later sub-tests (spmpen, satp_bare) do not access PMP[7].
     lines.extend(
         [
             f"\nCSRW({mpmpdeleg_csr}, x{save_reg})  # restore mpmpdeleg",

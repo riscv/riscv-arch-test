@@ -132,7 +132,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
 
 
 def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
-    """Generate ecall and ebreak and mret tests."""
+    """Generate ecall and ebreak and mret and sfence.vma tests."""
     ######################################
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sprivinst"
@@ -161,6 +161,12 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         test_data.add_testcase("mret", coverpoint, covergroup),
         "mret                # test mret instruction",
         "nop                 # trap handler skips following instruction so this should not be executed",
+        "",
+        # sfence.vma test
+        "# Testcase: sfence.vma instruction",
+        test_data.add_testcase("sfence_vma", coverpoint, covergroup),
+        "sfence.vma          # test sfence.vma instruction",
+        "nop                 # might be skipped",
     ]
 
     return lines

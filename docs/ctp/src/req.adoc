@@ -22,7 +22,7 @@ The test suites may be provided by multiple suppliers, but must meet a common se
 *** Name of coverpoint and bin that failed, if practical
 ** Tests should not contain loops over multiple bins.  Each bin of each coverpoint should be tested by a unique instruction so that a failing bin can be uniquely identified from the program counter.  Loops should go in the test generator instead of the test itself.
 
-* Tests are organized in a highly granular way so that each ISA feature can be tested independently of other features
+* Tests are organized in a granular way so that each ISA feature can be tested independently of other features
 
 * All tests are written in assembly or C and work with the latest release of both GCC and Clang
 ** The latest release is typically needed because new extensions are rapidly being added to these compilers

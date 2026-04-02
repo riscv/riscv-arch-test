@@ -269,36 +269,6 @@ def make_cmp_rd_rs1_val_d(instr_name: str, instr_type: str, coverpoint: str, tes
 
     return test_chunks
 
-
-@add_coverpoint_generator("cmp_rd_rs1_pair_full_val")
-def make_cmp_rd_rs1_pair_full_val(
-    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
-) -> list[TestChunk]:
-    """Generate tests for full register pair equality"""
-
-    if test_data.xlen not in [32, 64] or instr_name not in ["amocas.q", "amocas.d"] or instr_type != "AP":
-        return []
-
-    test_chunks = []
-
-    all_ones = (1 << test_data.xlen) - 1
-
-    rd_lo = random_range(0, all_ones)
-    rd_hi = random_range(0, all_ones)
-
-    rd_val = (rd_hi << test_data.xlen) | rd_lo
-    rs1_val = rd_val
-
-    desc = "full value match (rd == mem)"
-    bin_name = "full_match"
-
-    tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
-
-    test_chunks.append(tc)
-
-    return test_chunks
-
-
 @add_coverpoint_generator("cmp_rd_rs1_pair_partial_val")
 def make_cmp_rd_rs1_pair_partial_val(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData

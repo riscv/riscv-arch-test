@@ -40,5 +40,5 @@ Should write 0 to rd unless implemented.
 [[t-Zcmop-coverpoints]]
 .Zcmop Coverpoints
 //,===
-//include::{testplansdir}/Zcmop.adoc[]
+include::{testplansdir}/Zcmop.adoc[]
 //,===

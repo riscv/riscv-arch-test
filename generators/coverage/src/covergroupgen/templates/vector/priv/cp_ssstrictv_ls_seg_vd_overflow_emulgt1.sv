@@ -5,9 +5,9 @@
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Segment load/store where vd + NFIELDS * LMUL > 32 with LMUL > 1
-    vd_nf_lmul_overflow : {coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
-                           coverpoint ins.current.insn[31:29],
-                           coverpoint ins.current.insn[11:7]} {
+    vd_nf_lmul_overflow : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")[2:0],
+                           ins.current.insn[31:29],
+                           ins.current.insn[11:7]} {
         // LMUL=2, nf=2 (4 regs): vd=30 overflows (30+4=34)
         bins lmul2_nf2_vd30 = {3'b001, 3'b001, 5'd30};
         // LMUL=2, nf=3 (6 regs): vd=28,30 overflow

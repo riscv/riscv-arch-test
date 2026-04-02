@@ -5,9 +5,9 @@
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Indexed segment load dest groups (EMUL=2) cannot overlap vs2 index group
-    vd_vs2_grp_overlap_lmul2 : {coverpoint ins.current.insn[11:7],
-                                 coverpoint ins.current.insn[24:20],
-                                 coverpoint ins.current.insn[31:29]} {
+    vd_vs2_grp_overlap_lmul2 : coverpoint {ins.current.insn[11:7],
+                                 ins.current.insn[24:20],
+                                 ins.current.insn[31:29]} {
         // LMUL=2, NFIELDS=2: dest groups [vd,vd+1] and [vd+2,vd+3], vs2 group [vs2,vs2+1]
         // vs2 group overlaps 1st dest group (vs2=vd)
         bins nf1_vd8_vs2eq8    = {5'd8,  5'd8,  3'b001};

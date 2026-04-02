@@ -5,9 +5,9 @@
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Verify indexed segment load destination groups cannot overlap vs2 source index register
-    vd_vs2_nf_overlap : {coverpoint ins.current.insn[11:7],
-                         coverpoint ins.current.insn[24:20],
-                         coverpoint ins.current.insn[31:29]} {
+    vd_vs2_nf_overlap : coverpoint {ins.current.insn[11:7],
+                         ins.current.insn[24:20],
+                         ins.current.insn[31:29]} {
         bins nf1_vd8_vs2eq8   = {5'd8,  5'd8,  3'b001};  // NFIELDS=2, vs2=vd (1st dest group)
         bins nf1_vd8_vs2eq9   = {5'd8,  5'd9,  3'b001};  // NFIELDS=2, vs2=vd+1 (2nd dest group)
         bins nf2_vd8_vs2eq10  = {5'd8,  5'd10, 3'b010};  // NFIELDS=3, vs2=vd+2 (3rd dest group)

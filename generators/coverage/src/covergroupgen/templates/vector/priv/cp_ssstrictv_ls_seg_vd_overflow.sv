@@ -5,8 +5,8 @@
     `include "general/RISCV_coverage_standard_coverpoints_vector.svh"
 
     // Segment load/store where vd + NFIELDS > 32 (register numbers past 31)
-    vd_nf_overflow : {coverpoint ins.current.insn[11:7],
-                      coverpoint ins.current.insn[31:29]} {
+    vd_nf_overflow : coverpoint {ins.current.insn[11:7],
+                      ins.current.insn[31:29]} {
         bins nf1_vd31 = {5'd31, 3'b001};  // NFIELDS=2, vd=31: 31+2=33 > 32
         bins nf2_vd30 = {5'd30, 3'b010};  // NFIELDS=3, vd=30: 30+3=33 > 32
         bins nf3_vd29 = {5'd29, 3'b011};  // NFIELDS=4, vd=29: 29+4=33 > 32

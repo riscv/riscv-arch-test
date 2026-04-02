@@ -41,10 +41,10 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
-  - { name: Zbc, version: "= 1.0.0" }
-  - { name: Zknh, version: "= 1.0.0" }
-  - { name: Zknd, version: "= 1.0.0" }
-  - { name: Zkne, version: "= 1.0.0" }
+  # - { name: Zbc, version: "= 1.0.0" }
+  #  - { name: Zknh, version: "= 1.0.0" }
+  #  - { name: Zknd, version: "= 1.0.0" }
+  #  - { name: Zkne, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }

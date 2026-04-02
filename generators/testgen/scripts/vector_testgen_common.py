@@ -1965,7 +1965,7 @@ def getInstructionArguments(instruction):
 def writeTest(description, instruction, cp, instruction_data=None,
               sew=None, lmul=1, vl=1, vstart=0, maskval=None, vxrm=None,
               frm=None, vxsat=None, vta=0, vma=0, suite="base",
-              clear_fflags: bool = True):
+              clear_fflags: bool = True, force_vill: bool = False):
     # Support old 3-arg calling convention: writeTest(desc, inst, data, ...)
     # where data (a list) was passed as cp. Detect and shift args.
     if instruction_data is None and isinstance(cp, list):
@@ -2108,7 +2108,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
       vs2_preloaded = True
       # restore vl later after prepBaseV will reset it, so no need to save/restore vtype
 
-    scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, *scalar_registers_used)
+    scalar_registers_used = prepBaseV(sew, lmul, vl, vstart, vta, vma, force_vill, *scalar_registers_used)
 
     # These bare vmv.v.i cases must be after prepBaseV which sets vsetvli (otherwise
     # vtype is invalid after reset and the vector instruction hangs in sail)
@@ -2227,7 +2227,7 @@ def getLmulFlag(lmul):
 
   return lmulflag
 
-def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, *scalar_registers_used):
+def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, *scalar_registers_used):
   scalar_registers_used = list(scalar_registers_used)
 
   lmulflag = getLmulFlag(lmul)
@@ -2272,6 +2272,14 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, *scalar_registers_used):
   if (vstart):   # if vstart specified
     writeLine(f"li x{tempReg2}, {vstart}",                                        "# Load desired vstart value")
     writeLine(f"csrw vstart, x{tempReg2}")
+
+  if force_vill:
+    villReg = 3
+    while villReg in scalar_registers_used:
+      villReg = randint(1,31)
+    scalar_registers_used.append(villReg)
+    writeLine(f"li x{villReg}, {1 << (xlen - 1)}",                               "# Load vtype value with vill bit set")
+    writeLine(f"vsetvl x0, x0, x{villReg}",                                       "# Set vtype with vill=1 via vsetvl")
 
   return scalar_registers_used
 

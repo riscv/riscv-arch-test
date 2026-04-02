@@ -7,9 +7,9 @@ Template: single coverpoint checking vill==1 AND vstart==0 AND no trap.
 Strategy: Two-test approach.
 1. First test with valid vtype (sew=8, lmul=1) loads data into registers
    and sets up rs1 with a valid memory address.
-2. Second test uses an unsupported SEW/LMUL combo (sew=64, lmul=0.125)
-   which sets vill=1. The whole register LS instruction should still
-   execute without trapping because it ignores vtype.
+2. Second test uses force_vill to explicitly set the vill bit via vsetvl
+   with a register holding the vill bit. The whole register LS instruction
+   should still execute without trapping because it ignores vtype.
 """
 
 from coverpoint_registry import register
@@ -37,15 +37,16 @@ def make(test, sew):
     except ValueError:
         pass
 
-    # Test 2: Use unsupported SEW/LMUL to set vill=1
-    # sew=64, lmul=0.125 → SEW/LMUL = 512 > VLEN, sets vill=1
-    # Whole register LS ignores vtype, so should not trap
-    description = f"cp_custom_vwholeRegLS_vill ({test}, vill=1 via sew=64/lmul=mf8)"
+    # Test 2: Explicitly set vill=1 via force_vill
+    # force_vill loads a register with the vill bit set and uses vsetvl
+    # to guarantee vill=1 regardless of VLEN configuration.
+    # Whole register LS ignores vtype, so should not trap.
+    description = f"cp_custom_vwholeRegLS_vill ({test}, vill=1 via force_vill)"
     try:
         data = randomizeVectorInstructionData(
             test, sew, getBaseSuiteTestCount(), lmul=1,
         )
-        writeTest(description, test, data, sew=64, lmul=0.125, vl=0)
+        writeTest(description, test, data, sew=sew, lmul=1, vl=0, force_vill=True)
         incrementBasetestCount()
         vsAddressCount()
     except ValueError:

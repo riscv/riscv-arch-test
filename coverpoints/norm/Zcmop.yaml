@@ -1,10 +1,7 @@
-# SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2024 RISC-V International
-
-Zcmop_instruction_format:
-  description: >
-    Verify that all c.mop.n instructions correctly execute
-    as May-Be-Operations. They must not write to any register,
-    and must not raise an illegal-instruction exception.
-  coverpoints:
-    - cp_asm_count
+# Mapping of normative rules to coverpoints for a test suite
+normative_rule_definitions:
+  - name: c_mop_op
+    # c.mop.n instructions are May-Be-Operations. Unless redefined by another
+    # extension, they do not write to any register and must not raise an
+    # illegal-instruction exception.
+    coverpoint: ["Zcmop_c_mop_cg/cp_asm_count"]

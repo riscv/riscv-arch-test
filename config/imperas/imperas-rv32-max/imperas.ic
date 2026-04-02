@@ -52,6 +52,8 @@
 --override cpu*/Zacas=T
 --override cpu*/Zfbfmin=T
 --override cpu*/Sstc=T
+--override cpu*/Zimop=T
+--override cpu*/Zcmop=T
 
 # Misaligned access (Zicclsm)
 --override cpu*/unaligned=T

@@ -1,0 +1,7 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  - name: mop_r_op
+    coverpoint: ["Zimop_mop_r_cg/cp_asm_count, cp_rs1, cp_rd, cp_rs1_edges, cmp_rd_rs1}"]
+  - name: mop_rr_op
+    coverpoint: ["Zimop_mop_rr_cg/cp_asm_count, cp_rs1, cp_rs2, cp_rd, cp_rs1_edges, cp_rs2_edges, cmp_rd_rs1, cmp_rd_rs2, cmp_rd_rs1_rs2}"]

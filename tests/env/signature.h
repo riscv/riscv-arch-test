@@ -343,31 +343,40 @@
 //   - vfirst.m returns -1 if no bits are set, and >=0 otherwise.
 //
 // Parameters:
-//   _SIG_PTR       - Base register for signature region
-//   _LINK_REG      - Link register used for failure jump
-//   _TEMP_REG      - Temporary scalar register
-//   _TEMP_REG2     - Secondary temporary register
-//   _VTMP          - Temporary vector register used for loading reference and other vector operations
-//   _MTMP          - Mask register containing mismatch results
-//   _MTMP2         - Temporary mask register used for building active/tail/inactive masks
-//   _VR            - Vector register under test
-//   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
-//   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
-//   _SEW           - Element width
-//   _LMUL          - LMUL setting
-//   _OFFSET        - Signature stride, calculated in vector-testgen.py (function writeSIGUPD_V)
-//   _INST_PTR      - Label of instruction under test
-//   _STR_PTR       - Label to descriptive string
+//   _SIG_PTR        - Base register for signature region
+//   _LINK_REG       - Link register used for failure jump
+//   _TEMP_REG       - Temporary scalar register
+//   _TEMP_REG2      - Secondary temporary register
+//   _VTMP           - Temporary vector register used for loading reference and other vector operations
+//   _MTMP           - Mask register containing mismatch results
+//   _MTMP2          - Temporary mask register used for building active/tail/inactive masks
+//   _VR             - Vector register under test
+//   _MASKPROD_FLAG  - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
+//   _MASKED_FLAG    - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
+//   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m, which changes effective vl of destination register
+//                     If the instruction under test is vcompress.m, the immediate should be the number of vs1 register (e.g., v4 -> 4),
+//                     and -1 if the instruction under test is not vcompress.m.
+//                     The effective vl of vd of vcompress.m is the number of 1s in vs1, with respect to the original vl setting when executed.
+//   _SEW            - Element width
+//   _LMUL           - LMUL setting
+//   _OFFSET         - Signature stride, calculated in vector-testgen.py (function writeSIGUPD_V)
+//   _INST_PTR       - Label of instruction under test
+//   _STR_PTR        - Label to descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
-    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _VS1,             \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         csrr        _TEMP_REG, vl            ;                                                                      \
         csrr        _TEMP_REG2, vtype        ;                                                                      \
+        /* Obtain effective vl if insstruction is vcompress.m */ \
+        LI(_LINK_REG, _VCOMPRESS_FLAG)       ;   /* Load whether instr is vcompress.m which changes effective vl of vd */              \
+        beqz        _LINK_REG, 0f            ;   /* If not vcompress.m, effective vl is the same as current vl, skip following */      \
+        vcpop.m     _TEMP_REG, _VS1          ;   /* Count number of active elements in vs1 to get effective vl for vcompress.m */      \
+    0:                                                                                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e##_SEW, m##_LMUL, ta, ma ;                                                      \
         /* Load reference from signature and compute mismatch mask */                                               \
@@ -409,7 +418,7 @@
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == -1) → mismatch with all 1s */     \
         j           5f                       ;   /* Unconditional skip data vec agnostic handling to tail check */  \
     4:                                                                                                              \
-        /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
+        /* Mask vector tail agnostic handling: all 1s in agnostic element is also legal */                          \
         vmand.mm    _MTMP2, _VR, _VR         ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
         vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
     5:                                                                                                              \
@@ -466,13 +475,18 @@
         addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
         .option pop
 #else
-    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+    #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _VS1,             \
+        _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
+        /* Obtain effective vl if insstruction is vcompress.m */ \
+        LI(_LINK_REG, _VCOMPRESS_FLAG)            ;   /* Load whether instr is vcompress.m which changes effective vl of vd */              \
+        beqz        _LINK_REG, 0f                 ;   /* If not vcompress.m, effective vl is the same as current vl, skip following */      \
+        nop                                       ;   /* Count number of active elements in vs1 to get effective vl for vcompress.m */      \
+    0:                                                                                                                                      \
         /* Set vl = VLMAX for full-register comparison*/                                                            \
         vsetvli     _LINK_REG, x0, e ##_SEW, m ##_LMUL, ta, ma ;                                                    \
         /* Load reference from signature and compute mismatch mask */                                               \
@@ -502,13 +516,13 @@
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
+        /* Check whether instr is a mask-producing instruction */                                                   \
+        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
+        beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Extract and check vta policy */                                                                          \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
-        /* Check whether instr is a mask-producing instruction */                                                   \
-        LI(_LINK_REG, _MASKPROD_FLAG)        ;   /* Load whether instr is a mask-producing instruction */           \
-        beqz        _LINK_REG, 4f            ;   /* If not mask-producing, skip to data vector comparison */        \
         /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \

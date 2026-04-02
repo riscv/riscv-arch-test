@@ -1089,14 +1089,16 @@ def genVsedgesFP(test, sew, emul):
       return [f"0x{(val >> (eew * i)) & 0xFFFFFFFF:08x}" for i
               in range((bitwidth + (eew-1)) // eew)]
 
-  if sew == 64:
+  eew = sew * int(emul)
+
+  # Select edge values based on eew (effective element width), not sew,
+  # so widening instructions (emul=2) use the correct precision edges.
+  if eew == 64:
     vs_edges_f = fedgesD
-  elif sew == 16:
+  elif eew == 16:
     vs_edges_f = fedgesH
   else:
     vs_edges_f = fedges
-
-  eew = sew * int(emul)
   ending = "emul" + emul
 
   vectordata = ""
@@ -1960,7 +1962,8 @@ def getInstructionArguments(instruction):
 
 def writeTest(description, instruction, cp, instruction_data=None,
               sew=None, lmul=1, vl=1, vstart=0, maskval=None, vxrm=None,
-              frm=None, vxsat=None, vta=0, vma=0, suite="base"):
+              frm=None, vxsat=None, vta=0, vma=0, suite="base",
+              clear_fflags: bool = True):
     # Support old 3-arg calling convention: writeTest(desc, inst, data, ...)
     # where data (a list) was passed as cp. Detect and shift args.
     if instruction_data is None and isinstance(cp, list):
@@ -2040,7 +2043,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
     # record testcase string
     add_testcase_string(str(description), instruction)
 
-    if instruction in vfloattypes:
+    if instruction in vfloattypes and clear_fflags:
       writeLine("fsflagsi 0b00000", "# clear all fflags")
 
     # If mask value specified, load to v0 (must be before prepBaseV for types that

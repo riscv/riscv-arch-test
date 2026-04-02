@@ -1,92 +1,95 @@
 # SPDX-License-Identifier: BSD-3-Clause
-"""Shared constants and helpers for all cp_custom_vfp_flags_* scripts.
+"""Unified VFP flags test generator.
 
-This module is imported by each per-coverpoint script. It contains:
-- Instruction classification sets (NO_FLAG, DZ, OF, UF, wide-source, etc.)
-- FP trigger values per SEW
-- Test generation helpers (_gen_test, _gen_test_two_operands)
-- The gen_spacer / gen_nv / gen_nx / gen_dz / gen_of / gen_uf / gen_inactive
-  building blocks that each variant script calls selectively.
+Registers ``cp_custom_vfp_flags_<variant>`` for each variant listed in
+VARIANTS below.  The Vf.csv column ``cp_custom_vfp_flags`` holds the
+variant suffix (e.g. ``nv_nx_dz``); the framework appends it automatically.
+
+Also registers ``cp_custom_vfp_flags_inactive_not_set`` (separate CSV column).
+
+Variant suffixes and the flags they test::
+
+    nv            -> NV
+    nv_nx         -> NV, NX
+    nv_nx_dz      -> NV, NX, DZ
+    nv_nx_of      -> NV, NX, OF
+    nv_nx_of_uf   -> NV, NX, OF, UF
+    nx            -> NX
+    nv_dz         -> NV, DZ
 """
 
+from __future__ import annotations
+
+from collections.abc import Callable
+
 import vector_testgen_common as common
+from coverpoint_registry import register
 from vector_testgen_common import (
-    writeTest,
-    randomizeVectorInstructionData,
-    incrementBasetestCount,
     getBaseSuiteTestCount,
-    vsAddressCount,
+    incrementBasetestCount,
+    randomizeVectorInstructionData,
     registerCustomData,
     vfloattypes,
+    vsAddressCount,
+    writeTest,
 )
 
-# Instructions that do NOT set fflags — skip these for flag coverage
-NO_FLAG_INSTRUCTIONS = {
-    "vfmerge.vfm",      # merge — no arithmetic
-    "vfmv.v.f",         # move — no arithmetic
-    "vfmv.f.s",         # move — no arithmetic
-    "vfmv.s.f",         # move — no arithmetic
-    "vfsgnj.vv",        # sign injection — no arithmetic
+# -- Instruction classification -----------------------------------------------
+
+NO_FLAG = {
+    "vfmerge.vfm",
+    "vfmv.v.f",
+    "vfmv.f.s",
+    "vfmv.s.f",
+    "vfsgnj.vv",
     "vfsgnj.vf",
     "vfsgnjn.vv",
     "vfsgnjn.vf",
     "vfsgnjx.vv",
     "vfsgnjx.vf",
-    "vfslide1up.vf",    # slide — no arithmetic
+    "vfslide1up.vf",
     "vfslide1down.vf",
-    "vfclass.v",        # classify — no arithmetic
+    "vfclass.v",
 }
 
-# Instructions that can raise DZ (divide by zero)
-# vfrec7.v: vfrec7(0) = +Inf, raises DZ
-DZ_INSTRUCTIONS = {"vfdiv.vv", "vfdiv.vf", "vfrdiv.vf", "vfrsqrt7.v", "vfrec7.v"}
-
-# Instructions good for triggering OF (overflow via large values added together)
-OF_INSTRUCTIONS = {"vfadd.vv", "vfadd.vf", "vfmul.vv", "vfmul.vf"}
-
-# Instructions good for triggering UF (underflow via tiny value * tiny value)
-UF_INSTRUCTIONS = {"vfmul.vv", "vfmul.vf"}
-
-# Narrowing int→float: source register has 2*sew-wide INTEGER elements.
-NARROWING_INT_TO_FLOAT = {"vfncvt.f.x.w", "vfncvt.f.xu.w"}
-
-# ALL instructions whose vs2 source has 2*sew-wide elements.
-WIDE_SOURCE_INSTRUCTIONS = {
-    # Narrowing float→float
-    "vfncvt.f.f.w", "vfncvt.rod.f.f.w",
-    # Narrowing float→int
-    "vfncvt.x.f.w", "vfncvt.xu.f.w", "vfncvt.rtz.x.f.w", "vfncvt.rtz.xu.f.w",
-    # Narrowing int→float
-    "vfncvt.f.x.w", "vfncvt.f.xu.w",
-    # Widening with wide first operand (.wv/.wf)
-    "vfwadd.wv", "vfwadd.wf", "vfwsub.wv", "vfwsub.wf",
+WIDE_SRC = {
+    "vfncvt.f.f.w",
+    "vfncvt.rod.f.f.w",
+    "vfncvt.x.f.w",
+    "vfncvt.xu.f.w",
+    "vfncvt.rtz.x.f.w",
+    "vfncvt.rtz.xu.f.w",
+    "vfncvt.f.x.w",
+    "vfncvt.f.xu.w",
+    "vfwadd.wv",
+    "vfwadd.wf",
+    "vfwsub.wv",
+    "vfwsub.wf",
 }
 
-# Widening .vv/.vf where NX is structurally uncoverable.
+NARROW_I2F = {"vfncvt.f.x.w", "vfncvt.f.xu.w"}
+
 WIDENING_NX_IMPOSSIBLE = {
-    "vfwadd.vv", "vfwadd.vf", "vfwsub.vv", "vfwsub.vf",
-    "vfwmul.vv", "vfwmul.vf",
+    "vfwadd.vv",
+    "vfwadd.vf",
+    "vfwsub.vv",
+    "vfwsub.vf",
+    "vfwmul.vv",
+    "vfwmul.vf",
 }
 
-# Per-instruction NX trigger overrides.
-NX_TRIGGERS_OVERRIDE = {
-    "vfrsqrt7.v": {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},  # 3.0
-    "vfrec7.v":   {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},  # 3.0
-    "vfsqrt.v":   {16: 0x4000, 32: 0x40000000, 64: 0x4000000000000000},  # 2.0
-    "vfncvt.f.x.w":  {16: 0x00000801, 32: 0x0000000001000001},
-    "vfncvt.f.xu.w": {16: 0x00000801, 32: 0x0000000001000001},
-}
+# -- Trigger values per SEW ---------------------------------------------------
 
-# FP values that trigger each flag type per SEW
-FLAG_TRIGGERS = {
+TV: dict[int, dict[str, int]] = {
     16: {
-        "NV": 0x7D01,      # sNaN
-        "DZ": 0x0000,      # +0.0
-        "OF": 0x7BFF,      # max normal
-        "UF": 0x0080,      # very small normal
-        "NX": 0x3C01,      # 1.0 + ulp
-        "NX2": 0x3C02,     # 1.0 + 2*ulp
-        "ONE": 0x3C00,     # 1.0
+        "NV": 0x7D01,
+        "DZ": 0x0000,
+        "OF": 0x7BFF,
+        "UF": 0x0080,
+        "NX": 0x3C01,
+        "NX2": 0x3C02,
+        "ONE": 0x3C00,
+        "THREE": 0x4200,
     },
     32: {
         "NV": 0x7F800001,
@@ -96,6 +99,7 @@ FLAG_TRIGGERS = {
         "NX": 0x3F800001,
         "NX2": 0x3F800002,
         "ONE": 0x3F800000,
+        "THREE": 0x40400000,
     },
     64: {
         "NV": 0x7FF0000000000001,
@@ -105,392 +109,351 @@ FLAG_TRIGGERS = {
         "NX": 0x3FF0000000000001,
         "NX2": 0x3FF0000000000002,
         "ONE": 0x3FF0000000000000,
+        "THREE": 0x4008000000000000,
     },
 }
 
+NX_OVERRIDE: dict[str, dict[int, int]] = {
+    "vfrsqrt7.v": {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},
+    "vfrec7.v": {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000},
+    "vfsqrt.v": {16: 0x4000, 32: 0x40000000, 64: 0x4000000000000000},
+    "vfncvt.f.x.w": {16: 0x00000801, 32: 0x0000000001000001},
+    "vfncvt.f.xu.w": {16: 0x00000801, 32: 0x0000000001000001},
+}
 
-def _gen_test(test, sew, label_name, value, description, **extra_kwargs):
-    """Generate a single flag-triggering test case."""
-    esize = sew * 2 if test in WIDE_SOURCE_INSTRUCTIONS else sew
-    registerCustomData(label_name, [value], element_size=esize)
-    kwargs = {"lmul": 1, "vs2_val_pointer": label_name}
-    kwargs.update(extra_kwargs)
+# -- Per-instruction NX/DZ strategies ----------------------------------------
+# (vs2_key, vs1_key): looked up in TV[sew].  For .vf, vs1_key -> fs1_val.
+
+NX_PAIR: dict[str, tuple[str, str]] = {
+    "vfsub.vv": ("OF", "ONE"),  # max - 1 -> inexact
+    "vfsub.vf": ("OF", "ONE"),
+    "vfrsub.vf": ("ONE", "OF"),  # reversed: fs1 - vs2
+    "vfdiv.vv": ("ONE", "THREE"),  # 1 / 3 -> inexact
+    "vfdiv.vf": ("ONE", "THREE"),
+    "vfrdiv.vf": ("THREE", "ONE"),  # reversed: fs1 / vs2
+    "vfnmadd.vv": ("OF", "OF"),  # overflow -> NX
+}
+
+DZ_PAIR: dict[str, tuple[str, ...]] = {
+    "vfdiv.vv": ("ONE", "DZ"),  # vs2=1, vs1=0
+    "vfdiv.vf": ("ONE", "DZ"),  # vs2=1, fs1=0
+    "vfrdiv.vf": ("DZ",),  # vs2=0 (divisor in reversed div)
+    "vfrsqrt7.v": ("DZ",),  # rsqrt(0) -> DZ
+    "vfrec7.v": ("DZ",),  # rec(0) -> DZ
+}
+
+OF_SET = {"vfadd.vv", "vfadd.vf", "vfmul.vv", "vfmul.vf"}
+UF_SET = {"vfmul.vv", "vfmul.vf"}
+
+# -- Variant -> flag list mapping ---------------------------------------------
+
+VARIANTS: dict[str, list[str]] = {
+    "set": ["NV"],
+    "nv": ["NV"],
+    "nv_nx": ["NV", "NX"],
+    "nv_nx_dz": ["NV", "NX", "DZ"],
+    "nv_nx_of": ["NV", "NX", "OF"],
+    "nv_nx_of_uf": ["NV", "NX", "OF", "UF"],
+    "nx": ["NX"],
+    "nv_dz": ["NV", "DZ"],
+}
+
+# -- Low-level test helpers ---------------------------------------------------
+
+
+def _gen1(test: str, sew: int, label: str, val: int, desc: str, **kw: int) -> None:
+    """Single-operand test (unary or .vf with fs1_val in kw)."""
+    esize = sew * 2 if test in WIDE_SRC else sew
+    registerCustomData(label, [val], element_size=esize)
     data = randomizeVectorInstructionData(
-        test, sew, getBaseSuiteTestCount(), **kwargs,
+        test,
+        sew,
+        getBaseSuiteTestCount(),
+        lmul=1,
+        vs2_val_pointer=label,
+        **kw,
     )
-    writeTest(description, test, data, sew=sew, lmul=1, vl=1)
+    writeTest(desc, test, data, sew=sew, lmul=1, vl=1)
     incrementBasetestCount()
     vsAddressCount()
 
 
-def _gen_test_two_operands(test, sew, label1, val1, label2, val2, description):
-    """Generate test with both vs2 and vs1 (or vs2 and rs1 for .vf) set."""
-    registerCustomData(label1, [val1], element_size=sew)
-    registerCustomData(label2, [val2], element_size=sew)
-    if test.endswith(".vv") or test.endswith(".vs"):
+def _gen2(test: str, sew: int, l1: str, v1: int, l2: str, v2: int, desc: str) -> None:
+    """Two-operand test (.vv / .vs)."""
+    registerCustomData(l1, [v1], element_size=sew)
+    registerCustomData(l2, [v2], element_size=sew)
+    if test.endswith((".vv", ".vs")):
         data = randomizeVectorInstructionData(
-            test, sew, getBaseSuiteTestCount(),
-            lmul=1, vs2_val_pointer=label1, vs1_val_pointer=label2,
-            additional_no_overlap=[['vs2', 'vs1']],
+            test,
+            sew,
+            getBaseSuiteTestCount(),
+            lmul=1,
+            vs2_val_pointer=l1,
+            vs1_val_pointer=l2,
+            additional_no_overlap=[["vs2", "vs1"]],
         )
     else:
         data = randomizeVectorInstructionData(
-            test, sew, getBaseSuiteTestCount(),
-            lmul=1, vs2_val_pointer=label1,
+            test,
+            sew,
+            getBaseSuiteTestCount(),
+            lmul=1,
+            vs2_val_pointer=l1,
         )
-    writeTest(description, test, data, sew=sew, lmul=1, vl=1)
+    writeTest(desc, test, data, sew=sew, lmul=1, vl=1)
     incrementBasetestCount()
     vsAddressCount()
 
 
-def should_skip(test, sew):
-    """Return True if this instruction/sew combo should be skipped for flags."""
+def _emit(test: str, sew: int, vs2: int, vs1: int | None, desc: str, vs2_lbl: str, vs1_lbl: str = "") -> None:
+    """Emit one test, auto-dispatching on instruction suffix."""
+    if test.endswith((".vv", ".vs")):
+        _gen2(test, sew, vs2_lbl, vs2, vs1_lbl, vs1 if vs1 is not None else vs2, desc)
+    elif test.endswith((".vf", ".wf")):
+        kw: dict[str, int] = {"fs1_val": vs1} if vs1 is not None else {}
+        _gen1(test, sew, vs2_lbl, vs2, desc, **kw)
+    else:
+        _gen1(test, sew, vs2_lbl, vs2, desc)
+
+
+def _pair(test: str, sew: int, vs2: int, vs1: int | None, flag: str, detail: str) -> None:
+    """Emit two tests for 0->1 and 1->1 flag transitions."""
+    base = f"custom_flag_{flag.lower()}"
+    for i in range(2):
+        sfx = "" if i == 0 else "1"
+        _emit(
+            test,
+            sew,
+            vs2,
+            vs1,
+            f"cp_custom_vfp_flags ({flag}{sfx} via {detail}, {test})",
+            f"{base}_sew{sew}",
+            f"{base}2_sew{sew}",
+        )
+
+
+# -- Skip logic ---------------------------------------------------------------
+
+
+def _should_skip(test: str, sew: int) -> bool:
     if sew > common.flen:
         return True
     if test not in vfloattypes:
         return True
-    if test in NO_FLAG_INSTRUCTIONS:
+    if test in NO_FLAG:
         return True
-    if not FLAG_TRIGGERS.get(sew, {}):
-        return True
-    return False
+    return sew not in TV
 
 
-def gen_spacer(test, sew):
-    """Generate a clean spacer test (fflags=0) so first real flag gets 0→1."""
-    triggers = FLAG_TRIGGERS[sew]
-    if test in WIDE_SOURCE_INSTRUCTIONS:
-        wide_sew = sew * 2
-        wide_triggers = FLAG_TRIGGERS.get(wide_sew, {})
-        if test in NARROWING_INT_TO_FLOAT:
-            spacer_one = 1
-        else:
-            spacer_one = wide_triggers.get("ONE", triggers["ONE"])
-        spacer_label = f"custom_flag_wide_one_sew{sew}"
+# -- Per-flag generators -------------------------------------------------------
+
+
+def _gen_spacer(test: str, sew: int) -> None:
+    """Clean spacer (fflags=0) so first flag test gets 0->1 transition."""
+    t = TV[sew]
+    if test in WIDE_SRC:
+        one = 1 if test in NARROW_I2F else TV.get(sew * 2, {}).get("ONE", t["ONE"])
+        lbl = f"custom_flag_wide_one_sew{sew}"
     else:
-        spacer_one = triggers["ONE"]
-        spacer_label = f"custom_flag_one_sew{sew}"
-    spacer_label2 = f"custom_flag_spacer_one2_sew{sew}"
-    if test.endswith(".vv") or test.endswith(".vs"):
-        _gen_test_two_operands(test, sew,
-                               spacer_label, spacer_one,
-                               spacer_label2, spacer_one,
-                               f"cp_custom_vfp_flags_set (clean spacer, {test})")
-    elif test.endswith(".vf") or test.endswith(".wf"):
-        _gen_test(test, sew,
-                  spacer_label, spacer_one,
-                  f"cp_custom_vfp_flags_set (clean spacer, {test})",
-                  fs1_val=spacer_one)
-    else:
-        _gen_test(test, sew,
-                  spacer_label, spacer_one,
-                  f"cp_custom_vfp_flags_set (clean spacer, {test})")
+        one = t["ONE"]
+        lbl = f"custom_flag_one_sew{sew}"
+    _emit(test, sew, one, one, f"cp_custom_vfp_flags (clean spacer, {test})", lbl, f"custom_flag_spacer_one2_sew{sew}")
 
 
-def gen_nv(test, sew):
-    """Generate NV (Invalid) transition bin tests: spacer→NV (0→1) and NV→NV (1→1)."""
-    triggers = FLAG_TRIGGERS[sew]
-    if "NV" not in triggers:
+def _gen_nv(test: str, sew: int) -> None:
+    """NV (Invalid Operation) via sNaN input."""
+    t = TV[sew]
+    nv = TV.get(sew * 2, {}).get("NV", t["NV"]) if test in WIDE_SRC and test not in NARROW_I2F else t["NV"]
+    _pair(test, sew, nv, nv, "NV", "sNaN")
+
+
+def _gen_dz(test: str, sew: int) -> None:
+    """DZ (Divide by Zero) -- only for instructions in DZ_PAIR."""
+    if test not in DZ_PAIR:
         return
-    if test in WIDE_SOURCE_INSTRUCTIONS and test not in NARROWING_INT_TO_FLOAT:
-        nv_val = FLAG_TRIGGERS.get(sew * 2, {}).get("NV", triggers["NV"])
-        nv_label = f"custom_flag_wide_nv_sew{sew}"
-        nv_label2 = f"custom_flag_wide_nv2_sew{sew}"
-    else:
-        nv_val = triggers["NV"]
-        nv_label = f"custom_flag_nv_sew{sew}"
-        nv_label2 = f"custom_flag_nv2_sew{sew}"
-    if test.endswith(".vv") or test.endswith(".vs"):
-        _gen_test_two_operands(test, sew,
-                               nv_label, nv_val, nv_label2, nv_val,
-                               f"cp_custom_vfp_flags_set (NV via sNaN, {test})")
-        _gen_test_two_operands(test, sew,
-                               nv_label, nv_val, nv_label2, nv_val,
-                               f"cp_custom_vfp_flags_set (NV1 via sNaN again, {test})")
-    elif test.endswith(".vf") or test.endswith(".wf"):
-        _gen_test(test, sew,
-                  nv_label, nv_val,
-                  f"cp_custom_vfp_flags_set (NV via sNaN, {test})",
-                  fs1_val=nv_val)
-        _gen_test(test, sew,
-                  nv_label, nv_val,
-                  f"cp_custom_vfp_flags_set (NV1 via sNaN again, {test})",
-                  fs1_val=nv_val)
-    else:
-        _gen_test(test, sew,
-                  nv_label, nv_val,
-                  f"cp_custom_vfp_flags_set (NV via sNaN, {test})")
-        _gen_test(test, sew,
-                  nv_label, nv_val,
-                  f"cp_custom_vfp_flags_set (NV1 via sNaN again, {test})")
+    t = TV[sew]
+    keys = DZ_PAIR[test]
+    vs2 = t[keys[0]]
+    vs1 = t[keys[1]] if len(keys) > 1 else None
+    _pair(test, sew, vs2, vs1, "DZ", "zero")
 
 
-def gen_nx(test, sew):
-    """Generate NX (Inexact) transition bin tests."""
-    triggers = FLAG_TRIGGERS[sew]
-    if "NX" not in triggers:
+def _gen_of(test: str, sew: int) -> None:
+    """OF (Overflow) via max + max or max * max."""
+    if test not in OF_SET:
+        return
+    of_val = TV[sew]["OF"]
+    _pair(test, sew, of_val, of_val, "OF", "max normal")
+
+
+def _gen_uf(test: str, sew: int) -> None:
+    """UF (Underflow) via tiny * tiny."""
+    if test not in UF_SET:
+        return
+    uf = TV[sew]["UF"]
+    _pair(test, sew, uf, uf, "UF", "tiny*tiny")
+
+
+def _gen_nx(test: str, sew: int) -> None:
+    """NX (Inexact) -- strategy depends on instruction."""
+    t = TV[sew]
+
+    if test in WIDENING_NX_IMPOSSIBLE:
         return
 
-    if test in NX_TRIGGERS_OVERRIDE:
-        nx_val = NX_TRIGGERS_OVERRIDE[test].get(sew, triggers["NX"])
-    elif test in WIDE_SOURCE_INSTRUCTIONS:
-        wide_triggers = FLAG_TRIGGERS.get(sew * 2, {})
-        nx_val = wide_triggers.get("NX", triggers["NX"])
-    else:
-        nx_val = triggers["NX"]
+    # -- Table-driven two-operand strategies --
+    if test in NX_PAIR:
+        k2, k1 = NX_PAIR[test]
+        _pair(test, sew, t[k2], t[k1], "NX", f"{k2.lower()}/{k1.lower()}")
+        return
 
-    three = {16: 0x4200, 32: 0x40400000, 64: 0x4008000000000000}
-    if test == "vfsub.vv":
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_of_sew{sew}", triggers["OF"],
-                              f"custom_flag_one_sew{sew}", triggers["ONE"],
-                              f"cp_custom_vfp_flags_set (NX via max-1, {test})")
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_of_sew{sew}", triggers["OF"],
-                              f"custom_flag_three_sew{sew}", three[sew],
-                              f"cp_custom_vfp_flags_set (NX1 via max-3, {test})")
-    elif test == "vfdiv.vv":
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_one_sew{sew}", triggers["ONE"],
-                              f"custom_flag_three_sew{sew}", three[sew],
-                              f"cp_custom_vfp_flags_set (NX via 1/3, {test})")
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_one_sew{sew}", triggers["ONE"],
-                              f"custom_flag_three_sew{sew}", three[sew],
-                              f"cp_custom_vfp_flags_set (NX1 via 1/3 again, {test})")
-    elif test == "vfrdiv.vf":
-        # vfrdiv.vf: vd = f[rs1] / vs2[i]. With vs2=3 and fs1=1, we get 1/3 (NX).
-        _gen_test(test, sew,
-                  f"custom_flag_three_sew{sew}", three[sew],
-                  f"cp_custom_vfp_flags_set (NX via 1/3, {test})",
-                  fs1_val=triggers["ONE"])
-        _gen_test(test, sew,
-                  f"custom_flag_three_sew{sew}", three[sew],
-                  f"cp_custom_vfp_flags_set (NX1 via 1/3 again, {test})",
-                  fs1_val=triggers["ONE"])
-    elif test == "vfdiv.vf":
-        # vfdiv.vf: vd = vs2[i] / f[rs1]. With vs2=1 and fs1=3, we get 1/3 (NX).
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (NX via 1/3, {test})",
-                  fs1_val=three[sew])
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (NX1 via 1/3 again, {test})",
-                  fs1_val=three[sew])
-    elif test == "vfsub.vf":
-        # vfsub.vf: vd = vs2[i] - f[rs1]. Use vs2=MAX, fs1=1.0 → MAX-1 is inexact → NX.
-        _gen_test(test, sew,
-                  f"custom_flag_of_sew{sew}", triggers["OF"],
-                  f"cp_custom_vfp_flags_set (NX via max-1, {test})",
-                  fs1_val=triggers["ONE"])
-        _gen_test(test, sew,
-                  f"custom_flag_of_sew{sew}", triggers["OF"],
-                  f"cp_custom_vfp_flags_set (NX1 via max-1 again, {test})",
-                  fs1_val=triggers["ONE"])
-    elif test == "vfrsub.vf":
-        # vfrsub.vf: vd = f[rs1] - vs2[i]. Use vs2=1.0, fs1=MAX → MAX-1 is inexact → NX.
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (NX via max-1, {test})",
-                  fs1_val=triggers["OF"])
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (NX1 via max-1 again, {test})",
-                  fs1_val=triggers["OF"])
-    elif test in {"vfwadd.wv", "vfwsub.wv"}:
-        wide_triggers = FLAG_TRIGGERS.get(sew * 2, {})
-        vs2_label = f"custom_flag_wide_of_sew{sew}"
-        vs1_label = f"custom_flag_one_sew{sew}"
-        registerCustomData(vs2_label, [wide_triggers.get("OF", nx_val)], element_size=sew * 2)
-        registerCustomData(vs1_label, [triggers["ONE"]], element_size=sew)
+    # -- Reductions: overflow sum causes NX --
+    if test.endswith(".vs"):
+        of_val = t["OF"]
+        _pair(test, sew, of_val, of_val, "NX", "overflow sum")
+        return
+
+    # -- Wide .wv: vs2 at sew*2, vs1 at sew --
+    if test in {"vfwadd.wv", "vfwsub.wv"}:
+        wt = TV.get(sew * 2, {})
+        vs2_lbl = f"custom_flag_wide_of_sew{sew}"
+        vs1_lbl = f"custom_flag_one_sew{sew}"
+        vs2_val = wt.get("OF", t["NX"])
+        vs1_val = t["ONE"]
+        registerCustomData(vs2_lbl, [vs2_val], element_size=sew * 2)
+        registerCustomData(vs1_lbl, [vs1_val], element_size=sew)
         for i in range(2):
+            sfx = "" if i == 0 else "1"
             data = randomizeVectorInstructionData(
-                test, sew, getBaseSuiteTestCount(),
-                lmul=1, vs2_val_pointer=vs2_label, vs1_val_pointer=vs1_label,
+                test,
+                sew,
+                getBaseSuiteTestCount(),
+                lmul=1,
+                vs2_val_pointer=vs2_lbl,
+                vs1_val_pointer=vs1_lbl,
                 additional_no_overlap=[["vs2", "vs1"]],
             )
             writeTest(
-                f"cp_custom_vfp_flags_set (NX forced {i + 1}, {test})",
-                test, data, sew=sew, lmul=1, vl=1,
+                f"cp_custom_vfp_flags (NX{sfx} forced, {test})",
+                test,
+                data,
+                sew=sew,
+                lmul=1,
+                vl=1,
             )
             incrementBasetestCount()
             vsAddressCount()
-    elif test == "vfwsub.wf":
-        wide_triggers = FLAG_TRIGGERS.get(sew * 2, {})
-        vs2_label = f"custom_flag_wide_of_sew{sew}"
-        registerCustomData(vs2_label, [wide_triggers.get("OF", nx_val)], element_size=sew * 2)
-        fs1_val = triggers["ONE"]
+        return
+
+    # -- Wide .wf: vs2 at sew*2, fs1 at sew --
+    if test in {"vfwadd.wf", "vfwsub.wf"}:
+        wt = TV.get(sew * 2, {})
+        vs2_val = wt.get("OF", t["NX"])
+        vs2_lbl = f"custom_flag_wide_of_sew{sew}"
+        registerCustomData(vs2_lbl, [vs2_val], element_size=sew * 2)
         for i in range(2):
-            _gen_test(test, sew,
-                      vs2_label, wide_triggers.get("OF", nx_val),
-                      f"cp_custom_vfp_flags_set (NX forced {i + 1}, {test})",
-                      fs1_val=fs1_val)
-    elif test == "vfnmadd.vv":
-        _gen_test_two_operands(
-            test, sew,
-            f"custom_flag_of_sew{sew}", triggers["OF"],
-            f"custom_flag_of2_sew{sew}", triggers["OF"],
-            f"cp_custom_vfp_flags_set (NX forced 1, {test})")
-        _gen_test_two_operands(
-            test, sew,
-            f"custom_flag_of_sew{sew}", triggers["OF"],
-            f"custom_flag_of2_sew{sew}", triggers["OF"],
-            f"cp_custom_vfp_flags_set (NX forced 2, {test})")
-    elif test.endswith(".vs"):
-        # Reductions: vs1[0] is accumulator, vs2 is vector. MAX+MAX → +Inf (OF+NX)
-        _gen_test_two_operands(test, sew,
-                               f"custom_flag_of_sew{sew}", triggers["OF"],
-                               f"custom_flag_of2_sew{sew}", triggers["OF"],
-                               f"cp_custom_vfp_flags_set (NX via overflow sum, {test})")
-        _gen_test_two_operands(test, sew,
-                               f"custom_flag_of_sew{sew}", triggers["OF"],
-                               f"custom_flag_of2_sew{sew}", triggers["OF"],
-                               f"cp_custom_vfp_flags_set (NX1 via overflow sum again, {test})")
+            sfx = "" if i == 0 else "1"
+            _gen1(test, sew, vs2_lbl, vs2_val, f"cp_custom_vfp_flags (NX{sfx} forced, {test})", fs1_val=t["ONE"])
+        return
+
+    # -- Default: NX trigger values with alternating NX/NX2 --
+    nx_val = _resolve_nx(test, sew)
+    if test in NARROW_I2F:
+        nx2_val = nx_val + 2
+        nx_lbl = f"custom_flag_int_nx_sew{sew}"
+        nx2_lbl = f"custom_flag_int_nx2_sew{sew}"
+    elif test in WIDE_SRC:
+        nx2_val = TV.get(sew * 2, {}).get("NX2", nx_val)
+        nx_lbl = f"custom_flag_wide_nx_sew{sew}"
+        nx2_lbl = f"custom_flag_wide_nx2_sew{sew}"
     else:
-        if test in NARROWING_INT_TO_FLOAT:
-            nx_label = f"custom_flag_int_nx_sew{sew}"
-        elif test in WIDE_SOURCE_INSTRUCTIONS:
-            nx_label = f"custom_flag_wide_nx_sew{sew}"
+        nx2_val = t.get("NX2", nx_val)
+        nx_lbl = f"custom_flag_nx_sew{sew}"
+        nx2_lbl = f"custom_flag_nx2_sew{sew}"
+
+    tries = 8 if test in WIDE_SRC else 4
+    vf_kw: dict[str, int] = {}
+    if test.endswith((".vf", ".wf")):
+        vf_kw = {"fs1_val": nx_val}
+    for i in range(tries):
+        if i % 2 == 0:
+            _gen1(test, sew, nx_lbl, nx_val, f"cp_custom_vfp_flags (NX try {i + 1}, {test})", **vf_kw)
         else:
-            nx_label = f"custom_flag_nx_sew{sew}"
-        if test in NARROWING_INT_TO_FLOAT:
-            nx2_val = nx_val + 2
-            nx2_label = f"custom_flag_int_nx2_sew{sew}"
-        elif test in WIDE_SOURCE_INSTRUCTIONS:
-            nx2_val = FLAG_TRIGGERS.get(sew * 2, {}).get("NX2", nx_val)
-            nx2_label = f"custom_flag_wide_nx2_sew{sew}"
-        else:
-            nx2_val = triggers.get("NX2", nx_val)
-            nx2_label = f"custom_flag_nx2_sew{sew}"
-        nx_tries = 8 if test in WIDE_SOURCE_INSTRUCTIONS else 4
-        vf_extra: dict[str, int] = {}
-        if test.endswith(".vf") or test.endswith(".wf"):
-            vf_extra = {"fs1_val": nx_val}
-        for i in range(nx_tries):
-            if i % 2 == 0:
-                _gen_test(test, sew,
-                          nx_label, nx_val,
-                          f"cp_custom_vfp_flags_set (NX try {i+1}, {test})",
-                          **vf_extra)
-            else:
-                _gen_test(test, sew,
-                          nx2_label, nx2_val,
-                          f"cp_custom_vfp_flags_set (NX try {i+1}, {test})",
-                          **vf_extra)
+            _gen1(test, sew, nx2_lbl, nx2_val, f"cp_custom_vfp_flags (NX try {i + 1}, {test})", **vf_kw)
 
 
-def gen_dz(test, sew):
-    """Generate DZ (Divide by Zero) transition bin tests."""
-    triggers = FLAG_TRIGGERS[sew]
-    if test not in DZ_INSTRUCTIONS or "DZ" not in triggers:
+def _resolve_nx(test: str, sew: int) -> int:
+    """Resolve the NX trigger value for the default path."""
+    t = TV[sew]
+    if test in NX_OVERRIDE:
+        return NX_OVERRIDE[test].get(sew, t["NX"])
+    if test in WIDE_SRC:
+        return TV.get(sew * 2, {}).get("NX", t["NX"])
+    return t["NX"]
+
+
+# -- Flag dispatch table -------------------------------------------------------
+
+_FLAG_GEN: dict[str, Callable[[str, int], None]] = {
+    "NV": _gen_nv,
+    "NX": _gen_nx,
+    "DZ": _gen_dz,
+    "OF": _gen_of,
+    "UF": _gen_uf,
+}
+
+
+# -- Register all variants ----------------------------------------------------
+
+
+def _make_handler(flags: list[str]) -> Callable[[str, int], None]:
+    """Create a handler that generates spacer + per-flag tests."""
+
+    def handler(test: str, sew: int) -> None:
+        if _should_skip(test, sew):
+            return
+        _gen_spacer(test, sew)
+        for flag in flags:
+            _FLAG_GEN[flag](test, sew)
+
+    return handler
+
+
+for _variant, _flags in VARIANTS.items():
+    register(f"cp_custom_vfp_flags_{_variant}")(_make_handler(_flags))
+
+
+# -- Inactive-not-set (separate CSV column, special logic) ---------------------
+
+
+@register("cp_custom_vfp_flags_inactive_not_set")
+def _make_inactive(test: str, sew: int) -> None:
+    if _should_skip(test, sew):
         return
-    if test in {"vfrsqrt7.v", "vfrec7.v"}:
-        _gen_test(test, sew,
-                  f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                  f"cp_custom_vfp_flags_set (DZ via zero, {test})")
-        _gen_test(test, sew,
-                  f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                  f"cp_custom_vfp_flags_set (DZ1 via zero again, {test})")
-    elif test == "vfdiv.vv":
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_one_sew{sew}", triggers["ONE"],
-                              f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                              f"cp_custom_vfp_flags_set (DZ via zero divisor, {test})")
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_one_sew{sew}", triggers["ONE"],
-                              f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                              f"cp_custom_vfp_flags_set (DZ1 via zero divisor again, {test})")
-    elif test == "vfrdiv.vf":
-        _gen_test(test, sew,
-                  f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                  f"cp_custom_vfp_flags_set (DZ via zero vs2, {test})")
-        _gen_test(test, sew,
-                  f"custom_flag_dz_sew{sew}", triggers["DZ"],
-                  f"cp_custom_vfp_flags_set (DZ1 via zero vs2 again, {test})")
-    elif test == "vfdiv.vf":
-        # vfdiv.vf: vd = vs2 / f[rs1], DZ when f[rs1] = 0
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (DZ via zero scalar divisor, {test})",
-                  fs1_val=triggers["DZ"])
-        _gen_test(test, sew,
-                  f"custom_flag_one_sew{sew}", triggers["ONE"],
-                  f"cp_custom_vfp_flags_set (DZ1 via zero scalar divisor again, {test})",
-                  fs1_val=triggers["DZ"])
-
-
-def gen_of(test, sew):
-    """Generate OF (Overflow) transition bin tests."""
-    triggers = FLAG_TRIGGERS[sew]
-    if test not in OF_INSTRUCTIONS or "OF" not in triggers:
-        return
-    if test.endswith(".vv"):
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_of_sew{sew}", triggers["OF"],
-                              f"custom_flag_of2_sew{sew}", triggers["OF"],
-                              f"cp_custom_vfp_flags_set (OF via max+max, {test})")
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_of_sew{sew}", triggers["OF"],
-                              f"custom_flag_of2_sew{sew}", triggers["OF"],
-                              f"cp_custom_vfp_flags_set (OF1 via max+max again, {test})")
-    else:
-        _gen_test(test, sew,
-                  f"custom_flag_of_sew{sew}", triggers["OF"],
-                  f"cp_custom_vfp_flags_set (OF via max normal, {test})",
-                  fs1_val=triggers["OF"])
-        _gen_test(test, sew,
-                  f"custom_flag_of_sew{sew}", triggers["OF"],
-                  f"cp_custom_vfp_flags_set (OF1 via max normal again, {test})",
-                  fs1_val=triggers["OF"])
-
-
-def gen_uf(test, sew):
-    """Generate UF (Underflow) transition bin tests."""
-    triggers = FLAG_TRIGGERS[sew]
-    if test not in UF_INSTRUCTIONS or "UF" not in triggers:
-        return
-    if test.endswith(".vv"):
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_uf_sew{sew}", triggers["UF"],
-                              f"custom_flag_uf2_sew{sew}", triggers["UF"],
-                              f"cp_custom_vfp_flags_set (UF via tiny*tiny, {test})")
-        _gen_test_two_operands(test, sew,
-                              f"custom_flag_uf_sew{sew}", triggers["UF"],
-                              f"custom_flag_uf2_sew{sew}", triggers["UF"],
-                              f"cp_custom_vfp_flags_set (UF1 via tiny*tiny again, {test})")
-    else:
-        _gen_test(test, sew,
-                  f"custom_flag_uf_sew{sew}", triggers["UF"],
-                  f"cp_custom_vfp_flags_set (UF via tiny, {test})",
-                  fs1_val=triggers["UF"])
-        _gen_test(test, sew,
-                  f"custom_flag_uf_sew{sew}", triggers["UF"],
-                  f"cp_custom_vfp_flags_set (UF1 via tiny again, {test})",
-                  fs1_val=triggers["UF"])
-
-
-def gen_inactive(test, sew):
-    """Generate inactive-not-set test (only for vfrsqrt7.v)."""
     if test != "vfrsqrt7.v":
         return
-    triggers = FLAG_TRIGGERS[sew]
-    # RVVI fsflagsi CSR alias bug workaround: insert spacer to clear stale fcsr
-    spacer_label = f"custom_flag_one_sew{sew}"
-    registerCustomData(spacer_label, [triggers["ONE"]], element_size=sew)
-    _gen_test(test, sew,
-              spacer_label, triggers["ONE"],
-              f"cp_custom_vfp_flags spacer (clears stale fcsr, {test})")
-
+    t = TV[sew]
+    spacer_lbl = f"custom_flag_one_sew{sew}"
+    registerCustomData(spacer_lbl, [t["ONE"]], element_size=sew)
+    _gen1(test, sew, spacer_lbl, t["ONE"], f"cp_custom_vfp_flags spacer (clears stale fcsr, {test})")
     label = f"custom_flag_zero_sew{sew}"
     registerCustomData(label, [0], element_size=sew)
-    description = "cp_custom_vfp_flags_inactive_not_set (vfrsqrt7.v vs2=0, masked)"
     data = randomizeVectorInstructionData(
-        test, sew, getBaseSuiteTestCount(),
-        lmul=1, vs2_val_pointer=label,
-        additional_no_overlap=[['vs2', 'v0'], ['vd', 'v0']],
+        test,
+        sew,
+        getBaseSuiteTestCount(),
+        lmul=1,
+        vs2_val_pointer=label,
+        additional_no_overlap=[["vs2", "v0"], ["vd", "v0"]],
     )
-    writeTest(description, test, data,
-              sew=sew, lmul=1, vl=1, maskval="zeroes")
+    writeTest(
+        "cp_custom_vfp_flags_inactive_not_set (vfrsqrt7.v vs2=0, masked)",
+        test,
+        data,
+        sew=sew,
+        lmul=1,
+        vl=1,
+        maskval="zeroes",
+    )
     incrementBasetestCount()
     vsAddressCount()

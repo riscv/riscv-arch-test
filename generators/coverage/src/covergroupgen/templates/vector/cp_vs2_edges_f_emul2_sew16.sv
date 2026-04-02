@@ -2,7 +2,7 @@
     // cp_vs2_edges_f_emul2_sew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_emul2_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
+    cp_vs2_edges_f_emul2_sew16 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
         // Standard precision coverpoints
         bins pos0                   = {32'h00000000};
         bins neg0                   = {32'h80000000};

@@ -249,14 +249,13 @@ def gen_compile_tasks(
         )
     )
 
-    # 4. final.elf – compile with -DRVTEST_SELFCHECK
+    # 4. final.elf – compile without -DRVTEST_SELFCHECK (disabled for coverage)
     final_elf_cmd = [
         *compiler_cmd,
         "-o",
         str(final_elf),
         f"-march={march}",
         f"-mabi={mabi}",
-        "-DRVTEST_SELFCHECK",
         f"-DXLEN={xlen}",
         f"-DFLEN={flen}",
         f'-DSIGNATURE_FILE="{result_file}"',

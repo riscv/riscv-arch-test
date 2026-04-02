@@ -1,21 +1,18 @@
 # Normative rule to coverpoint mappings
-# Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # The Zimop extension defines 32 MOP instructions named MOP.R.n, where n is an
-  # integer between 0 and 31, inclusive. Unless redefined by another extension,
-  # these instructions simply write 0 to x[rd].
-  - name: Zimop_mop-r_op
-    coverpoint: [""]
+  - name: mop_r_op
+    # mop.r.n writes the value zero to rd. rs1 is ignored architecturally.
+    coverpoint: ["Zimop_mop_r_cg/{cp_asm_count, cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: mop_rr_op
+    # mop.rr.n writes the value zero to rd. rs1 and rs2 are ignored architecturally.
+    coverpoint:
+      [
+        "Zimop_mop_rr_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cp_rs1_edges, cp_rs2_edges, cr_rs1_rs2_edges}",
+      ]
 
   - name: Zimop_mop-r_enc
-    coverpoint: [""]
-
-  # The Zimop extension additionally defines 8 MOP instructions named MOP.RR.n,
-  # where n is an integer between 0 and 7, inclusive. Unless redefined by another
-  # extension, these instructions simply write 0 to x[rd].
-  - name: Zimop_mop-rr_op
-    coverpoint: [""]
+    coverpoint: ["Zimop_mop_r_cg/cp_asm_count"]
 
   - name: Zimop_mop-rr_enc
-    coverpoint: [""]
+    coverpoint: ["Zimop_mop_rr_cg/cp_asm_count"]

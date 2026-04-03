@@ -72,7 +72,7 @@ def csr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpo
     Returns:
         List of assembly lines for the access test
     """
-    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         "",
@@ -113,7 +113,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
     Returns:
         List of assembly lines for the walk test
     """
-    save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         "",
@@ -199,7 +199,7 @@ def cntr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverp
     Returns:
         List of assembly lines for the access test
     """
-    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         "",

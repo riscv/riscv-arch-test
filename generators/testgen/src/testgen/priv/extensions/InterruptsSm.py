@@ -24,7 +24,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
 
     # Exclude: x0 (zero), x2 (sp), x5 (t0-used by macros),
     # x7 (t2-consumed by interrupt macros), x30 (t5-consumed by interrupt macros)
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[0, 2, 7, 30])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[2, 7, 30])
 
     lines = [
         comment_banner(
@@ -71,9 +71,7 @@ def _generate_trigger_msi_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_msi"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(
-        6, exclude_regs=[0, 2, 7, 30]
-    )
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_cleanup = test_data.int_regs.get_registers(6, exclude_regs=[2, 7, 30])
 
     lines = [
         comment_banner(
@@ -120,7 +118,7 @@ def _generate_trigger_mei_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mei"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[0, 2, 7, 30])
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[2, 7, 30])
 
     lines = [
         comment_banner(
@@ -169,7 +167,7 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+        8, exclude_regs=[2, 7, 30]
     )
 
     lines = [
@@ -248,7 +246,7 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+        8, exclude_regs=[2, 7, 30]
     )
 
     lines = [
@@ -323,7 +321,7 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     ######################################
 
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+        8, exclude_regs=[2, 7, 30]
     )
 
     lines = [
@@ -384,7 +382,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsSm_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[0])
+    r_mtime, r_mtimecmp, r_t0, r_t1, r_t2, r_t3, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(

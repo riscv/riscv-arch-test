@@ -3,33 +3,25 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 // Test cases are as follows:
 // --------------------------------------------------------------------------------------------------------------------------------
-// .if (RVMODEL_PMP_GRAIN < 10)
-// Configure level 1 PTE as NAPOT with X permission (pmp0cfg0)
+// Configure test data region as NAPOT with X permission (pmp0cfg0)
 // 1. Setup a PTE at Level 1 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
-// .endif
-//
-// Configure level 0 PTE as NAPOT with X permission (pmp0cfg0)
+//      Then, in U-Mode, execute cbo.clean, cbo.flush and cbo.inval. Expected: 3 Store access faults
 // 2. Setup a PTE at Level 0 with RWX permissions
-//      → Then, in S-Mode, the page is accessed --> required: Store access fault, Load access fault, Instruction access fault
+//      Then, in U-Mode, execute cbo.clean, cbo.flush and cbo.inval. Expected: 3 Store access faults
 //
-// .if (RVMODEL_PMP_GRAIN < 10)
-//         Total Expected Faults :: 6
-// .else
-//         Total Expected Faults :: 3
-// .endif
+// Total Expected Faults :: 6
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, Sv32, Sm]
+# REQUIRED_EXTENSIONS: [I, Sv32, Zicbom, Sm]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr
+# MARCH: rv32i_zicsr_zicbom
 # CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
-#define TEST_FILE "sv32_pmp_on_pte_Smode.S"
-#define SIGUPD_COUNT 15
+#define TEST_FILE "sv32_pmp_on_pa_zicbom_Umode.S"
+#define SIGUPD_COUNT 10
 #define TRAP_SIGUPD_COUNT 40
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
@@ -42,27 +34,20 @@ RVTEST_BEGIN
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Test RWX permissions
-.macro VERIFICATION_RWX TEST_CASE
-  addi a2, a2, 16
+.macro VERIFICATION_RWX
 
-  // Test store permission
-  \TEST_CASE\()_store:
-  sw  a2, 20(a5)
+  cbo.clean (a5)
   nop
 
-  // Test load permission
-  \TEST_CASE\()_load:
-  lw a3, 20(a5)
+  cbo.flush (a5)
   nop
 
-  // Test execute permission
-  LI(  x4, 0xACCE)            // Store a value which is to be checked in trap handler
-  \TEST_CASE\()_exec:
-  jalr ra, a5, 0
+  cbo.inval (a5)
   nop
+
 .endm
 
-.macro TEST_CASES_RUNNER LOWER_MODE, VA, level, TEST_CASE
+.macro TEST_CASES_RUNNER LOWER_MODE, VA, level
 
   .if \level == LEVEL1
     // Adjust offset of VA to point to test region
@@ -77,14 +62,10 @@ RVTEST_BEGIN
 
   RVTEST_GOTO_LOWER_MODE \LOWER_MODE
 
-  VERIFICATION_RWX \TEST_CASE
+  VERIFICATION_RWX
 
   RVTEST_GOTO_MMODE
 
-  // Signature Update
-  RVTEST_SIGUPD(x2, x5, x4, a2, \TEST_CASE\()_store, \TEST_CASE\()_store_str)
-  RVTEST_SIGUPD(x2, x5, x4, a3, \TEST_CASE\()_load, \TEST_CASE\()_load_str)
-  RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_exec, \TEST_CASE\()_exec_str)
 .endm
 
 // PMP Macros
@@ -93,30 +74,45 @@ RVTEST_BEGIN
 
 
 main:
-  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
-//                                                    Setup pmpaddr registers
+//                                                    Setup pmp registers
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  li t2, 0                  // Set PMP permission for all memory in pmp2cfg0 (TOR)
+  li t2, 0                                        // Set PMP permission for all memory in pmp2cfg0 (TOR)
   csrw pmpaddr1, t2
   li t2, -1
   csrw pmpaddr2, t2
+
+  LA (t2, rvtest_data_1)                          // Configure test region as NAPOT
+  srl t2, t2, PMP_SHIFT
+
+  .if (RVMODEL_PMP_GRAIN <= 3)                    // G=3 -> 32 Bytes (Minimum size of test region)
+      LI (t1, 0x3)                                // Range = 2^(2+3) = 32 Bytes
+  .else
+      LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)      // Range = 2^(G+3) Bytes
+  .endif
+
+  or t2, t2, t1
+  CSRW(pmpaddr0, t2)
+
+  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)
+  pmpcfg0_x:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, pmpcfg0_x, pmpcfg0_x_str)
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Virtual Address of Test section (rvtest_data_1)
-  .set va_data,               0x00000000
+  .set va_data,               0x90407000
 
   // Virtual Address for code region
-  .set va_rvtest_code_begin,  0x90000000
+  .set va_rvtest_code_begin,  0x30000000
 
 
   // PTE setup for Code Region
-  SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL1)
   sfence.vma
 
   // Save area setup for code region
@@ -130,63 +126,37 @@ main:
   SATP_SETUP_SV32                                                        // Set SATP for virtualization
   sfence.vma                                                             // Flush TLB
 
-  // This test case for root page table is skipped if G >= 10, because with PMP granularity ≥ 4KB,
-  // the entire root page table will lose its read/write permissions, preventing entry into S-Mode.
-  .if (RVMODEL_PMP_GRAIN < 10)
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-//                                 Configure level 1 PTE as NAPOT region with X permission
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
+  LI(t0, MENVCFG_CBCFE | MENVCFG_CBIE)
+  CSRS(menvcfg, t0)                                                      // Allow execution of Zicbom instructions in S-Mode
+  CSRS(senvcfg, t0)                                                      // Further delegate the permission to U-Mode
 
-  LA (t2, rvtest_Sroot_pg_tbl)
-  srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
-  or t2, t2, t1
-  CSRW(pmpaddr0, t2)
-
-  LI (t2, PMP_GLOBAL_RWX | PMP0CFG_X)
-  write_pmpcfg0:
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, t2, write_pmpcfg0, write_pmpcfg0_str)
-
+//---------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 1
 //---------------------------------------------------------------------------------------------------------------------------------
-//                    2MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
+//                    4MB PAGE    Region 1 under test at level 1 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 1: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  // Test case 1: Test in U-Mode | RWX bit set | expected = 3 Store access faults
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL1, test1
+  TEST_CASES_RUNNER Umode, va_data, LEVEL1
 
 
-  .endif
 //---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-//                                 Configure level 0 PTE as NAPOT region with X permission
-//---------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------
-
-  LA (t2, rvtest_slvl0_pg_tbl)
-  srl t2, t2, PMP_SHIFT
-  LI (t1, ((1<<RVMODEL_PMP_GRAIN)-1)>>1)    // Minimum range is 8 Bytes (NAPOT). Increase range according to G
-  or t2, t2, t1
-  CSRW(pmpaddr0, t2)
-
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                                    TESTS AT LEVEL 0
 //---------------------------------------------------------------------------------------------------------------------------------
 //                    4KB PAGE    Region 1 under test at level 0 -- RWX permissions given to the region
 //---------------------------------------------------------------------------------------------------------------------------------
 
-  // Test case 2: Test in S-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
+  // Test case 2: Test in U-Mode | RWX bit set | expected = 3 Store access faults
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  TEST_CASES_RUNNER Smode, va_data, LEVEL0, test2
+  TEST_CASES_RUNNER Umode, va_data, LEVEL0
 
 
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -198,6 +168,7 @@ RVTEST_DATA_BEGIN
 //---------------------------------------------------------------------------------------------------------------------------------
 // Physical Address region under testing for LEVEL 0 and 1
 .align 12
+.align (RVMODEL_PMP_GRAIN+2)
 rvtest_data_1:
   nop
   addi a4, a2, 4
@@ -208,22 +179,15 @@ rvtest_data_1:
   nop
   jr ra
 
+.align (RVMODEL_PMP_GRAIN+2)
 //---------------------------------------------------------------------------------------------------------------------------------
 
 // Page Table
 .align 12
-.align (RVMODEL_PMP_GRAIN+2)
 rvtest_slvl0_pg_tbl:
     .skip(4096)
-.align (RVMODEL_PMP_GRAIN+2)
 
-write_pmpcfg0_str:   .string "\"Mismatch in pmpcfg0!\""
-test1_store_str:     .string "\"Mismatch during sw in Test Case 1!\""
-test1_load_str:      .string "\"Mismatch during lw in Test Case 1!\""
-test1_exec_str:      .string "\"Mismatch during jalr in Test Case 1!\""
-test2_store_str:     .string "\"Mismatch during sw in Test Case 2!\""
-test2_load_str:      .string "\"Mismatch during lw in Test Case 2!\""
-test2_exec_str:      .string "\"Mismatch during jalr in Test Case 2!\""
+pmpcfg0_x_str:    .string "\"Mismatch in pmpcfg0 while setting X permission!\""
 
 RVTEST_DATA_END
 RVTEST_SIG_SETUP

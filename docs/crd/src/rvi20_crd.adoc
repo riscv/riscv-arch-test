@@ -83,7 +83,7 @@ include::crd_common.adoc[]
 
 === Related Specifications
 
-* https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html[Unprivileged ISA Specification] - Latest version
+* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version from docs.riscv.org
 * https://github.com/riscv/riscv-profiles/blob/main/src/profiles.adoc[RISC-V Profiles Document] - Will be moving to ISA Manual repository soon
 
 <<<

@@ -18,7 +18,7 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
     """Generate cbie trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbie"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -71,7 +71,7 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
     """Generate cbcfe trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbcfe"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -130,7 +130,7 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
     """Generate cbze trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbze"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -181,7 +181,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate cbo access fault trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_access_fault"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -257,7 +257,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate cbo misaligned trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_misaligned"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(

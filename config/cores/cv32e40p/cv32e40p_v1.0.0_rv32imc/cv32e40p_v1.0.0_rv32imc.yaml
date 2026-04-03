@@ -152,48 +152,12 @@ params:
       false, # 24..31 (unimplemented)
     ]
   NUM_PMP_ENTRIES: 0
-  PMP_GRANULARITY: 2
   MCOUNTENABLE_EN:
     [
       true,
       true,
       true,
       true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ]
-  SCOUNTENABLE_EN: # Needed until https://github.com/riscv/riscv-unified-db/pull/1773 is merged
-    [
-      false,
-      false,
-      false,
-      false,
       false,
       false,
       false,

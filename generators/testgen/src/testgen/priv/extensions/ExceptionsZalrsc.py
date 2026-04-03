@@ -255,19 +255,6 @@ def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZalrsc coverpoints"""
     lines = []
 
-    lines.extend(
-        [
-            "# Initialize scratch memory with test data",
-            "LA(x10, scratch)",
-            "LI(x11, 0xDEADBEEF)",
-            "sw x11, 0(x10)",
-            "sw x11, 4(x10)",
-            "sw x11, 8(x10)",
-            "sw x11, 12(x10)",
-            "",
-        ]
-    )
-
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))
     lines.extend(_generate_load_misaligned_priority_tests(test_data))

@@ -3,6 +3,8 @@
 [[parameter_defs]]
 == Parameter Definitions
 
+This appendix lists all parameters defined by extensions used in this CRD whether they are IN-SCOPE or OUT-OF-SCOPE.
+
 Parameters are hardware options supported by RISC-V standards.
 Many parameters are not named in RISC-V standards but a golden list of parameters
 is maintained separately by RISC-V International and this section uses those names.

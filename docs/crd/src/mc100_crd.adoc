@@ -119,15 +119,11 @@ microcontrollers and are supported by the certification tests.
 |===
 
 <<<
-== Parameter Values
-
-This section lists the parameters that are IN-SCOPE and OUT-OF-SCOPE for the MC100 certificate.
-
-Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more information about the parameters listed in this section or click on the parameter names in the table below to jump to their definitions.
+== IN-SCOPE Parameter Values
 
 include::in_scope_param_intro.adoc[]
 
-=== Atomic Chapter IN-SCOPE Parameters
+=== Atomic Chapter Parameters
 
 [%autowidth]
 |===
@@ -181,78 +177,90 @@ include::in_scope_param_intro.adoc[]
 |===
 | Parameter | Allowed Value(s) | Impact on Certificate Scope
 
-include::../generated/param-appendix/machine/params/CRITICAL_ERROR.adoc[]
-include::../generated/param-appendix/machine/params/MARCHID.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_RST_ALIAS_OK.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_RST_VAL.adoc[]
-include::../generated/param-appendix/machine/params/MCONFIGPTR_VAL.adoc[]
-include::../generated/param-appendix/machine/params/MENVCFG_FIOM_RDONLY0_OK.adoc[]
-include::../generated/param-appendix/machine/params/MHARTID.adoc[]
-include::../generated/param-appendix/machine/params/MIPMPID.adoc[]
-include::../generated/param-appendix/machine/params/MSIP_UPDATE_MAX_TIME.adoc[]
-include::../generated/param-appendix/machine/params/MTIME_TICK_PERIOD.adoc[]
-include::../generated/param-appendix/machine/params/MTVAL_PER_EXC_BEHAVIOR.adoc[]
-include::../generated/param-appendix/machine/params/MTVEC_RDONLY.adoc[]
-include::../generated/param-appendix/machine/params/MVENDOR_ID_BANK.adoc[]
-include::../generated/param-appendix/machine/params/MVENDOR_ID_OFFSET.adoc[]
-include::../generated/param-appendix/machine/params/MXLEN.adoc[]
-include::../generated/param-appendix/machine/params/PMP_A_L_RST.adoc[]
-include::../generated/param-appendix/machine/params/PMP_ENTRY_COUNT.adoc[]
-include::../generated/param-appendix/machine/params/PMP_GRANULARITY.adoc[]
-include::../generated/param-appendix/machine/params/RST_ADDR.adoc[]
-include::../generated/param-appendix/machine/params/WFI_RESUME_REASON.adoc[]
-
-|===
-
-XXX
-| <<param:HPM_READ_BEHAVIOR,HPM_READ_BEHAVIOR>>
+| <<param:CRITICAL_ERROR,CRITICAL_ERROR>>
 | Any
-| Only counters with value of AlwaysValue or AlwaysIllegalInstExc are IN-SCOPE.
+| Only IN-SCOPE if parameter value is not "Other"
 
-
-| <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
+| <<param:MARCH_ID,MARCH_ID>>
 | Any
-| Misaligned load/store instructions are only IN-SCOPE if this parameter is true
-and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
+|
 
-| <<param:TIME_CSR_HW_SUPPORT,TIME_CSR_HW_SUPPORT>>
+| <<param:MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI,MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI>>
 | Any
-| Reading time-related CSRs is only IN-SCOPE if this parameter is true
+| Only IN-SCOPE if parameter value is not "Other"
 
-|===
+| <<param:MCAUSE_RST_ALIAS_OK,MCAUSE_RST_ALIAS_OK>>
+| Any
+| Only IN-SCOPE if parameter value is not "Other"
 
-include::out_of_scope_param_intro.adoc[]
+| <<param:MCAUSE_RST_VAL,MCAUSE_RST_VAL>>
+| Any
+|
 
-.OUT-OF-SCOPE Parameters
-include::param_table_header.adoc[]
-include::../generated/param-appendix/machine/params/MCYCLE_SHARED.adoc[]
-include::../generated/param-appendix/machine/params/MEPC_INV_ADDR_CONV.adoc[]
-include::../generated/param-appendix/machine/params/MRET_CLR_LR_RESV.adoc[]
-include::../generated/param-appendix/machine/params/MSECCFG_MML_MMWP_RLB_RST.adoc[]
-include::../generated/param-appendix/machine/params/MSECCFG_USEED_SSEED_RST.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_FS_IMPRECISE.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_FS_NO_CHANGE_DIRTY.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_SBE_ROCOPY.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_TW_TIME_LIMIT.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_TW_ALWAYS_ILLEGAL.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_UBE_ROCOPY.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_VS_NO_CHANGE_DIRTY.adoc[]
-include::../generated/param-appendix/machine/params/MSTATUS_VS_SW_DIRTY_UPDATE.adoc[]
-include::../generated/param-appendix/machine/params/MTVAL_INV_ADDR_CONV.adoc[]
-include::../generated/param-appendix/machine/params/NMI_ADDR.adoc[]
-include::../generated/param-appendix/machine/params/NMI_MCAUSE_VAL.adoc[]
-include::../generated/param-appendix/machine/params/PMA_CACHE_MM_ALL_ATOMICS.adoc[]
-include::../generated/param-appendix/machine/params/PMA_IDP_IMPLICIT_SZ.adoc[]
-include::../generated/param-appendix/machine/params/PMA_MAG_EXC.adoc[]
-include::../generated/param-appendix/machine/params/PMA_MAG_OP_LDST.adoc[]
-include::../generated/param-appendix/machine/params/PMA_MM_IFETCH.adoc[]
-include::../generated/param-appendix/machine/params/PMA_MO_DYN.adoc[]
-include::../generated/param-appendix/machine/params/SRET_CLR_LR_RESV.adoc[]
-include::../generated/param-appendix/machine/params/SXLEN.adoc[]
-include::../generated/param-appendix/machine/params/UXLEN.adoc[]
-include::../generated/param-appendix/machine/params/WFI_OPT_U_MODE.adoc[]
-include::../generated/param-appendix/machine/params/XLEN_REDUCTION_HINT_OP.adoc[]
+| <<param:MCONFIGPTR_VAL,MCONFIGPTR_VAL>>
+| Any
+|
+
+| <<param:MENVCFG_FIOM_RDONLY0_OK,MENVCFG_FIOM_RDONLY0_OK>>
+| Any
+|
+
+| <<param:MHARTID,MHARTID>>
+| Any
+|
+
+| <<param:MIPMPID,MIPMPID>>
+| Any
+|
+
+| <<param:MSIP_UPDATE_MAX_TIME,MSIP_UPDATE_MAX_TIME>>
+| Any
+|
+
+| <<param:MTIME_TICK_PERIOD,MTIME_TICK_PERIOD>>
+| Any
+|
+
+| <<param:MTVAL_PER_EXC_BEHAVIOR,MTVAL_PER_EXC_BEHAVIOR>>
+| Any
+| Only IN-SCOPE if parameter value is not "Other"
+
+| <<param:MTVEC_RDONLY,MTVEC_RDONLY>>
+| Any
+|
+
+| <<param:MVENDOR_ID_BANK,MVENDOR_ID_BANK>>
+| Any
+|
+
+| <<param:MVENDOR_ID_OFFSET,MVENDOR_ID_OFFSET>>
+| Any
+|
+
+| <<param:MXLEN,MXLEN>>
+| Any
+|
+
+| <<param:PMP_A_L_RST,PMP_A_L_RST>>
+| Any
+|
+
+| <<param:PMP_ENTRY_COUNT,PMP_ENTRY_COUNT>>
+| Any
+|
+
+| <<param:PMP_GRANULARITY,PMP_GRANULARITY>>
+| Any
+|
+
+| <<param:RST_ADDR,RST_ADDR>>
+| Any
+|
+
+| <<param:WFI_RESUME_REASON,WFI_RESUME_REASON>>
+| Any
+|
+
 |===
 
 == CSR WARL Fields
@@ -278,44 +286,13 @@ include::ext_defs/Zihpm.adoc[]
 include::param_appendix.adoc[]
 
 === Atomics Chapter Parameters
-include::param_table_header.adoc[]
-include::../generated/param-appendix/a-st-ext/params/LRSC_ALIGNMENT.adoc[]
-include::../generated/param-appendix/a-st-ext/params/LRSC_RESERVATION_STRATEGY.adoc[]
-|===
+include::../generated/param-appendix/a-st-ext/all_params.adoc[]
 
 === Counters Chapter Parameters
-include::param_table_header.adoc[]
-include::../generated/param-appendix/counters/params/HPM_READ_BEHAVIOR.adoc[]
-include::../generated/param-appendix/counters/params/TIME_CSR_HW_SUPPORT.adoc[]
-|===
+include::../generated/param-appendix/counters/all_params.adoc[]
 
 === RV32 Chapter Parameters
-include::param_table_header.adoc[]
-include::../generated/param-appendix/rv32/params/MISALIGNED_LDST_EXC_TYPE.adoc[]
-include::../generated/param-appendix/rv32/params/MISALIGNED_LDST_HW_SUPPORT.adoc[]
-|===
+include::../generated/param-appendix/rv32/all_params.adoc[]
 
 === Machine Mode Chapter Parameters
-include::param_table_header.adoc[]
-include::../generated/param-appendix/machine/params/CRITICAL_ERROR.adoc[]
-include::../generated/param-appendix/machine/params/MARCHID.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_RST_ALIAS_OK.adoc[]
-include::../generated/param-appendix/machine/params/MCAUSE_RST_VAL.adoc[]
-include::../generated/param-appendix/machine/params/MCONFIGPTR_VAL.adoc[]
-include::../generated/param-appendix/machine/params/MENVCFG_FIOM_RDONLY0_OK.adoc[]
-include::../generated/param-appendix/machine/params/MHARTID.adoc[]
-include::../generated/param-appendix/machine/params/MIPMPID.adoc[]
-include::../generated/param-appendix/machine/params/MSIP_UPDATE_MAX_TIME.adoc[]
-include::../generated/param-appendix/machine/params/MTIME_TICK_PERIOD.adoc[]
-include::../generated/param-appendix/machine/params/MTVAL_PER_EXC_BEHAVIOR.adoc[]
-include::../generated/param-appendix/machine/params/MTVEC_RDONLY.adoc[]
-include::../generated/param-appendix/machine/params/MVENDOR_ID_BANK.adoc[]
-include::../generated/param-appendix/machine/params/MVENDOR_ID_OFFSET.adoc[]
-include::../generated/param-appendix/machine/params/MXLEN.adoc[]
-include::../generated/param-appendix/machine/params/PMP_A_L_RST.adoc[]
-include::../generated/param-appendix/machine/params/PMP_ENTRY_COUNT.adoc[]
-include::../generated/param-appendix/machine/params/PMP_GRANULARITY.adoc[]
-include::../generated/param-appendix/machine/params/RST_ADDR.adoc[]
-include::../generated/param-appendix/machine/params/WFI_RESUME_REASON.adoc[]
-|===
+include::../generated/param-appendix/machine/all_params.adoc[]

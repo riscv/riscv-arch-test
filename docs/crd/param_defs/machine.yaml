@@ -257,7 +257,8 @@ parameter_definitions:
   - name: MCAUSE_RST_VAL
     long-name: MCAUSE_RST_VAL-TBD
     impl-def: MCAUSE_RST_VAL
-    type: boolean
+    type: uint
+    width: MXLEN
   - name: PMP_A_L_RST
     long-name: PMP_A_L_RST-TBD
     impl-def: PMP_A_L_RST
@@ -305,7 +306,18 @@ parameter_definitions:
   - name: CRITICAL_ERROR
     long-name: CRITICAL_ERROR-TBD
     impl-def: CRITICAL_ERROR
-    type: boolean
+    type: [ResetHart, ResetPlatform, Other]
+    description: |
+      When a critical error is detected, what does the implementation do?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! ResetHart ! The implementation resets the current hart
+      ! ResetPlatform ! The implementation resets all the harts in the entire platform
+      ! Other ! The implementation takes some other action
+      !===
   - name: NMI_MCAUSE_VAL
     long-name: NMI_MCAUSE_VAL-TBD
     impl-def: NMI_MCAUSE_VAL

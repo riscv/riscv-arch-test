@@ -1,17 +1,9 @@
 
 === Sv* Virtual Memory
 
-==== Svbare Virtual Memory Off
-
-[[t-Svbare-coverpoints]]
-.Svbare Coverpoints
-//,===
-//include::{testplansdir}/Svbare
-//,===
-
 ==== Sv
 
-*** config file determines whether to run SV32/39/48/57
+The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
 [[t-Sv-coverpoints]]
 .Sv Coverpoints
@@ -25,6 +17,16 @@ include::norm/Sv_norm_rules.adoc[]
 
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
+
+==== Svbare Virtual Memory Off
+
+[[t-Svbare-coverpoints]]
+.Svbare Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1237201823#gid=1237201823[Google Sheet Testplan]
+,===
+
+include::norm/Svbare_norm_rules.adoc[]
 
 
 ==== SvPMP VirtMem + PMP

@@ -81,6 +81,8 @@ https://docs.google.com/spreadsheets/d/11VGlIA__UYr7H47ZNqXtyYnGH5Fb41E8P9h53rN7
 
 ,===
 
+*** Make sure ExceptionsVls includes misaligned vector load/store coverpoints.  Not yet in the testplan.
+
 ==== ExceptionsZalrsc Atomic LR/SC Exceptions
 
 [[t-ExceptionsZalrsc-coverpoints]]

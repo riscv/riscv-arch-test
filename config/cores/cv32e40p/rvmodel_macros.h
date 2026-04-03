@@ -5,11 +5,7 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-#define RVMODEL_DATA_SECTION \
-        .pushsection .tohost,"aw",@progbits;                \
-        .align 8; .global tohost; tohost: .dword 0;         \
-        .align 8; .global fromhost; fromhost: .dword 0;     \
-        .popsection;
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 /*

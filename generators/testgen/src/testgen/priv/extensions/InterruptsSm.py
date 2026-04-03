@@ -22,7 +22,7 @@ def _generate_trigger_mti_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_trigger_mti"
     ######################################
 
-    # Exclude: x0 (zero), x2 (sp), x5 (t0-used by macros),
+    # Exclude: x2 (sp), x5 (t0-used by macros),
     # x7 (t2-consumed by interrupt macros), x30 (t5-consumed by interrupt macros)
     r1, r_mtime, r_mtimecmp, r_temp, r_temp2 = test_data.int_regs.get_registers(5, exclude_regs=[2, 7, 30])
 

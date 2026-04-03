@@ -91,7 +91,7 @@ GEM
     tty-screen (0.8.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    udb (0.1.5)
+    udb (0.1.8)
       activesupport
       asciidoctor
       awesome_print
@@ -131,7 +131,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  udb (~> 0.1.5)
+  udb (~> 0.1.8)
 
 CHECKSUMS
   activesupport (8.1.3) sha256=21a5e0dfbd4c3ddd9e1317ec6a4d782fa226e7867dc70b0743acda81a1dca20e
@@ -186,7 +186,7 @@ CHECKSUMS
   tty-progressbar (0.18.3) sha256=6cbb4260e55e74a9180d502143eb6a467d2c8e51bf5f3c9509fb5cacc3d4a5f6
   tty-screen (0.8.2) sha256=c090652115beae764336c28802d633f204fb84da93c6a968aa5d8e319e819b50
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
-  udb (0.1.5) sha256=c9d5dbff3477d08890fb3e455f53decca42566aef632811e1b0b4ce85a297b8b
+  udb (0.1.8) sha256=852e539465801161e421f5527fe07306a7f7448d8e38d8b8952be65dccbb488b
   udb_helpers (0.1.2) sha256=8e56cd3c9612a098bcf942495689eb60106d702df31d1652ff88eccce68e76b4
   unicode-display_width (2.6.0) sha256=12279874bba6d5e4d2728cef814b19197dbb10d7a7837a869bab65da943b7f5a
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6

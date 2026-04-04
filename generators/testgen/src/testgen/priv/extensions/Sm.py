@@ -15,6 +15,28 @@ from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
 
+def gen_misa_dependencies(
+    misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
+) -> str:
+    """Generate tests for misa dependencies."""
+    r1, rmask, rfail = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    lines = [
+        f"# Write {comment}. Error if this reads back the same.",
+        f"LI(x{rfail}, {misa}) # Illegal value to write to misa and read back",
+        f"LI(x{rmask}, {mask}) # bits to check",
+        test_data.add_testcase(cpbin, coverpoint, covergroup),
+        f"csrw misa, x{r1} # attempt to write misa",
+        f"csrr x{r1}, misa # read back",
+        f"and x{r1}, x{r1}, x{rmask} # Mask off don't care bits",
+        f"xor x{r1}, x{r1}, x{rfail} # Zero result means failing condition observed",
+        f"seqz x{r1}, x{r1}  # 1 indicates illegal outcome.  Ref model should always produce 0",
+        write_sigupd(r1, test_data),
+        "",
+    ]
+    test_data.int_regs.return_registers([r1, rmask, rfail])
+    return "\n".join(lines)
+
+
 def _generate_mcause_tests(test_data: TestData) -> list[str]:
     """Generate tests for mcause CSR."""
     covergroup = "Sm_mcause_cg"
@@ -489,6 +511,70 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([rmsb, rmsb2, rboth, rr])
+
+    ######################################
+    coverpoint = "cp_misa_dependencies"
+    ######################################
+
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Attempt to write incompatible values to misa and check illegal combinations do not occur",
+        ),
+    )
+
+    lines.extend(
+        [
+            #            gen_misa_dependencies("0b00000000000000000100010000", "0b00000000000000000100010000",
+            #                                  "i1e1", "I = 1, E = 1",
+            #                                  coverpoint, covergroup, test_data),
+            gen_misa_dependencies(
+                "0b00000000000000000000001000",
+                "0b00000000000000000000101000",
+                "f0d1",
+                "F=0, D = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            gen_misa_dependencies(
+                "0b00000000010000000000100000",
+                "0b00000000010000000000101000",
+                "f1d0q1",
+                "F=1, D = 0, Q = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            gen_misa_dependencies(
+                "0b00000001000000000000000000",
+                "0b00000101000000000000000000",
+                "s1u0",
+                "S = 1, U = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            gen_misa_dependencies(
+                "0b00000000000000000010000000",
+                "0b00000001000000000010000000",
+                "h1s0",
+                "H = 1, S = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            gen_misa_dependencies(
+                "0b00000001000000000010000000",
+                "0b00000101000000000010000000",
+                "h1s1u0",
+                "H = 1, S = 1, U = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+        ]
+    )
 
     return lines
 

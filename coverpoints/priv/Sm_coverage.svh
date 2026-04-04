@@ -366,6 +366,23 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr     = {CSRR};                                                   // read misa
     }
 
+    misa_dependencies : coverpoint ins.current.rs1_val[25:0] {
+        wildcard bins i1e1   = { 26'b?????????????????1???1???? };
+        wildcard bins f0d1   = { 26'b????????????????????0?1??? };
+        wildcard bins f1d0q1 = { 26'b?????????1??????????1?0??? };
+        wildcard bins s1u0   = { 26'b?????0?1?????????????????? };
+        wildcard bins h1s0   = { 26'b???????0??????????1??????? };
+        wildcard bins h1s1u0 = { 26'b?????0?1??????????1??????? };
+    }
+
+    misa_c_0 : coverpoint ins.current.rs1_val[2] {
+        bins c0 = {1'b0};
+    }
+
+    pc_1_1 : coverpoint ins.current.pc_rdata[1] {
+        bins odd = {1'b1};
+    }
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
@@ -379,6 +396,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
+    cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
+    cp_misa_clear_c :           cross priv_mode_m, csrrw, misa_c_0, pc_1_1;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
@@ -395,4 +414,5 @@ function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b", ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0]);
 endfunction

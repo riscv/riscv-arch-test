@@ -25,7 +25,7 @@ def gen_misa_dependencies(
         f"LI(x{rfail}, {misa}) # Illegal value to write to misa and read back",
         f"LI(x{rmask}, {mask}) # bits to check",
         test_data.add_testcase(cpbin, coverpoint, covergroup),
-        f"csrw misa, x{r1} # attempt to write misa",
+        f"csrw misa, x{rfail} # attempt to write misa",
         f"csrr x{r1}, misa # read back",
         f"and x{r1}, x{r1}, x{rmask} # Mask off don't care bits",
         f"xor x{r1}, x{r1}, x{rfail} # Zero result means failing condition observed",
@@ -525,9 +525,15 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            #            gen_misa_dependencies("0b00000000000000000100010000", "0b00000000000000000100010000",
-            #                                  "i1e1", "I = 1, E = 1",
-            #                                  coverpoint, covergroup, test_data),
+            gen_misa_dependencies(
+                "0b00000000000000000100010000",
+                "0b00000000000000000100010000",
+                "i1e1",
+                "I = 1, E = 1",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
             gen_misa_dependencies(
                 "0b00000000000000000000001000",
                 "0b00000000000000000000101000",

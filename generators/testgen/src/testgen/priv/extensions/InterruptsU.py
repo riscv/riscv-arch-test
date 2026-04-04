@@ -20,7 +20,7 @@ def _generate_user_mti_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mti"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_scratch = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -87,7 +87,7 @@ def _generate_user_msi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_msi"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[0])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -153,7 +153,7 @@ def _generate_user_mei_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_user_mei"
 
-    r_scratch = test_data.int_regs.get_register(exclude_regs=[0])
+    r_scratch = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -207,7 +207,7 @@ def _generate_user_wfi_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi"
 
-    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7, exclude_regs=[0])
+    r_mtime, r_mtimecmp, r_temp, r_temp2, r_t1, r_t2, r_scratch = test_data.int_regs.get_registers(7)
 
     lines = [
         comment_banner(
@@ -273,7 +273,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     covergroup = "InterruptsU_cg"
     coverpoint = "cp_wfi_timeout"
 
-    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    r_temp, r_mtimecmp, r_scratch = test_data.int_regs.get_registers(3)
 
     lines = [
         comment_banner(
@@ -338,7 +338,7 @@ def make_interruptsu(test_data: TestData) -> list[str]:
 
     lines: list[str] = []
 
-    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    r_temp, r_mtimecmp = test_data.int_regs.get_registers(2)
 
     # Initial setup - clear any pending timer
     lines.append("CSRW(mideleg, zero)")

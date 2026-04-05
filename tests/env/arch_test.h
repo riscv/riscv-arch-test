@@ -703,7 +703,7 @@
 
 #ifndef CAUSE_SPCL_GO2MMODE_OP // make sure this default can be overwritten (e.g. to illegal fetch addr)
     #define ALT_GOTO_M_CAUSE CAUSE_ILLEGAL_INSTRUCTION
-    #define ALT_GOTO_M_OP    .insn 0
+    #define ALT_GOTO_M_OP    .word 0
 #endif
 
 .macro  RVTEST_GOTO_MMODE

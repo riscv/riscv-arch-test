@@ -17,7 +17,7 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
     """Generate mcounteren access u mode tests."""
     covergroup, coverpoint = "ZicntrU_cg", "cp_mcounteren_access_u"
 
-    read_reg, ori_csr_reg, one_reg, walk_reg, temp_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    read_reg, ones_reg, walk_reg, temp_reg = test_data.int_regs.get_registers(4)
 
     reg_list = ["cycle", "time", "instret"]
     lines = [
@@ -29,16 +29,15 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
     ]
     lines.extend(
         [
-            f"csrr x{ori_csr_reg}, mcounteren",
-            f"LI(x{one_reg}, -1)",
+            f"LI(x{ones_reg}, -1)",
             f"LI(x{walk_reg}, 1)",
         ]
     )
     for i in range(32):
         lines.extend(
             [
-                test_data.add_testcase(f"walking 1 at {i}", coverpoint, covergroup),
-                f"csrrc x{temp_reg}, mcounteren, x{one_reg}  # clear all bits",
+                test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
+                f"csrrc x{temp_reg}, mcounteren, x{ones_reg}  # clear all bits",
                 f"csrrs x{temp_reg}, mcounteren, x{walk_reg}  # set current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
@@ -85,8 +84,8 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
     for i in range(32):
         lines.extend(
             [
-                test_data.add_testcase(f"walking 0 at {i}", coverpoint, covergroup),
-                f"csrrs x{temp_reg}, mcounteren, x{one_reg}  # set all bits",
+                test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
+                f"csrrs x{temp_reg}, mcounteren, x{ones_reg}  # set all bits",
                 f"csrrc x{temp_reg}, mcounteren, x{walk_reg}  # clear current bit",
                 "RVTEST_GOTO_LOWER_MODE Umode",
             ]
@@ -121,9 +120,7 @@ def _generate_mcounteren_access_u_tests(test_data: TestData) -> list[str]:
                 f"slli x{walk_reg}, x{walk_reg}, 1",
             ]
         )
-    lines.append(f"csrrw x{temp_reg}, mcounteren, {ori_csr_reg}  # restore original csr value")
-
-    test_data.int_regs.return_registers([read_reg, ori_csr_reg, one_reg, walk_reg, temp_reg])
+    test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg, temp_reg])
     return lines
 
 
@@ -131,7 +128,7 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     """Generate mcounteren access m mode tests."""
     covergroup, coverpoint = "ZicntrU_cg", "cp_mcounteren_access_m"
 
-    read_reg, ori_csr_reg, one_reg, walk_reg, temp_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    read_reg, ones_reg, walk_reg, temp_reg = test_data.int_regs.get_registers(4)
 
     reg_list = ["cycle", "time", "instret"]
     lines = [
@@ -143,16 +140,15 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     ]
     lines.extend(
         [
-            f"csrr x{ori_csr_reg}, mcounteren",
-            f"LI(x{one_reg}, -1)",
+            f"LI(x{ones_reg}, -1)",
             f"LI(x{walk_reg}, 1)",
         ]
     )
     for i in range(32):
         lines.extend(
             [
-                test_data.add_testcase(f"walking 1 at {i}", coverpoint, covergroup),
-                f"csrrc x{temp_reg}, mcounteren, x{one_reg}  # clear all bits",
+                test_data.add_testcase(f"walking_1_{i}", coverpoint, covergroup),
+                f"csrrc x{temp_reg}, mcounteren, x{ones_reg}  # clear all bits",
                 f"csrrs x{temp_reg}, mcounteren, x{walk_reg}  # set current bit",
             ]
         )
@@ -197,8 +193,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     for i in range(32):
         lines.extend(
             [
-                test_data.add_testcase(f"walking 0 at {i}", coverpoint, covergroup),
-                f"csrrs x{temp_reg}, mcounteren, x{one_reg}  # set all bits",
+                test_data.add_testcase(f"walking_0_{i}", coverpoint, covergroup),
+                f"csrrs x{temp_reg}, mcounteren, x{ones_reg}  # set all bits",
                 f"csrrc x{temp_reg}, mcounteren, x{walk_reg}  # clear current bit",
             ]
         )
@@ -231,9 +227,8 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
                 f"slli x{walk_reg}, x{walk_reg}, 1",
             ]
         )
-    lines.append(f"csrrw x{temp_reg}, mcounteren, {ori_csr_reg}  # restore original csr value")
 
-    test_data.int_regs.return_registers([read_reg, ori_csr_reg, one_reg, walk_reg, temp_reg])
+    test_data.int_regs.return_registers([read_reg, ones_reg, walk_reg, temp_reg])
     return lines
 
 
@@ -242,7 +237,7 @@ def _generate_mcounteren_access_m_tests(test_data: TestData) -> list[str]:
     required_extensions=["I", "Zicsr", "Sm", "U", "Zicntr"],
     march_extensions=["Zicsr", "Zicntr", "I", "Zihpm"],
 )
-def make_exceptionszicntru(test_data: TestData) -> list[str]:
+def make_zicntru(test_data: TestData) -> list[str]:
     """Generate tests for ZicntrU coverpoints"""
     lines = []
 

@@ -156,7 +156,7 @@ main:
 //---------------------------------------------------------------------------------------------------------------------------------
 
   // Test case 1: Test in U-Mode | RWX set | expected = Store access fault, Load access fault, Instruction access fault
-  PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
   TEST_CASES_RUNNER Umode, va_data, LEVEL1, test1

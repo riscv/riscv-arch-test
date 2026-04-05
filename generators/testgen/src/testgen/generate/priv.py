@@ -14,6 +14,7 @@ from random import seed
 from testgen.asm.helpers import reproducible_hash
 from testgen.data.config import TestConfig
 from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
 from testgen.io.writer import write_test_file
 from testgen.priv.registry import (
     get_priv_test_defines,
@@ -23,23 +24,133 @@ from testgen.priv.registry import (
     get_priv_test_required_extensions,
 )
 
+# ---------------------------------------------------------------------------
+# Testsuites that need file splitting AND a per-file fast trap handler.
+# These generate very large bodies (100k+ lines) that would overflow Sail's
+# trap signature region if the standard framework handler were used.
+# ---------------------------------------------------------------------------
+_SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "SsstrictU"})
+
+# Maximum body lines per generated .S file for split testsuites.
+# The 800-line limit keeps each file's instruction count well within Sail's
+# simulation budget even when every instruction traps.
+_LINES_PER_FILE: int = 800
+
+# Fast illegal-instruction trap handler, prepended to every split file.
+#
+# Why here and not in the generator?
+# The generator body is split across many files. If the preamble is only in
+# the generator's first lines it ends up only in file -00. Files -01, -02 ...
+# start mid-body and have no mtvec override, so they use the standard framework
+# handler (installed by RVTEST_TRAP_PROLOG). The standard handler writes 4 words
+# to the trap-signature region on every trap; with 15k-150k expected traps the
+# signature overflows, corrupting the signature pointer and causing Sail to enter
+# an infinite fetch-fault loop.
+#
+# By prepending these lines to every split file we guarantee that mtvec is
+# redirected to our fast handler at the start of every file's code section,
+# after RVTEST_TRAP_PROLOG has already run.
+#
+# Handler design
+# --------------
+# mcause is checked FIRST, before touching any save area or general registers.
+# - cause != 2: jump to Mtrampoline immediately with a clean CPU state.
+#   Mtrampoline (exported .global from arch_test.h RVTEST_TRAP_HANDLER) is the
+#   real framework handler — it handles store/fetch faults and epilog traps
+#   correctly, ending the test cleanly when appropriate.
+# - cause == 2 (illegal instruction): check mtval bits[1:0].
+#   - bits[1:0] != 11 (compressed): Mtrampoline handles it.
+#   - bits[1:0] == 11 (uncompressed): advance mepc+4 and mret directly.
+#     Clobbers t0 and t1 only — acceptable for Ssstrict.
+#
+# The handler is defined before ssstrict_test_body: so that the LA() forward
+# reference resolves within this single translation unit.
+_FAST_HANDLER_PREFIX: list[str] = [
+    "",
+    "// ── Fast illegal-instruction handler (prepended to every Ssstrict file) ────",
+    "// Handles ALL illegal instruction traps fast (no signature write).",
+    "// 32-bit (bits[1:0]==11): advance mepc+4.",
+    "// 16-bit (bits[1:0]!=11): advance mepc+2.",
+    "// Any non-illegal trap: hand off to Mtrampoline (real framework handler).",
+    "\tj ssstrict_test_body",
+    "",
+    "\t.align 4",
+    "trap_handler_fastuncompressedillegalinstr:",
+    "    // Check mcause FIRST — non-illegal traps go to Mtrampoline with clean CPU state.",
+    "\tcsrr    t0, mcause",
+    "\tli      t1, 2                  // cause 2 = illegal instruction",
+    "\tbne     t0, t1, Mtrampoline    // not illegal: real handler manages it",
+    "    // Illegal instruction: check encoding size via mtval bits[1:0]",
+    "    // bits[1:0]==11 -> 32-bit encoding -> advance mepc+4",
+    "    // bits[1:0]!=11 -> 16-bit encoding -> advance mepc+2",
+    "\tcsrr    t0, mtval",
+    "\tandi    t0, t0, 3",
+    "\taddi    t1, t0, -3             // 0 iff bits[1:0]==11 (32-bit uncompressed)",
+    "\tbeqz   t1, .Lillegal32",
+    "    // 16-bit compressed illegal instruction — advance mepc+2 and return fast.",
+    "\tcsrr    t0, mepc",
+    "\taddi    t0, t0, 2",
+    "\tcsrw    mepc, t0",
+    "\tmret",
+    ".Lillegal32:",
+    "    // 32-bit uncompressed illegal instruction — advance mepc+4 and return fast.",
+    "\tcsrr    t0, mepc",
+    "\taddi    t0, t0, 4",
+    "\tcsrw    mepc, t0",
+    "\tmret",
+    "",
+    "ssstrict_test_body:",
+    "\tLA(t0, trap_handler_fastuncompressedillegalinstr)",
+    "\tCSRW(mtvec, t0)",
+    "",
+]
+
+
+def _split_at_blank(lines: list[str], max_lines: int) -> list[list[str]]:
+    """Split lines into groups of ≤ max_lines, preferring blank-line boundaries."""
+    if not lines:
+        return [[]]
+    groups: list[list[str]] = []
+    start = 0
+    while start < len(lines):
+        end = min(start + max_lines, len(lines))
+        if end == len(lines):
+            groups.append(lines[start:])
+            break
+        # Search backwards up to 20 % of the window for a blank-line cut point
+        search_from = max(start, end - max_lines // 5)
+        split_at = end
+        for i in range(end - 1, search_from - 1, -1):
+            if lines[i].strip() == "":
+                split_at = i + 1
+                break
+        groups.append(lines[start:split_at])
+        start = split_at
+    return groups
+
 
 def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     """
     Generate tests for a privileged testsuite.
 
+    For most testsuites: produces a single SsstrictXx-00.S file (original
+    behaviour, generate/priv.py unchanged from the framework default).
+
+    For Ssstrict testsuites (SsstrictSm, SsstrictS, SsstrictU): splits the
+    body into multiple ≤ _LINES_PER_FILE-line files and prepends the inline
+    fast trap handler to every file.  This prevents the standard framework
+    trap handler from overflowing the trap-signature region across the
+    150k+ traps generated by the CSR and instruction-encoding sweeps.
+
     Args:
-        testsuite: Testsuite name (e.g., "ExceptionsSm")
+        testsuite: Testsuite name (e.g., \"ExceptionsSm\", \"SsstrictSm\")
         output_test_dir: Base directory to output generated tests
     """
-    # Output always goes to priv/<testsuite>
     output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Create test configuration - privileged tests are config_dependent and don't have a fixed xlen
-    # The xlen=0 indicates this is a multi-xlen test that uses preprocessor conditionals
     test_config = TestConfig(
-        xlen=0,  # One test for all XLENs
+        xlen=0,
         flen=64,
         testsuite=testsuite,
         E_ext=False,
@@ -49,34 +160,46 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         extra_params=get_priv_test_params(testsuite),
     )
 
-    # Create test data
     test_data = TestData(test_config)
-
-    # Begin a single TestChunk for the entire priv test
-    # TODO: Might eventually want to update priv tests to use multiple test chunks instead
-    # so they can be split for long priv tests (e.g. Ssstrict)
     tc = test_data.begin_test_chunk()
 
-    # Reserve x0 for priv tests so that desired values are actually loaded into registers
-    # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
     priv_exclude_regs = [0, 1]
     test_data.int_regs.consume_registers(priv_exclude_regs)
-
-    # Seed the RNG for reproducible test generation
     seed(reproducible_hash(testsuite))
 
-    # Generate test body
     priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
-    # Return x0/zero and x1/ra
     test_data.int_regs.return_registers(priv_exclude_regs)
-
-    # Save test chunk
     tc.code = "\n".join(body_lines)
     test_data.end_test_chunk()
 
-    # Produce actual test file
     extra_defines = [*get_priv_test_defines(testsuite), "#define RVTEST_PRIV_TEST"]
-    write_test_file(test_config, None, [tc], output_path, extra_defines=extra_defines)
+
+    if testsuite not in _SPLIT_TESTSUITES:
+        # ── Standard single-file output (original behaviour) ──────────────────
+        write_test_file(test_config, None, [tc], output_path,
+                        file_idx=0, extra_defines=extra_defines)
+    else:
+        # ── Ssstrict: split into multiple files with fast handler per file ─────
+        groups = _split_at_blank(body_lines, _LINES_PER_FILE)
+        for file_idx, group in enumerate(groups):
+            chunk = TestChunk()
+            # Prepend the fast handler to EVERY file so mtvec is always
+            # redirected to it at the start of each file's code section,
+            # regardless of which part of the body the file contains.
+            chunk.code = "\n".join(_FAST_HANDLER_PREFIX + group)
+            # Pass a COPY of extra_defines: insert_header_template() calls
+            # extra_defines.extend(...) which mutates the list in-place.
+            # Without a copy, each successive file accumulates duplicate
+            # #define RVTEST_FP / #define rvtest_mtrap_routine lines.
+            write_test_file(
+                test_config,
+                None,
+                [chunk],
+                output_path,
+                file_idx=file_idx,
+                extra_defines=extra_defines[:],
+            )
+
     test_data.destroy()

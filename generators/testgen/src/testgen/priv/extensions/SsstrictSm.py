@@ -7,62 +7,81 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""SsstrictSm privileged test generator — machine-mode negative/strict tests."""
+"""SsstrictSm — machine-mode strict/negative compliance tests.
 
-from random import randint, seed
+The fast trap handler is NOT emitted here — generate/priv.py prepends it
+to every split file so every generated .S file redirects mtvec immediately
+after RVTEST_TRAP_PROLOG.
+
+Register exclusion for the CSR sweep
+--------------------------------------
+The CSR sweep uses three scratch registers (r1, r2, r3) for:
+  r1  saved CSR value (to restore at end of block)
+  r2  holds -1 for write-all-ones operations
+  r3  destination for csrrw/csrrs/csrrc
+
+ALL three must be chosen from {x7..x31} only.  The following registers
+are permanently excluded:
+
+  x0  zero — hardware constant
+  x1  ra   — excluded by generate_priv_test's priv_exclude_regs
+  x2  sp   — DEFAULT_SIG_REG (signature pointer); if set to -1 the
+              epilog's sd x6,0(x2) faults, triggering the infinite loop
+  x3  gp   — DEFAULT_DATA_REG (test-data pointer)
+  x4  tp   — DEFAULT_TEMP_REG
+  x5  t0   — DEFAULT_LINK_REG; also clobbered by the fast handler
+              (csrr t0,mcause) on every trap — if r1=x5, the saved CSR
+              value is overwritten before the restore instruction runs
+  x6  t1   — clobbered by the fast handler (li t1,2) on every trap
+"""
+
+from random import randint, seed, sample
 
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CSR address skip sets (match csrtests.py exactly)
-# ─────────────────────────────────────────────────────────────────────────────
+# Blank line every N consecutive .word/.hword directives so the splitter
+# can break large encoding blocks into separate small files.
+BLANK_INTERVAL = 50
 
-# Custom / non-standard CSR ranges to skip in M-mode
+# Registers safe to use as scratch in the CSR sweep.
+# Excludes x0-x6: zero, ra, sp(sig ptr), gp(data ptr), tp, t0, t1.
+# t0 and t1 are clobbered by the fast handler on every trap.
+_SAFE_REGS: list[int] = list(range(7, 32))   # x7 .. x31
+
+
+# ── CSR skip set ──────────────────────────────────────────────────────────
+
 _M_CSR_SKIP: frozenset[int] = frozenset(
-    list(range(0x7A0, 0x7B0))   # debug trigger regs — toggling could corrupt debug state
-    + list(range(0x7C0, 0x800)) # M-mode custom
-    + list(range(0xBC0, 0xC00)) # M-mode custom2
-    + list(range(0xFC0, 0x1000))# M-mode custom3
-    # Also skip super/hyper/user custom inherited from lower-mode generators:
-    + list(range(0x5C0, 0x600)) # S-mode custom1
-    + list(range(0x6C0, 0x700)) # H-mode custom1
-    + list(range(0x9C0, 0xA00)) # S-mode custom2
-    + list(range(0xAC0, 0xB00)) # H-mode custom2
-    + list(range(0xDC0, 0xE00)) # S-mode custom3
-    + list(range(0xEC0, 0xF00)) # H-mode custom3
-    + list(range(0x800, 0x900)) # user custom2
-    + list(range(0xCC0, 0xD00)) # user custom3
-    # PMP registers — skip to protect PMP configuration
-    + list(range(0x3A0, 0x3F0)) # pmpcfg0-15, pmpaddr0-63
+    list(range(0x3A0, 0x3F0))    # PMP regs
+    + list(range(0x7A0, 0x7B0))  # debug trigger regs
+    + list(range(0x7C0, 0x800))  # M-mode custom1
+    + list(range(0xBC0, 0xC00))  # M-mode custom2
+    + list(range(0xFC0, 0x1000)) # M-mode custom3
+    + list(range(0x5C0, 0x600))  # S-mode custom1
+    + list(range(0x6C0, 0x700))  # H-mode custom1
+    + list(range(0x9C0, 0xA00))  # S-mode custom2
+    + list(range(0xAC0, 0xB00))  # H-mode custom2
+    + list(range(0xDC0, 0xE00))  # S-mode custom3
+    + list(range(0xEC0, 0xF00))  # H-mode custom3
+    + list(range(0x800, 0x900))  # user custom2
+    + list(range(0xCC0, 0xD00))  # user custom3
 )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Instruction encoding helpers (port of illegalinstrtests.py gen() function)
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Encoding helpers ──────────────────────────────────────────────────────
 
-def _gen_encodings(template: str, length: int = 32,
-                   exclusion: list[str] | None = None,
-                   rng_seed: int = 0) -> list[str]:
-    """
-    Generate all exhaustive instruction word encodings from a template.
-
-    Template characters:
-      E = exhaustively swept (0 and 1 for every combination)
-      R = random bit (set once per call, not per encoding)
-      0 / 1 = fixed bit
-
-    Returns a list of binary strings (no '0b' prefix) for each non-excluded encoding.
-    The exclusion patterns use X as wildcard.
-    """
+def _gen_encodings(
+    template: str,
+    length: int = 32,
+    exclusion: list[str] | None = None,
+) -> list[str]:
+    """Generate all exhaustive encodings from a template string."""
     if exclusion is None:
         exclusion = []
-
     ebits = template.count("E")
     results: list[str] = []
-
     for j in range(2 ** ebits):
         instr = ["0"] * length
         e = ebits - 1
@@ -73,579 +92,421 @@ def _gen_encodings(template: str, length: int = 32,
                 instr[i] = str((j >> e) & 1)
                 e -= 1
             else:
-                instr[i] = template[i]  # '0' or '1'
-
+                instr[i] = template[i]
         instrstr = "".join(instr)
-        excluded = False
-        for pat in exclusion:
-            if all(pat[k] == "X" or pat[k] == instrstr[k] for k in range(length)):
-                excluded = True
-                break
-        if not excluded:
+        if not any(
+            all(p[k] == "X" or p[k] == instrstr[k] for k in range(length))
+            for p in exclusion
+        ):
             results.append(instrstr)
     return results
 
 
-def _emit_raw_words(lines: list[str], comment: str, template: str,
-                    length: int = 32, exclusion: list[str] | None = None) -> None:
-    """Append raw .word / .hword directives to lines from template."""
+def _emit_raw_words(
+    lines: list[str],
+    comment: str,
+    template: str,
+    length: int = 32,
+    exclusion: list[str] | None = None,
+) -> None:
+    """Emit .word/.hword directives with blank lines every BLANK_INTERVAL."""
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
-    lines.append(f"\n// {comment}  ({len(encodings)} encodings from template {template})")
-    for enc in encodings:
+    lines.append(f"\n// {comment}  ({len(encodings)} encodings)")
+    for idx, enc in enumerate(encodings):
+        if idx > 0 and idx % BLANK_INTERVAL == 0:
+            lines.append("")
         lines.append(f"\t{directive} 0b{enc}")
+    lines.append("")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# cp_csrr / cp_csrw_corners / cp_csrcs
-# ─────────────────────────────────────────────────────────────────────────────
+# ── CSR sweep ─────────────────────────────────────────────────────────────
 
 def _generate_csr_tests_m(test_data: TestData) -> list[str]:
-    """Generate cp_csrr, cp_csrw_corners, cp_csrcs for M-mode."""
+    """cp_csrr / cp_csrw_corners / cp_csrcs.
+
+    Registers r1, r2, r3 are always chosen from _SAFE_REGS (x7..x31).
+    This prevents the sweep from corrupting framework-reserved registers
+    (sp, gp, tp) or the fast handler's scratch registers (t0, t1).
+    """
     covergroup = "SsstrictSm_mcsr_cg"
     lines: list[str] = []
 
     lines.append(comment_banner(
-        "cp_csrr / cp_csrw_corners / cp_csrcs",
-        "Read all 4096 CSRs, write all-zeros/all-ones, set/clear all bits.\n"
-        "Fast trap handler must already be installed before this section.\n"
-        "Skips: PMP regs 0x3A0-0x3EF, debug regs 0x7B0-0x7BF, and all custom CSR ranges.",
+        "cp_csrr / cp_csrw_corners / cp_csrcs (M-mode)",
+        "Read, write 0s/1s, set, clear every non-skipped CSR from M-mode.\n"
+        "All scratch registers chosen from x7-x31 only to preserve\n"
+        "framework-reserved regs (x2/sp, x3/gp, x4/tp) and fast-handler\n"
+        "scratch regs (x5/t0, x6/t1).",
     ))
 
-    # Lock PMP region 0 so PMP CSRs can be accessed without corrupting PMP config
     lines.extend([
         "",
-        "// Lock PMP region 0 with TOR RWX so all PMP CSRs can be accessed",
-        "\tli t0, 0x8F",
-        "\tcsrw pmpcfg0, t0   # configure PMP0 to TOR RWX locked",
+        "// Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
+        "\tli t2, 0x8F",    # t2=x7, safe
+        "\tcsrw pmpcfg0, t2",
         "",
     ])
 
-    for csr_addr in range(4096):
-        if csr_addr in _M_CSR_SKIP:
-            continue
+    for idx, csr_addr in enumerate(a for a in range(4096) if a not in _M_CSR_SKIP):
+        if idx > 0 and idx % 10 == 0:
+            lines.append("")
 
-        # Use three distinct random non-zero registers (avoid x0 for reads that need result)
-        r1 = randint(1, 31)
-        r2 = randint(1, 31)
-        while r2 == r1:
-            r2 = randint(1, 31)
-        r3 = randint(1, 31)
-        while r3 in (r1, r2):
-            r3 = randint(1, 31)
+        # Pick three distinct safe registers
+        r1, r2, r3 = sample(_SAFE_REGS, 3)
 
         ih = hex(csr_addr)
-        coverpoint_r  = "cp_csrr"
-        coverpoint_w  = "cp_csrw_corners"
-        coverpoint_cs = "cp_csrcs"
-
         lines.extend([
-            f"\n// CSR {ih}",
-            # cp_csrr — read with non-zero rd
-            f"\t{test_data.add_testcase(f'csrr_{ih}', coverpoint_r, covergroup)}",
-            f"\tcsrr x{r1}, {ih}                  // cp_csrr: read CSR",
-            # cp_csrw_corners — write all 1s then all 0s
-            f"\tli x{r2}, -1",
-            f"\t{test_data.add_testcase(f'csrw_ones_{ih}', coverpoint_w, covergroup)}",
-            f"\tcsrrw x{r3}, {ih}, x{r2}          // cp_csrw_corners: write all 1s",
-            f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', coverpoint_w, covergroup)}",
-            f"\tcsrrw x{r3}, {ih}, x0             // cp_csrw_corners: write all 0s",
-            # cp_csrcs — set all bits then clear all bits
-            f"\t{test_data.add_testcase(f'csrrs_{ih}', coverpoint_cs, covergroup)}",
-            f"\tcsrrs x{r3}, {ih}, x{r2}          // cp_csrcs: set all bits",
-            f"\t{test_data.add_testcase(f'csrrc_{ih}', coverpoint_cs, covergroup)}",
-            f"\tcsrrc x{r3}, {ih}, x{r2}          // cp_csrcs: clear all bits",
-            # Restore original value
-            f"\tcsrrw x{r3}, {ih}, x{r1}          // restore CSR",
+            f"// CSR {ih}",
+            f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
+            f"\tcsrr x{r1}, {ih}",           # save CSR value
+            f"\tli x{r2}, -1",               # all-ones value (r2 safe to hold -1)
+            f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_corners', covergroup)}",
+            f"\tcsrrw x{r3}, {ih}, x{r2}",   # write all-ones
+            f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_corners', covergroup)}",
+            f"\tcsrrw x{r3}, {ih}, x0",      # write all-zeros
+            f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
+            f"\tcsrrs x{r3}, {ih}, x{r2}",   # set all bits
+            f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
+            f"\tcsrrc x{r3}, {ih}, x{r2}",   # clear all bits
+            f"\tcsrrw x{r3}, {ih}, x{r1}",   # restore (r1 still holds saved value
+                                              # because fast handler doesn't touch x7+)
         ])
 
+    lines.append("")
     return lines
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# cp_illegal_instruction — reserved 32-bit encodings
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Reserved 32-bit encodings ─────────────────────────────────────────────
 
 def _generate_illegal_instr(test_data: TestData) -> list[str]:
-    """Generate cp_illegal_instruction: all reserved/illegal 32-bit encoding patterns."""
+    """cp_illegal_instruction — reserved/illegal 32-bit encoding sweep."""
     covergroup = "SsstrictSm_instr_cg"
     coverpoint = "cp_illegal_instruction"
     lines: list[str] = []
 
     lines.append(comment_banner(
         coverpoint,
-        "Exhaustive test of reserved and illegal 32-bit instruction encodings.\n"
-        "Each .word directive is a raw encoding that should raise illegal-instruction\n"
-        "or behave as a legal instruction that the coverage tool then classifies.\n"
-        "Fast trap handler handles each trap. mstatus.FS/VS must be enabled.",
+        "Exhaustive reserved/illegal 32-bit encoding sweep from M-mode.\n"
+        "Vector opcodes op21/op29 excluded — covered in SsstrictV.",
     ))
 
-    # Enable FP and Vector extensions before encoding sweep
     lines.extend([
         "",
-        "// Enable FP (mstatus.FS) and vector (mstatus.VS) to reduce unnecessary FP/V exceptions",
-        "\tli t0, 1",
-        "\tslli t1, t0, 13",
-        "\tcsrs mstatus, t1    # mstatus.FS = 01 (Initial)",
-        "\tslli t1, t0, 9",
-        "\tcsrs mstatus, t1    # mstatus.VS = 01 (Initial, if V supported)",
+        "// Enable FP (mstatus.FS=01)",
+        "\tli t2, 1",         # t2=x7, safe
+        "\tslli t3, t2, 13",  # t3=x28
+        "\tcsrs mstatus, t3",
         "",
     ])
 
-    # Add a single testcase label for the whole illegal instruction section
     lines.append(f"\t{test_data.add_testcase('illegal_instr_sweep', coverpoint, covergroup)}")
+    lines.append("")
 
-    # ── Reserved major opcodes ───────────────────────────────────────────────
-    for op_comment, template in [
-        ("Illegal op7  (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
-        ("Illegal op15 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
-        ("Illegal op21 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR1010111"),
-        ("Illegal op23 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
-        ("Illegal op26 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
-        ("Illegal op29 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR1110111"),
-        ("Illegal op31 (reserved)",  "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
+    for cmt, tmpl in [
+        ("Reserved op7",  "RRRRRRRRRRRRRRRRRRRRRRRRR0011111"),
+        ("Reserved op15", "RRRRRRRRRRRRRRRRRRRRRRRRR0111111"),
+        ("Reserved op23", "RRRRRRRRRRRRRRRRRRRRRRRRR1011111"),
+        ("Reserved op26", "RRRRRRRRRRRRRRRRRRRRRRRRR1101011"),
+        ("Reserved op31", "RRRRRRRRRRRRRRRRRRRRRRRRR1111111"),
     ]:
-        _emit_raw_words(lines, op_comment, template)
+        _emit_raw_words(lines, cmt, tmpl)
 
-    # ── LOAD/STORE/FP load-store reserved funct3 ────────────────────────────
-    _emit_raw_words(lines, "cp_load: reserved funct3 in LOAD opcode",
-                    "RRRRRRRRRRRRRRRRREEERRRRR0000011")
-    _emit_raw_words(lines, "cp_fload: reserved funct3 in FLOAD opcode",
-                    "RRRRRRRRRRRRRRRRREEERRRRR0000111")
-    _emit_raw_words(lines, "cp_fence_cbo: reserved funct3 in FENCE/CBO opcode",
-                    "RRRRRRRRRRRRRRRRREEERRRRR0001111")
-    _emit_raw_words(lines, "cp_cbo_immediate: all CBO immediates (rs1=0 to avoid bad writes)",
-                    "EEEEEEEEEEEE00000010000000001111")
-    _emit_raw_words(lines, "cp_cbo_rd: CBO with non-zero rd",
-                    "00000000000RRRRRR010EEEEE0001111")
-    _emit_raw_words(lines, "cp_store: reserved funct3 in STORE opcode (rs1=0)",
-                    "RRRRRRRRRRRR00000EEERRRRR0100011")
-    _emit_raw_words(lines, "cp_fstore: reserved funct3 in FSTORE opcode (rs1=0)",
-                    "RRRRRRRRRRRR00000EEERRRRR0100111")
-
-    # ── Integer arithmetic reserved fields ──────────────────────────────────
-    _emit_raw_words(lines, "cp_Itype: reserved funct3[2:1]=01 in I-type arithmetic",
-                    "EEEEEEEEEEEERRRRRE01RRRRR0010011")
-    _emit_raw_words(lines, "cp_llAItype: all funct3 of I-type arithmetic",
-                    "RRRRRRRRRRRRRRRRREEERRRRR0010011")
-    _emit_raw_words(lines, "cp_aes64ks1i: reserved rnum values",
-                    "0011000EEEEERRRRR001RRRRR0010011")
-    _emit_raw_words(lines, "cp_IWtype: reserved funct3 in IW-type (RV64 word ops)",
-                    "RRRRRRRRRRRRRRRRREEERRRRR0011011")
-    _emit_raw_words(lines, "cp_IWshift: reserved shift types and imm[5]=1 for word shifts",
-                    "EEEEEEERRRRRRRRRRE01RRRRR0011011")
-
-    # ── Atomics ──────────────────────────────────────────────────────────────
-    _emit_raw_words(lines, "cp_atomic_funct3: reserved funct3 in atomics (rs1=0)",
-                    "RRRRRRRRRRRR00000EEERRRRR0101111")
-    _emit_raw_words(lines, "cp_atomic_funct7: reserved funct7 in AMOs (rs1=0)",
-                    "EEEEERRRRRRR0000001ERRRRR0101111")
-    _emit_raw_words(lines, "cp_lrsc: reserved fields in LR/SC",
-                    "00010RREEEEE0000001ERRRRR0101111")
-
-    # ── R-type / RW-type ─────────────────────────────────────────────────────
-    _emit_raw_words(lines, "cp_rtype: reserved funct3/funct7 in R-type",
-                    "EEEEEEERRRRRRRRRREEERRRRR0110011")
-    _emit_raw_words(lines, "cp_rwtype: reserved fields in RW-type",
-                    "EEEEEEERRRRRRRRRREEERRRRR0111011")
-
-    # ── Floating-point ───────────────────────────────────────────────────────
-    _emit_raw_words(lines, "cp_ftype: reserved fmt/funct5 combinations in FP",
-                    "EEEEERRRRRRRRRRRREEERRRRR1010011")
-    _emit_raw_words(lines, "cp_fsqrt: reserved rs2 in fsqrt",
-                    "0101100EEEEERRRRRRRRRRRRR1010011")
-    _emit_raw_words(lines, "cp_fclass: reserved rs2 in fclass",
-                    "1110000EEEEERRRRR001RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtif: reserved fmt/rs2 in fcvt (int←float)",
-                    "1100000EEE00RRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtif_fmt: reserved fmt fields in fcvt (int←float)",
-                    "11000EE000EERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtfi: reserved fmt/rs2 in fcvt (float←int)",
-                    "1101000EEER00RRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtfi_fmt: reserved fmt fields in fcvt (float←int)",
-                    "11010EE000EERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtff: reserved fmt/rs2 in fcvt (float←float)",
-                    "0100000EEER00RRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtff_fmt: reserved fmt fields in fcvt (float←float)",
-                    "01000EEEEEEERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fmvif: reserved fields in fmv.x.*",
-                    "11100EEEEEEERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fmvfi: reserved fields in fmv.*.x",
-                    "11110EEEEEEERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fli: reserved fields in fli (Zfa)",
-                    "11110EEEEEEERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fmvh: reserved fields in fmvh (Zfa)",
-                    "11100EEEEEEERRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fmvp: reserved fields in fmvp (Zfa)",
-                    "10110EERRRRRRRRRR000RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtmodwd: reserved fmt in fcvtmod.w.d",
-                    "11000EEEEEEERRRRR001RRRRR1010011")
-    _emit_raw_words(lines, "cp_fcvtmodwdfrm: reserved frm in fcvtmod.w.d",
-                    "110000101000RRRRREEERRRRR1010011")
-
-    # ── Branch / JALR reserved funct3 ───────────────────────────────────────
-    _emit_raw_words(lines, "cp_branch2: reserved funct3=010 in BRANCH",
-                    "RRRRRRRRRRRRRRRRR010RRRRR1100011")
-    _emit_raw_words(lines, "cp_branch3: reserved funct3=011 in BRANCH",
-                    "RRRRRRRRRRRRRRRRR011RRRRR1100011")
-    _emit_raw_words(lines, "cp_jalr0: reserved funct3[1:0]!=00 in JALR",
-                    "RRRRRRRRRRRRRRRRREE1RRRRR1100111")
-    _emit_raw_words(lines, "cp_jalr1: reserved funct3=010 in JALR",
-                    "RRRRRRRRRRRRRRRRR010RRRRR1100111")
-    _emit_raw_words(lines, "cp_jalr2: reserved funct3=100 in JALR",
-                    "RRRRRRRRRRRRRRRRR100RRRRR1100111")
-    _emit_raw_words(lines, "cp_jalr3: reserved funct3=110 in JALR",
-                    "RRRRRRRRRRRRRRRRR110RRRRR1100111")
-
-    # ── SYSTEM opcode reserved fields ────────────────────────────────────────
-    _emit_raw_words(lines, "cp_privileged_f3: reserved funct3 in SYSTEM opcode",
-                    "00000000000100000EEE000001110011")
-    _emit_raw_words(lines, "cp_privileged_000: reserved rs2/funct7 in funct3=000 SYSTEM",
+    _emit_raw_words(lines, "cp_load funct3",           "RRRRRRRRRRRRRRRRREEERRRRR0000011")
+    _emit_raw_words(lines, "cp_fload funct3",          "RRRRRRRRRRRRRRRRREEERRRRR0000111")
+    _emit_raw_words(lines, "cp_fence_cbo funct3",      "RRRRRRRRRRRRRRRRREEERRRRR0001111")
+    _emit_raw_words(lines, "cp_cbo_immediate (rs1=0)", "EEEEEEEEEEEE00000010000000001111")
+    _emit_raw_words(lines, "cp_cbo_rd",                "00000000000RRRRRR010EEEEE0001111")
+    _emit_raw_words(lines, "cp_store funct3 (rs1=0)",  "RRRRRRRRRRRR00000EEERRRRR0100011")
+    _emit_raw_words(lines, "cp_fstore funct3 (rs1=0)", "RRRRRRRRRRRR00000EEERRRRR0100111")
+    _emit_raw_words(lines, "cp_Itype funct3[2:1]=01",  "EEEEEEEEEEEERRRRRE01001110010011")
+    _emit_raw_words(lines, "cp_Itypef3",               "RRRRRRRRRRRRRRRRREEE001110010011")
+    _emit_raw_words(lines, "cp_aes64ks1i rnum",        "0011000EEEEERRRRR001001110010011")
+    _emit_raw_words(lines, "cp_IWtype funct3",         "RRRRRRRRRRRRRRRRREEE001110011011")
+    _emit_raw_words(lines, "cp_IWshift",               "EEEEEEERRRRRRRRRRE01001110011011")
+    _emit_raw_words(lines, "cp_atomic_funct3 (rs1=0)", "RRRRRRRRRRRR00000EEE001110101111")
+    _emit_raw_words(lines, "cp_atomic_funct7 (rs1=0)", "EEEEERRRRRRR0000001E001110101111")
+    _emit_raw_words(lines, "cp_lrsc",                  "00010RREEEEE0000001E001110101111")
+    _emit_raw_words(lines, "cp_rtype",  "EEEEEEERRRRRRRRRREEE001110110011")
+    _emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEE001110111011")
+    _emit_raw_words(lines, "cp_ftype",        "EEEEERRRRRRRRRRRREEE001111010011")
+    _emit_raw_words(lines, "cp_fsqrt",        "0101100EEEEERRRRR000011111010011")
+    _emit_raw_words(lines, "cp_fclass",       "1110000EEEEERRRRR001001111010011")
+    _emit_raw_words(lines, "cp_fcvtif",       "1100000EEE00RRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtif_fmt",   "11000EE000EERRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtfi",       "1101000EEER00RRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtfi_fmt",   "11010EE000EERRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtff",       "0100000EEER00RRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtff_fmt",   "01000EEEEEEERRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fmvif",        "11100EEEEEEERRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fmvfi",        "11110EEEEEEERRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fmvp",         "10110EERRRRRRRRRR000001111010011")
+    _emit_raw_words(lines, "cp_fcvtmodwdfrm", "110000101000RRRRREEE001111010011")
+    _emit_raw_words(lines, "cp_branch2", "RRRRRRRRRRRRRRRRR010RRRRR1100011")
+    _emit_raw_words(lines, "cp_branch3", "RRRRRRRRRRRRRRRRR011RRRRR1100011")
+    _emit_raw_words(lines, "cp_jalr0",   "RRRRRRRRRRRRRRRRREE1001111100111")
+    _emit_raw_words(lines, "cp_jalr1",   "RRRRRRRRRRRRRRRRR010001111100111")
+    _emit_raw_words(lines, "cp_jalr2",   "RRRRRRRRRRRRRRRRR100001111100111")
+    _emit_raw_words(lines, "cp_jalr3",   "RRRRRRRRRRRRRRRRR110001111100111")
+    _emit_raw_words(lines, "cp_privileged_f3", "00000000000100000EEE000001110011")
+    _emit_raw_words(lines, "cp_privileged_000",
                     "EEEEEEEEEEEE00000000000001110011",
                     exclusion=[
                         "1XXX11XXXXXX00000000000001110011",  # custom system
                         "00X10000001000000000000001110011",  # mret/sret
                         "00000000000000000000000001110011",  # ecall
                         "00010000010100000000000001110011",  # wfi
+                        # Valid privileged instructions that execute without trapping
+                        # on implementations with Sv39/Svinval/H-extension:
+                        "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA (any rs1,rs2)
+                        "0001011XXXXXXXXXX000000001110011",  # SINVAL.VMA (Svinval)
+                        "00011000000000000000000001110011",  # SFENCE.W.INVAL
+                        "00011000000100000000000001110011",  # SFENCE.INVAL.IR
+                        "0010001XXXXXXXXXX000000001110011",  # HFENCE.BVMA
+                        "1010001XXXXXXXXXX000000001110011",  # HFENCE.GVMA
+                        "01110000001000000000000001110011",  # MNRET (Smrnmi)
+                        "00000000001000000000000001110011",  # URET (deprecated)
                     ])
-    _emit_raw_words(lines, "cp_privileged_rd: non-zero rd in privilege instructions",
+    _emit_raw_words(lines, "cp_privileged_rd",
                     "00000000000000000000EEEEE1110011",
-                    exclusion=["00000000000000000000000001110011"])  # exclude ecall
-    _emit_raw_words(lines, "cp_privileged_rs2: reserved rs2 in privilege instructions",
+                    exclusion=["00000000000000000000000001110011"])
+    _emit_raw_words(lines, "cp_privileged_rs2",
                     "000000000000EEEEE000000001110011",
-                    exclusion=["00000000000000000000000001110011"])  # exclude ecall
+                    exclusion=["00000000000000000000000001110011"])
+    _emit_raw_words(lines, "cp_reserved_fma",       "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
+    _emit_raw_words(lines, "cp_reserved_fence_fm",  "EEEE00000000RRRRR000RRRRR0001111")
+    _emit_raw_words(lines, "cp_reserved_fence_rs1", "00001111111100001000RRRRE0001111")
+    _emit_raw_words(lines, "cp_reserved_fence_rd",  "000011111111RRRRE000000010001111")
 
-    # ── Reserved FMA / FENCE encodings ───────────────────────────────────────
-    _emit_raw_words(lines, "cp_reserved_fma: reserved rm in FMA instructions",
-                    "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
-    _emit_raw_words(lines, "cp_reserved_fence_fm_tso: reserved FM and TSO fields in FENCE",
-                    "EEEE00000000RRRRR000RRRRR0001111")
-    _emit_raw_words(lines, "cp_reserved_fence_rs1: reserved rs1 for FENCE.TSO",
-                    "00001111111100001000RRRRE0001111")
-    _emit_raw_words(lines, "cp_reserved_fence_rd: reserved rd for FENCE.TSO",
-                    "000011111111RRRRE000000010001111")
-
-    # ── Upper register sweep (cp_upperreg) ───────────────────────────────────
-    lines.append(comment_banner("cp_upperreg", "Upper registers x16-x31 as rd/rs1/rs2"))
-    for op_comment, template in [
-        ("cp_upperreg_rs1_add",      "0000000000011EEEE000000010110011"),
-        ("cp_upperreg_rs2_add",      "00000001EEEE00001000000100110011"),
-        ("cp_upperreg_rd_add",       "000000000001000010001EEEE0110011"),
-        ("cp_upperreg_rs1_mul",      "0000001000011EEEE000000010110011"),
-        ("cp_upperreg_rs2_mul",      "00000011EEEE00001000000100110011"),
-        ("cp_upperreg_rd_mul",       "000000100001000010001EEEE0110011"),
-        ("cp_upperreg_rs1_fadd-s",   "0000000000011EEEE000000011010011"),
-        ("cp_upperreg_rs2_fadd-s",   "00000001EEEE00001000000101010011"),
-        ("cp_upperreg_rd_fadd-s",    "000000000001000010001EEEE1010011"),
-        ("cp_upperreg_imm_rs1_addi0","0000000000001EEEE000000010010011"),
-        ("cp_upperreg_imm_rs1_addi1","1111111111111EEEE000000010010011"),
-        ("cp_upperreg_imm_rd_addi0", "000000000000000010001EEEE0010011"),
-        ("cp_upperreg_imm_rd_addi1", "111111111111000010001EEEE0010011"),
-        ("cp_upperreg_fmv_x_w_rs1",  "1110000000001EEEE000000011010011"),
-        ("cp_upperreg_fmv_x_w_rd",   "111000000000000010001EEEE1010011"),
-        ("cp_upperreg_fmv_w_x_rs1",  "1111000000001EEEE000000011010011"),
-        ("cp_upperreg_fmv_w_x_rd",   "111100000000000010001EEEE1010011"),
+    lines.append(comment_banner("cp_upperreg", "x16-x31 — trap when E extension active"))
+    for cmt, tmpl in [
+        ("upperreg_rs1_add",       "0000000000011EEEE000001111010011"),
+        ("upperreg_rs2_add",       "00000001EEEE00001000001111010011"),
+        ("upperreg_rd_add",        "000000000001000010001EEEE0110011"),
+        ("upperreg_rs1_mul",       "0000001000011EEEE000001111010011"),
+        ("upperreg_rs2_mul",       "00000011EEEE00001000001111010011"),
+        ("upperreg_rd_mul",        "000000100001000010001EEEE0110011"),
+        ("upperreg_rs1_fadd-s",    "0000000000011EEEE000001111010011"),
+        ("upperreg_rs2_fadd-s",    "00000001EEEE00001000001111010011"),
+        ("upperreg_rd_fadd-s",     "000000000001000010001EEEE1010011"),
+        ("upperreg_imm_rs1_addi0", "0000000000001EEEE000001111010011"),
+        ("upperreg_imm_rs1_addi1", "1111111111111EEEE000001111010011"),
+        ("upperreg_imm_rd_addi0",  "000000000000000010001EEEE0010011"),
+        ("upperreg_imm_rd_addi1",  "111111111111000010001EEEE0010011"),
+        ("upperreg_fmv_x_w_rs1",   "1110000000001EEEE000001111010011"),
+        ("upperreg_fmv_x_w_rd",    "111000000000000010001EEEE1010011"),
+        ("upperreg_fmv_w_x_rs1",   "1111000000001EEEE000001111010011"),
+        ("upperreg_fmv_w_x_rd",    "111100000000000010001EEEE1010011"),
     ]:
-        _emit_raw_words(lines, op_comment, template)
+        _emit_raw_words(lines, cmt, tmpl)
 
-    # ── Zacas: amocas with odd register IDs ──────────────────────────────────
-    _emit_raw_words(lines, "cp_amocas_odd: AMOCAS with odd rd/rs2",
-                    "00101RRRRRRRRRRREEEERRRRE0101111")
-
-    # ── Vector vset reserved encodings ───────────────────────────────────────
-    for op_comment, template in [
-        ("cp_v_vsetvl: reserved vsetvl variants",       "10EEEEERRRRRRRRRR111RRRRR1010111"),
-        ("cp_v_vsetvli_sew: vsetvli reserved SEW",      "0000RR1EERRRRRRRR111RRRRR1010111"),
-        ("cp_v_vsetvli_res: vsetvli reserved upper",    "EEE0RR0RRRRRRRRRR111RRRRR1010111"),
-        ("cp_v_vsetivli_sew: vsetivli reserved SEW",    "1100RR1EERRRRRRRR111RRRRR1010111"),
-        ("cp_v_vsetivli_res: vsetivli reserved upper",  "11EERR0RRRRRRRRRR111RRRRR1010111"),
-    ]:
-        _emit_raw_words(lines, op_comment, template)
-
-    # ── Reserved vector load/store widths ────────────────────────────────────
-    for width_tag, load_op, store_op in [
-        ("000", "RRR0RRRRRRRRRRRRR000RRRRR0000111", "RRR0RRRRRRRRRRRRR000RRRRR0100111"),
-        ("101", "RRR0RRRRRRRRRRRRR101RRRRR0000111", "RRR0RRRRRRRRRRRRR101RRRRR0100111"),
-        ("110", "RRR0RRRRRRRRRRRRR110RRRRR0000111", "RRR0RRRRRRRRRRRRR110RRRRR0100111"),
-        ("111", "RRR0RRRRRRRRRRRRR111RRRRR0000111", "RRR0RRRRRRRRRRRRR111RRRRR0100111"),
-        ("mew1_000", "RRR1RRRRRRRRRRRRR000RRRRR0000111", "RRR1RRRRRRRRRRRRR000RRRRR0100111"),
-        ("mew1_101", "RRR1RRRRRRRRRRRRR101RRRRR0000111", "RRR1RRRRRRRRRRRRR101RRRRR0100111"),
-        ("mew1_110", "RRR1RRRRRRRRRRRRR110RRRRR0000111", "RRR1RRRRRRRRRRRRR110RRRRR0100111"),
-        ("mew1_111", "RRR1RRRRRRRRRRRRR111RRRRR0000111", "RRR1RRRRRRRRRRRRR111RRRRR0100111"),
-    ]:
-        _emit_raw_words(lines, f"cp_vl_{width_tag}: reserved vector load width {width_tag}", load_op)
-        _emit_raw_words(lines, f"cp_vs_{width_tag}: reserved vector store width {width_tag}", store_op)
-
-    # ── Reserved vector load lumop ────────────────────────────────────────────
-    for sew_name, width3 in [("8","000"), ("16","101"), ("32","110"), ("64","111")]:
-        _emit_raw_words(lines, f"cp_vl_lumop_{sew_name}: reserved lumop for {sew_name}-bit vload",
-                        f"RRR0RR1EEEEERRRRR{width3}RRRRR0000111")
-        _emit_raw_words(lines, f"cp_vs_lumop_{sew_name}: reserved lumop for {sew_name}-bit vstore",
-                        f"RRR0RR1EEEEERRRRR{width3}RRRRR0100111")
-
-    # ── Per-SEW vector arithmetic ─────────────────────────────────────────────
-    for sew in ["8", "16", "32", "64"]:
-        lines.append(f"\n// Vector instructions with SEW = {sew}")
-        lines.append(f"\tvsetivli x0, 1, e{sew}, m1, ta, ma")
-        for vop_comment, vtemplate in [
-            ("cp_IVV_f6: OPIVV funct6",     "EEEEEEERRRRRRRRRR000RRRRR1010111"),
-            ("cp_FVV_f6: OPFVV funct6",     "EEEEEEERRRRRRRRRR001RRRRR1010111"),
-            ("cp_MVV_f6: OPMVV funct6",     "EEEEEEERRRRRRRRRR010RRRRR1010111"),
-            ("cp_IVI_f6: OPIVI funct6",     "EEEEEEERRRRRRRRRR011RRRRR1010111"),
-            ("cp_IVX_f6: OPIVX funct6",     "EEEEEEERRRRRRRRRR100RRRRR1010111"),
-            ("cp_FVF_f6: OPFVF funct6",     "EEEEEEERRRRRRRRRR101RRRRR1010111"),
-            ("cp_MVX_f6: OPMVX funct6",     "EEEEEEERRRRRRRRRR110RRRRR1010111"),
-            ("cp_MVV_VWRXUNARY0",           "010000ERRRRREEEEE010RRRRR1010111"),
-            ("cp_MVX_VRXUNARY0",            "010000EEEEEERRRRR110RRRRR1010111"),
-            ("cp_MVV_VXUNARY0",             "010010ERRRRREEEEE010RRRRR1010111"),
-            ("cp_MVV_VMUNARY0",             "010100ERRRRREEEEE010RRRRR1010111"),
-            ("cp_FVV_VWFUNARY0",            "010000ERRRRREEEEE001RRRRR1010111"),
-            ("cp_FVF_VRFUNARY0",            "010000EEEEEERRRRR101RRRRR1010111"),
-            ("cp_FVV_VFUNARY0",             "010010ERRRRREEEEE001RRRRR1010111"),
-            ("cp_FVV_VFUNARY1",             "010011ERRRRREEEEE001RRRRR1010111"),
-            ("cp_MVV_vaesvv: vaes.vv",      "101000ERRRRREEEEE010RRRRR1010111"),
-            ("cp_MVV_vaesvs: vaes.vs",      "101001ERRRRREEEEE010RRRRR1010111"),
-        ]:
-            _emit_raw_words(lines, vop_comment, vtemplate)
-
+    _emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRRRRRREEEERRRRE0101111")
     return lines
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# cp_illegal_compressed_instruction — reserved 16-bit encodings
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Compressed instruction sweep ──────────────────────────────────────────
 
 def _generate_compressed_instr(test_data: TestData) -> list[str]:
-    """Generate cp_illegal_compressed_instruction: all 16-bit quadrant sweeps."""
-    covergroup = "SsstrictSm_instr_cg"
+    """cp_illegal_compressed_instruction — all 16-bit quadrant sweeps."""
+    covergroup = "SsstrictSm_comp_instr_cg"
     coverpoint = "cp_illegal_compressed_instruction"
     lines: list[str] = []
 
-    lines.append(comment_banner(
-        coverpoint,
-        "Exhaustive test of all 16-bit instruction encodings in quadrants 00/01/10.\n"
-        "Excludes jumps/branches (random targets) and most load/stores (bad address).\n"
-        "Includes one sanity-check instruction for each excluded memory operation.",
-    ))
+    lines.append(comment_banner(coverpoint, "Exhaustive 16-bit quadrant sweep from M-mode."))
     lines.append(f"\t{test_data.add_testcase('compressed_sweep', coverpoint, covergroup)}")
+    lines.append("")
 
-    # Quadrant 00
-    _emit_raw_words(lines, "compressed00: all encodings in quadrant 00",
-                    "EEEEEEEEEEEEEE00", length=16,
+    _emit_raw_words(lines, "compressed00", "EEEEEEEEEEEEEE00", length=16,
                     exclusion=[
-                        "X01XXXXXXXXXXX00",  # c.fld, c.fsd — bad address
-                        "X10XXXXXXXXXXX00",  # c.lw, c.sw — bad address
-                        "10000XXXXXXXXX00",  # c.lbu, c.lh, c.lhu — bad address
-                        "100010XXXXXXXX00",  # c.sb — bad address
-                        "100011XXX0XXXX00",  # c.sh — bad address
+                        "X01XXXXXXXXXXX00",  # c.fld/c.fsd — bad address
+                        "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
+                        "011XXXXXXXXXXX00",  # c.ld (RV64) — loads from x8-x15+offset; base holds garbage → load fault
+                        "111XXXXXXXXXXX00",  # c.sd (RV64) — stores to x8-x15+offset; same → store fault
+                        # Zcb load/store ops — all use x8-x15 as base (garbage after INIT_REGS → fault)
+                        "10000XXXXXXXXX00",  # c.lbu
+                        "100010XXXXXXXX00",  # c.lh
+                        "100011XXX0XXXX00",  # c.lhu
+                        "10010XXXXXXXXX00",  # c.sb: bits[15:11]=10010, bit10=imm[5] varies
+                        "10011XXXXXXXXX00",  # c.sh: bits[15:11]=10011, bit10 varies
                     ])
-
-    # Quadrant 01
-    _emit_raw_words(lines, "compressed01: all encodings in quadrant 01",
-                    "EEEEEEEEEEEEEE01", length=16,
+    _emit_raw_words(lines, "compressed01", "EEEEEEEEEEEEEE01", length=16,
                     exclusion=[
                         "101XXXXXXXXXXX01",  # c.j — random jump
-                        "11XXXXXXXXXXXX01",  # c.beqz, c.bnez — random branch
-                        "001XXXXXXXXXXX01",  # c.jr (in 01) — random jump
+                        "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
+                        "001XXXXXXXXXXX01",  # c.jal (RV32 only) / reserved
+                        # c.li rd, imm — legal instruction writing imm to rd.
+                        # For rd=x1-x6 (critical regs), corrupts framework state.
+                        "010X00001XXXXX01",  # c.li x1 (ra)
+                        "010X00010XXXXX01",  # c.li x2 (sp) — FATAL: sp = small_imm
+                        "010X00011XXXXX01",  # c.li x3 (gp)
+                        "010X00100XXXXX01",  # c.li x4 (tp)
+                        "010X00101XXXXX01",  # c.li x5 (t0, fast handler)
+                        "010X00110XXXXX01",  # c.li x6 (t1, fast handler)
+                        # c.addi16sp (funct3=011, rd=x2) — modifies sp by offset
+                        "011X00010XXXXX01",  # c.addi16sp
+                        # c.lui (funct3=011, rd=x1-x6) — loads shifted imm to critical reg
+                        "011X00001XXXXX01",  # c.lui x1
+                        "011X00011XXXXX01",  # c.lui x3
+                        "011X00100XXXXX01",  # c.lui x4
+                        "011X00101XXXXX01",  # c.lui x5
+                        "011X00110XXXXX01",  # c.lui x6
+                        # c.addi (funct3=000, rd=x1-x6) — modifies critical reg
+                        "000X00001XXXXX01",  # c.addi x1
+                        "000X00010XXXXX01",  # c.addi x2 (sp += nzimm)
+                        "000X00011XXXXX01",  # c.addi x3
+                        "000X00100XXXXX01",  # c.addi x4
+                        "000X00101XXXXX01",  # c.addi x5
+                        "000X00110XXXXX01",  # c.addi x6
                     ])
-
-    # Quadrant 10
-    _emit_raw_words(lines, "compressed10: all encodings in quadrant 10",
-                    "EEEEEEEEEEEEEE10", length=16,
+    _emit_raw_words(lines, "compressed10", "EEEEEEEEEEEEEE10", length=16,
                     exclusion=[
-                        "1000XXXXX0000010",  # c.jr rs1=0 — illegal (tested separately)
-                        "1001XXXXX0000010",  # c.jalr rs1=0 — c.ebreak, tested elsewhere
-                        "X01XXXXXXXXXXX10",  # c.fldsp, c.fsdsp — bad address
-                        "X10XXXXXXXXXXX10",  # c.swsp, c.lwsp — bad address
-                        "1001000000000010",  # c.ebreak — legal, tested in ExceptionsSm
+                        "1000XXXXX0000010",  # c.jr rs1!=0 — random jump
+                        "1001XXXXX0000010",  # c.jalr/c.ebreak space
+                        "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — bad address
+                        "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — bad address
+                        "1001000000000010",  # c.ebreak
+                        "011XXXXXXXXXXX10",  # c.ldsp — legal RV64 load via sp; corrupts regs
+                        "111XXXXXXXXXXX10",  # c.sdsp — legal RV64 store via sp; store fault
+                        # c.add rd,rs2 with rd = critical framework register:
+                        # All regs are 0xF0E1D2C3B4A59687 after RVTEST_INIT_REGS,
+                        # adding that to sp/gp/etc corrupts it and breaks the epilog.
+                        "100100001XXXXX10",  # c.add x1 (ra)
+                        "100100010XXXXX10",  # c.add x2 (sp / DEFAULT_SIG_REG) — FATAL
+                        "100100011XXXXX10",  # c.add x3 (gp / DEFAULT_DATA_REG)
+                        "100100100XXXXX10",  # c.add x4 (tp / DEFAULT_TEMP_REG)
+                        "100100101XXXXX10",  # c.add x5 (t0 / DEFAULT_LINK_REG, fast handler)
+                        "100100110XXXXX10",  # c.add x6 (t1, fast handler scratch)
+                        # c.mv rd, rs2 (legal move) with rd = critical register:
+                        # After RVTEST_INIT_REGS, rs2 holds garbage values.
+                        # c.mv x2, rs2: sp = garbage -> epilog faults.
+                        "100000001XXXXX10",  # c.mv x1 (ra)
+                        "100000010XXXXX10",  # c.mv x2 (sp) — FATAL
+                        "100000011XXXXX10",  # c.mv x3 (gp)
+                        "100000100XXXXX10",  # c.mv x4 (tp)
+                        "100000101XXXXX10",  # c.mv x5 (t0, fast handler)
+                        "100000110XXXXX10",  # c.mv x6 (t1, fast handler)
+                        # c.slli rd,shamt where rd = critical framework register:
+                        # c.slli x2 shifts sp left by shamt → sp becomes garbage.
+                        "000X00001XXXXX10",  # c.slli x1 (ra)
+                        "000X00010XXXXX10",  # c.slli x2 (sp) — FATAL, shifts stack pointer
+                        "000X00011XXXXX10",  # c.slli x3 (gp)
+                        "000X00100XXXXX10",  # c.slli x4 (tp)
+                        "000X00101XXXXX10",  # c.slli x5 (t0, fast handler scratch)
+                        "000X00110XXXXX10",  # c.slli x6 (t1, fast handler scratch)
                     ])
 
-    # Sanity-check instructions for excluded memory ops
-    lines.extend([
-        "",
-        "// Sanity-check one encoding for each excluded memory operation",
-        "\t.hword 0b0010000000000000  # c.fld (one sample)",
-        "\t.hword 0b1010000000000000  # c.fsd (one sample)",
-        "\t.hword 0b0100000000000000  # c.lw  (one sample)",
-        "\t.hword 0b1100000000000000  # c.sw  (one sample)",
-        "\t.hword 0b1000000000000000  # c.lbu (one sample)",
-        "\t.hword 0b1000010000000000  # c.lhu (one sample)",
-        "\t.hword 0b1000010001000000  # c.lh  (one sample)",
-        "\t.hword 0b1000100000000000  # c.sb  (one sample)",
-        "\t.hword 0b1000110000000000  # c.sh  (one sample)",
-        "\t.hword 0b0100100000000010  # c.lwsp (one sample)",
-        "\t.hword 0b1100000000000010  # c.swsp (one sample)",
-        "\t.hword 0b0010000000000010  # c.fldsp (one sample)",
-        "\t.hword 0b1010000000000010  # c.fsdsp (one sample)",
-        "\t.hword 0b1001000000000010  # jalr with rs1=0 (illegal: actually c.ebreak encoding space)",
-        "\t.hword 0b1000000000000010  # almost c.jr but rs1=0: illegal instruction",
-    ])
+    lines.append("")
 
     return lines
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# cp_reserved_frm
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Reserved FP rounding modes ─────────────────────────────────────────────
 
 def _generate_reserved_frm(test_data: TestData) -> list[str]:
-    """Generate cp_reserved_frm: reserved FP rounding modes 0-7 with FADD.S."""
+    """cp_reserved_frm — FRM 0-7 with FADD.S dynamic rounding."""
     covergroup = "SsstrictSm_instr_cg"
     coverpoint = "cp_reserved_frm"
     lines: list[str] = []
 
-    lines.append(comment_banner(
-        coverpoint,
-        "Test each FRM value 0–7 with a FADD.S using dynamic rounding (rm=7).\n"
-        "FRM=5 and FRM=6 are reserved; FRM=7 with dynamic FRM=5/6/7 raises invalid FP exception.",
-    ))
+    lines.append(comment_banner(coverpoint,
+        "FRM=0-4 legal; FRM=5,6 reserved; FRM=7+DYN raises invalid FP exception."))
 
     for frm in range(8):
         lines.extend([
-            "",
-            f"// cp_reserved_frm: FRM = {frm}",
+            f"\n// FRM = {frm}",
             f"\t{test_data.add_testcase(f'frm_{frm}', coverpoint, covergroup)}",
-            f"\tcsrwi frm, {frm}        # set FRM to {frm}",
-            f"\tfadd.s f0, f1, f2       # use dynamic rounding mode (inherits FRM={frm})",
+            f"\tcsrwi frm, {frm}",
+            "\tfadd.s f0, f1, f2",
         ])
 
+    lines.append("")
     return lines
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# cp_misa_ext_disable
-# ─────────────────────────────────────────────────────────────────────────────
+# ── misa extension disable ─────────────────────────────────────────────────
 
 def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
-    """Generate cp_misa_ext_disable: disable each misa extension bit, run an instruction."""
+    """cp_misa_ext_disable — disable each misa bit, run representative instruction."""
     covergroup = "SsstrictSm_mcsr_cg"
     coverpoint = "cp_misa_ext_disable"
     lines: list[str] = []
 
-    lines.append(comment_banner(
-        coverpoint,
-        "For each MUTABLE_MISA_* extension, clear the misa bit, execute a representative\n"
-        "instruction (should raise illegal-instruction), then re-enable.\n"
-        "Gated by MUTABLE_MISA_* UDB parameters at compile time.\n"
-        "Note: Zbc (clmul) is NOT controlled by the B bit — it should still work when B=0.",
-    ))
+    lines.append(comment_banner(coverpoint,
+        "Disable each MUTABLE_MISA_* bit, execute representative instruction\n"
+        "(should raise illegal-instruction), then re-enable.\n"
+        "Zbc is NOT controlled by B — clmul should NOT trap when B=0."))
 
-    # misa bit positions: A=0, B=1, C=2, D=3, F=5, H=7, I=8, M=12, Q=16, S=18, U=20, V=21
-    ext_tests = [
-        ("A", 0,  "amoswap.w x0, x0, (x0)",       "A-ext: AMO instruction with A=0"),
-        ("C", 2,  "c.addi x8, 0",                  "C-ext: compressed instruction with C=0"),
-        ("D", 3,  ".word 0x02008053",               "D-ext: fadd.d f0,f1,f2 with D=0"),
-        ("F", 5,  "fadd.s f0, f1, f2",              "F-ext: fadd.s with F=0"),
-        ("M", 12, "mul x1, x2, x3",                "M-ext: mul with M=0"),
-        ("V", 21, "vadd.vv v0, v1, v2",             "V-ext: vector add with V=0"),
-    ]
-
-    for ext, bit, instr, desc in ext_tests:
-        misa_bit = 1 << bit
+    for ext, bit, instr in [
+        ("A",  0,  "amoswap.w x0, x0, (x0)"),
+        ("C",  2,  "c.addi x8, 0"),
+        ("D",  3,  ".word 0x02008053"),
+        ("F",  5,  "fadd.s f0, f1, f2"),
+        ("M",  12, "mul x7, x8, x9"),      # use safe regs
+    ]:
         lines.extend([
-            "",
-            f"// {desc}",
-            f"#ifdef MUTABLE_MISA_{ext}",
-            f"\t{test_data.add_testcase(f'misa_{ext}_disable', coverpoint, covergroup)}",
-            f"\tli t0, {misa_bit:#010x}    # misa.{ext} bit",
-            f"\tcsrc misa, t0              # disable {ext} extension",
-            f"\tnop                        # ensure pipeline sees new misa",
-            f"\t{instr}                     # should raise illegal-instruction",
-            f"\tnop",
-            f"\tcsrs misa, t0              # re-enable {ext} extension",
+            f"\n#ifdef MUTABLE_MISA_{ext}",
+            f"\t{test_data.add_testcase(f'misa_{ext}', coverpoint, covergroup)}",
+            f"\tli t2, {1 << bit:#010x}",   # t2=x7, safe
+            "\tcsrc misa, t2",
+            "\tnop",
+            f"\t{instr}",
+            "\tnop",
+            "\tcsrs misa, t2",
             "#endif",
         ])
 
-    # B-extension: test Zba, Zbb, Zbs (trap with B=0); Zbc (no trap, Zbc independent)
     lines.extend([
-        "",
-        "// B-ext: test sub-extensions Zba, Zbb, Zbs trap; Zbc does NOT trap",
-        "#ifdef MUTABLE_MISA_B",
+        "\n#ifdef MUTABLE_MISA_B",
+        "\tli t2, 0x2",
+        "\tcsrc misa, t2",
         f"\t{test_data.add_testcase('misa_B_zba', coverpoint, covergroup)}",
-        "\tli t0, 0x2              # misa.B bit",
-        "\tcsrc misa, t0",
-        "\tsh3add x1, x2, x3      # Zba instruction — should trap",
+        "\tsh3add x8, x9, x10",
         "\tnop",
         f"\t{test_data.add_testcase('misa_B_zbb', coverpoint, covergroup)}",
-        "\tandn x1, x2, x3        # Zbb instruction — should trap",
+        "\tandn x8, x9, x10",
         "\tnop",
         f"\t{test_data.add_testcase('misa_B_zbs', coverpoint, covergroup)}",
-        "\tbext x1, x2, x3        # Zbs instruction — should trap",
+        "\tbext x8, x9, x10",
         "\tnop",
         f"\t{test_data.add_testcase('misa_B_zbc', coverpoint, covergroup)}",
-        "\tclmul x1, x2, x3       # Zbc instruction — should NOT trap (independent of B)",
+        "\tclmul x8, x9, x10  // Zbc does NOT trap — independent of B",
         "\tnop",
-        "\tcsrs misa, t0           # re-enable B",
+        "\tcsrs misa, t2",
         "#endif",
-    ])
-
-    # I-extension disable: run instruction using x16-x31 (should trap with E active)
-    lines.extend([
-        "",
-        "// I-ext: with misa.I=0 (misa.E=1), x16-x31 access should trap",
-        "#ifdef MUTABLE_MISA_I",
+        "\n#ifdef MUTABLE_MISA_I",
         f"\t{test_data.add_testcase('misa_I_upperreg', coverpoint, covergroup)}",
-        "\tli t0, 0x100            # misa.I bit",
-        "\tcsrc misa, t0           # clear I → E activates",
-        "\t.word 0x01080833        # add x16, x16, x16 — should trap with E active",
+        "\tli t2, 0x100",
+        "\tcsrc misa, t2",
+        "\t.word 0x01080833   // add x16,x16,x16 — traps when E active",
         "\tnop",
-        "\tcsrs misa, t0           # re-enable I",
+        "\tcsrs misa, t2",
         "#endif",
+        "",
     ])
 
     return lines
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Main entry point
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Entry point ────────────────────────────────────────────────────────────
 
 @add_priv_test_generator(
     "SsstrictSm",
     required_extensions=["Sm", "Zicsr"],
-    march_extensions=["I", "M", "A", "F", "D", "C", "Zicsr", "Zba", "Zbb", "Zbc", "Zbs", "Zacas",
-                      "Zca", "Zcb", "Zcd", "Zcf"],
-    extra_defines=[
-        "#define RVTEST_PRIV_TEST",
-        "#define FAST_TRAP_HANDLER",   # signals test infrastructure to install fast handler
+    march_extensions=[
+        # Zcf excluded — RV32-only; framework compiles for RV32 and RV64.
+        # Vector excluded — covered by SsstrictV.
+        "I", "M", "A", "F", "D", "C",
+        "Zicsr", "Zba", "Zbb", "Zbc", "Zbs", "Zacas",
+        "Zca", "Zcb", "Zcd",
     ],
 )
 def make_ssstrictsm(test_data: TestData) -> list[str]:
-    """
-    Generate tests for SsstrictSm — machine-mode strict compliance tests.
-
-    This testsuite verifies that a RISC-V implementation correctly handles:
-    1. Every CSR address (read/write/set/clear) from M-mode
-    2. Every reserved and illegal 32-bit instruction encoding from M-mode
-    3. Every reserved 16-bit compressed instruction encoding from M-mode
-    4. Upper register (x16-x31) accesses with the E extension
-    5. misa extension disable/enable and resulting illegal instructions
-    6. Reserved floating-point rounding modes
-
-    Note: This generates a very large test body (~100k+ instructions).
-    The single-TestChunk approach is used; the framework note suggests splitting
-    for Ssstrict if needed. See generate/priv.py comment about Ssstrict.
-    """
-    # Seed RNG for reproducible randomized register choices
+    """SsstrictSm — machine-mode strict compliance tests."""
     seed(42)
-
     lines: list[str] = []
-
-    # Install fast trap handler for uncompressed illegal instructions
-    # This dramatically reduces runtime for the CSR sweep (2x speedup)
-    lines.extend([
-        "// Install fast trap handler for uncompressed illegal instructions.",
-        "// The normal trap handler costs ~40 instructions per trap; this costs ~5.",
-        "// This is safe here because SsstrictSm tests trap recovery, not trap cause details.",
-        "LA(t0, trap_handler_fastuncompressedillegalinstr)",
-        "CSRW(mtvec, t0)",
-        "",
-    ])
-
     lines.extend(_generate_csr_tests_m(test_data))
     lines.extend(_generate_illegal_instr(test_data))
     lines.extend(_generate_compressed_instr(test_data))
     lines.extend(_generate_reserved_frm(test_data))
     lines.extend(_generate_misa_ext_disable(test_data))
-
     return lines

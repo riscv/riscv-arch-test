@@ -154,10 +154,6 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
-  - { name: Zvl256b, version: "= 1.0.0" }
-  - { name: Zvl512b, version: "= 1.0.0" }
-  - { name: Zvl1024b, version: "= 1.0.0" }
-
 params:
   # A params
   MISALIGNED_AMO: false
@@ -405,7 +401,7 @@ params:
     ]
   # Vector params
   MUTABLE_MISA_V: false
-  VLEN: 1024
+  VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
   HW_MSTATUS_VS_DIRTY_UPDATE: precise

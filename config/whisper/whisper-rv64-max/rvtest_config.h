@@ -6,9 +6,9 @@
 #define FLEN64
 #define VLEN256
 
-#define SV39
-#define SV48
-#define SV57
+#define SV39_SUPPORTED
+#define SV48_SUPPORTED
+#define SV57_SUPPORTED
 
 #define RAM_BASE_ADDR       0x80000000
 #define LARGEST_PROGRAM     0x00010000

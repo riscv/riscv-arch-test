@@ -1456,7 +1456,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 3*sv_area_sz)               // VS/VU mode sv_area
         add     T4, T4, sp
-        bnez    T2, skp_adj_\__MODE__\()epc     // mode is bare, fall through to force reloc
+        bnez    T2, sv_\__MODE__\()epc          // mode is bare, fall through to force reloc
   #endif   /* end of Smode_implemented handling */
 .endif     /* end of MMode epc reloc handler    */
 
@@ -1464,7 +1464,7 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE; if !=bare, VA, skip reloc */
         csrr    T2, CSR_HGATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc     // its a VA, skip adj
+        bnez    T2, sv_\__MODE__\()epc          // its a VA, skip adj
  // extract and test hstatus.SPV; if 0, no lower mode, so bare mode, force reloc
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, XLEN-MPV_LSB-1
@@ -1474,7 +1474,7 @@ common_\__MODE__\()excpt_handler:
         srli    T2, T2, MODE_LSB
         LI(     T4, 2*sv_area_sz)
         add     T4, T4, sp                      // T4 points to VS/VU mode sv_area
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
 .endif
 
@@ -1482,7 +1482,7 @@ common_\__MODE__\()excpt_handler:
 //  extract and test curr level satp.MODE!=bare; if so, skip reloc */
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
 // mode is bare, fall through to force reloc
 .endif
 
@@ -1490,11 +1490,11 @@ common_\__MODE__\()excpt_handler:
  //  extract and test curr level satp.MODE!=bare; if so, skip reloc
         csrr    T2, CSR_SATP
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // extract and test higher level satp.mode!=bare
         LREG    T2, sved_hgatp_off(sp)     /*saved when HS chgs its SATP */
         srli    T2, T2, MODE_LSB
-        bnez    T2, skp_adj_\__MODE__\()epc
+        bnez    T2, sv_\__MODE__\()epc
  // mode is bare, fall through to force reloc
   .endif
 

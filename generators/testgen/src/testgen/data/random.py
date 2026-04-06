@@ -6,7 +6,7 @@
 ##################################
 
 
-from random import choice, randint
+from random import randint
 
 
 def random_int(bits: int, *, signed: bool = True, nonzero: bool = False) -> int:
@@ -63,13 +63,14 @@ def random_range(min_val: int, max_val: int, *, nonzero: bool = False) -> int:
         if min_val == 0:
             # Only positive values: [1, max_val]
             return randint(1, max_val)
-        elif max_val == 0:
+        if max_val == 0:
             # Only negative values: [min_val, -1]
             return randint(min_val, -1)
-        else:
-            # Both negative and positive - use list comprehension for uniform distribution
-            valid_values = [v for v in range(min_val, max_val + 1) if v != 0]
-            return choice(valid_values)
+        # Both negative and positive values exist — pick from either side
+        val = 0
+        while val == 0:
+            val = randint(min_val, max_val)
+        return val
     else:
         # Fast path: no filtering needed
         return randint(min_val, max_val)

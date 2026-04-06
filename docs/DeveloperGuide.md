@@ -592,7 +592,15 @@ The Makefile and CI workflow auto-discover configs from the `config/` directory.
 
 ### Adding a Config for Running Locally
 
-Create a configuration directory following the instructions in the [Configuration section of the README](../README.md#configuration). In addition to the config files described there, add a `run_cmd.txt` file containing a single-line shell command to run an ELF. The ELF is appended to the end of the command. The command is used as an input to `run_tests.py`. See `config/spike/spike-rv64-max/run_cmd.txt` for a reference example.
+Create a configuration directory following the instructions in the [Configuration section of the README](../README.md#configuration). In addition to the config files described there, add a `run_cmd.txt` file containing a single-line shell command to run an ELF. The ELF path is appended to the end of the command by `run_tests.py`. See `config/spike/spike-rv64-max/run_cmd.txt` for a reference example.
+
+The command can include `{debug:...}` placeholders for DUT-specific trace flags that are only enabled when running with `DEBUG=1`. For example:
+
+```
+spike {debug:-l --log-commits} --isa=rv64gc
+```
+
+When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
 
 Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
 

@@ -1,1 +1,1 @@
-whisper --config config/whisper/whisper-rv64-max/whisper.json
+whisper {debug:--log --loglabel} --config config/whisper/whisper-rv64-max/whisper.json

@@ -153,7 +153,7 @@ regression: clean tests
 	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(RUN_CMD_FILES))" \
 	$(MAKE) elfs || exit_code=1; \
 	$(foreach f,$(RUN_CMD_FILES),\
-	  ./run_tests.py "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py $(if $(DEBUG),--debug) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$exit_code
 
 
@@ -190,7 +190,7 @@ $(1): tests
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\
-	  ./run_tests.py "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py $(if $(DEBUG),--debug) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$$$exit_code
 endef
 

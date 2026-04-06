@@ -111,7 +111,7 @@ qemu-rv64: elfs
 WHISPER_64_CMD := whisper --config config/whisper/whisper-rv64-max/whisper.json
 WHISPER_32_CMD := whisper --config config/whisper/whisper-rv32-max/whisper.json
 
-whisper: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
+whisper: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml config/whisper/whisper-rv32-max/test_config.yaml
 whisper: elfs
 	@exit_code=0; \
 	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs || exit_code=1; \

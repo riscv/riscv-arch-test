@@ -212,21 +212,21 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
-    _emit_raw_words(lines, "cp_load funct3",           "RRRRRRRRRRRRRRRRREEERRRRR0000011")
-    _emit_raw_words(lines, "cp_fload funct3",          "RRRRRRRRRRRRRRRRREEERRRRR0000111")
+    _emit_raw_words(lines, "cp_load funct3",           "RRRRRRRRRRRR00000111001110000011")
+    _emit_raw_words(lines, "cp_fload funct3",          "RRRRRRRRRRRR00000001001110000111")
     _emit_raw_words(lines, "cp_fence_cbo funct3",      "RRRRRRRRRRRRRRRRREEERRRRR0001111")
     _emit_raw_words(lines, "cp_cbo_immediate (rs1=0)", "EEEEEEEEEEEE00000010000000001111")
     _emit_raw_words(lines, "cp_cbo_rd",                "00000000000RRRRRR010EEEEE0001111")
-    _emit_raw_words(lines, "cp_store funct3 (rs1=0)",  "RRRRRRRRRRRR00000EEERRRRR0100011")
-    _emit_raw_words(lines, "cp_fstore funct3 (rs1=0)", "RRRRRRRRRRRR00000EEERRRRR0100111")
+    _emit_raw_words(lines, "cp_store funct3 (rs1=0)",  "RRRRRRRRRRRR00000100RRRRR0100011")
+    _emit_raw_words(lines, "cp_fstore funct3 (rs1=0)", "RRRRRRRRRRRR00000001RRRRR0100111")
     _emit_raw_words(lines, "cp_Itype funct3[2:1]=01",  "EEEEEEEEEEEERRRRRE01001110010011")
     _emit_raw_words(lines, "cp_Itypef3",               "RRRRRRRRRRRRRRRRREEE001110010011")
     _emit_raw_words(lines, "cp_aes64ks1i rnum",        "0011000EEEEERRRRR001001110010011")
     _emit_raw_words(lines, "cp_IWtype funct3",         "RRRRRRRRRRRRRRRRREEE001110011011")
     _emit_raw_words(lines, "cp_IWshift",               "EEEEEEERRRRRRRRRRE01001110011011")
-    _emit_raw_words(lines, "cp_atomic_funct3 (rs1=0)", "RRRRRRRRRRRR00000EEE001110101111")
-    _emit_raw_words(lines, "cp_atomic_funct7 (rs1=0)", "EEEEERRRRRRR0000001E001110101111")
-    _emit_raw_words(lines, "cp_lrsc",                  "00010RREEEEE0000001E001110101111")
+    _emit_raw_words(lines, "cp_atomic_funct3 (rs1=0)", "RRRRRRRRRRRR00000000001110101111")
+    _emit_raw_words(lines, "cp_atomic_funct7 (rs1=0)", "EEEEERRRRRRR00000000001110101111")
+    _emit_raw_words(lines, "cp_lrsc",                  "00010RREEEEE00000000001110101111")
     _emit_raw_words(lines, "cp_rtype",  "EEEEEEERRRRRRRRRREEE001110110011")
     _emit_raw_words(lines, "cp_rwtype", "EEEEEEERRRRRRRRRREEE001110111011")
     _emit_raw_words(lines, "cp_ftype",        "EEEEERRRRRRRRRRRREEE001111010011")
@@ -300,7 +300,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     ]:
         _emit_raw_words(lines, cmt, tmpl)
 
-    _emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRRRRRREEEERRRRE0101111")
+    _emit_raw_words(lines, "cp_amocas_odd", "00101RRRRRRR00000000RRRRE0101111")
     return lines
 
 

@@ -32,7 +32,7 @@ from testgen.priv.registry import (
 _SPLIT_TESTSUITES: frozenset[str] = frozenset({"SsstrictSm", "SsstrictS", "SsstrictU"})
 
 # Maximum body lines per generated .S file for split testsuites.
-# 1000 lines keeps file count low (~15 files) which minimises per-file startup
+# 5000 lines keeps file count low (~15 files) which minimises per-file startup
 # overhead on slower simulators (spike, QEMU).  Each file still completes in
 # well under one second on Sail even when every instruction traps.
 _LINES_PER_FILE: int = 1000
@@ -164,12 +164,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     test_data = TestData(test_config)
     tc = test_data.begin_test_chunk()
 
-    # Reserve registers for priv tests:
-    #   - x0: avoid so desired values are actually loaded into registers
-    #   - x1/ra: used as the return address for function calls
-    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
-    #   - x16-x31: ensure the same test can be used for I or E bases
-    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
+    priv_exclude_regs = [0, 1]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

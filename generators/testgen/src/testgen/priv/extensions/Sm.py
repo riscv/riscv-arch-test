@@ -19,7 +19,7 @@ def gen_misa_dependencies(
     misa: str, mask: str, cpbin: str, comment: str, coverpoint: str, covergroup: str, test_data: TestData
 ) -> str:
     """Generate tests for misa dependencies."""
-    r1, rmask, rfail = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    r1, rmask, rfail = test_data.int_regs.get_registers(3)
     lines = [
         f"# Write {comment}. Error if this reads back the same.",
         f"LI(x{rfail}, {misa}) # Illegal value to write to misa and read back",
@@ -607,11 +607,10 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    r1, r2, rc = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    r1, r2, rc = test_data.int_regs.get_registers(3)
 
     lines.extend(
         [
-            "# Load 1s into msb and msb-1 corresponding to misa.MXL bitfields",
             f"LI(x{rc}, 0b100)      # bitmask for C extension bit in misa",
             "",
             f"csrs misa, x{rc}     # set misa.C if possible",

@@ -22,6 +22,12 @@ These test CSRs and privileged instructions in machine mode.
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1563313604#gid=1563313604[Google Sheet Testplan]
 ,===
 
+[NOTE]
+====
+For `misa`, only the `MXL` field is checked.  The other bits are allowed to be 0s even if a feature is implemented, and
+their write behavior is not specified.
+====
+
 TODO: Plan how to check WARL, WPRI, WLRL fields.  It seems every CSR needs parameters, either to tell the reference model how they should behave (to generate expected values), or to tell the tests and coverpoints which values are legal to test.
 
 include::norm/Sm_norm_rules.adoc[]

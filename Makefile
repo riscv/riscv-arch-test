@@ -22,7 +22,7 @@ WORKDIR     ?= work
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-EXTENSIONS  ?=
+EXTENSIONS  ?= I
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo
 
 # DEBUG and FAST are runtime options for controlling build output. They are mutually exclusive. Set to True to enable either option.
@@ -145,90 +145,56 @@ coverage: elfs
 
 
 ########### Regression ###########
-# Run all tests
+# Clean, run coverage, then run all configs that have a run_cmd.txt, continuing through failures.
 .PHONY: regression
-regression:
-	$(MAKE) clean
+regression: clean tests
 	@exit_code=0; \
 	$(MAKE) coverage || exit_code=1; \
-	$(foreach sim,$(SIMULATORS),$(MAKE) $(sim) || exit_code=1; ) \
+	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(RUN_CMD_FILES))" \
+	$(MAKE) elfs || exit_code=1; \
+	$(foreach f,$(RUN_CMD_FILES),\
+	  ./run_tests.py "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$exit_code
 
 
 
 ########### Simulators ###########
-# Run commands are driven from config files:
-#   config/<simulator>/<config>/run_cmd.txt  — the shell command to run ELFs
+# Targets are auto-generated from discovered run_cmd.txt files. Every directory name
+# in the config path becomes a Make target that runs all configs beneath it:
+#   make spike-rv64-max   — single config
+#   make spike            — all spike configs
+#   make cvw              — all cvw configs
+#   make cores            — all configs under cores/
 #
-# Targets are auto-generated from the discovered run_cmd.txt files:
-#   make spike-rv64-max        — build ELFs and run tests for a single config
-#   make spike                 — build and run all configs for a simulator
-#   make regression            — run all simulators
-#
-# Note on escaping in the define blocks below:
-#   $$ is needed to defer expansion to recipe execution time (standard Make escaping).
-#   $$$$ produces a literal $$ in the shell, which is needed for command substitution
-#   inside shell commands that are themselves inside Make $(foreach) expansions.
+# Note on escaping: $$ defers expansion past $(eval $(call ...)); $$$$ yields a literal $ in the shell.
 
 # Find all configs that provide a run command
 RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
 
-# Extract unique simulator names from the second path component
-# e.g., config/spike/spike-rv64-max/run_cmd.txt -> spike
-SIMULATORS := $(sort $(foreach f,$(RUN_CMD_FILES),$(word 2,$(subst /, ,$(f)))))
+# Map each directory name in the path to its run_cmd.txt files.
+# e.g., config/cores/cvw/cvw-rv64gc/run_cmd.txt populates _TARGETS_cores, _TARGETS_cvw, _TARGETS_cvw-rv64gc
+$(foreach f,$(RUN_CMD_FILES),\
+  $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
+    $(eval _TARGETS_$(d) += $(f))))
 
-# Extract unique config names from the leaf directory of each run_cmd.txt path
-# e.g., config/spike/spike-rv64-max/run_cmd.txt -> spike-rv64-max
-ALL_CONFIGS := $(sort $(foreach f,$(RUN_CMD_FILES),$(notdir $(patsubst %/run_cmd.txt,%,$(f)))))
+# Collect all unique target names
+ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\
+  $(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f))))))
 
-# --- Helper functions ---
+# Each target generates tests, builds ELFs, and runs each config (continuing through failures).
+.PHONY: $(ALL_RUN_TARGETS)
 
-# Look up the full config directory path for a config name
-# e.g., $(call config-dir,spike-rv64-max) -> config/spike/spike-rv64-max
-config-dir = $(patsubst %/run_cmd.txt,%,$(filter %/$1/run_cmd.txt,$(RUN_CMD_FILES)))
-
-# Get all run_cmd.txt paths for a given simulator
-# e.g., $(call sim-run-cmds,spike) -> config/spike/spike-rv32-max/run_cmd.txt config/spike/spike-rv64-max/run_cmd.txt
-sim-run-cmds = $(filter config/$1/%,$(RUN_CMD_FILES))
-
-# Get all test_config.yaml paths for a given simulator (replacing run_cmd.txt with test_config.yaml)
-sim-test-configs = $(patsubst %/run_cmd.txt,%/test_config.yaml,$(call sim-run-cmds,$1))
-
-# Get all config names (leaf directories) for a given simulator
-# e.g., $(call sim-config-names,spike) -> spike-rv32-max spike-rv64-max
-sim-config-names = $(foreach f,$(call sim-run-cmds,$1),$(notdir $(patsubst %/run_cmd.txt,%,$(f))))
-
-# --- Per-config targets (make <config-name>) ---
-# Generates tests, builds ELFs for a single config, and runs them.
-.PHONY: $(ALL_CONFIGS)
-
-define config-target
-$(1): EXTENSIONS =
+define run-target
 $(1): tests
-	$$(eval _DIR := $$(call config-dir,$(1)))
-	@EXTENSIONS="" \
-	CONFIG_FILES="$$(_DIR)/test_config.yaml" \
-	$$(MAKE) elfs
-	./run_tests.py "$$$$(cat $$(_DIR)/run_cmd.txt)" $$(WORKDIR)/$(1)/elfs
-endef
-
-$(foreach cfg,$(ALL_CONFIGS),$(eval $(call config-target,$(cfg))))
-
-# --- Per-simulator targets (make <simulator>) ---
-# Generates tests, builds ELFs for all of a simulator's configs, then runs each one.
-# Continues through failures and reports a non-zero exit code if any run failed.
-define sim-target
-.PHONY: $(1)
-$(1): tests
-	CONFIG_FILES="$(call sim-test-configs,$(1))" \
+	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(_TARGETS_$(1)))" \
 	$$(MAKE) elfs
 	@exit_code=0; \
-	$(foreach cfg,$(call sim-config-names,$(1)),\
-	  ./run_tests.py "$$$$(cat $$(call config-dir,$(cfg))/run_cmd.txt)" $$(WORKDIR)/$(cfg)/elfs || exit_code=1; ) \
+	$(foreach f,$(_TARGETS_$(1)),\
+	  ./run_tests.py "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$$$exit_code
 endef
 
-$(foreach sim,$(SIMULATORS),$(eval $(call sim-target,$(sim))))
+$(foreach t,$(ALL_RUN_TARGETS),$(eval $(call run-target,$(t))))
 
 
 

@@ -25,3 +25,4 @@ cd ..
 git clone https://github.com/openhwgroup/cvw.git "$INSTALL_DIR/cvw"
 cd "$INSTALL_DIR/cvw"
 git checkout "$CVW_COMMIT"
+git submodule update --init addins/verilog-ethernet

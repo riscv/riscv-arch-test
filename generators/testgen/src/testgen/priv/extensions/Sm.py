@@ -539,6 +539,15 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
                 test_data,
             ),
             gen_misa_dependencies(
+                "0b00000000000000000000000000",
+                "0b00000000000000000000000000",
+                "i0e0",
+                "I = 0, E = 0",
+                coverpoint,
+                covergroup,
+                test_data,
+            ),
+            gen_misa_dependencies(
                 "0b00000000000000000000001000",
                 "0b00000000000000000000101000",
                 "f0d1",

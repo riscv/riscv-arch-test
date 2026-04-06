@@ -1,0 +1,1 @@
+IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose {debug:--trace --tracemode --tracechange --traceshowicount} --program

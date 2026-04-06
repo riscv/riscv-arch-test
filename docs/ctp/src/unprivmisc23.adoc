@@ -25,20 +25,17 @@ include::norm/ZacasZabha_norm_rules.adoc[]
 
 ==== Zimop Maybe-Ops
 
-Should write 0 to rd unless implemented.
+Should write 0 to rd unless an extension redefines them.
 
-[[t-Zimop-coverpoints]]
-.Zimop Coverpoints
-//,===
 include::{testplansdir}/Zimop.adoc[]
-//,===
+
+include::norm/Zimop_norm_rules.adoc[]
+
 
 ==== Zcmop Compressed Maybe-Ops
 
-Should write 0 to rd unless implemented.
+Should write 0 to rd unless an extension redefines them.
 
-[[t-Zcmop-coverpoints]]
-.Zcmop Coverpoints
-//,===
 include::{testplansdir}/Zcmop.adoc[]
-//,===
+
+include::norm/Zcmop_norm_rules.adoc[]

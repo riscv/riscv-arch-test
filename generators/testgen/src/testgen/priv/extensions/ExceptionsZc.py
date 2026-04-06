@@ -437,7 +437,7 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
     """Main entry point for Zc exception test generation."""
     lines = []
 
-    addr_reg, val_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, val_reg = test_data.int_regs.get_registers(2)
 
     lines.extend(
         [

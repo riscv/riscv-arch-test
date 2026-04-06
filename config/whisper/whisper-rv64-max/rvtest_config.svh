@@ -11,9 +11,9 @@
 `define VLEN256
 
 // Virtual Memory Modes
-`define SV39
-`define SV48
-`define SV57
+`define SV39_SUPPORTED
+`define SV48_SUPPORTED
+`define SV57_SUPPORTED
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -79,7 +79,6 @@
 `define ZCA_SUPPORTED
 `define ZCB_SUPPORTED
 `define ZCD_SUPPORTED
-`define ZCF_SUPPORTED
 `define ZCLSD_SUPPORTED
 `define ZCMOP_SUPPORTED
 `define ZFA_SUPPORTED

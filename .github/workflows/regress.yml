@@ -83,6 +83,12 @@ jobs:
             sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
           done
 
+      - name: Install runtime dependencies
+        if: matrix.runtime_deps != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.runtime_deps }}
+
       - name: Restore cached simulator
         if: matrix.cache_key != ''
         id: cache-restore

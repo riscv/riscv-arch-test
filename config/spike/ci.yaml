@@ -7,3 +7,4 @@ ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
 exclude_extensions: "Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo"
 install_script: ".github/scripts/install-spike.sh"
+runtime_deps: "libboost-regex-dev libboost-system-dev"

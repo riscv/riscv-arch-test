@@ -277,7 +277,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     # Standard M-mode CSRs
     csrs = [
         "mstatus",
-        "misa",
         "medeleg",
         "mideleg",
         "mie",

@@ -104,6 +104,22 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+
+##### Whisper targets #####
+.PHONY: whisper whisper-rv64
+
+WHISPER_64_CMD := whisper --config config/whisper/whisper-rv64-max/whisper.json
+
+whisper: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
+whisper: elfs
+	@exit_code=0; \
+	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+whisper-rv64: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
+whisper-rv64: elfs
+	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs
+
 ##### imperas test targets #####
 .PHONY: imperas imperas-rv32 imperas-rv64
 

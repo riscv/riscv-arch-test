@@ -1,0 +1,1 @@
+spike --isa=rv32imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcf_zcd_zaamo_zalrsc

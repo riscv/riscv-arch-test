@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for Sail reference model
+
+ci_enabled: true
+exclude_extensions: ""
+exclude_configs:
+  - sail-rv32e # UDB does not support E yet

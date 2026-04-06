@@ -5,7 +5,7 @@
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 #
-# Run all ELFs for a spike configuration in parallel
+# Run all ELFs from a directory using the input command in parallel
 ##################################
 
 from __future__ import annotations
@@ -21,9 +21,20 @@ from multiprocessing import Pool
 from pathlib import Path
 
 _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
+_DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
+
+
+def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
+    """Expand {debug:...} placeholders in a command string.
+
+    When debug is True, {debug:--flag1 --flag2} expands to '--flag1 --flag2'.
+    When debug is False, the placeholder is removed entirely.
+    """
+    result = _DEBUG_PLACEHOLDER_RE.sub(lambda m: m.group(1) if debug else "", command)
+    return " ".join(result.split())
 
 
 def _color(code: str, text: str) -> str:
@@ -139,8 +150,15 @@ def main() -> int:
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
     parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
     parser.add_argument("-v", "--verbose", action="store_true", help="Print the full command for every test")
+    parser.add_argument(
+        "-d", "--debug", action="store_true", help="Enable debug mode: expand {debug:...} placeholders in the command"
+    )
     args = parser.parse_args()
 
+    # Expand {debug:...} placeholders based on --debug flag
+    command = _expand_debug_placeholders(args.command, debug=args.debug)
+
+    # Set up directories
     elf_dir = args.elf_dir.resolve()
     log_dir = elf_dir.parent / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -151,12 +169,12 @@ def main() -> int:
         print(f"No ELF files found in {elf_dir}")
         sys.exit(1)
 
-    partial_run_test = partial(run_test, args.command, log_dir, verbose=args.verbose)
+    partial_run_test = partial(run_test, command, log_dir, verbose=args.verbose)
 
     failed = 0
 
     print(f"\n{bold('Running')} {len(elf_files)} tests in {elf_dir}")
-    print(f"  Command: {args.command}")
+    print(f"  Command: {command}")
 
     # Run individual tests
     with Pool(args.jobs) as pool:

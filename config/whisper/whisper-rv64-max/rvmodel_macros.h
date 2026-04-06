@@ -64,6 +64,10 @@
 
 ##### Machine Timer #####
 
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
+
+#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
+
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)
 
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)

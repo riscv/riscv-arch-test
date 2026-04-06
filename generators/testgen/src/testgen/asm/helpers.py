@@ -8,6 +8,8 @@
 
 """Assembly generation helpers for test code."""
 
+from __future__ import annotations
+
 from typing import Literal
 
 from testgen.constants import INDENT
@@ -72,7 +74,8 @@ def load_float_reg(
 
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.data_values.append(val)
-    return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val, test_data.flen)}"
+    fp_load_bits = {"half": 16, "single": 32, "double": 64, "quad": 128}.get(fp_load_type, test_data.flen)
+    return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val & ((1 << fp_load_bits) - 1), fp_load_bits)}"
 
 
 def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:

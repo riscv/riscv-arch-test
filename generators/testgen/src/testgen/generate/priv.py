@@ -164,7 +164,12 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     test_data = TestData(test_config)
     tc = test_data.begin_test_chunk()
 
-    priv_exclude_regs = [0, 1]
+    # Reserve registers for priv tests:
+    #   - x0: avoid so desired values are actually loaded into registers
+    #   - x1/ra: used as the return address for function calls
+    #   - x6, x7, x9: used by the RVTEST_GOTO_LOWER_MODE macro
+    #   - x16-x31: ensure the same test can be used for I or E bases
+    priv_exclude_regs = [0, 1, 6, 7, 9, *range(16, 32)]
     test_data.int_regs.consume_registers(priv_exclude_regs)
     seed(reproducible_hash(testsuite))
 

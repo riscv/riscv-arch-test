@@ -462,7 +462,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    rmisasave, rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    rmisasave, rmsb, rmsb2, rboth, rr = test_data.int_regs.get_registers(5)
 
     lines.extend(
         [

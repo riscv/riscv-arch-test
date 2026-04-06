@@ -56,11 +56,11 @@ jobs:
       matrix: ${{ fromJson(needs.discover-configs.outputs.matrix) }}
 
     steps:
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
-
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Install sail-riscv model
         run: |

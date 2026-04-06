@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for QEMU simulator
+# Shared across all QEMU configs
+
+ci_enabled: true
+# TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
+exclude_extensions: "Sm,ExceptionsZc,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo"
+install_script: ".github/scripts/install-qemu.sh"

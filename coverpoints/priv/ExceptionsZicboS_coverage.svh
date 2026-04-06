@@ -18,11 +18,11 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
     // building blocks for the main coverpoints
     `ifdef ZICBOM_SUPPORTED
         cbo_inval: coverpoint ins.current.insn {
-            wildcard bins cbo_inval = {32'b000000000000_?????_010_00000_0001111};
+            wildcard bins cbo_inval = {CBO_INVAL};
         }
         cbo_flushclean: coverpoint ins.current.insn {
-            wildcard bins cbo_flush = {32'b000000000010_?????_010_00000_0001111};
-            wildcard bins cbo_clean = {32'b000000000001_?????_010_00000_0001111};
+            wildcard bins cbo_flush = {CBO_FLUSH};
+            wildcard bins cbo_clean = {CBO_CLEAN};
         }
         menvcfg_cbie: coverpoint ins.current.csr[12'h30A][5:4] {
             ignore_bins reserved = {2'b10};
@@ -37,7 +37,7 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
     `endif
     `ifdef ZICBOZ_SUPPORTED
         cbo_zero: coverpoint ins.current.insn {
-            wildcard bins cbo_zero = {32'b000000000100_?????_010_00000_0001111};
+            wildcard bins cbo_zero = {CBO_ZERO};
         }
         menvcfg_cbze: coverpoint ins.current.csr[12'h30A][7] {
         }
@@ -59,16 +59,16 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
     }
     cbo_instrs: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
-            wildcard bins inval = {32'b000000000000_?????_010_00000_0001111};
-            wildcard bins clean  = {32'b000000000001_?????_010_00000_0001111};
-            wildcard bins flush  = {32'b000000000010_?????_010_00000_0001111};
+            wildcard bins inval = {CBO_INVAL};
+            wildcard bins clean  = {CBO_CLEAN};
+            wildcard bins flush  = {CBO_FLUSH};
         `endif
         `ifdef ZICBOZ_SUPPORTED
-            wildcard bins zero   = {32'b000000000100_?????_010_00000_0001111};
+            wildcard bins zero   = {CBO_ZERO};
         `endif
-        wildcard bins prefetch_i  = {32'b???????_00000_?????_110_00000_0010011};
-        wildcard bins prefetch_w  = {32'b???????_00001_?????_110_00000_0010011};
-        wildcard bins prefetch_r  = {32'b???????_00011_?????_110_00000_0010011};
+        wildcard bins prefetch_i  = {PREFETCH_I};
+        wildcard bins prefetch_w  = {PREFETCH_W};
+        wildcard bins prefetch_r  = {PREFETCH_R};
     }
 
     // main coverpoints

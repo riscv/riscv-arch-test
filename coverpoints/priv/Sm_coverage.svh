@@ -174,6 +174,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
+        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};

@@ -56,8 +56,32 @@ jobs:
       matrix: ${{ fromJson(needs.discover-configs.outputs.matrix) }}
 
     steps:
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Install sail-riscv model
+        run: |
+          sudo mkdir -p /usr/local
+          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
+          | sudo tar xvz --directory=/usr/local --strip-components=1
+
+      - name: Install RISC-V GCC toolchain
+        run: |
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+          | sudo tar xvJ --directory=/usr/local --strip-components=1
+
+      - name: Install Clang
+        env:
+          LLVM_VERSION: "21"
+        run: |
+          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
+          sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+          for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
+            sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
+          done
 
       - name: Restore cached simulator
         if: matrix.cache_key != ''
@@ -81,9 +105,6 @@ jobs:
       - name: Add simulator to PATH
         if: matrix.install_script != ''
         run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
-
-      - name: Common setup
-        uses: ./.github/actions/setup-common
 
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)

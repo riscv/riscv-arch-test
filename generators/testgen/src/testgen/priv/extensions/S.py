@@ -18,7 +18,7 @@ from testgen.priv.registry import add_priv_test_generator
 def _generate_scause_tests(test_data: TestData) -> list[str]:
     """Generate tests for scause CSR."""
     covergroup = "S_scause_cg"
-    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
 
     ######################################
     coverpoint = "cp_scause_write_exception"
@@ -84,7 +84,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sstatus_cg"
     coverpoint = "cp_sstatus_sd_write"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -178,7 +178,7 @@ def _generate_mretm_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_mret_m"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -233,7 +233,7 @@ def _generate_sretm_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_m"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -291,7 +291,7 @@ def _generate_srets_tests(test_data: TestData) -> list[str]:
     covergroup = "S_sprivinst_cg"
     coverpoint = "cp_sret_s"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -422,7 +422,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    walk_reg, mask_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines.extend(
         [
@@ -485,7 +485,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             "Attempt to write read-only CSRs.  Should throw illegal instruction",
         ),
     )
-    r1 = test_data.int_regs.get_register(exclude_regs=[0])
+    r1 = test_data.int_regs.get_register()
 
     lines.append(f"LI(x{r1}, -1)          # x{r1} = all 1s")
     for csr in range(0xC00, 0xF00):
@@ -522,7 +522,7 @@ def _generate_scsr_tests(test_data: TestData) -> list[str]:
             "Check that values written to shadowed registers are consistent between machine and supervisor mode",
         ),
     )
-    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    r1, r2 = test_data.int_regs.get_registers(2)
     lines.extend(
         [
             f"LI(x{r1}, -1)          # x{r1} = all 1s for writing to shadowed registers",

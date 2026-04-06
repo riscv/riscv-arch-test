@@ -104,10 +104,33 @@ qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
 qemu-rv64: elfs
 	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
 
+
+##### Whisper targets #####
+.PHONY: whisper whisper-rv64 whisper-rv32
+
+WHISPER_64_CMD := whisper --config config/whisper/whisper-rv64-max/whisper.json
+WHISPER_32_CMD := whisper --config config/whisper/whisper-rv32-max/whisper.json
+
+whisper: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml config/whisper/whisper-rv32-max/test_config.yaml
+whisper: elfs
+	@exit_code=0; \
+	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs || exit_code=1; \
+	./run_tests.py "$(WHISPER_32_CMD)" $(WORKDIR)/whisper-rv32-max/elfs || exit_code=1; \
+	exit $$exit_code
+
+whisper-rv64: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
+whisper-rv64: elfs
+	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs
+
+whisper-rv32: CONFIG_FILES = config/whisper/whisper-rv32-max/test_config.yaml
+whisper-rv32: elfs
+	./run_tests.py "$(WHISPER_32_CMD)" $(WORKDIR)/whisper-rv32-max/elfs
+
 ##### imperas test targets #####
 .PHONY: imperas imperas-rv32 imperas-rv64
 
-# Add --trace --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
+# Add --trace --tracemode --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
+# Add --showoverrides to show overridden CSR values in the .log to know which are available
 IMPERAS_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose --program
 IMPERAS_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv64-max/imperas.ic iss.exe --verbose --program
 
@@ -206,10 +229,12 @@ coverage: elfs
 .PHONY: regression
 regression:
 	$(MAKE) clean
-	$(MAKE) coverage
-	$(MAKE) spike
-	$(MAKE) qemu
-	$(MAKE) imperas
+	@exit_code=0; \
+	$(MAKE) coverage || exit_code=1; \
+	$(MAKE) spike || exit_code=1; \
+	$(MAKE) qemu || exit_code=1; \
+	$(MAKE) imperas || exit_code=1; \
+	exit $$exit_code
 
 ##### Dev targets #####
 .PHONY: lint

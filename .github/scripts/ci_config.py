@@ -57,7 +57,7 @@ def discover_configs(config_dir: Path) -> list[dict]:
         # Extract settings from ci.yaml
         exclude_extensions = sim_config.get("exclude_extensions", "")
         install_script = sim_config.get("install_script", "")
-        runtime_deps = sim_config.get("runtime_deps", "")
+        apt_packages = sim_config.get("apt_packages", "")
         exclude_configs: set[str] = set(sim_config.get("exclude_configs", []))
 
         # Cache key is derived from the install script's content hash.
@@ -87,7 +87,7 @@ def discover_configs(config_dir: Path) -> list[dict]:
                     "run_cmd": run_cmd,
                     "exclude_extensions": exclude_extensions,
                     "install_script": install_script,
-                    "runtime_deps": runtime_deps,
+                    "apt_packages": apt_packages,
                     "cache_key": cache_key,
                 }
             )

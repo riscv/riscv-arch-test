@@ -84,10 +84,10 @@ jobs:
           done
 
       - name: Install runtime dependencies
-        if: matrix.runtime_deps != ''
+        if: matrix.apt_packages != ''
         run: |
           sudo apt-get update
-          sudo apt-get install -y ${{ matrix.runtime_deps }}
+          sudo apt-get install -y ${{ matrix.apt_packages }}
 
       - name: Restore cached simulator
         if: matrix.cache_key != ''

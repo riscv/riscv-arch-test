@@ -1,0 +1,1 @@
+sail_riscv_sim --config config/sail/sail-RVI20U64/sail.json

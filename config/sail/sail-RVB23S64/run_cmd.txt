@@ -1,0 +1,1 @@
+sail_riscv_sim --config config/sail/sail-RVB23S64/sail.json

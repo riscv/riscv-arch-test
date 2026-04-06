@@ -57,8 +57,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     # so they can be split for long priv tests (e.g. Ssstrict)
     tc = test_data.begin_test_chunk()
 
+    # Reserve x0 for priv tests so that desired values are actually loaded into registers
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
-    test_data.int_regs.consume_registers([1])
+    priv_exclude_regs = [0, 1, 6, 7, 9]
+    #  x6, x7, x9 are excluded because they are used by the RVTEST_GOTO_LOWER_MODE macro
+    test_data.int_regs.consume_registers(priv_exclude_regs)
 
     # Seed the RNG for reproducible test generation
     seed(reproducible_hash(testsuite))
@@ -67,8 +70,8 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     priv_test_generator = get_priv_test_generator(testsuite)
     body_lines = priv_test_generator(test_data)
 
-    # Return x1/ra
-    test_data.int_regs.return_register(1)
+    # Return x0/zero and x1/ra
+    test_data.int_regs.return_registers(priv_exclude_regs)
 
     # Save test chunk
     tc.code = "\n".join(body_lines)

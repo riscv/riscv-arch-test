@@ -40,7 +40,7 @@ def gen_misa_dependencies(
 def _generate_mcause_tests(test_data: TestData) -> list[str]:
     """Generate tests for mcause CSR."""
     covergroup = "Sm_mcause_cg"
-    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         f"CSRR(x{save_reg}, mcause)     # save CSR before testing it",
@@ -106,7 +106,7 @@ def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mstatus_cg"
     coverpoint = "cp_mstatus_sd_write"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -185,7 +185,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_mret"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -239,7 +239,7 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
     covergroup = "Sm_mprivinst_cg"
     coverpoint = "cp_sret"
     ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
 
     lines = [
         comment_banner(
@@ -299,7 +299,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     # Standard M-mode CSRs
     csrs = [
         "mstatus",
-        "misa",
         "medeleg",
         "mideleg",
         "mie",
@@ -737,7 +736,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
 
     lines.append("#endif")
 
-    r1, r2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    r1, r2 = test_data.int_regs.get_registers(2)
 
     ######################################
     coverpoint = "cp_inhibit_mcycle"

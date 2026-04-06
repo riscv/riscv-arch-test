@@ -37,6 +37,7 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # Number of parallel build jobs for test compilation.
 # Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.
 # 0 (default) = auto-detect CPU count.
+# Setting to 1 is helpful for debugging test hangs so that only a single test runs at a time.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
 

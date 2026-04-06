@@ -174,6 +174,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     mcsrname : coverpoint ins.current.insn[31:20] { // excludes read-only CSRs
         bins mstatus    = {CSR_MSTATUS};
+        bins misa       = {CSR_MISA};
         bins medeleg    = {CSR_MEDELEG};
         bins mideleg    = {CSR_MIDELEG};
         bins mie        = {CSR_MIE};
@@ -315,6 +316,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
     }
+    csrc: coverpoint ins.current.insn {
+        wildcard bins csrc = {CSRC};
+    }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
@@ -366,6 +370,27 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         wildcard bins csrr     = {CSRR};                                                   // read misa
     }
 
+    misa_dependencies : coverpoint ins.current.rs1_val[25:0] {
+        wildcard bins i1e1   = { 26'b?????????????????1???1???? };
+        wildcard bins i0e0   = { 26'b?????????????????1???1???? };
+        wildcard bins f0d1   = { 26'b????????????????????0?1??? };
+        wildcard bins f1d0q1 = { 26'b?????????1??????????1?0??? };
+        wildcard bins s1u0   = { 26'b?????0?1?????????????????? };
+        wildcard bins h1s0   = { 26'b???????0??????????1??????? };
+        wildcard bins h1s1u0 = { 26'b?????0?1??????????1??????? };
+    }
+
+    misa_c_0 : coverpoint ins.current.rs1_val[2] {
+        bins c0 = {1'b1};
+    }
+
+    pc_1 : coverpoint ins.current.pc_rdata[1] {
+        `ifdef ZCA_SUPPORTED
+            bins odd = {1'b1}; // check for 2-byte alignment when supported
+        `endif
+        bins even = {1'b0}; // trivial case of 4-byte alignment
+    }
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
@@ -379,6 +404,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 
     // misa
     cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
+    cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
+    cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
@@ -389,10 +416,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
-    //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-    //    $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
+    //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],
+    //    ins.current.rs1_val[2], ins.current.pc_rdata[1]);
 endfunction

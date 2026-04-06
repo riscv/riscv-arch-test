@@ -1,1 +1,1 @@
-wsim rv32gc --elf
+wsim --sim verilator rv32gc --elf

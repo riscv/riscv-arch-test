@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for CORE-V Wally (CVW)
+# Requires Verilator and the CVW repository
+
+ci_enabled: true
+exclude_extensions: ""
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-cvw.sh"
+setup_script: ".github/scripts/setup-cvw.sh"

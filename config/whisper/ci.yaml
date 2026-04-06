@@ -5,4 +5,4 @@
 ci_enabled: true
 exclude_extensions: "Sm,S,InterruptsSm,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,Zfh,Zalrsc,ExceptionsZc,ExceptionsSm,ExceptionsZicboU,ExceptionsZicboS,Svbare,SmF,ZicntrU"
 install_script: ".github/scripts/install-whisper.sh"
-apt_packages: "libboost-regex-dev libboost-system-dev"
+apt_packages: "libboost-program-options-dev"

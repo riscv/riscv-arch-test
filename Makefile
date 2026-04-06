@@ -1,24 +1,37 @@
 # Jordan Carlin jcarlin@hmc.edu
-# Sept 10, 2025
+# Created Sept 10, 2025
+# Modified April 5, 2026
 # SPDX-License-Identifier: Apache-2.0
 
-# Directories and files
+
+
+########## Runtime Options ##########
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
 CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
 
+# WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
-EXTENSIONS  ?= # Extensions to generate tests for. Leave blank to generate for all tests.
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo # Extensions to exclude from test generation. Applies as a negative filter after EXTENSIONS.
-# Exclusion Reasons:
+
+# EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
+# EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
+# Default exclusion reasons:
 #  - Sm, S: Insufficient WARL configuration options.
 #  - Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo: sail-riscv missing support for Svade/Svadu causes mismatches. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-DEBUG       ?= # Set to True to generate debug output (signature objdump and trace files). Leave blank for no debug output.
-FAST        ?= # Set to True to disable objdump generation for faster builds. Leave blank for normal builds. Conflicts with DEBUG.
+EXTENSIONS  ?=
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo
+
+# DEBUG and FAST are runtime options for controlling build output. They are mutually exclusive. Set to True to enable either option.
+# DEBUG enables debug output (signature objdump and trace files). This will slow down ELF generation significantly.
+# FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
+DEBUG       ?=
+FAST        ?=
+
+# COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 
 # Number of parallel build jobs for test compilation.
@@ -26,13 +39,15 @@ COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
 # 0 (default) = auto-detect CPU count.
 JOBS ?= $(or $(patsubst -j%,%,$(filter -j%,$(MAKEFLAGS))),0)
 
+
+
+########## Directories ##########
 TESTDIR        := tests
 SRCDIR64       := $(TESTDIR)/rv64i
 SRCDIR64E      := $(TESTDIR)/rv64e
 SRCDIR32       := $(TESTDIR)/rv32i
 SRCDIR32E      := $(TESTDIR)/rv32e
 PRIVDIR        := $(TESTDIR)/priv
-PRIVHEADERSDIR := $(PRIVDIR)/headers
 
 COVERPOINT_DIR         := coverpoints
 UNPRIV_COVERPOINTS_DIR := $(COVERPOINT_DIR)/unpriv
@@ -47,7 +62,11 @@ TESTPLANS_DIR := testplans
 TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
 
 STAMP_DIR := $(WORKDIR)/stamps
+$(STAMP_DIR):
+	@mkdir -p $@
 
+
+########## Installation Check ##########
 # Check if UV is installed and set UV variable
 UV := $(shell command -v uv 2> /dev/null)
 ifneq ($(UV),)
@@ -57,96 +76,10 @@ else
   $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
 endif
 
+
+
+########## Test compilation ##########
 .DEFAULT_GOAL := elfs
-
-
-##### Spike test targets #####
-.PHONY: spike spike-rv32 spike-rv64
-
-spike: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
-SPIKE_ISA := imafdcbv_zicbom_zicboz_zicbop_zicfilp_zicond_zicsr_zicntr_zicclsm_zifencei_zihintntl_zihintpause_zihpm_zimop_zabha_zacas_zawrs_zfa_zfbfmin_zfh_zcb_zcmop_zbc_zkn_zks_zkr_zvfbfmin_zvfbfwma_zvfh_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt_sscofpmf_smcntrpmf_sstc_svinval
-spike: elfs
-	@exit_code=0; \
-	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs || exit_code=1; \
-	./run_tests.py "spike --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs || exit_code=1; \
-	exit $$exit_code
-
-spike-rv32: CONFIG_FILES = config/spike/spike-rv32-max/test_config.yaml
-spike-rv32: elfs
-	./run_tests.py "spike --isa=rv32$(SPIKE_ISA)" $(WORKDIR)/spike-rv32-max/elfs
-
-spike-rv64: CONFIG_FILES = config/spike/spike-rv64-max/test_config.yaml
-spike-rv64: elfs
-	./run_tests.py "spike --isa=rv64$(SPIKE_ISA)" $(WORKDIR)/spike-rv64-max/elfs
-
-
-##### QEMU test targets #####
-.PHONY: qemu qemu-rv32 qemu-rv64
-
-# -semihosting is needed for test termination
-# -icount shift=1 ensures accurate values for instret
-# pmu-mask sets the number of hpmcounters
-QEMU_RV64_CMD := qemu-system-riscv64 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
-QEMU_RV32_CMD := qemu-system-riscv32 -nographic -semihosting -icount shift=1 -machine virt -cpu max,pmu-mask=0xfffffff8 -bios
-
-qemu: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml config/qemu/qemu-rv64-max/test_config.yaml
-qemu: elfs
-	@exit_code=0; \
-	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs || exit_code=1; \
-	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs || exit_code=1; \
-	exit $$exit_code
-
-qemu-rv32: CONFIG_FILES = config/qemu/qemu-rv32-max/test_config.yaml
-qemu-rv32: elfs
-	./run_tests.py "$(QEMU_RV32_CMD)" $(WORKDIR)/qemu-rv32-max/elfs
-
-qemu-rv64: CONFIG_FILES = config/qemu/qemu-rv64-max/test_config.yaml
-qemu-rv64: elfs
-	./run_tests.py "$(QEMU_RV64_CMD)" $(WORKDIR)/qemu-rv64-max/elfs
-
-
-##### Whisper targets #####
-.PHONY: whisper whisper-rv64
-
-WHISPER_64_CMD := whisper --config config/whisper/whisper-rv64-max/whisper.json
-
-whisper: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
-whisper: elfs
-	@exit_code=0; \
-	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs || exit_code=1; \
-	exit $$exit_code
-
-whisper-rv64: CONFIG_FILES = config/whisper/whisper-rv64-max/test_config.yaml
-whisper-rv64: elfs
-	./run_tests.py "$(WHISPER_64_CMD)" $(WORKDIR)/whisper-rv64-max/elfs
-
-##### imperas test targets #####
-.PHONY: imperas imperas-rv32 imperas-rv64
-
-# Add --trace --tracechange --traceshowicount before --program to see a trace of the executed instructions for debug
-IMPERAS_RV32_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv32-max/imperas.ic iss.exe --verbose --program
-IMPERAS_RV64_MAX_CMD := IMPERAS_TOOLS=config/imperas/imperas-rv64-max/imperas.ic iss.exe --verbose --program
-
-imperas: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml config/imperas/imperas-rv64-max/test_config.yaml
-imperas: elfs
-	@exit_code=0; \
-	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs || exit_code=1; \
-	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs || exit_code=1; \
-	exit $$exit_code
-
-# Add --verbose to run_tests.py arguments to see the simulator commands
-imperas-rv32: CONFIG_FILES = config/imperas/imperas-rv32-max/test_config.yaml
-imperas-rv32: elfs
-	./run_tests.py "$(IMPERAS_RV32_MAX_CMD)" $(WORKDIR)/imperas-rv32-max/elfs
-
-imperas-rv64: CONFIG_FILES = config/imperas/imperas-rv64-max/test_config.yaml
-imperas-rv64: elfs
-	./run_tests.py "$(IMPERAS_RV64_MAX_CMD)" $(WORKDIR)/imperas-rv64-max/elfs
-
-
-
-
-###### Test compilation targets ######
 .PHONY: elfs
 elfs: tests
 	@$(UV_RUN) act $(CONFIG_FILES) \
@@ -167,7 +100,9 @@ clean: clean-tests
 		find $(WORKDIR) -type d -empty -delete; \
 	fi
 
-###### Test generation targets ######
+
+
+########## Test generation ##########
 .PHONY: covergroupgen
 covergroupgen: $(STAMP_DIR)/covergroupgen.stamp
 $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
@@ -186,50 +121,118 @@ $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-test
 	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
 	touch $@
 
-.PHONY: privheaders
-privheaders: $(STAMP_DIR)/csrtests.stamp $(STAMP_DIR)/illegalinstrtests.stamp
-
-$(STAMP_DIR)/csrtests.stamp: generators/testgen/scripts/csrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	@$(UV_RUN) generators/testgen/scripts/csrtests.py
-	@touch $@
-
-$(STAMP_DIR)/illegalinstrtests.stamp: generators/testgen/scripts/illegalinstrtests.py Makefile | $(PRIVHEADERSDIR) $(STAMP_DIR)
-	@$(UV_RUN) generators/testgen/scripts/illegalinstrtests.py
-	@touch $@
-
 .PHONY: tests
-tests: covergroupgen testgen privheaders
+tests: covergroupgen testgen
+
+.PHONY: vector-tests
+vector-tests: covergroupgen vector-testgen
 
 .PHONY: clean-tests
 clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVHEADERSDIR)
+	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E)
 	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
 	rm -rf $(STAMP_DIR)
 
-$(PRIVHEADERSDIR) $(STAMP_DIR):
-	@mkdir -p $@
 
-###### Coverage targets ######
+
+########### Coverage ###########
 # Just sets some variables and then runs the standard elfs target
 .PHONY: coverage
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
 
-###### Regression ######
-# Run all tests
 
+
+########### Regression ###########
+# Run all tests
 .PHONY: regression
 regression:
 	$(MAKE) clean
 	@exit_code=0; \
 	$(MAKE) coverage || exit_code=1; \
-	$(MAKE) spike || exit_code=1; \
-	$(MAKE) qemu || exit_code=1; \
-	$(MAKE) imperas || exit_code=1; \
+	$(foreach sim,$(SIMULATORS),$(MAKE) $(sim) || exit_code=1; ) \
 	exit $$exit_code
 
-##### Dev targets #####
+
+
+########### Simulators ###########
+# Run commands are driven from config files:
+#   config/<simulator>/<config>/run_cmd.txt  — the shell command to run ELFs
+#
+# Targets are auto-generated from the discovered run_cmd.txt files:
+#   make spike-rv64-max        — build ELFs and run tests for a single config
+#   make spike                 — build and run all configs for a simulator
+#   make regression            — run all simulators
+#
+# Note on escaping in the define blocks below:
+#   $$ is needed to defer expansion to recipe execution time (standard Make escaping).
+#   $$$$ produces a literal $$ in the shell, which is needed for command substitution
+#   inside shell commands that are themselves inside Make $(foreach) expansions.
+
+# Find all configs that provide a run command
+RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
+
+# Extract unique simulator names from the second path component
+# e.g., config/spike/spike-rv64-max/run_cmd.txt -> spike
+SIMULATORS := $(sort $(foreach f,$(RUN_CMD_FILES),$(word 2,$(subst /, ,$(f)))))
+
+# Extract unique config names from the leaf directory of each run_cmd.txt path
+# e.g., config/spike/spike-rv64-max/run_cmd.txt -> spike-rv64-max
+ALL_CONFIGS := $(sort $(foreach f,$(RUN_CMD_FILES),$(notdir $(patsubst %/run_cmd.txt,%,$(f)))))
+
+# --- Helper functions ---
+
+# Look up the full config directory path for a config name
+# e.g., $(call config-dir,spike-rv64-max) -> config/spike/spike-rv64-max
+config-dir = $(patsubst %/run_cmd.txt,%,$(filter %/$1/run_cmd.txt,$(RUN_CMD_FILES)))
+
+# Get all run_cmd.txt paths for a given simulator
+# e.g., $(call sim-run-cmds,spike) -> config/spike/spike-rv32-max/run_cmd.txt config/spike/spike-rv64-max/run_cmd.txt
+sim-run-cmds = $(filter config/$1/%,$(RUN_CMD_FILES))
+
+# Get all test_config.yaml paths for a given simulator (replacing run_cmd.txt with test_config.yaml)
+sim-test-configs = $(patsubst %/run_cmd.txt,%/test_config.yaml,$(call sim-run-cmds,$1))
+
+# Get all config names (leaf directories) for a given simulator
+# e.g., $(call sim-config-names,spike) -> spike-rv32-max spike-rv64-max
+sim-config-names = $(foreach f,$(call sim-run-cmds,$1),$(notdir $(patsubst %/run_cmd.txt,%,$(f))))
+
+# --- Per-config targets (make <config-name>) ---
+# Generates tests, builds ELFs for a single config, and runs them.
+.PHONY: $(ALL_CONFIGS)
+
+define config-target
+$(1): EXTENSIONS =
+$(1): tests
+	$$(eval _DIR := $$(call config-dir,$(1)))
+	@EXTENSIONS="" \
+	CONFIG_FILES="$$(_DIR)/test_config.yaml" \
+	$$(MAKE) elfs
+	./run_tests.py "$$$$(cat $$(_DIR)/run_cmd.txt)" $$(WORKDIR)/$(1)/elfs
+endef
+
+$(foreach cfg,$(ALL_CONFIGS),$(eval $(call config-target,$(cfg))))
+
+# --- Per-simulator targets (make <simulator>) ---
+# Generates tests, builds ELFs for all of a simulator's configs, then runs each one.
+# Continues through failures and reports a non-zero exit code if any run failed.
+define sim-target
+.PHONY: $(1)
+$(1): tests
+	CONFIG_FILES="$(call sim-test-configs,$(1))" \
+	$$(MAKE) elfs
+	@exit_code=0; \
+	$(foreach cfg,$(call sim-config-names,$(1)),\
+	  ./run_tests.py "$$$$(cat $$(call config-dir,$(cfg))/run_cmd.txt)" $$(WORKDIR)/$(cfg)/elfs || exit_code=1; ) \
+	exit $$$$exit_code
+endef
+
+$(foreach sim,$(SIMULATORS),$(eval $(call sim-target,$(sim))))
+
+
+
+########## Linting/Formatting ##########
 .PHONY: lint
 lint:
 	$(UV_RUN) ruff check
@@ -242,7 +245,3 @@ lint-fix:
 .PHONY: format
 format:
 	$(UV_RUN) ruff format
-
-###### Vector coverage targets ######
-.PHONY: vector-tests
-vector-tests: covergroupgen vector-testgen

@@ -633,12 +633,12 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             ".half 0x0001            # c.nop, can't write that directly because Zca not enabled for Sm",
             test_data.add_testcase("pc_1_1", coverpoint, covergroup),
             f"csrc misa, x{rc}      # attempt to clear misa.C with misa.C = 1 and PC 2-byte aligned",
-            f"csrr x{r2}, misa          # read misa to check misa.C didn't chamge",
+            f"csrr x{r2}, misa          # read misa to check misa.C didn't change",
             ".align 2",
             f"and x{r2}, x{r2}, x{rc} # mask off all but C bit",
             f"xor x{r2}, x{r2}, x{r1} # check if misa.C differed before and after clear attempt; should be 0 because writing misa.C is not allowed to differ when PC is 2-byte aligned",
             write_sigupd(r2, test_data),
-            "#endif ZCA_SUPPORTED",
+            "#endif",
             f"csrw misa, x{rmisasave}    # restore misa",
         ]
     )
@@ -828,10 +828,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-# march includes Zca for c.nop to test 2-byte alignment in cp_misa_clear_c if ZCA_SUPPORTED
 @add_priv_test_generator("Sm", required_extensions=["Sm", "Zicsr"])
-# @add_priv_test_generator("Sm",
-#                        required_extensions=["Sm", "Zicsr"])
 def make_sm(test_data: TestData) -> list[str]:
     """Generate tests for Sm machine-mode testsuite."""
     lines: list[str] = []

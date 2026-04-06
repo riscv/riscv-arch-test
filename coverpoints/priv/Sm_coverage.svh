@@ -419,7 +419,7 @@ function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
-    $display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
-        ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],
-        ins.current.rs1_val[2], ins.current.pc_rdata[1]);
+    //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
+    //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],
+    //    ins.current.rs1_val[2], ins.current.pc_rdata[1]);
 endfunction

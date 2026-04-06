@@ -18,6 +18,9 @@ Each is described below.
   - [Adding New Privileged Coverpoints](#adding-new-privileged-coverpoints)
   - [Adding New Privileged Tests](#adding-new-privileged-tests)
 - [Debugging Coverage](#debugging-coverage)
+- [Adding a New Simulator or DUT Config](#adding-a-new-simulator-or-dut-config)
+  - [Adding a Config for Running Locally](#adding-a-config-for-running-locally)
+  - [Adding CI Support for a Simulator](#adding-ci-support-for-a-simulator)
 
 ## Certification Test Plan
 
@@ -582,3 +585,38 @@ $display("mode: %b, medel: %b, funct3: %b, rs1_1_0: %b, pc_1: %b, offset: %b ",
 ```
 
 Then look in the `work/sail-rv64-max/coverage/priv/ExceptionsZc/ExceptionsZc.ucdb.log` file to see how these RVVI signals change after each instruction. Find the instruction that should have hit a bin, and see which coverpoint input(s) aren't taking on the necessary values. It is often useful to compare the `*.ucdb.log` file with the `*.trace` file in `work/sail-rv64-max/coverage/priv/ExceptionsZc`.
+
+## Adding a New Simulator or DUT Config
+
+The Makefile and CI workflow auto-discover configs from the `config/` directory. No changes to the Makefile or GitHub Actions workflow are needed when adding a new config.
+
+### Adding a Config for Running Locally
+
+Create a configuration directory following the instructions in the [Configuration section of the README](../README.md#configuration). In addition to the config files described there, add a `run_cmd.txt` file containing a single-line shell command to run an ELF. The ELF is appended to the end of the command. The command is used as an input to `run_tests.py`. See `config/spike/spike-rv64-max/run_cmd.txt` for a reference example.
+
+Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
+
+```bash
+make <config-name>   # Build ELFs and run tests for this config
+make <group>         # Build and run all configs in the group
+```
+
+The `<group>` can be any ancestor directory name. For example, configs under `config/cores/cvw/` produce targets for both `make cvw` (all CVW configs) and `make cores` (all configs under `cores/`).
+
+### Adding CI Support for a Simulator
+
+To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in the simulator's group directory (e.g., `config/<group>/ci.yaml`):
+
+```yaml
+ci_enabled: true # Set false to skip in CI
+exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
+install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
+apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
+```
+
+Field details:
+
+- **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
+- **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream.
+- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
+- **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).

@@ -28,7 +28,7 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     else:
         params = generate_random_params(test_data, instr_type)
 
-    if instr_type in ["B", "CB"]:
+    if instr_type in ["B", "BI", "CB"]:
         assert params.rs1 is not None and params.temp_reg is not None and params.temp_val is not None
         if instr_type == "B":
             test_lines.extend(
@@ -37,6 +37,12 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                     f"LI(x{params.rs2}, {1 if instr_name in ['beq', 'bge', 'bgeu'] else 2}) # setup for taken branch",
                 ]
             )
+        elif instr_type == "BI":
+            assert params.rs1 is not None and params.immval is not None
+            if instr_name == "beqi":
+                test_lines.append(f"LI(x{params.rs1}, 1) # setup for taken branch")
+            else:  # bnei
+                test_lines.append(f"LI(x{params.rs1}, 2) # setup for taken branch")
         else:  # CB
             branch_val = 0 if instr_name == "c.beqz" else 1  # set value to ensure branch is taken
             test_lines.append(f"LI(x{params.rs1}, {branch_val}) # initialize rs1 to {branch_val} for taken branch")
@@ -48,7 +54,18 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"1: addi x{params.temp_reg}, x{params.temp_reg}, 4 # backward branch target, increment check value",
                 "j 3f # jump past backward branch",
                 test_data.add_testcase("neg", coverpoint),
-                f"2: {instr_name} x{params.rs1}, {f'x{params.rs2},' if params.rs2 is not None else ''} 1b # backward branch",
+            ]
+        )
+
+        if instr_type != "BI":
+            test_lines.append(
+                f"2: {instr_name} x{params.rs1}, {f'x{params.rs2},' if params.rs2 is not None else ''} 1b # backward branch"
+            )
+        else:
+            test_lines.append(f"2: {instr_name} x{params.rs1}, 1, 1b # backward branch")
+
+        test_lines.extend(
+            [
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # branch not taken, decrement check value",
                 "3:  # done with sequence",
                 write_sigupd(params.temp_reg, test_data),

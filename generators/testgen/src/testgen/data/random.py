@@ -59,6 +59,8 @@ def random_range(min_val: int, max_val: int, *, nonzero: bool = False) -> int:
     """
     # Generate random value, using fast path when possible
     if nonzero and min_val <= 0 <= max_val:
+        if min_val == 0 and max_val == 0:
+            raise ValueError("Cannot generate non-zero value when min_val and max_val are both 0")
         # Need to exclude zero - check for fast paths
         if min_val == 0:
             # Only positive values: [1, max_val]

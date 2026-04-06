@@ -222,10 +222,12 @@ coverage: elfs
 .PHONY: regression
 regression:
 	$(MAKE) clean
-	$(MAKE) coverage
-	$(MAKE) spike
-	$(MAKE) qemu
-	$(MAKE) imperas
+	@exit_code=0; \
+	$(MAKE) coverage || exit_code=1; \
+	$(MAKE) spike || exit_code=1; \
+	$(MAKE) qemu || exit_code=1; \
+	$(MAKE) imperas || exit_code=1; \
+	exit $$exit_code
 
 ##### Dev targets #####
 .PHONY: lint

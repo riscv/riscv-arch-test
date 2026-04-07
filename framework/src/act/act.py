@@ -59,6 +59,9 @@ def run_act(
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    verbose: Annotated[
+        bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
+    ] = False,
     keep_going: Annotated[bool, typer.Option("--keep-going", "-k", help="Continue building after failures")] = False,
     dry_run: Annotated[
         bool, typer.Option("--dry-run", "-n", help="Show what would be built without executing")
@@ -68,6 +71,10 @@ def run_act(
         typer.Option(help="Coverage simulator backend", case_sensitive=False),
     ] = CoverageSimulator.QUESTA,
 ) -> None:
+    if verbose:
+        debug = True
+        jobs = 1
+
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
 
@@ -121,7 +128,7 @@ def run_act(
     )
 
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run)
+    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
 
     # Print summary
     parts = []

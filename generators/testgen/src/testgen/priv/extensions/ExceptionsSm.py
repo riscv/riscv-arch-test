@@ -105,13 +105,12 @@ def _generate_instr_adr_misaligned_jalr_tests(test_data: TestData) -> list[str]:
 
     # rs1 is set to PC + base_offset for rs1[1:0]
     # jalr controls the offset[1:0], which covers all 16 combinations of (rs1+offset)[1:0]
-    rs1_base_offsets = {0: 8, 1: 5, 2: 6, 3: 7}
-    jalr_offsets = {0: 8, 1: 5, 2: 6, 3: 7}
+    offsets = {0: 8, 1: 5, 2: 6, 3: 7}
 
     for rs1_lsb in range(4):
         for offset_lsb in range(4):
-            base_off = rs1_base_offsets[rs1_lsb]
-            jalr_off = jalr_offsets[offset_lsb]
+            base_off = offsets[rs1_lsb]
+            jalr_off = offsets[offset_lsb]
 
             lines.extend(
                 [
@@ -121,11 +120,6 @@ def _generate_instr_adr_misaligned_jalr_tests(test_data: TestData) -> list[str]:
                     f"addi x{addr_reg}, x{addr_reg}, {base_off}",
                     test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
                     f"jalr x1, {jalr_off}(x{addr_reg})",
-                ]
-            )
-
-            lines.extend(
-                [
                     f"{INDENT}# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                     "addi x0, x2, 0",
                     "nop",

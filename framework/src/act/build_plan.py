@@ -23,6 +23,7 @@ from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
+from act.trap_report import generate_trap_report
 
 OBJDUMP_FLAGS = ["-Stsxd", "-M", "no-aliases,numeric"]
 
@@ -239,6 +240,20 @@ def gen_compile_tasks(
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sig_log_file),
         )
     )
+
+    # 2a. trap report (optional, debug only)
+    if debug:
+        trap_report_file = Path(f"{sig_file}.trap_report")
+        # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
+        nm_exe = Path(str(config.objdump_exe).replace("objdump", "nm")) if config.objdump_exe is not None else None
+        tasks.append(
+            BuildTask(
+                outputs=(trap_report_file,),
+                deps=(sig_file,),
+                extra_inputs=(sig_elf,),
+                action=PythonAction(fn=generate_trap_report, args=(sig_file, xlen, sig_elf, nm_exe)),
+            )
+        )
 
     # 3. results – process signature file
     tasks.append(

@@ -1,1 +1,1 @@
-wsim rv32gc --elf
++wsim rv32gc {debug:--lockstepverbose} --elf

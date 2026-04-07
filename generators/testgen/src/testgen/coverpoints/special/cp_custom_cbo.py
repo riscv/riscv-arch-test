@@ -53,15 +53,17 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
             ]
         )
 
-        for word in range(65):
-            test_lines.extend(
-                [
-                    test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),
-                    f"lw x{reg1}, {word * 4}(x{reg2})",
-                    write_sigupd(reg1, test_data),
-                    "",
-                ]
-            )
+        # don't test the signature of cbo.inval because the behavior is unpredictable
+        if instr_name not in ["cbo.inval"]:
+            for word in range(65):
+                test_lines.extend(
+                    [
+                        test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),
+                        f"lw x{reg1}, {word * 4}(x{reg2})",
+                        write_sigupd(reg1, test_data),
+                        "",
+                    ]
+                )
 
     # Return registers
     test_data.int_regs.return_registers([reg1, reg2, reg3])

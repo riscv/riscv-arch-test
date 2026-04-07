@@ -6,4 +6,3 @@ ref_model_type: sail
 udb_config: cv32a65x.yaml
 linker_script: link.ld
 dut_include_dir: . # Directory containing DUT specific rvmodel_macros.h header
-include_priv_tests: False

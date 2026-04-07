@@ -34,6 +34,12 @@
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
+    },
+    "mcounteren": {
+      "mask": "0x00000007"
+    },
+    "scounteren": {
+      "mask": "0x00000007"
     }
   },
 

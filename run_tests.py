@@ -71,8 +71,8 @@ def dim(text: str) -> str:
     return _color("2", text)
 
 
-def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool:
-    """Run a single ELF and return success indication."""
+def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool) -> tuple[bool, Path, str]:
+    """Run a single ELF and return (failed, elf_path, rvcp_summary_line)."""
 
     # Split command, extracting leading KEY=VALUE env var assignments
     tokens = shlex.split(command)
@@ -83,8 +83,8 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
     env = {**os.environ, **env_overrides} if env_overrides else None
     cmd = tokens
 
-    # Create log file path
-    log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name
+    # Create log file path mirroring the ELF subdirectory hierarchy
+    log_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     full_cmd = [*cmd, str(elf_path)]
@@ -107,6 +107,8 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
     # Check log for RVCP-SUMMARY lines
     log_text = log_file.read_text(errors="replace")
     summaries = _SUMMARY_RE.findall(log_text)
+    rvcp_lines = [line for line in log_text.splitlines() if "RVCP-SUMMARY:" in line]
+    rvcp_summary = rvcp_lines[0] if rvcp_lines else "No RVCP-SUMMARY line found"
     summary_failed = "FAILED" in summaries
     summary_sigrun = "SIGRUN" in summaries
     no_summary = len(summaries) == 0
@@ -151,7 +153,7 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
             f"\n         Log: {dim(str(log_file))}"
         )
 
-    return failed
+    return failed, elf_path, rvcp_summary
 
 
 def main() -> int:
@@ -174,6 +176,7 @@ def main() -> int:
     elf_dir = args.elf_dir.resolve()
     log_dir = elf_dir.parent / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
+    summary_log = elf_dir.parent / "summary.log"
 
     # Derive config name from elf_dir (e.g., work/<config-name>/elfs -> config-name)
     config_name = elf_dir.parent.name
@@ -183,6 +186,7 @@ def main() -> int:
     print(f"\n{bold_cyan(banner)}")
     print(f"  {bold('ELFs')}:    {elf_dir}")
     print(f"  {bold('Command')}: {command} <elf_name>")
+    print(f"  {bold('Results')}: {summary_log}")
 
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))
@@ -190,15 +194,28 @@ def main() -> int:
         print(yellow("  No ELF files found"))
         sys.exit(1)
 
-    partial_run_test = partial(run_test, command, log_dir, verbose=args.verbose)
+    partial_run_test = partial(run_test, command, log_dir, elf_dir, verbose=args.verbose)
 
     failed = 0
+    all_results: list[tuple[Path, str]] = []
 
     # Run individual tests
     with Pool(args.jobs) as pool:
-        for fail_status in pool.imap_unordered(partial_run_test, elf_files):
+        for fail_status, elf_path, rvcp_summary in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
+            all_results.append((elf_path, rvcp_summary))
+
+    # Write single top-level summary log at the shared ancestor of elfs/ and logs/
+    entries = []
+    for elf_path, rvcp_summary in sorted(all_results, key=lambda x: x[0]):
+        log_path = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
+        rel_log = str(log_path.relative_to(log_dir))
+        entries.append((rel_log, rvcp_summary))
+    col_width = max((len(p) for p, _ in entries), default=0)
+    with summary_log.open("w") as f:
+        for rel_log, rvcp_summary in entries:
+            print(f"{rel_log:<{col_width}}  {rvcp_summary}", file=f)
 
     # Print overall results
     passed = len(elf_files) - failed

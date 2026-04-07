@@ -63,10 +63,6 @@ def bold_cyan(text: str) -> str:
     return _color("1;36", text)
 
 
-def cyan(text: str) -> str:
-    return _color("36", text)
-
-
 def dim(text: str) -> str:
     return _color("2", text)
 
@@ -184,9 +180,9 @@ def main() -> int:
     # Print banner for this config
     banner = f"══════ {config_name} ══════"
     print(f"\n{bold_cyan(banner)}")
-    print(f"  {bold('ELFs')}:    {elf_dir}")
-    print(f"  {bold('Command')}: {command} <elf_name>")
-    print(f"  {bold('Results')}: {summary_log}")
+    print(f"  {bold('Running ELFs from')}:    {elf_dir}")
+    print(f"  {bold('Using command')}: {command} <elf_path>")
+    print(f"  {bold('Summary available at')}: {summary_log}")
 
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))

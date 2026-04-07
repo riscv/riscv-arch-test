@@ -62,7 +62,7 @@ INTERRUPT_CAUSES: dict[int, str] = {
 
 # Mode encoding from signature
 MODE_NAMES: dict[int, str] = {
-    0: "VS",
+    0: "Unknown",
     1: "S/HS",
     2: "VS",
     3: "M",
@@ -287,26 +287,37 @@ def _format_hex(value: int, xlen: int) -> str:
 
 
 def _decode_xstatus(status_bits: int) -> str:
-    """Decode the xstatus field from word0 bits 30:13 into named fields.
+    """Decode the encoded xstatus field stored in signature word0 bits 30:13.
 
-    The xstatus field contains mstatus[17:0] shifted into position, with bits 2, 3,
-    and 8 cleared by the trap handler mask. Additionally, bits 16:14 are OR'd with
-    SPVP/MPV/GVA from mstatush/hstatus (overlapping with FS/XS when H-ext is present).
+    The trap handler packs mstatus[17:0] into bits [30:13] of word0, then applies
+    a mask to clear xstatus bits 16:13 (XS,FS) 10:9 (VS) and unused bits 4,2,0.
+    For M-mode traps, mstatus[39:38]/mstatush[7:6] (GVA, MPV) are OR'd into
+    word0 bits [15:14]. For H-mode traps, hstatus[8:6] (SPVP, SPV, GVA) are OR'd
+    into word0 bits [16:14].
     """
+    # Skip WPRI bit 0
     sie = (status_bits >> 1) & 1
+    # Skip WPRI bit 2
+    mie = (status_bits >> 3) & 1
+    # Skip WPRI bit 4
     spie = (status_bits >> 5) & 1
+    # Skip UBE bit 6 (not relevant to trap)
     mpie = (status_bits >> 7) & 1
     spp = (status_bits >> 8) & 1
+    # Skip VS bits 9-10 (not relevant to trap)
     mpp = (status_bits >> 11) & 0x3
+    # Skip FS bits 13-14 (not relevant to trap)
+    # Skip XS bits 15-16 (not relevant to trap)
+    mprv = (status_bits >> 17) & 1
+    # Overlaid bits
     gva = (status_bits >> 14) & 1
     mpv = (status_bits >> 15) & 1
     spvp = (status_bits >> 16) & 1
-    mprv = (status_bits >> 17) & 1
 
     return (
-        f"SIE={sie}, MIE=0, SPIE={spie}, MPIE={mpie}, "
-        f"SPP={'S' if spp else 'U'}, MPP={MPP_NAMES.get(mpp, '?')}, "
-        f"GVA={gva}, MPV={mpv}, MPRV={mprv}, SPVP={spvp}"
+        f"SIE={sie}, MIE={mie}, SPIE={spie}, MPIE={mpie}, "
+        f"SPP={spp}, MPP={mpp} ({MPP_NAMES.get(mpp, '?')}), MPRV={mprv}, "
+        f"GVA={gva}, MPV={mpv}, SPVP={spvp}"
     )
 
 

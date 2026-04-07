@@ -245,7 +245,11 @@ def gen_compile_tasks(
     if debug:
         trap_report_file = Path(f"{sig_file}.trap_report")
         # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
-        nm_exe = Path(str(config.objdump_exe).replace("objdump", "nm")) if config.objdump_exe is not None else None
+        nm_exe: Path | None = None
+        if config.objdump_exe is not None:
+            candidate = Path(str(config.objdump_exe).replace("objdump", "nm"))
+            if candidate.exists():
+                nm_exe = candidate
         tasks.append(
             BuildTask(
                 outputs=(trap_report_file,),

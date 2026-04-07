@@ -55,6 +55,18 @@ def bold(text: str) -> str:
     return _color("1", text)
 
 
+def yellow(text: str) -> str:
+    return _color("1;33", text)
+
+
+def bold_cyan(text: str) -> str:
+    return _color("1;36", text)
+
+
+def cyan(text: str) -> str:
+    return _color("36", text)
+
+
 def dim(text: str) -> str:
     return _color("2", text)
 
@@ -163,18 +175,24 @@ def main() -> int:
     log_dir = elf_dir.parent / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
 
+    # Derive config name from elf_dir (e.g., work/<config-name>/elfs -> config-name)
+    config_name = elf_dir.parent.name
+
+    # Print banner for this config
+    banner = f"══════ {config_name} ══════"
+    print(f"\n{bold_cyan(banner)}")
+    print(f"  {bold('ELFs')}:    {elf_dir}")
+    print(f"  {bold('Command')}: {command} <elf_name>")
+
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))
     if not elf_files:
-        print(f"No ELF files found in {elf_dir}")
+        print(yellow("  No ELF files found"))
         sys.exit(1)
 
     partial_run_test = partial(run_test, command, log_dir, verbose=args.verbose)
 
     failed = 0
-
-    print(f"\n{bold('Running')} {len(elf_files)} tests in {elf_dir}")
-    print(f"  Command: {command}")
 
     # Run individual tests
     with Pool(args.jobs) as pool:
@@ -186,9 +204,9 @@ def main() -> int:
     passed = len(elf_files) - failed
     print()
     if failed:
-        print(red(f"RESULT: {failed} failed, {passed} passed out of {len(elf_files)} tests."))
+        print(red(f"  RESULT: {failed} failed, {passed} passed out of {len(elf_files)} tests."))
     else:
-        print(green(f"RESULT: All {len(elf_files)} tests passed."))
+        print(green(f"  RESULT: All {len(elf_files)} tests passed."))
 
     return 1 if failed else 0
 

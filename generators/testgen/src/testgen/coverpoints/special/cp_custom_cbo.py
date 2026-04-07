@@ -39,10 +39,25 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
             ]
         )
 
+        # for cbo.inval, start by putting some known data in memory and cleaning it to ensure it is in memory and not just in the cache.
+        # this data will then be overwritten with new data before cbo.inval, and readback should show either the original data or the new data
+        mask_cmd = ""
+        if instr_name == "cbo.inval":
+            for word in range(65):
+                test_lines.extend(
+                    [
+                        f"# Write initial data to memory for word {word}",
+                        load_int_reg("rs1", reg1, word + 0x101, test_data),  # write data with a 1 in bit 8
+                        f"sw x{reg1}, {word * 4}(x{reg2})",
+                    ]
+                )
+            test_lines.append(f"cbo.clean (x{reg3}) # Clean the cache to ensure data is in memory, then write new data")
+            mask_cmd = f"andi x{reg1}, x{reg1}, ~0x100 # Mask to the bits that should be preserved by cbo.inval"
+
         for word in range(65):
             test_lines.extend(
                 [
-                    load_int_reg("rs1", reg1, word * 0x00FEDCBA + 0xD00F, test_data),
+                    load_int_reg("rs1", reg1, word + 0x001, test_data),
                     f"sw x{reg1}, {word * 4}(x{reg2})",
                 ]
             )
@@ -52,18 +67,16 @@ def make_custom_cbo(instr_name: str, instr_type: str, coverpoint: str, test_data
                 f"{instr_name} (x{reg3}) # Issue cbo instruction on first line of scratch or at an offset",
             ]
         )
-
-        # don't test the signature of cbo.inval because the behavior is unpredictable
-        if instr_name not in ["cbo.inval"]:
-            for word in range(65):
-                test_lines.extend(
-                    [
-                        test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),
-                        f"lw x{reg1}, {word * 4}(x{reg2})",
-                        write_sigupd(reg1, test_data),
-                        "",
-                    ]
-                )
+        for word in range(65):
+            test_lines.extend(
+                [
+                    test_data.add_testcase(f"word {word} offset {offset}", "cp_custom_cbo"),
+                    f"lw x{reg1}, {word * 4}(x{reg2}) # Read back data",
+                    mask_cmd,
+                    write_sigupd(reg1, test_data),
+                    "",
+                ]
+            )
 
     # Return registers
     test_data.int_regs.return_registers([reg1, reg2, reg3])

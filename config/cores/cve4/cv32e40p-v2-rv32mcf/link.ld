@@ -1,1 +1,1 @@
-../link.ld
+../cv32e40p-v2-rv32mc/link.ld

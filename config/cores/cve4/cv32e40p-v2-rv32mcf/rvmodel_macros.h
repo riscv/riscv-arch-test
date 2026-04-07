@@ -1,1 +1,1 @@
-../rvmodel_macros.h
+../cv32e40p-v2-rv32mc/rvmodel_macros.h

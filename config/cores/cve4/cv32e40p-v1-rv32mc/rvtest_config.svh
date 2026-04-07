@@ -1,1 +1,1 @@
-../rvtest_config.svh
+../cv32e40p-v2-rv32mc/rvtest_config.svh

@@ -33,9 +33,10 @@ DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=
 
-# VERBOSE implies DEBUG
+# VERBOSE implies DEBUG and serializes the build
 ifneq ($(VERBOSE),)
   DEBUG := True
+	JOBS  := 1
 endif
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)

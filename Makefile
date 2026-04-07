@@ -23,13 +23,20 @@ WORKDIR     ?= work
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
-# DEBUG and FAST are runtime options for controlling build output. They are mutually exclusive. Set to True to enable either option.
+# DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # DEBUG enables debug output (signature objdump and trace files). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
+# VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
 DEBUG       ?=
 FAST        ?=
+VERBOSE     ?=
+
+# VERBOSE implies DEBUG
+ifneq ($(VERBOSE),)
+  DEBUG := True
+endif
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
@@ -91,6 +98,7 @@ elfs: tests
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
+		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
@@ -148,13 +156,13 @@ coverage: elfs
 ########### Regression ###########
 # Clean, run coverage, then run all configs that have a run_cmd.txt, continuing through failures.
 .PHONY: regression
-regression: clean tests
+regression: clean
 	@exit_code=0; \
 	$(MAKE) coverage || exit_code=1; \
 	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(RUN_CMD_FILES))" \
 	$(MAKE) elfs || exit_code=1; \
 	$(foreach f,$(RUN_CMD_FILES),\
-	  ./run_tests.py $(if $(DEBUG),--debug) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$exit_code
 
 
@@ -191,7 +199,7 @@ $(1): tests
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\
-	  ./run_tests.py $(if $(DEBUG),--debug) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
 	exit $$$$exit_code
 endef
 

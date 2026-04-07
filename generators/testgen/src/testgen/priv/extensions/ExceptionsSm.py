@@ -121,18 +121,14 @@ def _generate_instr_adr_misaligned_jalr_tests(test_data: TestData) -> list[str]:
                     f"addi x{addr_reg}, x{addr_reg}, {base_off}",
                     test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
                     f"jalr x1, {jalr_off}(x{addr_reg})",
-                    "nop",
                 ]
             )
-
-            # conditional nop ensures addi below is always 8 bytes after jalr so trap handler returns correctly
-            if rs1_lsb & 1:
-                lines.append("nop")
 
             lines.extend(
                 [
                     f"{INDENT}# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                     "addi x0, x2, 0",
+                    "nop",
                 ]
             )
 

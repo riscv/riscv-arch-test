@@ -26,7 +26,7 @@ EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo
 
 # DEBUG and FAST are runtime options for controlling build output. They are mutually exclusive. Set to True to enable either option.
-# DEBUG enables debug output (signature objdump and trace files). This will slow down ELF generation significantly.
+# DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 DEBUG       ?=
 FAST        ?=

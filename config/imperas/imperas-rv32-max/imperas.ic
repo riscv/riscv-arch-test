@@ -83,7 +83,7 @@
 #
 # SVxx Memory 0x0000000000 0x7FFFFFFFFF
 #
---callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
+--callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0xFFFFFFFFFF -attributes " ---a-- ---- " # All memory inaccessible unless defined otherwise
 --callcommand iss/cpu0/setPMA -lo 0x0000000000 -hi 0x7FFFFFFFFF -attributes " ---a-- ---- " # INITIAL
 --callcommand iss/cpu0/setPMA -lo 0x0002000000 -hi 0x000200FFFF -attributes " rw-aA- 1248 " # CLINT
 --callcommand iss/cpu0/setPMA -lo 0x000C000000 -hi 0x000FFFFFFF -attributes " rw-aA- --4- " # PLIC

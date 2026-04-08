@@ -19,7 +19,7 @@ def _generate_instr_adr_misaligned_branch_tests(test_data: TestData) -> list[str
     temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
-        comment_banner(coverpoint, "Instruction Address Misaligned branch"),
+        comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
         f"LI(x{temp_reg}, 1)",
         ".align 2",
         test_data.add_testcase("taken_branch_pc_6", coverpoint, covergroup),

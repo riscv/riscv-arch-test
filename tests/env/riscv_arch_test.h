@@ -6,10 +6,9 @@
 #include "rvtest_config.h"
 #include "encoding.h"
 #include "utils.h"
-#ifdef RVTEST_SELFCHECK
-  #include "rvmodel_macros.h"
-#else
-  #include "sail_test.h"
+#include "rvmodel_macros.h"
+#ifndef RVTEST_SELFCHECK
+  #include "sail_macros.h"
 #endif
 #include "check_defines.h"
 #include "signature.h"

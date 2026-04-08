@@ -78,7 +78,9 @@ def load_float_reg(
     return f"{INDENT}RVTEST_TESTDATA_LOAD_FLOAT_{fp_load_type.upper()}(x{test_data.int_regs.data_reg}, f{reg}) # load {name}: f{reg} = {to_hex(val & ((1 << fp_load_bits) - 1), fp_load_bits)}"
 
 
-def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "float"] = "int") -> str:
+def write_sigupd(
+    check_reg: int | None, test_data: TestData, sig_type: Literal["int", "fflags", "float"] = "int"
+) -> str:
     """
     Generate assembly for SIGUPD and increment sigupd_count.
     """
@@ -87,14 +89,26 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
     fp_temp_reg = test_data.float_regs.temp_reg
+    label = test_data.current_testcase_label
     if sig_type == "int":
+        if check_reg is None:
+            raise ValueError("check_reg must be provided for int sig_type")
         test_data.test_chunk.sigupd_count += 1
         return (
             f"{INDENT}# Check if x{check_reg} contains the expected result. x{sig_reg} is the signature ptr, "
             f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
-            f"{INDENT}RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"{INDENT}RVTEST_SIGUPD(x{sig_reg}, x{link_reg}, x{temp_reg}, x{check_reg}, {label}, {label}_str)"
+        )
+    elif sig_type == "fflags":
+        test_data.test_chunk.sigupd_count += 1
+        return (
+            f"{INDENT}# Check fflags. x{sig_reg} is the signature ptr, "
+            f"x{link_reg} is the link ptr, x{temp_reg} is a temp reg.\n"
+            f"{INDENT}RVTEST_SIGUPD_FFLAGS(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)"
         )
     elif sig_type == "float":
+        if check_reg is None:
+            raise ValueError("check_reg must be provided for float sig_type")
         if test_data.flen > test_data.xlen:
             test_data.test_chunk.sigupd_count += 3
         else:
@@ -103,7 +117,7 @@ def write_sigupd(check_reg: int, test_data: TestData, sig_type: Literal["int", "
             f"{INDENT}# Check if f{check_reg} contains the expected result. Also checks fflags. "
             f"x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg} "
             f"is a temp reg, f{fp_temp_reg} is a floating point temp reg.\n"
-            f"{INDENT}RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
+            f"{INDENT}RVTEST_SIGUPD_F(x{sig_reg}, x{link_reg}, x{temp_reg}, f{fp_temp_reg}, f{check_reg}, {label}, {label}_str)"
         )
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")

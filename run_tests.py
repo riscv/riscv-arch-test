@@ -159,11 +159,21 @@ def main() -> int:
     )
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
     parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Print the full command for every test")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print the full command for every ELF, implies --debug, serializes to 1 job",
+    )
     parser.add_argument(
         "-d", "--debug", action="store_true", help="Enable debug mode: expand {debug:...} placeholders in the command"
     )
     args = parser.parse_args()
+
+    # Verbose implies debug and serialized execution
+    if args.verbose:
+        args.debug = True
+        args.jobs = 1
 
     # Expand {debug:...} placeholders based on --debug flag
     command = _expand_debug_placeholders(args.command, debug=args.debug)
@@ -180,7 +190,7 @@ def main() -> int:
     # Print banner for this config
     banner = f"══════ {config_name} ══════"
     print(f"\n{bold_cyan(banner)}")
-    print(f"  {bold('Running ELFs from')}:    {elf_dir}")
+    print(f"  {bold('Running ELFs from')}: {elf_dir}")
     print(f"  {bold('Using command')}: {command} <elf_path>")
     print(f"  {bold('Summary available at')}: {summary_log}")
 

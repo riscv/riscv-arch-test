@@ -290,6 +290,7 @@ The following variables can be set on the command line to customize the build (e
 | `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                      |
 | `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                             |
 | `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
+| `VERBOSE`            | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                      |
 | `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                  |
 | `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                         |
 

@@ -70,10 +70,10 @@
 #endif
 
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)
-// Reads fcsr and compares/stores it to the signature at 0(sigptr).
-// In SELFCHECK mode, compares the value in fcsr with the value in memory
+// Reads fflags and compares/stores it to the signature at 0(sigptr).
+// In SELFCHECK mode, compares the value in fflags with the value in memory
 // at 0(sigptr) and jumps to a failure handler if different.
-// In non-SELFCHECK mode, stores fcsr to memory at 0(sigptr).
+// In non-SELFCHECK mode, stores fflags to memory at 0(sigptr).
 // In both cases, increments sigptr by SIG_STRIDE.
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
@@ -84,7 +84,7 @@
   #define RVTEST_SIGUPD_FFLAGS(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
     .option push                                           ;\
     .option norvc                                          ;\
-    csrr _LINK_REG, fcsr                                   ;\
+    csrr _LINK_REG, fflags                                 ;\
     LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
     beq _TEMP_REG, _LINK_REG, 1f                           ;\
     jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\
@@ -97,7 +97,7 @@
   #define RVTEST_SIGUPD_FFLAGS(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
     .option push                                           ;\
     .option norvc                                          ;\
-    csrr _LINK_REG, fcsr                                   ;\
+    csrr _LINK_REG, fflags                                 ;\
     SREG _LINK_REG, 0(_SIG_PTR)                            ;\
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_fflags_##_LINK_REG##_##_TEMP_REG ;\

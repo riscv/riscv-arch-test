@@ -66,6 +66,14 @@
 #endif
 
 
+##### Interrupt Delays #####
+#ifndef RVMODEL_INTERRUPT_LATENCY
+  #error "RVMODEL_INTERRUPT_LATENCY not defined. Make sure to define it in rvmodel_macros.h."
+#endif
+#ifndef RVMODEL_TIMER_INT_SOON_DELAY
+  #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
+#endif
+
 ##### Machine Interrupts #####
 #ifndef RVMODEL_SET_MEXT_INT
   #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."

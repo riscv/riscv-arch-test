@@ -18,7 +18,7 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
     """Generate cbie trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbie"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -27,6 +27,7 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
         ),
         "",
     ]
+    mode_names = {"3": "machine", "1": "supervisor", "0": "user"}
     modes = ["3", "1", "0"]
     menvcfg = ["00", "01", "11"]
     senvcfg = ["00", "01", "11"]
@@ -54,7 +55,7 @@ def _generate_cbie_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         "nop",
-                        f"{INDENT}# attempting cbo.inval in {mode} mode with menvcfg.cbie = {m_val}, senvcfg.cbie = {s_val}",
+                        f"{INDENT}# attempting cbo.inval in {mode_names[mode]} mode with menvcfg.cbie = {m_val}, senvcfg.cbie = {s_val}",
                         test_data.add_testcase(
                             f"cbo.inval_mode{mode}_menvcfg.cbie{m_val}_senvcfg.cbie{s_val}", coverpoint, covergroup
                         ),
@@ -71,7 +72,7 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
     """Generate cbcfe trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbcfe"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -80,6 +81,7 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
         ),
         "",
     ]
+    mode_names = {"3": "machine", "1": "supervisor", "0": "user"}
     modes = ["3", "1", "0"]
     menvcfg = ["0", "1"]
     senvcfg = ["0", "1"]
@@ -107,13 +109,13 @@ def _generate_cbcfe_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         "nop",
-                        f"{INDENT}# attempting cbo.clean in {mode} mode with menvcfg.cbcfe = {m_val}, senvcfg.cbcfe = {s_val}",
+                        f"{INDENT}# attempting cbo.clean in {mode_names[mode]} mode with menvcfg.cbcfe = {m_val}, senvcfg.cbcfe = {s_val}",
                         test_data.add_testcase(
                             f"cbo.clean_mode{mode}_menvcfg.cbcfe{m_val}_senvcfg.cbcfe{s_val}", coverpoint, covergroup
                         ),
                         f"cbo.clean    0(x{addr_reg})",
                         "nop",
-                        f"{INDENT}# attempting cbo.flush in {mode} mode with menvcfg.cbcfe = {m_val}, senvcfg.cbcfe = {s_val}",
+                        f"{INDENT}# attempting cbo.flush in {mode_names[mode]} mode with menvcfg.cbcfe = {m_val}, senvcfg.cbcfe = {s_val}",
                         test_data.add_testcase(
                             f"cbo.flush_mode{mode}_menvcfg.cbcfe{m_val}_senvcfg.cbcfe{s_val}", coverpoint, covergroup
                         ),
@@ -130,7 +132,7 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
     """Generate cbze trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbze"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -139,6 +141,7 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
         ),
         "",
     ]
+    mode_names = {"3": "machine", "1": "supervisor", "0": "user"}
     modes = ["3", "1", "0"]
     menvcfg = ["0", "1"]
     senvcfg = ["0", "1"]
@@ -166,7 +169,7 @@ def _generate_cbze_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         "nop",
-                        f"{INDENT}# attempting cbo.zero in {mode} mode with menvcfg.cbze = {m_val}, senvcfg.cbze = {s_val}",
+                        f"{INDENT}# attempting cbo.zero in {mode_names[mode]} mode with menvcfg.cbze = {m_val}, senvcfg.cbze = {s_val}",
                         test_data.add_testcase(f"cbo.zero_mode{mode}_mval{m_val}_sval{s_val}", coverpoint, covergroup),
                         f"cbo.zero    0(x{addr_reg})",
                         "nop",
@@ -181,7 +184,7 @@ def _generate_cbo_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate cbo access fault trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_access_fault"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(
@@ -257,7 +260,7 @@ def _generate_cbo_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate cbo misaligned trap tests."""
     covergroup, coverpoint = "ExceptionsZicboS_cg", "cp_cbo_misaligned"
 
-    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, envcfg_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(

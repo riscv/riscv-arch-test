@@ -66,7 +66,7 @@ def _generate_fcsr_write(test_data: TestData) -> list[str]:
     coverpoint = "cp_fcsr_frm_write"
     ######################################
 
-    r1 = test_data.int_regs.get_register(exclude_regs=[0])
+    r1 = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(
@@ -188,7 +188,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_fflags_set_m"
     ######################################
 
-    r1 = test_data.int_regs.get_register(exclude_regs=[0])
+    r1 = test_data.int_regs.get_register()
 
     lines = [
         comment_banner(

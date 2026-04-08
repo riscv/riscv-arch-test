@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for Whisper simulator
+
+ci_enabled: true
+exclude_extensions: "Sm,S,InterruptsSm,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,Zalrsc"
+install_script: ".github/scripts/install-whisper.sh"
+apt_packages: "libboost-program-options-dev"

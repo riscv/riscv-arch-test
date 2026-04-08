@@ -5,3 +5,19 @@ normative_rule_definitions:
     # extension, they do not write to any register and must not raise an
     # illegal-instruction exception.
     coverpoint: ["Zcmop_c_mop_cg/cp_asm_count"]
+
+  # C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI xn, 0,
+  # as shown in &lt;&lt;norm:c-mop_enc&gt;&gt;.
+  - name: Zcmop_enc
+    coverpoint: ["Zcmop_c_mop_cg/cp_asm_count"]
+
+  # Mnemonic|Encoding|Redefinable to read register ===
+  # C.MOP.1|0110000010000001|x1¶C.MOP.3|0110000110000001|x3¶C.MOP.5|0110001010000001|x5¶C.MOP.7|0110001110000001|x7¶C.MOP.9|0110010010000001|x9¶C.MOP.11|0110010110000001|x11¶C.MOP.13|0110011010000001|x13¶C.MOP.15|0110011110000001|x15
+  # ===
+  - name: Zcmop_enc_table
+    coverpoint: ["Zcmop_c_mop_cg/cp_asm_count"]
+
+  # Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions are
+  # defined to not write any register.
+  - name: Zcmop_instr_write
+    coverpoint: ["Zcmop_c_mop_cg/cp_asm_count"]

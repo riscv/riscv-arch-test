@@ -1,509 +1,44 @@
 ##################################
 # priv/extensions/ExceptionsS.py
 #
-# ExceptionsS test generator.
-# jgong@g.hmc.edu 3/9/2026
+# ExceptionsS test generator
+# jgong@hmc.edu Apr 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Exceptions S-mode test generator."""
+"""Exceptions S-mode test generator (refactored, calls ExceptionsCommon)."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
+from testgen.priv.extensions.ExceptionsCommon import (
+    generate_breakpoint_tests,
+    generate_ecall_tests,
+    generate_illegal_instruction_seed_tests,
+    generate_illegal_instruction_tests,
+    generate_instr_access_fault_tests,
+    generate_instr_adr_misaligned_branch_nottaken,
+    generate_instr_adr_misaligned_branch_tests,
+    generate_instr_adr_misaligned_jal_tests,
+    generate_instr_adr_misaligned_jalr_tests,
+    generate_load_access_fault_tests,
+    generate_load_address_misaligned_tests,
+    generate_misaligned_priority_fetch_tests,
+    generate_misaligned_priority_load_tests,
+    generate_misaligned_priority_store_tests,
+    generate_store_access_fault_tests,
+    generate_store_address_misaligned_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
-
-def _generate_instr_adr_misaligned_branch_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_instr_adr_misaligned_branch"
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
-
-    lines = [
-        comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
-        f"LI(x{temp_reg}, 1)",
-        ".align 2",
-        test_data.add_testcase("taken_branch_pc_6", coverpoint, covergroup),
-    ]
-
-    branches = ["beq", "bne", "blt", "bge", "bltu", "bgeu"]
-    for branch in branches:
-        if branch in ("bge", "bgeu"):
-            rs1 = f"x{temp_reg}"
-            rs2 = "x0"
-        elif branch == "beq":
-            rs1 = "x0"
-            rs2 = "x0"
-        else:  # bne, blt, bltu
-            rs1 = "x0"
-            rs2 = f"x{temp_reg}"
-
-        lines.extend(
-            [
-                f"{branch} {rs1}, {rs2}, .+6",
-                "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-                "addi x0, x2, 0",
-                "nop",
-            ]
-        )
-
-    test_data.int_regs.return_registers([temp_reg])
-    return lines
-
-
-def _generate_instr_adr_misaligned_branch_nottaken(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_instr_adr_misaligned_branch_nottaken"
-    temp_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-    lines = [
-        comment_banner(coverpoint, "Branch to unaligned address NOT taken"),
-        ".align 2",
-        f"LI(x{temp_reg}, 1)",
-        f"LI(x{check_reg}, 1)",
-        test_data.add_testcase("nottaken_branch_pc_6", coverpoint, covergroup),
-    ]
-
-    branches = ["beq", "bne", "blt", "bge", "bltu", "bgeu"]
-    for branch in branches:
-        if branch in ("beq", "bge", "bgeu"):
-            rs1, rs2 = "x0", f"x{temp_reg}"
-        elif branch == "bne":
-            rs1, rs2 = "x0", "x0"
-        else:  # blt, bltu
-            rs1, rs2 = f"x{temp_reg}", "x0"
-        lines.append(f"{branch} {rs1}, {rs2}, .+6")
-
-    lines.append(write_sigupd(check_reg, test_data))
-    test_data.int_regs.return_registers([temp_reg, check_reg])
-    return lines
-
-
-def _generate_instr_adr_misaligned_jal_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_instr_adr_misaligned_jal"
-
-    lines = [
-        comment_banner(coverpoint, "Instruction Address Misaligned JAL"),
-        test_data.add_testcase("jal_misaligned", coverpoint, covergroup),
-        "jal x0, .+6",
-        "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-        "addi x0, x2, 0",
-        "nop",
-    ]
-
-    return lines
-
-
-def _generate_instr_adr_misaligned_jalr_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_instr_adr_misaligned_jalr"
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0])
-
-    lines = [
-        comment_banner(coverpoint, "Instruction Address Misaligned JALR"),
-    ]
-
-    # Test all 16 combinations of rs1[1:0] and offset[1:0] for JALR
-    offsets_for_lsb = {0: 8, 1: 5, 2: 6, 3: 7}
-
-    for rs1_lsb in range(4):
-        for offset_lsb in range(4):
-            base_off = offsets_for_lsb[rs1_lsb]
-            jalr_off = offsets_for_lsb[offset_lsb]
-
-            lines.extend(
-                [
-                    f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
-                    ".align 2",
-                    # AUIPC gets the aligned PC, then ADDI sets addr_reg[1:0] = rs1_lsb
-                    f"auipc x{addr_reg}, 0",
-                    f"addi x{addr_reg}, x{addr_reg}, {base_off}",
-                    test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
-                    # JALR jumps to (addr_reg + jalr_off) & ~1
-                    f"jalr x1, {jalr_off}(x{addr_reg})",
-                    "nop",
-                ]
-            )
-
-            if rs1_lsb & 1:
-                lines.append("nop")
-
-            lines.extend(
-                [
-                    "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-                    "addi x0, x2, 0",
-                ]
-            )
-
-    test_data.int_regs.return_registers([addr_reg])
-    return lines
-
-
-def _generate_instr_access_fault_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_instr_access_fault"
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0, 4])
-
-    lines = [
-        comment_banner(coverpoint, "Instruction Access Fault"),
-        f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-        "LI(x4, 0xACCE)",
-        test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
-        f"jalr x1, 0(x{addr_reg})",
-        "nop",
-    ]
-
-    test_data.int_regs.return_registers([addr_reg])
-    return lines
-
-
-def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_illegal_instruction"
-
-    lines = [
-        comment_banner(coverpoint, "Illegal Instruction"),
-        ".align 2",
-        test_data.add_testcase("illegal_0x00000000", coverpoint, covergroup),
-        ".word 0x00000000",
-        "nop",
-        ".align 2",
-        test_data.add_testcase("illegal_0xFFFFFFFF", coverpoint, covergroup),
-        ".word 0xFFFFFFFF",
-        "nop",
-    ]
-    return lines
-
-
-def _generate_illegal_instruction_seed_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_illegal_instruction_seed"
-    dest_regs = test_data.int_regs.get_registers(4, exclude_regs=[0])
-
-    lines = [
-        comment_banner(coverpoint, "Illegal Instruction"),
-        test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
-        f" csrrs x{dest_regs[0]}, seed, x0",
-        " nop",
-        test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
-        f" csrrc x{dest_regs[1]}, seed, x0",
-        " nop",
-        test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
-        f" csrrsi x{dest_regs[2]}, seed, 0",
-        " nop",
-        test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
-        f" csrrci x{dest_regs[3]}, seed, 0",
-        " nop",
-    ]
-
-    test_data.int_regs.return_registers(dest_regs)
-    return lines
-
-
-def _generate_breakpoint_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_breakpoint"
-
-    lines = [
-        comment_banner(coverpoint, "Breakpoint"),
-        test_data.add_testcase("ebreak", coverpoint, covergroup),
-        "ebreak",
-        "nop",
-    ]
-    return lines
-
-
-def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_load_access_fault"
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-    lines = [comment_banner(coverpoint, "Load Access Fault")]
-
-    load_ops = ["lb", "lbu", "lh", "lhu", "lw"]
-
-    for op in load_ops:
-        lines.extend(
-            [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"LI(x{check_reg}, 0xB0BACAFE)",
-                test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
-                f"{op} x{check_reg}, 0(x{addr_reg})",
-                "nop",
-                write_sigupd(check_reg, test_data),
-            ]
-        )
-
-    lines.extend(
-        [
-            "#if __riscv_xlen == 64",
-            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f" LI(x{check_reg}, 0xB0BACAFE)",
-            test_data.add_testcase("lwu_fault", coverpoint, covergroup),
-            f" lwu x{check_reg}, 0(x{addr_reg})",
-            " nop",
-            write_sigupd(check_reg, test_data),
-            f" LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f" LI(x{check_reg}, 0xB0BACAFE)",
-            test_data.add_testcase("ld_fault", coverpoint, covergroup),
-            f" ld x{check_reg}, 0(x{addr_reg})",
-            " nop",
-            write_sigupd(check_reg, test_data),
-            "#endif",
-        ]
-    )
-
-    test_data.int_regs.return_registers([addr_reg, check_reg])
-    return lines
-
-
-def _add_load_misaligned_test(
-    op: str,
-    offset: int,
-    test_data: TestData,
-    coverpoint: str,
-    covergroup: str,
-) -> list[str]:
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-    t_lines = [
-        f"LA(x{addr_reg}, scratch)",
-        f"addi x{addr_reg}, x{addr_reg}, {offset}",
-        f"LI(x{check_reg}, 0xB0BACAFE)",
-        test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
-        f"{op} x{check_reg}, 0(x{addr_reg})",
-        "nop",
-        write_sigupd(check_reg, test_data),
-    ]
-
-    test_data.int_regs.return_registers([addr_reg, check_reg])
-    return t_lines
-
-
-def _add_store_misaligned_test(
-    op: str,
-    offset: int,
-    test_data: TestData,
-    coverpoint: str,
-    covergroup: str,
-) -> list[str]:
-    addr_reg, data_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
-
-    t_lines = [
-        f"LI(x{data_reg}, 0xDEADBEEF)",
-        f"LA(x{addr_reg}, scratch)",
-        f"addi x{addr_reg}, x{addr_reg}, {offset}",
-        test_data.add_testcase(f"{op}_off{offset}", coverpoint, covergroup),
-        f"{op} x{data_reg}, 0(x{addr_reg})",
-        "nop",
-        # Read back scratch to verify store result
-        f"LA(x{addr_reg}, scratch)",
-        f"lw x{check_reg}, 0(x{addr_reg})",
-        write_sigupd(check_reg, test_data),
-        f"lw x{check_reg}, 4(x{addr_reg})",
-        write_sigupd(check_reg, test_data),
-        f"lw x{check_reg}, 8(x{addr_reg})",
-        write_sigupd(check_reg, test_data),
-        f"lw x{check_reg}, 12(x{addr_reg})",
-        write_sigupd(check_reg, test_data),
-    ]
-
-    test_data.int_regs.return_registers([addr_reg, data_reg, check_reg])
-    return t_lines
-
-
-def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_load_address_misaligned"
-
-    lines = [comment_banner(coverpoint, "Load Address Misaligned")]
-
-    load_ops = ["lb", "lbu", "lh", "lhu", "lw"]
-
-    for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b})")
-        for op in load_ops:
-            lines.extend(_add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
-
-        lines.append("#if __riscv_xlen == 64")
-        for op in ["lwu", "ld"]:
-            lines.extend(_add_load_misaligned_test(op, offset, test_data, coverpoint, covergroup))
-        lines.append("#endif")
-
-    return lines
-
-
-def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_store_address_misaligned"
-
-    lines = [comment_banner(coverpoint, "Store Address Misaligned")]
-
-    store_ops = ["sb", "sh", "sw"]
-
-    for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b})")
-        for op in store_ops:
-            lines.extend(_add_store_misaligned_test(op, offset, test_data, coverpoint, covergroup))
-
-        lines.append("#if __riscv_xlen == 64")
-        lines.extend(_add_store_misaligned_test("sd", offset, test_data, coverpoint, covergroup))
-        lines.append("#endif")
-
-    return lines
-
-
-def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_store_access_fault"
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-    lines = [comment_banner(coverpoint, "Store Access Fault")]
-
-    store_ops = ["sb", "sh", "sw"]
-    test_values = {"sb": "0xAB", "sh": "0xBEAD", "sw": "0xADDEDCAB", "sd": "0xADDEDCABADDEDCAB"}
-
-    for op in store_ops:
-        lines.extend(
-            [
-                f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"LI(x{data_reg}, {test_values[op]})",
-                test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
-                f"{op} x{data_reg}, 0(x{addr_reg})",
-                " nop",
-            ]
-        )
-
-    lines.extend(
-        [
-            "#if __riscv_xlen == 64",
-            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f"LI(x{data_reg}, {test_values['sd']})",
-            test_data.add_testcase("sd_fault", coverpoint, covergroup),
-            f"sd x{data_reg}, 0(x{addr_reg})",
-            "nop",
-            "#endif",
-        ]
-    )
-
-    test_data.int_regs.return_registers([addr_reg, data_reg])
-    return lines
+_CG = "ExceptionsS_cg"
 
 
 def _generate_ecall_s_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_ecall_s"
-
-    lines = [
-        comment_banner(coverpoint, "Ecall"),
-        test_data.add_testcase("ecall_s", coverpoint, covergroup),
-        "ecall",
-        "nop",
-    ]
-
-    return lines
-
-
-def _generate_misaligned_priority_load_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_misaligned_priority"
-    addr_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0, 1])
-
-    lines = [comment_banner(coverpoint, "Misaligned Priority Tests")]
-    load_ops_base = ["lh", "lhu", "lw", "lb", "lbu"]
-    load_ops_64 = ["lwu", "ld"]
-
-    lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
-
-    for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b}) Misaligned Access fault")
-        lines.append(f"addi x{temp_reg}, x{addr_reg}, {offset}")
-
-        for op in load_ops_base:
-            lines.extend(
-                [
-                    test_data.add_testcase(f"{op}_load_off{offset}_priority", coverpoint, covergroup),
-                    f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
-                ]
-            )
-
-        lines.append("#if __riscv_xlen == 64")
-        for op in load_ops_64:
-            lines.extend(
-                [
-                    test_data.add_testcase(f"{op}_load_off{offset}_priority", coverpoint, covergroup),
-                    f"{op} x{check_reg}, 0(x{temp_reg})",
-                    "nop",
-                ]
-            )
-        lines.append("#endif")
-
-    test_data.int_regs.return_registers([temp_reg, addr_reg, check_reg])
-    return lines
-
-
-def _generate_misaligned_priority_store_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_misaligned_priority"
-    addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
-
-    lines = [comment_banner(coverpoint, "Misaligned Priority Store")]
-    store_ops_base = ["sb", "sh", "sw"]
-
-    for offset in range(8):
-        lines.append(f"\n# Offset {offset} (LSBs: {offset:03b}) Misaligned Access fault")
-        lines.extend(
-            [
-                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-                f"addi x{addr_reg}, x{addr_reg}, {offset}",
-                f"LI(x{data_reg}, 0xDECAFCAB)",
-            ]
-        )
-
-        for op in store_ops_base:
-            lines.extend(
-                [
-                    test_data.add_testcase(f"{op}_store_off{offset}_priority", coverpoint, covergroup),
-                    f"{op} x{data_reg}, 0(x{addr_reg})",
-                    "nop",
-                ]
-            )
-
-        lines.extend(
-            [
-                "#if __riscv_xlen == 64",
-                test_data.add_testcase(f"sd_store_off{offset}_priority", coverpoint, covergroup),
-                f"sd x{data_reg}, 0(x{addr_reg})",
-                "nop",
-                "#endif",
-            ]
-        )
-
-    test_data.int_regs.return_registers([addr_reg, data_reg])
-    return lines
-
-
-def _generate_misaligned_priority_fetch_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_misaligned_priority"
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0])
-
-    lines = [comment_banner(coverpoint, "Misaligned Priority Fetch")]
-
-    target_label = f"misaligned_fetch_target_{test_data.test_count + 1}"
-    lines.extend(
-        [
-            "\n# misaligned fetch - existent address",
-            f"LA(x{addr_reg}, {target_label})",
-            f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",
-            test_data.add_testcase("fetch_misaligned_existent_priority", coverpoint, covergroup),
-            f"jalr x1, 0(x{addr_reg})",
-            "nop",
-            ".align 4",
-            f"{target_label}:",
-            "nop",
-            "\n# misaligned fetch - non-existent (fault) address",
-            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f"addi x{addr_reg}, x{addr_reg}, 2",
-            "LI(x4, 0xACCE)",
-            test_data.add_testcase("fetch_misaligned_nonexistent_priority", coverpoint, covergroup),
-            f"jalr x1, 0(x{addr_reg})",
-            "nop",
-        ]
-    )
-
-    test_data.int_regs.return_registers([addr_reg])
-    return lines
+    return generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall")
 
 
 def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_illegal_instruction_csr"
+    covergroup, coverpoint = _CG, "cp_illegal_instruction_csr"
     dest_regs = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     lines = [
@@ -567,10 +102,10 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
     Assumes caller has already entered the correct privilege mode.
     Sets medeleg itself for each iteration by returning to M-mode temporarily.
     """
-    covergroup = "ExceptionsS_cg"
+    covergroup = _CG
     coverpoint = "cp_medeleg_msu"
 
-    # excluding x6, x7, x9 since TVTEST_GOTO_LOWER_MODE may clobber these registers
+    # excluding x6, x7, x9 since RVTEST_GOTO_LOWER_MODE may clobber these registers
     addr_reg, data_reg, check_reg, medeleg_reg = test_data.int_regs.get_registers(4, exclude_regs=[0, 1, 6, 7, 9])
 
     lines = []
@@ -770,7 +305,7 @@ def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: i
 
 
 def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_stvec"
+    covergroup, coverpoint = _CG, "cp_stvec"
     addr_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
@@ -809,7 +344,7 @@ def _generate_stvec_tests(test_data: TestData, mode_tag: str, priv_mode: int) ->
 
 
 def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
-    covergroup, coverpoint = "ExceptionsS_cg", "cp_xstatus_ie"
+    covergroup, coverpoint = _CG, "cp_xstatus_ie"
     save_reg, mask_mie, mask_sie, medeleg_reg = test_data.int_regs.get_registers(4, exclude_regs=[0, 6, 7, 9])
 
     lines = [
@@ -883,8 +418,8 @@ def _generate_xstatus_ie_tests(test_data: TestData, mode_tag: str, priv_mode: in
     extra_defines=["#define SKIP_MEPC"],
 )
 def make_exceptionss(test_data: TestData) -> list[str]:
-    """Main entry point for S-mode exception test generation."""
-    lines = []
+    """Main entry point for S-mode exception test generation (refactored)."""
+    lines: list[str] = []
 
     # Initialize scratch memory
     lines.extend(
@@ -900,28 +435,30 @@ def make_exceptionss(test_data: TestData) -> list[str]:
         ]
     )
 
+    lines.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
+    lines.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
+    lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
+    lines.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
+    lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
+    lines.extend(generate_instr_access_fault_tests(test_data, _CG))
+    lines.extend(generate_illegal_instruction_tests(test_data, _CG))
+    lines.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
+    lines.extend(generate_breakpoint_tests(test_data, _CG))
+    lines.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=True))
+    lines.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=True))
+    lines.extend(generate_store_address_misaligned_tests(test_data, _CG))
+    lines.extend(generate_store_access_fault_tests(test_data, _CG))
+    lines.extend(generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority", name_infix="_load_"))
     lines.extend(
-        [
-            "RVTEST_GOTO_LOWER_MODE Smode  # use S-mode",
-        ]
+        generate_misaligned_priority_store_tests(test_data, _CG, "cp_misaligned_priority", name_infix="_store_")
     )
-    lines.extend(_generate_instr_adr_misaligned_branch_tests(test_data))
-    lines.extend(_generate_instr_adr_misaligned_branch_nottaken(test_data))
-    lines.extend(_generate_instr_adr_misaligned_jal_tests(test_data))
-    lines.extend(_generate_instr_adr_misaligned_jalr_tests(test_data))
-    lines.extend(_generate_instr_access_fault_tests(test_data))
-    lines.extend(_generate_illegal_instruction_tests(test_data))
-    lines.extend(_generate_illegal_instruction_seed_tests(test_data))
-    lines.extend(_generate_illegal_instruction_csr_tests(test_data))
-    lines.extend(_generate_breakpoint_tests(test_data))
-    lines.extend(_generate_load_address_misaligned_tests(test_data))
-    lines.extend(_generate_load_access_fault_tests(test_data))
-    lines.extend(_generate_store_address_misaligned_tests(test_data))
-    lines.extend(_generate_store_access_fault_tests(test_data))
+    lines.extend(
+        generate_misaligned_priority_fetch_tests(
+            test_data, _CG, "cp_misaligned_priority", name_prefix="fetch_", name_suffix="_priority"
+        )
+    )
     lines.extend(_generate_ecall_s_tests(test_data))
-    lines.extend(_generate_misaligned_priority_load_tests(test_data))
-    lines.extend(_generate_misaligned_priority_store_tests(test_data))
-    lines.extend(_generate_misaligned_priority_fetch_tests(test_data))
+    lines.extend(_generate_illegal_instruction_csr_tests(test_data))
     lines.extend(_generate_medeleg_msu_tests(test_data, "mode_m", priv_mode=3))
     lines.extend(_generate_medeleg_msu_tests(test_data, "mode_s", priv_mode=1))
     lines.extend(_generate_medeleg_msu_tests(test_data, "mode_u", priv_mode=0))

@@ -7,11 +7,11 @@ SPDX-License-Identifier: Apache-2.0
 
 Three configurations are provided:
 
-| Config               | ISA       | Notes                                                      |
-| -------------------- | --------- | ---------------------------------------------------------- |
-| `cv32e40p-v1-rv32mc` | RV32IMC   | v1.0.0 release                                             |
-| `cv32e40p-v2-rv32mc` | RV32IMC   | v1.8.3 release, logically equivalent to v1-rv32mc          |
-| `cv32e40p-v2-rv32mcf`| RV32IMCZcf| v1.8.3 release with FPU (F + Zcf)                          |
+| Config                | ISA        | Notes                                             |
+| --------------------- | ---------- | ------------------------------------------------- |
+| `cv32e40p-v1-rv32mc`  | RV32IMC    | v1.0.0 release                                    |
+| `cv32e40p-v2-rv32mc`  | RV32IMC    | v1.8.3 release, logically equivalent to v1-rv32mc |
+| `cv32e40p-v2-rv32mcf` | RV32IMCF   | v1.8.3 release with FPU                           |
 
 The differences (or lack thereof) between versions are explained in the
 [CV32E40P User Manual (v1.8.3)](https://docs.openhwgroup.org/projects/cv32e40p-user-manual/en/latest/core_versions.html).

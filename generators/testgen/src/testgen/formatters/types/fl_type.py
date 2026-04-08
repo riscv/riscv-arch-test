@@ -35,7 +35,7 @@ def format_fl_type(
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    setup: list[str] = []
+    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
 
     # Handle special case where offset is -2048 (can't represent +2048 in 12 bits)
     if params.immval == -2048:

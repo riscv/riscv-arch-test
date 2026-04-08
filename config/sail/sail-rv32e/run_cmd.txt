@@ -1,1 +1,0 @@
-sail_riscv_sim {debug:--trace-all} --config config/sail/sail-rv32e/sail.json

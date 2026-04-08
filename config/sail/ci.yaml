@@ -4,5 +4,3 @@
 
 ci_enabled: true
 exclude_extensions: ""
-exclude_configs:
-  - sail-rv32e # UDB does not support E yet

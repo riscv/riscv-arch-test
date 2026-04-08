@@ -99,12 +99,12 @@ unsupported_tests = [ # conflicting signatures between sail and spike, open PRs 
   # "vslideup.vi",    # Sail issue 1071
   # "vslidedown.vi",  # Sail issue 1071
   # "vrgather.vi",    # Sail issue 1071
-  "vlseg3e32ff.v",
-  "vlseg3e32.v",
-  "vlseg4e32.v",
-  "vsseg3e64.v",
-  "vsseg3e32.v",
-  "vwredusum.vs"
+  # "vlseg3e32ff.v",  # resolved 2026-04-08: Spike PASS on all SEW/RV variants
+  # "vlseg3e32.v",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants
+  # "vlseg4e32.v",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants
+  # "vsseg3e64.v",    # Sail/Spike disagree on masking (2026-04-08) — Sail runs fine, only Spike comparison fails. NOT a coverage blocker.
+  # "vsseg3e32.v",    # Sail/Spike disagree on masking (2026-04-08) — Sail runs fine, only Spike comparison fails. NOT a coverage blocker.
+  # "vwredsum.vs",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants (was typo: vwredusum.vs)
 
 ]
 

@@ -31,27 +31,29 @@ def _get_nf(instruction):
 
 
 @register("cp_custom_maskLS")
-def make(test, sew):
-    # emul_ge_16 — sweep LMUL > 1 with SEW > 8
-    if sew > 8:
-        eew = _get_eew(test)
-        nf = _get_nf(test)
+def make(test: str, sew: int) -> None:
+    # For VlsCustom8: generate at sew=8 (to cover lmul/asm_count bins under sample guard)
+    # plus higher SEWs (for cross bins in other extensions).
+    # For VlsCustom16/32/64: generate at the matching sew only.
+    sew_values = [8, 16, 32, 64] if sew == 8 else [sew]
+    eew = _get_eew(test)
+    nf = _get_nf(test)
+    for test_sew in sew_values:
         for lmul in LMULS_GT1:
-            # nf × EMUL must not exceed 8 (RISC-V V spec constraint — illegal otherwise)
             if eew is not None:
-                emul = eew * lmul // sew
+                emul = eew * lmul // test_sew
             else:
                 emul = lmul
             if emul * nf > 8:
                 continue
 
-            description = f"cp_custom_maskLS_emul_ge_16 ({test}, lmul={lmul}, sew={sew})"
+            description = f"cp_custom_maskLS ({test}, lmul={lmul}, sew={test_sew})"
             try:
                 data = randomizeVectorInstructionData(
-                    test, sew, getBaseSuiteTestCount(), lmul=lmul,
+                    test, test_sew, getBaseSuiteTestCount(), lmul=lmul,
                 )
             except ValueError:
                 continue
-            writeTest(description, test, data, sew=sew, lmul=lmul, vl=1)
+            writeTest(description, test, data, sew=test_sew, lmul=lmul, vl="vlmax")
             incrementBasetestCount()
             vsAddressCount()

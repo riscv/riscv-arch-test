@@ -5,6 +5,7 @@
     // Mask load/store with EMUL >= 16 (LMUL > 1 and SEW > 8)
 
     vtype_all_sewgt8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+          option.auto_bin_max = 0;
           `ifdef COVER_VLSCUSTOM16
           bins sixteen    = {1};
           `endif
@@ -18,7 +19,7 @@
           `ifndef COVER_VLSCUSTOM16
           `ifndef COVER_VLSCUSTOM32
           `ifndef COVER_VLSCUSTOM64
-          bins sew_not_supported  = {[1:3]};
+          ignore_bins sew_not_supported  = {[1:3]};
           `endif
           `endif
           `endif

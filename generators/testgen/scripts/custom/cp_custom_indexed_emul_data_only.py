@@ -2,17 +2,11 @@
 """Custom coverpoint: cp_custom_indexed_emul_data_only
 
 Verify EMUL*NFIELDS <= 8 constraint applies to data register group only.
-Test at LMUL*NFIELDS = 8 boundary.
+Test at data LMUL*NFIELDS = 8 boundary.
 
-Template has 3 crosses:
-- cp_custom_indexed_emul_data_only_lmul1_nf8: LMUL=1, NF=8 (nf field=7)
-- cp_custom_indexed_emul_data_only_lmul2_nf4: LMUL=2, NF=4 (nf field=3)
-- cp_custom_indexed_emul_data_only_lmul4_nf2: LMUL=4, NF=2 (nf field=1)
-
-The nf field is encoded in the instruction bits [31:29].
-Segmented indexed instructions have names like vluxseg2ei8.v where the
-segment count is in the name. We need to match the right instruction
-to the right LMUL.
+Template has a single cross: std_vec × nf_lmul_at_boundary.
+The nf_lmul_at_boundary coverpoint checks a combined condition:
+  NF=2 at LMUL=4, NF=4 at LMUL=2, or NF=8 at LMUL=1.
 """
 
 from coverpoint_registry import register
@@ -23,32 +17,58 @@ from vector_testgen_common import (
     incrementBasetestCount,
     getBaseSuiteTestCount,
     vsAddressCount,
+    eew8_ins,
+    eew16_ins,
+    eew32_ins,
+    eew64_ins,
 )
 
 import re
 
-def _get_nfields(instruction):
+
+def _get_nfields(instruction: str) -> int:
     """Extract NFIELDS from segmented instruction name (e.g., vluxseg4ei8.v → 4)."""
     m = re.search(r'seg(\d+)', instruction)
     return int(m.group(1)) if m else 1
 
 
+def _get_index_eew(instruction: str) -> int | None:
+    """Get the index element width from the instruction name."""
+    if instruction in eew64_ins:
+        return 64
+    if instruction in eew32_ins:
+        return 32
+    if instruction in eew16_ins:
+        return 16
+    if instruction in eew8_ins:
+        return 8
+    return None
+
+
 @register("cp_custom_indexed_emul_data_only")
-def make(test, sew):
+def make(test: str, sew: int) -> None:
     nf = _get_nfields(test)
+    targets = {8: 1, 4: 2, 2: 4}  # nf → required lmul
 
-    # Test each LMUL*NFIELDS = 8 boundary case
-    targets = {8: 1, 4: 2, 2: 4}  # nf → lmul
+    if nf not in targets:
+        return
 
-    if nf in targets:
-        lmul = targets[nf]
-        description = f"cp_custom_indexed_emul_data_only ({test}, lmul={lmul}, nf={nf})"
-        try:
-            data = randomizeVectorInstructionData(
-                test, sew, getBaseSuiteTestCount(), lmul=lmul,
-            )
-            writeTest(description, test, data, sew=sew, lmul=lmul, vl=1)
-            incrementBasetestCount()
-            vsAddressCount()
-        except ValueError:
-            pass  # overlap constraints unsolvable for this instruction/sew/lmul combo
+    lmul = targets[nf]
+
+    # Check index EMUL legality at the required LMUL
+    index_eew = _get_index_eew(test)
+    if index_eew is not None:
+        index_emul = index_eew * lmul // sew
+        if index_emul > 8:
+            return
+
+    description = f"cp_custom_indexed_emul_data_only ({test}, lmul={lmul}, nf={nf})"
+    try:
+        data = randomizeVectorInstructionData(
+            test, sew, getBaseSuiteTestCount(), lmul=lmul,
+        )
+    except ValueError:
+        return
+    writeTest(description, test, data, sew=sew, lmul=lmul, vl=1)
+    incrementBasetestCount()
+    vsAddressCount()

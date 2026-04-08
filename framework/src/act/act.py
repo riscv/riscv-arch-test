@@ -110,7 +110,6 @@ def run_act(
             {
                 "config": config,
                 "xlen": mxlen,
-                "e_ext": "E" in implemented_extensions,
                 "selected_tests": selected_tests,
             }
         )

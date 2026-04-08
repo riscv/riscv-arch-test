@@ -8,14 +8,9 @@
 # previously expressed as generated Makefiles.
 ##################################
 
-import hashlib
 import importlib.resources
-import json
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
-
-import pyjson5
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config, CoverageSimulator
@@ -29,7 +24,7 @@ OBJDUMP_FLAGS = ["-Stsxd", "-M", "no-aliases,numeric"]
 
 
 # ---------------------------------------------------------------------------
-# Shared types and helpers
+# Types and helpers
 # ---------------------------------------------------------------------------
 
 
@@ -38,86 +33,7 @@ class ConfigData(TypedDict):
 
     config: Config
     xlen: int
-    e_ext: bool
     selected_tests: dict[str, TestMetadata]
-
-
-@dataclass
-class CommonGroup:
-    """A group of configs that share a common test directory."""
-
-    config: Config  # Representative config (for compiler/linker paths)
-    xlen: int
-    e_ext: bool
-    common_tests: dict[str, TestMetadata] = field(default_factory=dict)
-    configs: list[ConfigData] = field(default_factory=list)
-
-
-def compute_config_hash(config: Config, xlen: int, e_ext: bool) -> str:
-    """Compute a hash of the config options that affect common test compilation.
-
-    Includes the linker script, `rvmodel_macros.h`, the paths to the compiler, reference model,
-    and objdump executables, xlen, e_ext, and the memory map from `sail.json` (if present).
-    """
-    hasher = hashlib.sha256()
-
-    # Hash the architecture parameters
-    hasher.update(f"{xlen=}".encode())
-    hasher.update(f"{e_ext=}".encode())
-
-    # Hash the linker script contents
-    hasher.update(config.linker_script.read_bytes())
-
-    # Hash rvmodel_macros.h contents
-    model_test_h = config.dut_include_dir / "rvmodel_macros.h"
-    hasher.update(model_test_h.read_bytes())
-
-    # Hash sail.json memory map (if present)
-    sail_config = config.dut_include_dir / "sail.json"
-    if sail_config.exists():
-        sail_data = pyjson5.decode(sail_config.read_text())
-        if "memory" in sail_data and "regions" in sail_data["memory"]:
-            hasher.update(json.dumps(sail_data["memory"]["regions"], sort_keys=True).encode())
-
-    # Hash executable paths (resolved paths to detect different binaries)
-    hasher.update(str(config.compiler_exe.resolve()).encode())
-    hasher.update(str(config.ref_model_exe.resolve()).encode())
-    if config.objdump_exe is not None:
-        hasher.update(str(config.objdump_exe.resolve()).encode())
-
-    return hasher.hexdigest()
-
-
-def generate_sail_config(xlen: int, e_ext: bool, user_sail_config: Path, common_wkdir: Path) -> Path:
-    """Get the path to the internal Sail config file for the given XLEN.
-
-    This config is used for generating signatures for common tests and has
-    all extensions enabled.
-    """
-    # Extract memory map from user's Sail config
-    user_sail_config_data = pyjson5.decode(user_sail_config.read_text())
-    memory_map = user_sail_config_data["memory"]["regions"]
-
-    # Load internal Sail config template
-    internal_sail_config_file = (
-        Path(str(importlib.resources.files("act"))) / "data" / f"sail-rv{xlen}{'e' if e_ext else 'i'}.json"
-    )
-    internal_sail_config = pyjson5.decode(internal_sail_config_file.read_text())
-
-    # Replace memory map
-    internal_sail_config["memory"]["regions"] = memory_map
-
-    # Write out modified Sail config to temporary file
-    common_sail_config_path = common_wkdir / f"sail-rv{xlen}{'e' if e_ext else 'i'}-common.json"
-    common_sail_config_path.parent.mkdir(parents=True, exist_ok=True)
-    common_sail_config_path.write_text(pyjson5.encode(internal_sail_config))
-
-    return common_sail_config_path
-
-
-# ---------------------------------------------------------------------------
-# Compiler command construction
-# ---------------------------------------------------------------------------
 
 
 def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
@@ -487,153 +403,68 @@ def generate_build_plan(
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
-    """Build the full DAG of tasks for all configs.
-
-    Groups configs by hash for common test sharing, then generates per-config tasks.
-    """
+    """Build the full DAG of tasks for all configs."""
     all_tasks: list[BuildTask] = []
 
-    # Pass 1: Group configs by hash and compute union of needed common tests
-    common_groups: dict[str, CommonGroup] = {}
-
     for config_data in configs:
-        # Unpack config data
         config = config_data["config"]
         xlen = config_data["xlen"]
-        e_ext = config_data["e_ext"]
+        config_wkdir = workdir / config.name
+        config_coverage_dir = config_wkdir / "coverage"
+        config_report_dir = config_wkdir / "reports"
+        sail_config_path = config.dut_include_dir / "sail.json"
 
-        # Compute config hash and add to list of hashes if needed
-        config_hash = compute_config_hash(config, xlen, e_ext)
-        if config_hash not in common_groups:
-            common_groups[config_hash] = CommonGroup(config=config, xlen=xlen, e_ext=e_ext)
+        coverage_targets: dict[Path, list[Path]] = {}
+        compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
 
-        # Add this config to the appropriate common list based on hash and add tests to that common list
-        common_group = common_groups[config_hash]
-        common_group.configs.append(config_data)
-        common_group.common_tests.update(
-            {
-                test: metadata
-                for test, metadata in config_data["selected_tests"].items()
-                if not metadata.config_dependent
-            }
-        )
-
-    # Pass 2: Generate tasks
-    for config_hash, common_group in common_groups.items():
-        common_wkdir = workdir / "common" / config_hash[:8]
-
-        # Generate maximal Sail config for common tests
-        common_sail_config = generate_sail_config(
-            common_group.xlen,
-            common_group.e_ext,
-            common_group.config.dut_include_dir / "sail.json",
-            common_wkdir,
-        )
-
-        # Compute compiler command once per common group
-        common_compiler_cmd = _compiler_cmd(common_group.config, common_group.xlen, tests_dir)
-
-        # Common test tasks
-        for test_name_str, test_metadata in sorted(common_group.common_tests.items()):
+        for test_name_str, test_metadata in sorted(config_data["selected_tests"].items()):
             test_name = Path(test_name_str)
+
+            # Compile test
             all_tasks.extend(
                 gen_compile_tasks(
                     test_name,
                     test_metadata,
-                    common_wkdir,
-                    common_group.xlen,
-                    common_group.config,
-                    common_sail_config,
-                    common_compiler_cmd,
+                    config_wkdir,
+                    xlen,
+                    config,
+                    sail_config_path,
+                    compiler_cmd,
                     debug,
                     fast,
                 )
             )
 
-        # Per-config tasks
-        for config_data in common_group.configs:
-            config = config_data["config"]
-            xlen = config_data["xlen"]
-            config_wkdir = workdir / config.name
-            config_elf_dir = config_wkdir / "elfs"
-            config_coverage_dir = config_wkdir / "coverage"
-            config_report_dir = config_wkdir / "reports"
-            sail_config_path = config.dut_include_dir / "sail.json"
+            # Coverage trace generation
+            if coverage_enabled:
+                trace_name = test_name.with_suffix(".rvvi")
+                trace_path = config_coverage_dir / trace_name
+                coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
+                if coverage_group_dir not in coverage_targets:
+                    coverage_targets[coverage_group_dir] = []
+                coverage_targets[coverage_group_dir].append(trace_path.absolute())
 
-            coverage_targets: dict[Path, list[Path]] = {}
-            config_compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
-
-            for test_name_str, test_metadata in sorted(config_data["selected_tests"].items()):
-                test_name = Path(test_name_str)
-                final_elf = config_elf_dir / test_name.with_suffix(".elf")
-
-                if test_name_str in common_group.common_tests:
-                    # Symlink to common elf
-                    common_elf = common_wkdir / "elfs" / test_name.with_suffix(".elf")
-                    all_tasks.append(
-                        BuildTask(
-                            outputs=(final_elf,),
-                            deps=(common_elf,),
-                            action=SymlinkAction(src=common_elf, dst=final_elf),
-                        )
-                    )
-                    # Symlink objdump too
-                    if not fast and config.objdump_exe is not None:
-                        common_objdump = Path(f"{common_elf}.objdump")
-                        config_objdump = Path(f"{final_elf}.objdump")
-                        all_tasks.append(
-                            BuildTask(
-                                outputs=(config_objdump,),
-                                deps=(common_objdump,),
-                                action=SymlinkAction(src=common_objdump, dst=config_objdump),
-                            )
-                        )
-                else:
-                    # Config-specific compilation
-                    all_tasks.extend(
-                        gen_compile_tasks(
-                            test_name,
-                            test_metadata,
-                            config_wkdir,
-                            xlen,
-                            config,
-                            sail_config_path,
-                            config_compiler_cmd,
-                            debug,
-                            fast,
-                        )
-                    )
-
-                # Coverage trace generation
-                if coverage_enabled:
-                    trace_name = test_name.with_suffix(".rvvi")
-                    trace_path = config_coverage_dir / trace_name
-                    coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
-                    if coverage_group_dir not in coverage_targets:
-                        coverage_targets[coverage_group_dir] = []
-                    coverage_targets[coverage_group_dir].append(trace_path.absolute())
-
-                    all_tasks.extend(
-                        gen_rvvi_tasks(
-                            test_name,
-                            config_wkdir,
-                            config,
-                            fast,
-                        )
-                    )
-
-            # Coverage report tasks
-            if coverage_enabled and coverage_targets:
                 all_tasks.extend(
-                    gen_coverage_tasks(
-                        coverage_targets,
-                        coverpoint_dir,
-                        config_coverage_dir,
-                        config_report_dir,
-                        config.dut_include_dir,
-                        coverage_simulator,
-                        config.name,
+                    gen_rvvi_tasks(
+                        test_name,
+                        config_wkdir,
+                        config,
+                        fast,
                     )
                 )
+
+        # Coverage report tasks
+        if coverage_enabled and coverage_targets:
+            all_tasks.extend(
+                gen_coverage_tasks(
+                    coverage_targets,
+                    coverpoint_dir,
+                    config_coverage_dir,
+                    config_report_dir,
+                    config.dut_include_dir,
+                    coverage_simulator,
+                    config.name,
+                )
+            )
 
     return all_tasks

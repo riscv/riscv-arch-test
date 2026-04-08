@@ -19,7 +19,6 @@ class TestMetadata(BaseModel):
     test_path: FilePath
     required_extensions: set[str] = Field(alias="REQUIRED_EXTENSIONS", min_length=1)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
-    config_dependent: bool = Field(alias="CONFIG_DEPENDENT")
     params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}

@@ -9,8 +9,8 @@
 ##################################
 
 import importlib.resources
+from collections import defaultdict
 from pathlib import Path
-from typing import TypedDict
 
 from act.build import BuildTask, PythonAction, SubprocessAction, SymlinkAction
 from act.config import CompilerType, Config, CoverageSimulator
@@ -24,16 +24,8 @@ OBJDUMP_FLAGS = ["-Stsxd", "-M", "no-aliases,numeric"]
 
 
 # ---------------------------------------------------------------------------
-# Types and helpers
+# Helpers
 # ---------------------------------------------------------------------------
-
-
-class ConfigData(TypedDict):
-    """Type definition for configuration data dictionary."""
-
-    config: Config
-    xlen: int
-    selected_tests: dict[str, TestMetadata]
 
 
 def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
@@ -66,7 +58,6 @@ def gen_compile_tasks(
     base_dir: Path,
     xlen: int,
     config: Config,
-    sail_config_path: Path,
     compiler_cmd: list[str],
     debug: bool = False,
     fast: bool = False,
@@ -83,7 +74,6 @@ def gen_compile_tasks(
         base_dir: Base directory for the build.
         xlen: XLEN (32 or 64).
         config: Configuration object.
-        sail_config_path: Path to a Sail config file for signature generation.
         compiler_cmd: Pre-built compiler command prefix (from _compiler_cmd).
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
@@ -99,6 +89,7 @@ def gen_compile_tasks(
     sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
     final_elf = elf_dir / test_name.with_suffix(".elf")
+    sail_config_path = config.dut_include_dir / "sail.json"
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
@@ -394,7 +385,9 @@ def gen_coverage_tasks(
 
 
 def generate_build_plan(
-    configs: list[ConfigData],
+    config: Config,
+    xlen: int,
+    selected_tests: dict[str, TestMetadata],
     tests_dir: Path,
     coverpoint_dir: Path,
     workdir: Path,
@@ -403,68 +396,61 @@ def generate_build_plan(
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
-    """Build the full DAG of tasks for all configs."""
-    all_tasks: list[BuildTask] = []
+    """Build the full DAG of tasks for a single config."""
+    tasks: list[BuildTask] = []
 
-    for config_data in configs:
-        config = config_data["config"]
-        xlen = config_data["xlen"]
-        config_wkdir = workdir / config.name
-        config_coverage_dir = config_wkdir / "coverage"
-        config_report_dir = config_wkdir / "reports"
-        sail_config_path = config.dut_include_dir / "sail.json"
+    config_wkdir = workdir / config.name
+    config_coverage_dir = config_wkdir / "coverage"
+    config_report_dir = config_wkdir / "reports"
 
-        coverage_targets: dict[Path, list[Path]] = {}
-        compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
+    coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
+    compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
 
-        for test_name_str, test_metadata in sorted(config_data["selected_tests"].items()):
-            test_name = Path(test_name_str)
+    for test_name_str, test_metadata in sorted(selected_tests.items()):
+        test_name = Path(test_name_str)
 
-            # Compile test
-            all_tasks.extend(
-                gen_compile_tasks(
+        # Compile test
+        tasks.extend(
+            gen_compile_tasks(
+                test_name,
+                test_metadata,
+                config_wkdir,
+                xlen,
+                config,
+                compiler_cmd,
+                debug,
+                fast,
+            )
+        )
+
+        # Coverage trace generation
+        if coverage_enabled:
+            trace_name = test_name.with_suffix(".rvvi")
+            trace_path = config_coverage_dir / trace_name
+            coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
+            coverage_targets[coverage_group_dir].append(trace_path.absolute())
+
+            tasks.extend(
+                gen_rvvi_tasks(
                     test_name,
-                    test_metadata,
                     config_wkdir,
-                    xlen,
                     config,
-                    sail_config_path,
-                    compiler_cmd,
-                    debug,
                     fast,
                 )
             )
 
-            # Coverage trace generation
-            if coverage_enabled:
-                trace_name = test_name.with_suffix(".rvvi")
-                trace_path = config_coverage_dir / trace_name
-                coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
-                if coverage_group_dir not in coverage_targets:
-                    coverage_targets[coverage_group_dir] = []
-                coverage_targets[coverage_group_dir].append(trace_path.absolute())
-
-                all_tasks.extend(
-                    gen_rvvi_tasks(
-                        test_name,
-                        config_wkdir,
-                        config,
-                        fast,
-                    )
-                )
-
-        # Coverage report tasks
-        if coverage_enabled and coverage_targets:
-            all_tasks.extend(
-                gen_coverage_tasks(
-                    coverage_targets,
-                    coverpoint_dir,
-                    config_coverage_dir,
-                    config_report_dir,
-                    config.dut_include_dir,
-                    coverage_simulator,
-                    config.name,
-                )
+    # Coverage report tasks
+    if coverage_enabled and coverage_targets:
+        tasks.extend(
+            gen_coverage_tasks(
+                coverage_targets,
+                coverpoint_dir,
+                config_coverage_dir,
+                config_report_dir,
+                config.dut_include_dir,
+                coverage_simulator,
+                config.name,
             )
+        )
 
-    return all_tasks
+    return tasks

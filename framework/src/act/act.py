@@ -16,8 +16,8 @@ from typing import Annotated
 
 import typer
 
-from act.build import build
-from act.build_plan import ConfigData, generate_build_plan
+from act.build import BuildTask, build
+from act.build_plan import generate_build_plan
 from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import generate_test_dict
@@ -71,6 +71,8 @@ def run_act(
         typer.Option(help="Coverage simulator backend", case_sensitive=False),
     ] = CoverageSimulator.QUESTA,
 ) -> None:
+
+    # Parse options
     if verbose:
         debug = True
         jobs = 1
@@ -84,10 +86,16 @@ def run_act(
     if jobs <= 0:
         jobs = os.cpu_count() or 1
 
+    # Resolve paths
+    test_dir = test_dir.absolute()
+    coverpoint_dir = coverpoint_dir.absolute()
+    workdir = workdir.absolute()
+
     # Generate test list
     full_test_dict = generate_test_dict(test_dir, extensions, exclude)
 
-    configs: list[ConfigData] = []
+    config_names: list[str] = []
+    tasks: list[BuildTask] = []
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
@@ -106,25 +114,22 @@ def run_act(
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
-        configs.append(
-            {
-                "config": config,
-                "xlen": mxlen,
-                "selected_tests": selected_tests,
-            }
-        )
 
-    # Generate list of build tasks
-    tasks = generate_build_plan(
-        configs,
-        test_dir.absolute(),
-        coverpoint_dir.absolute(),
-        workdir.absolute(),
-        coverage,
-        coverage_simulator,
-        debug,
-        fast,
-    )
+        config_names.append(config.name)
+        tasks.extend(
+            generate_build_plan(
+                config,
+                mxlen,
+                selected_tests,
+                test_dir,
+                coverpoint_dir,
+                workdir,
+                coverage,
+                coverage_simulator,
+                debug,
+                fast,
+            )
+        )
 
     # Run all tasks to compile ELFs
     result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
@@ -147,12 +152,11 @@ def run_act(
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:
-        for config_data in configs:
-            config = config_data["config"]
-            overall_summary = workdir.absolute() / config.name / "reports" / "_overall_summary.txt"
+        for name in config_names:
+            overall_summary = workdir / name / "reports" / "_overall_summary.txt"
             if overall_summary.exists():
                 print()
-                print_coverage_summary(overall_summary, config.name)
+                print_coverage_summary(overall_summary, name)
 
 
 def main() -> None:

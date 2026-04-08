@@ -1,0 +1,1 @@
+wsim rv32imc {debug:--lockstepverbose} --elf

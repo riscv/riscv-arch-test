@@ -46,7 +46,7 @@ def format_cfss_type(
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
 
-    setup: list[str] = []
+    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
     asm = test_data.int_regs.consume_registers([2])  # sp (x2) is used as the base pointer for CSS instructions
     if asm:
         setup.append(asm)

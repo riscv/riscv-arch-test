@@ -80,9 +80,11 @@
 
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
-##### Machine Timer #####
+##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
+
+##### Machine Timer #####
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 

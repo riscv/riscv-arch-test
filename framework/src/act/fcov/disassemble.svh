@@ -97,16 +97,16 @@ function string disassemble (logic [31:0] instrRaw);
       PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
     `endif
     `ifdef ZIHINTNTL_COVERAGE
-    NTL_ALL: $sformat(decoded, "ntl.all");
-    NTL_PALL:$sformat(decoded, "ntl.pall");
-    NTL_P1:  $sformat(decoded, "ntl.p1");
-    NTL_S1:  $sformat(decoded, "ntl.s1");
+      NTL_ALL: $sformat(decoded, "ntl.all");
+      NTL_PALL:$sformat(decoded, "ntl.pall");
+      NTL_P1:  $sformat(decoded, "ntl.p1");
+      NTL_S1:  $sformat(decoded, "ntl.s1");
     `endif
     `ifdef ZIHINTNTLZCA_COVERAGE
-    C_NTL_ALL: $sformat(decoded, "c.ntl.all");
-    C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
-    C_NTL_P1: $sformat(decoded, "c.ntl.p1");
-    C_NTL_S1: $sformat(decoded, "c.ntl.s1");
+      C_NTL_ALL: $sformat(decoded, "c.ntl.all");
+      C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
+      C_NTL_P1: $sformat(decoded, "c.ntl.p1");
+      C_NTL_S1: $sformat(decoded, "c.ntl.s1");
     `endif
     // NOP
     NOP:     $sformat(decoded, "nop");

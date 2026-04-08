@@ -38,3 +38,24 @@ normative_rule_definitions:
   # architecturally visible effects of the target instruction.
   - name: NTL-target_definition
     coverpoint: ["Untested - hint"]
+
+  # The NTL instructions affect all memory-access instructions except the
+  # cache-management instructions in the Zicbom extension.
+  - name: NTL_range
+    coverpoint: ["not tested - no architectural observable effects"]
+
+  # When an NTL instruction is applied to a prefetch hint in the Zicbop extension,
+  # it indicates that a cache line should be prefetched into a cache that is outer
+  # from the level specified by the NTL.
+  - name: NTL_Zicob_prefetch_outer
+    coverpoint: ["not tested - no architectural observable effects"]
+
+  - name: NTL_TRAP_BEHAVIOR
+    coverpoint: ["TODO"]
+
+  # Since the NTL instructions are encoded as ADDs, they can be used within LR/SC
+  # loops without voiding the forward-progress guarantee. But, since using other
+  # loads and stores within an LR/SC loop does void the forward-progress guarantee,
+  # the only reason to use an NTL within such a loop is to modify the LR or the SC.
+  - name: NTL-LR_SC_exception
+    coverpoint: ["TODO"]

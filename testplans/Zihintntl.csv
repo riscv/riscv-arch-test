@@ -1,0 +1,5 @@
+Instruction,Type,RV32,RV64,cp_asm_count
+ntl.p1,I,x,x,x
+ntl.s1,I,x,x,x
+ntl.pall,I,x,x,x
+ntl.all,I,x,x,x

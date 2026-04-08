@@ -12,6 +12,7 @@ implemented_extensions:
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }

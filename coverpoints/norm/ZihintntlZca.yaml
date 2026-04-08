@@ -64,7 +64,7 @@ normative_rule_definitions:
   - name: C-NTL-availability
     coverpoint:
       [
-        "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count}",
+        "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count",
       ]
 
   # The NTL instructions affect all memory-access instructions except the

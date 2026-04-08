@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "rvmodel_macros.h"
 #ifndef RVTEST_SELFCHECK
-  #include "sail_test.h"
+  #include "sail_macros.h"
 #endif
 #include "check_defines.h"
 #include "signature.h"

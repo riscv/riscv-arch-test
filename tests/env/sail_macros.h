@@ -1,4 +1,4 @@
-# sail_test.h
+# sail_macros.h
 # RVMODEL macro definitions for Sail reference model
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
@@ -9,8 +9,8 @@
 // always come from the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS) are NOT
 // redefined here.
 
-#ifndef _SAIL_TEST_H
-#define _SAIL_TEST_H
+#ifndef _SAIL_MACROS_H
+#define _SAIL_MACROS_H
 
 #undef CLINT_BASE_ADDRESS
 #define CLINT_BASE_ADDRESS 0x02000000
@@ -168,4 +168,4 @@
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
-#endif // _SAIL_TEST_H
+#endif // _SAIL_MACROS_H

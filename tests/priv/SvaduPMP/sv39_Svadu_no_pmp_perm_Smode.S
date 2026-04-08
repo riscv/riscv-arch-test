@@ -36,7 +36,6 @@
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_Svadu_no_pmp_perm_Smode.S"

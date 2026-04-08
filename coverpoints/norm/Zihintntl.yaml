@@ -1,0 +1,40 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # The NTL.P1 instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of the innermost level of private cache in
+  # the memory hierarchy.
+  - name: C-NTL-P1_op
+    coverpoint: ["Zihintntl_ntl_p1_cg/cp_asm_test"]
+  # NTL.P1 is encoded as ADD x0, x0, x2.
+  - name: NTL-P1_enc
+    coverpoint: ["Zihintntl_ntl_p1_cg/cp_asm_test"]
+  # The NTL.ALL instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of any level of cache in the memory
+  # hierarchy.
+  - name: C-NTL-ALL_op
+    coverpoint: ["Zihintntl_ntl_all_cg/cp_asm_test"]
+  # NTL.ALL is encoded as ADD x0, x0, x5.
+  - name: C-NTL-ALL_end
+    coverpoint: ["Zihintntl_ntl_all_cg/cp_asm_test"]
+  # The NTL.PALL instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of any level of private cache in the
+  # memory hierarchy.
+  - name: C-NTL-PALL_op
+    coverpoint: ["Zihintntl_ntl_pall_cg/cp_asm_test"]
+  # NTL.PALL is encoded as ADD x0, x0, x3.
+  - name: C-NTL-PALL_enc
+    coverpoint: ["Zihintntl_ntl_pall_cg/cp_asm_test"]
+  # The NTL.S1 instruction indicates that the target instruction does not exhibit
+  # temporal locality within the capacity of the innermost level of shared cache in
+  # the memory hierarchy.
+  - name: C-NTL-S1_op
+    coverpoint: ["Zihintntl_ntl_s1_cg/cp_asm_test"]
+  # NTL.S1 is encoded as ADD x0, x0, x4.
+  - name: C-NTL-S1_enc
+    coverpoint: ["Zihintntl_ntl_s1_cg/cp_asm_test"]
+
+  # The NTL instructions do not change architectural state, nor do they alter the
+  # architecturally visible effects of the target instruction.
+  - name: NTL-target_definition
+    coverpoint: ["Untested - hint"]

@@ -61,7 +61,14 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### Interrupt Latency #####
+
+#define RVMODEL_INTERRUPT_LATENCY 10
+
 ##### Machine Timer #####
+
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
 /*
  * NOTE: The following parameters are intentionally left empty.
  *

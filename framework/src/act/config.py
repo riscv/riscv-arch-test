@@ -115,7 +115,7 @@ class Config(BaseModel):
 # Minimum required tool versions
 REQUIRED_SAIL_VERSION = "0.10"
 REQUIRED_GCC_MAJOR_VERSION = 15
-REQUIRED_CLANG_MAJOR_VERSION = 21
+REQUIRED_CLANG_MAJOR_VERSION = 20
 
 
 def check_ref_model_version(config: Config) -> None:

@@ -3,11 +3,19 @@
 # Jordan Carlin jcarlin@hmc.edu October 2025, Sadhvi Narayana sanarayanan@hmc.edu February 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+// This header is included AFTER rvmodel_macros.h for signature ELF builds
+// (non-selfcheck). It overrides DUT-specific macros with Sail-compatible
+// implementations for IO, termination, and interrupts. Macros that should
+// always come from the DUT (e.g. RVMODEL_ACCESS_FAULT_ADDRESS) are NOT
+// redefined here.
 
+#ifndef _SAIL_TEST_H
+#define _SAIL_TEST_H
+
+#undef CLINT_BASE_ADDRESS
 #define CLINT_BASE_ADDRESS 0x02000000
 
+#undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
         .align 8; .global tohost; tohost: .dword 0;         \
@@ -17,6 +25,7 @@
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty.
+#undef RVMODEL_BOOT
 #define RVMODEL_BOOT
 
 ##### TERMINATION #####
@@ -26,6 +35,7 @@
 
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.
+#undef RVMODEL_HALT_PASS
 #define RVMODEL_HALT_PASS  \
   li x1, 1                ;\
   la t0, tohost           ;\
@@ -37,6 +47,7 @@
 
 # Terminate test with a fail indication.
 # When the test is run in simulation, this should end the simulation.
+#undef RVMODEL_HALT_FAIL
 #define RVMODEL_HALT_FAIL \
   li x1, 3                ;\
   la t0, tohost           ;\
@@ -51,6 +62,7 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+#undef RVMODEL_IO_INIT
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 
@@ -58,6 +70,7 @@
 # A pointer to the string is passed in _STR_PTR.
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+#undef RVMODEL_IO_WRITE_STR
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)               \
 1:                           ;                       \
   lbu _R1, 0(_STR_PTR)        ;/* Load byte */        \
@@ -72,44 +85,50 @@
   j 1b                       ;/* Loop */             \
 3:
 
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
 ##### Machine Timer #####
 
+#undef RVMODEL_MTIMECMP_ADDRESS
 #define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
 
+#undef RVMODEL_MTIME_ADDRESS
 #define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 ##### Machine Interrupts #####
 
 // Interrupt latency configuration
+#undef RVMODEL_INTERRUPT_LATENCY
 #define RVMODEL_INTERRUPT_LATENCY 10
 
+#undef RVMODEL_TIMER_INT_SOON_DELAY
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 // TODO: need to implement external interrupts in SAIL
+#undef RVMODEL_MEXT_ADDRESS
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
+#undef RVMODEL_SET_MEXT_INT
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, 1;               \
   li _R2, RVMODEL_MEXT_ADDRESS; \
   sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
 
 
+#undef RVMODEL_CLR_MEXT_INT
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
   li _R2, RVMODEL_MEXT_ADDRESS; \
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 
+#undef MSIP_ADDRESS
 #define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
+#undef RVMODEL_SET_MSW_INT
 #define RVMODEL_SET_MSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
   li _R2, MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
+#undef RVMODEL_CLR_MSW_INT
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
   li _R2, MSIP_ADDRESS;              \
   sw zero, 0(_R2);
@@ -119,28 +138,34 @@
 ##### Supervisor Interrupts #####
 
 // TODO: change this when Jordan implements the SAIL SEXT interrupt generator
-#define SAIL_SEXT_ADDRESS  0x80000004  /* Address of a memory mapped supervisor external interrupt generator */
+#undef RVMODEL_SEXT_ADDRESS
+#define RVMODEL_SEXT_ADDRESS  0x80000004  /* Address of a memory mapped supervisor external interrupt generator */
+#undef RVMODEL_SET_SEXT_INT
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
   li _R1, 1;               \
-  li _R2, SAIL_SEXT_ADDRESS; \
+  li _R2, RVMODEL_SEXT_ADDRESS; \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
 
+#undef RVMODEL_CLR_SEXT_INT
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
-  li _R2, SAIL_SEXT_ADDRESS; \
+  li _R2, RVMODEL_SEXT_ADDRESS; \
   sw zero, 0(_R2)            ; /* Clear SEXT interrupt */
 
 
 // TODO: check to see if SAIL support this, and we may want to implement this in WALLY
+#undef CLINT_SSIP_ADDRESS
 #define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
+#undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
   li _R1, 1;                 \
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
 
+#undef RVMODEL_CLR_SSW_INT
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _SAIL_TEST_H

@@ -57,6 +57,7 @@ def gen_compile_tasks(
     test_metadata: TestMetadata,
     base_dir: Path,
     xlen: int,
+    flen: int,
     config: Config,
     compiler_cmd: list[str],
     debug: bool = False,
@@ -93,7 +94,6 @@ def gen_compile_tasks(
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
-    flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
 
@@ -387,6 +387,7 @@ def gen_coverage_tasks(
 def generate_build_plan(
     config: Config,
     xlen: int,
+    flen: int,
     selected_tests: dict[str, TestMetadata],
     tests_dir: Path,
     coverpoint_dir: Path,
@@ -416,6 +417,7 @@ def generate_build_plan(
                 test_metadata,
                 config_wkdir,
                 xlen,
+                flen,
                 config,
                 compiler_cmd,
                 debug,

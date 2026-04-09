@@ -83,21 +83,6 @@ def get_implemented_extensions(extension_list_file: Path) -> set[str]:
     return set(extension_list_file.read_text().splitlines())
 
 
-def compute_flen(implemented_extensions: set[str], xlen: int) -> int:
-    """Compute FLEN from DUT's implemented extensions.
-
-    FLEN is determined by the widest FP extension: Q=128, D=64, F=32.
-    Q (FLEN=128) is not supported on RV32, so it is skipped when xlen==32.
-    """
-    if "Q" in implemented_extensions and xlen != 32:
-        return 128
-    if "D" in implemented_extensions:
-        return 64
-    if "F" in implemented_extensions:
-        return 32
-    return 32
-
-
 def generate_udb_files(udb_config_file: Path, output_dir: Path) -> None:
     if (
         not (output_dir / "extensions.txt").exists()

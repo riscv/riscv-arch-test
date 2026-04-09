@@ -50,6 +50,7 @@
     INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
     RVTEST_INIT_REGS // 0xF0E1D2C3B4A59687
 
+    // *** move to ***BOOT_TO_M_MODE
     #ifdef rvtest_mtrap_routine
       #if RVMODEL_NUM_PMPS > 0
         // set up PMP so user and supervisor mode can access full address space
@@ -132,6 +133,7 @@
   /**** MPRV must be clear here !!! ****/
 
   // Switch to M-mode
+  // ***dh 4/8/26 is this still the right thing to do if there is no conforming M-mode?
   rvtest_code_end:
     RVTEST_GOTO_MMODE // If only M-mode used by tests, this has no effect
 
@@ -186,14 +188,46 @@
 
   // Model specific boot code
   rvmodel_boot:
-    RVMODEL_BOOT
-    RVMODEL_IO_INIT(T1, T2, T3)
+    #ifdef RVMODEL_BOOT
+      RVMODEL_BOOT
+    #endif
+    #ifdef RVMODEL_IO_INIT
+      RVMODEL_IO_INIT(T1, T2, T3)
+    #endif
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
 
   // rvtest macros are used to invoke the rvmodel specific interrupt macros and those rvmodels macros need to be at the end of the program because their length is variable and we don't want their lengths to affect the relative addresses of program
+  // ***DH 4/8/26 check this is proper gating
   #ifdef rvtest_mtrap_routine
-    RVTEST_INTERRUPTS
+// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
+    rvtest_set_msw_int: ; \
+      RVMODEL_SET_MSW_INT(T2, T5) ; \
+      ret ; \
+    rvtest_clr_msw_int: ; \
+      RVMODEL_CLR_MSW_INT(T2, T5) ; \
+      ret ; \
+    rvtest_set_mext_int: ; \
+      RVMODEL_SET_MEXT_INT(T2, T5) ; \
+      ret ; \
+    rvtest_clr_mext_int: ; \
+      RVMODEL_CLR_MEXT_INT(T2, T5) ; \
+      ret ; \
+    rvtest_set_ssw_int: ; \
+      RVMODEL_SET_SSW_INT(T2, T5) ; \
+      ret ; \
+    rvtest_clr_ssw_int: ; \
+      RVMODEL_CLR_SSW_INT(T2, T5) ; \
+      csrci sip, 2 ; \
+      ret ; \
+    rvtest_set_sext_int: ; \
+      RVMODEL_SET_SEXT_INT(T2, T5) ; \
+      ret ; \
+    rvtest_clr_sext_int: ; \
+      RVMODEL_CLR_SEXT_INT(T2, T5) ; \
+      LI(T3, 512) ; \
+      csrc sip, T3 ; \
+      ret
   #endif
 
   nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
@@ -319,3 +353,59 @@
   end_signature:
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
+
+/*****************************************************************/
+/**** initialize regs, just to make sure you catch any errors ****/
+/*****************************************************************/
+
+.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
+        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
+        srli    \dstreg\(), \oldreg\(),        \shamt
+        or      \dstreg\(), \dstreg\(), \tmpreg\()
+.endm
+
+/* init regs, to ensure you catch any errors */
+.macro RVTEST_INIT_REGS
+  // *** move these to ***boot_to_m_mode
+    #ifdef rvtest_mtrap_routine
+     // Initialising CSR registers (mpec, mtval, mstatus, mip)
+     csrw  CSR_MSTATUS,    x0
+     csrw  CSR_MEPC,       x0
+     csrw  CSR_MIP,        x0
+     csrw  CSR_MTVAL,      x0
+     csrw  CSR_MCAUSE,     x0
+    #endif
+    #ifndef RVTEST_E
+     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
+     DBLSHIFTR x17, x16, x15, 7
+     DBLSHIFTR x18, x17, x15, 7
+     DBLSHIFTR x19, x18, x15, 7
+     DBLSHIFTR x20, x19, x15, 7
+     DBLSHIFTR x21, x20, x15, 7
+     DBLSHIFTR x22, x21, x15, 7
+     DBLSHIFTR x23, x22, x15, 7
+     DBLSHIFTR x24, x23, x15, 7
+     DBLSHIFTR x25, x24, x15, 7
+     DBLSHIFTR x26, x25, x15, 7
+     DBLSHIFTR x27, x26, x15, 7
+     DBLSHIFTR x28, x27, x15, 7
+     DBLSHIFTR x29, x28, x15, 7
+     DBLSHIFTR x30, x29, x15, 7
+     DBLSHIFTR x31, x30, x15, 7
+    #endif
+    LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
+    DBLSHIFTR x2,  x1,  x15, 7
+    DBLSHIFTR x3,  x2,  x15, 7
+    DBLSHIFTR x4,  x3,  x15, 7
+    DBLSHIFTR x5,  x4,  x15, 7
+    DBLSHIFTR x6,  x5,  x15, 7
+    DBLSHIFTR x7,  x6,  x15, 7
+    DBLSHIFTR x8,  x7,  x15, 7
+    DBLSHIFTR x9,  x8,  x15, 7
+    DBLSHIFTR x10, x9,  x15, 7
+    DBLSHIFTR x11, x10, x15, 7
+    DBLSHIFTR x12, x11, x15, 7
+    DBLSHIFTR x13, x12, x15, 7
+    DBLSHIFTR x14, x13, x15, 7
+    LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
+.endm

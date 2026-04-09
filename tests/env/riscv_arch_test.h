@@ -13,10 +13,10 @@
 #endif
 #include "check_defines.h"
 #include "signature.h"
-#include "test_macros.h"
+#include "rvtest_macros.h"
 #ifdef RVTEST_VECTOR
-  #include "test_macros_vector.h"
+  #include "rvtest_macros_vector.h"
 #endif
-#include "arch_test.h" // TODO: clean up and split arch_test.h
+#include "rvtest_trap_handler.h" // TODO: clean up and split arch_test.h
 #include "failure_code.h"
-#include "test_setup.h"
+#include "rvtest_setup.h"

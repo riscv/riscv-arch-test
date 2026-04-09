@@ -30,7 +30,7 @@ EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,P
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
 DEBUG       ?=
-FAST        ?=
+FAST        ?= True
 VERBOSE     ?=
 
 # VERBOSE implies DEBUG and serializes the build

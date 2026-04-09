@@ -1,0 +1,2 @@
+name,goal,description,expectation,spec
+cp_vstart_vl_noop,"Test vd not updated when vstart >= vl","Test that all instructions obey not updating the vd register when vstart >= vl, including tail agnostic behavior","Run a vector arithmetic instruction with lmul=1, vd != vs2 != vs1, set vstart and vl to zero. Set ta={0/1}. lmul=1 and distinct registers simplifies testing without loss of generality.","vstart >= vl means no elements written"

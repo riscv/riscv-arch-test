@@ -1,0 +1,231 @@
+"Sr No
+(link to coverage)",Test Written,Coverpoint Written,,Goal,Feature Description,Expectation,Bins,"Pass/Fail Criteria
+(checker)",Functional Coverage ,Normative Rules,Notes,Spec,,,,
+,,,,,"It should be understood that for most coverpoints that are based on arithmatic instructions, the coverpoints will check to make sure they're non-trivial, meaning that vl != 0, vstart=0, vill=0, and they do not trap. It may be useful to know that when using vsetvl{i} instructions if rd != x0 and rs1 = x0, vl = vlmax",,,,,,,,,,,
+All mask-writing arithmetic instructions,,,,,,,,,,,,,,,,
+cp_custom_vmask_write_lmulge1,,,v,"Check that a mask write instruction will only modify the target mask register (vd, not necessarilly v0) even though the lmul value is greater than one","With vl set to vlmax and lmul = {1/2/4/8}, conduct a mask arithmatic operation.
+
+Using vlmax and all values of lmul checks that even in the most extreme case, the mask write opperation never writes to more than one vector register, as with mask operations EEW = 1.",Expect only the target mask register (vd) is modified,"4 lmul bins (1,2,4,8)",,,,,"Mask registers are always contained in a single vector register, regardless of LMUL.",,,,
+cp_custom_vmask_write_v0_masked,,,v,Confirm that v0 can be written and doesnt raise an exception for mask arithmatic when mask is active,"Conduct a mask arithmetic operation with vd = v0 and vm active
+
+This ensures v0 can still be written even when used as a mask",Expect v0 should still be updated and no exception thrown,1,,,,"exclude vmadc.v*, vmsbc.v*, and .mm instructions
+
+exclude vmsbf/vmsif/vmsof because the spec says their vd cannot be v0 when masked","The destination vector register group for a masked vector instruction cannot overlap the source mask register (v0), unless the destination vector register is being written with a mask value (e.g., compares) or the scalar result of a reduction.",,,,
+"All reduction operations, vmv.s.x, vmv.x.s",,,,,,,,,,,,,,,,
+cp_custom_voffgroup_vd_lmul2,,,v,Confirm that destination registers can be written off group when accessed as a scalar value (just element 0),"With lmul of 2, conduct an operation with vs1 and vs2 on group, and vd with all off-group registers
+
+This isolates the only off group element as vd, and tests all possible situations where vd could be off group.",All registers should be written with the scalar value despite not lining up with lmul values,"16 for all possible vd registers (1,3,5...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+cp_custom_voffgroup_vs1/vs2_lmul2,,should be vs2 for vmv.x.s (and should not cross with vs1) add another column?,v,Confirm that vs1 can be accessed off group when accessed as a scalar value (just element 0),"With lmul of 2, conduct an operation with vd and vs2 on group, and vs1 with all off-group registers
+
+This isolates the only off group element as vs1, and tests all possible situations where vs1 could be off group.",All registers should be accessed correctly and treated as scalar elements despite being off group,"16 for all possible vs1 registers (1,3,5...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+cp_custom_voffgroup_vd_lmul4,,,v,Confirm that desination registers can be written off group when accessed as a scalar value (just element 0),"With lmul of 4, conduct an operation with vs1 and vs2 on group, and vd with all off-group registers
+
+This isolates the only off group element as vd, and tests all possible situations where vd could be off group.",All registers should be written with the scalar value despite not lining up with lmul values,"24 for all possible vd registers (1,2,3,5...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+cp_custom_voffgroup_vs1_lmul4,,,v,Confirm that vs1 can be accessed off group when accessed as a scalar value (just element 0),"With lmul of 4, conduct an operation with vd and vs2 on group, and vs1 with all off-group registers
+
+This isolates the only off group element as vs1, and tests all possible situations where vs1 could be off group.",All registers should be accessed correctly and treated as scalar elements despite being off group,"24 for all possible vs1 registers (1,2,3,5...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+cp_custom_voffgroup_vd_lmul8,,,v,Confirm that desination registers can be written off group when accessed as a scalar value (just element 0),"With lmul of 8, conduct an operation with vs1 and vs2 on group, and vd with all off-group registers
+
+This isolates the only off group element as vd, and tests all possible situations where vd could be off group.",All registers should be written with the scalar value despite not lining up with lmul values,"28 for all possible vd registers (1,2,3,4,5,6,7,9...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+cp_custom_voffgroup_vs1_lmul8,,,v,Confirm that vs1 can be accessed off group when accessed as a scalar value (just element 0),"With lmul of 8, conduct an operation with vd and vs2 on group, and vs1 with all off-group registers
+
+This isolates the only off group element as vs1, and tests all possible situations where vs1 could be off group.",All registers should be accessed correctly and treated as scalar elements despite being off group,"28 for all possible vd registers (1,2, 3,4,5,6,7,9...)",,,,,Reduction operations: Any vector register can be used to hold a scalar regardless of the current LMUL setting,The integer scalar read/write instructions transfer a single value between a scalar x register and element 0 of a vector register. The instructions ignore LMUL and vector register groups.,,,
+All reduction operations,,,,,,,,,,,,,,,,
+cp_custom_vdEqV0Masked,,"same cp as cp_custom_vmask_write_v0_masked, but for a different set of instructions",,Confirm that v0 can be written and doesnt raise an exception when mask is active,"Conduct an operation with vd = v0 and vm active
+
+This ensures v0 can still be written even when used as a mask",Expect v0 should still be updated and no exception thrown,1,,,,,"Vector reduction operations: The destination vector register group for a masked vector instruction cannot overlap the source mask register (v0), unless the destination vector register is being written with a mask value (e.g., compares) or the scalar result of a reduction.",,,,
+"All reduction operations, vslidedown (vs2)",,,,,,,,,,,,,,,,
+cp_custom_vdEqVs_vd_eq_vs1,,"tested with cmp_vd_vs1, slidedown no vv",,Confrim that reduction operations are considered valid if vd = vs1,Run a reduction instruction with vd = vs1,Instruction executes effectively,1,,,,,"Vector reduction operations: The scalar input and output operands are held in element 0 of a single vector register, not a vector register group, so any vector register can be the scalar source or destination of a vector reduction regardless of LMUL setting. The destination vector register can overlap the source operands, including the mask register.",,,,
+cp_custom_vdEqVs_vd_eq_vs2,,"tested with cmp_vd_vs2, widening red reserved",,Confrim that reduction operations are considered valid if vd = vs2,Run a reduction instruction with vd = vs2,Instruction executes effectively,1,,,,,"Vector reduction operations: The scalar input and output operands are held in element 0 of a single vector register, not a vector register group, so any vector register can be the scalar source or destination of a vector reduction regardless of LMUL setting. The destination vector register can overlap the source operands, including the mask register.",vslide1down: source and destination register match,,,
+"All reduction operations, vmv.s.x, vslideup, vslidedown, vmv<nr>r.v instructions, vfirst",,,,,,,,,,,,,,,,
+cp_custom_vl0,,tested with cp_vl_0,,Confirm that the scalar element in vs1 is not coppied to vd if vl = 0,"with vl = 0 and vd != vs1 run a reduction instruction
+
+vd != vs1 confirm that the instruction is actaully testing if the scalar value from vs1 is coppied to vd",Vd is not updated,1,,,,,"Vector reduction: For the uncommon case that the source and destination scalar operand are in different vector registers, this instruction will not copy the source into the destination when vl=0.
+
+[For reduction operations] If vl=0, no operation is performed and the destination register is not updated.","vmv.s.x: If vstart ≥ vl, no operation is performed and the destination register is not updated.","For all of the vslideup, vslidedown instructions, if vstart ≥ vl, the instruction performs no operation and leaves the destination vector register unchanged.","The vmv<nr>r.v instructions copy whole vector registers (i.e., all VLEN bits) and can copy whole vector register groups. The nr value in the opcode is the number of individual vector registers, NREG, to copy. The instructions operate as if EEW=SEW, EMUL = NREG, effective length evl= EMUL * VLEN/SEW. (The usual property that no elements are written if vstart ≥ vl does not apply to these instructions. Instead, no elements are written if vstart ≥ evl.)","The vfirst.m instruction writes x[rd] even if vl=0 (with the value -1, since no mask elements are active)."
+X - writing instructuons,,,,,,,,,,,,,,,,
+cp_custom_gprWriting_vstart_eq_vl,,,v,Confirm GPR producing insturctions execute even when vstart >= vl,"For a gpr register writing instruction, execute with vl = 0 and vstart = 0.
+
+This should ensure the instruction executes even in this unique condition",Gpr register is updated,1,,,,,"Instructions that write an x register or f register do so even when vstart ≥ vl, including when vl=0.",,,,
+All vzext and vsext instructions ending in f2,,,,,,,,,,,,,,,,
+cp_custom_vext2_overlapping_vd_vs2_lmul2,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vext2_overlapping_vd_vs2_lmul4,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vext2_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+All vzext and vsext instructions ending in f4,,,,,,,,,,,,,,,,
+cp_custom_vext4_overlapping_vd_vs2_lmul4,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vext4_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+All vzext and vsext instructions ending in f8,,,,,,,,,,,,,,,,
+cp_custom_vext8_overlapping_vd_vs2_lmul8,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f8,"" when the vs2 overlaps the top eighth of the vd register group the operation is legal","Conduct a widening operation with lmul=8, vs2 overlapping the top eigth of the vd register group (if lmul is 8 and vd = v0 then vs2 must be v7 for vzext.vf8). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+All widening instructions except reduction ,,,,,,,,,,,,,,,,
+cp_custom_vdOverlapTopVs1_vd_vs1_lmul1,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=1, vs1 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs1 must be v1).
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vdOverlapTopVs1_vd_vs1_lmul2,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=2, vs1 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs1 must be v2).
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vdOverlapTopVs1_vd_vs1_lmul4,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=4, vs1 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs1 must be v4).
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul1,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=1, vs2 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs2 must be v1). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul2,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v2). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul4,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=4, vs2 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v4). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+Single widening .vv instruction,,,,,,,,,,,,,,,,
+cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=1, vs1 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs1 must be v1). Execute with vd = {0,2,4,8..30}
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=2, vs1 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs1 must be v2). Execute with vd = {0,4,8,...28}
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=4, vs1 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs1 must be v4). Execute with vd = {0,8,16,24}
+ 
+The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1,,,,Confirm that with vs2 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=1, vs2 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs2 must be v1). Execute with vd = {0,2,4,8..30}
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2,,,,Confirm that with vs2 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v2). Execute with vd = {0,4,8,...28}
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+cp_custom_allVdOverlapTopVs2_vd_vs2_lmul4,,,,Confirm that with vs2 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=4, vs2 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v4). Execute with vd = {0,8,16,24}
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
+
+The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
+All narrowing instructions,,,,,,,,,,,,,,,,
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1,,,"think should mention that vd is on group, or else the lmul in vs2_vd_overlap_lmul1 and vd_reg_aligned_lmul_2 is confusing",Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+Single narrowing instruction,,,,,,,,,,,,,,,,
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0). 
+
+The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
+Reduction widening instructions,,,,,,,,,,,,,,,,
+cp_custom_vreductionw_vd_vs1_emul_16,"sail issues, test done",,,"Confirm that with widening reduction operations, that lmul of 8 does not trap. Since 2 * 8 > = 16 is an undefined EMUL, normally this would trap, but since the widened elements are treated as scalar values it should not",Conduct widening reduction operation with lmul = {8},We expect this insturction not to trap,1,,,,,"The largest vector register group used by an instruction can not be greater than 8 vector registers (i.e., EMUL≤8), and if a vector instruction would require greater than 8 vector registers in a group, the instruction encoding is reserved. For example, a widening operation that produces a widened vector register group result when LMUL=8 is reserved as this would imply a result EMUL=16.",,,,
+"vrgather instructions, vslidedown",,,,,,,,,,,,,,,,
+cp_custom_vindexCorners_index_ge_vlmax,,corner cases for vi are covered by cp_5bit_imm,,Confrim that if vs1 contains an element index that is greater than VLMAX a value of zero is returned,"For sew = {supported} randomize the value of vs2 and set the value of element 0 of vs1 to all ones
+
+Randomizing vs2 ensures every element is non-zero and setting element of zero of vs1 to all ones ensures its greater than vlmax ",vd is wrriten with a value of zero for element 0,num supported sew,,,,,Vector register gather: If an element index is out of range ( vs1[i] ≥ VLMAX ) then zero is returned for the element value.,Some instructions such as vslidedown and vrgather may read indices past vl or even VLMAX in source vector register groups. The general policy is to return the value 0 when the index is greater than VLMAX in the source vector register group.,,,
+cp_custom_vindexCorners_index_gt_vl_lt_vlmax,,,,Confrim that if vs1 contains an element index that is less than vlmax but greater than vl that the value is returned,"For sew = {supported}, vl = 1, lmul = 2 and randomize value of element 1 of vs2, set element 0 of vs1 to 2.
+
+lmul of 2 guarentees there are 2 elements in the register group (vlmax >= 2), we then set vl to 1 and vs1[0] = 2 to confirm the value is grabbed",vd should be written with the value of element 1 of vs2,num supported sew,,,,,"Vector register gather: The source vector can be read at any index < VLMAX regardless of vl
+
+Vector register gather: The index values in the second vector are treated as unsigned integers. The source vector can be read at any index < VLMAX regardless of vl. ","vslidedown behavior for source elements for element i in slide (`vstart` < `vl`)
+
+0 <= i+OFFSET < VLMAX   src[i] = vs2[i+OFFSET]",,,
+"vrgather and vslidedown, vslideup",,,,,,,,,,,,,,,,
+cp_custom_vindexVX_rs1_not_truncated_32,May be covered by standard extension running rs1 = -1,,,"Coverpoint is only defined for xlen = 32 
+
+Confrim that when sew < 32 (xlen) that the index value stored in rs1 is not truncated","For supported sew = {8/16} set rs1 = 0x80000001, vs2[sew:0] != 0
+
+This configuration ensures that rs1 tuncation is always tested, if truncated it will read the vs2 register which will set a non-zero value to vd, if not truncated since the index is greater than vlmax necessarilly, it would return zero",vd element 0 is written with zero,1,,,,,"
+
+
+Vector-scalar and vector-immediate forms of the register gather are also provided. These read one element from the source vector at the given index, and write this value to the active elements of the destination vector register. If XLEN > SEW, the index value is not truncated to SEW bits.","vslidedown: The start index (OFFSET) for the source can be either specified using an unsigned integer in the x register specified by rs1, or a 5-bit immediate, zero-extended to XLEN bits. If XLEN > SEW, OFFSET is not truncated to SEW bits.
+
+vslidedown: If XLEN > SEW, OFFSET is not truncated to SEW bits.","vslideup: If XLEN > SEW, OFFSET is not truncated to SEW bits.",,
+cp_custom_vindexVX_rs1_not_truncated_64,May be covered by standard extension running rs1 = -1,,,"Coverpoint is only defined for xlen = 64
+
+Confrim that when sew < 64 (xlen) that the index value stored in rs1 when running vrgatherei16.vx is not truncated","Run instruction with supported sews = {8/16/32} set rs1 = 0x8000000000000001, vs2[SEW-1:0] != 0
+
+This configuration ensures that rs1 tuncation is always tested, if truncated it will read the vs2 register which will set a non-zero value to vd, if not truncated since the index is greater than vlmax necessarilly, it would return zero",vd element 0 is written with zero,1,,,,,"
+
+
+Vector-scalar and vector-immediate forms of the register gather are also provided. These read one element from the source vector at the given index, and write this value to the active elements of the destination vector register. If XLEN > SEW, the index value is not truncated to SEW bits.","vslidedown: The start index (OFFSET) for the source can be either specified using an unsigned integer in the x register specified by rs1, or a 5-bit immediate, zero-extended to XLEN bits. If XLEN > SEW, OFFSET is not truncated to SEW bits.
+
+vslidedown: If XLEN > SEW, OFFSET is not truncated to SEW bits.","vslideup: If XLEN > SEW, OFFSET is not truncated to SEW bits.",,
+Reduction operations,,,,,,,,,,,,,,,,
+cp_custom_element0Masked,,,,"Confrim that if the operation is masked in element 0, that the scalar element is still included in the operation","set v0[0] = 1 (mask element 0) and conduct a reduction operation with vd != vs1, vl=1",Element 0 is coppied from vs1 to vd,1,,,,,"Inactive elements from the source vector register group are excluded from the reduction, but the scalar operand is always included regardless of the mask values.",,,,
+vshift (not narrowing) operations,,,,,,,,,,,,,,,,
+cp_custom_vshift_upperbits_vs1_ones,,,v,Confrim that only the bottom lg2(sew) bits are used to control the shift amount in shift instructions ,"run all supported SEW with the top [sew-1:log2(sew)] bits of element 0 of vs1 as all ones
+
+We make all these bits one to confrim that none of them are used by the instruction",doesnt completely shift out value,4 sew bins,,,,,Shift instructions:  Only the low lg2(SEW) bits of the shift-amount value are used to control the shift amount,,,,
+cp_custom_vshift_upperbits_rs1_ones,,,fix all rs1 top bits should be 1s,Confrim that only the bottom lg2(sew) bits are used to control the shift amount in shift instructions ,"run all supported SEW with the top [xlen-1:log2(sew)] bits of rs1 as all ones
+
+We make all these bits one to confrim that none of them are used by the instruction",doesnt completely shift out value,4 sew bins,,,,,Shift instructions:  Only the low lg2(SEW) bits of the shift-amount value are used to control the shift amount,,,,
+cp_imm,,Immediate version of tests above are covered by standard generated tests,,,,,,,,,,,,,,
+"vshift narrowing operations, vnclip instructions",,,,,,,,,,,,,,,,
+cp_custom_vshiftn_upperbits_vs1_ones,,,v,Confrim that only the bottom lg2(2*sew) bits are used to control the shift amount in shift instructions ,"run all supported SEW with the top [sew-1:log2(2*sew)] bits of element 0 of vs1 as all ones
+
+We make all these bits one to confrim that none of them are used by the instruction",doesnt completely shift out value,3 sew bins,,,,,"Shift narrowing instructions:  The low lg2(2*SEW) bits of the shift-amount value are used (e.g., the low 6 bits for a SEW=64-bit to SEW=32-bit narrowing operation).",,,,
+cp_custom_vshiftn_upperbits_rs1_ones,,,fix all rs1 top bits should be 1s,Confrim that only the bottom lg2(2*sew) bits are used to control the shift amount in shift instructions ,"run all supported SEW with the top [xlen-1:log2(2*sew)] bits of rs1 as all ones
+
+We make all these bits one to confrim that none of them are used by the instruction",doesnt completely shift out value,3 sew bins,,,,,"Shift narrowing instructions:  The low lg2(2*SEW) bits of the shift-amount value are used (e.g., the low 6 bits for a SEW=64-bit to SEW=32-bit narrowing operation).",,,,
+cp_imm,,Immediate version of tests above are covered by standard generated tests,,,,,,,,,,,,,,
+Fixed point instructions,,,,,,,,,,,,,,,,
+cp_vs2_vs1_corners,,Should be covered by standard testing suite,,Confrim when saturating add and subtract overflows the destination that its set to the closest representable value and the vxsat bit is set,,,,,,,,"Saturating forms of integer add and subtract are provided, for both signed and unsigned integers. If the result would overflow the destination, the result is replaced with the closest representable value, and the vxsat bit is set."," For vaaddu and vaadd there can be no overflow in the result. For vasub and vasubu, overflow is ignored and the result wraps around.","The signed fractional multiply instruction produces a 2*SEW product of the two SEW inputs, then shifts the result right by SEW-1 bits, rounding these bits according to vxrm, then saturates the result to fit into SEW bits. If the result causes saturation, the vxsat bit is set.","For vnclipu, the shifted rounded source value is treated as an unsigned integer and saturates if the result would overflow the destination viewed as an unsigned integer.","For vnclip, the shifted rounded source value is treated as a signed integer and saturates if the result would overflow the destination viewed as a signed integer."
+cp_vs2_vs1_corners,,Should be covered by standard testing suite,,Confrim that when a possitive and negative number are added together and produce a negative result that this doesnt set the vxsat bit since it is not an overflow,,,,,,,,"Saturating forms of integer add and subtract are provided, for both signed and unsigned integers. If the result would overflow the destination, the result is replaced with the closest representable value, and the vxsat bit is set."," For vaaddu and vaadd there can be no overflow in the result. For vasub and vasubu, overflow is ignored and the result wraps around.","The signed fractional multiply instruction produces a 2*SEW product of the two SEW inputs, then shifts the result right by SEW-1 bits, rounding these bits according to vxrm, then saturates the result to fit into SEW bits. If the result causes saturation, the vxsat bit is set.","For vnclipu, the shifted rounded source value is treated as an unsigned integer and saturates if the result would overflow the destination viewed as an unsigned integer.","For vnclip, the shifted rounded source value is treated as a signed integer and saturates if the result would overflow the destination viewed as a signed integer."
+,Should verify that sail executes this instruction correctly,Covered by standard testing suite,,"When multiplying two N-bit signed numbers, the largest magnitude is obtained for -2N-1 * -2N-1 producing a result +22N-2, which has a single (zero) sign bit when held in 2N bits. All other products have two sign bits in 2N bits. To retain greater precision in N result bits, the product is shifted right by one bit less than N, saturating the largest magnitude result but increasing result precision by one bit for all other products.",,,,,,,,,,,,
+vfirst,,,,,,,,,,,,,,,,
+cp_vs2_vm_corners,,Should be covered by standard testing but coverpoint is left in case,,,"The vfirst instruction finds the lowest-numbered active element of the source mask vector that has the value 1 and writes that element’s index to a GPR. If no active element has the value 1, -1 is written to the GPR.",,,,,,,,,,,
+Mask arithmetic insturcitons,,,,,,,,,,,,,,,,
+cp_vs2_vs1_mask_corners,,Should already be tested,,,any element in the tail of a mask result can also be written with the value the mask-producing operation would have calculated with vl=VLMAX.,,,,,,,,,,,
+Gpr reading and wiritng instructions,,,,,,,,,,,,,,,,
+cr_vs2_vs1_corners / cr_vs2_rs1_corners,,Covered by standard extension running every instruction with rs1=-1,,,What to do when XLEN doesnt match EEW for a gpr writing/reading instruction,,,,,,,,,,,
+cr_vs2_vs1_corners / cr_vs2_rs1_corners,,Covered by standard extension running every instruction with rs1=-1,,,"If XLEN < SEW, the value is sign-extended to SEW bits. If XLEN > SEW, the least-significant bits are copied over and the high XLEN-SEW bits are ignored.",,,,,,,,,,,
+All arithmetic instructions,,,,,,,,,,,,,,,,
+,,Covered by privileged plane,,"Test that all instructions obey not updating the vd register when vstart ≥ vl, including the fact that the instruction could be treated as tail agnostic.","Run a vector arithmatic instruction with lmul = 1, vd != vs2 != vs1, set vstart and vl to zero. Set ta = {0/1}
+
+lmul=1 and vector registers not being the same simplifies the testing process without loss of generality, and vstart and vl equal to zero gives the whole register the agnostic property so that can be easily tested.",vd is not updated by these instructions,2 bins for ta,,,,,"When vstart ≥ vl, there are no body elements, and no elements are updated in any destination vector register group, including that no tail elements are updated with agnostic values.",,,,

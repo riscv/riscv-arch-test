@@ -190,31 +190,6 @@ python3 isolate_coverpoint.py --restore Vls
 
 ---
 
-### 6. `vwredsum.vs` — resolved (Spike validates Sail; was typo in unsupported list)
-
-- **Status**: resolved
-- **Date tested**: 2026-04-08
-- **Instruction**: `vwredsum.vs` (in `Vx-save.csv`)
-
-The `unsupported_tests` entry had a typo: `vwredusum.vs` instead of `vwredsum.vs`.
-Because of the typo, the entry had no effect. Testing the correct instruction via Spike:
-all 6 tests PASS (3 RV64 + 3 RV32). Sail and Spike agree. Removed from `unsupported_tests`.
-
-#### Reproduction
-
-```bash
-python3 isolate_coverpoint.py Vx --tests vwredsum.vs
-make clean && make vector-tests
-CONFIG_FILES="config/spike/spike-rv64-max/test_config.yaml config/spike/spike-rv32-max/test_config.yaml" \
-  EXTENSIONS=Vx8,Vx16,Vx32,Vx64 make elfs
-./run_tests.py "$(cat config/spike/spike-rv64-max/run_cmd.txt)" work/spike-rv64-max/elfs
-./run_tests.py "$(cat config/spike/spike-rv32-max/run_cmd.txt)" work/spike-rv32-max/elfs
-# Result: All 3 RV64 + 3 RV32 = 6 tests PASS
-python3 isolate_coverpoint.py --restore Vx
-```
-
----
-
 ## Triage Decision Tree
 
 | Symptom                                             | Most likely cause                 | Action                                                                                                                                                  |

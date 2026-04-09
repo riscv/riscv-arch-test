@@ -25,6 +25,7 @@ implemented_extensions:
   - { name: Zicond, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }

@@ -13,7 +13,7 @@ implemented_extensions:
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
-  - { name: Zihpm, version: "= 2.0" }
+  # - { name: Zihpm, version: "= 2.0" } # TODO: Disabled because hpmcounter CSRs are not accessible without U mode. See https://github.com/riscv/sail-riscv/pull/1649.
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }

@@ -85,7 +85,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-normative-rules>>||||x|x
+|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x

@@ -34,6 +34,7 @@ implemented_extensions:
   - { name: Zicond, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
@@ -43,19 +44,28 @@ implemented_extensions:
   - { name: Zfa, version: "= 1.0.0" }
   - { name: Zfh, version: "= 1.0.0" }
   - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zfbfmin, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
-  - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
   - { name: Zknh, version: "= 1.0.0" }
   - { name: Zknd, version: "= 1.0.0" }
   - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zks, version: "= 1.0.0" }
+  - { name: Zksed, version: "= 1.0.0" }
+  - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }
+  #  - { name: H, version: "= 1.0.0" } # this should be on but needs many associated parameters
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
@@ -73,6 +83,9 @@ implemented_extensions:
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
+  - { name: Zimop, version: "= 1.0.0" }
+  - { name: Zcmop, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
 
 params:
   # A params

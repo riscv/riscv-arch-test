@@ -393,33 +393,3 @@
 // Timer interrupts (no parameters)
 #define RVTEST_CLR_STIMER_INT
 #define RVTEST_CLR_VTIMER_INT
-
-// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
-#define RVTEST_INTERRUPTS \
-  rvtest_set_msw_int: ; \
-    RVMODEL_SET_MSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_msw_int: ; \
-    RVMODEL_CLR_MSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_set_mext_int: ; \
-    RVMODEL_SET_MEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_mext_int: ; \
-    RVMODEL_CLR_MEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_set_ssw_int: ; \
-    RVMODEL_SET_SSW_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_ssw_int: ; \
-    RVMODEL_CLR_SSW_INT(T2, T5) ; \
-    csrci sip, 2 ; \
-    ret ; \
-  rvtest_set_sext_int: ; \
-    RVMODEL_SET_SEXT_INT(T2, T5) ; \
-    ret ; \
-  rvtest_clr_sext_int: ; \
-    RVMODEL_CLR_SEXT_INT(T2, T5) ; \
-    LI(T3, 512) ; \
-    csrc sip, T3 ; \
-    ret

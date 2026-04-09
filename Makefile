@@ -22,7 +22,7 @@ WORKDIR     ?= work
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-EXTENSIONS  ?= Vls8,Vls16,Vls32,Vls64
+EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
@@ -138,11 +138,17 @@ $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-test
 	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	touch $@
 
+.PHONY: vector-testgen-priv
+vector-testgen-priv: $(STAMP_DIR)/vector-testgen-priv.stamp
+$(STAMP_DIR)/vector-testgen-priv.stamp: generators/testgen/scripts/vector-testgen-priv.py generators/testgen/scripts/vector_testgen_common.py $(wildcard testplans/priv/*.csv) Makefile | $(STAMP_DIR)
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-priv.py
+	touch $@
+
 .PHONY: tests
 tests: covergroupgen testgen
 
 .PHONY: vector-tests
-vector-tests: covergroupgen vector-testgen
+vector-tests: covergroupgen vector-testgen vector-testgen-priv
 
 .PHONY: clean-tests
 clean-tests:

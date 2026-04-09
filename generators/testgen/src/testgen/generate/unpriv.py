@@ -11,7 +11,6 @@
 from pathlib import Path
 
 from testgen.constants import (
-    CONFIG_DEPENDENT_EXTENSIONS,
     TESTCASES_PER_FILE,
     get_flen_for_extension,
 )
@@ -46,8 +45,7 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     flen = get_flen_for_extension(testsuite)
-    config_dependent = testsuite in CONFIG_DEPENDENT_EXTENSIONS
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, config_dependent=config_dependent)
+    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext)
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:

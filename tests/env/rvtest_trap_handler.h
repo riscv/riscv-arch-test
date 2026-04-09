@@ -336,61 +336,6 @@
 #define _ARG1(_1ST,...) _1ST
 #define NARG(...) _ARG5(__VA_OPT__(__VA_ARGS__,)4,3,2,1,0)
 
-/*****************************************************************/
-/**** initialize regs, just to make sure you catch any errors ****/
-/*****************************************************************/
-
-.macro DBLSHIFTR dstreg,     oldreg,    tmpreg, shamt       //this is just a rotate  using xtmp as a tmp
-        slli    \tmpreg\(), \oldreg\(),   XLEN-\shamt
-        srli    \dstreg\(), \oldreg\(),        \shamt
-        or      \dstreg\(), \dstreg\(), \tmpreg\()
-.endm
-
-/* init regs, to ensure you catch any errors */
-.macro RVTEST_INIT_REGS
-    #ifdef rvtest_mtrap_routine
-     // Initialising CSR registers (mpec, mtval, mstatus, mip)
-     csrw  CSR_MSTATUS,    x0
-     csrw  CSR_MEPC,       x0
-     csrw  CSR_MIP,        x0
-     csrw  CSR_MTVAL,      x0
-     csrw  CSR_MCAUSE,     x0
-    #endif
-   #ifndef RVTEST_E
-     LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
-     DBLSHIFTR x17, x16, x15, 7
-     DBLSHIFTR x18, x17, x15, 7
-     DBLSHIFTR x19, x18, x15, 7
-     DBLSHIFTR x20, x19, x15, 7
-     DBLSHIFTR x21, x20, x15, 7
-     DBLSHIFTR x22, x21, x15, 7
-     DBLSHIFTR x23, x22, x15, 7
-     DBLSHIFTR x24, x23, x15, 7
-     DBLSHIFTR x25, x24, x15, 7
-     DBLSHIFTR x26, x25, x15, 7
-     DBLSHIFTR x27, x26, x15, 7
-     DBLSHIFTR x28, x27, x15, 7
-     DBLSHIFTR x29, x28, x15, 7
-     DBLSHIFTR x30, x29, x15, 7
-     DBLSHIFTR x31, x30, x15, 7
-   #endif
-     LI (x1,  (0xFEEDBEADFEEDBEAD & MASK))
-     DBLSHIFTR x2,  x1,  x15, 7
-     DBLSHIFTR x3,  x2,  x15, 7
-     DBLSHIFTR x4,  x3,  x15, 7
-     DBLSHIFTR x5,  x4,  x15, 7
-     DBLSHIFTR x6,  x5,  x15, 7
-     DBLSHIFTR x7,  x6,  x15, 7
-     DBLSHIFTR x8,  x7,  x15, 7
-     DBLSHIFTR x9,  x8,  x15, 7
-     DBLSHIFTR x10, x9,  x15, 7
-     DBLSHIFTR x11, x10, x15, 7
-     DBLSHIFTR x12, x11, x15, 7
-     DBLSHIFTR x13, x12, x15, 7
-     DBLSHIFTR x14, x13, x15, 7
-     LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
-.endm
-
 /*************************************/
 /**** valid mode configs are:     ****/
 /**** M                           ****/

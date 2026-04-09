@@ -4,8 +4,7 @@
 # Requires Verilator and the CVW repository
 
 ci_enabled: true
-# Everything after Zicbom passes but is excluded for runtime/disk space
-exclude_extensions: "Sm,S,InterruptsU,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,Zicboz,Zicbom,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,D,Zfh"
+exclude_extensions: "Sm,S,InterruptsU,PMPSm,ExceptionsZalrsc,ExceptionsZaamo,Zicboz,Zicbom"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

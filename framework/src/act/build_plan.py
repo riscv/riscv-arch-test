@@ -57,6 +57,7 @@ def gen_compile_tasks(
     test_metadata: TestMetadata,
     base_dir: Path,
     xlen: int,
+    dut_flen: int,
     config: Config,
     compiler_cmd: list[str],
     debug: bool = False,
@@ -93,9 +94,12 @@ def gen_compile_tasks(
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
-    flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
+
+    # Cap FLEN to what the test march actually supports — prevents emitting D/Q instructions
+    # in tests whose march string only covers F, even when the DUT supports wider FP.
+    flen = min(dut_flen, test_metadata.flen)
 
     # 1. sig.elf – compile with -DSIGNATURE
     sig_elf_cmd = [
@@ -387,6 +391,7 @@ def gen_coverage_tasks(
 def generate_build_plan(
     config: Config,
     xlen: int,
+    dut_flen: int,
     selected_tests: dict[str, TestMetadata],
     tests_dir: Path,
     coverpoint_dir: Path,
@@ -416,6 +421,7 @@ def generate_build_plan(
                 test_metadata,
                 config_wkdir,
                 xlen,
+                dut_flen,
                 config,
                 compiler_cmd,
                 debug,

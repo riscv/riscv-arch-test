@@ -21,7 +21,7 @@ from act.build_plan import generate_build_plan
 from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import generate_test_dict
-from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
+from act.parse_udb_config import compute_flen, generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
 
 # CLI interface setup
@@ -120,6 +120,7 @@ def run_act(
             generate_build_plan(
                 config,
                 mxlen,
+                compute_flen(implemented_extensions, mxlen),
                 selected_tests,
                 test_dir,
                 coverpoint_dir,

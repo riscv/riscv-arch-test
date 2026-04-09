@@ -266,7 +266,9 @@ def main() -> None:
     parser.add_argument("csv_name", help="CSV name (e.g. 'Vls' or 'Vls.csv')")
     parser.add_argument("coverpoint", nargs="?", help="Coverpoint column to isolate (e.g. 'cp_custom_vfp_state')")
     parser.add_argument("--restore", action="store_true", help="Restore CSV from canonical backup instead of isolating")
-    parser.add_argument("--tests", nargs="+", metavar="INSTR", help="Isolate specific instructions (e.g. 'vlseg3e32.v vwredusum.vs')")
+    parser.add_argument(
+        "--tests", nargs="+", metavar="INSTR", help="Isolate specific instructions (e.g. 'vlseg3e32.v vwredusum.vs')"
+    )
 
     args = parser.parse_args()
 

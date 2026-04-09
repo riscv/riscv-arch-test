@@ -48,82 +48,82 @@ cp_custom_gprWriting_vstart_eq_vl,,,v,Confirm GPR producing insturctions execute
 
 This should ensure the instruction executes even in this unique condition",Gpr register is updated,1,,,,,"Instructions that write an x register or f register do so even when vstart ≥ vl, including when vl=0.",,,,
 All vzext and vsext instructions ending in f2,,,,,,,,,,,,,,,,
-cp_custom_vext2_overlapping_vd_vs2_lmul2,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+cp_custom_vext2_overlapping_vd_vs2_lmul2,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vext2_overlapping_vd_vs2_lmul4,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+cp_custom_vext2_overlapping_vd_vs2_lmul4,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vext2_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2). 
+cp_custom_vext2_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f2,"" when the vs2 overlaps the top half of the vd register group the operation is legal","Conduct a widening operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v1 for vzext.vf2).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 All vzext and vsext instructions ending in f4,,,,,,,,,,,,,,,,
-cp_custom_vext4_overlapping_vd_vs2_lmul4,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4). 
+cp_custom_vext4_overlapping_vd_vs2_lmul4,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vext4_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4). 
+cp_custom_vext4_overlapping_vd_vs2_lmul8,,,same with above,"Confirm that with zero and sign extending instructions ending in ""f4,"" when the vs2 overlaps the top quarter of the vd register group the operation is legal","Conduct a widening operation with lmul=4, vs2 overlapping the top quarter of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v3 for vzext.vf4).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 All vzext and vsext instructions ending in f8,,,,,,,,,,,,,,,,
-cp_custom_vext8_overlapping_vd_vs2_lmul8,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f8,"" when the vs2 overlaps the top eighth of the vd register group the operation is legal","Conduct a widening operation with lmul=8, vs2 overlapping the top eigth of the vd register group (if lmul is 8 and vd = v0 then vs2 must be v7 for vzext.vf8). 
+cp_custom_vext8_overlapping_vd_vs2_lmul8,,,"""conduct a widening operation""?","Confirm that with zero and sign extending instructions ending in ""f8,"" when the vs2 overlaps the top eighth of the vd register group the operation is legal","Conduct a widening operation with lmul=8, vs2 overlapping the top eigth of the vd register group (if lmul is 8 and vd = v0 then vs2 must be v7 for vzext.vf8).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 All widening instructions except reduction ,,,,,,,,,,,,,,,,
 cp_custom_vdOverlapTopVs1_vd_vs1_lmul1,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=1, vs1 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs1 must be v1).
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 cp_custom_vdOverlapTopVs1_vd_vs1_lmul2,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=2, vs1 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs1 must be v2).
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 cp_custom_vdOverlapTopVs1_vd_vs1_lmul4,,,,Confirm that vs1 overlapping the top half of vd is legal,"Conduct an operation with lmul=4, vs1 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs1 must be v4).
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vdOverlapTopVs2_vd_vs2_lmul1,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=1, vs2 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs2 must be v1). 
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul1,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=1, vs2 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs2 must be v1).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vdOverlapTopVs2_vd_vs2_lmul2,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v2). 
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul2,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=2, vs2 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs2 must be v2).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
-cp_custom_vdOverlapTopVs2_vd_vs2_lmul4,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=4, vs2 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v4). 
+cp_custom_vdOverlapTopVs2_vd_vs2_lmul4,,,,Confirm that with vs2 overlapping the top half of vd is legal,"Conduct an operation with lmul=4, vs2 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs2 must be v4).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 Single widening .vv instruction,,,,,,,,,,,,,,,,
 cp_custom_allVdOverlapTopVs1_vd_vs1_lmul1,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=1, vs1 overlapping the top half of the vd register group (if lmul is 1 and vd = v0 then vs1 must be v1). Execute with vd = {0,2,4,8..30}
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=2, vs1 overlapping the top half of the vd register group (if lmul is 2 and vd = v0 then vs1 must be v2). Execute with vd = {0,4,8,...28}
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 cp_custom_allVdOverlapTopVs1_vd_vs1_lmul4,,,,Confirm that vs1 overlapping the top half of vd is legal with all legal vd registers,"Conduct an operation with lmul=4, vs1 overlapping the top half of the vd register group (if lmul is 4 and vd = v0 then vs1 must be v4). Execute with vd = {0,8,16,24}
- 
+
 The vd and vs1 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"A destination vector register group can overlap a source vector register group only if one of the following holds:
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
@@ -143,23 +143,23 @@ The vd and vs2 registers must overlap in this manner to be legal",We expect this
 
 The destination EEW is greater than the source EEW, the source EMUL is at least 1, and the overlap is in the highest-numbered part of the destination register group (e.g., when LMUL=8, vzext.vf4 v0, v6 is legal, but a source of v0, v2, or v4 is not).",,,,
 All narrowing instructions,,,,,,,,,,,,,,,,
-cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1,,,"think should mention that vd is on group, or else the lmul in vs2_vd_overlap_lmul1 and vd_reg_aligned_lmul_2 is confusing",Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0). 
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1,,,"think should mention that vd is on group, or else the lmul in vs2_vd_overlap_lmul1 and vd_reg_aligned_lmul_2 is confusing",Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
-cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0). 
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
-cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0). 
+cp_custom_vdOverlapBtmVs2_vd_vs2_lmul4,,,same as above,Confirm that vs1 overlapping the bottom half of vd is legal,"Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,1,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
 Single narrowing instruction,,,,,,,,,,,,,,,,
-cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0). 
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul1,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=1, vd overlapping the bottom half of the vs2 register group (if lmul is 1 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
-cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0). 
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=2, vd overlapping the bottom half of the vs2 register group (if lmul is 2 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
-cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0). 
+cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul4,,,,"Confrim that for all on-group vs2, vd can overlap the bottom most register","Conduct an operation with lmul=4, vd overlapping the bottom half of the vs2 register group (if lmul is 4 and vs2 = v0 then vd must be v0).
 
 The vd and vs2 registers must overlap in this manner to be legal",We expect this insturction not to trap,32,,,,,"The destination EEW is smaller than the source EEW and the overlap is in the lowest-numbered part of the source register group (e.g., when LMUL=1, vnsrl.wi v0, v0, 3 is legal, but a destination of v1 is not).",,,,
 Reduction widening instructions,,,,,,,,,,,,,,,,
@@ -176,7 +176,7 @@ Vector register gather: The index values in the second vector are treated as uns
 
 0 <= i+OFFSET < VLMAX   src[i] = vs2[i+OFFSET]",,,
 "vrgather and vslidedown, vslideup",,,,,,,,,,,,,,,,
-cp_custom_vindexVX_rs1_not_truncated_32,May be covered by standard extension running rs1 = -1,,,"Coverpoint is only defined for xlen = 32 
+cp_custom_vindexVX_rs1_not_truncated_32,May be covered by standard extension running rs1 = -1,,,"Coverpoint is only defined for xlen = 32
 
 Confrim that when sew < 32 (xlen) that the index value stored in rs1 is not truncated","For supported sew = {8/16} set rs1 = 0x80000001, vs2[sew:0] != 0
 

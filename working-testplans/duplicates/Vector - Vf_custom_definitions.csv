@@ -33,7 +33,7 @@ cp_custom_vfncvt_rod_overflow,,,,Verify that vfncvt.rod.f.f.w correctly saturate
 
 Do both signs to ensure positive and negative are correct",converted to the largest finite FP32 value with the same sign,2,,,,,"For vfncvt.rod.f.f.w, a finite value that exceeds the range of the destination format is converted to the destination format’s largest finite value with the same sign.",,
 vfredosum,,,,,,,,,,,,,,
-cp_custom_vfredosum_ordered_sum,,No way to verify second element is non-zero,,Confirm correct order of summartion by vfredosum,"load maxnorm to vs1 element 0 and negmax norm to vs2 element 0, load a relatively small number to vs2 element 1 by setting lmul 2 during the load to load to subsequent element despite VLEN. 
+cp_custom_vfredosum_ordered_sum,,No way to verify second element is non-zero,,Confirm correct order of summartion by vfredosum,"load maxnorm to vs1 element 0 and negmax norm to vs2 element 0, load a relatively small number to vs2 element 1 by setting lmul 2 during the load to load to subsequent element despite VLEN.
 
 This ensures the order of summation is tested correctly",Sum will be vs2 element 1,1,,,,,"The vfredosum instruction must sum the floating-point values in element order, starting with the scalar in vs1[0]--that is, it performs the computation: vd[0] = `(((vs1[0] + vs2[0]) + vs2[1]) + ...) + vs2[vl-1]` where each addition operates identically to the scalar floating-point instructions in terms of raising exception flags and generating or propagating special values.",,
 "vfwredosum.vs, vfredosum.vs ",,,,,,,,,,,,,,

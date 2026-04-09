@@ -1072,11 +1072,15 @@ def genVsedges(test, sew, emul):
       val = v_register_edges[corner]
       val &= (1 << eew) - 1
       vectordata += writeData(f"vs_corner_{corner}_{ending}:")
-      for w in convert(val, eew):
-        if (sew == 64) or (eew == 64):
-          vectordata += writeData(f"    .dword {w}")
-        else:
-          vectordata += writeData(f"    .word {w}")
+      if corner == "zero":
+        # Pad with enough zeros for a whole-register load (vl1re*.v loads VLEN/8 bytes)
+        vectordata += writeData("    .fill 128, 1, 0")
+      else:
+        for w in convert(val, eew):
+          if (sew == 64) or (eew == 64):
+            vectordata += writeData(f"    .dword {w}")
+          else:
+            vectordata += writeData(f"    .word {w}")
 
   return vectordata
 
@@ -2108,8 +2112,13 @@ def writeTest(description, instruction, cp, instruction_data=None,
       # For non-indexed LS instructions with EEW, vd occupies EMUL = LMUL × EEW/SEW
       # registers. The preload must cover the full EMUL group for deterministic self-check.
       # Whole register LS: NF is fixed by instruction name, NOT by EEW/SEW ratio.
+      # For stores: vd is unused (store uses vs3). Cap preload LMUL to the
+      # register's allocation LMUL to avoid alignment traps when EEW > SEW
+      # would push vd_emul beyond the register's alignment.
       eew_ls = getInstructionEEW(instruction)
-      if instruction in whole_register_ls:
+      if instruction in vector_stores or instruction in indexed_stores:
+        vd_emul = lmul  # stores don't write vd; use safe LMUL
+      elif instruction in whole_register_ls:
         nf = int(instruction[2])  # vl1re32.v -> 1, vs4r.v -> 4
         vd_emul = nf
       elif eew_ls is not None and instruction in vector_ls_ins and instruction not in indexed_ls_ins:
@@ -2259,12 +2268,14 @@ def writeTest(description, instruction, cp, instruction_data=None,
       if maskval is not None:
         load_testline = load_testline + ", v0.t"
 
-      # Mask LS stores (vsm.v): the reload (vlm.v) only writes ceil(VL/8) bytes;
-      # remaining tail bytes of the reload register are undisturbed.  SELFCHECK
-      # code in final.elf may modify those tail bytes differently than test.elf,
-      # causing false signature mismatches.  Fix: zero the entire reload register
-      # before the reload so tail bytes are deterministic in both builds.
-      if instruction in mask_ls_ins:
+      # Store reloads can have non-deterministic undisturbed/tail elements:
+      # - Masked reloads: unmasked elements keep prior register contents
+      # - Length-suite (vl < VLMAX): tail elements depend on tail policy
+      # SELFCHECK final.elf clobbers registers between tests, so prior
+      # register contents differ from sig.elf → false signature mismatches.
+      # Fix: zero load_vd before the reload so undisturbed/tail elements
+      # are deterministic in both builds.
+      if instruction in mask_ls_ins or maskval is not None or suite == "length":
         mi_t1 = 3
         while mi_t1 in scalar_registers_used:
           mi_t1 = randint(1, 31)

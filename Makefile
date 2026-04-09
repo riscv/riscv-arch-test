@@ -101,7 +101,8 @@ elfs: tests
 		$(if $(FAST),--fast) \
 		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \
-		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
+		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR)) \
+		$(if $(COVERAGE),--keep-going)
 
 .PHONY: clean
 clean: clean-tests
@@ -128,7 +129,7 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	touch $@
 
 .PHONY: tests

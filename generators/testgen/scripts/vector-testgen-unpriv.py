@@ -12,6 +12,7 @@
 ##################################
 # libraries
 ##################################
+import argparse
 import filecmp
 import math
 import os
@@ -932,6 +933,10 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs1_nv0"                   : make_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cp_vs1_emul2"                 : make_vs1(test, sew, range(0,vreg_count,2))
     elif coverpoint == "cmp_vd_vs2"                   : make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint.startswith("cmp_vd_vs2_sew_lte"):
+      max_sew = int(coverpoint.split("_")[-1])
+      if sew <= max_sew:
+        make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_nv0"               : make_vd_vs2(test, sew, range(1,vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul2"             : make_vd_vs2(test, sew, range(0,vreg_count,2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul4"             : make_vd_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
@@ -1036,6 +1041,9 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vtype_agnostic_e16_emul1max" : make_vtype_agnostic(test, sew, eew = 16, maxemul=1)
     elif coverpoint == "cr_vtype_agnostic_e32_emul1max" : make_vtype_agnostic(test, sew, eew = 32, maxemul=1)
     elif coverpoint == "cr_vtype_agnostic_e64_emul1max" : make_vtype_agnostic(test, sew, eew = 64, maxemul=1)
+    elif coverpoint == "cr_vtype_agnostic_lmul4max_nomask" : make_vtype_agnostic(test, sew, maxemul=4, preset_emul=getLengthLmul(test))
+    elif coverpoint == "cr_vtype_agnostic_lmul2max_nomask" : make_vtype_agnostic(test, sew, maxemul=2, preset_emul=getLengthLmul(test))
+    elif coverpoint == "cr_vtype_agnostic_lmul1max_nomask" : make_vtype_agnostic(test, sew, maxemul=1, preset_emul=getLengthLmul(test))
     ############################  cp_custom   ############################
     elif coverpoint == "cp_custom_vmask_write_lmulge1"                : make_custom_vmask_write_lmulge1(test, sew)
     elif coverpoint == "cp_custom_vmask_write_v0_masked"              : make_custom_vmask_write_v0_masked(test, sew)
@@ -1243,6 +1251,13 @@ def getExtensions():
   return extensions
 
 if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description="Generate directed vector tests for functional coverage")
+  parser.add_argument("--extensions", type=str, default="",
+                      help="Comma-separated list of extensions to generate tests for (default: all)")
+  parser.add_argument("--exclude", type=str, default="",
+                      help="Comma-separated list of extensions to exclude from generation")
+  args = parser.parse_args()
+
   common.writeLine        = writeLine
 
   # import custom coverpoints for use
@@ -1258,11 +1273,21 @@ if __name__ == '__main__':
   # setup
   seed(0) # make tests reproducible
 
+  # parse extension filters
+  include_set = set(args.extensions.split(",")) if args.extensions else set()
+  exclude_set = set(args.exclude.split(",")) if args.exclude else set()
+
   # generate files for each test
   for xlen in xlens:
     # extensions = getExtensions() # find all extensions in
     testplans = readTestplans()
     extensions = list(testplans.keys())
+
+    # filter extensions based on --extensions and --exclude
+    if include_set:
+      extensions = [e for e in extensions if e in include_set]
+    if exclude_set:
+      extensions = [e for e in extensions if e not in exclude_set]
     maxreg = 31 # I uses registers x0-x31
 
     for extension in extensions:

@@ -201,33 +201,41 @@
   // ***DH 4/8/26 check this is proper gating
   #ifdef rvtest_mtrap_routine
 // RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
-    rvtest_set_msw_int: ; \
-      RVMODEL_SET_MSW_INT(T2, T5) ; \
-      ret ; \
-    rvtest_clr_msw_int: ; \
-      RVMODEL_CLR_MSW_INT(T2, T5) ; \
-      ret ; \
-    rvtest_set_mext_int: ; \
-      RVMODEL_SET_MEXT_INT(T2, T5) ; \
-      ret ; \
-    rvtest_clr_mext_int: ; \
-      RVMODEL_CLR_MEXT_INT(T2, T5) ; \
-      ret ; \
-    rvtest_set_ssw_int: ; \
-      RVMODEL_SET_SSW_INT(T2, T5) ; \
-      ret ; \
-    rvtest_clr_ssw_int: ; \
-      RVMODEL_CLR_SSW_INT(T2, T5) ; \
-      csrci sip, 2 ; \
-      ret ; \
-    rvtest_set_sext_int: ; \
-      RVMODEL_SET_SEXT_INT(T2, T5) ; \
-      ret ; \
-    rvtest_clr_sext_int: ; \
-      RVMODEL_CLR_SEXT_INT(T2, T5) ; \
-      LI(T3, 512) ; \
-      csrc sip, T3 ; \
+    rvtest_set_msw_int:
+      RVMODEL_SET_MSW_INT(T2, T5)
       ret
+
+    rvtest_clr_msw_int:
+      RVMODEL_CLR_MSW_INT(T2, T5)
+      ret
+
+    rvtest_set_mext_int:
+      RVMODEL_SET_MEXT_INT(T2, T5)
+      ret
+
+    rvtest_clr_mext_int:
+      RVMODEL_CLR_MEXT_INT(T2, T5)
+      ret
+
+    rvtest_set_ssw_int:
+      RVMODEL_SET_SSW_INT(T2, T5)
+      ret
+
+    rvtest_clr_ssw_int:
+      RVMODEL_CLR_SSW_INT(T2, T5)
+      csrci sip, 2
+      ret
+
+    rvtest_set_sext_int:
+      RVMODEL_SET_SEXT_INT(T2, T5)
+      ret
+
+    rvtest_clr_sext_int:
+      RVMODEL_CLR_SEXT_INT(T2, T5)
+      LI(T3, 512)
+      csrc sip, T3
+      ret
+
   #endif
 
   nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section

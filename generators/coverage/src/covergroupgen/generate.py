@@ -7,6 +7,8 @@
 # Generate functional covergroups for RISC-V instructions
 ##################################
 
+from __future__ import annotations
+
 import csv
 import importlib.resources
 import math
@@ -55,7 +57,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
     """
     testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
 
-    for csv_path in testplan_dir.rglob("*.csv"):
+    for csv_path in testplan_dir.glob("*.csv"):
         arch = csv_path.stem
 
         # Parse the CSV into a dict of (instruction, type) -> coverpoints
@@ -638,6 +640,114 @@ def write_instruction_sample_file(
     (coverage_dir / "RISCV_instruction_sample.svh").write_text("".join(lines))
 
 
+def write_priv_covergroups(
+    testplan_dir: Path,
+    templates: dict[str, str],
+    output_dir: Path,
+    extensions: str = "all",
+    exclude: str = "",
+) -> None:
+    """Generate per-instruction priv coverage files from testplans/priv/*.csv.
+
+    Reads CSVs from testplan_dir / "priv" and generates _coverage.svh
+    and _coverage_init.svh files in output_dir / "priv".
+    Skips extensions that already have handwritten coverage files.
+    """
+    priv_plan_dir = testplan_dir / "priv"
+    if not priv_plan_dir.exists():
+        return
+
+    priv_output_dir = output_dir / "priv"
+    priv_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Read priv testplans (no SEW expansion needed)
+    priv_plans: dict[str, dict[tuple[str, str], list[str]]] = {}
+    for csv_path in priv_plan_dir.glob("*.csv"):
+        arch = csv_path.stem
+        tp: dict[tuple[str, str], list[str]] = {}
+        with csv_path.open() as csvfile:
+            for row in csv.DictReader(csvfile):
+                if "Instruction" not in row:
+                    raise ValueError(
+                        f"Error reading testplan {csv_path.name}. "
+                        "Did you remember to shrink the .csv files after expanding?"
+                    )
+                instr = row["Instruction"]
+                instr_type = row["Type"]
+                cps: list[str] = []
+                del row["Instruction"]
+                for key, value in row.items():
+                    if not isinstance(value, str) or value == "":
+                        continue
+                    if key == "Type":
+                        cps.append(f"sample_{value}")
+                    else:
+                        if value != "x":
+                            key = f"{key}_{value}"
+                        cps.append(key)
+                tp[(instr, instr_type)] = cps
+        priv_plans[arch] = tp
+
+    # Apply extension filtering
+    if extensions != "all" or exclude != "":
+        priv_plans = _filter_testplans(priv_plans, extensions, exclude)
+
+    # Skip extensions that already have handwritten coverage files
+    existing_priv = {f.stem.split("_")[0] for f in priv_output_dir.iterdir() if f.name.endswith("_coverage.svh")}
+
+    for arch, tp in track(
+        priv_plans.items(), description="[cyan]Generating priv covergroups...", total=len(priv_plans)
+    ):
+        if arch in existing_priv:
+            continue
+
+        instr_keys = sorted(tp.keys())
+        lines: list[str] = []
+        init_lines: list[str] = []
+
+        # Header
+        lines.append(customize_template(templates, "header", arch))
+        init_lines.append(customize_template(templates, "initheader", arch))
+
+        # Per-instruction covergroups
+        instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, True)
+        lines.append(instr_content)
+        init_lines.append(init_content)
+
+        # RV32-only instructions
+        if _any_xlen_exclusion("RV64", instr_keys, tp):
+            guard = customize_template(templates, "RV32", arch)
+            end = customize_template(templates, "end", arch)
+            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, False)
+            lines.extend([guard, instr_content, end])
+            init_lines.extend([guard, init_content, end])
+
+        # RV64-only instructions
+        if _any_xlen_exclusion("RV32", instr_keys, tp):
+            guard = customize_template(templates, "RV64", arch)
+            end = customize_template(templates, "end", arch)
+            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, False, True)
+            lines.extend([guard, instr_content, end])
+            init_lines.extend([guard, init_content, end])
+
+        # Sample function
+        lines.append(customize_template(templates, "covergroup_sample_header", arch))
+        lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True))
+        if _any_xlen_exclusion("RV64", instr_keys, tp):
+            lines.append(customize_template(templates, "RV32", arch))
+            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, False))
+            lines.append(customize_template(templates, "end", arch))
+        if _any_xlen_exclusion("RV32", instr_keys, tp):
+            lines.append(customize_template(templates, "RV64", arch))
+            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, False, True))
+            lines.append(customize_template(templates, "end", arch))
+        lines.append(customize_template(templates, "covergroup_sample_end", arch))
+
+        # Write files
+        (priv_output_dir / f"{arch}_coverage.svh").write_text("".join(lines))
+        (priv_output_dir / f"{arch}_coverage_init.svh").write_text("".join(init_lines))
+
+
 ##################################
 # Entry point
 ##################################
@@ -653,5 +763,6 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
 
     templates = read_covergroup_templates()
     write_covergroups(test_plans, templates, output_dir)
+    write_priv_covergroups(testplan_dir, templates, output_dir, extensions, exclude)
     write_coverage_headers(test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)

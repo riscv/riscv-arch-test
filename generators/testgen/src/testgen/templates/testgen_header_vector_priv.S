@@ -4,29 +4,28 @@
 // SPDX-License-Identifier: Apache-2.0
 ///////////////////////////////////////////
 
-// Define special purpose registers before including test_macros_vector.h
-#define DATA_BASE x4
-#define SIG_BASE x3
-#define VLENB_CACHE x5
-#define HELPER_GPR x6
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: @EXTENSION_LIST@
+# @PARAMS@
+# MARCH: @MARCH@
+# CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
+##### END_TEST_CONFIG #####
+
+// Define the name of this test file for reporting and the size of the signature region
+#define TEST_FILE "@TEST_FILE_NAME@"
+#define SIGUPD_COUNT @SIGUPD_COUNT_FROM_TESTGEN@
+
+@EXTRA_DEFINES@
+#define rvtest_mtrap_routine
+#define rvtest_strap_routine
+#define rvtest_dtrap_routine
+#define RVTEST_PRIV_TEST
 
 #include "test_macros_vector.h"
 
-RVTEST_ISA("RV32IMV_Zicsr, RV64IMV_Zicsr")
+#include "riscv_arch_test.h"
 
-# Test code region
-.section .text.init
-.globl rvtest_entry_point
-rvtest_entry_point:
-RVMODEL_BOOT
-RVTEST_CODE_BEGIN
-
-#ifdef TEST_CASE_1
-
-RVTEST_CASE(1,"//check ISA:=regex(.*I.*M.*V.*Zicsr.*); def rvtest_mtrap_routine=True; def rvtest_strap_routine=True; def rvtest_dtrap_routine=True; def TEST_CASE_1=True",ZicsrV)
-
-RVTEST_V_ENABLE()
-RVTEST_SIGBASE(SIG_BASE, signature_base)
+RVTEST_BEGIN
 
 #define SEWMIN 8
 #define ELEN 64

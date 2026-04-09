@@ -14,30 +14,37 @@
 import filecmp
 import math
 import os
+import pathlib
 from random import randint, seed
 
+import priv  # priv coverpoint generator scripts
 import vector_testgen_common as common
+from priv_coverpoint_registry import PRIV_REGISTRY, import_all_modules
 from vector_testgen_common import (
-    ARCH_VERIF,
-    flen,
-    genVMaskCorners,
-    getBaseSuiteTestCount,
-    getInstructionArguments,
-    getLengthLmul,
-    getLengthSuiteTestCount,
-    getSigSpace,
-    insertTemplate,
-    loadScalarReg,
-    maxVLEN,
-    myhash,
-    prepVstart,
-    randomizeMask,
-    randomizeVectorInstructionData,
-    readTestplans,
-    setExtension,
-    setXlen,
-    whole_register_move,
-    writeVecTest,
+  ARCH_VERIF,
+  add_testcase_string,
+  flen,
+  genVMaskedges,
+  getBaseSuiteTestCount,
+  getInstructionArguments,
+  getLengthLmul,
+  getLengthSuiteTestCount,
+  getSigSpace,
+  insertTemplate,
+  loadScalarReg,
+  maxVLEN,
+  minSEW_MIN,
+  myhash,
+  narrowins,
+  prepVstart,
+  randomizeMask,
+  randomizeVectorInstructionData,
+  readTestplans,
+  setExtension,
+  setXlen,
+  vd_widen_ins,
+  whole_register_move,
+  writeVecTest,
 )
 
 
@@ -57,15 +64,18 @@ def writeLine(argument: str, comment = ""):
 
 def make_vill(instruction):
     description = "cp_vill"
-    instruction_data = randomizeVectorInstructionData(instruction, "SEWMIN", getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
+    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
     writePrivTestPrep(description, instruction)
     writeLine("vsetivli  x8, 1, e64, mf8, tu, mu",  "# SEW = 64 and LMUL = 1/8, illegal config which sets vill = 1")
-    writePrivTestLine(instruction, instruction_data)
+    writePrivTestLine(instruction, instruction_data, cp="cp_vill")
 
 
-def make_vstart(instruction, sew, maxlmul = 8):
+def make_vstart(instruction, maxlmul = 8):
+    # Cap LMUL for widening/narrowing instructions (EMUL = 2*LMUL must be ≤ 8)
+    if instruction in vd_widen_ins or instruction in narrowins:
+        maxlmul = min(maxlmul, 4)
     vstartvals = ["one", "vlmaxm1", "vlmaxd2", "random"]
     for vstartval in vstartvals:
         lmul = 2 ** randint(1, int(math.log2(maxlmul))) # pick random integer LMUL to ensure that coverpoints are hit
@@ -74,27 +84,27 @@ def make_vstart(instruction, sew, maxlmul = 8):
         no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
 
         description = f"cp_vstart (vstart = {vstartval})"
-        instruction_data = randomizeVectorInstructionData(instruction, "SEWMIN", getLengthSuiteTestCount(), suite = "length", lmul = lmul,
+        instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getLengthSuiteTestCount(), suite = "length", lmul = lmul,
                                                           vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
                                                           vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random",
                                                           additional_no_overlap=no_overlap)
 
         writePrivTestPrep(description, instruction, lmul = lmul, vl = "vlmax")
         prepVstart(vstartval)
-        writePrivTestLine(instruction, instruction_data, lmul = lmul, vl = "vlmax", maskval = maskval)
+        writePrivTestLine(instruction, instruction_data, cp="cp_vstart", lmul = lmul, vl = "vlmax", maskval = maskval)
 
 def make_vstart_gt_vl(instruction):
     randvl = randint(1, maxVLEN)
     randvstart = randint(1, maxVLEN)
     description = "cp_vstart_gt_vl"
-    instruction_data = randomizeVectorInstructionData(instruction, "SEWMIN", getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
+    instruction_data = randomizeVectorInstructionData(instruction, minSEW_MIN, getBaseSuiteTestCount(), vd = 8, vs2 = 16, vs1 = 24, rd = 5, rs2 = 6, rs1 = 7,
                                                       vd_val_pointer = "vector_random", vs2_val_pointer = "vector_random", vs1_val_pointer = "vector_random")
 
     writePrivTestPrep(description, instruction, lmul = 4, vl = "vlmax", vstart = True)
     writeLine(f"li a0, {randvl}",            "# load random number to a0, place holder for vl")
     writeLine(f"li a0, {randvstart}",        "# load random number to a1, place holder for vstart")
     writeLine("jal cp_vstart_gt_vl_setup",  "# jump to set up vstart and vl for the test")
-    writePrivTestLine(instruction, instruction_data, vl = "vlmax", lmul = 4)
+    writePrivTestLine(instruction, instruction_data, cp="cp_vstart_gt_vl", vl = "vlmax", lmul = 4)
 
 #####################################           test generation           #####################################
 
@@ -114,6 +124,7 @@ def makeTest(coverpoints, instruction):
         elif (coverpoint == "cp_vill")                       : make_vill(instruction)
         elif (coverpoint == "cp_vstart")                     : make_vstart(instruction)
         elif (coverpoint == "cp_vstart_gt_vl")               : make_vstart_gt_vl(instruction)
+        elif coverpoint in PRIV_REGISTRY                     : PRIV_REGISTRY[coverpoint](instruction)
         else:
             print("Warning: " + coverpoint + " not implemented yet for " + instruction)
 
@@ -138,7 +149,7 @@ def writePrivTestPrep(description, instruction, lmul = 1, vl = 1, vstart = False
     if ("vs1" in instruction_arguments):
         writeLine("VLESEWMIN v24, (x2)",                   "# load to initialize vs1 (v24)")
 
-def writePrivTestLine(instruction, instruction_data, vl=1, lmul=1, maskval=None):
+def writePrivTestLine(instruction, instruction_data, cp="cp_vill", vl=1, lmul=1, maskval=None):
     instruction_arguments = getInstructionArguments(instruction)
     [vector_register_data, scalar_register_data, floating_point_register_data, imm_val] = instruction_data
 
@@ -182,10 +193,8 @@ def writePrivTestLine(instruction, instruction_data, vl=1, lmul=1, maskval=None)
     vd = vector_register_data ['vd'] ['reg']
     rd = scalar_register_data ['rd'] ['reg']
 
-    if (maskval is not None) or (vl is not None):
-        writeVecTest(vd, "SEWMIN", testline, test=instruction, rd=rd, vl=vl, sig_lmul = sig_lmul, sig_whole_register_store = sig_whole_register_store, priv = True)
-    else:
-        writeVecTest(vd, "SEWMIN", testline, test=instruction, rd=rd, sig_lmul = sig_lmul, sig_whole_register_store = sig_whole_register_store, priv = True)
+    add_testcase_string(cp, instruction)
+    writeVecTest(instruction, cp, vd, minSEW_MIN, testline, test=instruction, rd=rd, vl=vl, sig_lmul=sig_lmul, sig_whole_register_store=sig_whole_register_store, priv=True, force_vill=(cp == "cp_vill"))
 
 
 
@@ -207,28 +216,35 @@ if __name__ == '__main__':
     # setup
     seed(0) # make tests reproducible
 
+    import_all_modules(priv)
+
     testplans = readTestplans(priv=True)
     extensions = list(testplans.keys())
 
-    for extension in extensions:
+    for xlen in xlens:
+      for extension in extensions:
         setExtension(extension)
-        setXlen(maxXLEN)
-        instructions = list(testplans[extension].keys())
+        setXlen(xlen)
 
-        pathname = f"{ARCH_VERIF}/tests/priv/vector"
+        # Filter instructions to only those marked for this xlen
+        all_instructions = list(testplans[extension].keys())
+        instructions = [inst for inst in all_instructions if f"RV{xlen}" in testplans[extension][inst]]
+        if not instructions:
+            continue
+
+        basename = extension
+        pathname = f"{ARCH_VERIF}/tests/priv/{basename}"
 
         cmd = "mkdir -p " + pathname # make directory
         os.system(cmd)
+        fname = pathname + "/" + basename + f"_rv{xlen}.S"
+        tempfname = pathname + "/" + basename + f"_rv{xlen}_temp.S"
 
-        basename = extension
-        fname = pathname + "/" + basename + ".S"
-        tempfname = pathname + "/" + basename + "_temp.S"
-
-        print("Generating tests for " + fname)
+        print(f"Generating rv{xlen} tests for " + fname)
 
         ############################### starting test file ###############################
         # print custom header part
-        f = open(tempfname, "w")
+        f = pathlib.Path(tempfname).open("w")
         line = "///////////////////////////////////////////\n"
         f.write(line)
         line = "// "+fname+ "\n// " + author + "\n"
@@ -245,20 +261,17 @@ if __name__ == '__main__':
         insertTemplate(basename, 0, "cp_vstart_gt_vl_setup.S")
 
         ###############################  ending test file  ###############################
-        # print footer (before DATA)
-        insertTemplate(basename, 0, "testgen_footer_vector1.S")
-
         # generate vector data (random and corners)
-        genVMaskCorners() # TODO: change to generate a good random (vector_random)
+        test_data = genVMaskedges() # TODO: change to generate a good random (vector_random)
 
-        # print footer (after DATA)
-        signatureWords = getSigSpace(maxXLEN, flen) #figure out how many words are needed for signature
-        insertTemplate(basename, signatureWords, "testgen_footer_vector2.S")
+        # print footer with test data and signature
+        signatureWords = getSigSpace(xlen, flen)
+        insertTemplate(basename, signatureWords, "testgen_footer.S", test_data=test_data)
 
         # Finish
         f.close()
         # if new file is different from old file, replace old file with new file
-        if os.path.exists(fname):
+        if pathlib.Path(fname).exists():
             if filecmp.cmp(fname, tempfname): # files are the same
                 os.system(f"rm {tempfname}") # remove temp file
             else:

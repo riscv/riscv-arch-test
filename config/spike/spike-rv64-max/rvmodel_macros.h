@@ -14,8 +14,10 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -52,6 +54,7 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
+# Can be empty if no initialization is needed.
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
   uart_init:                ;\
     li _R1, UART_LCR         ; /* Load address of UART LCR */    \

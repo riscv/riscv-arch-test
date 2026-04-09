@@ -29,7 +29,6 @@
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv64i_zicsr_zicboz
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_pmp_on_pte_zicboz_Umode.S"

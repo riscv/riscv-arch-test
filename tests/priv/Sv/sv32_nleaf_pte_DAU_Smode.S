@@ -17,7 +17,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, NORUN]
 # MARCH: rv32i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_nleaf_pte_DAU_Smode.S"

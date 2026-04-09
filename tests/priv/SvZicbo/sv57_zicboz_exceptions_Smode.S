@@ -147,7 +147,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv57, Zicboz, NORUN]
 # MARCH: rv64i_zicsr_zicboz
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv57_zicboz_exceptions_Smode.S"

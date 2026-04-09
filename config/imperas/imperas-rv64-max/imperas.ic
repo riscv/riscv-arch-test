@@ -46,6 +46,31 @@
 --override cpu*/Zksed=T
 --override cpu*/Zksh=T
 
+# Vector extensions
+--override cpu*/EEW_index=0 #(Uns32) (default=0) (default) Override maximum supported index EEW (use ELEN if zero)
+--override cpu*/ELEN=64 #(Uns32) (default=64) (default) Override ELEN
+--override cpu*/SEW_min=8 #(Uns32) (default=8) (default) Override minimum supported SEW
+--override cpu*/VLEN=0x200 #(Uns32) (default=0x200) (default) Override VLEN
+--override cpu*/Zve32f=F #(Boolean) (default=F) (default) Specify that Zve32f is implemented
+--override cpu*/Zve32x=F #(Boolean) (default=F) (default) Specify that Zve32x is implemented
+--override cpu*/Zve64d=F #(Boolean) (default=F) (default) Specify that Zve64d is implemented
+--override cpu*/Zve64f=F #(Boolean) (default=F) (default) Specify that Zve64f is implemented
+--override cpu*/Zve64x=F #(Boolean) (default=F) (default) Specify that Zve64x is implemented
+--override cpu*/Zvfbfmin=T #(Boolean) (default=T) (default) Specify that Zvfbfmin is implemented
+--override cpu*/Zvfbfwma=T #(Boolean) (default=T) (default) Specify that Zvfbfwma is implemented
+--override cpu*/Zvfh=T #(Boolean) (default=T) (default) Specify that Zvfh is implemented
+--override cpu*/Zvfhmin=T #(Boolean) (default=T) (default) Specify that Zvfhfmin is implemented
+--override cpu*/agnostic_mask=F #(Boolean) (default=F) (default) Specify that artifact mask registers holding agnostic bits are present
+--override cpu*/agnostic_ones=F #(Boolean) (default=F) (default) Specify that vector agnostic elements are set to 1
+--override cpu*/align_whole=F #(Boolean) (default=F) (default) Whether whole-register load addresses must be aligned using the encoded EEW
+--override cpu*/mstatus_VS=0 #(Uns32) (default=0) (default) Override default value of mstatus.VS (initial state of vector unit)
+--override cpu*/mstatus_vs_mode=state_update #(Enumeration) (default=state_update) (default) Specify conditions causing update of mstatus.VS to dirty
+--override cpu*/unalignedV=F #(Boolean) (default=F) (default) Specify whether the processor supports unaligned memory accesses for vector instructions
+--override cpu*/vector_version=1.0-ratified #(Enumeration) (default=1.0-ratified) (default) Specify required Vector Architecture version
+--override cpu*/vill_trap=F #(Boolean) (default=F) (default) Whether illegal vtype values cause trap instead of setting vtype.vill
+--override cpu*/vstart0_ld_st=F #(Boolean) (default=F) (default) Whether CSR vstart must be 0 for load/store vector instructions
+--override cpu*/vstart0_non_ld_st=F #(Boolean) (default=F) (default) Whether CSR vstart must be 0 for non-load/store vector instructions
+
 # Miscellaneous extensions
 --override cpu*/Zicond=T
 --override cpu*/Zfh=T

@@ -25,6 +25,12 @@ WORKDIR     ?= work
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
+# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
+empty :=
+space := $(empty) $(empty)
+override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
+override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
+
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.

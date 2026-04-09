@@ -24,7 +24,6 @@ class TestConfig:
         flen: Floating-point register width (32, 64, or 128 bits)
         testsuite: Name of the testsuite (e.g., "I", "M", "ZcbM", "MisalignD", "ExceptionsSm")
         E_ext: Whether to use RV32E/RV64E (16 registers instead of 32)
-        config_dependent: Whether this test is config dependent
         required_extensions: List of RISC-V extensions required for the test.
                              Used for generating the march string and header defines.
                              If None, extensions are parsed from testsuite name.
@@ -37,7 +36,6 @@ class TestConfig:
     flen: int
     testsuite: str
     E_ext: bool = False
-    config_dependent: bool = False
     required_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None

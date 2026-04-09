@@ -66,3 +66,6 @@
 `define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64

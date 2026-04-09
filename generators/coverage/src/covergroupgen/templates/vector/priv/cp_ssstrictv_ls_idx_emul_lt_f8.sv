@@ -35,6 +35,7 @@
         `endif
 
         // Index EEW=16 (width=101): EMUL = (16/SEW)*LMUL
+        `ifdef MAXINDEXEEW_GE16
         `ifdef LMULf8_SUPPORTED
         `ifdef SEW32_SUPPORTED
         bins eew16_sew32_lmulf8 = {3'b101, 2'b10, 3'b101};  // (16/32)*(1/8) = 1/16
@@ -48,11 +49,14 @@
         bins eew16_sew64_lmulf4 = {3'b110, 2'b11, 3'b101};  // (16/64)*(1/4) = 1/16
         `endif
         `endif
+        `endif
 
         // Index EEW=32 (width=110): EMUL = (32/SEW)*LMUL
+        `ifdef MAXINDEXEEW_GE32
         `ifdef LMULf8_SUPPORTED
         `ifdef SEW64_SUPPORTED
         bins eew32_sew64_lmulf8 = {3'b101, 2'b11, 3'b110};  // (32/64)*(1/8) = 1/16
+        `endif
         `endif
         `endif
     }

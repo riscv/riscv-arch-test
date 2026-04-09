@@ -8,7 +8,6 @@
 # REQUIRED_EXTENSIONS: @EXTENSION_LIST@
 # @PARAMS@
 # MARCH: @MARCH@
-# CONFIG_DEPENDENT: @CONFIG_DEPENDENT@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -20,8 +19,6 @@
 #define rvtest_strap_routine
 #define rvtest_dtrap_routine
 #define RVTEST_PRIV_TEST
-
-#include "test_macros_vector.h"
 
 #include "riscv_arch_test.h"
 

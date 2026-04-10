@@ -13,7 +13,7 @@ implemented_extensions:
   - { name: D, version: "= 2.2.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
-  - { name: Zihpm, version: "= 2.0" }
+  # - { name: Zihpm, version: "= 2.0" } # TODO: Disabled because hpmcounter CSRs are not accessible without U mode. See https://github.com/riscv/sail-riscv/pull/1649.
   # Smhpm is a fake extension for UDB purposes, due to be deleted soon.  Remove when possible.  DH 3/22/26
   - { name: Smhpm, version: "= 1.12" }
   - { name: Zicsr, version: "= 2.0" }
@@ -56,10 +56,8 @@ params:
   IMP_ID_VALUE: 0x0
   VENDOR_ID_BANK: 0x0
   VENDOR_ID_OFFSET: 0x0
-  MISALIGNED_LDST: true
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true

@@ -280,17 +280,26 @@ CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
-`$WORKDIR` defaults to `work` inside of the `riscv-arch-test` directory, but can be overridden by specifying `WORKDIR` when calling `make`:
+The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
 
-```bash
-WORKDIR=</path/to/workdir> CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
-```
+| Variable             | Default                                         | Description                                                                                                                                                      |
+| -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_FILES`       | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                              |
+| `WORKDIR`            | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                        |
+| `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                      |
+| `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                             |
+| `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
+| `VERBOSE`            | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                      |
+| `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                  |
+| `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                         |
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
-By default, the framework generates tests for all extensions listed in your UDB config file. To create tests for only a subset of the extensions that your DUT supports, set `EXTENSIONS` or `EXCLUDE_EXTENSIONS` when running `make`.
+> [!NOTE]
+>
+> The default `EXCLUDE_EXTENSIONS` list excludes several privileged extensions that are still being stabilized or have known issues with the Sail reference model. See [Makefile](./Makefile) for the current list and reasons for each excluded extension.
 
-Note that the ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
+The ACT framework first compiles signature-generating versions of the tests (with a .sig.elf suffix) in the `$WORKDIR/<config_name>/build` or `$WORKDIR/common/build` directory, then simulates these tests on the RISC-V Sail reference model and saves the signature into a `.sig` file. It then recompiles the tests with the correct results included to enable self-checking, placing the executable in the elfs directory mentioned above. The build directory contents are only of interest when troubleshooting during test development. See [LINK COMING SOON] for details.
 
 > [!NOTE]
 >
@@ -323,6 +332,15 @@ A common source of errors is configuration mismatches, so ensure that:
 - The RISC-V Sail config file matches your UDB configuration and DUT
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
+
+#### Debug Flag
+
+If the standard debug information is insufficient, use the `DEBUG=True` flag to generate additional artifacts alongside each test that aid in debugging:
+
+- **Sail trace files** (`.sig.log`) — Instruction-by-instruction trace from the Sail reference model. Useful for understanding the expected execution flow.
+- **Trap report** (`.sig.trap_report`) — Human-readable summary of every trap recorded in the trap signature region. Shows cause, mode, xepc, xtval, and status bits for each trap.
+
+These files are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation and is mutually exclusive with `FAST`. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
 
 ## Contributing
 

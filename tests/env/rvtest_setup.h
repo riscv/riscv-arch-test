@@ -256,28 +256,29 @@
 /*******************************************************************************************/
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
-  // Initialized with distinct random values so tests can detect unintended zeroing or aliasing.
-  // 264 bytes = 66 words (needed for atomic reservation tests with offsets up to 256 bytes)
+  // Initialized with distinct values so tests can detect unintended zeroing or aliasing,
+  // while remaining obviously recognizable as uninitialized scratch defaults.
+  // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
   .data
-  .align 4
+  .align 8
   scratch:
-    .word 0xEA1FAD7A, 0x3B8596BC, 0x969E25D7, 0x79DE9C3D
-    .word 0xB1028C3C, 0xF3533081, 0x4AD3D2E6, 0xEBBE2441
-    .word 0xA7415E5F, 0x493DCCF4, 0xA4AC0779, 0xAA8D5C7B
-    .word 0xD9A36422, 0x9F959A21, 0xE61C3C67, 0x72F54A19
-    .word 0x7B89F616, 0x92096FF9, 0x968EE389, 0x8BC43752
-    .word 0x345C7077, 0xB2165179, 0x8B2D77AB, 0xC6D24BC6
-    .word 0x21CCFA99, 0xAADC6805, 0x64453B43, 0x7EF5D8C8
-    .word 0x133D197A, 0xF0EE04D0, 0x000A3AA8, 0xB1BF562C
-    .word 0x0C527053, 0xAABEB650, 0xB57DA75B, 0x71A9291F
-    .word 0xE6EDDF90, 0x9D30B74F, 0xBBF4C2A3, 0x8CE1F116
-    .word 0x9AB0C9DA, 0x4FA28D7E, 0xB75D9C8F, 0xD1BE6325
-    .word 0xD5287096, 0x34BB3C9C, 0x81B31ABE, 0xBF9D5C82
-    .word 0xE87697FB, 0xA584761D, 0xF8CB8D75, 0x7E3B0026
-    .word 0xCB06A563, 0x888E76A0, 0xF1BEC1CB, 0xBA8149FE
-    .word 0x44E7D347, 0xA4379EEC, 0x0D473C8B, 0x4C01A4A1
-    .word 0x4AE2AC01, 0xD08C3EBC, 0xC56EBC94, 0x712544F2
-    .word 0x3D1D67AA, 0xC183B120
+    .dword 0xDEAD0001FFFEBEEF, 0xDEAD0002FFFDBEEF
+    .dword 0xDEAD0003FFFCBEEF, 0xDEAD0004FFFBBEEF
+    .dword 0xDEAD0005FFFABEEF, 0xDEAD0006FFF9BEEF
+    .dword 0xDEAD0007FFF8BEEF, 0xDEAD0008FFF7BEEF
+    .dword 0xDEAD0009FFF6BEEF, 0xDEAD000AFFF5BEEF
+    .dword 0xDEAD000BFFF4BEEF, 0xDEAD000CFFF3BEEF
+    .dword 0xDEAD000DFFF2BEEF, 0xDEAD000EFFF1BEEF
+    .dword 0xDEAD000FFFF0BEEF, 0xDEAD0010FFEFBEEF
+    .dword 0xDEAD0011FFEEBEEF, 0xDEAD0012FFEDBEEF
+    .dword 0xDEAD0013FFECBEEF, 0xDEAD0014FFEBBEEF
+    .dword 0xDEAD0015FFEABEEF, 0xDEAD0016FFE9BEEF
+    .dword 0xDEAD0017FFE8BEEF, 0xDEAD0018FFE7BEEF
+    .dword 0xDEAD0019FFE6BEEF, 0xDEAD001AFFE5BEEF
+    .dword 0xDEAD001BFFE4BEEF, 0xDEAD001CFFE3BEEF
+    .dword 0xDEAD001DFFE2BEEF, 0xDEAD001EFFE1BEEF
+    .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
+    .dword 0xDEAD0021FFDEBEEF
 
   .align 4
 

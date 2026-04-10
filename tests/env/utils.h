@@ -170,7 +170,8 @@
 // This macro is used to load floating point test values from the .data section.
 //  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
 //  _DEST_REG - Floating point destination register to load the value into
-// The default version loads the full TEST_FLEN width. Variants for smaller widths use an _SIZE suffix.
+// The default version loads the full CONFIG_FLEN (the actual size of the floating-point registers on the DUT).
+// Variants for fixed widths use an _SIZE suffix.
 #define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
   FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE

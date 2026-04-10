@@ -242,8 +242,10 @@
         sw x6, 260(DEFAULT_TEMP_REG)      # record failing_reg
 
         # Load bad FP value from scratch memory (written by FSREG in the sigupd macro)
+        # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
+        # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
         la x6, scratch
-        LREG x7, 0(x6)
+        FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
     #if CONFIG_FLEN > XLEN
         LREG x7, REGWIDTH(x6)

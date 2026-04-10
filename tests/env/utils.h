@@ -116,6 +116,18 @@
   #endif
 #endif
 
+// Integer-width load matching FSREG's store width, zero-extended to XLEN.
+// Used to read back an FP value from scratch memory after FSREG stored it.
+// When CONFIG_FLEN < XLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
+// would read 8), using LREG would pull in whatever bytes happened to sit
+// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
+// the loaded value is deterministic regardless of prior scratch contents.
+#if XLEN == 64 && CONFIG_FLEN == 32
+  #define FP_LREG lwu
+#else
+  #define FP_LREG LREG
+#endif
+
 // Default VDSEW to 0 for non-vector tests
 #ifndef VDSEW
   #define VDSEW 0

@@ -118,9 +118,9 @@
 //
 // On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
 // store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
-// 4 bytes of unused padding — harmless because both the DUT and Sail build from
-// the same source and produce identical signatures, and the .fill reservation
-// driven by SIGUPD_COUNT is already an upper bound.
+// 4 bytes of unused padding — harmless because the .fill reservation driven by
+// SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
+// the CONFIG_FLEN bits actually written by FSREG are read back.
 //
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
@@ -195,7 +195,7 @@
       .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
-      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
       beq _TEMP_REG, _LINK_REG, 1f                           ;\
       jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\
@@ -211,7 +211,7 @@
       .option norvc                                          ;\
       LA(_LINK_REG, scratch)                                 ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
-      LREG _LINK_REG, 0(_LINK_REG)                           ;\
+      FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
       beq x0, x0, 1f                                         ;\
       jal _LINK_REG, failedtest_fp_##_LINK_REG##_##_TEMP_REG ;\

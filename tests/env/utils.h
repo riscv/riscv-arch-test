@@ -44,21 +44,75 @@
 #endif
 
 # FLEN specific macros
-#define FREGWIDTH (FLEN>>3)      // in units of #bytes
+# ============================================================================
+# Two distinct FLEN values
+# ----------------------------------------------------------------------------
+# TEST_FLEN  — the FLEN this test file was *generated* for. Supplied by the
+#              build via -DTEST_FLEN. It fixes the width of the .data section
+#              entries and of every signature slot (SIG_STRIDE). It must not
+#              vary between configs: the generated assembly has literal byte
+#              offsets and the Sail-produced signature layout baked in.
+#
+# CONFIG_FLEN — the effective FP width for store/load instruction selection.
+#               It is the minimum of what the DUT actually supports (derived
+#               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED / ZFH*_SUPPORTED)
+#               and what the test's march allows the assembler to emit
+#               (TEST_FLEN). It decides which FP store instruction (fsw/fsd/fsq)
+#               we use in the signature macros and whether a single FP value
+#               needs to be sliced into two integer loads (the
+#               "CONFIG_FLEN > XLEN" path in signature.h).
+#
+#               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
+#               only knows instructions up to that width (e.g. an F-only test
+#               with march=rv64if cannot assemble fsd). It must not exceed
+#               the DUT's capability either (e.g. a priv test generated with
+#               D in its march but run on an F-only DUT must not emit fsd).
+#               See issue #1223.
+# ============================================================================
+
+#ifndef TEST_FLEN
+  #error "TEST_FLEN not defined. The build should pass -DTEST_FLEN=<32|64|128>."
+#endif
+
+#define FREGWIDTH (TEST_FLEN>>3)     // data/signature slot width, in bytes
+
+// Derive the DUT's raw FP capability from its rvtest_config.h defines.
+#if defined(Q_SUPPORTED)
+  #define _DUT_FLEN 128
+#elif defined(D_SUPPORTED)
+  #define _DUT_FLEN 64
+#elif defined(F_SUPPORTED) || defined(ZFH_SUPPORTED) || defined(ZFHMIN_SUPPORTED) || defined(ZFBFMIN_SUPPORTED)
+  #define _DUT_FLEN 32
+#else
+  #define _DUT_FLEN 0
+#endif
+
+// CONFIG_FLEN = min(TEST_FLEN, _DUT_FLEN).
+// Capping at TEST_FLEN ensures we never emit an instruction the assembler
+// cannot encode (e.g. fsd when march has only F). Capping at _DUT_FLEN
+// ensures we never emit an instruction the DUT does not support.
+#if _DUT_FLEN < TEST_FLEN
+  #define CONFIG_FLEN _DUT_FLEN
+#else
+  #define CONFIG_FLEN TEST_FLEN
+#endif
 
 #ifdef ZFINX
+  // Zfinx: FP values live in integer registers; use plain integer store/load.
   #define FLREG LREG
   #define FSREG SREG
 #else
-  #if FLEN==32
-    #define FLREG flw
-    #define FSREG fsw
-  #elif FLEN==64
-    #define FLREG fld
-    #define FSREG fsd
-  #elif FLEN==128
+  // Pick the FP store/load based on CONFIG_FLEN — the effective FP width that
+  // both the assembler and DUT can handle.
+  #if CONFIG_FLEN == 128
     #define FLREG flq
     #define FSREG fsq
+  #elif CONFIG_FLEN == 64
+    #define FLREG fld
+    #define FSREG fsd
+  #else   // CONFIG_FLEN == 32 (or 0 — no FP; macros are unused)
+    #define FLREG flw
+    #define FSREG fsw
   #endif
 #endif
 
@@ -68,9 +122,10 @@
 #endif
 #define VDSEWWIDTH (VDSEW>>3)  // in units of #bytes
 
-// Max data size alignment for signature and data region
-// Max of XLEN, FLEN, and SEW
-#if XLEN>FLEN
+// Max data size alignment for signature and data region.
+// Keyed on TEST_FLEN because the generated .data section and the signature
+// reservation were laid out at testgen time with that width.
+#if XLEN>TEST_FLEN
   #define _SIG_STRIDE_1 REGWIDTH
 #else
   #define _SIG_STRIDE_1 FREGWIDTH
@@ -115,7 +170,7 @@
 // This macro is used to load floating point test values from the .data section.
 //  _DATA_PTR - Pointer register to current position in test data section (will be incremented)
 //  _DEST_REG - Floating point destination register to load the value into
-// The default version loads the full FLEN width. Variants for smaller widths use an _SIZE suffix.
+// The default version loads the full TEST_FLEN width. Variants for smaller widths use an _SIZE suffix.
 #define RVTEST_TESTDATA_LOAD_FLOAT(_DATA_PTR, _DEST_REG)  \
   FLREG _DEST_REG, 0(_DATA_PTR)                          ;\
   addi _DATA_PTR, _DATA_PTR, SIG_STRIDE

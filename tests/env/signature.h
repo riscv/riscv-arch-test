@@ -111,10 +111,17 @@
 // RVTEST_SIGUPD_F(sigptr, linkreg, tempreg, ftempreg, sigreg, instptr, strptr)
 // Checks both a floating point result register and fflags against the signature.
 // Compares the float value in sigreg with the value in memory at 0(sigptr),
-// then uses RVTEST_SIGUPD_FFLAGS to check fflags. When FLEN > XLEN, the float
-// value requires 2 signature entries (low and high words), plus 1 for fflags
-// (total 3*SIG_STRIDE). When FLEN == XLEN, uses 1 entry for the float value
-// plus 1 for fflags (total 2*SIG_STRIDE).
+// then uses RVTEST_SIGUPD_FFLAGS to check fflags. When CONFIG_FLEN > XLEN, the
+// float value requires 2 signature entries (low and high words), plus 1 for
+// fflags (total 3*SIG_STRIDE). When CONFIG_FLEN <= XLEN, uses 1 entry for the
+// float value plus 1 for fflags (total 2*SIG_STRIDE).
+//
+// On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
+// store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
+// 4 bytes of unused padding — harmless because both the DUT and Sail build from
+// the same source and produce identical signatures, and the .fill reservation
+// driven by SIGUPD_COUNT is already an upper bound.
+//
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
@@ -122,13 +129,14 @@
 //  _FR - Floating point register containing value to store/compare
 //  _INST_PTR - label on instruction being tested (for PC reporting)
 //  _STR_PTR - label to string describing the test
+//
 // Floating point values are stored to memory and then loaded back into integer registers
 // for comparison, to avoid issues with NaN that arise from using feq. There is no way to
 // directly transfer a floating point value to an integer register without Zfa when FLEN > XLEN.
-#if FLEN == 128 && XLEN == 32
+#if CONFIG_FLEN == 128 && XLEN == 32
   #error "Q on RV32 is not supported yet."
 #endif
-#if FLEN > XLEN
+#if CONFIG_FLEN > XLEN
   #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\

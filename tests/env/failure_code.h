@@ -245,7 +245,7 @@
         la x6, scratch
         LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
-    #if FLEN > XLEN
+    #if CONFIG_FLEN > XLEN
         LREG x7, REGWIDTH(x6)
         la x8, failing_value_upper
         SREG x7, 0(x8)                    # failing_value upper half
@@ -265,7 +265,7 @@
         # Load full expected FP value from signature
         LREG x7, 0(x6)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
-    #if FLEN > XLEN
+    #if CONFIG_FLEN > XLEN
         LREG x7, SIG_STRIDE(x6)
         la x8, expected_value_upper
         SREG x7, 0(x8)                    # expected_value upper half
@@ -395,13 +395,13 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
-        # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
+    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with FLEN <= XLEN (or FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, failing_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
@@ -422,13 +422,13 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
-        # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
+    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with FLEN <= XLEN (or FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, expected_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
@@ -556,7 +556,7 @@
         ret
 
 
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
     # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper XLEN-bit value
     # a1: lower XLEN-bit value
@@ -628,7 +628,7 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:

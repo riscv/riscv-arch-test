@@ -293,15 +293,15 @@ def gen_coverage_tasks(
     tasks: list[BuildTask] = []
     coverage_reports: list[Path] = []
 
-    # Resolve package resources once for use in commands and dependency tracking
-    with importlib.resources.path("act", "fcov") as fcov_resolved:
-        fcov_path = Path(fcov_resolved).absolute()
-    if coverage_simulator == CoverageSimulator.QUESTA:
-        with importlib.resources.path("act", "riscv-arch-test.do") as script_resolved:
-            sim_script = Path(script_resolved).absolute()
-    else:
-        with importlib.resources.path("act", "riscv-arch-test-vcs.sh") as script_resolved:
-            sim_script = Path(script_resolved).absolute()
+    # Resolve package resources once for use in commands and dependency tracking.
+    # Uses importlib.resources.files() which returns a real filesystem path when the
+    # package is installed from source (the current workflow). If act is ever published
+    # as a zipped wheel, these resources will need to be materialized via as_file() with
+    # a context that spans task execution.
+    act_resources = importlib.resources.files("act")
+    fcov_path = Path(str(act_resources / "fcov")).absolute()
+    script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
+    sim_script = Path(str(act_resources / script_name)).absolute()
 
     # Collect file dependencies for staleness checking.
     # Coverage simulation depends on coverpoints, fcov infrastructure, DUT config headers, and the simulator script.
@@ -322,13 +322,17 @@ def gen_coverage_tasks(
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
 
-        # Write tracelist file
+        # Write tracelist file, but only when its contents actually change so its mtime
+        # reflects real changes. This lets us include it in extra_inputs below without
+        # forcing a coverage rebuild on every run.
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
-        tracelist_file.write_text(
+        tracelist_contents = (
             f"# Tests for coverage group: {coverage_group}\n"
             "# Generated automatically by riscv-arch-test act framework\n"
             + "\n".join(str(trace) for trace in sorted(traces))
         )
+        if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
+            tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
         if coverage_simulator == CoverageSimulator.QUESTA:
@@ -364,7 +368,7 @@ def gen_coverage_tasks(
             BuildTask(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
-                extra_inputs=coverage_inputs,
+                extra_inputs=(*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
             )
         )

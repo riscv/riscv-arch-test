@@ -3,14 +3,14 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-# General utility macros
+// General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define BIT(addr, bit) (((addr)>>(bit))&1)
 #define MASK (((1<<(XLEN-1))-1) + (1<<(XLEN-1))) // XLEN bits of 1s
 #define MASK_XLEN(val)  val&MASK // shortens 64b values to XLEN when XLEN==32
 
-# Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
+// Constants and sign extension macros (TODO: Check which of these are actually needed for ACT 4.0)
 #define WDSZ 32
 #define WDSGN (WDSZ -1)
 #define WDMSK ((1 << WDSZ) -1)
@@ -28,7 +28,7 @@
 #define WDBYTSZ (WDSZ >> 3)  // in units of #bytes
 #define WDBYTMSK (WDBYTSZ-1)
 
-# XLEN specific macros
+// XLEN specific macros
 #define REGWIDTH (XLEN>>3)      // in units of #bytes
 #define ALIGNSZ ((XLEN>>5)+2)   // log2(XLEN): 2,3,4 for XLEN 32,64,128
 
@@ -43,32 +43,32 @@
     #define LREG lq
 #endif
 
-# FLEN specific macros
-# ============================================================================
-# Two distinct FLEN values
-# ----------------------------------------------------------------------------
-# TEST_FLEN  — the FLEN this test file was *generated* for. Supplied by the
-#              build via -DTEST_FLEN. It fixes the width of the .data section
-#              entries and of every signature slot (SIG_STRIDE). It must not
-#              vary between configs: the generated assembly has literal byte
-#              offsets and the Sail-produced signature layout baked in.
-#
-# CONFIG_FLEN — the effective FP width for store/load instruction selection.
-#               It is the minimum of what the DUT actually supports (derived
-#               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED / ZFH*_SUPPORTED)
-#               and what the test's march allows the assembler to emit
-#               (TEST_FLEN). It decides which FP store instruction (fsw/fsd/fsq)
-#               we use in the signature macros and whether a single FP value
-#               needs to be sliced into two integer loads (the
-#               "CONFIG_FLEN > XLEN" path in signature.h).
-#
-#               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
-#               only knows instructions up to that width (e.g. an F-only test
-#               with march=rv64if cannot assemble fsd). It must not exceed
-#               the DUT's capability either (e.g. a priv test generated with
-#               D in its march but run on an F-only DUT must not emit fsd).
-#               See issue #1223.
-# ============================================================================
+// FLEN specific macros
+// ============================================================================
+// Two distinct FLEN values
+// ----------------------------------------------------------------------------
+// TEST_FLEN  — the FLEN this test file was *generated* for. Supplied by the
+//              build via -DTEST_FLEN. It fixes the width of the .data section
+//              entries and of every signature slot (SIG_STRIDE). It must not
+//              vary between configs: the generated assembly has literal byte
+//              offsets and the Sail-produced signature layout baked in.
+//
+// CONFIG_FLEN — the effective FP width for store/load instruction selection.
+//               It is the minimum of what the DUT actually supports (derived
+//               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED / ZFH*_SUPPORTED)
+//               and what the test's march allows the assembler to emit
+//               (TEST_FLEN). It decides which FP store instruction (fsw/fsd/fsq)
+//               we use in the signature macros and whether a single FP value
+//               needs to be sliced into two integer loads (the
+//               "CONFIG_FLEN > XLEN" path in signature.h).
+//
+//               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
+//               only knows instructions up to that width (e.g. an F-only test
+//               with march=rv64if cannot assemble fsd). It must not exceed
+//               the DUT's capability either (e.g. a priv test generated with
+//               D in its march but run on an F-only DUT must not emit fsd).
+//               See issue #1223.
+// ============================================================================
 
 #ifndef TEST_FLEN
   #error "TEST_FLEN not defined. The build should pass -DTEST_FLEN=<32|64|128>."
@@ -333,9 +333,9 @@
   .option pop
 #endif
 
-# Alignment size for LA macro. Must be larger than the longest instruction
-# sequence that the la pseudo-instruction can expand into (to account for the jump hack).
-# On some rv64 targets, this may need to be increased to 6.
+// Alignment size for LA macro. Must be larger than the longest instruction
+// sequence that the la pseudo-instruction can expand into (to account for the jump hack).
+// On some rv64 targets, this may need to be increased to 6.
 #ifndef UNROLLSZ
   #define UNROLLSZ 5
 #endif

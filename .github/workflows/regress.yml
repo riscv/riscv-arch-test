@@ -112,6 +112,10 @@ jobs:
         if: matrix.install_script != ''
         run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
 
+      - name: Run setup script
+        if: matrix.setup_script != ''
+        run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 

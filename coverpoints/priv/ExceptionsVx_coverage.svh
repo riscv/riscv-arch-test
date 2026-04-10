@@ -4664,7 +4664,6 @@ covergroup ExceptionsVx_vrgather_vx_cg with function sample(ins_t ins);
     //// end cp_vstart_gt_vl////////////////////////////////////////////////
 endgroup
 // ---------------------
-`ifdef MAXINDEXEEW_GE16
 covergroup ExceptionsVx_vrgatherei16_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
 //////////////////////////////////////////////////////////////////////////////////
@@ -4700,7 +4699,6 @@ covergroup ExceptionsVx_vrgatherei16_vv_cg with function sample(ins_t ins);
     //// end cp_vstart_gt_vl////////////////////////////////////////////////
 endgroup
 // ---------------------
-`endif
 covergroup ExceptionsVx_vrsub_vi_cg with function sample(ins_t ins);
     option.per_instance = 0;
 //////////////////////////////////////////////////////////////////////////////////
@@ -7868,11 +7866,9 @@ function void exceptionsvx_sample(int hart, int issue, ins_t ins);
         "vrgather.vx"     : begin
             ExceptionsVx_vrgather_vx_cg.sample(ins);
         end
-`ifdef MAXINDEXEEW_GE16
         "vrgatherei16.vv"     : begin
             ExceptionsVx_vrgatherei16_vv_cg.sample(ins);
         end
-`endif
         "vrsub.vi"     : begin
             ExceptionsVx_vrsub_vi_cg.sample(ins);
         end

@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: Indirect CSR
+
+csr_definitions:
+  - reg-name: miselect
+    impl-def: MISELECT_WARL
+    type: Other #TBD

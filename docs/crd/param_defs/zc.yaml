@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create parameters for zc.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Zc Extension
+
+parameter_definitions:
+  - name: INTERRUPTS_ALLOWED_IN_PUSHPOP
+    long-name: INTERRUPTS_ALLOWED_IN_PUSHPOP-TBD
+    impl-def: INTERRUPTS_ALLOWED_IN_PUSHPOP
+    type: boolean
+    description: Can interrupts be taken during the execution of a push/pop instruction?
+
+csr_definitions:
+  - reg-name: jvt
+    field-name: BASE
+    impl-def: JVT_WARL
+    type: ConstMask
+
+  - reg-name: jvt
+    field-name: MODE
+    impl-def: JVT_MODE_WARL
+    type: LegalEnum

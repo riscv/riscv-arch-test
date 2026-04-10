@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create parameters for rnmi.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+
+chapter_name: Smrnmi Extension for Resumable Non-Maskable Interrupts
+
+csr_definitions:
+  - reg-name: mnepc
+    impl-def: MNEPC_WARL
+    type: Other #TBD
+  - reg-name: mncause
+    impl-def: MNCAUSE_WARL
+    type: Other #TBD
+  - reg-name: mnstatus
+    impl-def: MNSTATUS_WARL
+    type: Other #TBD

@@ -1,4 +1,9 @@
-=== IN-SCOPE Parameters
+This section lists the parameters that are IN-SCOPE for the certificate.
+Any parameters omitted from this section are considered OUT-OF-SCOPE.
+
+Please refer to the <<parameter_defs,Parameter Definitions>> appendix for more details about parameters or click on the parameter names in the table below to jump to their definitions.
 
 An implementation MUST abide by the "Allowed Value(s)" of IN-SCOPE parameters to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value defined by the parameter is acceptable.
+There are no restrictions on the values of OUT-OF-SCOPE parameters for certification purposes because the certificate
+doesn't cover the behavior associated with the parameter.

@@ -1,0 +1,533 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create parameters for machine.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+chapter_name: Machine Mode
+
+parameter_definitions:
+  - name: MXLEN
+    long-name: MXLEN-TBD
+    impl-def: MXLEN
+    type: [32, 64]
+    description: Effective XLEN in M-mode
+
+  # Information CSRs
+  - name: MVENDOR_ID_BANK
+    long-name: MVENDOR_ID_BANK-TBD
+    impl-def: VENDOR_ID_BANK
+    type: uint
+    width: 25
+  - name: MVENDOR_ID_OFFSET
+    long-name: MVENDOR_ID_OFFSET-TBD
+    impl-def: VENDOR_ID_OFFSET
+    type: uint
+    width: 7
+  - name: MARCHID
+    long-name: MARCHID-TBD
+    impl-def: ARCH_ID
+    type: uint
+    width: MXLEN
+  - name: MIPMPID
+    long-name: MIPMPID-TBD
+    impl-def: IMP_ID
+    type: uint
+    width: MXLEN
+  - name: MHARTID
+    long-name: MHARTID-TBD
+    impl-def: HART_ID
+    type: uint
+    width: MXLEN
+
+  # mstatus CSR
+  - name: MSTATUS_SBE_ROCOPY
+    long-name: MSTATUS_SBE_ROCOPY-TBD
+    impl-def: MSTATUS_SBE_ROCOPY
+    type: boolean
+    description: Does implementation make `mstatus.SBE` a read-only copy of `mstatus.MBE`?
+  - name: MSTATUS_UBE_ROCOPY
+    long-name: MSTATUS_UBE_ROCOPY-TBD
+    impl-def: MSTATUS_UBE_ROCOPY
+    type: [ROCopyOfMBE, ROCopyOfSBE, Other]
+    description: |
+      Does implementation make `mstatus.UBE` a read-only copy of `mstatus.MBE` or `mstatus.SBE`?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! ROCopyOfMBE ! mstatus.UBE` is a read-only copy of `mstatus.MBE`
+      ! ROCopyOfSBE ! mstatus.UBE` is a read-only copy of `mstatus.SBE`
+      ! Other ! mstatus.UBE` is not a read-only copy of either `mstatus.MBE` or `mstatus.SBE`
+      !===
+  - name: MSTATUS_TW_TIME_LIMIT
+    long-name: MSTATUS_TW_TIME_LIMIT-TBD
+    impl-def: MSTATUS_TW_TIME_LIMIT
+    type: int
+    width: 32
+    description: |
+      If `mstatus.TW`=1 and WFI is executed in any less-privileged mode than M-mode
+      the WFI instruction causes an illegal-instruction exception if MSTATUS_TW_TIME_LIMIT cycles have passed since
+      the WFI instruction began execution.
+  - name: MSTATUS_TW_ALWAYS_ILLEGAL
+    long-name: MSTATUS_TW_ALWAYS_ILLEGAL-TBD
+    impl-def: MSTATUS_TW_ALWAYS_ILLEGAL
+    type: boolean
+    description: |
+      Does the implementation have WFI always raise an illegal-instruction exception in modes less privileged than M when
+      TW=1, even if there are pending globally-disabled interrupts when the instruction is executed?
+  - name: MSTATUS_FS_IMPRECISE
+    long-name: MSTATUS_FS_IMPRECISE-TBD
+    impl-defs: [MSTATUS_FS_IMPRECISE, MSTATUS_FS_NO_DIRTY_TRACK]
+    type: [PreciseDirty, Other]
+    description: |
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! PreciseDirty ! Only set `mstatus.FS`` to Dirty only when floating-point state is changed
+      ! NoDirtyTracking ! Dirtiness isn't tracked so the only valid FS states are Off and Dirty,
+                          and an attempt to set `mstatus.FS` to Initial or Clean causes it to be set to Dirty.
+      ! Other ! Unpredictable behavior
+      !===
+  - name: MSTATUS_FS_NO_CHANGE_DIRTY
+    long-name: MSTATUS_FS_NO_CHANGE_DIRTY-TBD
+    impl-def: MSTATUS_FS_NO_CHANGE_DIRTY
+    type: boolean
+    description: |
+      When an instruction explicitly or implicitly writes a floating-point register or the fcsr
+      but does not alter its contents and FS=Initial or FS=Clean, does the implementation transition
+      `mstatus.FS` to Dirty?
+  - name: MSTATUS_VS_SW_DIRTY_UPDATE
+    long-name: MSTATUS_VS_SW_DIRTY_UPDATE-TBD
+    impl-def: MSTATUS_VS_IMPRECISE
+    type: [DirtyWhenInitOrClean, Other]
+    description: |
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! DirtyWhenInitOrClean ! Implementation sets `mstatus.VS` to Dirty when software attempts to set VS to Initial or Clean
+      ! Other ! Unpredictable behavior
+      !===
+  - name: MSTATUS_VS_NO_CHANGE_DIRTY
+    long-name: MSTATUS_VS_NO_CHANGE_DIRTY-TBD
+    impl-def: MSTATUS_VS_NO_CHANGE_DIRTY
+    type: boolean
+    description: |
+      When an instruction that writes a vector register or vector CSR
+      but does not alter its contents and VS=Initial or VS=Clean, does the implementation transition
+      `mstatus.VS` to Dirty?
+  - name: MTVEC_RDONLY
+    long-name: MTVEC_RDONLY-TBD
+    impl-def: MTVEC_RDONLY
+    type: boolean
+    description: Is the `mtvec` CSR read-only?
+
+  - name: MSIP_UPDATE_MAX_TIME
+    long-name: MSIP_UPDATE_MAX_TIME-TBD
+    impl-def: MSIP_UPDATE_MAX_TIME
+    type: dword
+    description: |
+      Maximum time in cycles for a store to memory-mapped register `msip` to be reflected in `mip.MSIP`.
+
+  # CSR mcycle
+  - name: MCYCLE_SHARED
+    long-name: MCYCLE_SHARED-TBD
+    impl-def: MCYCLE_SHARED
+    type: boolean
+    description: |
+      Is the mcycle CSR shared between harts on the same core, in which case writes to mcycle
+      will be visible to those harts.
+
+  # CSR mepc
+  - name: MEPC_INV_ADDR_CONV
+    long-name: MEPC_INV_ADDR_CONV-TBD
+    impl-def: MEPC_INV_ADDR_CONV
+    type: [NoInvAddrConv, Other]
+    description: |
+      `mepc` can hold all valid virtual addresses but not necessarily
+      all invalid virtual addresses. If an implementation needs to  convert
+      an invalid address into some other value that `mepc` can hold,
+      how is this done?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! NoInvAddrConv ! No conversion of invalid virtual addresses is performed
+      ! Other ! Converts invalid virtual addresses in some unknown way
+      !===
+
+  # CSR mcause
+  - name: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
+    long-name: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI-TBD
+    impl-def: MCAUSE_EXCCODE_MISALIGNED_VS_FAULT_PRI
+    type: [MisalignedAlwaysHigher, MisalignedAlwaysLower, Other]
+    description: |
+      An implementation may treat address-misaligned exceptions with higher or
+      lower priority than page-fault/access-fault exceptions.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! MisalignedAlwaysHigher ! Address-misaligned exceptions have higher priority than page-fault/access-fault exceptions
+      ! MisalignedAlwaysLower ! Address-misaligned exceptions have lower priority than page-fault/access-fault exceptions
+      ! Other ! Sometimes higher and sometimes lower depending on the implementation
+      !===
+
+  # CSR mtval
+  - name: MTVAL_PER_EXC_BEHAVIOR
+    long-name: MTVAL_PER_EXC_BEHAVIOR-TBD
+    impl-def: MTVAL_PER_EXC_BEHAVIOR
+    type: [Informative, Zero, Other]
+    array: [0, 19]
+    description: |
+      Specifies on a per-exception code basis whether `mtval` holds an
+      "informative" value such as the faulting address, sets it to zero, or
+      some other unknown behavior.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! Informative ! Holds an "informative" value such as the faulting address
+      ! Zero ! Sets it to zero
+      ! Other ! Some other unknown behavior
+      !===
+  - name: MTVAL_INV_ADDR_CONV
+    long-name: MTVAL_INV_ADDR_CONV-TBD
+    impl-def: MTVAL_INV_ADDR_CONV
+    type: [NoInvAddrConv, Other]
+    description: |
+      `mtval` can hold all valid virtual addresses but not necessarily
+      all invalid virtual addresses. If an implementation needs to  convert
+      an invalid address into some other value that `mtval` can hold,
+      how is this done?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! NoInvAddrConv ! No conversion of invalid virtual addresses is performed
+      ! Other ! Converts invalid virtual addresses in some unknown way
+      !===
+
+  # CSR mconfigptr
+  - name: MCONFIGPTR_VAL
+    long-name: MCONFIGPTR_VAL-TBD
+    impl-def: MCONFIGPTR_VAL
+    type: boolean
+
+  # CSR menvcfg
+  - name: MENVCFG_FIOM_RDONLY0_OK
+    long-name: MENVCFG_FIOM_RDONLY0_OK-TBD
+    impl-def: MENVCFG_FIOM_RDONLY0_OK
+    type: boolean
+
+  # CSR mtime
+  - name: MTIME_TICK_PERIOD
+    long-name: MTIME_TICK_PERIOD-TBD
+    impl-def: MTIME_TICK_PERIOD
+    type: uint
+    width: 64
+
+  # MRET/SRET instructions and LR/SC atomic behavior
+  - name: MRET_CLR_LR_RESV
+    long-name: MRET_CLR_LR_RESV-TBD
+    impl-def: MRET_CLR_LR_RESV
+    type: boolean
+  - name: SRET_CLR_LR_RESV
+    long-name: SRET_CLR_LR_RESV-TBD
+    impl-def: SRET_CLR_LR_RESV
+    type: boolean
+
+  # WFI instruction
+  - name: WFI_OPT_U_MODE
+    long-name: WFI_OPT_U_MODE-TBD
+    impl-def: WFI_OPT_U_MODE
+    type: boolean
+  - name: WFI_RESUME_REASON
+    long-name: WFI_RESUME_REASON-TBD
+    impl-def: WFI_RESUME_REASON
+    type: boolean
+  - name: MCAUSE_RST_VAL
+    long-name: MCAUSE_RST_VAL-TBD
+    impl-def: MCAUSE_RST_VAL
+    type: uint
+    width: MXLEN
+  - name: PMP_A_L_RST
+    long-name: PMP_A_L_RST-TBD
+    impl-def: PMP_A_L_RST
+    type: boolean
+  - name: MSECCFG_MML_MMWP_RLB_RST
+    long-name: MSECCFG_MML_MMWP_RLB_RST-TBD
+    impl-def: MSECCFG_MML_MMWP_RLB_RST
+    type: boolean
+  - name: MSECCFG_USEED_SSEED_RST
+    long-name: MSECCFG_USEED_SSEED_RST-TBD
+    impl-def: MSECCFG_USEED_SSEED_RST
+    type: boolean
+  - name: MCAUSE_RST_ALIAS_OK
+    long-name: MCAUSE_RST_ALIAS_OK-TBD
+    impl-def: MCAUSE_RST_ALIAS_OK
+    type: boolean
+
+  # PMAs (Physical Memory Attributes)
+  - name: PMA_MM_IFETCH
+    long-name: PMA_MM_IFETCH-TBD
+    impl-def: PMA_MM_IFETCH
+    type: boolean
+  - name: PMA_CACHE_MM_ALL_ATOMICS
+    long-name: PMA_CACHE_MM_ALL_ATOMICS-TBD
+    impl-def: PMA_CACHE_MM_ALL_ATOMICS
+    type: boolean
+  - name: PMA_MAG_OP_LDST
+    long-name: PMA_MAG_OP_LDST-TBD
+    impl-def: PMA_MAG_OP_LDST
+    type: boolean
+  - name: PMA_MAG_EXC
+    long-name: PMA_MAG_EXC-TBD
+    impl-def: PMA_MAG_EXC
+    type: boolean
+  - name: PMA_MO_DYN
+    long-name: PMA_MO_DYN-TBD
+    impl-def: PMA_MO_DYN
+    type: boolean
+  - name: PMA_IDP_IMPLICIT_SZ
+    long-name: PMA_IDP_IMPLICIT_SZ-TBD
+    impl-def: PMA_IDP_IMPLICIT_SZ
+    type: boolean
+
+  # Traps - Mechanism for handling exceptions and interrupts)
+  - name: CRITICAL_ERROR
+    long-name: CRITICAL_ERROR-TBD
+    impl-def: CRITICAL_ERROR
+    type: [ResetHart, ResetPlatform, Other]
+    description: |
+      When a critical error is detected, what does the implementation do?
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! ResetHart ! The implementation resets the current hart
+      ! ResetPlatform ! The implementation resets all the harts in the entire platform
+      ! Other ! The implementation takes some other action
+      !===
+  - name: NMI_MCAUSE_VAL
+    long-name: NMI_MCAUSE_VAL-TBD
+    impl-def: NMI_MCAUSE_VAL
+    type: boolean
+  - name: SXLEN
+    long-name: SXLEN-TBD
+    type: [32, 64]
+    description: Effective XLEN in S-mode
+  - name: UXLEN
+    long-name: UXLEN-TBD
+    type: [32, 64]
+    description: Effective XLEN in U-mode
+  - name: XLEN_REDUCTION_HINT_OP
+    long-name: XLEN_REDUCTION_HINT_OP-TBD
+    impl-def: XLEN_REDUCTION_HINT_OP
+    type: boolean
+  - name: RST_ADDR
+    long-name: RST_ADDR-TBD
+    type: uint
+    width: MXLEN
+    description: Base address of the reset vector.
+  - name: NMI_ADDR
+    long-name: NMI_ADDR-TBD
+    type: uint
+    width: MXLEN
+    description: Base address of the non-maskable interrupt vector.
+
+  # PMP (Physical Memory Protection)
+  - name: PMP_GRANULARITY
+    long-name: PMP_GRANULARITY-TBD
+    impl-def: PMP_GRANULARITY
+    type: uint
+    width: 64
+    description: Minimum PMP region granularity supported by the platform
+  - name: PMP_ENTRY_COUNT
+    long-name: PMP_ENTRY_COUNT-TBD
+    impl-def: PMP_ENTRY_COUNT
+    type: uint
+    width: 64
+    description: PMP supports up to 64 entries with allowed implementation counts and ordering rules
+
+csr_definitions:
+  - reg-name: misa
+    field-name: MXL
+    impl-defs: [MISA_WARL, MISA_CSR_IMPLEMENTED]
+    type: ConstMask
+  - reg-name: misa
+    field-name: EXTENSIONS
+    impl-defs:
+      - MISA_WARL
+      - MISA_EXTENSIONS_WARL
+      - MISA_CSR_IMPLEMENTED
+      - MISA_EXTENSIONS_WRITABLE_BITS
+      - MUTABLE_MISA_V
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: MPP
+    impl-def: MSTATUS_XPP_WARL
+    type: LegalEnum
+  - reg-name: mstatus
+    field-name: SPP
+    impl-def: MSTATUS_XPP_WARL
+    type: LegalEnum
+  - reg-name: mstatus
+    field-name: MDT
+    impl-def: MSTATUS_MDT_WARL
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: SXL
+    impl-defs: [MSTATUS_SXL_WARL, MSTATUS_SXL_RDONLY_MXLEN64]
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: UXL
+    impl-def: MSTATUS_UXL_WARL
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: MBE
+    impl-defs: [MSTATUS_MBE_WARL, MSTATUSH_MBE_WARL]
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: SBE
+    impl-defs: [MSTATUS_SBE_WARL, MSTATUSH_SBE_WARL]
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: UBE
+    impl-defs: [MSTATUS_UBE_WARL, MSTATUSH_UBE_WARL]
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: TVM
+    type: ConstMask
+    impl-def: MSTATUS_TVM_WARL
+  - reg-name: mstatus
+    field-name: TW
+    impl-def: MSTATUS_TW_WARL
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: TSR
+    impl-def: MSTATUS_TSR_WARL
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: FS
+    impl-defs: [MSTATUS_FS_WARL, MSTATUS_FS_RDONLY0_S_NO_F]
+    type: ConstMask
+  - reg-name: mstatus
+    field-name: VS
+    impl-defs: [MSTATUS_VS_WARL, MSTATUS_VS_RDONLY0_S_NO_V]
+    type: ConstMask
+
+  #
+  # Various CSRs
+  #
+
+  - reg-name: mtvec
+    field-name: MODE
+    impl-def: MTVEC_WARL
+    type: LegalEnum
+  - reg-name: mtvec
+    field-name: BASE
+    impl-defs: [MTVEC_WARL, MTVEC_BASE_ALIGN_FUNC_MODE]
+    type: ConstMask
+    func-of-field-name: MODE # The mtvec.BASE alignment can be a function of mtvec.MODE.
+  - reg-name: mip
+    impl-defs: [MIP_WARL, MIP_BITS_WR_OR_RDONLY]
+    type: ConstMask
+  - reg-name: mie
+    impl-def: MIE_WARL
+    type: ConstMask
+  - reg-name: medeleg
+    impl-def: MEDELEG_WARL
+    type: ConstMask
+  - reg-name: mideleg
+    impl-defs: [MIDELEG_WARL, MIDELEG_RD1_LOWER_LEVEL]
+    type: ConstMask
+  - reg-name: mhpmcounter
+    impl-defs: [MHPMCOUNTER_WARL, MHPMEVENT_N_RDONLY0]
+    type: ConstMask
+  - reg-name: mhpmevent
+    impl-defs: [MHPMEVENT_WARL, MHPMEVENT_N_RDONLY0]
+    type: ConstMask
+  - reg-name: mcounteren
+    impl-defs:
+      - MCOUNTEREN_FLDS_WARL
+      - MCOUNTEREN_CY_RDONLY0
+      - MCOUNTEREN_TM_RDONLY0
+      - MCOUNTEREN_IR_RDONLY0
+      - MCOUNTEREN_HPM_N_RDONLY0
+    type: ConstMask
+  - reg-name: mcountinhibit
+    impl-def: MCOUNTINHIBIT_WARL
+    type: ConstMask
+  - reg-name: mepc
+    impl-def: MEPC_WARL
+    type: ConstMask
+
+  - reg-name: mcause
+    field-name: EXCCODE
+    impl-def: MCAUSE_EXCCODE_WLRL
+    type: LegalEnum
+    func-of-field-name: INTR
+
+  - reg-name: mtval
+    impl-defs: [MTVAL_WARL, MTVAL_RDONLY0]
+    type: ConstMask
+
+  - reg-name: menvcfg
+    field-name: CBIE
+    impl-def: MENVCFG_CBIE_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
+  - reg-name: menvcfg
+    field-name: PMM
+    impl-def: MENVCFG_PMM_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
+  - reg-name: mseccfg
+    field-name: RLB
+    impl-def: MSECCFG_RLB_WARL
+    type: ConstMask
+
+  - reg-name: mseccfg
+    field-name: MMWP
+    impl-def: MSECCFG_MMWP_WARL
+    type: ConstMask
+
+  - reg-name: mseccfg
+    field-name: MML
+    impl-def: MSECCFG_MML_WARL
+    type: ConstMask
+
+  - reg-name: mseccfg
+    field-name: PMM
+    impl-def: MSECCFG_PMM_WARL
+    type: LegalEnum
+    description: |
+      If list of legal write values is empty, then this field is read-only zero.
+
+  - reg-name: pmpcfgN
+    field-name: pmpMcfg
+    impl-def: PMPCFG_WARL
+    type: Other
+    description: |
+      There are up to 64 PMP entries (M=0 to 63) each with an 8-bit WARL field.
+      RV32 has 4 pmpcfg fields per CSR (N=0 to 15) and RV64 has 8 pmpcfg fields per CSR (N=0 to 15, even values).
+      The WARL behavior of all fields is the same.
+
+  - reg-name: pmpaddrN
+    impl-def: PMPADDR_WARL
+    type: ConstMask
+    description: There are up to 64 PMP address registers (N=0 to 63) with the same WARL behavior.

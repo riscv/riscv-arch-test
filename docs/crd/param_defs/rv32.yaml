@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+# Used to create parameters for rv32.adoc file.
+# Tags refer to anchors in any adoc file for any ISA manual.
+chapter_name: RV32I Base ISA
+
+parameter_definitions:
+  - name: MISALIGNED_LDST_HW_SUPPORT
+    long-name: MISALIGNED_LDST_HW_SUPPORT-TBD
+    impl-def: MISALIGNED_LDST_HW_SUPPORT
+    type: boolean
+    description: |
+      Hardware support for misaligned integer and floating-point load/store instructions.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! False ! No hardware support for misaligned load/store instructions
+      ! True ! Misaligned load/store instructions are supported in hardware (potentially with restrictions expressed by other parameters).
+      !===
+  - name: MISALIGNED_LDST_EXC_TYPE
+    long-name: MISALIGNED_LDST_EXC_TYPE-TBD
+    impl-def: MISALIGNED_LDST_EXC_TYPE
+    type: [AlwaysMisalignedExc, AlwaysAccessFaultExc, AccessFaultExcDontEmulate, Other]
+    note: Need specific conditions for when access shouldn't be emulated for AccessFaultExcDontEmulate.
+    description: |
+      Type of exception raised by a misaligned integer/float load/store instruction when an implementation
+      raises an exception due to misalignment.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysMisalignedExc ! Implementation always raises a misaligned exception
+      ! AlwaysAccessFaultExc ! Implementation always raises an access fault exception
+      ! AccessFaultExcDontEmulate ! For a memory access that would otherwise be able to complete except for the misalignment,
+          an access-fault exception is raised instead of an address-misaligned exception if the misaligned
+          access should not be emulated by software, e.g., if accesses to the memory region have side effects.
+      ! Other ! Sometimes implementation raises a misaligned exception and sometimes raises an access fault exception
+      !===

@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: Counters
+
+parameter_definitions:
+  - name: HPM_READ_BEHAVIOR
+    long-name: Performance Counter Read Behavior
+    impl-defs: [HPM_PLATFORM_SPECIFIC_IMPL, HPM_UNIMPLEMENTED_COUNTER_ACCESS]
+    type: [AlwaysValue, AlwaysIllegalInstExc, Other]
+    array: [3, 31]
+    description: |
+      Defines the behavior when a particular HPM counter is read.
+
+      [%autowidth]
+      !===
+      ! Value ! Definition
+
+      ! AlwaysValue ! Implementation always returns some value when read
+      ! AlwaysIllegalInstExc ! Implementation always raises an illegal instruction exception when read
+      ! Other ! Sometimes implementation returns a value or raises an illegal instruction exception
+      !===
+
+  - name: TIME_CSR_HW_SUPPORT
+    long-name: Time CSR Hardware Support
+    impl-def: EE_IMPL_FLEX
+    type: boolean
+    description: |
+      Implementation supports reading of all unprivileged time-related CSRs without triggering an exception.
+      For RV32I the `time` and `timeh` CSRs are the unprivileged time-related CSRs.
+      For RV64I the `time` CSR is the only unprivileged time-related CSR.

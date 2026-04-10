@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=../../docs-resources/schemas/param-defs-schema.json
+
+$schema: "../../docs-resources/schemas/param-defs-schema.json#"
+
+chapter_name: State Enable Extension
+
+csr_definitions:
+  - reg-names: [mstateen0, mstateen1, mstateen2, mstateen3]
+    impl-def: STATEEN_WARL_ACCESS
+    type: ConstMask
+
+  - reg-names: [sstateen0, sstateen1, sstateen2, sstateen3]
+    impl-def: STATEEN_WARL_ACCESS
+    type: ConstMask
+
+  - reg-names: [hstateen0, hstateen1, hstateen2, hstateen3]
+    impl-def: STATEEN_WARL_ACCESS
+    type: ConstMask

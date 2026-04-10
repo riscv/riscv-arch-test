@@ -152,7 +152,7 @@ vector-tests: covergroupgen vector-testgen vector-testgen-priv
 
 .PHONY: clean-tests
 clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E)
+	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E) $(PRIVDIR)/ExceptionsVx $(PRIVDIR)/ExceptionsVls
 	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
 	rm -rf $(STAMP_DIR)
 

@@ -7,8 +7,13 @@
         bins valid = {1'b0};
     }
 
-    // Main condition: instruction trapped
-    trap_occurred: coverpoint ins.trap {
+    // Main condition: instruction trapped (load/store access or page fault detected via mcause)
+    trap_occurred: coverpoint (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 5 |   // load access fault
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 7 |   // store access fault
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 13 |  // load page fault
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "int") == 15    // store page fault
+    ) {
         bins trapped = {1'b1};
     }
 

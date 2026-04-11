@@ -10,7 +10,7 @@ description = "RISC-V Architectural Certification Test Generator"
 # readme = "README.md"
 authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
 requires-python = ">=3.12"
-dependencies = ["typer>=0.20.0", "rich>=13.0.0"]
+dependencies = ["typer>=0.23.1", "rich>=14.3.4"]
 
 [project.scripts]
 testgen = "testgen.cli:main"

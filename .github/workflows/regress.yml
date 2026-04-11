@@ -21,8 +21,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set up mise
-        uses: jdx/mise-action@v2
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Ensure pre-commit checks pass
         run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
@@ -87,26 +87,11 @@ jobs:
         if: matrix.apt_packages != ''
         run: |
           sudo apt-get update
-          sudo apt-get install -y device-tree-compiler \
-                                  libboost-regex-dev \
-                                  libboost-system-dev
+          sudo apt-get install -y ${{ matrix.apt_packages }}
 
-      - name: Set up mise
-        uses: jdx/mise-action@v2
-
-      - name: Install sail-riscv model
-        run: |
-          sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
-          | sudo tar xvz --directory=/usr/local --strip-components=1
-
-      - name: Get Latest Spike Commit
-        run: |
-          SPIKE_HASH=$(git ls-remote https://github.com/riscv/riscv-isa-sim.git HEAD | awk '{ print $1}')
-          echo "SPIKE_HASH=$SPIKE_HASH" >> "$GITHUB_ENV"
-
-      - name: Restore cached Spike
-        id: cache-spike-restore
+      - name: Restore cached simulator
+        if: matrix.cache_key != ''
+        id: cache-restore
         uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}

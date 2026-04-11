@@ -3,46 +3,31 @@
 #
 # Includes:
 #   - riscv-gnu-toolchain  (GCC 15 / Binutils 2.44, built from source, statically linked)
-#   - uv                   (Python project / venv manager)
+#   - mise                 (tool manager; installs uv/Python and Ruby automatically)
 #   - sail-riscv           (RISC-V reference model)
-#   - podman               (required by ACT4 for riscv-unified-db)
 #
 # Usage:
-#   docker build -t riscv-act4 .                                    # Native
-#   docker build --platform linux/amd64,linux/arm64 -t riscv-act4 . # Cross-compilation
-#   docker run -it --rm --privileged -v .:/mnt riscv-act4
+#   docker build -t riscv-act4 .
+#   docker run -it --rm -v .:/mnt riscv-act4
+#   Or if your user does not have ID 1000:
+#   docker run -it --rm -u $(id -u):$(id -g) -v .:/mnt riscv-act4
 #
 #   Inside the container the repo root is at /mnt; run:
 #     CONFIG_FILES=config/cores/<vendor>/<dut>/test_config.yaml make
-#
-#   Output files will be owned by root; fix ownership after building:
-#     sudo chown -R $(id -u):$(id -g) work/
-#
-# Overridable build args (apply to all stages):
-#   --build-arg RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-#   --build-arg SAIL_PREFIX=/opt/sail
-#   --build-arg SAIL_VERSION=0.10
 
 # Global ARGs - declared before any FROM so they are overridable across all stages.
-# Each stage that uses them must re-declare them with a bare ARG (no default) to bring them into scope.
+# Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
 ARG SAIL_PREFIX=/opt/sail
 ARG SAIL_VERSION=0.10
 
 # Stage 1: build riscv-gnu-toolchain
 #
-# Always runs on the build machine ($BUILDPLATFORM) for speed.
-# When BUILDARCH != TARGETARCH we install a build -> target cross-compiler and
-# pass --host to configure so autotools compiles the toolchain executables
-# (gcc, ld, objdump, …) for the target architecture. LDFLAGS=-static ensures
-# no shared-lib dependencies survive into the final image, making the binaries
-# safe to COPY across architectures.
-FROM --platform=$BUILDPLATFORM ubuntu:24.04 AS toolchain-builder
+# LDFLAGS=-static ensures no shared-lib dependencies survive into the final image.
+FROM ubuntu:24.04 AS toolchain-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
-ARG BUILDARCH
-ARG TARGETARCH
 
 ENV RISCV_TOOLCHAIN_PREFIX="${RISCV_TOOLCHAIN_PREFIX}"
 
@@ -75,32 +60,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     texinfo \
     zlib1g-dev
 
-# Install the build -> target cross-compiler when cross-compiling.
-# We only need to cover the two directions: amd64↔arm64.
-RUN if [ "${BUILDARCH}" != "${TARGETARCH}" ]; then \
-      case "${TARGETARCH}" in \
-        arm64) apt-get install -y --no-install-recommends \
-                 gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
-                 libc6-dev-arm64-cross ;; \
-        amd64) apt-get install -y --no-install-recommends \
-                 gcc-x86-64-linux-gnu g++-x86-64-linux-gnu \
-                 libc6-dev-amd64-cross ;; \
-        *) echo "Unsupported TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
-      esac \
-    fi \
- && rm -rf /var/lib/apt/lists/*
-
 RUN git clone --depth 1 https://github.com/riscv/riscv-gnu-toolchain /tmp/riscv-gnu-toolchain \
  && cd /tmp/riscv-gnu-toolchain \
  && sed -i 's/c,c++/c/g' Makefile.in \
  && sed -i 's/c,c++,fortran/c/g' Makefile.in \
- && if [ "${BUILDARCH}" != "${TARGETARCH}" ]; then \
-      case "${TARGETARCH}" in \
-        arm64) HOST_TRIPLE="aarch64-linux-gnu" ;; \
-        amd64) HOST_TRIPLE="x86_64-linux-gnu"  ;; \
-      esac; \
-      CROSS_FLAGS="--host=${HOST_TRIPLE} CC=${HOST_TRIPLE}-gcc CXX=${HOST_TRIPLE}-g++"; \
-    fi \
  && ./configure \
         --prefix="${RISCV_TOOLCHAIN_PREFIX}" \
         --disable-gdb \
@@ -160,19 +123,53 @@ RUN SAIL_OS="$(uname -s)" \
       "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${SAIL_OS}-${SAIL_ARCH}.tar.gz" \
     | tar xz --directory="${SAIL_PREFIX}" --strip-components=1
 
-# Stage 3: fetch uv binary
+# Stage 3: install mise, then use it to install uv (Python) and Ruby, and pre-install the riscv-unified-db Bundler gem.
 #
-# The install script pulls a binary into ~/.local/bin
-FROM ubuntu:24.04 AS uv-fetcher
+# mise reads .mise.toml from the repo to pin exact tool versions.
+# We pre-warm the gem cache here so the first `make` inside the container doesn't need network access for Ruby deps.
+#
+# mise installs everything under MISE_DATA_DIR (/opt/mise) so it can be cleanly COPY'd into the final image.
+FROM ubuntu:24.04 AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+# mise needs curl + ca-certificates to download tools.
+# The remaining packages are required by ruby-build to compile Ruby from source (mise uses ruby-build under the hood and
+# does not use the distro Ruby package).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    build-essential \
+    autoconf \
+    libffi-dev \
+    libgdbm-dev \
+    libncurses-dev \
+    libreadline-dev \
+    libssl-dev \
+    libyaml-dev \
+    zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV MISE_DATA_DIR=/opt/mise
+ENV MISE_CONFIG_DIR=/opt/mise/config
+ENV MISE_CACHE_DIR=/opt/mise/cache
+ENV MISE_YES=1
+ENV PATH="/opt/mise/shims:/opt/mise/bin:${PATH}"
+
+# Install mise itself into /opt/mise/bin
+RUN curl -fsSL https://mise.jdx.dev/install.sh | MISE_INSTALL_PATH=/opt/mise/bin/mise sh
+
+# Copy only the files mise and bundler need from the build context.
+# .mise.toml pins the uv and Ruby versions; the Gemfile(s) declare the riscv-unified-db gem. No full repo clone needed.
+COPY .mise.toml /tmp/act/
+COPY framework/src/act/data/Gemfile framework/src/act/data/Gemfile.lock /tmp/act/
+
+# Install uv and Ruby at the versions pinned in .mise.toml.
+# Tools land in /opt/mise/installs/, shims in /opt/mise/shims/.
+RUN cd /tmp/act && mise install
+
+# Pre-install the riscv-unified-db gem into the mise-managed Ruby's gem dir so `bundle install` is a no-op at runtime
+RUN cd /tmp/act && mise exec -- bundle install --gemfile=Gemfile
 
 # Stage 4: final runtime image
 FROM ubuntu:24.04
@@ -185,71 +182,60 @@ ARG TZ=UTC
 ARG RISCV_TOOLCHAIN_PREFIX
 ARG SAIL_PREFIX
 
-# These must be ENV so the running container can find the binaries
 ENV TZ="${TZ}"
 ENV RISCV_TOOLCHAIN_PREFIX="${RISCV_TOOLCHAIN_PREFIX}"
 ENV SAIL_PREFIX="${SAIL_PREFIX}"
-ENV PATH="${RISCV_TOOLCHAIN_PREFIX}/bin:${SAIL_PREFIX}/bin:/root/.local/bin:${PATH}"
-ENV CONTAINERS_CONF=/etc/containers/containers.conf
-ENV CONTAINERS_STORAGE_CONF=/etc/containers/storage.conf
+ENV XDG_CACHE_HOME=/opt/cache
 
-# Runtime deps only:
-#   - python3: needed by uv-managed venvs and the ACT4 framework
-#   - ca-certificates / make / git: needed to drive the ACT4 Makefile
-#   - fuse-overlayfs: userspace overlayfs implementation for Podman
-#   - podman: required by ACT4 for riscv-unified-db
+# mise environment — must match mise-fetcher stage
+ENV MISE_DATA_DIR=/opt/mise
+ENV MISE_CONFIG_DIR=/opt/mise/config
+ENV MISE_CACHE_DIR=/opt/mise/cache
+ENV MISE_YES=1
+# Writable by any user for mise and other tools to store data
+ENV HOME=/tmp/home
+
+# Full PATH: RISC-V toolchain → Sail → mise shims (uv, ruby, bundle, …) → mise itself
+ENV PATH="${RISCV_TOOLCHAIN_PREFIX}/bin:${SAIL_PREFIX}/bin:/opt/mise/shims:/opt/mise/bin:${PATH}"
+
+# Runtime-only packages:
+#   - python3: uv-managed venvs need a system Python as fallback
+#   - make, git, ca-certificates: drive the ACT4 Makefile
+#   - lib*: Ruby runtime shared libs
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     git \
     make \
-    podman \
-    fuse-overlayfs \
     python3 \
- && rm -rf /var/lib/apt/lists/*
+    libffi8 \
+    libgdbm6t64 \
+    libncurses6 \
+    libreadline8t64 \
+    libssl3 \
+    libyaml-0-2 \
+    zlib1g \
+ && rm -rf /var/lib/apt/lists/* \
+ && ldconfig
 
 COPY --from=toolchain-builder "${RISCV_TOOLCHAIN_PREFIX}" "${RISCV_TOOLCHAIN_PREFIX}"
 COPY --from=sail-fetcher      "${SAIL_PREFIX}"            "${SAIL_PREFIX}"
-COPY --from=uv-fetcher        /root/.local                /root/.local
+COPY --from=mise-fetcher      /opt/mise                   /opt/mise
+# For some crazy reason udb isn't using normally installed libz3 and instead reaches to its cache 😞
+COPY --from=mise-fetcher      /root/.cache/udb            "${XDG_CACHE_HOME}/udb"
 
-# Podman configuration for running inside Docker (--privileged).
-#
-#   storage.conf - userspace overlayfs that works inside container
-#   containers.conf:
-#     cgroup_manager = cgroupfs   don't try to delegate via systemd
-#     events_logger  = file       journald unavailable inside Docker
-#     no_pivot_root  = true       pivot_root blocked by Docker seccomp
-#     cgroups        = disabled   don't create any cgroup for the container; eliminates the
-#                                 conmon sandbox cgroup attempt that causes
-#                                 "write cgroup.subtree_control: device or resource busy"
-RUN cat > /etc/containers/storage.conf <<'EOF'
-[storage]
-driver = "overlay"
+# Fix cache ownership so that any user can use it
+RUN chown -R nobody:nogroup "${XDG_CACHE_HOME}" && chmod -R 777 "${XDG_CACHE_HOME}"
 
-[storage.options.overlay]
-mount_program = "/usr/bin/fuse-overlayfs"
-mountopt = "nodev,metacopy=on"
-EOF
+# Use --system so the safe.directory setting is visible to all users, not just root
+RUN git config --system --add safe.directory /mnt \
+ && git config --system --add safe.directory /mnt/external/riscv-unified-db
 
-RUN cat > /etc/containers/containers.conf <<'EOF'
-[engine]
-cgroup_manager = "cgroupfs"
-events_logger  = "file"
-no_pivot_root  = true
-
-[containers]
-cgroups  = "disabled"
-cgroupns = "host"
-EOF
-
-# Fix Git configuration so it doesn't complain about mixed permissions
-RUN git config --global --add safe.directory /mnt \
- && git config --global --add safe.directory /mnt/external/riscv-unified-db
-
-# Smoke-test: verify all the binaries landed correctly
+# Smoke-test: verify all the binaries landed correctly (runs as root during build, before USER switch)
 RUN riscv64-unknown-elf-gcc --version \
  && sail_riscv_sim --version \
- && uv --version \
- && podman --version
+ && mise --version
+
+USER ubuntu
 
 WORKDIR /mnt
 

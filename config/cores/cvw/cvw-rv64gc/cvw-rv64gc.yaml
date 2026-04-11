@@ -28,6 +28,7 @@ implemented_extensions:
   - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }

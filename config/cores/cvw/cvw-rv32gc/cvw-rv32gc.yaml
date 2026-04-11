@@ -27,6 +27,7 @@ implemented_extensions:
   - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
@@ -163,10 +164,8 @@ params:
   IMP_ID_VALUE: 0x100
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
-  MISALIGNED_LDST: true
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # check
-  MISALIGNED_SPLIT_STRATEGY: custom # We fetch the lower and upper parts with two XLEN-sized fetches and merge them
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true

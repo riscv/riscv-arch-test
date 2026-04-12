@@ -14,6 +14,9 @@
 # virtualenv
 .venv
 
+# Bundler
+.bundle/
+
 # Linter and type checker caches
 .mypy_cache/
 .ruff_cache/

@@ -7,6 +7,11 @@ include::{testplansdir}/Zkne.adoc[]
 
 include::norm/Zkne_norm_rules.adoc[]
 
+[NOTE]
+====
+aes64ks1i coverpoints in both Zkne and Zknd do not exhaustively tests the sbox inputs.  sbox is fully tested for encrypt and decrypt instructions, and randomly tested for aes64ks1i.
+====
+
 ==== Zknd NIST AES Decryption
 
 include::{testplansdir}/Zknd.adoc[]

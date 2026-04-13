@@ -121,6 +121,7 @@
 // 4 bytes of unused padding — harmless because the .fill reservation driven by
 // SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
 // the CONFIG_FLEN bits actually written by FSREG are read back.
+// See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
 //
 //  _SIG_PTR - Base register for signature region
 //  _LINK_REG - Link register to use for failure jump

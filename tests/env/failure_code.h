@@ -244,6 +244,7 @@
         # Load bad FP value from scratch memory (written by FSREG in the sigupd macro)
         # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
         # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
+        # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
         la x6, scratch
         FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)

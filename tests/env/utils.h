@@ -45,22 +45,39 @@
 
 // FLEN specific macros
 // ============================================================================
-// Two distinct FLEN values
+// Tests are written assuming a certain FLEN. For most tests, the test will only
+// run if the DUT supports at least that FLEN. For example, the D tests (FLEN = 64)
+// will only run on a DUT that supports the D extension. Some tests are written
+// with testcases for multiple floating point extensions. For example, the ZicsrF
+// test only requires F (FLEN = 32), but conditionally includes extra testcases
+// for D (FLEN = 64) and Q (FLEN = 128) when the DUT supports those extensions.
+// The test data values are preloaded in memory assuming the longest FLEN that
+// the test *might* use is supported so that values can be loaded using whole
+// fp register loads (flq if supported else fld if supported else flw). This
+// maximum FLEN must always be used when incrementing the data pointer to ensure
+// the correct values are loaded. Separately, when loading whole fp registers,
+// the largest fp load that is actually supported by the DUT must be used. For
+// tests that have conditional floating point instructions based on the extension,
+// this may differ from the FLEN assumed when generating values for the test.
+// For example, the ZicsrF test on an rv32f core results in a test that was
+// generated to support FLEN of up to 64 (so the data is spaced accordingly)
+// but a DUT that only supports FLEN = 32. This gives rise to the following
+// two distinct FLEN values:
 // ----------------------------------------------------------------------------
-// TEST_FLEN  — the FLEN this test file was *generated* for. Supplied by the
-//              build via -DTEST_FLEN. It fixes the width of the .data section
-//              entries and of every signature slot (SIG_STRIDE). It must not
-//              vary between configs: the generated assembly has literal byte
-//              offsets and the Sail-produced signature layout baked in.
+// TEST_FLEN  — the max FLEN this test file was written for. Supplied by the
+//              build via -DTEST_FLEN and based on the march string. It fixes
+//              the width of the .data section entries and of every signature
+//              slot (SIG_STRIDE). It must notvary between configs: the
+//              generated assembly has literal byte offsets and the Sail-produced
+//              signature layout baked in.
 //
 // CONFIG_FLEN — the effective FP width for store/load instruction selection.
 //               It is the minimum of what the DUT actually supports (derived
-//               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED / ZFH*_SUPPORTED)
-//               and what the test's march allows the assembler to emit
-//               (TEST_FLEN). It decides which FP store instruction (fsw/fsd/fsq)
-//               we use in the signature macros and whether a single FP value
-//               needs to be sliced into two integer loads (the
-//               "CONFIG_FLEN > XLEN" path in signature.h).
+//               from D_SUPPORTED / Q_SUPPORTED / F_SUPPORTED) and what the test's
+//               march allows the assembler to emit (TEST_FLEN). It decides which
+//               FP store instruction (fsw/fsd/fsq) are used in the signature macros
+//               and whether a single FP value needs to be sliced into two integer
+//               loads (the "CONFIG_FLEN > XLEN" path in signature.h).
 //
 //               CONFIG_FLEN must not exceed TEST_FLEN because the assembler
 //               only knows instructions up to that width (e.g. an F-only test
@@ -81,7 +98,7 @@
   #define _DUT_FLEN 128
 #elif defined(D_SUPPORTED)
   #define _DUT_FLEN 64
-#elif defined(F_SUPPORTED) || defined(ZFH_SUPPORTED) || defined(ZFHMIN_SUPPORTED) || defined(ZFBFMIN_SUPPORTED)
+#elif defined(F_SUPPORTED)
   #define _DUT_FLEN 32
 #else
   #define _DUT_FLEN 0

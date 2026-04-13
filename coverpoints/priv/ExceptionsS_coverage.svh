@@ -115,7 +115,7 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_instraccessfault_enabled: coverpoint ins.current.csr[12'h302][1] {
+    medeleg_illegalinstr_enabled: coverpoint ins.current.csr[12'h302][2] {
         bins enabled = {1};
     }
     medeleg_b8: coverpoint ins.current.csr[12'h302][8] {
@@ -165,7 +165,7 @@ covergroup ExceptionsS_cg with function sample(ins_t ins);
     cp_medeleg_msu_illegalinstruction:       cross priv_mode_m_s_u, illegalops,                   medeleg_walk;
     cp_medeleg_msu_ecall:                    cross priv_mode_m_s_u, ecall,                        medeleg_walk;
     cp_medeleg_msu_ebreak:                   cross priv_mode_m_s_u, ebreak,                       medeleg_walk;
-    cp_stvec:                                cross priv_mode_s_u, jalr, illegal_address, medeleg_instraccessfault_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose instr access fault for the delegated exception
+    cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
     cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE, medeleg_b8;
 
     // access fault coverpoints

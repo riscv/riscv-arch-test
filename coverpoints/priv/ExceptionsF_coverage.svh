@@ -96,7 +96,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
     cp_mstatus_fs_illegal_instr: cross instrs, mstatus_FS_zero;
     cp_badfrm:                   cross instrs_dynrm, mstatus_FS_nonzero, frm_illegal;
     cp_mstatus_fs_legal:         cross instrs, mstatus_FS_status, frm_legal;
-    cp_load_access_fault:        cross loadops, illegal_address;
+    cp_load_address_misaligned:  cross loadops, adr_LSBs;
     cp_store_address_misaligned: cross storeops, adr_LSBs;
 
     // access fault coverpoints
@@ -104,7 +104,7 @@ covergroup ExceptionsF_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-        cp_load_address_misaligned:  cross loadops, adr_LSBs;
+        cp_load_access_fault:        cross loadops, illegal_address;
         cp_store_access_fault:       cross storeops, illegal_address;
     `endif
 endgroup

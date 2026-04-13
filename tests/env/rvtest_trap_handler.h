@@ -1717,8 +1717,11 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mtmr_int:               // int 7 default to just return
         li T5, -1
-        la T2, RVMODEL_MTIMECMP_ADDRESS
-        SREG T5, 0(T2)
+        # skip if RVMODEL_MTIMECMP_ADDRESS is not defined
+        #ifdef RVMODEL_MTIMECMP_ADDRESS
+                la T2, RVMODEL_MTIMECMP_ADDRESS
+                SREG T5, 0(T2)
+        #endif
         #if __riscv_xlen == 32
                 sw T5, 4(T2)
         #endif

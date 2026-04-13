@@ -9,8 +9,10 @@ To build the UDB configuration, coverage files and ELFs run the following
 command from the top of your working copy of this repo:
 
 ```
-$ make CONFIG_FILES=config/cores/cve2/cv32e20/test_config.yaml
+$ make EXCLUDE_EXTENSIONS=ExceptionsSm,InterruptsSm,Sm,ExceptionsZc CONFIG_FILES=config/cores/cve2/cv32e20/test_config.yaml
 ```
+
+The privileged test suites (`ExceptionsSm`, `InterruptsSm`, `Sm`, `ExceptionsZc`) are excluded because they contain coverpoints incompatible with CV32E20.
 
 <!--
 ### Developer Info

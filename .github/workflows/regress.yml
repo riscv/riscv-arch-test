@@ -59,8 +59,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Install sail-riscv model
         run: |
@@ -112,12 +112,15 @@ jobs:
         if: matrix.install_script != ''
         run: echo "$GITHUB_WORKSPACE/${{ matrix.simulator }}/bin" >> $GITHUB_PATH
 
+      - name: Run setup script
+        if: matrix.setup_script != ''
+        run: bash ${{ matrix.setup_script }} ${{ github.workspace }}/${{ matrix.simulator }}
+
       - name: Generate tests and coverpoints
         run: make tests --jobs $(nproc)
 
       - name: Build ELFs
         run: |
-          DOCKER=1 \
           FAST=True \
           EXCLUDE_EXTENSIONS=${{ matrix.exclude_extensions }} \
           CONFIG_FILES=${{ matrix.config_file }} \
@@ -143,8 +146,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
@@ -155,10 +158,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up mise
+        uses: jdx/mise-action@v2
 
-      - run: git submodule update --init docs/docs-resources external/riscv-unified-db
+      - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
         run: cd docs/ctp && make -j2

@@ -1,5 +1,5 @@
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -108,4 +108,4 @@
   li _R2, WHISPER_SSIP_ADDRESS; \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

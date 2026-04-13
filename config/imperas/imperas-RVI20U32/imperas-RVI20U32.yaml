@@ -14,8 +14,6 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
   - { name: Zihpm, version: "= 2.0" }
-  # Smhpm is a fake extension for UDB purposes, due to be deleted soon.  Remove when possible.  DH 3/22/26
-  - { name: Smhpm, version: "= 1.12" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
@@ -56,10 +54,8 @@ params:
   IMP_ID_VALUE: 0x0
   VENDOR_ID_BANK: 0x0
   VENDOR_ID_OFFSET: 0x0
-  MISALIGNED_LDST: true
+  MISALIGNED_LDST: false
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
@@ -83,7 +79,6 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,
@@ -124,6 +119,42 @@ params:
     [
       true,
       false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  NUM_PMP_ENTRIES: 0
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
       true,
       true,
       true,

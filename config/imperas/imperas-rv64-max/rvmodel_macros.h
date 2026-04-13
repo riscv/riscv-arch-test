@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu Jan 2026 and David_Harris@hmc.edu March 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define CLINT_BASE_ADDRESS 0x02000000
 
@@ -141,4 +141,4 @@
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

@@ -36,14 +36,13 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     output_path = output_test_dir / "priv" / testsuite
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Create test configuration - privileged tests are config_dependent and don't have a fixed xlen
+    # Create test configuration - privileged tests don't have a fixed xlen
     # The xlen=0 indicates this is a multi-xlen test that uses preprocessor conditionals
     test_config = TestConfig(
         xlen=0,  # One test for all XLENs
         flen=64,
         testsuite=testsuite,
         E_ext=False,
-        config_dependent=True,
         required_extensions=get_priv_test_required_extensions(testsuite),
         march_extensions=get_priv_test_march_extensions(testsuite),
         extra_params=get_priv_test_params(testsuite),

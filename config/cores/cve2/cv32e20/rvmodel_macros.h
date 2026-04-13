@@ -2,8 +2,8 @@
 # RVMODEL macro definitions for OpenHW CV32E20 core
 # SPDX-License-Identifier: Apache-2.0
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION
 
@@ -106,4 +106,4 @@
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

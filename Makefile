@@ -25,6 +25,12 @@ WORKDIR     ?= work
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
+# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
+empty :=
+space := $(empty) $(empty)
+override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
+override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
+
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
@@ -75,14 +81,27 @@ $(STAMP_DIR):
 	@mkdir -p $@
 
 
+
 ########## Installation Check ##########
-# Check if UV is installed and set UV variable
-UV := $(shell command -v uv 2> /dev/null)
-ifneq ($(UV),)
-  UV_RUN := $(UV) run
+# Tool management — use mise if available, fall back to direct tool detection
+MISE := $(shell command -v mise 2> /dev/null)
+ifneq ($(MISE),)
+  UV_RUN := $(MISE) exec -- uv run
 else
-  UV_RUN :=
-  $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
+  # Check for uv (needed for Python dependencies if not using mise)
+  UV := $(shell command -v uv 2> /dev/null)
+  ifneq ($(UV),)
+    UV_RUN := $(UV) run
+  else
+    UV_RUN :=
+    $(warning "Warning: Neither mise nor uv found. Running without uv, but there may be dependency issues. See the README for more information.")
+  endif
+
+  # Check for Ruby/Bundler (needed for UDB gem when not using mise)
+  BUNDLE := $(shell command -v bundle 2> /dev/null)
+  ifeq ($(BUNDLE),)
+    $(error "Error: Neither mise nor bundle found. Ruby and Bundler are required for UDB. See the README for more information.")
+  endif
 endif
 
 

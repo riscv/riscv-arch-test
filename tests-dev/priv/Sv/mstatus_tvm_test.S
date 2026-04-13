@@ -24,7 +24,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32]
 # MARCH: rv32i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 //TODO: instead of using two different tests, use a single test for hart/software update.

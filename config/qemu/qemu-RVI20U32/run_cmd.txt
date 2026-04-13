@@ -1,0 +1,1 @@
+qemu-system-riscv32 {debug:-d in_asm,int,mmu,unimp,cpu,fpu,vpu,exec,nochain} -nographic -semihosting -icount shift=1 -machine virt -cpu rv32,zicsr=true,zifencei=true,zicntr=true,pmu-mask=0xfffffff8 -bios

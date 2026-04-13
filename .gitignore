@@ -14,6 +14,9 @@
 # virtualenv
 .venv
 
+# Bundler
+.bundle/
+
 # Linter and type checker caches
 .mypy_cache/
 .ruff_cache/
@@ -34,8 +37,7 @@ tests/rv32i
 tests/rv32e
 tests/rv64i
 tests/rv64e
-tests/priv/Sm/Sm-00.S
-tests/priv/ExceptionsZc/ExceptionsZc-00.S
+tests/priv/**/*.S
 # docs
 docs/ctp/mismatch_report.txt
 docs/crd/build

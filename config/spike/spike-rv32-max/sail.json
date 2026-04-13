@@ -4,7 +4,7 @@
     "xlen": 32,
     "E": false,
     "writable_misa": true,
-    "writable_fiom": true,
+    "writable_fiom": false,
     "writable_hpm_counters": {
       "len": 32,
       "value": "0xFFFF_FFFF"

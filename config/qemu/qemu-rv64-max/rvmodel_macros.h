@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu Feb 2026
 # SPDX-License-Identifier: BSD-3-Clause
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .data,"aw",@progbits;                             \
@@ -193,4 +193,4 @@
   li _R2, QEMU_SSIP_ADDRESS; \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

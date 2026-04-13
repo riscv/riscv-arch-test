@@ -18,7 +18,7 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate load address misaligned exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_load_address_misaligned"
 
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [comment_banner(coverpoint)]
 
@@ -51,7 +51,7 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
 def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate store address misaligned exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_address_misaligned"
-    addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6, exclude_regs=[0])
+    addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6)
 
     lines = [comment_banner(coverpoint)]
     # illegal sc.w does not get coverage as SAIL stores content in by bytes instead of giving exceptions
@@ -113,7 +113,7 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
 def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate load access fault exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_load_access_fault"
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(coverpoint),
@@ -141,7 +141,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
 def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
     """Generate instruction address misaligned and access fault exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_load_misaligned_priority"
-    addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
         comment_banner(coverpoint),
@@ -170,7 +170,7 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
 def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     """Generate store access fault exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_access_fault"
-    addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4)
     # sc.w at illegal address does not trigger exception in QEMU
     # QEMU issue: https://gitlab.com/qemu-project/qemu/-/issues/3323
     lines = [
@@ -211,7 +211,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
     """Generate instruction address misaligned and access fault exception tests."""
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_misaligned_priority"
-    addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4)
 
     lines = [comment_banner(coverpoint)]
 
@@ -254,19 +254,6 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
 def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZalrsc coverpoints"""
     lines = []
-
-    lines.extend(
-        [
-            "# Initialize scratch memory with test data",
-            "LA(x10, scratch)",
-            "LI(x11, 0xDEADBEEF)",
-            "sw x11, 0(x10)",
-            "sw x11, 4(x10)",
-            "sw x11, 8(x10)",
-            "sw x11, 12(x10)",
-            "",
-        ]
-    )
 
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))

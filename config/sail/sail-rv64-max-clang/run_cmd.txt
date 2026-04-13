@@ -1,0 +1,1 @@
+sail_riscv_sim {debug:--trace-all} --config config/sail/sail-rv64-max-clang/sail.json

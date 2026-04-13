@@ -2,8 +2,8 @@
 # RVMODEL macro definitions for OpenHW CV32E20 core
 # SPDX-License-Identifier: Apache-2.0
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION
 
@@ -61,7 +61,14 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### Interrupt Latency #####
+
+#define RVMODEL_INTERRUPT_LATENCY 10
+
 ##### Machine Timer #####
+
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
 /*
  * NOTE: The following parameters are intentionally left empty.
  *
@@ -96,4 +103,4 @@
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

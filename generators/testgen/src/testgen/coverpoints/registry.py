@@ -8,7 +8,6 @@
 """Coverpoint generator registry with automatic discovery."""
 
 from collections.abc import Callable
-from importlib import import_module
 from pathlib import Path
 from random import seed
 
@@ -16,6 +15,7 @@ from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.constants import SKIP_COVERPOINTS
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.discovery import discover_and_import_modules
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for coverpoint generator functions
@@ -71,23 +71,8 @@ def add_coverpoint_generator(*patterns: str) -> Callable[[CoverpointGenerator], 
     return decorator
 
 
-def _discover_and_import_coverpoint_generators() -> None:
-    """Auto-import all generator modules to trigger decorator registration."""
-    current_file = Path(__file__)
-    package_dir = current_file.parent
-
-    # Recursively import all Python files except this file and files starting with _
-    for module_file in package_dir.rglob("*.py"):
-        if module_file.stem != current_file and not module_file.stem.startswith("_"):
-            # Convert file path to module path (e.g., special/branch.py -> testgen.coverpoints.special.branch)
-            relative_path = module_file.relative_to(package_dir)
-            module_parts = [*list(relative_path.parts[:-1]), relative_path.stem]
-            module_name = "testgen.coverpoints." + ".".join(module_parts)
-            import_module(module_name)
-
-
 # Discover and import coverpoint generators at module load
-_discover_and_import_coverpoint_generators()
+discover_and_import_modules(Path(__file__).parent, "testgen.coverpoints", exclude=Path(__file__))
 
 
 def _select_coverpoint_generator(coverpoint: str) -> CoverpointGenerator:

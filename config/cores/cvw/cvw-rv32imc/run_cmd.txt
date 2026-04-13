@@ -1,1 +1,1 @@
-wsim rv32imc {debug:--lockstepverbose} --elf
+wsim --sim verilator rv32imc {debug:--lockstepverbose} --elf

@@ -65,7 +65,6 @@ def insert_header_template(
         .replace("@PARAMS@", format_params(params))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
-        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
     return template

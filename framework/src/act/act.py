@@ -20,7 +20,7 @@ from act.build import BuildTask, build
 from act.build_plan import generate_build_plan
 from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
-from act.parse_test_constraints import generate_test_dict
+from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
 
@@ -92,7 +92,11 @@ def run_act(
     workdir = workdir.absolute()
 
     # Generate test list
-    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    try:
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    except TestYamlHeaderError as e:
+        e.print()
+        raise typer.Exit(1) from None
 
     config_names: list[str] = []
     tasks: list[BuildTask] = []

@@ -14,7 +14,7 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty unless needed for
+# Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT

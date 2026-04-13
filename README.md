@@ -202,19 +202,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 **Printing Macros**: Can be left blank if no console is available
 
-- `RVMODEL_IO_INIT(_R1, _R2, _R3)`
+- `RVMODEL_IO_INIT(_R1, _R2, _R3)` (can be omitted if not needed)
 - `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
-- `RVMODEL_BOOT`
-- `RVMODEL_ACCESS_FAULT_ADDRESS`
+- `RVMODEL_BOOT` (can be omitted if not needed)
+- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS`
-- `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
+- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.

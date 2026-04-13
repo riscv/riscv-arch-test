@@ -8,7 +8,7 @@
 
 """Exceptions Sm test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -545,6 +545,7 @@ def make_exceptionssm(test_data: TestData) -> list[str]:
     """Main entry point for Sm exception test generation."""
     lines = []
 
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_instr_adr_misaligned_branch_tests(test_data))
     lines.extend(_generate_instr_adr_misaligned_branch_nottaken(test_data))
     lines.extend(_generate_instr_adr_misaligned_jal_tests(test_data))

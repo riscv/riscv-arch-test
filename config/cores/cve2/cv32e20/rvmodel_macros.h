@@ -15,7 +15,8 @@
 //#define RVMODEL_BOOT
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 

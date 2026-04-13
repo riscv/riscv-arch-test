@@ -542,9 +542,14 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
    cp_hlv_address_misaligned: cross hlv_instructions, hlv_adr_LSBs, priv_mode_m;
 
 
-   // HLV access fault crosses
-   cp_hlv_access_fault: cross hlv_instructions, hlv_illegal_address, priv_mode_m;
-
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        // HLV access fault crosses
+        cp_hlv_access_fault: cross hlv_instructions, hlv_illegal_address, priv_mode_m;
+    `endif
 
    // HSV address misalignment crosses
    cp_hsv_address_misaligned: cross hsv_instructions, adr_LSBs, priv_mode_m;

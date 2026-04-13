@@ -1,17 +1,9 @@
 
 === Sv* Virtual Memory
 
-==== Svbare Virtual Memory Off
-
-[[t-Svbare-coverpoints]]
-.Svbare Coverpoints
-//,===
-//include::{testplansdir}/Svbare
-//,===
-
 ==== Sv
 
-*** config file determines whether to run SV32/39/48/57
+The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
 [[t-Sv-coverpoints]]
 .Sv Coverpoints
@@ -26,6 +18,16 @@ include::norm/Sv_norm_rules.adoc[]
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
+==== Svbare Virtual Memory Off
+
+[[t-Svbare-coverpoints]]
+.Svbare Coverpoints
+,===
+https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1237201823#gid=1237201823[Google Sheet Testplan]
+,===
+
+include::norm/Svbare_norm_rules.adoc[]
+
 
 ==== SvPMP VirtMem + PMP
 
@@ -37,17 +39,16 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 
 ==== SvZicbo VirtMem + CBOM/CBOZ
 
-*** config file determines whether to run cbom/cboz/both
-
 [[t-SvZicbo-coverpoints]]
 .SvZicbo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429[Google Sheet Testplan]
 ,===
 
-==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
+include::norm/SvZicbo_norm_rules.adoc[]
 
-*** config file determines whether to run cbom/cboz/both
+
+==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 
 [[t-SvPMPZicbo-coverpoints]]
 .SvPMPZicbo Coverpoints
@@ -55,6 +56,7 @@ https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jv
 https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1563579846#gid=1563579846[Google Sheet Testplan]
 ,===
 
+include::norm/SvPMPZicbo_norm_rules.adoc[]
 
 
 ==== Svinval Memory Management Unit Table Invalidation

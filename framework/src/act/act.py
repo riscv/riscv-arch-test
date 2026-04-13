@@ -16,11 +16,11 @@ from typing import Annotated
 
 import typer
 
-from act.build import build
-from act.build_plan import ConfigData, generate_build_plan
-from act.config import load_config
+from act.build import BuildTask, build
+from act.build_plan import generate_build_plan
+from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
-from act.parse_test_constraints import generate_test_dict
+from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
 
@@ -59,11 +59,24 @@ def run_act(
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    verbose: Annotated[
+        bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
+    ] = False,
     keep_going: Annotated[bool, typer.Option("--keep-going", "-k", help="Continue building after failures")] = False,
     dry_run: Annotated[
         bool, typer.Option("--dry-run", "-n", help="Show what would be built without executing")
     ] = False,
+    coverage_simulator: Annotated[
+        CoverageSimulator,
+        typer.Option(help="Coverage simulator backend", case_sensitive=False),
+    ] = CoverageSimulator.QUESTA,
 ) -> None:
+
+    # Parse options
+    if verbose:
+        debug = True
+        jobs = 1
+
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
 
@@ -73,10 +86,20 @@ def run_act(
     if jobs <= 0:
         jobs = os.cpu_count() or 1
 
-    # Generate test list
-    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    # Resolve paths
+    test_dir = test_dir.absolute()
+    coverpoint_dir = coverpoint_dir.absolute()
+    workdir = workdir.absolute()
 
-    configs: list[ConfigData] = []
+    # Generate test list
+    try:
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    except TestYamlHeaderError as e:
+        e.print()
+        raise typer.Exit(1) from None
+
+    config_names: list[str] = []
+    tasks: list[BuildTask] = []
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
@@ -95,28 +118,25 @@ def run_act(
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
-        configs.append(
-            {
-                "config": config,
-                "xlen": mxlen,
-                "e_ext": "E" in implemented_extensions,
-                "selected_tests": selected_tests,
-            }
+
+        config_names.append(config.name)
+        tasks.extend(
+            generate_build_plan(
+                config,
+                mxlen,
+                selected_tests,
+                test_dir,
+                coverpoint_dir,
+                workdir,
+                coverage,
+                coverage_simulator,
+                debug,
+                fast,
+            )
         )
 
-    # Generate list of build tasks
-    tasks = generate_build_plan(
-        configs,
-        test_dir.absolute(),
-        coverpoint_dir.absolute(),
-        workdir.absolute(),
-        coverage,
-        debug,
-        fast,
-    )
-
     # Run all tasks to compile ELFs
-    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run)
+    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
 
     # Print summary
     parts = []
@@ -136,12 +156,11 @@ def run_act(
 
     # Always print coverage summaries when coverage is enabled, even if up-to-date
     if coverage:
-        for config_data in configs:
-            config = config_data["config"]
-            overall_summary = workdir.absolute() / config.name / "reports" / "_overall_summary.txt"
+        for name in config_names:
+            overall_summary = workdir / name / "reports" / "_overall_summary.txt"
             if overall_summary.exists():
                 print()
-                print_coverage_summary(overall_summary, config.name)
+                print_coverage_summary(overall_summary, name)
 
 
 def main() -> None:

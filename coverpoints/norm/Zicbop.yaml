@@ -1,3 +1,41 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # A prefetch.i instruction indicates to hardware that the cache block whose
+  # effective address is the sum of the base address specified in rs1 and the
+  # sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000, is
+  # likely to be accessed by an instruction fetch in the near future.
+  - name: prefetch-i_op
+    coverpoint: ["Zicbop_prefetch_i_cg/cp_custom_prefetch"]
+
+  # A prefetch.r instruction indicates to hardware that the cache block whose
+  # effective address is the sum of the base address specified in rs1 and the
+  # sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000, is
+  # likely to be accessed by a data read (i.e. load) in the near future.
+  - name: prefetch-r_op
+    coverpoint: ["Zicbop_prefetch_r_cg/cp_custom_prefetch"]
+
+  # A prefetch.w instruction indicates to hardware that the cache block whose
+  # effective address is the sum of the base address specified in rs1 and the
+  # sign-extended offset encoded in imm[11:0], where imm[4:0] equals 0b00000, is
+  # likely to be accessed by a data write (i.e. store) in the near future.
+  - name: prefetch-w_op
+    coverpoint: ["Zicbop_prefetch_w_cg/cp_custom_prefetch"]
+
+  # These instructions operate on the cache block whose effective address is the sum
+  # of the base address specified in rs1 and the sign-extended offset encoded in
+  # imm[11:0], where imm[4:0] shall equal 0b00000.
+  - name: prefetch_operating_block
+    coverpoint: ["Assembler information, not a normative rule"]
+
+  # A cache-block prefetch instruction is permitted to access the specified cache
+  # block whenever a load instruction, store instruction, or instruction fetch is
+  # permitted to access the corresponding physical addresses.
+  - name: cbp_access
+    coverpoint: ["Zicbop_prefetch_w_cg/cp_custom_prefetch"]
+
+  # If access to the cache block is not permitted, a cache-block prefetch
+  # instruction does not raise any exceptions and shall not access any caches or
+  # memory.
+  - name: cbp_unperm_noexcep
+    coverpoint: ["Zicbop_prefetch_w_cg/cp_rs1 (x0 bin)"]

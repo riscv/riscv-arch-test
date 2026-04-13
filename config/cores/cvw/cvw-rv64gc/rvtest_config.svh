@@ -10,10 +10,6 @@
 `define FLEN64
 `define VLEN512
 
-// Virtual Memory Modes
-`define SV39
-`define SV48
-
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
 `define G 4
@@ -46,6 +42,9 @@
 `define ZCD_SUPPORTED
 `define ZAAMO_SUPPORTED
 `define ZALRSC_SUPPORTED
+`define SV39_SUPPORTED
+`define SV48_SUPPORTED
+`define SV57_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
 `define COUNTINHIBIT_EN_2

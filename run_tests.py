@@ -5,7 +5,7 @@
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 #
-# Run all ELFs for a spike configuration in parallel
+# Run all ELFs from a directory using the input command in parallel
 ##################################
 
 from __future__ import annotations
@@ -20,10 +20,21 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: Test File ".*": (PASSED|FAILED|SIGRUN)')
+_SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
+_DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
+
+
+def _expand_debug_placeholders(command: str, *, debug: bool) -> str:
+    """Expand {debug:...} placeholders in a command string.
+
+    When debug is True, {debug:--flag1 --flag2} expands to '--flag1 --flag2'.
+    When debug is False, the placeholder is removed entirely.
+    """
+    result = _DEBUG_PLACEHOLDER_RE.sub(lambda m: m.group(1) if debug else "", command)
+    return " ".join(result.split())
 
 
 def _color(code: str, text: str) -> str:
@@ -44,12 +55,20 @@ def bold(text: str) -> str:
     return _color("1", text)
 
 
+def yellow(text: str) -> str:
+    return _color("1;33", text)
+
+
+def bold_cyan(text: str) -> str:
+    return _color("1;36", text)
+
+
 def dim(text: str) -> str:
     return _color("2", text)
 
 
-def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool:
-    """Run a single ELF and return success indication."""
+def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool) -> tuple[bool, Path, str]:
+    """Run a single ELF and return (failed, elf_path, rvcp_summary_line)."""
 
     # Split command, extracting leading KEY=VALUE env var assignments
     tokens = shlex.split(command)
@@ -60,8 +79,8 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
     env = {**os.environ, **env_overrides} if env_overrides else None
     cmd = tokens
 
-    # Create log file path
-    log_file = log_dir / elf_path.parent.name / elf_path.with_suffix(".log").name
+    # Create log file path mirroring the ELF subdirectory hierarchy
+    log_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     full_cmd = [*cmd, str(elf_path)]
@@ -84,12 +103,14 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
     # Check log for RVCP-SUMMARY lines
     log_text = log_file.read_text(errors="replace")
     summaries = _SUMMARY_RE.findall(log_text)
+    rvcp_lines = [line for line in log_text.splitlines() if "RVCP-SUMMARY:" in line]
+    rvcp_summary = rvcp_lines[0] if rvcp_lines else "No RVCP-SUMMARY line found"
     summary_failed = "FAILED" in summaries
     summary_sigrun = "SIGRUN" in summaries
     no_summary = len(summaries) == 0
 
     # Overall failure for test
-    failed = exit_failed or summary_failed or summary_sigrun
+    failed = exit_failed or summary_failed or summary_sigrun or no_summary
 
     # Print failure message for test
     if summary_sigrun:
@@ -111,18 +132,24 @@ def run_test(command: str, log_dir: Path, elf_path: Path, verbose: bool) -> bool
         )
     elif summary_failed and not exit_failed:
         print(
-            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports FAILED but exit code {result.returncode} indicates success"
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {result.returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
             f"\n         Log: {dim(str(log_file))}"
         )
     elif exit_failed and not summary_failed:
         print(
-            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY PASSED but exit code {result.returncode} indicates failure"
+            f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {result.returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
             f"\n         Log: {dim(str(log_file))}"
         )
+    elif no_summary and not exit_failed:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
+            f"\n         Test may have been killed externally or hung without producing output."
+            f"\n         Log: {dim(str(log_file))}"
+        )
 
-    return failed
+    return failed, elf_path, rvcp_summary
 
 
 def main() -> int:
@@ -132,39 +159,77 @@ def main() -> int:
     )
     parser.add_argument("elf_dir", type=Path, help="Path to ELF directory (e.g., work/spike-rv64/elfs)")
     parser.add_argument("-j", "--jobs", type=int, default=os.cpu_count(), help="Number of parallel jobs")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Print the full command for every test")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print the full command for every ELF, implies --debug, serializes to 1 job",
+    )
+    parser.add_argument(
+        "-d", "--debug", action="store_true", help="Enable debug mode: expand {debug:...} placeholders in the command"
+    )
     args = parser.parse_args()
 
+    # Verbose implies debug and serialized execution
+    if args.verbose:
+        args.debug = True
+        args.jobs = 1
+
+    # Expand {debug:...} placeholders based on --debug flag
+    command = _expand_debug_placeholders(args.command, debug=args.debug)
+
+    # Set up directories
     elf_dir = args.elf_dir.resolve()
     log_dir = elf_dir.parent / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
+    summary_log = elf_dir.parent / "summary.log"
+
+    # Derive config name from elf_dir (e.g., work/<config-name>/elfs -> config-name)
+    config_name = elf_dir.parent.name
+
+    # Print banner for this config
+    banner = f"══════ {config_name} ══════"
+    print(f"\n{bold_cyan(banner)}")
+    print(f"  {bold('Running ELFs from')}: {elf_dir}")
+    print(f"  {bold('Using command')}: {command} <elf_path>")
+    print(f"  {bold('Summary available at')}: {summary_log}")
 
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))
     if not elf_files:
-        print(f"No ELF files found in {elf_dir}")
+        print(yellow("  No ELF files found"))
         sys.exit(1)
 
-    partial_run_test = partial(run_test, args.command, log_dir, verbose=args.verbose)
+    partial_run_test = partial(run_test, command, log_dir, elf_dir, verbose=args.verbose)
 
     failed = 0
-
-    print(f"\n{bold('Running')} {len(elf_files)} tests in {elf_dir}")
-    print(f"  Command: {args.command}")
+    all_results: list[tuple[Path, str]] = []
 
     # Run individual tests
     with Pool(args.jobs) as pool:
-        for fail_status in pool.imap_unordered(partial_run_test, elf_files):
+        for fail_status, elf_path, rvcp_summary in pool.imap_unordered(partial_run_test, elf_files):
             if fail_status:
                 failed += 1
+            all_results.append((elf_path, rvcp_summary))
+
+    # Write single top-level summary log at the shared ancestor of elfs/ and logs/
+    entries = []
+    for elf_path, rvcp_summary in sorted(all_results, key=lambda x: x[0]):
+        log_path = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
+        rel_log = str(log_path.relative_to(log_dir))
+        entries.append((rel_log, rvcp_summary))
+    col_width = max((len(p) for p, _ in entries), default=0)
+    with summary_log.open("w") as f:
+        for rel_log, rvcp_summary in entries:
+            print(f"{rel_log:<{col_width}}  {rvcp_summary}", file=f)
 
     # Print overall results
     passed = len(elf_files) - failed
     print()
     if failed:
-        print(red(f"RESULT: {failed} failed, {passed} passed out of {len(elf_files)} tests."))
+        print(red(f"  RESULT: {failed} failed, {passed} passed out of {len(elf_files)} tests."))
     else:
-        print(green(f"RESULT: All {len(elf_files)} tests passed."))
+        print(green(f"  RESULT: All {len(elf_files)} tests passed."))
 
     return 1 if failed else 0
 

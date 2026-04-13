@@ -158,6 +158,66 @@ gen("cp_upperreg_fmv_x_w_rd",  "111000000000000010001EEEE1010011")  # rd in uppe
 gen("cp_upperreg_fmv_w_x_rs1", "1111000000001EEEE000000011010011")  # rs1 in upper regs for fmv.w.x
 gen("cp_upperreg_fmv_w_x_rd",  "111100000000000010001EEEE1010011")  # rd in upper regs for fmv.w.x
 gen("cp_amocas_odd",           "00101RRRRRRRRRRREEEERRRRE0101111")  # each type of AMOCAS with odd rd or rs1
+
+# vector vset instructions
+
+gen("cp_v_vsetvl",             "10EEEEERRRRRRRRRR111RRRRR1010111") # vsetvl reserved variants
+gen("cp_v_vsetvli_sew",        "0000RR1EERRRRRRRR111RRRRR1010111") # vsetvli with reserved sew
+gen("cp_v_vsetvli_res",        "EEE0RR0RRRRRRRRRR111RRRRR1010111") # vsetvli with reserved upper bits
+gen("cp_v_vsetivli_sew",       "1100RR1EERRRRRRRR111RRRRR1010111") # vsetivli with reserved sew
+gen("cp_v_vsetivli_res",       "11EERR0RRRRRRRRRR111RRRRR1010111") # vsetivli with reserved sew
+
+# reserved vector loads
+gen("cp_vl_0_000",            "RRR0RRRRRRRRRRRRR000RRRRR0000111") # mew 0 width width 000 reserved if SEW=8 unsupported
+gen("cp_vl_0_101",            "RRR0RRRRRRRRRRRRR101RRRRR0000111") # mew 0 width width 101 reserved if SEW=8 unsupported
+gen("cp_vl_0_110",            "RRR0RRRRRRRRRRRRR110RRRRR0000111") # mew 0 width width 110 reserved if SEW=8 unsupported
+gen("cp_vl_0_111",            "RRR0RRRRRRRRRRRRR111RRRRR0000111") # mew 0 width width 111 reserved if SEW=8 unsupported
+gen("cp_vl_1_000",            "RRR1RRRRRRRRRRRRR000RRRRR0000111") # reserved mew 1 width width 000
+gen("cp_vl_1_101",            "RRR1RRRRRRRRRRRRR101RRRRR0000111") # reserved mew 1 width width 101
+gen("cp_vl_1_110",            "RRR1RRRRRRRRRRRRR110RRRRR0000111") # reserved mew 1 width width 110
+gen("cp_vl_1_111",            "RRR1RRRRRRRRRRRRR111RRRRR0000111") # reserved mew 1 width width 111
+gen("cp_vl_lumop_8",          "RRR0RR1EEEEERRRRR000RRRRR0000111") # reserved lumop for 8-bit
+gen("cp_vl_lumop_16",         "RRR0RR1EEEEERRRRR101RRRRR0000111") # reserved lumop for 16-bit
+gen("cp_vl_lumop_32",         "RRR0RR1EEEEERRRRR110RRRRR0000111") # reserved lumop for 32-bit
+gen("cp_vl_lumop_64",         "RRR0RR1EEEEERRRRR111RRRRR0000111") # reserved lumop for 64-bit
+# reserved vector stores
+gen("cp_vs_0_000",            "RRR0RRRRRRRRRRRRR000RRRRR0100111") # mew 0 width width 000 reserved if SEW=8 unsupported
+gen("cp_vs_0_101",            "RRR0RRRRRRRRRRRRR101RRRRR0100111") # mew 0 width width 101 reserved if SEW=8 unsupported
+gen("cp_vs_0_110",            "RRR0RRRRRRRRRRRRR110RRRRR0100111") # mew 0 width width 110 reserved if SEW=8 unsupported
+gen("cp_vs_0_111",            "RRR0RRRRRRRRRRRRR111RRRRR0100111") # mew 0 width width 111 reserved if SEW=8 unsupported
+gen("cp_vs_1_000",            "RRR1RRRRRRRRRRRRR000RRRRR0100111") # reserved mew 1 width width 000
+gen("cp_vs_1_101",            "RRR1RRRRRRRRRRRRR101RRRRR0100111") # reserved mew 1 width width 101
+gen("cp_vs_1_110",            "RRR1RRRRRRRRRRRRR110RRRRR0100111") # reserved mew 1 width width 110
+gen("cp_vs_1_111",            "RRR1RRRRRRRRRRRRR111RRRRR0100111") # reserved mew 1 width width 111
+gen("cp_vs_lumop_8",          "RRR0RR1EEEEERRRRR000RRRRR0100111") # reserved lumop for 8-bit
+gen("cp_vs_lumop_16",         "RRR0RR1EEEEERRRRR101RRRRR0100111") # reserved lumop for 16-bit
+gen("cp_vs_lumop_32",         "RRR0RR1EEEEERRRRR110RRRRR0100111") # reserved lumop for 32-bit
+gen("cp_vs_lumop_64",         "RRR0RR1EEEEERRRRR111RRRRR0100111") # reserved lumop for 64-bit
+
+# vector instructions.  Repeate for each SEW because some instructions are only legal for certain SEW
+for sew in ["8", "16", "32", "64"]:
+    print("\n# Vector instructions with SEW = " + sew)
+    print(f"vsetivli x0, 1, e{sew}, m1, ta, ma")
+    # Vector arithmetic
+    gen("cp_IVV_f6",              "EEEEEEERRRRRRRRRR000RRRRR1010111") # Every funct6 in OPIVV
+    gen("cp_FVV_f6",              "EEEEEEERRRRRRRRRR001RRRRR1010111") # Every funct6 in OPFVV
+    gen("cp_MVV_f6",              "EEEEEEERRRRRRRRRR010RRRRR1010111") # Every funct6 in OPMVV
+    gen("cp_IVI_f6",              "EEEEEEERRRRRRRRRR011RRRRR1010111") # Every funct6 in OPIVU
+    gen("cp_IVX_f6",              "EEEEEEERRRRRRRRRR100RRRRR1010111") # Every funct6 in OPIVX
+    gen("cp_FVF_f6",              "EEEEEEERRRRRRRRRR101RRRRR1010111") # Every funct6 in OPFVF
+    gen("cp_MVX_f6",              "EEEEEEERRRRRRRRRR110RRRRR1010111") # Every funct6 in OPMVX
+    # unary vector instructions: exhaustive test
+    gen("cp_MVV_VWRXUNARY0",      "010000ERRRRREEEEE010RRRRR1010111") # VWRXUNARY0 encodes type in vs1
+    gen("cp_MVX_VRXUNARY0",       "010000EEEEEERRRRR110RRRRR1010111") # VRXUNARY0 encodes type in vs2
+    gen("cp_MVV_VXUNARY0",        "010010ERRRRREEEEE010RRRRR1010111") # VXUNARY0 encodes type in vs1
+    gen("cp_MVV_VMUNARY0",        "010100ERRRRREEEEE010RRRRR1010111") # VMUNARY0 encodes type in vs1
+    gen("cp_FVV_VWFUNARY0",       "010000ERRRRREEEEE001RRRRR1010111") # VWFUNARY0 encoes type in vs1
+    gen("cp_FVF_VRFUNARY0",       "010000EEEEEERRRRR101RRRRR1010111") # VRFUNARY0 encodes type in vs2
+    gen("cp_FVV_VFUNARY0",        "010010ERRRRREEEEE001RRRRR1010111") # VFUNARY0 encodes type in vs1
+    gen("cp_FVV_VFUNARY1",        "010011ERRRRREEEEE001RRRRR1010111") # VFUNARY1 encodes type in vs1
+    # No effort here to make vl or vstart be multiples of EGS for vector crypto.  This needs to be tested in ExceptionsV
+    gen("cp_MVV_vaesvv",          "101000ERRRRREEEEE010RRRRR1010111") # crypto vaes.vv encodes type in vs1
+    gen("cp_MVV_vaesvs",          "101001ERRRRREEEEE010RRRRR1010111") # crypto vaes.vs encodes type in vs1
 outfile.close()
 
 pathname = f"{ARCH_VERIF}/tests/priv/headers/SsstrictInstrCompressed-Tests.h"

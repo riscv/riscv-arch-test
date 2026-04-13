@@ -59,7 +59,7 @@ These test additional CSRs that exist in user mode, and privileged instructions 
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356[Google Sheet Testplan]
 ,===
 
-TODO: Incorporate normative rules now that Sm is fully tagged.
+include::norm/U_norm_rules.adoc[]
 
 ==== SmF Floating-Point CSRs
 
@@ -70,6 +70,8 @@ These test additional CSRs that exist when floating-point is supported.
 ,===
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079[Google Sheet Testplan]
 ,===
+
+include::norm/SmF_norm_rules.adoc[]
 
 ==== SmV Vector CSRs and Instructions
 
@@ -100,6 +102,8 @@ These test additional CSR scenarios that exist when floating-point and user mode
 ,===
 https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=242878857#gid=242878857[Google Sheet Testplan]
 ,===
+
+include::norm/UF_norm_rules.adoc[]
 
 ==== UV User-Mode Vector CSRs
 

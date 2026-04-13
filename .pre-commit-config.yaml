@@ -32,7 +32,7 @@ repos:
   # Ruff Python linter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.6
+    rev: v0.15.10
     hooks:
       # Run the linter.
       - id: ruff-check
@@ -51,7 +51,7 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.4
+    rev: 0.11.6
     hooks:
       - id: uv-lock
 
@@ -64,13 +64,13 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.8.1
+    rev: v3.8.2
     hooks:
       - id: prettier
 
   # Avoid common misspellings
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
 

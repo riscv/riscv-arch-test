@@ -27,6 +27,7 @@
 # Perform boot operations. Can be empty unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
+#undef RVMODEL_BOOT
 //#define RVMODEL_BOOT
 
 ##### TERMINATION #####
@@ -64,6 +65,7 @@
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
 # Can be empty if no initialization is needed.
+#undef RVMODEL_IO_INIT
 //#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 

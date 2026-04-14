@@ -2375,10 +2375,6 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
         for mideleg_val in [0, 1]:  # 0 = none, 1 = 0x222
             for mip_name, mip_bit, mie_bit, set_fn, clr_fn, is_timer in interrupts:
                 for mie_name in ["ssie", "msie", "stie", "mtie", "seie", "meie"]:
-                    # SKIP: External interrupts not implemented
-                    if mip_name in ["seip", "meip"]:
-                        continue
-
                     # Determine if delegated
                     is_delegated = (mideleg_val == 1) and (mip_name in s_interrupts)
 

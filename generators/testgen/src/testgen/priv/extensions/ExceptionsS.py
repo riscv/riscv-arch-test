@@ -94,7 +94,7 @@ _MEDELEG_WALK = (
 
 def _generate_medeleg_msu_tests(test_data: TestData, mode_tag: str, priv_mode: int) -> list[str]:
     """
-    Runs 9 exception tests x 14 medeleg values for one privilege mode.
+    Runs 10 exception tests x 17 medeleg values for one privilege mode.
     Assumes caller has already entered the correct privilege mode.
     Sets medeleg itself for each iteration by returning to M-mode temporarily.
     """

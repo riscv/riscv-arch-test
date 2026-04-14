@@ -70,6 +70,10 @@ mise --version
 >
 > For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
 
+> [!NOTE]
+>
+> See note on enabling trust in the `.mise.toml` file below.
+
 #### 3. RISC-V Compiler (GCC or LLVM)
 
 The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
@@ -150,6 +154,18 @@ Clone the `riscv-arch-test` repo:
 
 ```bash
 git clone https://github.com/riscv/riscv-arch-test
+```
+
+On entering the top-level directory of the repository for the first
+time, or on the first use of one of the build commands below, you may
+see messages or a prompt from `mise` requiring enabling trust before
+the `.mise.toml` configuration file can be used.  This can be done by
+selecting `Yes` in the prompt or with the following command in the
+top-level directory of the repository:
+
+```bash
+mise trust .mise.toml
+
 ```
 
 ### Configuration

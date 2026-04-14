@@ -97,7 +97,7 @@ def gen_compile_tasks(
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
-    flen = test_metadata.flen
+    test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
 
@@ -110,7 +110,7 @@ def gen_compile_tasks(
         f"-mabi={mabi}",
         "-DSIGNATURE",
         f"-DXLEN={xlen}",
-        f"-DFLEN={flen}",
+        f"-DTEST_FLEN={test_flen}",
         str(test_path),
     ]
     tasks.append(
@@ -189,7 +189,7 @@ def gen_compile_tasks(
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
         f"-DXLEN={xlen}",
-        f"-DFLEN={flen}",
+        f"-DTEST_FLEN={test_flen}",
         f'-DSIGNATURE_FILE="{result_file}"',
         str(test_path),
     ]

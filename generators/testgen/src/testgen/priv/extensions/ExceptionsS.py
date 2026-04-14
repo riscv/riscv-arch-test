@@ -432,10 +432,10 @@ def make_exceptionss(test_data: TestData) -> list[str]:
     )
 
     lines.extend(["RVTEST_GOTO_LOWER_MODE Smode  # use S-mode"])
-    lines.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
-    lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
+    lines.extend(generate_instr_adr_misaligned_branch_tests(test_data, _CG))
+    lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
     lines.extend(generate_instr_access_fault_tests(test_data, _CG))
     lines.extend(generate_illegal_instruction_tests(test_data, _CG))
     lines.extend(generate_illegal_instruction_seed_tests(test_data, _CG))

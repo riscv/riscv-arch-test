@@ -59,26 +59,26 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
     }
 
     PageType_i: coverpoint ins.current.page_type_i {
-        `ifdef SV48
+        `ifdef SV48_SUPPORTED
             bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
         `endif
-        `ifdef SV39
+        `ifdef SV39_SUPPORTED
             bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
         `endif
     }
     PageType_d: coverpoint ins.current.page_type_d {
-        `ifdef SV48
+        `ifdef SV48_SUPPORTED
             bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
         `endif
-        `ifdef SV39
+        `ifdef SV39_SUPPORTED
             bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
             bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -106,28 +106,28 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
     }
 
     nonleaf_PTE_pbmt_exec_s:  cross nonleaf_PTE_pbmt_i, PBMTE_set, PageType_i, jalr, ins_page_fault, priv_mode_s {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_i.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_i.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_i.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_i.sv48_kilo); `endif
     }
     nonleaf_PTE_pbmt_exec_u:  cross nonleaf_PTE_pbmt_i, PBMTE_set, PageType_i, jalr, ins_page_fault, priv_mode_u {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_i.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_i.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_i.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_i.sv48_kilo); `endif
     }
     nonleaf_PTE_pbmt_read_s:  cross nonleaf_PTE_pbmt_d, PBMTE_set, PageType_d, lw, load_page_fault, priv_mode_s {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
     }
     nonleaf_PTE_pbmt_read_u:  cross nonleaf_PTE_pbmt_d, PBMTE_set, PageType_d, lw, load_page_fault, priv_mode_u {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
     }
     nonleaf_PTE_pbmt_write_s: cross nonleaf_PTE_pbmt_d, PBMTE_set, PageType_d, sw, store_page_fault, priv_mode_s {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
     }
     nonleaf_PTE_pbmt_write_u: cross nonleaf_PTE_pbmt_d, PBMTE_set, PageType_d, sw, store_page_fault, priv_mode_u {
-        `ifdef SV39     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef SV48     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED     ignore_bins ig1 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef SV48_SUPPORTED     ignore_bins ig2 = binsof(PageType_d.sv48_kilo); `endif
     }
 
     leaf_PTE_pbmt_exec_s:  cross leaf_PTE_pbmt_s_i, PBMTE_set, PageType_i, jalr, priv_mode_s;

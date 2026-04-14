@@ -2,14 +2,10 @@
 # RVMODEL macro definitions for OpenHW CV32E20 core
 # SPDX-License-Identifier: Apache-2.0
 
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION \
-        .pushsection .tohost,"aw",@progbits;                \
-        .align 8; .global tohost; tohost: .dword 0;         \
-        .align 8; .global fromhost; fromhost: .dword 0;     \
-        .popsection;
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 
@@ -24,9 +20,9 @@
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
-  li x1, 123456789                ;\
+  li x1, 123456789        ;\
   li t0, 0x20000000       ;\
-  write_tohost_pass:      ;\
+  write_halt_pass:        ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_pass:         ;\
@@ -37,7 +33,7 @@
 #define RVMODEL_HALT_FAIL \
   li x1, 1                ;\
   li t0, 0x20000000       ;\
-  write_tohost_fail:      ;\
+  write_halt_fail:        ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_fail:         ;\
@@ -65,8 +61,25 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### Interrupt Latency #####
+
+#define RVMODEL_INTERRUPT_LATENCY 10
+
 ##### Machine Timer #####
 
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
+
+/*
+ * NOTE: The following parameters are intentionally left empty.
+ *
+ * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
+ * will FAIL because these platform-level memory-mapped registers are
+ * not defined. This is a temporary state.
+ *
+ * To properly run the suite by excluding these specific tests (the recommended
+ * workaround), refer to the instructions here:
+ * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
+ */
 #define RVMODEL_MTIME_ADDRESS  /* unimplemented */
 
 #define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */
@@ -90,4 +103,4 @@
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

@@ -37,6 +37,9 @@ class TestPlanData:
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
+    # Columns that are parsed separately and should not be treated as coverpoints
+    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64"}
+
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
@@ -51,13 +54,11 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 raise
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
-            del row["Instruction"]
-            del row["Type"]
-            del row["RV32"]
-            del row["RV64"]
             coverpoints: list[str] = []
             for key, value in row.items():
-                if type(value) is str and value != "":
+                if key in non_coverpoint_columns:
+                    continue
+                if isinstance(value, str) and value != "":
                     if (
                         value != "x"
                     ):  # for special entries, append the entry name (e.g. cp_rd_edges becomes cp_rd_edges_lui)

@@ -47,6 +47,7 @@ def format_cfl_type(
     test_data.test_chunk.data_values.append(params.temp_val)
 
     setup = [
+        "fsflagsi 0b00000 # clear all fflags",
         f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",
     ]
     test = [

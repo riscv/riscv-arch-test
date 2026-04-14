@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
@@ -24,8 +24,10 @@ implemented_extensions:
   - { name: Zicond, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
   - { name: Zalrsc, version: "= 1.0.0" }
   - { name: Za64rs, version: "= 1.0.0" }
@@ -59,8 +61,6 @@ implemented_extensions:
   - { name: Svbare, version: "= 1.0.0" }
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
-  - { name: Smpmp, version: "= 1.12.0" }
-  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # A params
@@ -151,7 +151,6 @@ params:
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
-  TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: true
   MSTATUS_VS_LEGAL_VALUES: [0]
   MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
@@ -165,10 +164,8 @@ params:
   IMP_ID_VALUE: 0x100
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
-  MISALIGNED_LDST: true
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # check
-  MISALIGNED_SPLIT_STRATEGY: custom # We fetch the lower and upper parts with two XLEN-sized fetches and merge them
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
   TRAP_ON_ILLEGAL_WLRL: false
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
@@ -192,10 +189,8 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smpmp params
   NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 4
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,

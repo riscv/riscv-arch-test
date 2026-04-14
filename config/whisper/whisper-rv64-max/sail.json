@@ -7,7 +7,7 @@
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x0"
+      "value": "0x00000007"
     },
     // These settings control whether the specified exceptions
     // cause information to be written into the appropriate

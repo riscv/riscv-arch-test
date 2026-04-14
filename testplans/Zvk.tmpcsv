@@ -1,0 +1,52 @@
+Note: work in progress.  Posted for review.
+Next steps:
+Divide up into per-extension .csv files
+Define egs4/8,egs4s,etc in CTP
+Load multiple consecutive vector elements
+Fix type fields for generator
+Do instructions like vfmacc need to also have a cp_vd_edges field?  YES,Georgia handling.
+How to generate tests with LMUL=2?
+Is special consideration/ coverpoint variants needed to avoid overlap of registers,especially for LMUL=2
+SstrictV tests such as conflicting register groups
+Is special handling needed for hitting all the sbox entries in Zvksed?  xor happens before sbox.  Maybe use special coverpoints?
+Make sure ACT3 vector crypto tests are integrated even though they don't hit specific coverpoints
+
+Instruction,Type,RV32,RV64,EFFEW8,EFFEW16,EFFEW32,EFFEW64,cp_asm_count,cp_vd,cp_rd,cp_vs2,cp_rs2,cp_vs1,cp_rs1,cp_imm_5bit,cp_vs3,cmp_vd_vs2,cmp_vd_vs1,cmp_vs1_vs2,cmp_vd_vs1_vs2,cp_vs2_edges,cp_vs1_edges,cr_vs2_vs1_edges,cr_vxrm_vs2_vs1_edges,cp_rs1_edges,cr_vs2_rs1_edges,cr_vxrm_vs2_rs1_edges,cr_vs2_imm_edges,cr_vxrm_vs2_imm_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,cp_custom,cp_rd_edges
+
+Zvkg
+vghsh.vv,VVV,x,x,,,x,,x,egs4,,egs4,,egs4,,,,egs4,egs4,egs4,egs4,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+vgmul.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4
+
+Zvkned
+vaesef.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4_subbytes
+vaesef.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4s_subbytes
+vaesem.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4_subbytes
+vaesem.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4s_subbytes
+vaesdf.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4_subbytes
+vaesdf.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4s_subbytes
+vaesdm.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4_subbytes
+vaesdm.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4s_subbytes
+vaeskf1.vi,VVI,x,x,,,x,,x,egs4,,egs4,,,,egs4,,egs4,,,,egs4_subbytes,,,,,,,,,,egs4,egs4,x,,
+vaeskf2.vi,VVI,x,x,,,x,,x,egs4,,egs4,,,,egs4,,egs4,,,,egs4_subbytes,,,,,,,,,,egs4,egs4,x,,egs4
+vaesz.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4
+
+Zvknha
+vsha2ms.vv,VVV,x,x,,,x,,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+vsha2ch.vv,VVV,x,x,,,x,,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+vsha2cl.vv,VVV,x,x,,,x,,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+
+Zvknhb
+vsha2ms.vv,VVV,x,x,,,x,x,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+vsha2ch.vv,VVV,x,x,,,x,x,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+vsha2cl.vv,VVV,x,x,,,x,x,x,egs4,,egs4,,egs4,,,,,,egs4,,egs4,egs4,egs4,,,,,,,,egs4,egs4,,,egs4
+
+Zvksed
+vsm4k.vi,VVI,x,x,,,x,,x,egs4,,egs4,,,,egs4,,egs4,,,,egs4_subbytes,,,,,,,,,,egs4,egs4,x,,
+vsm4r.vv,VV,x,x,,,x,,x,egs4,,egs4,,,,,,egs4,,,,egs4,,,,,,,,,,egs4,egs4,,,egs4_subbytes
+vsm4r.vs,VV,x,x,,,x,,x,egs4,,egs4,,,,,,,,,,egs4,,,,,,,,,,egs4s,egs4s,,,egs4s_subbytes
+
+Zvksh
+vsm3me.vv,VVV,x,x,,,x,,x,egs8,,egs8,,egs8,,,,,egs8,x,,egs8,egs8,egs8,,,,,,,,egs8,egs8,x,,
+vsm3c.vi,VVI,x,x,,,x,,x,egs8,,egs8,,,,u,,,,,,egs8,,,,,,,,,,egs8,egs8,x,,egs8
+
+Notes: use LMUL=2 to fit 128b

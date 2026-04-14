@@ -1,0 +1,37 @@
+normative_rule_definitions:
+  # Mapping of normative rules to coverpoints for a test suite
+
+  # When a page-fault, guest-page-fault, or access-fault exception is taken, the
+  # relevant *tval CSR is written with the faulting effective address (i.e. the
+  # value of rs1).
+  - name: fault_excep_csr
+    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+
+  # If access to the cache block is not permitted, a cache-block management
+  # instruction raises a store page-fault or store guest-page-fault exception if
+  # address translation does not permit any access or raises a store access-fault
+  # exception otherwise.
+  - name: cbm_unperm_fault
+    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+
+  # During address translation, the instruction also checks the accessed bit and may
+  # either raise an exception or set the bit as required.
+  - name: cbm_unperm_translate
+    coverpoint: ["SvZicbo_cg/Abit_unset_cbo_s", "TODO: guest page fault"]
+
+  # If access to the cache block is not permitted, a cache-block zero instruction
+  # raises a store page-fault or store guest-page-fault exception if address
+  # translation does not permit write access or raises a store access-fault
+  # exception otherwise.
+  - name: cbz_unperm_fault
+    coverpoint: ["SvZicbo_cg/PTE_inv_cbo_s", "TODO: guest page fault"]
+
+  # During address translation, the instruction also checks the accessed and dirty
+  # bits and may either raise an exception or set the bits as required.
+  - name: cbz_unperm_translate
+    coverpoint: ["SvZicbo_cg/{Abit_unset_cbo_s,Dbit_unset_zicbom_s}"]
+
+  # During address translation, the instruction does not check the accessed and
+  # dirty bits and neither raises an exception nor sets the bits.
+  - name: cbp_unperm_translate
+    coverpoint: ["SvZicbo_cg/{Abit_unset_cbo_s,Dbit_unset_zicbom_s}"]

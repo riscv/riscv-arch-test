@@ -1,0 +1,18 @@
+# Normative rule to coverpoint mappings
+
+normative_rule_definitions:
+  - name: mop_r_op
+    # mop.r.n writes the value zero to rd. rs1 is ignored architecturally.
+    coverpoint: ["Zimop_mop_r_cg/{cp_asm_count, cp_rs1, cp_rd, cp_rs1_edges}"]
+  - name: mop_rr_op
+    # mop.rr.n writes the value zero to rd. rs1 and rs2 are ignored architecturally.
+    coverpoint:
+      [
+        "Zimop_mop_rr_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cp_rs1_edges, cp_rs2_edges, cr_rs1_rs2_edges}",
+      ]
+
+  - name: Zimop_mop-r_enc
+    coverpoint: ["Zimop_mop_r_cg/cp_asm_count"]
+
+  - name: Zimop_mop-rr_enc
+    coverpoint: ["Zimop_mop_rr_cg/cp_asm_count"]

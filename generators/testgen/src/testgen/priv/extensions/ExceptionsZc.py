@@ -153,7 +153,10 @@ def _add_load_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
+        t_lines.append(
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
+        )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
@@ -162,8 +165,9 @@ def _add_load_fault(
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
-            f"{INDENT}# Load access will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
         )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
 
@@ -194,7 +198,10 @@ def _add_store_fault(
         t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
+        t_lines.append(
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
+        )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
@@ -203,8 +210,9 @@ def _add_store_fault(
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
-            f"{INDENT}# Store access will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
+            f"{INDENT}#Faulting compressed instruction can land on or 2 bytes past a 4 byte boundary (Resume address is 8 or 6 bytes after instr addr); Three c.nops provide 6 bytes buffer"
         )
+        t_lines.append("c.nop")
         t_lines.append("c.nop")
         t_lines.append("c.nop")
 
@@ -429,19 +437,12 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
     """Main entry point for Zc exception test generation."""
     lines = []
 
-    addr_reg, val_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg = test_data.int_regs.get_register()
 
     lines.extend(
         [
-            "# Initialize scratch memory with test data",
+            "# Load FP test data from scratch if FP is supported",
             f"LA(x{addr_reg}, scratch)",
-            f"LI(x{val_reg}, 0xDEADBEEF)",
-            f"sw x{val_reg}, 0(x{addr_reg})",
-            f"sw x{val_reg}, 4(x{addr_reg})",
-            f"sw x{val_reg}, 8(x{addr_reg})",
-            f"sw x{val_reg}, 12(x{addr_reg})",
-            "",
-            "# Load FP test data if FP is supported",
             "#ifdef F_SUPPORTED",
             f"FLREG f8, 0(x{addr_reg})",
             "#endif",
@@ -449,7 +450,7 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([addr_reg, val_reg])
+    test_data.int_regs.return_registers([addr_reg])
 
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_store_address_misaligned_tests(test_data))

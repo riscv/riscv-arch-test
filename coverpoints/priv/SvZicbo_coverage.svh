@@ -90,13 +90,13 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     // satp.mode for coverage of SV32, SV39, SV48 & SV57
     `ifdef XLEN64
         mode: coverpoint ins.current.csr[12'h180][63:60] {
-            `ifdef SV57
+            `ifdef SV57_SUPPORTED
                 bins sv57 = {4'b1010};
             `endif
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48 = {4'b1001};
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39 = {4'b1000};
             `endif
         }
@@ -108,13 +108,13 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         PageType_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera = {2'b11} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
                 bins sv48_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1001);
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga = {2'b10} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_mega = {2'b01} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
                 bins sv39_kilo = {2'b00} iff (ins.current.csr[12'h180][63:60] == 4'b1000);
@@ -133,12 +133,12 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
         misaligned_PPN_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48
+            `ifdef SV48_SUPPORTED
                 bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
                 bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1001));
             `endif
-            `ifdef SV39
+            `ifdef SV39_SUPPORTED
                 bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
                 bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (ins.current.csr[12'h180][63:60] == 4'b1000));
             `endif
@@ -171,115 +171,130 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
     `endif
 
     cbo_ins: coverpoint ins.current.insn {
-        wildcard bins any_zicbom_ins = {32'b000000000000_?????_010_00000_0001111, 32'b000000000001_?????_010_00000_0001111, 32'b000000000010_?????_010_00000_0001111};
-        wildcard bins zicboz_ins = {32'b000000000100_?????_010_00000_0001111};
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zicboz_ins = {CBO_ZERO};
+        `endif
     }
 
-    PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    zicbop_ins: coverpoint ins.current.insn {
+        wildcard bins any_prefetch_ins = {PREFETCH_I, PREFETCH_R, PREFETCH_W};
+    }
+
+    cp_PTE_rwx_zicbop_s: cross PTE_RWX_d, PageType_d, zicbop_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
+    }
+    cp_PTE_rwx_zicbop_u: cross PTE_RWX_d, PageType_d, zicbop_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
+    }
+
+    cp_PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_u_w);
     }
-    PTE_inv_cbo_u: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_PTE_inv_cbo_u: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_s_w);
     }
 
-    PTE_res_rwx_cbo_s: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    cp_PTE_res_rwx_cbo_s: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_d_res_rwx.leaflvl_exec_u);
         ignore_bins ig2 = binsof(PTE_d_res_rwx.leaflvl_noexec_u);
     }
-    PTE_res_rwx_cbo_u: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_u  {
+    cp_PTE_res_rwx_cbo_u: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_u  {
         ignore_bins ig1 = binsof(PTE_d_res_rwx.leaflvl_exec_s);
         ignore_bins ig2 = binsof(PTE_d_res_rwx.leaflvl_noexec_s);
     }
 
-    PTE_nonleaf_lvl0_cbo_s: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_s {
+    cp_PTE_nonleaf_lvl0_cbo_s: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_nonleaf_lvl0_d.lvl0_u);
     }
 
-    PTE_nonleaf_lvl0_cbo_u: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_u {
+    cp_PTE_nonleaf_lvl0_cbo_u: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_nonleaf_lvl0_d.lvl0_s);
     }
 
     // A Zicbom instruction is allowed if a load or store instruction is permitted to access the corresponding physical addresses
-    PTE_r_set_w_unset_zicbom_s: cross PTE_r_set_w_unset_spage_d, PageType_d, cbo_ins, priv_mode_s, sum_sstatus {
+    cp_PTE_r_set_w_unset_zicbom_s: cross PTE_r_set_w_unset_spage_d, PageType_d, cbo_ins, priv_mode_s, sum_sstatus {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
-    PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
+    cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
-    PTE_rw_unset_zicbom_s: cross PTE_x_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    cp_PTE_rw_unset_zicbom_s: cross PTE_x_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
-    PTE_rw_unset_zicbom_u: cross PTE_x_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_PTE_rw_unset_zicbom_u: cross PTE_x_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
 
     // A Zicboz instruction is allowed if a store instruction is permitted to access the corresponding physical addresses
-    PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
+    cp_PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
         ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
     }
-    PTE_w_unset_zicboz_u: cross PTE_w_unset_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_PTE_w_unset_zicboz_u: cross PTE_w_unset_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
     }
 
-    spage_rwx_cbo_u: cross PTE_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u;
+    cp_spage_rwx_cbo_u: cross PTE_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u;
 
-    upage_sumunset_cbo_s: cross PTE_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
+    cp_upage_sumunset_cbo_s: cross PTE_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
         ignore_bins ig1 = binsof(sum_sstatus.set);
     }
 
-    Abit_unset_cbo_s: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    cp_Abit_unset_cbo_s: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_u);
     }
-    Abit_unset_cbo_u: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_Abit_unset_cbo_u: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_s);
     }
 
     // A Zicbom instruction does not check the dirty bit and neither raises an exception nor sets the bit
-    Dbit_unset_zicbom_s: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_s {
+    cp_Dbit_unset_zicbom_s: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
         ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
     }
-    Dbit_unset_zicbom_u: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_u {
+    cp_Dbit_unset_zicbom_u: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
         ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
     }
     // A Zicboz instruction checks the dirty bit and may raise an exception and set the bit as required
-    Dbit_unset_zicboz_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+    cp_Dbit_unset_zicboz_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
         ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
     }
-    Dbit_unset_zicboz_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+    cp_Dbit_unset_zicboz_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
         ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
     }
 
-    misaligned_page_cbo_s: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_s  {
+    cp_misaligned_page_cbo_s: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_s  {
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
     }
-    misaligned_page_cbo_u: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_u  {
+    cp_misaligned_page_cbo_u: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_u  {
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
     }
 
     // PTE points to a non existent physical address
-    leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
+    cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
     }
-    leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
+    cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
     }
 
     // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
     // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
-    nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+    cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
     }
 
-    PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48     ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
-        `ifdef SV39     ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
-        `ifdef XLEN32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+    cp_PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
 
 endgroup

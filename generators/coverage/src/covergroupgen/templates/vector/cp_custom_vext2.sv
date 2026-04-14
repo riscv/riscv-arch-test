@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vext2_overlapping_vd_vs2_lmul8
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -6,6 +6,14 @@
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
 
     vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
@@ -37,11 +45,11 @@
     }
 
     vs2_mod4_2: coverpoint ins.current.insn[21:20] {
-        bins odd = {2'b11};
+        bins mod4_2 = {2'b10};
     }
 
     vs2_mod8_4: coverpoint ins.current.insn[22:20] {
-        bins odd = {3'b110};
+        bins mod8_4 = {3'b100};
     }
 
     cp_custom_vext2_overlapping_vd_vs2_lmul2:    cross std_vec, vtype_lmul_2, vs2_vd_overlap_lmul2, vs2_reg_unaligned_lmul_2;

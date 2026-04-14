@@ -1,1 +1,1 @@
-../../../tests/env/sail_test.h
+../sail-rv64-max/rvmodel_macros.h

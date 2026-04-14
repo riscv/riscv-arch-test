@@ -8,6 +8,8 @@
 
 """Template loading and insertion for test files."""
 
+from __future__ import annotations
+
 import importlib.resources
 import re
 from pathlib import Path
@@ -63,7 +65,6 @@ def insert_header_template(
         .replace("@PARAMS@", format_params(params))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
-        .replace("@CONFIG_DEPENDENT@", str(test_config.config_dependent).lower())
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
     )
     return template
@@ -168,6 +169,10 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
             single_letter.append(ext)
         else:
             multi_letter.append(ext)
+
+    # workaround for https://github.com/llvm/llvm-project/issues/190910; can be removed when this is resolved
+    if ("Zihintntl" in multi_letter) and ("Zca" in multi_letter):
+        single_letter.append("C")
 
     # Sort single-letter extensions in canonical order (I/E, M, A, F, D, Q, C, B, V, H)
     single_letter.sort(key=_single_letter_sort_key)

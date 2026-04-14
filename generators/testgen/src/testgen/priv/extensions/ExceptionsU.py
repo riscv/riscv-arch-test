@@ -34,10 +34,11 @@ _CG = "ExceptionsU_cg"
 
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsU_cg", "cp_mstatus_ie"
-    save_reg, mask_reg, arg_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, mask_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
     lines = [
         comment_banner(coverpoint, "ecall from user mode with MIE=0 vs MIE=1"),
+        "RVTEST_GOTO_MMODE",
         f"csrr x{save_reg}, mstatus",
         f"LI(x{mask_reg}, 0x8)",
         f"csrrc x0, mstatus, x{mask_reg}",
@@ -52,10 +53,11 @@ def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
         test_data.add_testcase("ecall_mie_1", coverpoint, covergroup),
         "ecall",
         "nop",
+        "RVTEST_GOTO_MMODE",
         f"csrw mstatus, x{save_reg}",
     ]
 
-    test_data.int_regs.return_registers([save_reg, mask_reg, arg_reg])
+    test_data.int_regs.return_registers([save_reg, mask_reg])
     return lines
 
 

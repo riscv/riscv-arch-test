@@ -186,7 +186,7 @@ def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str
         comment_banner(
             coverpoint, "Illegal instruction on seed CSR which should cause an illegal instruction exception"
         ),
-        "#ifdef ZKR_SUPPORTED",
+        "#ifndef ZKR_SUPPORTED",
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
         f"csrrs x{dest_reg}, seed, x0",
         "nop",

@@ -168,8 +168,8 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_interrupts"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_val, r_mie_save = test_data.int_regs.get_registers(
+        7, exclude_regs=[0, 2, 7, 30]
     )
 
     lines = [
@@ -249,8 +249,8 @@ def _generate_vectored_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_vectored"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_all, r_mie_save = test_data.int_regs.get_registers(
+        7, exclude_regs=[0, 2, 7, 30]
     )
 
     lines = [
@@ -324,8 +324,8 @@ def _generate_priority_tests(test_data: TestData) -> list[str]:
     coverpoint = "cp_priority"
     ######################################
 
-    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch, r_csr_tmp = test_data.int_regs.get_registers(
-        8, exclude_regs=[0, 2, 7, 30]
+    r1, r_mtime, r_mtimecmp, r_temp, r_temp2, r_mie_mask, r_scratch = test_data.int_regs.get_registers(
+        7, exclude_regs=[0, 2, 7, 30]
     )
 
     lines = [

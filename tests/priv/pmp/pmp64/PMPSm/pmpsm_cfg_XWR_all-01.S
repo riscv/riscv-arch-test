@@ -302,21 +302,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 10
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -335,6 +320,18 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lhu\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_lw\""
 test_10_str: .string "\"test: 10; cp: pmpm_cfg_XWR_all_lwu\""
 test_11_str: .string "\"test: 11; cp: pmpm_cfg_XWR_all_ld\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

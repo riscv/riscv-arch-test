@@ -330,20 +330,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -354,6 +340,18 @@ canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: pmpm_cfg_A_off_all_jalr\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_A_off_all_sw\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_A_off_all_lw\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

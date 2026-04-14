@@ -188,25 +188,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<RVMODEL_PMP_GRAIN)
-    nop
-    .endr
-//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
-.if RVMODEL_PMP_GRAIN == 0
-    nop
-.endif
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -232,6 +213,21 @@ test_14_str: .string "\"test: 14; cp: pmpm_misaligned_na4_sh_address+3\""
 test_15_str: .string "\"test: 15; cp: pmpm_misaligned_na4_lh_address+3\""
 test_16_str: .string "\"test: 16; cp: pmpm_misaligned_na4_lhu_address+3\""
 
+
+.align 10
+TEST_FOR_EXECUTION:
+    .rept (1<<RVMODEL_PMP_GRAIN)
+    nop
+    .endr
+//We need to add a extra nop to complete the minimal NAPOT region i.e., 8 Byte in case of 4 Byte Grain
+.if RVMODEL_PMP_GRAIN == 0
+    nop
+.endif
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

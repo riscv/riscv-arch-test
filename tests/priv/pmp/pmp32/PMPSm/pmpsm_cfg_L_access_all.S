@@ -315,21 +315,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-    j exit                                                      // Verification Complete, exit the test
-
-.align 12
-TEST_FOR_EXECUTION:
-    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -338,6 +323,18 @@ RVTEST_DATA_BEGIN
 canary_mismatch: .string "Testcase signature canary mismatch!"
 test_1_str: .string "\"test: 1; cp: cp_cfg_L_access_all_lw and cp_none_lw\""
 test_2_str: .string "\"test: 2; cp: cp_cfg_L_access_all_sw and cp_none_sw\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

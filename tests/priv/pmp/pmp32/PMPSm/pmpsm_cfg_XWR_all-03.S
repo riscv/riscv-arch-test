@@ -256,21 +256,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
 
-   j exit                                                      // Verification Complete, exit the test
-
-.align 11
-.align (RVMODEL_PMP_GRAIN+2)
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 
@@ -287,6 +272,18 @@ test_5_str: .string "\"test: 5; cp: pmpm_cfg_XWR_all_lbu\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_XWR_all_lh\""
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

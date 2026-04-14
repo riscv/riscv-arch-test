@@ -220,21 +220,6 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
-
-.align 13
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
@@ -259,6 +244,18 @@ test_13_str: .string "\"test: 13; cp: pmpm_misaligned_napot_lw_address+g-1\""
 test_14_str: .string "\"test: 14; cp: pmpm_misaligned_napot_lwu_address+g-1\""
 test_15_str: .string "\"test: 15; cp: pmpm_misaligned_napot_sd_address+g-1\""
 test_16_str: .string "\"test: 16; cp: pmpm_misaligned_napot_ld_address+g-1\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

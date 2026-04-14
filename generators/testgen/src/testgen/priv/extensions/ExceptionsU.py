@@ -524,9 +524,9 @@ def make_exceptionsu(test_data: TestData) -> list[str]:
     lines.append("RVTEST_GOTO_LOWER_MODE Umode  # Run tests in user mode\n")
 
     lines.extend(_generate_instr_adr_misaligned_branch_tests(test_data))
+    lines.extend(_generate_instr_adr_misaligned_jalr_tests(test_data))
     lines.extend(_generate_instr_adr_misaligned_branch_nottaken(test_data))
     lines.extend(_generate_instr_adr_misaligned_jal_tests(test_data))
-    lines.extend(_generate_instr_adr_misaligned_jalr_tests(test_data))
     lines.extend(_generate_instr_access_fault_tests(test_data))
     lines.extend(_generate_illegal_instruction_tests(test_data))
     lines.extend(_generate_illegal_instruction_seed_tests(test_data))

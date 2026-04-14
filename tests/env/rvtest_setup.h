@@ -256,13 +256,30 @@
 /*******************************************************************************************/
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
-  .section .bss
-  .align 4
-  scratch:
-    .space 264 // Reserve enough scratch space (needed for atomic reservation tests with offsets up to 256 bytes)
-
-  // Start of data region
+  // Initialized with distinct values so tests can detect unintended zeroing or aliasing,
+  // while remaining obviously recognizable as uninitialized scratch defaults.
+  // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
   .data
+  .align 8
+  scratch:
+    .dword 0xDEAD0001FFFEBEEF, 0xDEAD0002FFFDBEEF
+    .dword 0xDEAD0003FFFCBEEF, 0xDEAD0004FFFBBEEF
+    .dword 0xDEAD0005FFFABEEF, 0xDEAD0006FFF9BEEF
+    .dword 0xDEAD0007FFF8BEEF, 0xDEAD0008FFF7BEEF
+    .dword 0xDEAD0009FFF6BEEF, 0xDEAD000AFFF5BEEF
+    .dword 0xDEAD000BFFF4BEEF, 0xDEAD000CFFF3BEEF
+    .dword 0xDEAD000DFFF2BEEF, 0xDEAD000EFFF1BEEF
+    .dword 0xDEAD000FFFF0BEEF, 0xDEAD0010FFEFBEEF
+    .dword 0xDEAD0011FFEEBEEF, 0xDEAD0012FFEDBEEF
+    .dword 0xDEAD0013FFECBEEF, 0xDEAD0014FFEBBEEF
+    .dword 0xDEAD0015FFEABEEF, 0xDEAD0016FFE9BEEF
+    .dword 0xDEAD0017FFE8BEEF, 0xDEAD0018FFE7BEEF
+    .dword 0xDEAD0019FFE6BEEF, 0xDEAD001AFFE5BEEF
+    .dword 0xDEAD001BFFE4BEEF, 0xDEAD001CFFE3BEEF
+    .dword 0xDEAD001DFFE2BEEF, 0xDEAD001EFFE1BEEF
+    .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
+    .dword 0xDEAD0021FFDEBEEF
+
   .align 4
 
   // Create separate save areas for each priv mode trap handler

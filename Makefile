@@ -81,14 +81,27 @@ $(STAMP_DIR):
 	@mkdir -p $@
 
 
+
 ########## Installation Check ##########
-# Check if UV is installed and set UV variable
-UV := $(shell command -v uv 2> /dev/null)
-ifneq ($(UV),)
-  UV_RUN := $(UV) run
+# Tool management — use mise if available, fall back to direct tool detection
+MISE := $(shell command -v mise 2> /dev/null)
+ifneq ($(MISE),)
+  UV_RUN := $(MISE) exec -- uv run
 else
-  UV_RUN :=
-  $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
+  # Check for uv (needed for Python dependencies if not using mise)
+  UV := $(shell command -v uv 2> /dev/null)
+  ifneq ($(UV),)
+    UV_RUN := $(UV) run
+  else
+    UV_RUN :=
+    $(warning "Warning: Neither mise nor uv found. Running without uv, but there may be dependency issues. See the README for more information.")
+  endif
+
+  # Check for Ruby/Bundler (needed for UDB gem when not using mise)
+  BUNDLE := $(shell command -v bundle 2> /dev/null)
+  ifeq ($(BUNDLE),)
+    $(error "Error: Neither mise nor bundle found. Ruby and Bundler are required for UDB. See the README for more information.")
+  endif
 endif
 
 

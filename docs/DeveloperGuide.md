@@ -618,13 +618,15 @@ To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in th
 ```yaml
 ci_enabled: true # Set false to skip in CI
 exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
-install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
 apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
+install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
+setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before running tests
 ```
 
 Field details:
 
 - **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
 - **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream.
-- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
 - **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).
+- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
+- **`setup_script`**: Path to a shell script that sets up the simulator environment. This script is always run before running tests.

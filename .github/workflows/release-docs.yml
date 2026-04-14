@@ -141,7 +141,7 @@ jobs:
           path: docs/pages/crd
 
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/pages
 

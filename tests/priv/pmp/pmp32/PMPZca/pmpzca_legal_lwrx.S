@@ -132,7 +132,7 @@ main:
 #define PMPREGION_LXWR_1111 ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP0_CFG_SHIFT))
 
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
-#define REGIONSTART            TEST_FOR_EXECUTION    // RAM_BASE_ADDR + PROGRAM_SIZE
+#define REGIONSTART            TEST_FOR_EXECUTION
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
@@ -232,6 +232,18 @@ main:
 
     j exit                                                        // Verification Complete, exit the test
 
+exit:
+
+RVTEST_CODE_END
+
+RVTEST_DATA_BEGIN
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
+test_2_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_lw\""
+test_3_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.swsp\""
+test_4_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.lwsp\""
+
 .align 13
 TEST_FOR_EXECUTION:
     .rept (1<<RVMODEL_PMP_GRAIN+2)
@@ -242,20 +254,7 @@ TEST_FOR_EXECUTION:
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
-RVTEST_CODE_END
-
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_sw\""
-test_2_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_lw\""
-test_3_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.swsp\""
-test_4_str: .string "\"test: 1; cp: pmpzca_legal_lxwr_c.lwsp\""
+    jr ra
 
 RVTEST_DATA_END
 

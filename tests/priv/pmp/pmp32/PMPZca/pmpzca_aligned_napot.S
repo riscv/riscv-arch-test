@@ -139,6 +139,16 @@ main:
 
     j exit                                                      // Verification Complete, exit the test
 
+
+exit:
+
+RVTEST_CODE_END
+
+RVTEST_DATA_BEGIN
+
+// Test case strings for reporting
+test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
+
 .align 13
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
@@ -162,15 +172,6 @@ RETURN_INSTRUCTION:
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpzca_aligned_na4_region_execute\""
 
 RVTEST_DATA_END
 

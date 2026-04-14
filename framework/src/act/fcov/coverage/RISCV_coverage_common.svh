@@ -36,7 +36,7 @@
 // Physical Memory Protection (PMP) Specific Macros
 // -----------------------------------------------------------------------------
 
-`define SAFE_REGION_START   (`RAM_BASE_ADDR + `LARGEST_PROGRAM)
+`define SAFE_REGION_START   (`DATA_REGION_START + `LARGEST_PROGRAM)
 `define REGIONSTART        `SAFE_REGION_START
 
 // Calculate region size g in bytes.

@@ -28,7 +28,6 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"LREG x{r_temp}, 0(x{r_mtime})",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",
         "#elif __riscv_xlen == 32",
-<<<<<<< HEAD
         "# Write sequence to prevent spurious interrupts",
         "# Read mtime (new comparand will be in temp2:temp)",
         f"lw x{r_temp}, 0(x{r_mtime}) # mtime[31:0] -> low word",
@@ -38,7 +37,6 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"sw x{r_mtime}, 0(x{r_mtimecmp}) # Step 1: Write -1 to low (no smaller than old)",
         f"sw x{r_temp2}, 4(x{r_mtimecmp}) # Step 2: Write high word (no smaller than new)",
         f"sw x{r_temp}, 0(x{r_mtimecmp}) # Step 3: Write low word (new value)",
-=======
         # Write sequence to prevent spurious interrupts
         # Read mtime (new comparand will be in temp2:temp)
         f"lw x{r_temp}, 0(x{r_mtime})",  # mtime[31:0] -> low word
@@ -75,6 +73,70 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
     ]
 
 
+# def set_mtimer_int_soon(
+#     r_mtime: int, r_mtimecmp: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int
+# ) -> list[str]:
+#     """Generate assembly to set timer to fire soon (mtimecmp = mtime + DELAY).
+
+#     Uses LI + add to handle delays > 2047 (addi 12-bit immediate limit).
+
+
+#     Args:
+#         r_mtime: Register for MTIME address
+#         r_mtimecmp: Register for MTIMECMP address
+#         r_temp1, r_temp2, r_temp3, r_temp4: Temp registers for calculations
+#     """
+#     return [
+#         f"{INDENT}# Cause machine timer interrupt soon",
+#         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+#         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
+#         "#if __riscv_xlen == 64",
+#         "# Read current time and add delay",
+#         "# Load delay first for more accurate timing",
+#         f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
+#         "# Then read mtime",
+#         f"ld x{r_temp1}, 0(x{r_mtime})",
+#         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
+#         f"sd x{r_temp1}, 0(x{r_mtimecmp})",
+#         "#elif __riscv_xlen == 32",
+#         f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
+#         "# Read current time (64-bit on RV32)",
+#         f"lw x{r_temp1}, 0(x{r_mtime})",  # mtime[31:0]
+#         f"lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32]
+#         "# Add delay to 64-bit value",
+#         f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",  # new_low = mtime_low + delay
+#         f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",  # carry bit
+#         f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",  # new_high = mtime_high + carry
+#         "# Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt",
+#         "# New comparand is in temp2:temp3",
+#         f"LI(x{r_temp1}, -1)",
+#         f"sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
+#         f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
+#         f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
+#         # Read current time and add delay
+#         # Load delay first for more accurate timing
+#         f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
+#         # Then read mtime
+#         f"ld x{r_temp1}, 0(x{r_mtime})",
+#         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
+#         f"sd x{r_temp1}, 0(x{r_mtimecmp})",
+#         "#elif __riscv_xlen == 32",
+#         f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
+#         # Read current time (64-bit on RV32)
+#         f"lw x{r_temp1}, 0(x{r_mtime})",  # mtime[31:0]
+#         f"lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32]
+#         # Add delay to 64-bit value
+#         f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",  # new_low = mtime_low + delay
+#         f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",  # carry bit
+#         f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",  # new_high = mtime_high + carry
+#         # Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt
+#         # New comparand is in temp2:temp3
+#         f"LI(x{r_temp1}, -1)",
+#         f"sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
+#         f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
+#         f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
+#         "#endif",
+#     ]
 def set_mtimer_int_soon(
     r_mtime: int, r_mtimecmp: int, r_temp1: int, r_temp2: int, r_temp3: int, r_temp4: int
 ) -> list[str]:
@@ -93,52 +155,25 @@ def set_mtimer_int_soon(
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
-<<<<<<< HEAD
         "# Read current time and add delay",
-        "# Load delay first for more accurate timing",
         f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
-        "# Then read mtime",
-        f"ld x{r_temp1}, 0(x{r_mtime})",
+        f"LREG x{r_temp1}, 0(x{r_mtime})",  # Use LREG macro
         f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
-        f"sd x{r_temp1}, 0(x{r_mtimecmp})",
+        f"SREG x{r_temp1}, 0(x{r_mtimecmp})",  # Use SREG macro
         "#elif __riscv_xlen == 32",
-        f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
+        f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",
         "# Read current time (64-bit on RV32)",
-        f"lw x{r_temp1}, 0(x{r_mtime})",  # mtime[31:0]
-        f"lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32]
+        f"lw x{r_temp1}, 0(x{r_mtime})",
+        f"lw x{r_temp2}, 4(x{r_mtime})",
         "# Add delay to 64-bit value",
-        f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",  # new_low = mtime_low + delay
-        f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",  # carry bit
-        f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",  # new_high = mtime_high + carry
+        f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",
+        f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",
+        f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",
         "# Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt",
-        "# New comparand is in temp2:temp3",
         f"LI(x{r_temp1}, -1)",
-        f"sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
-        f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
-        f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
-=======
-        # Read current time and add delay
-        # Load delay first for more accurate timing
-        f"LI(x{r_temp2}, RVMODEL_TIMER_INT_SOON_DELAY)",
-        # Then read mtime
-        f"ld x{r_temp1}, 0(x{r_mtime})",
-        f"add x{r_temp1}, x{r_temp1}, x{r_temp2}",
-        f"sd x{r_temp1}, 0(x{r_mtimecmp})",
-        "#elif __riscv_xlen == 32",
-        f"LI(x{r_temp4}, RVMODEL_TIMER_INT_SOON_DELAY)",  # Load delay into register
-        # Read current time (64-bit on RV32)
-        f"lw x{r_temp1}, 0(x{r_mtime})",  # mtime[31:0]
-        f"lw x{r_temp2}, 4(x{r_mtime})",  # mtime[63:32]
-        # Add delay to 64-bit value
-        f"add x{r_temp3}, x{r_temp1}, x{r_temp4}",  # new_low = mtime_low + delay
-        f"sltu x{r_temp4}, x{r_temp3}, x{r_temp1}",  # carry bit
-        f"add x{r_temp2}, x{r_temp2}, x{r_temp4}",  # new_high = mtime_high + carry
-        # Per RISC-V Spec 3.2.1: Write sequence to prevent spurious interrupt
-        # New comparand is in temp2:temp3
-        f"LI(x{r_temp1}, -1)",
-        f"sw x{r_temp1}, 0(x{r_mtimecmp})",  # Write -1 to low word first
-        f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
-        f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
+        f"sw x{r_temp1}, 0(x{r_mtimecmp})",
+        f"sw x{r_temp2}, 4(x{r_mtimecmp})",
+        f"sw x{r_temp3}, 0(x{r_mtimecmp})",
         "#endif",
         "#endif",
     ]
@@ -442,4 +477,44 @@ def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: 
         f"csrw stimecmp, x{r_temp3}",
         f"csrw stimecmph, x{r_temp2}",
         "#endif",
+    ]
+
+
+def set_stimer_mmode(r_scratch: int) -> list[str]:
+    """Set supervisor timer interrupt in M-mode (direct mip write).
+
+    This function directly writes mip.STIP without mode transitions.
+    Must be called from M-mode.
+
+    Args:
+        r_scratch: Scratch register for loading immediate
+
+    Returns:
+        List of assembly instructions
+    """
+    return [
+        f"{INDENT}# Set supervisor timer interrupt (M-mode direct)",
+        f"LI(x{r_scratch}, 0x20)",  # STIP bit (bit 5)
+        f"CSRS(mip, x{r_scratch})",
+        "nop",
+    ]
+
+
+def clr_stimer_mmode(r_scratch: int) -> list[str]:
+    """Clear supervisor timer interrupt in M-mode (direct mip write).
+
+    This function directly clears mip.STIP without mode transitions.
+    Must be called from M-mode.
+
+    Args:
+        r_scratch: Scratch register for loading immediate
+
+    Returns:
+        List of assembly instructions
+    """
+    return [
+        f"{INDENT}# Clear supervisor timer interrupt (M-mode direct)",
+        f"LI(x{r_scratch}, 0x20)",  # STIP bit (bit 5)
+        f"CSRC(mip, x{r_scratch})",
+        "nop",
     ]

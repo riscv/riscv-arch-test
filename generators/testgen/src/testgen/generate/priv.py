@@ -57,7 +57,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     tc = test_data.begin_test_chunk()
 
     # Priv tests use x1/ra as the return address for function calls, so reserve it before generating the test
-    test_data.int_regs.consume_registers([1])
+    test_data.int_regs.consume_registers([1, 5, 6, 7, 8, 9, 11, 28, 29, 30, 31])
 
     # Seed the RNG for reproducible test generation
     seed(reproducible_hash(testsuite))
@@ -67,7 +67,8 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
     body_lines = priv_test_generator(test_data)
 
     # Return x1/ra
-    test_data.int_regs.return_register(1)
+    # test_data.int_regs.return_register(1)
+    test_data.int_regs.return_registers([1, 5, 6, 7, 8, 9, 11, 28, 29, 30, 31])
 
     # Save test chunk
     tc.code = "\n".join(body_lines)

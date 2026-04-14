@@ -86,11 +86,6 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
     // FAULT CONDITION COVERPOINTS
     // ============================================================================
 
-    address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
-        bins legal = {0};
-        bins illegal = {1};
-    }
-
 
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
         // Auto fills 000 through 111 for misalignment
@@ -465,15 +460,6 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         vstvec_different_from_stvec;
 
 
-    // Priority crosses
-    // checking for legal addresses is not as rigorous right now
-    cp_priority: cross
-        hlv_hsv_instr,
-        address_legality,
-        addr_alignment,
-        priv_mode_m_hs_vs_u_vu,
-        hstatus_hu;
-
 
     // Virtual instruction exception crosses - VS mode
     cp_virtual_instr_vs_instret: cross hcounteren_disabled_ir, mcounteren_enabled_ir, csrr, instret, priv_mode_vs;
@@ -532,9 +518,13 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
         }
-    // Illegal address for HLV/HSV instructions (rs1 only, no immediate)
+        // Illegal address for HLV/HSV instructions (rs1 only, no immediate)
         hlv_illegal_address: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        address_legality: coverpoint ((ins.current.imm + ins.current.rs1_val) & ~(`XLEN'h3)) == (`RVMODEL_ACCESS_FAULT_ADDRESS & ~(`XLEN'h3)) {
+            bins legal = {0};
+            bins illegal = {1};
         }
 
         // HLV access fault crosses
@@ -549,6 +539,15 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         cp_hedeleg_instr_access_fault: cross jalr, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
         cp_hedeleg_load_access_fault: cross loadop, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
         cp_hedeleg_store_access_fault: cross storeop, illegal_address, priv_mode_m_hs_vs_u_vu, medeleg_delegation, hedeleg_delegation;
+        // Priority crosses
+        // checking for legal addresses is not as rigorous right now
+        cp_priority: cross
+            hlv_hsv_instr,
+            address_legality,
+            addr_alignment,
+            priv_mode_m_hs_vs_u_vu,
+            hstatus_hu;
+
     `endif
 
     // HSV address misalignment crosses

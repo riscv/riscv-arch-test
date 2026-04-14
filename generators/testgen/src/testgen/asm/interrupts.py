@@ -55,11 +55,11 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
         f"LI(x{r_temp}, -1)",
         "// skip clearing interrupt if RVMODEL_MTIMECMP_ADDRESS is not defined",
         "#ifdef RVMODEL_MTIMECMP_ADDRESS",
-        f"\tLA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
-        f"\tSREG x{r_temp}, 0(x{r_mtimecmp})",
-        "\t#if __riscv_xlen == 32",
-        f"\tsw x{r_temp}, 4(x{r_mtimecmp})",
-        "\t#endif",
+        f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
+        f"SREG x{r_temp}, 0(x{r_mtimecmp})",
+        "#if __riscv_xlen == 32",
+        f"sw x{r_temp}, 4(x{r_mtimecmp})",
+        "#endif",
         "#endif",
     ]
 

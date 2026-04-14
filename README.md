@@ -159,7 +159,7 @@ git clone https://github.com/riscv/riscv-arch-test
 On entering the top-level directory of the repository for the first
 time, or on the first use of one of the build commands below, you may
 see messages or a prompt from `mise` requiring enabling trust before
-the `.mise.toml` configuration file can be used.  This can be done by
+the `.mise.toml` configuration file can be used. This can be done by
 selecting `Yes` in the prompt or with the following command in the
 top-level directory of the repository:
 

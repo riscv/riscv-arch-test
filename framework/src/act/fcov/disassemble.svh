@@ -110,8 +110,7 @@ function string disassemble (logic [31:0] instrRaw);
     `endif
     // NOP
     NOP:     $sformat(decoded, "nop");
-
-    // Zimop Extension: MOP.R.n instructions
+    // Zimop Extension
     MOP_R_0: $sformat(decoded, "mop.r.0 %s, %s", rd, rs1);
     MOP_R_1: $sformat(decoded, "mop.r.1 %s, %s", rd, rs1);
     MOP_R_2: $sformat(decoded, "mop.r.2 %s, %s", rd, rs1);
@@ -144,8 +143,6 @@ function string disassemble (logic [31:0] instrRaw);
     MOP_R_29: $sformat(decoded, "mop.r.29 %s, %s", rd, rs1);
     MOP_R_30: $sformat(decoded, "mop.r.30 %s, %s", rd, rs1);
     MOP_R_31: $sformat(decoded, "mop.r.31 %s, %s", rd, rs1);
-
-    // Zimop Extension: MOP.RR.n instructions
     MOP_RR_0: $sformat(decoded, "mop.rr.0 %s, %s, %s", rd, rs1, rs2);
     MOP_RR_1: $sformat(decoded, "mop.rr.1 %s, %s, %s", rd, rs1, rs2);
     MOP_RR_2: $sformat(decoded, "mop.rr.2 %s, %s, %s", rd, rs1, rs2);
@@ -154,17 +151,15 @@ function string disassemble (logic [31:0] instrRaw);
     MOP_RR_5: $sformat(decoded, "mop.rr.5 %s, %s, %s", rd, rs1, rs2);
     MOP_RR_6: $sformat(decoded, "mop.rr.6 %s, %s, %s", rd, rs1, rs2);
     MOP_RR_7: $sformat(decoded, "mop.rr.7 %s, %s, %s", rd, rs1, rs2);
-
-    // Zcmop Extension: C.MOP.n instructions
-    C_MOP_1: $sformat(decoded, "c.mop.1");
-    C_MOP_3: $sformat(decoded, "c.mop.3");
-    C_MOP_5: $sformat(decoded, "c.mop.5");
-    C_MOP_7: $sformat(decoded, "c.mop.7");
-    C_MOP_9: $sformat(decoded, "c.mop.9");
+    // Zcmop Extension
+    C_MOP_1:  $sformat(decoded, "c.mop.1");
+    C_MOP_3:  $sformat(decoded, "c.mop.3");
+    C_MOP_5:  $sformat(decoded, "c.mop.5");
+    C_MOP_7:  $sformat(decoded, "c.mop.7");
+    C_MOP_9:  $sformat(decoded, "c.mop.9");
     C_MOP_11: $sformat(decoded, "c.mop.11");
     C_MOP_13: $sformat(decoded, "c.mop.13");
     C_MOP_15: $sformat(decoded, "c.mop.15");
-
     // Base Instructions
     ADD:     $sformat(decoded, "add %s, %s, %s", rd, rs1, rs2);
     SUB:     $sformat(decoded, "sub %s, %s, %s", rd, rs1, rs2);

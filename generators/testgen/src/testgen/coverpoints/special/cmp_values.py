@@ -29,19 +29,16 @@ def generate_cmp_testcase(
 ) -> TestChunk:
     """Generate a generic compare test case for CAS instructions"""
 
-    # Check if this instruction uses register pairs (value is 2 * XLEN)
-    is_pair = (instr_name == "amocas.q" and test_data.xlen == 64) or (instr_name == "amocas.d" and test_data.xlen == 32)
+    # Determine if this is a pair register instruction based on the instruction type
+    is_pair = instr_type == "AP"
 
     # Split values if dealing with a register pair
     mask = (1 << test_data.xlen) - 1
 
-    if not is_pair:
-        rd_val &= mask
-        rs1_val &= mask
-    else:
-        pair_mask = (1 << (2 * test_data.xlen)) - 1
-        rd_val &= pair_mask
-        rs1_val &= pair_mask
+    mask_val = (1 << (2 * test_data.xlen)) - 1 if is_pair else mask
+
+    rd_val &= mask_val
+    rs1_val &= mask_val
 
     # Allocate registers and generate params
     params = generate_random_params(
@@ -272,7 +269,7 @@ def make_cmp_rd_rs1_pair_partial_val(
 ) -> list[TestChunk]:
     """Generate tests for partial register pair equality"""
 
-    if test_data.xlen not in [32, 64] or instr_name not in ["amocas.q", "amocas.d"] or instr_type != "AP":
+    if instr_type != "AP":
         return []
 
     test_chunks = []
@@ -296,7 +293,7 @@ def make_cmp_rd_rs1_pair_partial_val(
             rd_val = (hi << test_data.xlen) | lo
             rs1_val = (mem_hi << test_data.xlen) | lo
 
-            desc = "PARTIAL VALUE (LOWER MATCH)"
+            desc = f"{coverpoint} (lower match)"
             bin_name = "partial_lo"
 
         else:
@@ -308,7 +305,7 @@ def make_cmp_rd_rs1_pair_partial_val(
             rd_val = (hi << test_data.xlen) | lo
             rs1_val = (hi << test_data.xlen) | mem_lo
 
-            desc = "PARTIAL VALUE (UPPER MATCH)"
+            desc = f"{coverpoint} (upper match)"
             bin_name = "partial_hi"
 
         tc = generate_cmp_testcase(instr_name, instr_type, test_data, coverpoint, desc, bin_name, rd_val, rs1_val)
@@ -325,7 +322,7 @@ def make_cmp_rd_rs1_sign_ext(instr_name: str, instr_type: str, coverpoint: str, 
     test_chunks = []
 
     # RV64 only, AMOCAS.W is relevant
-    if test_data.xlen != 64 or instr_name != "amocas.w":
+    if instr_type != "AP" or test_data.xlen != 64 or instr_name != "amocas.w":
         return test_chunks
 
     # Select corner memory values to cover sign-extension

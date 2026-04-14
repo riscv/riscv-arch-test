@@ -33,10 +33,6 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ExceptionsSm_cg"
 
 
-def _generate_ecall_m_tests(test_data: TestData) -> list[str]:
-    return generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode")
-
-
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_mstatus_ie"
     save_reg, mask_reg, arg_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
@@ -109,7 +105,7 @@ def make_exceptionssm(test_data: TestData) -> list[str]:
     lines.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     lines.extend(generate_breakpoint_tests(test_data, _CG))
     lines.extend(generate_illegal_instruction_tests(test_data, _CG))
-    lines.extend(_generate_ecall_m_tests(test_data))
+    lines.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_m", "ecall_m", "Ecall Machine Mode"))
     lines.extend(_generate_mstatus_ie_tests(test_data))
 
     return lines

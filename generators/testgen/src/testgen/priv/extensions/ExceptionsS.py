@@ -33,10 +33,6 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "ExceptionsS_cg"
 
 
-def _generate_ecall_s_tests(test_data: TestData) -> list[str]:
-    return generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall")
-
-
 def _generate_illegal_instruction_csr_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = _CG, "cp_illegal_instruction_csr"
     dest_regs = test_data.int_regs.get_registers(2, exclude_regs=[0])
@@ -457,7 +453,7 @@ def make_exceptionss(test_data: TestData) -> list[str]:
             test_data, _CG, "cp_misaligned_priority", name_prefix="fetch_", name_suffix="_priority"
         )
     )
-    lines.extend(_generate_ecall_s_tests(test_data))
+    lines.extend(generate_ecall_tests(test_data, _CG, "cp_ecall_s", "ecall_s", "Ecall"))
     lines.extend(_generate_illegal_instruction_csr_tests(test_data))
     lines.extend(_generate_medeleg_msu_tests(test_data, "mode_m", priv_mode=3))
     lines.extend(_generate_medeleg_msu_tests(test_data, "mode_s", priv_mode=1))

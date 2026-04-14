@@ -14,7 +14,7 @@ from testgen.data.state import TestData
 
 def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_branch"
-    temp_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    temp_reg = test_data.int_regs.get_register(exclude_regs=[])
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned branch (taken)"),
@@ -50,7 +50,7 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
 
 def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_branch_nottaken"
-    temp_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    temp_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[])
 
     lines = [
         comment_banner(
@@ -59,7 +59,7 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
         ),
         ".align 2",
         f"LI(x{temp_reg}, 1)",
-        f"LI(x{check_reg}, 1)",
+        f"LI(x{check_reg}, 0)",
         test_data.add_testcase("nottaken_branch_pc_6", coverpoint, covergroup),
     ]
 
@@ -72,6 +72,7 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
         else:  # blt, bltu
             rs1, rs2 = f"x{temp_reg}", "x0"
         lines.append(f"{branch} {rs1}, {rs2}, .+6")
+        lines.append(f"addi x{check_reg}, x{check_reg}, 1")
 
     lines.append(write_sigupd(check_reg, test_data))
     test_data.int_regs.return_registers([temp_reg, check_reg])
@@ -100,8 +101,9 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
         comment_banner(coverpoint, "Instruction Address Misaligned JALR"),
     ]
 
-    # rs1 is set to PC + base_offset so that rs1[1:0] == rs1_lsb.
     # jalr_off controls the offset[1:0], covering all 16 combinations of (rs1+offset)[1:0].
+    # JALR jumps to (rs1 + offset) with bit 0 cleared.
+    # Misaligned exception occurs when bit 1 of the target is set
     offsets_for_lsb = {0: 8, 1: 5, 2: 6, 3: 7}
 
     for rs1_lsb in range(4):
@@ -113,21 +115,12 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
                 [
                     f"\n# rs1[1:0]={rs1_lsb:02b}, offset[1:0]={offset_lsb:02b}",
                     ".align 2",
-                    f"auipc x{addr_reg}, 0",
-                    f"addi x{addr_reg}, x{addr_reg}, {base_off}",
-                    test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),
-                    f"jalr x1, {jalr_off}(x{addr_reg})",
-                    "nop",
-                ]
-            )
-
-            if rs1_lsb & 1:
-                lines.append("nop")
-
-            lines.extend(
-                [
+                    f"auipc x{addr_reg}, 0",  # PC+0 addr_reg = PC
+                    f"addi x{addr_reg}, x{addr_reg}, {base_off}",  # PC+4 addr_reg[1:0] = rs1_lsb
+                    test_data.add_testcase(f"jalr_rs1_{rs1_lsb}_off_{offset_lsb}", coverpoint, covergroup),  # PC+8
+                    f"jalr x1, {jalr_off}(x{addr_reg})",  # PC+12 jump target is PC + base_off + jalr_off (bit 0 cleared)
                     "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
-                    "addi x0, x2, 0",
+                    "addi x0, x2, 0",  # PC+16 return for aligned jumps
                 ]
             )
 

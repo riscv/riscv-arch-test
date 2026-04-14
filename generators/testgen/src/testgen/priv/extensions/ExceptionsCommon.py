@@ -59,7 +59,6 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
         ".align 2",
         f"LI(x{temp_reg}, 1)",
         f"LI(x{check_reg}, 0)",
-        test_data.add_testcase("nottaken_branch_pc_6", coverpoint, covergroup),
     ]
 
     branches = ["beq", "bne", "blt", "bge", "bltu", "bgeu"]
@@ -70,9 +69,14 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
             rs1, rs2 = "x0", "x0"  # 0 == 0, so bne not taken
         else:  # blt, bltu
             rs1, rs2 = f"x{temp_reg}", "x0"
-        lines.append(f"{branch} {rs1}, {rs2}, .+6")
-        lines.append(f"addi x{check_reg}, x{check_reg}, 1")
-
+        lines.extend(
+            [
+                test_data.add_testcase(f"nottaken_branch_pc_6_{branch}", coverpoint, covergroup),
+                f"{branch} {rs1}, {rs2}, .+6",
+                f"addi x{check_reg}, x{check_reg}, 1",
+                "nop",
+            ]
+        )
     lines.append(write_sigupd(check_reg, test_data))
     test_data.int_regs.return_registers([temp_reg, check_reg])
     return lines
@@ -87,13 +91,14 @@ def generate_instr_adr_misaligned_jal_tests(test_data: TestData, covergroup: str
         "jal x0, .+6",
         "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
         "addi x0, x2, 0",
+        "nop",
     ]
     return lines
 
 
 def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_instr_adr_misaligned_jalr"
-    addr_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    addr_reg = test_data.int_regs.get_register(exclude_regs=[])
 
     lines = [
         comment_banner(coverpoint, "Instruction Address Misaligned JALR"),
@@ -119,6 +124,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
                     f"jalr x1, {jalr_off}(x{addr_reg})",  # PC+12 jump target is PC + base_off + jalr_off (bit 0 cleared)
                     "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                     "addi x0, x2, 0",  # PC+16 return for aligned jumps
+                    "nop",
                 ]
             )
 
@@ -186,7 +192,6 @@ def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str
         comment_banner(
             coverpoint, "Illegal instruction on seed CSR which should cause an illegal instruction exception"
         ),
-        "#ifndef ZKR_SUPPORTED",
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
         f"csrrs x{dest_reg}, seed, x0",
         "nop",
@@ -203,10 +208,9 @@ def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str
         f"csrrci x{dest_reg}, seed, 0",
         "nop",
         write_sigupd(dest_reg, test_data),
-        "#endif",
     ]
 
-    test_data.int_regs.return_registers([dest_reg])
+    test_data.int_regs.return_register(dest_reg)
     return lines
 
 

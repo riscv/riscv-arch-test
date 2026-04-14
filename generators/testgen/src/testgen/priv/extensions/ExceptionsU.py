@@ -34,7 +34,7 @@ _CG = "ExceptionsU_cg"
 
 def _generate_mstatus_ie_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsU_cg", "cp_mstatus_ie"
-    save_reg, mask_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    save_reg, mask_reg = test_data.int_regs.get_registers(2, exclude_regs=[])
 
     lines = [
         comment_banner(coverpoint, "ecall from user mode with MIE=0 vs MIE=1"),

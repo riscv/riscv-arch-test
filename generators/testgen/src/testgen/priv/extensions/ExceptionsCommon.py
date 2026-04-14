@@ -40,7 +40,6 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
                 f"{branch} {rs1}, {rs2}, .+6",
                 "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
                 "addi x0, x2, 0",
-                "nop",
             ]
         )
 
@@ -88,7 +87,6 @@ def generate_instr_adr_misaligned_jal_tests(test_data: TestData, covergroup: str
         "jal x0, .+6",
         "# branch by 6 lands in upper half of next instruction 0x0001 which is generated into a c.nop",
         "addi x0, x2, 0",
-        "nop",
     ]
     return lines
 
@@ -104,7 +102,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
     # jalr_off controls the offset[1:0], covering all 16 combinations of (rs1+offset)[1:0].
     # JALR jumps to (rs1 + offset) with bit 0 cleared.
     # Misaligned exception occurs when bit 1 of the target is set
-    offsets_for_lsb = {0: 8, 1: 5, 2: 6, 3: 7}
+    offsets_for_lsb = [8, 5, 6, 7]
 
     for rs1_lsb in range(4):
         for offset_lsb in range(4):
@@ -182,25 +180,33 @@ def generate_illegal_instruction_tests(test_data: TestData, covergroup: str) -> 
 
 def generate_illegal_instruction_seed_tests(test_data: TestData, covergroup: str) -> list[str]:
     coverpoint = "cp_illegal_instruction_seed"
-    dest_regs = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    dest_reg = test_data.int_regs.get_register(exclude_regs=[0])
 
     lines = [
-        comment_banner(coverpoint, "Illegal Instruction Seed"),
+        comment_banner(
+            coverpoint, "Illegal instruction on seed CSR which should cause an illegal instruction exception"
+        ),
+        "#ifdef ZKR_SUPPORTED",
         test_data.add_testcase("seed_csrrs", coverpoint, covergroup),
-        f"csrrs x{dest_regs[0]}, seed, x0",
+        f"csrrs x{dest_reg}, seed, x0",
         "nop",
+        write_sigupd(dest_reg, test_data),
         test_data.add_testcase("seed_csrrc", coverpoint, covergroup),
-        f"csrrc x{dest_regs[1]}, seed, x0",
+        f"csrrc x{dest_reg}, seed, x0",
         "nop",
+        write_sigupd(dest_reg, test_data),
         test_data.add_testcase("seed_csrrsi", coverpoint, covergroup),
-        f"csrrsi x{dest_regs[2]}, seed, 0",
+        f"csrrsi x{dest_reg}, seed, 0",
         "nop",
+        write_sigupd(dest_reg, test_data),
         test_data.add_testcase("seed_csrrci", coverpoint, covergroup),
-        f"csrrci x{dest_regs[3]}, seed, 0",
+        f"csrrci x{dest_reg}, seed, 0",
         "nop",
+        write_sigupd(dest_reg, test_data),
+        "#endif",
     ]
 
-    test_data.int_regs.return_registers(dest_regs)
+    test_data.int_regs.return_registers([dest_reg])
     return lines
 
 

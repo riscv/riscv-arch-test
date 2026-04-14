@@ -445,9 +445,6 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
 def make_interruptssm(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
 
-    # consumer t2 and t5 for interrupt subroutines, but mark as consumed for whole test since they're used throughout
-    test_data.int_regs.consume_registers([7, 30])
-
     lines: list[str] = []
 
     lines.extend(_generate_trigger_mti_tests(test_data))
@@ -457,8 +454,5 @@ def make_interruptssm(test_data: TestData) -> list[str]:
     lines.extend(_generate_vectored_tests(test_data))
     lines.extend(_generate_priority_tests(test_data))
     lines.extend(_generate_wfi_tests(test_data))
-
-    # Return the consumed registers before test ends
-    test_data.int_regs.return_registers([7, 30])
 
     return lines

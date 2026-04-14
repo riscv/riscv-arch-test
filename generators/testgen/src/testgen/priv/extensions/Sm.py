@@ -796,11 +796,12 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             coverpoint,
-            "Write mtime and read back time",
+            "Write mtime and read back time if supported",
         ),
     )
     lines.extend(
         [
+            "#ifdef RVMODEL_MTIME_ADDRESS",
             f"LI(x{r1}, 42)        # value to write to mtime",
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
@@ -818,6 +819,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"CSRR(x{r2}, timeh)        # read timeh",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
             write_sigupd(r2, test_data),
+            "#endif",
             "#endif",
         ]
     )

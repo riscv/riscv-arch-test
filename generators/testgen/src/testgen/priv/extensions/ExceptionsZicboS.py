@@ -8,7 +8,7 @@
 
 """Zicbo extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -343,6 +343,7 @@ def make_exceptionszicbos(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZicboS coverpoints"""
     lines = []
 
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_cbie_tests(test_data))
     lines.extend(_generate_cbcfe_tests(test_data))
     lines.extend(_generate_cbze_tests(test_data))

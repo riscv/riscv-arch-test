@@ -44,7 +44,7 @@ def _generate_smfcsr_tests(test_data: TestData) -> list[str]:
         )
     )
 
-    ones_reg, check_reg, scratch_reg, temp_reg, save_reg = test_data.int_regs.get_registers(5, exclude_regs=[0])
+    ones_reg, check_reg, scratch_reg, temp_reg, save_reg = test_data.int_regs.get_registers(5)
     lines.append(f"LI(x{ones_reg}, -1)\n")
 
     for fs in range(4):

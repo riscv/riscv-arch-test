@@ -316,6 +316,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     csrrw: coverpoint ins.current.insn {
         wildcard bins csrrw = {CSRRW};
     }
+    csrc: coverpoint ins.current.insn {
+        wildcard bins csrc = {CSRC};
+    }
     nonzerord: coverpoint ins.current.insn[11:7] {
         type_option.weight = 0;
         bins nonzero = { [1:$] }; // rd != 0
@@ -352,16 +355,57 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
     `endif
 
+    misa: coverpoint ins.current.insn[31:20] {
+        bins misa = {CSR_MISA};
+    }
+    // only check MISA.MXL.  The other bits are allowed to be 0s even if a feature is implemented.
+    // misa.MXL is also allowed to be hardwired to 0 (but should match the reference model)
+    misa_mxl_accesses : coverpoint ins.current.insn {
+        wildcard bins csrc_11  = {CSRC} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // clear misa.MXL
+        wildcard bins csrs_11  = {CSRS} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // set misa.MXL = 11
+        wildcard bins csrw_00  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b00); // write misa.MXL = 00
+        wildcard bins csrw_01  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b01); // write misa.MXL = 01
+        wildcard bins csrw_10  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b10); // write misa.MXL = 10
+        wildcard bins csrw_11  = {CSRW} iff (ins.current.rs1_val[XLEN-1:XLEN-2] == 2'b11); // write misa.MXL = 11
+        wildcard bins csrr     = {CSRR};                                                   // read misa
+    }
+
+    misa_dependencies : coverpoint ins.current.rs1_val[25:0] {
+        wildcard bins i1e1   = { 26'b?????????????????1???1???? };
+        wildcard bins i0e0   = { 26'b?????????????????1???1???? };
+        wildcard bins f0d1   = { 26'b????????????????????0?1??? };
+        wildcard bins f1d0q1 = { 26'b?????????1??????????1?0??? };
+        wildcard bins s1u0   = { 26'b?????0?1?????????????????? };
+        wildcard bins h1s0   = { 26'b???????0??????????1??????? };
+        wildcard bins h1s1u0 = { 26'b?????0?1??????????1??????? };
+    }
+
+    misa_c_0 : coverpoint ins.current.rs1_val[2] {
+        bins c0 = {1'b1};
+    }
+
+    pc_1 : coverpoint ins.current.pc_rdata[1] {
+        `ifdef ZCA_SUPPORTED
+            bins odd = {1'b1}; // check for 2-byte alignment when supported
+        `endif
+        bins even = {1'b0}; // trivial case of 4-byte alignment
+    }
+
     cp_mcsr_access:             cross priv_mode_m, mcsrname, csraccesses;
     cp_mcsr_access_ro:          cross priv_mode_m, mcsrname_ro, csraccesses;
     cp_mcsrwalk :               cross priv_mode_m, mcsrname, csrop, walking_ones;
-    cp_csr_insufficient_priv:   cross priv_mode_m, csrr,   csr_debug, nonzerord;
-    cp_csr_ro:                  cross priv_mode_m, csrrw,  csr_ro,    rs1_ones;
+    cp_csr_insufficient_priv:   cross priv_mode_m, csrr, csr_debug, nonzerord;
+    cp_csr_ro:                  cross priv_mode_m, csrrw, csr_ro, rs1_ones;
 
     // counters
     cp_cntr_access :            cross priv_mode_m, mcounters, cntraccesses;
     cp_inhibit_mcycle :         cross priv_mode_m, csrr, mcycle, old_mcountinhibit_cy;
     cp_inhibit_minstret :       cross priv_mode_m, csrr, minstret, old_mcountinhibit_ir;
+
+    // misa
+    cp_misa_mxl :               cross priv_mode_m, misa, misa_mxl_accesses;
+    cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
+    cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
     `ifdef TIME_CSR_IMPLEMENTED
         cp_mtime_write :        cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
@@ -372,10 +416,11 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
 endgroup
 
 function void sm_sample(int hart, int issue, ins_t ins);
-    //if (ins.ins_str == "csrrw" || ins.ins_str == "csrrs" || ins.ins_str == "csrrc")
-    //    $display("PC = %h (%s) csr = %h rs1_val = %h", ins.current.pc_rdata,ins.current.disass, ins.current.insn[31:20], ins.current.rs1_val);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
     Sm_mprivinst_cg.sample(ins);
     Sm_mcsr_cg.sample(ins);
+    //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
+    //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],
+    //    ins.current.rs1_val[2], ins.current.pc_rdata[1]);
 endfunction

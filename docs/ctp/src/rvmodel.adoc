@@ -39,11 +39,11 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_CLR_SEXT_INT(_R1, _R2)|Clears the Supervisor External Interrupt `sip.SEIP` using platform-specific interrupt controller. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode external interrupts are not tested.  | Machine or Supervisor
 |RVMODEL_SET_SSW_INT(_R1, _R2)|Sets the Supervisor Software Interrupt `sip.SSIP` using a platform-specific interrupt controller, if supported. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
 |RVMODEL_CLR_SSW_INT(_R1, _R2)|Clears the Supervisor Software Interrupt `sip.SSIP` by using a platform-specific interrupt controller, as applicable. _R1 and _R2 are temporary registers that may be trashed by the macro.|If S-mode software interrupts are not tested.  | Machine or Supervisor
-|RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures handler completes before test continues.|Can be 0 if interrupt controller adds no delay. | n/a
 |RVMODEL_ACCESS_FAULT_ADDRESS|The base physical address of a region of at least 128 bytes that causes an access fault when any part of the region is read or written. This is used to test exceptions.|No.| n/a
 |RVMODEL_MTIME_ADDRESS|The address of the memory-mapped `mtime` register, used for timer accesses and interrupts.|If timer interrupts are not tested. | n/a
 |RVMODEL_MTIMECMP_ADDRESS|The address of the memory-mapped `mtimecmp` register, used for timer interrupts.| If Machine timer interrupts are not tested. | n/a
-|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in cycles) before a timer interrupt fires when using `set_mtimer_int_soon()`. Sets `mtimecmp = mtime + delay`.| If Machine timer interrupts are not tested. | n/a
+|RVMODEL_INTERRUPT_LATENCY|Expected latency (in cycles/NOPs) for interrupt trap processing. Ensures interrupt is received and can be processed before test continues.|Can be 0 if interrupt controller adds no delay. | n/a
+|RVMODEL_TIMER_INT_SOON_DELAY|The delay (in cycles) before a timer interrupt fires when using `set_mtimer_int_soon()`. Sets `mtimecmp = mtime + delay`. Should be long enough that the core can run a few instructions before the interrupt fires.| If Machine timer interrupts are not tested. | n/a
 |RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
 |===
 
@@ -86,4 +86,4 @@ If you have a complex DUT, you presumably have a team of sophisticated verificat
 [[linker-script]]
 === Linker Script
 
-Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text`, `.data`, and `.bss` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text`, and `.data` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.

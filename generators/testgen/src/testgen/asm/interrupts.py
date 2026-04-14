@@ -20,7 +20,8 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         r_temp2: Second temp register number for RV32
     """
     return [
-        f"{INDENT}# Cause machine timer interrupt",
+        f"{INDENT}# Cause machine timer interrupt if supported",
+        "#ifdef RVMODEL_MTIME_ADDRESS",
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
@@ -37,6 +38,7 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
         f"sw x{r_temp2}, 4(x{r_mtimecmp}) # Step 2: Write high word (no smaller than new)",
         f"sw x{r_temp}, 0(x{r_mtimecmp}) # Step 3: Write low word (new value)",
         "#endif",
+        "#endif",
     ]
 
 
@@ -51,10 +53,13 @@ def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
     return [
         f"{INDENT}# Clear machine timer interrupt",
         f"LI(x{r_temp}, -1)",
+        "// skip clearing interrupt if RVMODEL_MTIMECMP_ADDRESS is not defined",
+        "#ifdef RVMODEL_MTIMECMP_ADDRESS",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         f"SREG x{r_temp}, 0(x{r_mtimecmp})",
         "#if __riscv_xlen == 32",
         f"sw x{r_temp}, 4(x{r_mtimecmp})",
+        "#endif",
         "#endif",
     ]
 
@@ -72,7 +77,8 @@ def set_mtimer_int_soon(
         r_temp1, r_temp2, r_temp3, r_temp4: Temp registers for calculations
     """
     return [
-        f"{INDENT}# Cause machine timer interrupt soon",
+        f"{INDENT}# Cause machine timer interrupt soon if supported",
+        "#ifdef RVMODEL_MTIME_ADDRESS",
         f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
         f"LA(x{r_mtimecmp}, RVMODEL_MTIMECMP_ADDRESS)",
         "#if __riscv_xlen == 64",
@@ -99,6 +105,7 @@ def set_mtimer_int_soon(
         f"sw x{r_temp2}, 4(x{r_mtimecmp})",  # Write high word
         f"sw x{r_temp3}, 0(x{r_mtimecmp})",  # Write low word (final value)
         "#endif",
+        "#endif",
     ]
 
 
@@ -122,7 +129,7 @@ def set_stimer_int(r_mtime: int, r_temp: int, r_temp2: int, r_scratch: int) -> l
         f"BEQZ x{r_scratch}, 1f # If STCE=0, use non sstc method",
         "",
         f"{INDENT}# Sstc method: Write stimecmp",
-        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS) # NOTE: This will need to be replaced by a SBI call because MTIME might not exist or be accessible",
         f"LREG x{r_temp}, 0(x{r_mtime})",
         f"csrw stimecmp, x{r_temp}",
         "nop",
@@ -188,7 +195,7 @@ def set_stimer_int_soon_sstc(r_mtime: int, r_temp1: int, r_temp2: int, r_temp3: 
     """
     return [
         f"{INDENT}# Set supervisor timer interrupt to fire soon with Sstc extension",
-        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)",
+        f"LA(x{r_mtime}, RVMODEL_MTIME_ADDRESS)  # NOTE: This will need to be replaced by a SBI call because MTIME might not exist or be accessible",
         "#if __riscv_xlen == 64",
         f"{INDENT}# Disable comparator first",
         f"LI(x{r_temp1}, -1)",

@@ -88,10 +88,15 @@ def make_exceptionssm(test_data: TestData) -> list[str]:
     lines.extend(generate_instr_adr_misaligned_branch_nottaken(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_jal_tests(test_data, _CG))
     lines.extend(generate_instr_adr_misaligned_jalr_tests(test_data, _CG))
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
     lines.extend(generate_instr_access_fault_tests(test_data, _CG))
+    lines.append("#endif")
     lines.extend(generate_load_address_misaligned_tests(test_data, _CG, use_sentinel=False))
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
     lines.extend(generate_load_access_fault_tests(test_data, _CG, use_sigupd=False))
+    lines.append("#endif")
     lines.extend(generate_store_address_misaligned_tests(test_data, _CG))
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
     lines.extend(generate_store_access_fault_tests(test_data, _CG))
     lines.extend(generate_misaligned_priority_load_tests(test_data, _CG, "cp_misaligned_priority_load", name_infix="_"))
     lines.extend(
@@ -102,6 +107,7 @@ def make_exceptionssm(test_data: TestData) -> list[str]:
             test_data, _CG, "cp_misaligned_priority_fetch", name_prefix="", name_suffix=""
         )
     )
+    lines.append("#endif")
     lines.extend(generate_illegal_instruction_seed_tests(test_data, _CG))
     lines.extend(generate_breakpoint_tests(test_data, _CG))
     lines.extend(generate_illegal_instruction_tests(test_data, _CG))

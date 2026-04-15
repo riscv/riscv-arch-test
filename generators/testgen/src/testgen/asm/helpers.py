@@ -148,12 +148,12 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
 
 def check_access_fault_address_defined(test_data: TestData) -> str:
     """
-    If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute scratch so test runs but does not generate access faults.
+    If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute 0 so test compiles and runs but does not generate access faults.
     """
     lines = [
-        "# If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute scratch so test runs but does not generate access faults.",
+        "# If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute 0 so test compiles and runs but does not generate access faults.",
         "#ifndef RVMODEL_ACCESS_FAULT_ADDRESS",
-        "  #define RVMODEL_ACCESS_FAULT_ADDRESS scratch",
+        "  #define RVMODEL_ACCESS_FAULT_ADDRESS 0",
         "#endif",
         "",
     ]

@@ -8,7 +8,7 @@
 
 """Zicbo extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -300,6 +300,7 @@ def make_exceptionszicbou(test_data: TestData) -> list[str]:
     lines = []
 
     lines.extend(["#ifdef S_SUPPORTED", "    LI(x11, -1)", "    csrw senvcfg, x11", "#endif"])
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_cbie_tests(test_data))
     lines.extend(_generate_cbcfe_tests(test_data))
     lines.extend(_generate_cbze_tests(test_data))

@@ -41,17 +41,18 @@
 #endif
 
 ##### ADDRESSES #####
-#ifndef RVMODEL_ACCESS_FAULT_ADDRESS
-  #error "RVMODEL_ACCESS_FAULT_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+// If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
 
 ##### MTIME #####
-#ifndef RVMODEL_MTIME_ADDRESS
-  #error "RVMODEL_MTIME_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
-#endif
+// If RVMODEL_MTIME_ADDRESS is not defined, no machine timer interrupts are tested
 
-#ifndef RVMODEL_MTIMECMP_ADDRESS
-  #error "RVMODEL_MTIMECMP_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
+#ifdef RVMODEL_MTIME_ADDRESS
+  // If RVMODEL_MTIME_ADDRESS is defined, these other MTIME-related macros must also be defined
+  // because the tests will need them to cause timer interrupts and test timer functionality.
+  // If these macros are not defined, the tests will fail to assemble due to the checks below.
+  #ifndef RVMODEL_MTIMECMP_ADDRESS
+    #error "RVMODEL_MTIMECMP_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
+  #endif
 #endif
 
 ##### Interrupt Delays #####

@@ -1452,10 +1452,13 @@ common_\__MODE__\()excpt_handler:
 
 vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem area
 #ifdef SKIP_MEPC
-        LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
-        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
-        addi    T2, T2, 2
-        beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+        // skip checking if there are no access faults
+        #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+                LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+                beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
+                addi    T2, T2, 2
+                beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2
+        #endif
 #endif
         LREG    T2, vmem_bgn_off(T4)            // T4 points to trapping mode sv_area
         LREG    T6, vmem_seg_siz(T4)
@@ -1714,8 +1717,11 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 
 \__MODE__\()clr_Mtmr_int:               // int 7 default to just return
         li T5, -1
-        la T2, RVMODEL_MTIMECMP_ADDRESS
-        SREG T5, 0(T2)
+        # skip if RVMODEL_MTIMECMP_ADDRESS is not defined
+        #ifdef RVMODEL_MTIMECMP_ADDRESS
+                la T2, RVMODEL_MTIMECMP_ADDRESS
+                SREG T5, 0(T2)
+        #endif
         #if __riscv_xlen == 32
                 sw T5, 4(T2)
         #endif

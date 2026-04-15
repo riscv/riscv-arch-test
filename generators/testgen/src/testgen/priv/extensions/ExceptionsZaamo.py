@@ -8,7 +8,7 @@
 
 """Zaamo extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
@@ -176,6 +176,7 @@ def make_exceptionszaamo(test_data: TestData) -> list[str]:
     """Main entry point for Zaamo exception test generation."""
     lines = []
 
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_amo_address_misaligned_tests(test_data))
     lines.extend(_generate_amo_access_fault_tests(test_data))
     return lines

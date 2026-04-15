@@ -342,9 +342,6 @@
   // End of data region
   .global rvtest_data_end
   rvtest_data_end:
-
-  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h
-  RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_DATA_END ********************************/
 
@@ -395,6 +392,11 @@
   rvtest_sig_end:
   .global end_signature
   end_signature:
+
+  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
+  // Placed after the signature so variable-size DUT data does not affect any
+  // test-visible symbol addresses.
+  RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 

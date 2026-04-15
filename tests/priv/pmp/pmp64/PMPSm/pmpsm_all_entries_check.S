@@ -410,141 +410,16 @@ main:
     SET_PMP_ENTRY pmpaddr16, pmpcfg4, PMP_REGION_16
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
 
-// Test Case: 48 — slot 14, pmpcfg2
-    SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_48
 
-// Test Case: 49 — slot 13, pmpcfg2
-    SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_49
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
 
-// Test Case: 50 — slot 12, pmpcfg2
-    SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_50
+test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
+test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
-// Test Case: 51 — slot 11, pmpcfg2
-    SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_51
-
-// Test Case: 52 — slot 10, pmpcfg2
-    SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_52
-
-// Test Case: 53 — slot 9, pmpcfg2
-    SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_53
-
-// Test Case: 54 — slot 8, pmpcfg2
-    SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_54
-
-// Test Case: 55 — slot 7, pmpcfg0
-    SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_55
-
-// Test Case: 56 — slot 6, pmpcfg0
-    SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_56
-
-// Test Case: 57 — slot 5, pmpcfg0
-    SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_57
-
-// Test Case: 58 — slot 4, pmpcfg0
-    SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_58
-
-// Test Case: 59 — slot 3, pmpcfg0
-    SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_59
-
-// Test Case: 60 — slot 2, pmpcfg0
-    SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_60
-
-// Test Case: 61 — slot 1, pmpcfg0
-    SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_61
-
-// Test Case: 62 — slot 0, pmpcfg0
-    SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_62
-
-#endif  // RVMODEL_NUM_PMPS == 64
-
-// ===========================================================================
-// TEST CASES — 16-PMP ONLY (slots 14-0, test cases 1-15)
-// slot 15 is the background region; we test slots 14 down to 0.
-// pmpcfg2 covers pmpaddr8-15  (RV64: one 64-bit CSR = 8 entries)
-// pmpcfg0 covers pmpaddr0-7
-// ===========================================================================
-#if RVMODEL_NUM_PMPS == 16
-
-// Test Case: 1 — slot 14, pmpcfg2
-    SET_PMP_ENTRY pmpaddr14, pmpcfg2, PMP_REGION_14
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_1
-
-// Test Case: 2 — slot 13, pmpcfg2
-    SET_PMP_ENTRY pmpaddr13, pmpcfg2, PMP_REGION_13
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_2
-
-// Test Case: 3 — slot 12, pmpcfg2
-    SET_PMP_ENTRY pmpaddr12, pmpcfg2, PMP_REGION_12
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_3
-
-// Test Case: 4 — slot 11, pmpcfg2
-    SET_PMP_ENTRY pmpaddr11, pmpcfg2, PMP_REGION_11
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_4
-
-// Test Case: 5 — slot 10, pmpcfg2
-    SET_PMP_ENTRY pmpaddr10, pmpcfg2, PMP_REGION_10
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_5
-
-// Test Case: 6 — slot 9, pmpcfg2
-    SET_PMP_ENTRY pmpaddr9, pmpcfg2, PMP_REGION_9
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_6
-
-// Test Case: 7 — slot 8, pmpcfg2
-    SET_PMP_ENTRY pmpaddr8, pmpcfg2, PMP_REGION_8
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_7
-
-// Test Case: 8 — slot 7, pmpcfg0
-    SET_PMP_ENTRY pmpaddr7, pmpcfg0, PMP_REGION_7
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_8
-
-// Test Case: 9 — slot 6, pmpcfg0
-    SET_PMP_ENTRY pmpaddr6, pmpcfg0, PMP_REGION_6
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_9
-
-// Test Case: 10 — slot 5, pmpcfg0
-    SET_PMP_ENTRY pmpaddr5, pmpcfg0, PMP_REGION_5
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_10
-
-// Test Case: 11 — slot 4, pmpcfg0
-    SET_PMP_ENTRY pmpaddr4, pmpcfg0, PMP_REGION_4
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_11
-
-// Test Case: 12 — slot 3, pmpcfg0
-    SET_PMP_ENTRY pmpaddr3, pmpcfg0, PMP_REGION_3
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_12
-
-// Test Case: 13 — slot 2, pmpcfg0
-    SET_PMP_ENTRY pmpaddr2, pmpcfg0, PMP_REGION_2
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_13
-
-// Test Case: 14 — slot 1, pmpcfg0
-    SET_PMP_ENTRY pmpaddr1, pmpcfg0, PMP_REGION_1
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_14
-
-// Test Case: 15 — slot 0, pmpcfg0
-    SET_PMP_ENTRY pmpaddr0, pmpcfg0, PMP_REGION_0
-    VERIFICATION_RWX    TEST_FOR_EXECUTION, test_15
-
-#endif  // RVMODEL_NUM_PMPS == 16
-
-    j exit                                                  // Verification complete
-
-.align 12
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))
     nop
@@ -553,16 +428,8 @@ TEST_FOR_EXECUTION:
 RETURN_INSTRUCTION:
     nop
     nop
-    jr ra                                                   // Return to caller
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-test_1_str: .string "\"test: 1; cp: cp_pmpm64_lw\""
-test_2_str: .string "\"test: 2; cp: cp_pmpm64_sw\""
 
 RVTEST_DATA_END
 

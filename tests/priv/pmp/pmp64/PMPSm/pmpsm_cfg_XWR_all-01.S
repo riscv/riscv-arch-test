@@ -238,20 +238,68 @@ main:
 
     RVTEST_GOTO_MMODE
 
-    j exit                                                        // Verification Complete, exit the test
+// Test Case: 9 -- R Permissions given to the PMP Region 6
 
-.align 12
-TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
-    nop
-    .endr
+    LI(x4, (PMPREGION_XWR_001 << PMP6_CFG_SHIFT))
+    csrw pmpcfg0, x4
 
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_9
 
-exit:
+    RVTEST_GOTO_MMODE
+
+// Test Case: 10 -- XR Permissions given to the PMP Region 5
+
+    LI(x4, (PMPREGION_XWR_101 << PMP5_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_10
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 11 -- XR Permissions given to the PMP Region 4
+
+    LI(x4, (PMPREGION_XWR_011 << PMP4_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_11
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 12 -- XWR Permissions given to the PMP Region 3
+
+    LI(x4, (PMPREGION_XWR_111 << PMP3_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_12
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 13 -- No Permissions given to the PMP Region 2
+
+    LI(x4, (PMPREGION_XWR_000 << PMP2_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_13
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 14 -- X Permissions given to the PMP Region 1
+
+    LI(x4, (PMPREGION_XWR_100 << PMP1_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_14
+
+    RVTEST_GOTO_MMODE
+
+// Test Case: 15 -- R Permissions given to the PMP Region 0
+
+    LI(x4, (PMPREGION_XWR_001 << PMP0_CFG_SHIFT))
+    csrw pmpcfg0, x4
+
+    VERIFICATION_RWX    TEST_FOR_EXECUTION , test_15
+
+    RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END
 
@@ -270,6 +318,18 @@ test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lhu\""
 test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_lw\""
 test_10_str: .string "\"test: 10; cp: pmpm_cfg_XWR_all_lwu\""
 test_11_str: .string "\"test: 11; cp: pmpm_cfg_XWR_all_ld\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

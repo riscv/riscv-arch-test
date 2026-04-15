@@ -177,9 +177,15 @@ main:
     VERIFICATION_RWX    TEST_FOR_EXECUTION_13, test_14
     VERIFICATION_RWX    TEST_FOR_EXECUTION_14, test_15
 
-    j exit                                                      // Verification Complete, exit the test
+RVTEST_CODE_END
+RVTEST_DATA_BEGIN
+.align 4
 
-.align 13
+// Test case strings for reporting
+canary_mismatch: .string "Testcase signature canary mismatch!"
+test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
+
+.align 10
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION_0:                       // Adding nops in TOR Region from 0x80001000 to 0x80001000 + g
     .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)
@@ -260,15 +266,6 @@ RETURN_INSTRUCTION:
     nop
     nop
     jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
-
-RVTEST_CODE_END
-RVTEST_DATA_BEGIN
-.align 4
-
-// Test case strings for reporting
-test_1_str: .string "\"test: 1; cp: pmpm_cfg_tor_all_lw\""
 
 RVTEST_DATA_END
 

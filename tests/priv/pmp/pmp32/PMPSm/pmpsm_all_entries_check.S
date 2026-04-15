@@ -659,20 +659,7 @@ main:
     csrw pmpcfg4, x4
     VERIFICATION_RWX    TEST_FOR_EXECUTION, test_47
 
-    j exit                                                      // Verification Complete, exit the test
 
-.align 11
-TEST_FOR_EXECUTION:
-    .rept ((1<<(RVMODEL_PMP_GRAIN+2))/4)                        //(size of region)/size of nop
-    nop
-    .endr
-
-RETURN_INSTRUCTION:
-    nop
-    nop
-    jr ra                                                       // Get back to the point from where TEST_FOR_EXECUTION was called.
-
-exit:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
@@ -681,6 +668,18 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_sw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_lw\""
+
+.align 10
+.align (RVMODEL_PMP_GRAIN+2)
+TEST_FOR_EXECUTION:
+    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    nop
+    .endr
+
+RETURN_INSTRUCTION:
+    nop
+    nop
+    jr ra                                                        // Get back to the point from where TEST_FOR_EXECUTION was called.
 
 RVTEST_DATA_END
 

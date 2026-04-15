@@ -3,7 +3,7 @@
 #
 # IBM-defined floating point coverpoint generator. Each instruction has multiple
 # IBM coverpoint groups (b1, b2, ...); testcase values are read from per-group
-# CSV files bundled with the testgen package at coverpoints/ibm/<instr>_b<N>.csv.
+# CSV files bundled with the testgen package at coverpoints/ibm/<instr>/<group>.csv.
 # jcarlin@hmc.edu Apr 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -11,6 +11,7 @@
 """IBM floating point coverpoint generator (cp_ibm_b<N>)."""
 
 import csv
+import re
 from pathlib import Path
 
 from testgen.asm.helpers import return_test_regs
@@ -41,14 +42,14 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     """Generate tests from the IBM testcase CSV for this instruction and coverpoint group.
 
     The ``coverpoint`` argument is of the form ``cp_ibm_b<N>``; testcase values are read from
-    ``coverpoints/ibm/<instr_name>_b<N>.csv``. The CSV header names columns after the
+    ``coverpoints/ibm/<instr_name>/b<N>.csv``. The CSV header names columns after the
     ``generate_random_params`` kwargs (for example ``frm``, ``fs1val``, ``fs2val``,
     ``rs1val``). Each data row produces one testcase. Value cells for operand columns are
     parsed as integers via ``int(cell, 0)``; ``frm`` is a rounding-mode name string (one
     of ``rne``, ``rtz``, ``rdn``, ``rup``, ``rmm``). Expected-result columns (``fdval``,
     ``rdval``, ``fflags``) are accepted in the header but currently ignored.
     """
-    if not coverpoint.startswith("cp_ibm_b"):
+    if re.fullmatch(r"cp_ibm_b\d+", coverpoint) is None:
         raise ValueError(f"cp_ibm coverpoint must be of the form 'cp_ibm_b<N>', got {coverpoint!r}")
     group = coverpoint[len("cp_ibm_") :]  # extract IBM group (b1, b2, etc.)
 
@@ -78,6 +79,8 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         if unknown:
             raise ValueError(f"{data_file}: unrecognized columns in header: {sorted(unknown)}")
 
+        input_cols_in_header = [col for col in header if col in INPUT_VALUE_KEYS]
+
         for row in reader:
             lineno = reader.line_num
 
@@ -90,15 +93,20 @@ def make_cp_ibm(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 )
 
             values: dict[str, int] = {}
-            for col in INPUT_VALUE_KEYS & set(header):
+            for col in input_cols_in_header:
                 cell = (row.get(col) or "").strip()
                 if not cell:
-                    raise ValueError(f"{data_file}:{lineno}: empty cell for required column '{col}'")
+                    if col in required_input_cols:
+                        raise ValueError(f"{data_file}:{lineno}: empty cell for required column '{col}'")
+                    continue
                 values[col] = int(cell, 0)
 
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode, **values)
 
-            operand_desc = " ".join(f"{key} = {test_data.flen_format_str.format(v)}" for key, v in values.items())
+            operand_desc = " ".join(
+                f"{key} = {(test_data.xlen_format_str if key.startswith('rs') else test_data.flen_format_str).format(v)}"
+                for key, v in values.items()
+            )
             desc = f"{coverpoint} ({data_file.name}:{lineno} Test source {operand_desc}, frm = {frm_mode})"
             bin_name = f"{coverpoint}_{lineno}"
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)

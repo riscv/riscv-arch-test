@@ -8,7 +8,7 @@
 
 """Zalrsc extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -255,6 +255,7 @@ def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZalrsc coverpoints"""
     lines = []
 
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))
     lines.extend(_generate_load_misaligned_priority_tests(test_data))

@@ -65,12 +65,12 @@
       "grain": 0,
       // This specifies the number of PMP entries present.
       // The value must be one of 0, 16, or 64.
-      "count": 16,
+      "count": 0,
       // This specifies the number of usable PMP entries.
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
-      "usable_count": 8,
-      "tor_supported": true,
+      "usable_count": 0,
+      "tor_supported": false,
       "na4_supported": false,
       "napot_supported": false
     },

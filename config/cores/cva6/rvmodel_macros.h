@@ -1,9 +1,5 @@
-# rvmodel_macros.h
-# RVMODEL macro definitions for OpenHW CV32A65X core
-# SPDX-License-Identifier: Apache-2.0
-
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -13,8 +9,10 @@
 
 ##### STARTUP #####
 
-#define RVMODEL_BOOT
-
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -45,7 +43,8 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+# Can be empty or left undefined if no initialization is needed.
+ //#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -66,29 +65,51 @@
 
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
-##### Machine Timer #####
-
-# Standard CLINT-style timer addresses for the CVA6 subsystem.
-#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
-
-
 ##### Machine Interrupts #####
 
-# External (MEIP) and Timer (MTIP) are supported.
-# Logic is empty as these are level-sensitive signals driven by the testbench. 
+// Interrupt latency configuration
+#define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_SET_MEXT_INT(_R1,_R2)
-#define RVMODEL_CLR_MEXT_INT(_R1,_R2)
-#define RVMODEL_SET_MSW_INT(_R1,_R2)      /* Disabled: MSIP not supported on cv32a65x  */
-#define RVMODEL_CLR_MSW_INT(_R1,_R2)      /* Disabled: MSIP not supported on cv32a65x  */
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-#####  Supervisor Interrupts #####
+##### Machine Timer #####
 
-# Supervisor mode is NOT supported on cv32a65x. 
-#define RVMODEL_SET_SEXT_INT(_R1,_R2)
-#define RVMODEL_CLR_SEXT_INT(_R1,_R2)
-#define RVMODEL_SET_SSW_INT(_R1,_R2)
-#define RVMODEL_CLR_SSW_INT(_R1,_R2)
+#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
 
-#endif // _COMPLIANCE_MODEL_H
+#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
+
+#define CLINT_BASE_ADDRESS 0x02000000
+#define MSIP_ADDRESS       0x02000000
+
+
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)
+
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+
+#define RVMODEL_SET_MSW_INT(_R1, _R2) \
+  li _R1, 1; \
+  li _R2, MSIP_ADDRESS; \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_CLR_MSW_INT(_R1, _R2) \
+  li _R2, MSIP_ADDRESS; \
+  sw zero, 0(_R2);
+
+##### Supervisor Interrupts #####
+
+#define WHISPER_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
+
+#define RVMODEL_SET_SEXT_INT(_R1, _R2)
+
+#define RVMODEL_CLR_SEXT_INT(_R1, _R2)
+
+#define RVMODEL_SET_SSW_INT(_R1, _R2) \
+  li _R1, 1; \
+  li _R2, WHISPER_SSIP_ADDRESS; \
+  sw _R1, 0(_R2);
+
+#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
+  li _R2, WHISPER_SSIP_ADDRESS; \
+  sw zero, 0(_R2);
+
+#endif // _RVMODEL_MACROS_H

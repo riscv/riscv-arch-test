@@ -1,14 +1,14 @@
 ##################################
 # cp_ibm.py
 #
-# IBM-defined floating point coverpoint generator. Each instruction has multiple
+# Test generator for IBM-defined floating point coverpoints. Each instruction has multiple
 # IBM coverpoint groups (b1, b2, ...); testcase values are read from per-group
 # CSV files bundled with the testgen package at coverpoints/ibm/<instr>/<group>.csv.
 # jcarlin@hmc.edu Apr 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""IBM floating point coverpoint generator (cp_ibm_b<N>)."""
+"""IBM floating point coverpoint test generator (cp_ibm_b<N>)."""
 
 import csv
 import re

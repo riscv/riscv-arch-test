@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Jordan Carlin jcarlin@hmc.edu April 2026
+# CI configuration for Spike simulator
+# Shared across all Spike configs
+
+ci_enabled: true
+# TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
+exclude_extensions: "Sm,ExceptionsZc,S,InterruptsSm,PMPmisaligned,ExceptionsZalrsc,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo"
+install_script: ".github/scripts/install-spike.sh"
+apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"

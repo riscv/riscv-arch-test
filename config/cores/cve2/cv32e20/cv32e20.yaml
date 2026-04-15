@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
@@ -18,7 +18,6 @@ implemented_extensions:
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Sm, version: "= 1.12.0" }
-  - { name: Smhpm, version: "= 1.12.0" }
 
 params:
   # XLEN parameters (VERIFIED)
@@ -158,5 +157,41 @@ params:
       true,
       true,
       true,
+    ]
+  NUM_PMP_ENTRIES: 0
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
 # end

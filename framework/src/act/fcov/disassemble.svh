@@ -96,15 +96,18 @@ function string disassemble (logic [31:0] instrRaw);
       PREFETCH_R: $sformat(decoded, "prefetch.r %0d(%s)", immIType, rs1);
       PREFETCH_W: $sformat(decoded, "prefetch.w %0d(%s)", immIType, rs1);
     `endif
-    // No need to decode NTL hints for present coverpoints, and they might confuse testing normal instructions
-    // NTL_ALL: $sformat(decoded, "NTL.ALL");
-    // NTL_PALL:$sformat(decoded, "NTL.PALL");
-    // NTL_P1:  $sformat(decoded, "NTL.P1");
-    // NTL_S1:  $sformat(decoded, "NTL.S1");
-    // C_NTL_ALL: $sformat(decoded, "C.NTL.ALL");
-    // C_NTL_PALL: $sformat(decoded, "C.NTL.PALL");
-    // C_NTL_P1: $sformat(decoded, "C.NTL.P1");
-    // C_NTL_S1: $sformat(decoded, "C.NTL.S1");
+    `ifdef ZIHINTNTL_COVERAGE
+      NTL_ALL: $sformat(decoded, "ntl.all");
+      NTL_PALL:$sformat(decoded, "ntl.pall");
+      NTL_P1:  $sformat(decoded, "ntl.p1");
+      NTL_S1:  $sformat(decoded, "ntl.s1");
+    `endif
+    `ifdef ZIHINTNTLZCA_COVERAGE
+      C_NTL_ALL: $sformat(decoded, "c.ntl.all");
+      C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
+      C_NTL_P1: $sformat(decoded, "c.ntl.p1");
+      C_NTL_S1: $sformat(decoded, "c.ntl.s1");
+    `endif
     // NOP
     NOP:     $sformat(decoded, "nop");
     // Zimop Extension

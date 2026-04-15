@@ -29,7 +29,6 @@
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zca_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

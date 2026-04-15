@@ -269,7 +269,7 @@ def _gen_instrs(
         frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
         ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
         for cp in ordered_cps:
-            if cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}:
+            if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
             # Append SEW suffix for SEW-dependent coverpoints

@@ -61,10 +61,15 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### Interrupt Latency #####
+
+#define RVMODEL_INTERRUPT_LATENCY 10
+
 ##### Machine Timer #####
 
 #define RVMODEL_MTIME_ADDRESS    0x0200BFF8
 #define RVMODEL_MTIMECMP_ADDRESS 0x02004000
+#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####
 

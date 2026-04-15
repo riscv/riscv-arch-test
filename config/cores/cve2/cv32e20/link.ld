@@ -7,8 +7,6 @@ SECTIONS
   .text.init : { *(.text.init) }
   .text : { *(.text) *(.text.*) }
   . = ALIGN(0x4000);
-  .bss : { *(.bss) }
-  . = ALIGN(0x1000);
   .data : { *(.data) }
   . = ALIGN(0x1000);
   _end = .;

@@ -3,15 +3,14 @@
 name: Create Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       version:
         description: "Release version (must match a heading in CHANGELOG.md, e.g. 4.0.0)"
         required: true
-      tag:
-        description: "Tag name (defaults to v<version>)"
-        required: false
-        default: ""
       draft:
         description: "Create the release as a draft"
         type: boolean
@@ -26,25 +25,36 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up mise
-        uses: jdx/mise-action@v4
-
-      - run: git submodule update --init docs/docs-resources
-
-      - name: Build CTP
-        run: cd docs/ctp && make -j2
-
-      - name: Resolve tag name
-        id: tag
-        run: |
-          tag="${{ inputs.tag }}"
-          [ -z "$tag" ] && tag="${{ inputs.version }}"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-
-      - name: Extract release notes from CHANGELOG.md
-        id: notes
+      - name: Resolve version
+        id: version
         run: |
           version="${{ inputs.version }}"
+          if [ -z "$version" ]; then
+            version=$(awk -F'[][]' '/^## \[/ { print $2; exit }' CHANGELOG.md)
+          fi
+          if [ -z "$version" ]; then
+            echo "::error::Could not determine release version from CHANGELOG.md."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check if release already exists
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "::notice::Release ${{ steps.version.outputs.version }} already exists; skipping."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract release notes from CHANGELOG.md
+        if: steps.check.outputs.exists == 'false'
+        id: notes
+        run: |
+          version="${{ steps.version.outputs.version }}"
           notes=$(awk -v ver="$version" '
             $0 ~ "^## \\[" ver "\\]" { in_section = 1; next }
             in_section && /^## / { exit }
@@ -62,14 +72,26 @@ jobs:
             echo "CHANGELOG_EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Set up mise
+        if: steps.check.outputs.exists == 'false'
+        uses: jdx/mise-action@v4
+
+      - if: steps.check.outputs.exists == 'false'
+        run: git submodule update --init docs/docs-resources
+
+      - name: Build CTP
+        if: steps.check.outputs.exists == 'false'
+        run: cd docs/ctp && make -j2
+
       - name: Create Release
+        if: steps.check.outputs.exists == 'false'
         uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
-          draft: ${{ inputs.draft }}
+          draft: ${{ inputs.draft || false }}
           prerelease: false
           make_latest: true
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: "ACT ${{ inputs.version }}"
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "ACT ${{ steps.version.outputs.version }}"
           body: ${{ steps.notes.outputs.notes }}
           fail_on_unmatched_files: true
           files: |

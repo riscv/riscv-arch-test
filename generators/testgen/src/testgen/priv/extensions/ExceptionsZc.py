@@ -8,7 +8,7 @@
 
 """Compressed exceptions test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -437,19 +437,12 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
     """Main entry point for Zc exception test generation."""
     lines = []
 
-    addr_reg, val_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg = test_data.int_regs.get_register()
 
     lines.extend(
         [
-            "# Initialize scratch memory with test data",
+            "# Load FP test data from scratch if FP is supported",
             f"LA(x{addr_reg}, scratch)",
-            f"LI(x{val_reg}, 0xDEADBEEF)",
-            f"sw x{val_reg}, 0(x{addr_reg})",
-            f"sw x{val_reg}, 4(x{addr_reg})",
-            f"sw x{val_reg}, 8(x{addr_reg})",
-            f"sw x{val_reg}, 12(x{addr_reg})",
-            "",
-            "# Load FP test data if FP is supported",
             "#ifdef F_SUPPORTED",
             f"FLREG f8, 0(x{addr_reg})",
             "#endif",
@@ -457,8 +450,9 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([addr_reg, val_reg])
+    test_data.int_regs.return_registers([addr_reg])
 
+    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_store_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))

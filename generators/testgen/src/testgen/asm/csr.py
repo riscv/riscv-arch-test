@@ -31,7 +31,7 @@ def gen_csr_read_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> s
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.sigupd_count += 1
     return (
-        f"{INDENT}# Read {csr_name} into x{check_reg} and check against expected."
+        f"{INDENT}# Read {csr_name} into x{check_reg} and check against expected.\n"
         f"RVTEST_SIGUPD_CSR_READ({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
     )
 
@@ -54,7 +54,7 @@ def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> 
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
     test_data.test_chunk.sigupd_count += 1
     return (
-        f"{INDENT}# Write x{check_reg} to {csr_name}, read back and check against expected."
+        f"{INDENT}# Write x{check_reg} to {csr_name}, read back and check against expected.\n"
         f"RVTEST_SIGUPD_CSR_WRITE({csr_name}, x{check_reg}, {test_data.current_testcase_label}, {test_data.current_testcase_label}_str)"
     )
 
@@ -72,7 +72,7 @@ def csr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverpo
     Returns:
         List of assembly lines for the access test
     """
-    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         "",
@@ -113,7 +113,7 @@ def csr_walk_test(test_data: TestData, csr_name: str, covergroup: str, coverpoin
     Returns:
         List of assembly lines for the walk test
     """
-    save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         "",
@@ -199,7 +199,7 @@ def cntr_access_test(test_data: TestData, csr_name: str, covergroup: str, coverp
     Returns:
         List of assembly lines for the access test
     """
-    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    save_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3)
 
     lines = [
         "",

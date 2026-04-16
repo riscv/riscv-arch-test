@@ -1,4 +1,3 @@
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 #define RVMODEL_PMP_GRAIN 0
 #define RVMODEL_NUM_PMPS 16
 #define D_SUPPORTED
@@ -23,3 +22,14 @@
 #define SV32_SUPPORTED
 
 #define TIME_CSR_IMPLEMENTED 1
+
+// Vector configuration
+#define SEWMIN 8
+#define ELEN 64
+#define MAXINDEXEEW 64
+
+// Supported fractional LMULs for vector
+// all supported now should be generated based on config
+#define LMULf8_SUPPORTED
+#define LMULf4_SUPPORTED
+#define LMULf2_SUPPORTED

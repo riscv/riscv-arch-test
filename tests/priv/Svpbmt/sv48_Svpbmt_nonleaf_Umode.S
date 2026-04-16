@@ -31,7 +31,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv48, Svpbmt, NORUN]
 # MARCH: rv64i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_Svpbmt_nonleaf_Umode.S"

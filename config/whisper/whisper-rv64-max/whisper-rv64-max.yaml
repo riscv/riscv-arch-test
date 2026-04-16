@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
@@ -14,6 +14,14 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: B, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
+  - { name: Zve32f, version: "= 1.0.0" }
+  - { name: Zve32x, version: "= 1.0.0" }
+  - { name: Zve64d, version: "= 1.0.0" }
+  - { name: Zve64f, version: "= 1.0.0" }
+  - { name: Zve64x, version: "= 1.0.0" }
+  - { name: Zvl32b, version: "= 1.0.0" }
+  - { name: Zvl64b, version: "= 1.0.0" }
+  - { name: Zvl128b, version: "= 1.0.0" }
   - { name: Zic64b, version: "= 1.0.0" }
   - { name: Zicbom, version: "= 1.0.0" }
   - { name: Zicbop, version: "= 1.0.0" }
@@ -26,6 +34,7 @@ implemented_extensions:
   - { name: Zicond, version: "= 1.0.0" }
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
+  - { name: Zihintntl, version: "= 1.0.0" }
   - { name: Zihintpause, version: "= 2.0.0" }
   - { name: Zihpm, version: "= 2.0.0" }
   - { name: Zaamo, version: "= 1.0.0" }
@@ -35,19 +44,28 @@ implemented_extensions:
   - { name: Zfa, version: "= 1.0.0" }
   - { name: Zfh, version: "= 1.0.0" }
   - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: Zfbfmin, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcd, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
-  - { name: Zbs, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
+  - { name: Zbkx, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
   - { name: Zknh, version: "= 1.0.0" }
   - { name: Zknd, version: "= 1.0.0" }
   - { name: Zkne, version: "= 1.0.0" }
+  - { name: Zks, version: "= 1.0.0" }
+  - { name: Zksed, version: "= 1.0.0" }
+  - { name: Zksh, version: "= 1.0.0" }
   - { name: Zkt, version: "= 1.0.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: S, version: "= 1.12.0" }
+  #  - { name: H, version: "= 1.0.0" } # this should be on but needs many associated parameters
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
@@ -65,8 +83,9 @@ implemented_extensions:
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
-  - { name: Smpmp, version: "= 1.12.0" }
-  - { name: Smhpm, version: "= 1.12.0" }
+  - { name: Zimop, version: "= 1.0.0" }
+  - { name: Zcmop, version: "= 1.0.0" }
+  - { name: Zabha, version: "= 1.0.0" }
 
 params:
   # A params
@@ -91,6 +110,32 @@ params:
   MUTABLE_MISA_B: true
   # V params
   MUTABLE_MISA_V: true
+  VLEN: 512
+  ELEN: 64
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
+  SEW_MIN: 8
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
+  VILL_SET_ON_RESERVED_VTYPE: true
+  RESERVED_VSET_X0X0_VILL_SET: "always"
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
+  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
+  VECTOR_LS_MISALIGNED_LEGAL: true
+  VECTOR_LOAD_PAST_TRAP: false
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
+  VECTOR_LS_SEG_PARTIAL_ACCESS: false
+  LEGAL_VSTART: "1_stride"
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
+  VSSTATUS_VS_EXISTS: true
+  VECTOR_FF_NO_EXCEPTION_TRIM: false
+  VFREDUSUM_NAN: "no_change"
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # CBO params
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
@@ -160,7 +205,6 @@ params:
   STVEC_MODE_VECTORED: true
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
-  TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY: false
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
@@ -201,10 +245,8 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  # Smpmp params
   NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 32
-  # Smhpm params
   HPM_COUNTER_EN:
     [
       false,

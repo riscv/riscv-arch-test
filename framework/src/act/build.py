@@ -125,8 +125,10 @@ def is_stale(task: BuildTask) -> bool:
     return any(inp.exists() and inp.stat().st_mtime > oldest_output_mtime for inp in all_inputs)
 
 
-def execute_task(task: BuildTask) -> BuildError | None:
+def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None:
     """Execute a single build task. Returns None on success, BuildError on failure."""
+    if verbose:
+        print(f"  {_task_str(task)}")
     action = task.action
 
     if isinstance(action, SubprocessAction):
@@ -191,6 +193,7 @@ def build(
     jobs: int,
     keep_going: bool = False,
     dry_run: bool = False,
+    verbose: bool = False,
 ) -> BuildResult:
     """Execute a DAG of build tasks using TopologicalSorter + ThreadPoolExecutor.
 
@@ -199,6 +202,7 @@ def build(
         jobs: Number of parallel workers.
         keep_going: If True, continue building independent tasks after a failure.
         dry_run: If True, print what would be built without executing.
+        verbose: If True, print each command as it is issued.
 
     Returns:
         BuildResult with counts and any errors.
@@ -299,7 +303,7 @@ def build(
                     continue
 
                 # Submit task to thread pool
-                future = executor.submit(execute_task, task)
+                future = executor.submit(execute_task, task, verbose=verbose)
                 in_flight[key] = future
                 future_to_key[future] = key
 

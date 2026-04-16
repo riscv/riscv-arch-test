@@ -211,11 +211,11 @@
 
   rvmodel_halt_pass:
     RVMODEL_HALT_PASS
-    // does not return
+    j . // Explicit non-returning tail if the macro returns (it should not)
 
   rvmodel_halt_fail:
     RVMODEL_HALT_FAIL
-    // does not return
+    j . // Explicit non-returning tail if the macro returns (it should not)
 
   // ***DH 4/8/26 check this is proper gating
   #ifdef rvtest_mtrap_routine

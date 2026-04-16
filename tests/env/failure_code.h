@@ -317,7 +317,6 @@
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:
-        # RVMODEL_IO_INIT(x6, x7, x8)
       print_failstr:
         LA(a0, failstr)
         call rvmodel_io_write_str
@@ -465,6 +464,7 @@
         2:
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
+        mv x7, a0           # move xepc
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
     failedtest_report_xepc_instr:
@@ -472,7 +472,6 @@
         LA(a0, xepcinstrstr)
         call rvmodel_io_write_str
         # Check if its a compressed instruction
-        mv x7, a0           # move xepc
         lhu a0, 0(x7)       # load lower half of instruction at xepc
         li a1, 16
         andi x8, a0, 3

@@ -461,9 +461,10 @@ def write_instruction_sample_file(
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
-    for arch, tp in test_plans.items():
+    for arch in sorted(test_plans.keys()):
         if arch == "E":
             continue  # E is a duplicate of I; skip to avoid duplicate case entries
+        tp = test_plans[arch]
         instr_keys = _get_sorted_instr_keys(tp, arch)
 
         lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, True))

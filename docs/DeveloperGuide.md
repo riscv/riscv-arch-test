@@ -9,6 +9,7 @@ Each is described below.
 
 - [Certification Test Plan](#certification-test-plan)
 - [Test Hierarchy](#test-hierarchy)
+- [Test YAML Header](#test-yaml-header)
 - [Table-Driven Unprivileged Coverpoints and Tests](#table-driven-unprivileged-coverpoints-and-tests)
   - [Creating New CSV Testplans](#creating-new-csv-testplans)
   - [Adding New Coverpoints](#adding-new-coverpoints)
@@ -81,6 +82,137 @@ test suite
 - **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index.
 
 - **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite typically contains a single test file covering all coverpoints for that feature.
+
+## Test YAML Header
+
+Every assembly test file (`.S`) must include a YAML configuration header that
+describes the test's requirements. The framework uses this header to determine
+which tests to select and how to compile them for a given DUT configuration.
+
+The header is embedded in assembly comments between two marker lines:
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zba']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i_zba
+##### END_TEST_CONFIG #####
+```
+
+The framework strips the leading `#` comment characters from each line and
+parses the remaining content as YAML. The header must appear before any
+assembly code in the file.
+
+### Supported Keys
+
+The following top-level keys are recognized. No other keys are permitted
+(the parser uses strict validation and will reject unknown keys).
+
+| Key                   | Type            | Required | Description                                                                                                                                          |
+| --------------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REQUIRED_EXTENSIONS` | list of strings | **Yes**  | RISC-V extensions required by this test. The test is only selected for a DUT whose implemented extensions list contains **all** of these extensions. |
+| `MARCH`               | string          | **Yes**  | The `-march` string passed to the compiler. Must match the pattern `rv(32\|64\|${XLEN})(i\|e\|g)...` (e.g., `rv32i_zba`, `rv64ifd_zfh`).             |
+| `params`              | mapping         | No       | A dictionary of parameter constraints that must match the DUT's UDB configuration for the test to be selected.                                       |
+
+#### `REQUIRED_EXTENSIONS`
+
+A YAML list of extension name strings. Both quoted and unquoted styles are
+accepted:
+
+```yaml
+# Quoted style (common in generated tests)
+REQUIRED_EXTENSIONS: ['I', 'Zba']
+
+# Unquoted style (common in hand-written tests)
+REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+```
+
+During test selection, the framework checks that every extension in this list
+is present in the DUT's implemented extensions (derived from the UDB
+configuration). A test is skipped if any required extension is missing.
+
+#### `MARCH`
+
+The compiler march string determines the available extensions during compilation.
+It follows the standard RISC-V ISA string naming convention:
+
+- Single-letter extensions are concatenated without separators: `rv32imafd`
+- Multi-letter extensions are separated by underscores: `rv64i_zba_zbb`
+- Privilege-mode extensions (`Sm`, `S`, `U`) are omitted from the march string
+
+For privileged tests that need to support both RV32 and RV64, use the
+`${XLEN}` placeholder:
+
+```yaml
+MARCH: rv${XLEN}i_zicsr
+```
+
+The framework substitutes the actual XLEN value (32 or 64) at compile time
+based on the DUT configuration.
+
+#### `params`
+
+An optional mapping of parameter names to required values. Each parameter
+must exist in the DUT's UDB configuration and match the specified value for the
+test to be selected.
+
+```yaml
+params:
+  MXLEN: 32
+```
+
+Parameters support both exact matching and comparison operators. Comparison
+operators are specified as string-prefixed values:
+
+| Operator | Example                  | Meaning                             |
+| -------- | ------------------------ | ----------------------------------- |
+| _(none)_ | `MXLEN: 32`              | Exact equality (equivalent to `==`) |
+| `==`     | `MXLEN: '==64'`          | Exact equality                      |
+| `>`      | `NUM_PMP_ENTRIES: '>0'`  | Greater than                        |
+| `>=`     | `VLEN: '>=64'`           | Greater than or equal               |
+| `<`      | `VLEN: '<256'`           | Less than                           |
+| `<=`     | `PMP_GRANULARITY: '<=4'` | Less than or equal                  |
+| `!=`     | `PMP_GRANULARITY: '!=0'` | Not equal                           |
+
+Comparison operator values support both decimal and hexadecimal (e.g.,
+`'>=0x80'`, `'<0xFF'`). Comparison values must be quoted in YAML since they
+start with special characters.
+
+### Examples
+
+**Minimal header** (unprivileged test, single extension, fixed XLEN):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i
+##### END_TEST_CONFIG #####
+```
+
+**Privileged test** (multi-XLEN, no params):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+# MARCH: rv${XLEN}i_zicsr
+##### END_TEST_CONFIG #####
+```
+
+**Test with parameter constraints** (PMP requirements):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zca', 'Sm']
+# params:
+#   MXLEN: 32
+#   NUM_PMP_ENTRIES: '>0'
+#   PMP_GRANULARITY: 2
+# MARCH: rv32i_zca_zicsr
+##### END_TEST_CONFIG #####
+```
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 

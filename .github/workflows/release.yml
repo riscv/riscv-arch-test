@@ -91,7 +91,7 @@ jobs:
           prerelease: false
           make_latest: true
           tag_name: ${{ steps.version.outputs.version }}
-          name: "ACT ${{ steps.version.outputs.version }}"
+          name: "${{ steps.version.outputs.version }}"
           body: ${{ steps.notes.outputs.notes }}
           fail_on_unmatched_files: true
           files: |

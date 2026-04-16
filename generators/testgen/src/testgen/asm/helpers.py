@@ -144,5 +144,3 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
-
-

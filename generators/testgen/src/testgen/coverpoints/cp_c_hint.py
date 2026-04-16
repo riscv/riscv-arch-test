@@ -20,11 +20,9 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
     """Generate tests for cp_c_hint coverpoints (hint encodings of compressed instructions)."""
     test_chunks: list[TestChunk] = []
 
-    # c.nop with imm in [-32, 31] (excluding 0, which is the true nop).
+    # c.nop with imm in [-32, 31].
     if coverpoint == "cp_c_hint_nop":
         for imm in range(-32, 32):
-            if imm == 0:
-                continue
             params = generate_random_params(test_data, instr_type, immval=imm)
             tc = format_single_testcase(
                 instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint
@@ -45,21 +43,9 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
             test_chunks.append(tc)
             return_test_regs(test_data, params)
 
-    # c.li x0, imm for all 6-bit signed immediates.
-    elif coverpoint == "cp_c_hint_li":
+    # {c.li, c.lui} x0, imm for all 6-bit signed immediates.
+    elif coverpoint == "cp_c_hint_li" or coverpoint == "cp_c_hint_lui":
         for imm in range(-32, 32):
-            params = generate_random_params(test_data, instr_type, rs1=0, immval=imm)
-            tc = format_single_testcase(
-                instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint
-            )
-            test_chunks.append(tc)
-            return_test_regs(test_data, params)
-
-    # c.lui x0, imm for all 6-bit signed immediates (excluding 0).
-    elif coverpoint == "cp_c_hint_lui":
-        for imm in range(-32, 32):
-            if imm == 0:
-                continue
             params = generate_random_params(test_data, instr_type, rs1=0, immval=imm)
             tc = format_single_testcase(
                 instr_name, instr_type, test_data, params, f"{coverpoint}: imm = {imm}", f"imm{imm}", coverpoint

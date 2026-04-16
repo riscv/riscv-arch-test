@@ -135,6 +135,10 @@ configuration). A test is skipped if any required extension is missing.
 #### `MARCH`
 
 The compiler march string determines the available extensions during compilation.
+It will usually contain the same list of extensions as `REQUIRED_EXTENSIONS`, but
+certain privileged extensions are omitted (the compiler does not accept them).
+The `REQUIRED_EXTENSIONS` list and march string may also differ for tests that
+conditionally include extra testcases depending on the DUT configuration.
 It follows the standard RISC-V ISA string naming convention:
 
 - Single-letter extensions are concatenated without separators: `rv32imafd`
@@ -201,6 +205,8 @@ start with special characters.
 ##### END_TEST_CONFIG #####
 ```
 
+Note that `MARCH` does not include `S` or `Sm` because the compiler does not need those extensions.
+
 **Test with parameter constraints** (PMP requirements):
 
 ```asm
@@ -209,10 +215,14 @@ start with special characters.
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'
-#   PMP_GRANULARITY: 2
+#   PMP_GRANULARITY: '<=2'
 # MARCH: rv32i_zca_zicsr
 ##### END_TEST_CONFIG #####
 ```
+
+This header would correspond to a PMP test that uses NA4 mode. NA4 does not exist if
+the PMP_GRANULARITY is >2 and PMP in general does not exist if NUM_PMP_ENTRIES is 0,
+so both of these param constraints are needed to make sure the test can run on the DUT.
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 

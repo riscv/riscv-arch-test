@@ -14,7 +14,7 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
-      "software_breakpoint": true,
+      "software_breakpoint": false,
       "hardware_breakpoint": true,
       "load_address_misaligned": true,
       "load_access_fault": true,

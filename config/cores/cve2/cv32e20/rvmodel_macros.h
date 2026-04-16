@@ -84,9 +84,9 @@
  * workaround), refer to the instructions here:
  * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
  */
-#define RVMODEL_MTIME_ADDRESS  /* unimplemented */
-
-#define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */
+// MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS
+//#define RVMODEL_MTIMECMP_ADDRESS
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)

@@ -88,19 +88,19 @@ normative_rule_definitions:
 
   # compressed Zca_hints
   - name: Zca_hints
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_add}"] # representative
+    coverpoint: ["Zca_c_add_cg/{cp_c_hint_add}"] # representative
   - name: c-add_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_add}"]
+    coverpoint: ["Zca_c_add_cg/{cp_c_hint_add}"]
   - name: c-addi_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_addi}"]
+    coverpoint: ["Zca_c_addi_cg/{cp_c_hint_addi}"]
   - name: c-li_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_li}"]
+    coverpoint: ["Zca_c_li_cg/{cp_c_hint_li}"]
   - name: c-lui_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_lui}"]
+    coverpoint: ["Zca_c_lui_cg/{cp_c_hint_lui}"]
   - name: c-mv_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_mv}"]
+    coverpoint: ["Zca_c_mv_cg/{cp_c_hint_mv}"]
   - name: c-nop_hint
-    coverpoint: ["Zca_c_hint_cg/{cp_c_hint_nop}"]
+    coverpoint: ["Zca_c_nop_cg/{cp_c_hint_nop}"]
   - name: c-slli_hint
     coverpoint: ["N/A custom hints not certified"]
   - name: c-srli_hint

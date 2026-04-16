@@ -20,7 +20,7 @@ def make_cp_c_hint(instr_name: str, instr_type: str, coverpoint: str, test_data:
     """Generate tests for cp_c_hint coverpoints (hint encodings of compressed instructions)."""
     test_chunks: list[TestChunk] = []
 
-    # c.nop with imm in [-32, 31] (excluding 0, which is the true nop).
+    # c.nop with imm in [-32, 31] (excluding 0, which is the true nop and is written without the immediate).
     if coverpoint == "cp_c_hint_nop":
         for imm in range(-32, 32):
             if imm == 0:

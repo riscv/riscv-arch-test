@@ -23,7 +23,7 @@ WORKDIR     ?= work
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo,ExceptionsZc,ExceptionsSm
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
 empty :=

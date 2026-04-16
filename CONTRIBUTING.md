@@ -8,10 +8,6 @@ Your inputs are welcome and greatly appreciated! We want to make contributing to
 - Proposing new tests or coverpoints
 - Becoming a maintainer
 
-## We Develop with GitHub
-
-We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
-
 ## Development Setup
 
 Before contributing, make sure you have the development environment set up. Refer to the [README](./README.md#getting-started) for full installation and setup instructions.

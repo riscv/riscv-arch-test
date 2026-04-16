@@ -1,3 +1,7 @@
+# rvmodel_macros.h
+# RVMODEL macro definitions for OpenHW CVA6 (cv32a65x) core
+# SPDX-License-Identifier: Apache-2.0
+
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
@@ -63,7 +67,7 @@
 
 ##### Access Fault #####
 
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+// #define RVMODEL_ACCESS_FAULT_ADDRESS 0x50000000
 
 ##### Machine Interrupts #####
 

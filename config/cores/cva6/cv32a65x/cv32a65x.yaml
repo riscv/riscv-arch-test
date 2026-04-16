@@ -1,4 +1,9 @@
 # yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+# UDB Architecture Configuration for the CV32A65X, a configuration of the CVA6 project.
+
 ---
 $schema: config_schema.json#
 kind: architecture configuration
@@ -25,7 +30,7 @@ params:
   MUTABLE_MISA_C: false
 
   # Addressing & Memory
-  PHYS_ADDR_WIDTH: 32          # AxiAddrWidth=64 in design (even though XLEN=32)
+  PHYS_ADDR_WIDTH: 32         
   M_MODE_ENDIANNESS: little    # Default RISC-V + CVA6 behaviour
   PMA_GRANULARITY: 4         # No programmable PMA unit (fixed by system bus)
   

@@ -1454,7 +1454,7 @@ vmem_adj_\__MODE__\()epc:                       // see if epc is in the vmem are
 #ifdef SKIP_MEPC
         // skip checking if there are no access faults
         #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-                LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
+                LA(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
                 beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS
                 addi    T2, T2, 2
                 beq     T3, T2, sv_\__MODE__\()epc      // Skip checks if XEPC = RVMODEL_ACCESS_FAULT_ADDRESS+2

@@ -391,7 +391,7 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
         lines.extend(
             [
                 f"\n# Testcase: {op} access fault",
-                f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+                f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
                 f"LI(x{data_reg}, {test_values[op]})",
                 test_data.add_testcase(f"{op}_fault", coverpoint, covergroup),
                 f"{op} x{data_reg}, 0(x{addr_reg})",
@@ -404,7 +404,7 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
             "",
             "#if __riscv_xlen == 64",
             "\n# Testcase: sd access fault",
-            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"LI(x{data_reg}, {test_values['sd']})",
             test_data.add_testcase("sd_fault", coverpoint, covergroup),
             f"sd x{data_reg}, 0(x{addr_reg})",

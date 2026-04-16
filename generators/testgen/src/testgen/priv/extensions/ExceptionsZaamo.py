@@ -111,7 +111,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         [
             f"LI(x{source_reg}, 1)",
             "",
-            f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         ]
     )
 

@@ -150,7 +150,7 @@ def _add_load_fault(
 
     if is_sp:
         t_lines.append(f"mv x{base_reg}, sp")
-        t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append("LA(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
         t_lines.append(
@@ -161,7 +161,7 @@ def _add_load_fault(
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
-        t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(
@@ -195,7 +195,7 @@ def _add_store_fault(
 
     if is_sp:
         t_lines.append(f"mv x{base_reg}, sp")
-        t_lines.append("LI(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append("LA(sp, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
         t_lines.append(
@@ -206,7 +206,7 @@ def _add_store_fault(
         t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")
     else:
-        t_lines.append(f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
+        t_lines.append(f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)")
         t_lines.append(test_data.add_testcase(test_label, coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
         t_lines.append(

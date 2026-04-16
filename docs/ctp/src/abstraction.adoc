@@ -1,6 +1,106 @@
+== Abstraction Layer
+
+*** separate this into parts required for all test suites including TT vs. parts required only for ACT4
+*** key for TT is to invoke RVMODEL_BOOT and RVMODEL_BOOT_TO_xMODE if they exist, and to implement SBI, also use other RVMODEL macros and link.ld
+
+The abstraction layer provides a set of macros that allow test programs and coverpoints to interact with the DUT in a platform-specific way.  This allows the same test program and coverpoint source code to be used across different DUTs, with only the abstraction layer macros needing to be modified for each DUT.  In particular, the abstraction layer includes
+
+* Boot macros to initialize state.
+* Trap handler
+* Supervisor Binary Interface (SBI) calls
+* RVMODEL DUT-specific macros (semihosting/trick box)
+* Memory map (linker script)
+
+Fundamental design considerations are:
+
+* For unprivileged extensions, RISC-V tests cannot assume the existence of any privileged capabilities whatsoever unless a profile explicitly requires them.  For example, RV32I tests should be able to run on a microcontroller that does not implement any CSRs, including `mtvec`, and thus cannot have a trap handler.
+
+* Even if machine-mode exists, the tests cannot assume the existence of a _Conforming Machine Mode_, i.e. a machine mode that implements all of the features in the ISA specification.  In particular, the RVA23S64 profile of particular interest for certification does not require a conforming M-mode, only an execution environment that responds to certain things such as `ecall`.
+
+* Nevertheless, most users will implement a conforming M-mode on their DUT.  Therefore, the abstraction layer should provide default implementations of boot macros, trap handler, and SBI calls that assume a conforming M-mode, and users can override these implementations as needed for their DUT.
+
+* To reduce the risk of bugs from uninitialized state and the burden on test developers, the boot process places known values in all applicable GPRs and CSRs.
+
+The REQUIRED_EXTENSIONS list in each test implies the privilege mode into which the test boots.  If REQUIRED_EXTENSIONS includes ConformingSm, the test boots into M-mode. Otherwise, if REQUIRED_EXTENSIONS includes S, the test boots into S-mode.  This is the case even for hypervisor tests, which require S and boot into S (effectively HS)-mode, and then are responsible for setting up and switching to VS/VU mode if desired.  Otherwise, the test boots into U-mode if the DUT supports it, and M-mode (possibly nonconforming) if the DUT lacks U-mode.
+
+The implication of these rules is that privileged tests that specify ConformingSm, S, or U will boot into those modes, respectively, and unprivileged tests will run in U-mode if supported and M-mode (possibly nonconforming) otherwise.
+
+*** signpost trap, sbi, rvmodel, memory map
+TODO: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
+    replace rvtest_strap_routine with S_SUPPORTED if needed
+    replace rvtest_htrap_routine with H_SUPPORTED if needed
+
+Test generator:
+    Any test that lists Sm in REQUIRED_EXTENSIONS adds CONFORMING_SM_SUPPORTED as a parameter
+    DONE Any test that lists S in REQUIRED_EXTENSIONS adds #define BOOT_TO_SMODE
+    DONE else any test that lists Sm in REQUIRED_EXTENSIONS adds #define BOOT_TO_MMODE
+    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  Drop RVTEST_FP and tweak where it was used (hopefully removed)
+        if any(ext in ext_components for ext in ["H", "S"]):
+            extra_defines.append("#define BOOT_TO_SMODE")
+        elif any(ext in ext_components for ext in ["Sm"]):
+            extra_defines.append("#define BOOT_TO_MMODE")
+
+
+    *** delete mcountinhibt init from OpenHW core
+    *** Need zicsr in march string (generate_march_string)
+
+
+=== Controlling Parameters
+
+Every DUT has `S_SUPPORTED`, `U_SUPPORTED`, and `H_SUPPORTED` parameters from the UDB that indicate which privilege modes are supported.  All DUT UDB configs support `Sm`, but not necessarily a conforming M-mode (and possibly no CSRs at all).  This section introduces `CONFORMING_SM_SUPPORTED`, which is true when the DUT implements mandatory portions of the M-mode spec.
+
+*** discuss how to name these in UDB.  Where does _SUPPORTED come into play?
+
+=== Boot Sequence
+
+The user is responsible for loading the test ELF onto the DUT and jumping to `rvtest_entry_point`.  The user may optionally run some other firmware or custom boot loader that performs DUT-specific initialization before loading the test ELF.
+
+The test ELF begins with the `RVTEST_BEGIN` macro, which defines `rvtest_entry_point` (at an address specified in the link.ld file), and jumps to `rvmodel_boot`.
+
+`rvmodel_boot` in turn calls the `RVMODEL_BOOT` macro, which optionally contains DUT-specific boot code such as turning on a PLL or memory controller.  This macro can be empty or undefined in the common case that no DUT-specific boot code is required or that the DUT-specific boot is performed earlier by a separate bootloader.
+
+Next, `rvmodel_boot` calls `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
+
+Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the M-mode trap handler and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming conforming M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for nonconforming M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
+
+CSR initialization includes
+
+* mstatus
+* mnstatus (if SMDBLTRP_SUPPORTED)
+* mcountinhibit = 0 *** if exists
+* mhpmenvent3...31 = 0
+* mseccfg
+* menvcfg *** (if U supported)
+* mstateen0 (if SMSTATEN_SUPPORTED)
+* mie = 0 (disable all interrupts)
+* mip = 0 (turn off all interrupts)
+* pmpaddr0/pmpcfg0 if PMP_ENTRIES > 0
+* perform sfence.vma to synchronize MMU if SV32_SUPPORTED or SV39_SUPPORTED
+
+If the test is continuing to boot to a lower privilege mode, it next checks if `S_SUPPORTED` and, if so, calls `RVTEST_BOOT_TO_SMODE`. This sets up the S-mode trap handler (and H and V if H_SUPPORTED), initializes S-mode CSRs, and adjusts M-mode CSRs such as trap delegation and environment configuration. It then enters S-mode. This entire routine can be overridden by a RVMODEL equivalent for non-conforming M-mode implementations that cannot access M-mode CSRs or use the standard `mret` method of entering S-mode.
+
+S-mode CSR initialization includes
+
+* medeleg = 0x***
+* mideleg = *** to
+* sstateen0
+* mcounteren = all 1s
+* scounteren = all 1s (if U_SUPPORTED)
+* senvcfg
+* satp = 0 (disable VM)
+
+If the test is not intended to run in S-mode, and U-mode is supported, it calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for non-conforming M-mode implementations.
+
+Finally, `rvmodel_boot` jumps to `rvtest_init`, which calls `RVTEST_INIT_REGS` to initialize GPRs, then sets up the signature pointer and checks a canary if applicable.***
+
+*** discuss memory map, sizes to keep things the same
+
+
+The test ELF contains the RVMODEL_BOOT macro, which performs any necessary boot operations such as turning on a phase-locked loop or DRAM controller or initializing custom state.  After RVMODEL_BOOT, the system should be in conforming machine mode if supported, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE). *** replace
+
 
 [[rvmodel-macros]]
-== RVMODEL DUT-Specific Macros
+=== RVMODEL DUT-Specific Macros
 
 Each DUT requires implementing a set of macros to perform the following non-ISA functions:
 
@@ -15,7 +115,7 @@ The RVMODEL DUT-Specific Macros rely on the capabilities of the SoC and/or testb
 
 Most macros are implemented in config/cores/<core>/<version>/rvmodel_macros.h.  RVMODEL_ACCESS_FAULT_ADDRESS is defined in rvtest_config.h and rvtest_config.svh for the test programs and coverpoints, respectively.
 
-=== Macros
+==== Macros
 
 The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" field indicates circumstances under which the macro can be empty. The Mode column indicates the privilege mode from which the macro is called.
 
@@ -53,7 +153,7 @@ RVMODEL interrupt macros are only required for interrupts controlled in a platfo
 [NOTE]
 If a macro needs machine mode privileges to perform its function but might be called from any mode, it must change privilege level.  For example, if RVMODEL_IO_WRITE_STR needs machine mode to access a UART, it may call RVTEST_GOTO_M_MODE.  Printing (and halting) is done at the end of a test, so there is no need to return to the previous privilege mode.
 
-=== RVMODEL_BOOT Requirements
+==== RVMODEL_BOOT Requirements
 
 The RVMODEL_BOOT macro may be empty for a simple DUT.
 
@@ -63,13 +163,13 @@ At the end of RVMODEL_BOOT, the system should be in conforming machine mode, wit
 
 Alternatively, the DUT might run a separate proprietary bootloader executable file that initializes the system, then loads the test ELF and jumps to `rvtest_entry_point`. Or the DUT could modify link.ld to link proprietary bootloader code into the test ELF and jump to `rvtest_entry_point`. In these cases, RVMODEL_BOOT can be empty.
 
-=== RVMODEL Macros for Spike and SAIL
+==== RVMODEL Macros for Spike and SAIL
 
 RVMODEL macros for Spike are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/config/spike/spike-rv64-max/rvmodel_macros.h[spike-rv64-max/rvmodel_macros.h].  They use HTIF for termination, and write to a virtual UART at address 0x1000_0000 to print characters.  TODO: Interrupts
 
 RVMODEL macros for the RISC-V Sail model are implemented in https://github.com/riscv/riscv-arch-test/blob/act4/tests/env/sail_test.h[tests/env/sail_test.h].  They are similar to Spike but use HTIF for printing.  TODO: interrupts
 
-=== Host Target Interface
+==== Host Target Interface
 
 The https://github.com/Timmmm/htif_spec/releases/download/v0.0.1/htif-0.0.1.pdf[host target interface] (HTIF) is an unofficial semihosting method that has become widely used by RISC-V simulators (Spike, QEMU, RISC-V Sail) and test benches.  If your SystemVerilog testbench supports it, you can share the same HTIF code as Spike and RISC-V Sail for the  RVMODEL_HALT_PASS, RVMODEL_HALT_FAIL, and RVMODEL_IO_WRITE_STR DUT-specific macros.  A drawback is that your testbench needs to parse the ELF labels to find the address of the `tohost` symbol, which is used for HTIF communication.  If your testbench does not support HTIF, you can implement the RVMODEL macros using other methods, such as memory-mapped I/O to a SoC peripheral or an address monitored by the testbench.
 
@@ -77,7 +177,7 @@ For example, the testbench might implement the [unofficial HTIF semihosting spec
 
 Note that writing the upper word of the doubleword to `tohost` with `sd` is only properly defined for RV64.  Therefore, RV32 can use HTIF to terminate with a success or failure code but not necessarily to write to the console.
 
-=== RVMODEL Macros for Other DUTs
+==== RVMODEL Macros for Other DUTs
 
 If you have a simple DUT designed to match the behavior of RISC-V Sail and Spike, you may be able to implement the RVMODEL macros with the same code used by RISC-V Sail.  Your RVMODEL_BOOT macro can be empty.  The interrupt macros for unsupported privilege modes can be empty.
 
@@ -87,3 +187,11 @@ If you have a complex DUT, you presumably have a team of sophisticated verificat
 === Linker Script
 
 Each DUT needs a linker script tailored to its memory map. The linker script in config/<core>/<version>/link.ld defines where to place the code and data regions in the DUT's memory map.  It must contain `.text.init`, `.text`, and `.data` sections, and an `ENTRY` point named `rvtest_entry_point`.  Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
+
+=== File Organization
+
+Standard macros are defined in `tests/env`.  DUT-specific macros are defined in `rvmodel_macros.h`, which is in a DUT-specific config directory (e.g. `config/<dut>/<version>/rvmodel_macros.h` for predefined simulators, or out-of-tree for custom DUTs).
+
+Standard framework macros begin with `RVTEST`.  They include `rvtest_setup.h` for boot macros and `rvtest_trap_handler.h` for standard trap handlers, and `rvtest_failure_code.h` for error reporting. Other macros are defined in ***util.h, ... describe further
+
+DUT-specific macros begin with `RVMODEL`.  Some `RVTEST` macros check if corresponding `RVMODEL` macros are defined and invoke the `RVMODEL` macro instead for nonconforming DUTs when defined.

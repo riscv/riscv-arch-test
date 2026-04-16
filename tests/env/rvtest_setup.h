@@ -47,27 +47,7 @@
   // Test initialization
   .global rvtest_init
   rvtest_init:
-    INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
     RVTEST_INIT_REGS // 0xF0E1D2C3B4A59687
-
-    // *** move to ***BOOT_TO_M_MODE
-    #ifdef rvtest_mtrap_routine
-      #if RVMODEL_NUM_PMPS > 0
-        // set up PMP so user and supervisor mode can access full address space
-        // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
-        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
-        LI(t0, -1)
-        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-        // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
-        // memory system and any PMP or address translation caches. sfence.vma should not be
-        // performed in a system that does not support virtual memory because it might raise
-        // an illegal instruction.
-        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
-          sfence.vma
-        #endif
-      #endif
-    #endif
-
   // Start of test
   .global rvtest_code_begin
   rvtest_code_begin:
@@ -193,6 +173,20 @@
     #endif
     #ifdef RVMODEL_IO_INIT
       RVMODEL_IO_INIT(T1, T2, T3)
+    #endif
+    // always boot to at least M-mode
+    RVTEST_BOOT_TO_MMODE
+    #ifndef BOOT_TO_MMODE
+      // continue to a lower privilege mode depending on the type of test
+      #ifdef S_SUPPORTED
+        RVTEST_BOOT_TO_SMODE
+      #endif
+      #ifndef S_REQUIRED
+        // continue to U-mode if U-mode supported and S-mode not required
+        #ifdef U_SUPPORTED
+          RVTEST_BOOT_TO_UMODE
+        #endif
+      #endif
     #endif
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
@@ -433,4 +427,80 @@
     DBLSHIFTR x13, x12, x15, 7
     DBLSHIFTR x14, x13, x15, 7
     LI (x15, (0xFAB7FBB6FAB7FBB6 & MASK))
+.endm
+
+/************************************ RVTEST_BOOT_TO_M_MODE ********************************/
+/**** Set up M-mode trap handler and initialize M-mode CSRs                             ****/
+/**** Can be overridden by DUT-specific RVMODEL_BOOT_TO_MMODE if no conforming M-mode   ****/
+/*******************************************************************************************/
+.macro RVTEST_BOOT_TO_MMODE
+  // Run custom RVMODEL flavor if the DUT provides it to override this default boot
+  #ifdef RVMODEL_BOOT_TO_MMODE
+    RVMODEL_BOOT_TO_MMODE
+  #else
+    // Default implementation assumes conforming M-mode
+    // We are in M-mode now at initial boot time
+
+    // Set up trap handlers for all modes
+    // *** this code needs a close review
+    RVTEST_TRAP_PROLOG M
+    //RVTEST_TRAP_PROLOG S
+    //INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
+
+    // *** change rvtest_mtrap_routine stuff everywhere to TBD
+    // *** change rvtest_strap_routine to S_SUPPORTED
+    // *** change rvtest_htrap_routine to H_SUPPORTED
+
+    // Initialize M-mode CSRs
+    #if RVMODEL_NUM_PMPS > 0
+      // set up PMP so user and supervisor mode can access full address space
+      // gated by rvtest_mtrap_routine so unpriv tests won't touch PMP unnecessarily
+      CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+      LI(t0, -1)
+      CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+      // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
+      // memory system and any PMP or address translation caches. sfence.vma should not be
+      // performed in a system that does not support virtual memory because it might raise
+      // an illegal instruction.
+      #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+        sfence.vma
+      #endif
+    #endif
+  #endif
+.endm
+
+/************************************ RVTEST_BOOT_TO_S_MODE ********************************/
+/**** Set up S-mode trap handler and initialize S-mode CSRs                             ****/
+/**** Switch into S-mode                                                                ****/
+/*******************************************************************************************/
+.macro RVTEST_BOOT_TO_SMODE
+  // We start in M-mode after initial boot but cannot assume it is conforming
+  // so access to M-mode features must be through a SBI
+
+  // Run custom RVMODEL flavor if the DUT provides it to override this default boot
+  #ifdef RVMODEL_BOOT_TO_SMODE
+    RVMODEL_BOOT_TO_SMODE
+  #else
+    // Default implementation assumes conforming M-mode
+    // We are in M-mode now at initial boot time
+
+    // Set up trap handler for S-mode
+    // RVTEST_TRAP_PROLOG S
+    // if Hypervisor supported, also set up HS and VS-mode trap handlers
+    // *** how does h differ from S?
+    #ifdef H_SUPPORTED
+      //RVTEST_TRAP_PROLOG H
+      //RVTEST_TRAP_PROLOG V
+    #endif
+
+  // Initialize S-mode CSRs
+  #endif
+.endm
+
+/************************************ RVTEST_BOOT_TO_U_MODE ********************************/
+/**** Switch into U-mode    ***describe                                                            ****/
+/*******************************************************************************************/
+.macro RVTEST_BOOT_TO_UMODE
+  // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
+  // Cannot assume M-mode is conforming, so access M-mode features through SBI
 .endm

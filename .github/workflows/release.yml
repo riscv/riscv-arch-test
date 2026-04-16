@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: Apache-2.0
+
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (must match a heading in CHANGELOG.md, e.g. 4.0.0)"
+        required: true
+      tag:
+        description: "Tag name (defaults to v<version>)"
+        required: false
+        default: ""
+      draft:
+        description: "Create the release as a draft"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up mise
+        uses: jdx/mise-action@v4
+
+      - run: git submodule update --init docs/docs-resources
+
+      - name: Build CTP
+        run: cd docs/ctp && make -j2
+
+      - name: Resolve tag name
+        id: tag
+        run: |
+          tag="${{ inputs.tag }}"
+          [ -z "$tag" ] && tag="${{ inputs.version }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          version="${{ inputs.version }}"
+          notes=$(awk -v ver="$version" '
+            $0 ~ "^## \\[" ver "\\]" { in_section = 1; next }
+            in_section && /^## / { exit }
+            in_section { print }
+          ' CHANGELOG.md)
+          # Strip leading/trailing blank lines.
+          notes=$(printf "%s" "$notes" | sed -e '/./,$!d' | tac | sed -e '/./,$!d' | tac)
+          if [ -z "$notes" ]; then
+            echo "::error::No release notes found for version '$version' in CHANGELOG.md. Add a '## [$version] - <date>' section before releasing."
+            exit 1
+          fi
+          {
+            echo "notes<<CHANGELOG_EOF"
+            echo "$notes"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
+        with:
+          draft: ${{ inputs.draft }}
+          prerelease: false
+          make_latest: true
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "ACT ${{ inputs.version }}"
+          body: ${{ steps.notes.outputs.notes }}
+          fail_on_unmatched_files: true
+          files: |
+            docs/ctp/build/ctp.pdf
+            docs/ctp/build/ctp.html
+            README.md

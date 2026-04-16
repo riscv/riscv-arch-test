@@ -132,23 +132,18 @@
 
 
 // TODO: check to see if SAIL support this, and we may want to implement this in WALLY
-#define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
-// #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-//   li _R1, 1;                 \
-//   li _R2, CLINT_SSIP_ADDRESS;              \
-//   sw _R1, 0(_R2);
-
-
-// #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
-//   li _R2, CLINT_SSIP_ADDRESS;              \
-//   sw zero, 0(_R2);
-
+// #define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
+#define CLINT_SSIP_ADDRESS (0x80000000)
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
-  li _R1, 2;                 \
-  csrs mip, _R1;             /* Set mip.SSIP (M-mode) */
+  li _R1, 1;                 \
+  li _R2, CLINT_SSIP_ADDRESS;              \
+  sw _R1, 0(_R2);
+
 
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
-  li _R1, 2;                 \
-  csrc sip, _R1;             /* Clear sip.SSIP (S-mode handler: only used when mideleg.SSIP=1) */
+  li _R2, CLINT_SSIP_ADDRESS;              \
+  sw zero, 0(_R2);
+
+
 
 #endif // _RVMODEL_MACROS_H

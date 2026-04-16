@@ -198,7 +198,7 @@ jobs:
           untracked=$(git ls-files --others --exclude-standard -- $dirs)
           if [ -n "$changed" ] || [ -n "$untracked" ]; then
             echo "::error::Checked-in generated files are out of sync with the generators. Run 'make tests' and commit the results."
-            [ -n "$changed" ] && echo "Changed files:" && echo "$changed"
+            [ -n "$changed" ] && echo "Changed files:" && git diff -- $dirs
             [ -n "$untracked" ] && echo "New files:" && echo "$untracked"
             exit 1
           fi

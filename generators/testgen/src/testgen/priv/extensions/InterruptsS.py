@@ -243,7 +243,8 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
             lines.extend(
                 [
-                    "RVTEST_SET_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",  # SSIP bit
+                    f"CSRS(mip, x{r_scratch})",  # Set via CSR write
                     "nop",
                     "nop",
                 ]
@@ -267,7 +268,8 @@ def _generate_trigger_ssi_mip_tests(test_data: TestData) -> list[str]:
                     "csrci mstatus, 2",  # Clear SIE
                     "CSRW(mideleg, zero)",  # Clear delegation
                     "CSRW(mie, zero)",  # Clear all interrupt enables
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                 ]
             )
 
@@ -662,7 +664,12 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     ]
 
     # Clear SSIP
-    lines.append("RVTEST_CLR_SSW_INT")
+    lines.extend(
+        [
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
+        ]
+    )
 
     # Set mideleg (delegate STI+SEI+SSI)
     lines.extend(
@@ -684,7 +691,8 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             test_data.add_testcase("changingtos_ssi", coverpoint, covergroup),
-            "RVTEST_SET_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",  # SSIP bit
+            f"CSRS(mip, x{r_scratch})",  # Set via CSR write
             "nop",
         ]
     )
@@ -709,7 +717,8 @@ def _generate_changingtos_ssi_tests(test_data: TestData) -> list[str]:
             "csrci mstatus, 2",
             "CSRW(mideleg, zero)",
             "CSRW(mie, zero)",
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
         ]
     )
 
@@ -773,7 +782,7 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
 
     # ALL 6 interrupts
     mip_interrupts = [
-        ("ssip", 0x002, "RVTEST_SET_SSW_INT", "RVTEST_CLR_SSW_INT", False),
+        ("ssip", 0x002, None, None, False),
         ("msip", 0x008, "RVTEST_SET_MSW_INT", "RVTEST_CLR_MSW_INT", False),
         ("stip", 0x020, None, None, True),
         ("mtip", 0x080, None, None, True),
@@ -813,7 +822,8 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                 # Clear all interrupts
                 lines.extend(
                     [
-                        "RVTEST_CLR_SSW_INT",
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
                         "RVTEST_CLR_MSW_INT",
                         "RVTEST_CLR_SEXT_INT",
                         "RVTEST_CLR_MEXT_INT",
@@ -886,6 +896,13 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                         lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
                     else:  # mtip
                         lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
+                elif mip_name == "ssip":
+                    lines.extend(
+                        [
+                            f"LI(x{r_scratch}, 0x2)",
+                            f"CSRS(mip, x{r_scratch})",
+                        ]
+                    )
                 else:
                     lines.extend([mip_set, "nop"])
 
@@ -927,6 +944,14 @@ def _generate_interrupts_s_tests(test_data: TestData) -> list[str]:
                         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
                     else:
                         lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+                elif mip_name == "ssip":
+                    # Clear both ways for SSIP
+                    lines.extend(
+                        [
+                            f"LI(x{r_scratch}, 0x2)",
+                            f"CSRC(mip, x{r_scratch})",
+                        ]
+                    )
                 else:
                     lines.append(mip_clr)
 
@@ -955,7 +980,7 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
 
     # ALL 6 interrupts (including M-mode ones!)
     interrupts = [
-        ("ssip", 0x002, "RVTEST_SET_SSW_INT", "RVTEST_CLR_SSW_INT", False),
+        ("ssip", 0x002, None, None, False),
         ("msip", 0x008, "RVTEST_SET_MSW_INT", "RVTEST_CLR_MSW_INT", False),
         ("stip", 0x020, None, None, True),
         ("mtip", 0x080, None, None, True),
@@ -983,7 +1008,8 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1054,6 +1080,14 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                     lines.extend(set_stimer_int(r_mtime, r_temp, r_temp2, r_scratch, r_stce))
                 else:  # mtip
                     lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
+            elif int_name == "ssip":
+                # Override macro with CSR for SSIP
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRS(mip, x{r_scratch})",
+                    ]
+                )
             else:
                 lines.extend([int_set, "nop"])
 
@@ -1094,6 +1128,14 @@ def _generate_vectored_s_tests(test_data: TestData) -> list[str]:
                     lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
                 else:
                     lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
+            elif int_name == "ssip":
+                # Clear both ways for SSIP
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
+                    ]
+                )
             else:
                 lines.append(int_clr)
 
@@ -1156,7 +1198,8 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1207,7 +1250,12 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
 
             # Set each interrupt according to the pattern
             if ssip_set:
-                lines.append("RVTEST_SET_SSW_INT")
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRS(mip, x{r_scratch})",
+                    ]
+                )
             if msip_set:
                 lines.append("RVTEST_SET_MSW_INT")
             if stip_set:
@@ -1257,7 +1305,12 @@ def _generate_priority_mip_s_tests(test_data: TestData) -> list[str]:
 
             # Clear all interrupts that were set
             if ssip_set:
-                lines.append("RVTEST_CLR_SSW_INT")
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
+                    ]
+                )
             if msip_set:
                 lines.append("RVTEST_CLR_MSW_INT")
             if stip_set:
@@ -1321,7 +1374,8 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1371,7 +1425,8 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint_s, covergroup))
             lines.extend(
                 [
-                    "RVTEST_SET_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRS(mip, x{r_scratch})",
                     f"CSRR x{r_stce}, menvcfg",
                     "#if __riscv_xlen == 64",
                     f"    srli x{r_stce}, x{r_stce}, 63",
@@ -1409,7 +1464,8 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
                     "csrci mstatus, 2",
                     "CSRW(mideleg, zero)",
                     "CSRW(mie, zero)",
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                 ]
             )
             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
@@ -1439,7 +1495,8 @@ def _generate_priority_mie_s_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_MSW_INT",
                     "RVTEST_CLR_SEXT_INT",
                     "RVTEST_CLR_MEXT_INT",
@@ -1578,7 +1635,8 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_SEXT_INT",
                 ]
             )
@@ -1625,7 +1683,12 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             lines.append(test_data.add_testcase(binname, coverpoint_s, covergroup))
 
             if ssip:
-                lines.append("RVTEST_SET_SSW_INT")
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRS(mip, x{r_scratch})",
+                    ]
+                )
             if stip:
                 lines.extend(
                     [
@@ -1668,7 +1731,12 @@ def _generate_priority_both_s_tests(test_data: TestData) -> list[str]:
             )
 
             if ssip:
-                lines.append("RVTEST_CLR_SSW_INT")
+                lines.extend(
+                    [
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
+                    ]
+                )
             if stip:
                 lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
             if seip:
@@ -1834,7 +1902,8 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
         # Clear all interrupts
         lines.extend(
             [
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_SEXT_INT",
             ]
         )
@@ -1878,7 +1947,8 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
         lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
         lines.extend(
             [
-                "RVTEST_SET_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRS(mip, x{r_scratch})",
                 f"CSRR x{r_stce}, menvcfg",
                 "#if __riscv_xlen == 64",
                 f"    srli x{r_stce}, x{r_stce}, 63",
@@ -1916,7 +1986,8 @@ def _generate_priority_mideleg_m_tests(test_data: TestData) -> list[str]:
                 "csrci mstatus, 2",
                 "CSRW(mideleg, zero)",
                 "CSRW(mie, zero)",
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
             ]
         )
         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
@@ -1970,7 +2041,8 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
         # Clear all interrupts
         lines.extend(
             [
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_SEXT_INT",
             ]
         )
@@ -2014,7 +2086,8 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
         lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
         lines.extend(
             [
-                "RVTEST_SET_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRS(mip, x{r_scratch})",
                 f"CSRR x{r_stce}, menvcfg",
                 "#if __riscv_xlen == 64",
                 f"    srli x{r_stce}, x{r_stce}, 63",
@@ -2052,7 +2125,8 @@ def _generate_priority_mideleg_s_tests(test_data: TestData) -> list[str]:
                 "csrci mstatus, 2",
                 "CSRW(mideleg, zero)",
                 "CSRW(mie, zero)",
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
             ]
         )
         lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
@@ -2251,7 +2325,8 @@ def _generate_wfi_timeout_s_tests(test_data: TestData) -> list[str]:
                         # Clear all interrupts
                         lines.extend(
                             [
-                                "RVTEST_CLR_SSW_INT",
+                                f"LI(x{r_scratch}, 0x2)",
+                                f"CSRC(mip, x{r_scratch})",
                                 "RVTEST_CLR_MSW_INT",
                             ]
                         )
@@ -2359,7 +2434,7 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
 
     # 6 interrupts (walking 1s)
     interrupts = [
-        ("ssip", 0x002, 0x002, "RVTEST_SET_SSW_INT", "RVTEST_CLR_SSW_INT", False),
+        ("ssip", 0x002, 0x002, None, None, False),
         ("msip", 0x008, 0x008, "RVTEST_SET_MSW_INT", "RVTEST_CLR_MSW_INT", False),
         ("stip", 0x020, 0x020, None, None, True),
         ("mtip", 0x080, 0x080, None, None, True),
@@ -2399,7 +2474,8 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                     # Clear all interrupts
                     lines.extend(
                         [
-                            "RVTEST_CLR_SSW_INT",
+                            f"LI(x{r_scratch}, 0x2)",
+                            f"CSRC(mip, x{r_scratch})",
                             "RVTEST_CLR_MSW_INT",
                             # Reset stimecmp to max unconditionally before clearing mip.STIP.
                             # clr_stimer_int(r_stce=0) always uses legacy csrrc path which does NOT
@@ -2476,7 +2552,15 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                             else:
                                 lines.extend(set_mtimer_int(r_mtime, r_stimecmp, r_temp, r_temp2))
                     else:
-                        lines.extend([set_fn, "nop"])
+                        if mip_name == "ssip":
+                            lines.extend(
+                                [
+                                    f"LI(x{r_scratch}, 0x2)",
+                                    f"CSRS(mip, x{r_scratch})",
+                                ]
+                            )
+                        else:
+                            lines.extend([set_fn, "nop"])
 
                     # === WAIT FOR INTERRUPT ===
                     if is_delegated:
@@ -2528,7 +2612,15 @@ def _generate_interrupts_m_tests(test_data: TestData) -> list[str]:
                         else:
                             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
                     else:
-                        lines.append(clr_fn)
+                        if mip_name == "ssip":
+                            lines.extend(
+                                [
+                                    f"LI(x{r_scratch}, 0x2)",
+                                    f"CSRC(mip, x{r_scratch})",
+                                ]
+                            )
+                        else:
+                            lines.append(clr_fn)
 
     test_data.int_regs.return_registers([r_mtime, r_temp, r_temp2, r_stimecmp, r_scratch, r_stce])
     return lines
@@ -2555,7 +2647,7 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
 
     # S-mode interrupts (fire in M-mode when not delegated)
     interrupts = [
-        ("ssip", 0x002, "RVTEST_SET_SSW_INT", "RVTEST_CLR_SSW_INT", False),
+        ("ssip", 0x002, None, None, False),
         ("stip", 0x020, None, None, True),
         ("seip", 0x200, "RVTEST_SET_SEXT_INT", "RVTEST_CLR_SEXT_INT", False),
     ]
@@ -2576,7 +2668,8 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
         # Clear all interrupts
         lines.extend(
             [
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_SEXT_INT",
             ]
         )
@@ -2612,6 +2705,13 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
 
         if uses_timer:
             lines.extend(set_stimer_mmode(r_scratch))
+        elif int_name == "ssip":
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRS(mip, x{r_scratch})",
+                ]
+            )
         else:
             lines.extend([int_set, "nop"])
 
@@ -2638,6 +2738,13 @@ def _generate_vectored_m_tests(test_data: TestData) -> list[str]:
         # Clear interrupt
         if uses_timer:
             lines.extend(clr_stimer_mmode(r_scratch))
+        elif int_name == "ssip":
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
+                ]
+            )
         else:
             lines.append(int_clr)
 
@@ -2688,7 +2795,8 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
         # Clear all interrupts
         lines.extend(
             [
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_MSW_INT",
                 "RVTEST_CLR_SEXT_INT",
                 "RVTEST_CLR_MEXT_INT",
@@ -2712,7 +2820,12 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
         lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
 
         if ssip:
-            lines.append("RVTEST_SET_SSW_INT")
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRS(mip, x{r_scratch})",
+                ]
+            )
         if msip:
             lines.append("RVTEST_SET_MSW_INT")
         if stip:
@@ -2750,7 +2863,12 @@ def _generate_priority_mip_m_tests(test_data: TestData) -> list[str]:
 
         # Clear interrupts
         if ssip:
-            lines.append("RVTEST_CLR_SSW_INT")
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
+                ]
+            )
         if msip:
             lines.append("RVTEST_CLR_MSW_INT")
         if stip:
@@ -2812,7 +2930,8 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
         # Clear all interrupts
         lines.extend(
             [
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_MSW_INT",
                 "RVTEST_CLR_SEXT_INT",
                 "RVTEST_CLR_MEXT_INT",
@@ -2836,7 +2955,8 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
         lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
         lines.extend(
             [
-                "RVTEST_SET_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRS(mip, x{r_scratch})",
                 "RVTEST_SET_MSW_INT",
             ]
         )
@@ -2869,7 +2989,8 @@ def _generate_priority_mie_m_tests(test_data: TestData) -> list[str]:
                 "csrci mstatus, 8",
                 "CSRW(mideleg, zero)",
                 "CSRW(mie, zero)",
-                "RVTEST_CLR_SSW_INT",
+                f"LI(x{r_scratch}, 0x2)",
+                f"CSRC(mip, x{r_scratch})",
                 "RVTEST_CLR_MSW_INT",
             ]
         )
@@ -3110,7 +3231,12 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
             )
 
             # Clear SSIP
-            lines.append("RVTEST_CLR_SSW_INT")
+            lines.extend(
+                [
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
+                ]
+            )
 
             lines.extend(clr_stimer_int(r_temp, r_stimecmp, r_scratch, 0))
             lines.extend(clr_mtimer_int(r_temp, r_stimecmp))
@@ -3172,7 +3298,8 @@ def _generate_trigger_ssi_sip_m_tests(test_data: TestData) -> list[str]:
                 [
                     "RVTEST_GOTO_MMODE",
                     "csrci mstatus, 8",
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "CSRW(mideleg, zero)",
                     "CSRW(mie, zero)",
                 ]
@@ -3216,7 +3343,8 @@ def _generate_trigger_msi_m_tests(test_data: TestData) -> list[str]:
     # Clear all interrupts
     lines.extend(
         [
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
             "RVTEST_CLR_MSW_INT",
         ]
     )
@@ -3309,7 +3437,8 @@ def _generate_trigger_mei_m_tests(test_data: TestData) -> list[str]:
     # Clear all interrupts
     lines.extend(
         [
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
             "RVTEST_CLR_MSW_INT",
             "RVTEST_CLR_SEXT_INT",
             "RVTEST_CLR_MEXT_INT",
@@ -3402,7 +3531,8 @@ def _generate_trigger_sti_m_tests(test_data: TestData) -> list[str]:
     # Clear all interrupts
     lines.extend(
         [
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
             "RVTEST_CLR_MSW_INT",
             "RVTEST_CLR_SEXT_INT",
             "RVTEST_CLR_MEXT_INT",
@@ -3492,7 +3622,8 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     # Clear all interrupts
     lines.extend(
         [
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
             "RVTEST_CLR_MSW_INT",
             "RVTEST_CLR_SEXT_INT",
             "RVTEST_CLR_MEXT_INT",
@@ -3516,7 +3647,8 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
     lines.append(test_data.add_testcase(binname, coverpoint, covergroup))
     lines.extend(
         [
-            "RVTEST_SET_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRS(mip, x{r_scratch})",
         ]
     )
 
@@ -3545,7 +3677,8 @@ def _generate_trigger_ssi_m_tests(test_data: TestData) -> list[str]:
             "csrci mstatus, 8",
             "CSRW(mideleg, zero)",
             "CSRW(mie, zero)",
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
         ]
     )
 
@@ -3587,7 +3720,8 @@ def _generate_trigger_sei_m_tests(test_data: TestData) -> list[str]:
     # Clear all interrupts
     lines.extend(
         [
-            "RVTEST_CLR_SSW_INT",
+            f"LI(x{r_scratch}, 0x2)",
+            f"CSRC(mip, x{r_scratch})",
             "RVTEST_CLR_MSW_INT",
             "RVTEST_CLR_SEXT_INT",
             "RVTEST_CLR_MEXT_INT",
@@ -3856,7 +3990,8 @@ def _generate_global_ie_tests(test_data: TestData) -> list[str]:
                 # Clear all interrupts
                 lines.extend(
                     [
-                        "RVTEST_CLR_SSW_INT",
+                        f"LI(x{r_scratch}, 0x2)",
+                        f"CSRC(mip, x{r_scratch})",
                         "RVTEST_CLR_MSW_INT",
                         "RVTEST_CLR_SEXT_INT",
                         "RVTEST_CLR_MEXT_INT",
@@ -4589,7 +4724,8 @@ def _generate_wfi_timeout_u_tests(test_data: TestData) -> list[str]:
             # Clear all interrupts
             lines.extend(
                 [
-                    "RVTEST_CLR_SSW_INT",
+                    f"LI(x{r_scratch}, 0x2)",
+                    f"CSRC(mip, x{r_scratch})",
                     "RVTEST_CLR_MSW_INT",
                 ]
             )

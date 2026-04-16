@@ -154,7 +154,8 @@
 
 // TODO: check to see if SAIL support this, and we may want to implement this in WALLY
 #undef SAIL_CLINT_SSIP_ADDRESS
-#define SAIL_CLINT_SSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xC000)
+// #define SAIL_CLINT_SSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xC000)
+#define SAIL_CLINT_SSIP_ADDRESS (0x80000000)  // dummy address for now
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
   li _R1, 1;                 \

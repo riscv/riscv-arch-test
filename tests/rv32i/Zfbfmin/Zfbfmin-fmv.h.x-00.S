@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zfbfmin', 'F']
 # params:
 #   MXLEN: 32
-# MARCH: rv32if_zfbfmin
+# MARCH: rv32if_zicsr_zfbfmin
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

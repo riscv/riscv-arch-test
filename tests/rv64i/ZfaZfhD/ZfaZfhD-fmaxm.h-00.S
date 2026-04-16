@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zfa', 'Zfh', 'D', 'F']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ifd_zfa_zfh
+# MARCH: rv64ifd_zicsr_zfa_zfh
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

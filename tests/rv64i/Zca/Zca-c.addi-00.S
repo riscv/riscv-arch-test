@@ -12,12 +12,12 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zca']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zca
+# MARCH: rv64i_zicsr_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
 #define TEST_FILE "Zca-c.addi-00.S"
-#define SIGUPD_COUNT 249
+#define SIGUPD_COUNT 280
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -1723,6 +1723,235 @@ Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x1:
   # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x16, Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x1, Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x1_str)
 
+/////////////////////////////////
+// cp_c_hint_addi
+/////////////////////////////////
+
+# Testcase cp_c_hint_addi: rd = x1
+  RVTEST_TESTDATA_LOAD_INT(x15, x1) # load rd/rs1: x1 = 0x9bab7388042f89bd
+Zca_c_addi_cg_cp_c_hint_addi_rd1:
+  c.addi x1, 0 # perform operation
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zca_c_addi_cg_cp_c_hint_addi_rd1, Zca_c_addi_cg_cp_c_hint_addi_rd1_str)
+
+# Testcase cp_c_hint_addi: rd = x2
+  RVTEST_TESTDATA_LOAD_INT(x15, x2) # load rd/rs1: x2 = 0xcde5eadfad2d807d
+Zca_c_addi_cg_cp_c_hint_addi_rd2:
+  c.addi x2, 0 # perform operation
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zca_c_addi_cg_cp_c_hint_addi_rd2, Zca_c_addi_cg_cp_c_hint_addi_rd2_str)
+
+# Testcase cp_c_hint_addi: rd = x3
+  RVTEST_TESTDATA_LOAD_INT(x15, x3) # load rd/rs1: x3 = 0x6e2adec8c4eaa663
+Zca_c_addi_cg_cp_c_hint_addi_rd3:
+  c.addi x3, 0 # perform operation
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zca_c_addi_cg_cp_c_hint_addi_rd3, Zca_c_addi_cg_cp_c_hint_addi_rd3_str)
+
+  mv x12, x4 # switch temp register to avoid conflict with test
+  mv x13, x5 # switch link pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x4
+  RVTEST_TESTDATA_LOAD_INT(x15, x4) # load rd/rs1: x4 = 0x9a322dd27a3eaf6d
+Zca_c_addi_cg_cp_c_hint_addi_rd4:
+  c.addi x4, 0 # perform operation
+  # Check if x4 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x4, Zca_c_addi_cg_cp_c_hint_addi_rd4, Zca_c_addi_cg_cp_c_hint_addi_rd4_str)
+
+# Testcase cp_c_hint_addi: rd = x5
+  RVTEST_TESTDATA_LOAD_INT(x15, x5) # load rd/rs1: x5 = 0xf8a0c8aa98bc97c8
+Zca_c_addi_cg_cp_c_hint_addi_rd5:
+  c.addi x5, 0 # perform operation
+  # Check if x5 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x5, Zca_c_addi_cg_cp_c_hint_addi_rd5, Zca_c_addi_cg_cp_c_hint_addi_rd5_str)
+
+# Testcase cp_c_hint_addi: rd = x6
+  RVTEST_TESTDATA_LOAD_INT(x15, x6) # load rd/rs1: x6 = 0x2cd457c123ae770a
+Zca_c_addi_cg_cp_c_hint_addi_rd6:
+  c.addi x6, 0 # perform operation
+  # Check if x6 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x6, Zca_c_addi_cg_cp_c_hint_addi_rd6, Zca_c_addi_cg_cp_c_hint_addi_rd6_str)
+
+# Testcase cp_c_hint_addi: rd = x7
+  RVTEST_TESTDATA_LOAD_INT(x15, x7) # load rd/rs1: x7 = 0x4488cd577de7390f
+Zca_c_addi_cg_cp_c_hint_addi_rd7:
+  c.addi x7, 0 # perform operation
+  # Check if x7 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x7, Zca_c_addi_cg_cp_c_hint_addi_rd7, Zca_c_addi_cg_cp_c_hint_addi_rd7_str)
+
+# Testcase cp_c_hint_addi: rd = x8
+  RVTEST_TESTDATA_LOAD_INT(x15, x8) # load rd/rs1: x8 = 0xbd0b3de52166bfca
+Zca_c_addi_cg_cp_c_hint_addi_rd8:
+  c.addi x8, 0 # perform operation
+  # Check if x8 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x8, Zca_c_addi_cg_cp_c_hint_addi_rd8, Zca_c_addi_cg_cp_c_hint_addi_rd8_str)
+
+# Testcase cp_c_hint_addi: rd = x9
+  RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rd/rs1: x9 = 0x7cdfa3da3de5db26
+Zca_c_addi_cg_cp_c_hint_addi_rd9:
+  c.addi x9, 0 # perform operation
+  # Check if x9 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x9, Zca_c_addi_cg_cp_c_hint_addi_rd9, Zca_c_addi_cg_cp_c_hint_addi_rd9_str)
+
+# Testcase cp_c_hint_addi: rd = x10
+  RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rd/rs1: x10 = 0x7bbd0aa0c247cd8d
+Zca_c_addi_cg_cp_c_hint_addi_rd10:
+  c.addi x10, 0 # perform operation
+  # Check if x10 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x10, Zca_c_addi_cg_cp_c_hint_addi_rd10, Zca_c_addi_cg_cp_c_hint_addi_rd10_str)
+
+# Testcase cp_c_hint_addi: rd = x11
+  RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rd/rs1: x11 = 0xd3ad60341ff40ab7
+Zca_c_addi_cg_cp_c_hint_addi_rd11:
+  c.addi x11, 0 # perform operation
+  # Check if x11 contains the expected result. x28 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
+  RVTEST_SIGUPD(x28, x13, x12, x11, Zca_c_addi_cg_cp_c_hint_addi_rd11, Zca_c_addi_cg_cp_c_hint_addi_rd11_str)
+
+  mv x4, x12 # switch temp register to avoid conflict with test
+  mv x5, x13 # switch link pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x12
+  RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rd/rs1: x12 = 0x318f2af9720134a0
+Zca_c_addi_cg_cp_c_hint_addi_rd12:
+  c.addi x12, 0 # perform operation
+  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x12, Zca_c_addi_cg_cp_c_hint_addi_rd12, Zca_c_addi_cg_cp_c_hint_addi_rd12_str)
+
+# Testcase cp_c_hint_addi: rd = x13
+  RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rd/rs1: x13 = 0xf2a9e7ae76ee13c4
+Zca_c_addi_cg_cp_c_hint_addi_rd13:
+  c.addi x13, 0 # perform operation
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zca_c_addi_cg_cp_c_hint_addi_rd13, Zca_c_addi_cg_cp_c_hint_addi_rd13_str)
+
+# Testcase cp_c_hint_addi: rd = x14
+  RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rd/rs1: x14 = 0x9b048a5fd6039756
+Zca_c_addi_cg_cp_c_hint_addi_rd14:
+  c.addi x14, 0 # perform operation
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zca_c_addi_cg_cp_c_hint_addi_rd14, Zca_c_addi_cg_cp_c_hint_addi_rd14_str)
+
+  mv x20, x15 # switch data pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x15
+  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rd/rs1: x15 = 0xd68f542df48976ba
+Zca_c_addi_cg_cp_c_hint_addi_rd15:
+  c.addi x15, 0 # perform operation
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zca_c_addi_cg_cp_c_hint_addi_rd15, Zca_c_addi_cg_cp_c_hint_addi_rd15_str)
+
+# Testcase cp_c_hint_addi: rd = x16
+  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rd/rs1: x16 = 0x76d2ffdd9ec53363
+Zca_c_addi_cg_cp_c_hint_addi_rd16:
+  c.addi x16, 0 # perform operation
+  # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x16, Zca_c_addi_cg_cp_c_hint_addi_rd16, Zca_c_addi_cg_cp_c_hint_addi_rd16_str)
+
+# Testcase cp_c_hint_addi: rd = x17
+  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rd/rs1: x17 = 0x0871e30aa207e797
+Zca_c_addi_cg_cp_c_hint_addi_rd17:
+  c.addi x17, 0 # perform operation
+  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x17, Zca_c_addi_cg_cp_c_hint_addi_rd17, Zca_c_addi_cg_cp_c_hint_addi_rd17_str)
+
+# Testcase cp_c_hint_addi: rd = x18
+  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rd/rs1: x18 = 0xcac46b688172dcbb
+Zca_c_addi_cg_cp_c_hint_addi_rd18:
+  c.addi x18, 0 # perform operation
+  # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x18, Zca_c_addi_cg_cp_c_hint_addi_rd18, Zca_c_addi_cg_cp_c_hint_addi_rd18_str)
+
+# Testcase cp_c_hint_addi: rd = x19
+  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rd/rs1: x19 = 0xdf8b023db800d027
+Zca_c_addi_cg_cp_c_hint_addi_rd19:
+  c.addi x19, 0 # perform operation
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zca_c_addi_cg_cp_c_hint_addi_rd19, Zca_c_addi_cg_cp_c_hint_addi_rd19_str)
+
+  mv x25, x20 # switch data pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x20
+  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rd/rs1: x20 = 0x7a5dce185f8178c5
+Zca_c_addi_cg_cp_c_hint_addi_rd20:
+  c.addi x20, 0 # perform operation
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zca_c_addi_cg_cp_c_hint_addi_rd20, Zca_c_addi_cg_cp_c_hint_addi_rd20_str)
+
+# Testcase cp_c_hint_addi: rd = x21
+  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rd/rs1: x21 = 0x1bbe6e58cd5ba2fd
+Zca_c_addi_cg_cp_c_hint_addi_rd21:
+  c.addi x21, 0 # perform operation
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zca_c_addi_cg_cp_c_hint_addi_rd21, Zca_c_addi_cg_cp_c_hint_addi_rd21_str)
+
+# Testcase cp_c_hint_addi: rd = x22
+  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rd/rs1: x22 = 0x00f8e12f392874bd
+Zca_c_addi_cg_cp_c_hint_addi_rd22:
+  c.addi x22, 0 # perform operation
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zca_c_addi_cg_cp_c_hint_addi_rd22, Zca_c_addi_cg_cp_c_hint_addi_rd22_str)
+
+# Testcase cp_c_hint_addi: rd = x23
+  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rd/rs1: x23 = 0xa046082422f2007d
+Zca_c_addi_cg_cp_c_hint_addi_rd23:
+  c.addi x23, 0 # perform operation
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zca_c_addi_cg_cp_c_hint_addi_rd23, Zca_c_addi_cg_cp_c_hint_addi_rd23_str)
+
+# Testcase cp_c_hint_addi: rd = x24
+  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rd/rs1: x24 = 0xf7556538b19cc496
+Zca_c_addi_cg_cp_c_hint_addi_rd24:
+  c.addi x24, 0 # perform operation
+  # Check if x24 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x24, Zca_c_addi_cg_cp_c_hint_addi_rd24, Zca_c_addi_cg_cp_c_hint_addi_rd24_str)
+
+  mv x19, x25 # switch data pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x25
+  RVTEST_TESTDATA_LOAD_INT(x19, x25) # load rd/rs1: x25 = 0xe8674715325d17dd
+Zca_c_addi_cg_cp_c_hint_addi_rd25:
+  c.addi x25, 0 # perform operation
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zca_c_addi_cg_cp_c_hint_addi_rd25, Zca_c_addi_cg_cp_c_hint_addi_rd25_str)
+
+# Testcase cp_c_hint_addi: rd = x26
+  RVTEST_TESTDATA_LOAD_INT(x19, x26) # load rd/rs1: x26 = 0x6712a2d7a18abe3e
+Zca_c_addi_cg_cp_c_hint_addi_rd26:
+  c.addi x26, 0 # perform operation
+  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x26, Zca_c_addi_cg_cp_c_hint_addi_rd26, Zca_c_addi_cg_cp_c_hint_addi_rd26_str)
+
+# Testcase cp_c_hint_addi: rd = x27
+  RVTEST_TESTDATA_LOAD_INT(x19, x27) # load rd/rs1: x27 = 0x278cb919c3d4319f
+Zca_c_addi_cg_cp_c_hint_addi_rd27:
+  c.addi x27, 0 # perform operation
+  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x27, Zca_c_addi_cg_cp_c_hint_addi_rd27, Zca_c_addi_cg_cp_c_hint_addi_rd27_str)
+
+  mv x14, x28 # switch signature pointer register to avoid conflict with test
+# Testcase cp_c_hint_addi: rd = x28
+  RVTEST_TESTDATA_LOAD_INT(x19, x28) # load rd/rs1: x28 = 0xe80a986ce334b5a7
+Zca_c_addi_cg_cp_c_hint_addi_rd28:
+  c.addi x28, 0 # perform operation
+  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x28, Zca_c_addi_cg_cp_c_hint_addi_rd28, Zca_c_addi_cg_cp_c_hint_addi_rd28_str)
+
+# Testcase cp_c_hint_addi: rd = x29
+  RVTEST_TESTDATA_LOAD_INT(x19, x29) # load rd/rs1: x29 = 0x48456ebd56d3a37c
+Zca_c_addi_cg_cp_c_hint_addi_rd29:
+  c.addi x29, 0 # perform operation
+  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x29, Zca_c_addi_cg_cp_c_hint_addi_rd29, Zca_c_addi_cg_cp_c_hint_addi_rd29_str)
+
+# Testcase cp_c_hint_addi: rd = x30
+  RVTEST_TESTDATA_LOAD_INT(x19, x30) # load rd/rs1: x30 = 0x06af6840b911d29b
+Zca_c_addi_cg_cp_c_hint_addi_rd30:
+  c.addi x30, 0 # perform operation
+  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x30, Zca_c_addi_cg_cp_c_hint_addi_rd30, Zca_c_addi_cg_cp_c_hint_addi_rd30_str)
+
+# Testcase cp_c_hint_addi: rd = x31
+  RVTEST_TESTDATA_LOAD_INT(x19, x31) # load rd/rs1: x31 = 0x8886896d31a7c08c
+Zca_c_addi_cg_cp_c_hint_addi_rd31:
+  c.addi x31, 0 # perform operation
+  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x14, x5, x4, x31, Zca_c_addi_cg_cp_c_hint_addi_rd31, Zca_c_addi_cg_cp_c_hint_addi_rd31_str)
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 
@@ -1969,6 +2198,37 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000100000001
 .dword 0x0000000100000001
 .dword 0x0000000100000001
+.dword 0x9bab7388042f89bd
+.dword 0xcde5eadfad2d807d
+.dword 0x6e2adec8c4eaa663
+.dword 0x9a322dd27a3eaf6d
+.dword 0xf8a0c8aa98bc97c8
+.dword 0x2cd457c123ae770a
+.dword 0x4488cd577de7390f
+.dword 0xbd0b3de52166bfca
+.dword 0x7cdfa3da3de5db26
+.dword 0x7bbd0aa0c247cd8d
+.dword 0xd3ad60341ff40ab7
+.dword 0x318f2af9720134a0
+.dword 0xf2a9e7ae76ee13c4
+.dword 0x9b048a5fd6039756
+.dword 0xd68f542df48976ba
+.dword 0x76d2ffdd9ec53363
+.dword 0x0871e30aa207e797
+.dword 0xcac46b688172dcbb
+.dword 0xdf8b023db800d027
+.dword 0x7a5dce185f8178c5
+.dword 0x1bbe6e58cd5ba2fd
+.dword 0x00f8e12f392874bd
+.dword 0xa046082422f2007d
+.dword 0xf7556538b19cc496
+.dword 0xe8674715325d17dd
+.dword 0x6712a2d7a18abe3e
+.dword 0x278cb919c3d4319f
+.dword 0xe80a986ce334b5a7
+.dword 0x48456ebd56d3a37c
+.dword 0x06af6840b911d29b
+.dword 0x8886896d31a7c08c
 
 // Testcase strings
 Zca_c_addi_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zca_c.addi_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -2210,6 +2470,37 @@ Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x20_str: .str
 Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x1f_str: .string "\"test: 237; cg: Zca_c.addi_cg; cp: cr_rs1_imm_edges_6bit_n0; bin: rs1val=0x100000001, immval=-0x1f\""
 Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x2_str: .string "\"test: 238; cg: Zca_c.addi_cg; cp: cr_rs1_imm_edges_6bit_n0; bin: rs1val=0x100000001, immval=-0x2\""
 Zca_c_addi_cg_cr_rs1_imm_edges_6bit_n0_rs1val_0x100000001_immval_m0x1_str: .string "\"test: 239; cg: Zca_c.addi_cg; cp: cr_rs1_imm_edges_6bit_n0; bin: rs1val=0x100000001, immval=-0x1\""
+Zca_c_addi_cg_cp_c_hint_addi_rd1_str: .string "\"test: 240; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd1\""
+Zca_c_addi_cg_cp_c_hint_addi_rd2_str: .string "\"test: 241; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd2\""
+Zca_c_addi_cg_cp_c_hint_addi_rd3_str: .string "\"test: 242; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd3\""
+Zca_c_addi_cg_cp_c_hint_addi_rd4_str: .string "\"test: 243; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd4\""
+Zca_c_addi_cg_cp_c_hint_addi_rd5_str: .string "\"test: 244; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd5\""
+Zca_c_addi_cg_cp_c_hint_addi_rd6_str: .string "\"test: 245; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd6\""
+Zca_c_addi_cg_cp_c_hint_addi_rd7_str: .string "\"test: 246; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd7\""
+Zca_c_addi_cg_cp_c_hint_addi_rd8_str: .string "\"test: 247; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd8\""
+Zca_c_addi_cg_cp_c_hint_addi_rd9_str: .string "\"test: 248; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd9\""
+Zca_c_addi_cg_cp_c_hint_addi_rd10_str: .string "\"test: 249; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd10\""
+Zca_c_addi_cg_cp_c_hint_addi_rd11_str: .string "\"test: 250; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd11\""
+Zca_c_addi_cg_cp_c_hint_addi_rd12_str: .string "\"test: 251; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd12\""
+Zca_c_addi_cg_cp_c_hint_addi_rd13_str: .string "\"test: 252; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd13\""
+Zca_c_addi_cg_cp_c_hint_addi_rd14_str: .string "\"test: 253; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd14\""
+Zca_c_addi_cg_cp_c_hint_addi_rd15_str: .string "\"test: 254; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd15\""
+Zca_c_addi_cg_cp_c_hint_addi_rd16_str: .string "\"test: 255; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd16\""
+Zca_c_addi_cg_cp_c_hint_addi_rd17_str: .string "\"test: 256; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd17\""
+Zca_c_addi_cg_cp_c_hint_addi_rd18_str: .string "\"test: 257; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd18\""
+Zca_c_addi_cg_cp_c_hint_addi_rd19_str: .string "\"test: 258; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd19\""
+Zca_c_addi_cg_cp_c_hint_addi_rd20_str: .string "\"test: 259; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd20\""
+Zca_c_addi_cg_cp_c_hint_addi_rd21_str: .string "\"test: 260; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd21\""
+Zca_c_addi_cg_cp_c_hint_addi_rd22_str: .string "\"test: 261; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd22\""
+Zca_c_addi_cg_cp_c_hint_addi_rd23_str: .string "\"test: 262; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd23\""
+Zca_c_addi_cg_cp_c_hint_addi_rd24_str: .string "\"test: 263; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd24\""
+Zca_c_addi_cg_cp_c_hint_addi_rd25_str: .string "\"test: 264; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd25\""
+Zca_c_addi_cg_cp_c_hint_addi_rd26_str: .string "\"test: 265; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd26\""
+Zca_c_addi_cg_cp_c_hint_addi_rd27_str: .string "\"test: 266; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd27\""
+Zca_c_addi_cg_cp_c_hint_addi_rd28_str: .string "\"test: 267; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd28\""
+Zca_c_addi_cg_cp_c_hint_addi_rd29_str: .string "\"test: 268; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd29\""
+Zca_c_addi_cg_cp_c_hint_addi_rd30_str: .string "\"test: 269; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd30\""
+Zca_c_addi_cg_cp_c_hint_addi_rd31_str: .string "\"test: 270; cg: Zca_c.addi_cg; cp: cp_c_hint_addi; bin: rd31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

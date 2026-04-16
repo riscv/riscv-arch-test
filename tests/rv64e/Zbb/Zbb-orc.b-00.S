@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E', 'Zbb']
 # params:
 #   MXLEN: 64
-# MARCH: rv64e_zbb
+# MARCH: rv64e_zicsr_zbb
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

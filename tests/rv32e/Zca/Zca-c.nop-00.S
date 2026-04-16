@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E', 'Zca']
 # params:
 #   MXLEN: 32
-# MARCH: rv32e_zca
+# MARCH: rv32e_zicsr_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
@@ -31,12 +31,268 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_asm_count
+// cp_asm_count_nop
 /////////////////////////////////
 
 # Testcase cp_asm_count
-Zca_c_nop_cg_cp_asm_count_count:
+Zca_c_nop_cg_cp_asm_count_nop_count:
   c.nop
+
+/////////////////////////////////
+// cp_c_hint_nop
+/////////////////////////////////
+
+# Testcase cp_c_hint_nop: imm = -32
+Zca_c_nop_cg_cp_c_hint_nop_immm32:
+  c.nop -32 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -31
+Zca_c_nop_cg_cp_c_hint_nop_immm31:
+  c.nop -31 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -30
+Zca_c_nop_cg_cp_c_hint_nop_immm30:
+  c.nop -30 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -29
+Zca_c_nop_cg_cp_c_hint_nop_immm29:
+  c.nop -29 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -28
+Zca_c_nop_cg_cp_c_hint_nop_immm28:
+  c.nop -28 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -27
+Zca_c_nop_cg_cp_c_hint_nop_immm27:
+  c.nop -27 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -26
+Zca_c_nop_cg_cp_c_hint_nop_immm26:
+  c.nop -26 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -25
+Zca_c_nop_cg_cp_c_hint_nop_immm25:
+  c.nop -25 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -24
+Zca_c_nop_cg_cp_c_hint_nop_immm24:
+  c.nop -24 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -23
+Zca_c_nop_cg_cp_c_hint_nop_immm23:
+  c.nop -23 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -22
+Zca_c_nop_cg_cp_c_hint_nop_immm22:
+  c.nop -22 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -21
+Zca_c_nop_cg_cp_c_hint_nop_immm21:
+  c.nop -21 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -20
+Zca_c_nop_cg_cp_c_hint_nop_immm20:
+  c.nop -20 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -19
+Zca_c_nop_cg_cp_c_hint_nop_immm19:
+  c.nop -19 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -18
+Zca_c_nop_cg_cp_c_hint_nop_immm18:
+  c.nop -18 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -17
+Zca_c_nop_cg_cp_c_hint_nop_immm17:
+  c.nop -17 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -16
+Zca_c_nop_cg_cp_c_hint_nop_immm16:
+  c.nop -16 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -15
+Zca_c_nop_cg_cp_c_hint_nop_immm15:
+  c.nop -15 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -14
+Zca_c_nop_cg_cp_c_hint_nop_immm14:
+  c.nop -14 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -13
+Zca_c_nop_cg_cp_c_hint_nop_immm13:
+  c.nop -13 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -12
+Zca_c_nop_cg_cp_c_hint_nop_immm12:
+  c.nop -12 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -11
+Zca_c_nop_cg_cp_c_hint_nop_immm11:
+  c.nop -11 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -10
+Zca_c_nop_cg_cp_c_hint_nop_immm10:
+  c.nop -10 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -9
+Zca_c_nop_cg_cp_c_hint_nop_immm9:
+  c.nop -9 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -8
+Zca_c_nop_cg_cp_c_hint_nop_immm8:
+  c.nop -8 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -7
+Zca_c_nop_cg_cp_c_hint_nop_immm7:
+  c.nop -7 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -6
+Zca_c_nop_cg_cp_c_hint_nop_immm6:
+  c.nop -6 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -5
+Zca_c_nop_cg_cp_c_hint_nop_immm5:
+  c.nop -5 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -4
+Zca_c_nop_cg_cp_c_hint_nop_immm4:
+  c.nop -4 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -3
+Zca_c_nop_cg_cp_c_hint_nop_immm3:
+  c.nop -3 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -2
+Zca_c_nop_cg_cp_c_hint_nop_immm2:
+  c.nop -2 # perform operation
+
+# Testcase cp_c_hint_nop: imm = -1
+Zca_c_nop_cg_cp_c_hint_nop_immm1:
+  c.nop -1 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 1
+Zca_c_nop_cg_cp_c_hint_nop_imm1:
+  c.nop 1 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 2
+Zca_c_nop_cg_cp_c_hint_nop_imm2:
+  c.nop 2 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 3
+Zca_c_nop_cg_cp_c_hint_nop_imm3:
+  c.nop 3 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 4
+Zca_c_nop_cg_cp_c_hint_nop_imm4:
+  c.nop 4 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 5
+Zca_c_nop_cg_cp_c_hint_nop_imm5:
+  c.nop 5 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 6
+Zca_c_nop_cg_cp_c_hint_nop_imm6:
+  c.nop 6 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 7
+Zca_c_nop_cg_cp_c_hint_nop_imm7:
+  c.nop 7 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 8
+Zca_c_nop_cg_cp_c_hint_nop_imm8:
+  c.nop 8 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 9
+Zca_c_nop_cg_cp_c_hint_nop_imm9:
+  c.nop 9 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 10
+Zca_c_nop_cg_cp_c_hint_nop_imm10:
+  c.nop 10 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 11
+Zca_c_nop_cg_cp_c_hint_nop_imm11:
+  c.nop 11 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 12
+Zca_c_nop_cg_cp_c_hint_nop_imm12:
+  c.nop 12 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 13
+Zca_c_nop_cg_cp_c_hint_nop_imm13:
+  c.nop 13 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 14
+Zca_c_nop_cg_cp_c_hint_nop_imm14:
+  c.nop 14 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 15
+Zca_c_nop_cg_cp_c_hint_nop_imm15:
+  c.nop 15 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 16
+Zca_c_nop_cg_cp_c_hint_nop_imm16:
+  c.nop 16 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 17
+Zca_c_nop_cg_cp_c_hint_nop_imm17:
+  c.nop 17 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 18
+Zca_c_nop_cg_cp_c_hint_nop_imm18:
+  c.nop 18 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 19
+Zca_c_nop_cg_cp_c_hint_nop_imm19:
+  c.nop 19 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 20
+Zca_c_nop_cg_cp_c_hint_nop_imm20:
+  c.nop 20 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 21
+Zca_c_nop_cg_cp_c_hint_nop_imm21:
+  c.nop 21 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 22
+Zca_c_nop_cg_cp_c_hint_nop_imm22:
+  c.nop 22 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 23
+Zca_c_nop_cg_cp_c_hint_nop_imm23:
+  c.nop 23 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 24
+Zca_c_nop_cg_cp_c_hint_nop_imm24:
+  c.nop 24 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 25
+Zca_c_nop_cg_cp_c_hint_nop_imm25:
+  c.nop 25 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 26
+Zca_c_nop_cg_cp_c_hint_nop_imm26:
+  c.nop 26 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 27
+Zca_c_nop_cg_cp_c_hint_nop_imm27:
+  c.nop 27 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 28
+Zca_c_nop_cg_cp_c_hint_nop_imm28:
+  c.nop 28 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 29
+Zca_c_nop_cg_cp_c_hint_nop_imm29:
+  c.nop 29 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 30
+Zca_c_nop_cg_cp_c_hint_nop_imm30:
+  c.nop 30 # perform operation
+
+# Testcase cp_c_hint_nop: imm = 31
+Zca_c_nop_cg_cp_c_hint_nop_imm31:
+  c.nop 31 # perform operation
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -48,7 +304,70 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-Zca_c_nop_cg_cp_asm_count_count_str: .string "\"test: 1; cg: Zca_c.nop_cg; cp: cp_asm_count; bin: count\""
+Zca_c_nop_cg_cp_asm_count_nop_count_str: .string "\"test: 1; cg: Zca_c.nop_cg; cp: cp_asm_count_nop; bin: count\""
+Zca_c_nop_cg_cp_c_hint_nop_immm32_str: .string "\"test: 2; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-32\""
+Zca_c_nop_cg_cp_c_hint_nop_immm31_str: .string "\"test: 3; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-31\""
+Zca_c_nop_cg_cp_c_hint_nop_immm30_str: .string "\"test: 4; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-30\""
+Zca_c_nop_cg_cp_c_hint_nop_immm29_str: .string "\"test: 5; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-29\""
+Zca_c_nop_cg_cp_c_hint_nop_immm28_str: .string "\"test: 6; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-28\""
+Zca_c_nop_cg_cp_c_hint_nop_immm27_str: .string "\"test: 7; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-27\""
+Zca_c_nop_cg_cp_c_hint_nop_immm26_str: .string "\"test: 8; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-26\""
+Zca_c_nop_cg_cp_c_hint_nop_immm25_str: .string "\"test: 9; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-25\""
+Zca_c_nop_cg_cp_c_hint_nop_immm24_str: .string "\"test: 10; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-24\""
+Zca_c_nop_cg_cp_c_hint_nop_immm23_str: .string "\"test: 11; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-23\""
+Zca_c_nop_cg_cp_c_hint_nop_immm22_str: .string "\"test: 12; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-22\""
+Zca_c_nop_cg_cp_c_hint_nop_immm21_str: .string "\"test: 13; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-21\""
+Zca_c_nop_cg_cp_c_hint_nop_immm20_str: .string "\"test: 14; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-20\""
+Zca_c_nop_cg_cp_c_hint_nop_immm19_str: .string "\"test: 15; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-19\""
+Zca_c_nop_cg_cp_c_hint_nop_immm18_str: .string "\"test: 16; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-18\""
+Zca_c_nop_cg_cp_c_hint_nop_immm17_str: .string "\"test: 17; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-17\""
+Zca_c_nop_cg_cp_c_hint_nop_immm16_str: .string "\"test: 18; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-16\""
+Zca_c_nop_cg_cp_c_hint_nop_immm15_str: .string "\"test: 19; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-15\""
+Zca_c_nop_cg_cp_c_hint_nop_immm14_str: .string "\"test: 20; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-14\""
+Zca_c_nop_cg_cp_c_hint_nop_immm13_str: .string "\"test: 21; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-13\""
+Zca_c_nop_cg_cp_c_hint_nop_immm12_str: .string "\"test: 22; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-12\""
+Zca_c_nop_cg_cp_c_hint_nop_immm11_str: .string "\"test: 23; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-11\""
+Zca_c_nop_cg_cp_c_hint_nop_immm10_str: .string "\"test: 24; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-10\""
+Zca_c_nop_cg_cp_c_hint_nop_immm9_str: .string "\"test: 25; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-9\""
+Zca_c_nop_cg_cp_c_hint_nop_immm8_str: .string "\"test: 26; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-8\""
+Zca_c_nop_cg_cp_c_hint_nop_immm7_str: .string "\"test: 27; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-7\""
+Zca_c_nop_cg_cp_c_hint_nop_immm6_str: .string "\"test: 28; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-6\""
+Zca_c_nop_cg_cp_c_hint_nop_immm5_str: .string "\"test: 29; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-5\""
+Zca_c_nop_cg_cp_c_hint_nop_immm4_str: .string "\"test: 30; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-4\""
+Zca_c_nop_cg_cp_c_hint_nop_immm3_str: .string "\"test: 31; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-3\""
+Zca_c_nop_cg_cp_c_hint_nop_immm2_str: .string "\"test: 32; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-2\""
+Zca_c_nop_cg_cp_c_hint_nop_immm1_str: .string "\"test: 33; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm-1\""
+Zca_c_nop_cg_cp_c_hint_nop_imm1_str: .string "\"test: 34; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm1\""
+Zca_c_nop_cg_cp_c_hint_nop_imm2_str: .string "\"test: 35; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm2\""
+Zca_c_nop_cg_cp_c_hint_nop_imm3_str: .string "\"test: 36; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm3\""
+Zca_c_nop_cg_cp_c_hint_nop_imm4_str: .string "\"test: 37; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm4\""
+Zca_c_nop_cg_cp_c_hint_nop_imm5_str: .string "\"test: 38; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm5\""
+Zca_c_nop_cg_cp_c_hint_nop_imm6_str: .string "\"test: 39; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm6\""
+Zca_c_nop_cg_cp_c_hint_nop_imm7_str: .string "\"test: 40; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm7\""
+Zca_c_nop_cg_cp_c_hint_nop_imm8_str: .string "\"test: 41; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm8\""
+Zca_c_nop_cg_cp_c_hint_nop_imm9_str: .string "\"test: 42; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm9\""
+Zca_c_nop_cg_cp_c_hint_nop_imm10_str: .string "\"test: 43; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm10\""
+Zca_c_nop_cg_cp_c_hint_nop_imm11_str: .string "\"test: 44; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm11\""
+Zca_c_nop_cg_cp_c_hint_nop_imm12_str: .string "\"test: 45; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm12\""
+Zca_c_nop_cg_cp_c_hint_nop_imm13_str: .string "\"test: 46; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm13\""
+Zca_c_nop_cg_cp_c_hint_nop_imm14_str: .string "\"test: 47; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm14\""
+Zca_c_nop_cg_cp_c_hint_nop_imm15_str: .string "\"test: 48; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm15\""
+Zca_c_nop_cg_cp_c_hint_nop_imm16_str: .string "\"test: 49; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm16\""
+Zca_c_nop_cg_cp_c_hint_nop_imm17_str: .string "\"test: 50; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm17\""
+Zca_c_nop_cg_cp_c_hint_nop_imm18_str: .string "\"test: 51; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm18\""
+Zca_c_nop_cg_cp_c_hint_nop_imm19_str: .string "\"test: 52; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm19\""
+Zca_c_nop_cg_cp_c_hint_nop_imm20_str: .string "\"test: 53; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm20\""
+Zca_c_nop_cg_cp_c_hint_nop_imm21_str: .string "\"test: 54; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm21\""
+Zca_c_nop_cg_cp_c_hint_nop_imm22_str: .string "\"test: 55; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm22\""
+Zca_c_nop_cg_cp_c_hint_nop_imm23_str: .string "\"test: 56; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm23\""
+Zca_c_nop_cg_cp_c_hint_nop_imm24_str: .string "\"test: 57; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm24\""
+Zca_c_nop_cg_cp_c_hint_nop_imm25_str: .string "\"test: 58; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm25\""
+Zca_c_nop_cg_cp_c_hint_nop_imm26_str: .string "\"test: 59; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm26\""
+Zca_c_nop_cg_cp_c_hint_nop_imm27_str: .string "\"test: 60; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm27\""
+Zca_c_nop_cg_cp_c_hint_nop_imm28_str: .string "\"test: 61; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm28\""
+Zca_c_nop_cg_cp_c_hint_nop_imm29_str: .string "\"test: 62; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm29\""
+Zca_c_nop_cg_cp_c_hint_nop_imm30_str: .string "\"test: 63; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm30\""
+Zca_c_nop_cg_cp_c_hint_nop_imm31_str: .string "\"test: 64; cg: Zca_c.nop_cg; cp: cp_c_hint_nop; bin: imm31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

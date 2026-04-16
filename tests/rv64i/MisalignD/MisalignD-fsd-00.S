@@ -13,7 +13,7 @@
 # params:
 #   MXLEN: 64
 #   MISALIGNED_LDST: true
-# MARCH: rv64ifd
+# MARCH: rv64ifd_zicsr
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

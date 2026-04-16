@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zihintntl', 'Zca']
 # params:
 #   MXLEN: 64
-# MARCH: rv64ic_zihintntl_zca
+# MARCH: rv64ic_zicsr_zihintntl_zca
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

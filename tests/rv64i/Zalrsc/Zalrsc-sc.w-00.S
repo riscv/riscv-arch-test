@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zalrsc']
 # params:
 #   MXLEN: 64
-# MARCH: rv64i_zalrsc
+# MARCH: rv64i_zicsr_zalrsc
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

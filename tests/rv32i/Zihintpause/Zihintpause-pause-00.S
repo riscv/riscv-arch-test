@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zihintpause']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zihintpause
+# MARCH: rv32i_zicsr_zihintpause
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

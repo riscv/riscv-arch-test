@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zicond']
 # params:
 #   MXLEN: 32
-# MARCH: rv32i_zicond
+# MARCH: rv32i_zicond_zicsr
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['E', 'Zba']
 # params:
 #   MXLEN: 32
-# MARCH: rv32e_zba
+# MARCH: rv32e_zicsr_zba
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region

@@ -1705,7 +1705,10 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
 // **FIXME** : the spec needs to be updated with the per/mode versions, not just one
 // do these need per/mode versions? presumably they are written so the lowest
 // priv mode that is it delegated to will work
-// **FIXME**: move these outside the handler so it can copied per mode using INSTANTIATE_MODE_MACRO
+// Move interrupt handler stubs to .text.rvmodel so that RVMODEL macro size
+// differences between DUT and reference don't affect .text.rvtest size (which
+// would shift .data addresses and break page table setups).
+.pushsection .text.rvmodel, "ax"
 
 //------------- MMode----------------
 \__MODE__\()clr_Msw_int:                // int 3 default to just return if not defined
@@ -1772,6 +1775,8 @@ excpt_\__MODE__\()hndlr_tbl:            // handler code should only touch T2..T6
         RVMODEL_CLR_VEXT_INT
         TRAP_SIGUPD(T4, T3, 3, \__MODE__\()clr_Vext_int, \__MODE__\()clr_Vext_int_str)  // Save intID
         j       resto_\__MODE__\()rtn
+
+.popsection
 
 .ifc \__MODE__ , M
 

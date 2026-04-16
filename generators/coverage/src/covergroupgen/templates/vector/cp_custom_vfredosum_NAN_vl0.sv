@@ -1,6 +1,6 @@
 
-        // Positive qNaN range: sign=0, exponent all 1s, mantissa MSB=1
-        // SEW16: 0x7E00..0x7FFF, SEW32: 0x7FC00000..0x7FFFFFFF, SEW64: 0x7FF8000000000000..0x7FFFFFFFFFFFFFFF
+    // Positive qNaN range: sign=0, exponent all 1s, mantissa MSB=1
+    // SEW16: 0x7E00..0x7FFF, SEW32: 0x7FC00000..0x7FFFFFFF, SEW64: 0x7FF8000000000000..0x7FFFFFFFFFFFFFFF
         //
         // For non-widening (vfredosum), vs1 is at SEW — get_vr_element_zero matches.
         // For widening (vfwredosum), vs1 accumulator is at 2*SEW — get_vr_element_zero_widen matches.
@@ -68,5 +68,5 @@
         }
 
         cp_custom_vfredosum_NAN_vl0 : cross fp_flags_clear, vtype_prev_vill_clear, vl_zero, vstart_zero, vs1_0_qNAN iff (ins.trap == 0);
-        `endif
+    `endif
 `endif

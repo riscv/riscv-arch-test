@@ -60,7 +60,7 @@ params:
   # Misaligned load/store support (!VERIFIED)
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low # LSU documentation says: “If an error response is received for the first transaction, the second transaction will still be issued and ignored.” means that Misalignment does not cause an exception
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096 # unable to verify from documentation (but 4kb sounds reasonable)
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension, no atomicity requirements
   MISALIGNED_SPLIT_STRATEGY: custom # from LSU docs
 
   # CSR / implementation IDs (VERIFIED)
@@ -72,7 +72,7 @@ params:
   # MTVEC (!VERIFIED)
   MTVEC_MODES: [1]
   MTVEC_ACCESS: rw
-  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
   MTVEC_BASE_ALIGNMENT_VECTORED: 256
   #MTVEC_BASE_ALIGNMENT_DIRECT: 256
   #Parameter is not defined by this config: 'MTVEC_BASE_ALIGNMENT_DIRECT'.

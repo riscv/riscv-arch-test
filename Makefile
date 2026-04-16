@@ -123,7 +123,7 @@ elfs: tests
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
 .PHONY: clean
-clean: clean-tests
+clean:
 	@if [ -d $(WORKDIR) ]; then \
 		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \

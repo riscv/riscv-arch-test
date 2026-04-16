@@ -70,6 +70,10 @@ mise --version
 >
 > For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
 
+> [!NOTE]
+>
+> See note on enabling trust in the `.mise.toml` file below.
+
 #### 3. RISC-V Compiler (GCC or LLVM)
 
 The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
@@ -152,6 +156,18 @@ Clone the `riscv-arch-test` repo:
 git clone https://github.com/riscv/riscv-arch-test
 ```
 
+On entering the top-level directory of the repository for the first
+time, or on the first use of one of the build commands below, you may
+see messages or a prompt from `mise` requiring enabling trust before
+the `.mise.toml` configuration file can be used. This can be done by
+selecting `Yes` in the prompt or with the following command in the
+top-level directory of the repository:
+
+```bash
+mise trust .mise.toml
+
+```
+
 ### Configuration
 
 Several configuration files are needed to tell the ACT framework how to find your tools, what extensions and parameters are supported by your implementation, and how to perform implementation-specific functions.
@@ -202,19 +218,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 **Printing Macros**: Can be left blank if no console is available
 
-- `RVMODEL_IO_INIT(_R1, _R2, _R3)`
+- `RVMODEL_IO_INIT(_R1, _R2, _R3)` (can be omitted if not needed)
 - `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
-- `RVMODEL_BOOT`
-- `RVMODEL_ACCESS_FAULT_ADDRESS`
+- `RVMODEL_BOOT` (can be omitted if not needed)
+- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS`
-- `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
+- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
@@ -338,7 +354,7 @@ These files are generated in the `$WORKDIR/<config_name>/build` directory alongs
 Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
-- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

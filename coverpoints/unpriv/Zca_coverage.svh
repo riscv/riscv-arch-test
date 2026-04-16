@@ -22,6 +22,10 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+    // c.add with rd = 0, rs2 != 0 is a hint
+    cp_c_hint_add : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
+        bins rs2 = {[x1:x31]}; // rs2 != 0
+    }
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -106,6 +110,10 @@ covergroup Zca_c_addi_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.addi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+    // c.addi with rd != 0, imm = 0 is a hint
+    cp_c_hint_addi : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0 && ins.current.imm == 0) {
+        bins rd[] = {[x1:x31]}; // rd != x0
     }
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
@@ -437,50 +445,6 @@ covergroup Zca_c_bnez_cg with function sample(ins_t ins);
     }
 endgroup
 // ---------------------
-covergroup Zca_c_hint_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    // Custom coverpoints for compressed standard hints
-    // flavors of compressed instructions
-
-    // c.nop with imm != 0 are hints
-    cp_chint_nop: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b000 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
-        bins imm[] = {[1:63]};  // imm != 0
-    }
-
-    // c.addi with rd != 0, imm = 0 are hints
-    cp_chint_addi: coverpoint {ins.current.insn[11:7]} iff (ins.current.insn[15:12] == 3'b000 & ins.current.insn[6:0] == 7'b0000001) {
-        bins rd[] = {[1:31]}; // rd != 0
-    }
-
-    // c.li with rd = 0 are hints
-    cp_chint_li: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b010 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
-        bins imm[] = {[0:63]}; // imm
-    }
-
-    // c.lui with rd = 0, imm != 0 are hints
-    cp_chint_lui: coverpoint {ins.current.insn[12], ins.current.insn[6:2]} iff (ins.current.insn[15:13] == 3'b011 & ins.current.insn[11:7] == 5'b00000 & ins.current.insn[1:0] == 2'b01) {
-        bins imm[] = {[1:63]}; // imm
-    }
-
-    // c.mv with rd = 0, rs2 != 0 are hints
-    cp_chint_mv: coverpoint {ins.current.insn[6:2]} iff (ins.current.insn[15:7] == 9'b1000_00000 & ins.current.insn[1:0] == 2'b10) {
-        bins rs2[] = {[1:31]}; // rs2 != 0
-    }
-
-    // c.add with rd = x0, rs2 != x0 are hints
-    // note that rs2 = x2-x5 are c.ntl hints if Zihintntl is supported
-    cp_chint_add: coverpoint {ins.current.insn[6:2]} iff (ins.current.insn[15:7] == 9'b1001_00000 & ins.current.insn[1:0] == 2'b10) {
-        bins rs2a = {1};
-        bins c_ntl_p1 = {2};
-        bins c_ntl_pall = {3};
-        bins c_ntl_s1 = {4};
-        bins c_ntl_all = {5};
-        bins rs2b[] = {[6:31]}; // rs2 != 0
-    }
-
-    // hints for c.slli,  c.srli, c.srai are designated for custom use and are not certified
-endgroup
-// ---------------------
 covergroup Zca_c_j_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "c.j"  iff (ins.trap == 0 )  {
@@ -565,6 +529,10 @@ covergroup Zca_c_li_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+    // c.li with rd = 0 is a hint
+    cp_c_hint_li : coverpoint signed'(ins.current.imm) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
+        bins imm[] = {[-32:31]};
+    }
     cp_imm_edges_6bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -591,6 +559,11 @@ covergroup Zca_c_lui_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "c.lui"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+    // c.lui with rd = 0, imm != 0 is a hint
+    cp_c_hint_lui : coverpoint signed'(ins.current.imm) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
+        bins imm[] = {[-32:31]};
+        ignore_bins zero = {0};
     }
     cp_imm_edges_6bit_n0 : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_1 = {1};
@@ -660,6 +633,10 @@ covergroup Zca_c_mv_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+    // c.mv with rd = 0, rs2 != 0 is a hint
+    cp_c_hint_mv : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
+        bins rs2[] = {[x1:x31]}; // rs2 != 0
+    }
     cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {
         // RD register assignment (excluding x0)
         ignore_bins x0 = {x0};
@@ -705,9 +682,14 @@ endgroup
 // ---------------------
 covergroup Zca_c_nop_cg with function sample(ins_t ins);
     option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "c.nop"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
+    cp_asm_count : coverpoint ins.ins_str == "c.nop" iff (ins.trap == 0 && ins.current.imm == 0) {
+        // Number of times the canonical c.nop (imm == 0) is executed
+        bins count[] = {1};
+    }
+    // c.nop with imm != 0 is a hint
+    cp_c_hint_nop : coverpoint signed'(ins.current.imm) iff (ins.trap == 0) {
+        bins imm[] = {[-32:31]};
+        ignore_bins zero = {0};
     }
 endgroup
 // ---------------------
@@ -1718,9 +1700,6 @@ function void zca_sample(int hart, int issue, ins_t ins);
         end
         "c.bnez"     : begin
             Zca_c_bnez_cg.sample(ins);
-        end
-        "c.hint"     : begin
-            Zca_c_hint_cg.sample(ins);
         end
         "c.j"     : begin
             Zca_c_j_cg.sample(ins);

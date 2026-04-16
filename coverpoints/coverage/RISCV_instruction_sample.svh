@@ -26447,11 +26447,6 @@
             ins.add_rs1(0);
             ins.add_imm_addr(1);
         end
-        "c.hint"     : begin
-            ins.add_rd(0);
-            ins.add_rs1(0);
-            ins.add_imm(1);
-        end
         "c.j"     : begin
             ins.add_imm_addr(0);
         end
@@ -26492,6 +26487,7 @@
             ins.add_rs2(1);
         end
         "c.nop"     : begin
+            ins.add_imm(0);
         end
         "c.or"     : begin
             ins.add_rd(0);
@@ -26713,20 +26709,28 @@
         end
 `endif
         "c.mop.1"     : begin
+            ins.add_imm(0);
         end
         "c.mop.11"     : begin
+            ins.add_imm(0);
         end
         "c.mop.13"     : begin
+            ins.add_imm(0);
         end
         "c.mop.15"     : begin
+            ins.add_imm(0);
         end
         "c.mop.3"     : begin
+            ins.add_imm(0);
         end
         "c.mop.5"     : begin
+            ins.add_imm(0);
         end
         "c.mop.7"     : begin
+            ins.add_imm(0);
         end
         "c.mop.9"     : begin
+            ins.add_imm(0);
         end
         "fcvtmod.w.d"     : begin
             ins.add_rd(0);

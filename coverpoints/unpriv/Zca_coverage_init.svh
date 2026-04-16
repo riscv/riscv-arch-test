@@ -18,7 +18,6 @@
     Zca_c_andi_cg = new(); Zca_c_andi_cg.set_inst_name("obj_Zca_c_andi");
     Zca_c_beqz_cg = new(); Zca_c_beqz_cg.set_inst_name("obj_Zca_c_beqz");
     Zca_c_bnez_cg = new(); Zca_c_bnez_cg.set_inst_name("obj_Zca_c_bnez");
-    Zca_c_hint_cg = new(); Zca_c_hint_cg.set_inst_name("obj_Zca_c_hint");
     Zca_c_j_cg = new(); Zca_c_j_cg.set_inst_name("obj_Zca_c_j");
     Zca_c_jalr_cg = new(); Zca_c_jalr_cg.set_inst_name("obj_Zca_c_jalr");
     Zca_c_jr_cg = new(); Zca_c_jr_cg.set_inst_name("obj_Zca_c_jr");

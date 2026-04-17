@@ -179,8 +179,7 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
 
     if testsuite not in _SPLIT_TESTSUITES:
         # ── Standard single-file output (original behaviour) ──────────────────
-        write_test_file(test_config, None, [tc], output_path,
-                        file_idx=0, extra_defines=extra_defines)
+        write_test_file(test_config, None, [tc], output_path, file_idx=0, extra_defines=extra_defines)
     else:
         # ── Ssstrict: split into multiple files with fast handler per file ─────
         groups = _split_at_blank(body_lines, _LINES_PER_FILE)

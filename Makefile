@@ -121,7 +121,6 @@ elfs: tests
 		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR)) \
-		$(if $(COVERAGE),--keep-going)
 
 .PHONY: clean
 clean:

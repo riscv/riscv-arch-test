@@ -22,6 +22,7 @@ from pathlib import Path
 
 _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
+_TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -70,8 +71,18 @@ def dim(text: str) -> str:
 def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool) -> tuple[bool, Path, str]:
     """Run a single ELF and return (failed, elf_path, rvcp_summary_line)."""
 
+    # Create log and trace file paths mirroring the ELF subdirectory hierarchy
+    log_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
+    trace_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".trace.log")
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+
+    # Substitute __TRACEFILE__ placeholder with the per-test trace file path.
+    # This directs simulator trace output to a separate file so it doesn't
+    # interleave with RVCP-SUMMARY lines in the main log.
+    test_command = command.replace(_TRACEFILE_PLACEHOLDER, str(trace_file))
+
     # Split command, extracting leading KEY=VALUE env var assignments
-    tokens = shlex.split(command)
+    tokens = shlex.split(test_command)
     env_overrides: dict[str, str] = {}
     while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
         key, _, value = tokens.pop(0).partition("=")
@@ -79,12 +90,8 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
     env = {**os.environ, **env_overrides} if env_overrides else None
     cmd = tokens
 
-    # Create log file path mirroring the ELF subdirectory hierarchy
-    log_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
-    log_file.parent.mkdir(parents=True, exist_ok=True)
-
     full_cmd = [*cmd, str(elf_path)]
-    display_cmd = f"{command} {elf_path}"
+    display_cmd = f"{test_command} {elf_path}"
 
     if verbose:
         print(f"\nRunning {display_cmd}")
@@ -96,6 +103,9 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
         result = subprocess.run(
             full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False, env=env
         )
+
+    # Build trace file reference for failure output
+    trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
 
     # Check exit code
     exit_failed = result.returncode != 0
@@ -117,36 +127,36 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
             f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
     elif exit_failed and no_summary:
         print(
             f"  {red('FAIL')} {bold(elf_path.name)} — exit code {result.returncode} indicates failure, no RVCP-SUMMARY line found"
             f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
     elif exit_failed and summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code {result.returncode}"
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
     elif summary_failed and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {result.returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
     elif exit_failed and not summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {result.returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
     elif no_summary and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
             f"\n         Test may have been killed externally or hung without producing output."
-            f"\n         Log: {dim(str(log_file))}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}"
         )
 
     return failed, elf_path, rvcp_summary
@@ -191,8 +201,11 @@ def main() -> int:
     banner = f"══════ {config_name} ══════"
     print(f"\n{bold_cyan(banner)}")
     print(f"  {bold('Running ELFs from')}: {elf_dir}")
-    print(f"  {bold('Using command')}: {command} <elf_path>")
+    banner_command = command.replace(_TRACEFILE_PLACEHOLDER, "<trace_file>")
+    print(f"  {bold('Using command')}: {banner_command} <elf_path>")
     print(f"  {bold('Summary available at')}: {summary_log}")
+    if _TRACEFILE_PLACEHOLDER in command:
+        print(f"  {bold('Trace output')}: {log_dir}/<test>.trace.log")
 
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))

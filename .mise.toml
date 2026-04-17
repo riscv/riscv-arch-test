@@ -2,7 +2,7 @@
 
 [tools]
 ruby = "3.4.9"
-uv = "0.11.6"
+uv = "0.11.7"
 
 [settings.ruby]
 compile = false

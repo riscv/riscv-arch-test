@@ -22,7 +22,7 @@ from vector_testgen_common import (
 )
 
 
-@register("cp_custom_masked_v0_operand")
+@register("cp_custom_masked_vs2_v0")
 def make(test: str, sew: int) -> None:
     if test not in indexed_ls_ins:
         return

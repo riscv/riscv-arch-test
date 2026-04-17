@@ -45,8 +45,14 @@ def _get_index_eew(instruction: str) -> int | None:
     return None
 
 
-@register("cp_custom_indexed_emul_data_only")
-def make(test: str, sew: int) -> None:
+def _make(test: str, sew: int, min_sew: int = 0) -> None:
+    # Gate for _sew_ge{N} variants: CSV framework appends e.g. "sew_ge16" to the
+    # column name, producing cp_custom_indexed_emul_data_only_sew_ge16. The
+    # coverage generator strips the suffix from the covergroup template, but the
+    # testgen registry sees the full name — so one handler per variant gates SEW.
+    if sew < min_sew:
+        return
+
     nf = _get_nfields(test)
     targets = {8: 1, 4: 2, 2: 4}  # nf → required lmul
 
@@ -72,3 +78,10 @@ def make(test: str, sew: int) -> None:
     writeTest(description, test, data, sew=sew, lmul=lmul, vl=1)
     incrementBasetestCount()
     vsAddressCount()
+
+
+register("cp_custom_indexed_emul_data_only")(lambda test, sew: _make(test, sew))
+for _min in (16, 32, 64):
+    register(f"cp_custom_indexed_emul_data_only_sew_ge{_min}")(
+        (lambda m: lambda test, sew: _make(test, sew, min_sew=m))(_min)
+    )

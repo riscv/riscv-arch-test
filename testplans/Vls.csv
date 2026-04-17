@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,EFFEW8,EFFEW16,EFFEW32,EFFEW64,cp_asm_count,cp_vd,cp_vs3,cp_vs2,cp_vs2_edges,cmp_vd_vs2,cmp_vs3_vs2,cp_rs1,cp_rs2,cp_rs2_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,std_vec,cp_custom_vwholeRegLS_vill,cp_custom_vwholeRegLS_lmul,cp_custom_maskLS,cp_custom_ls_indexed,cp_custom_ffLS_update_vl,cp_custom_indexed_emul_data_only,cp_custom_masked_v0_operand
+Instruction,Type,RV32,RV64,EFFEW8,EFFEW16,EFFEW32,EFFEW64,cp_asm_count,cp_vd,cp_vs3,cp_vs2,cp_vs2_edges,cmp_vd_vs2,cmp_vs3_vs2,cp_rs1,cp_rs2,cp_rs2_edges,cp_masking_edges,cr_vl_lmul,cr_vtype_agnostic,cp_vl_0,std_vec,cp_custom_vwholeRegLS_vill,cp_custom_vwholeRegLS_lmul,cp_custom_maskLS,cp_custom_ls_indexed,cp_custom_ffLS_update_vl,cp_custom_indexed_emul_data_only,cp_custom_masked_vs2_v0
 vle8.v,VXM,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e8,e8,x,x,,,,,,,
 vle16.v,VXM,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e16,e16,x,x,,,,,,,
 vle32.v,VXM,x,x,x,x,x,x,x,x,,,,,,nx0,,,x,e32,e32,x,x,,,,,,,

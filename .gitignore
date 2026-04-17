@@ -27,16 +27,8 @@ __pycache__
 # Work directories
 work/
 
-### Don't check in generated files for now
-# coverpoints
-coverpoints/unpriv
-coverpoints/coverage
-# tests
+# priv tests
 tests/priv/headers
-tests/rv32i
-tests/rv32e
-tests/rv64i
-tests/rv64e
 tests/priv/**/*.S
 # docs
 docs/ctp/mismatch_report.txt

@@ -170,6 +170,10 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
         else:
             multi_letter.append(ext)
 
+    # Always include Zicsr so boot code CSR instructions can compile
+    if "Zicsr" not in multi_letter:
+        multi_letter.append("Zicsr")
+
     # workaround for https://github.com/llvm/llvm-project/issues/190910; can be removed when this is resolved
     if ("Zihintntl" in multi_letter) and ("Zca" in multi_letter):
         single_letter.append("C")

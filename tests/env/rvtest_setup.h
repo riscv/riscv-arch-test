@@ -33,7 +33,7 @@
   .option norvc
 
   // Include model specific boot code
-  j rvmodel_boot
+  call rvmodel_boot
 
   // Create new section so that .align directives in the test code don't affect the
   // entry point address. The assembler increases a section's overall alignment to
@@ -151,9 +151,9 @@
 
   // Terminate test
   exit_cleanup:
-    LA(T4, successstr)
-    RVMODEL_IO_WRITE_STR(T1, T2, T3, T4)
-    RVMODEL_HALT_PASS
+    LA(a0, successstr)
+    call rvmodel_io_write_str
+    call rvmodel_halt_pass
 
   // Terminate test with a failure message
   abort_test:
@@ -166,6 +166,13 @@
   // Include test failure handling code
   RVTEST_FAILURE_CODE
 
+  // All model-specific (RVMODEL_*) code lives in the dedicated .text.rvmodel
+  // section, placed AFTER .data by the linker script. This isolates variable-
+  // sized macro expansions (they differ between the DUT build and the Sail
+  // reference build) from the .text section so that test-visible symbols in
+  // .data (scratch, begin_signature, etc.) have identical addresses in both
+  // the .elf and .sig.elf builds.
+  .pushsection .text.rvmodel,"ax",@progbits
   // Model specific boot code
   rvmodel_boot:
     #ifdef RVMODEL_BOOT
@@ -191,10 +198,21 @@
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
 
-  // rvtest macros are used to invoke the rvmodel specific interrupt macros and those rvmodels macros need to be at the end of the program because their length is variable and we don't want their lengths to affect the relative addresses of program
+  rvmodel_io_write_str:
+    // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
+    RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
+    ret
+
+  rvmodel_halt_pass:
+    RVMODEL_HALT_PASS
+    j . // Explicit non-returning tail if the macro returns (it should not)
+
+  rvmodel_halt_fail:
+    RVMODEL_HALT_FAIL
+    j . // Explicit non-returning tail if the macro returns (it should not)
+
   // ***DH 4/8/26 check this is proper gating
   #ifdef rvtest_mtrap_routine
-// RVMODEL macros for DUT specific interrupts. These implement the actual interrupt setup for the DUT and are invoked by the generic RVTEST macros.
     rvtest_set_msw_int:
       RVMODEL_SET_MSW_INT(T2, T5)
       ret
@@ -229,10 +247,11 @@
       LI(T3, 512)
       csrc sip, T3
       ret
-
   #endif
 
-  nop // Padding to ensure valid memory after jr in case it's at the edge of the .text section
+  nop // Padding to ensure valid memory at the edge of the section
+
+  .popsection
 
   .option pop
 
@@ -317,9 +336,6 @@
   // End of data region
   .global rvtest_data_end
   rvtest_data_end:
-
-  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h
-  RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_DATA_END ********************************/
 
@@ -370,6 +386,11 @@
   rvtest_sig_end:
   .global end_signature
   end_signature:
+
+  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
+  // Placed after the signature so variable-size DUT data does not affect any
+  // test-visible symbol addresses.
+  RVMODEL_DATA_SECTION
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 

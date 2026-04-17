@@ -224,15 +224,6 @@
 `ifdef VF64_COVERAGE
   `include "Vf64_coverage.svh"
 `endif
-`ifdef VFCUSTOM16_COVERAGE
-  `include "VfCustom16_coverage.svh"
-`endif
-`ifdef VFCUSTOM32_COVERAGE
-  `include "VfCustom32_coverage.svh"
-`endif
-`ifdef VFCUSTOM64_COVERAGE
-  `include "VfCustom64_coverage.svh"
-`endif
 `ifdef VLS16_COVERAGE
   `include "Vls16_coverage.svh"
 `endif

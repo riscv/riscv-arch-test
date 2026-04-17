@@ -757,7 +757,7 @@ When debug mode enables simulator tracing, trace output can interleave with `RVC
 - **`__SUMMARYFILE__`** — Use when the simulator cannot redirect trace but _can_ redirect its console output (which contains `RVCP-SUMMARY`) to a file. When present, `run_tests.py` reads `RVCP-SUMMARY` from this `.summary.log` file instead of the main log. Example:
 
   ```
-  wsim --sim verilator {debug:--sim questa --lockstepverbose --args "+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__"} rv64gc --elf
+  wsim --sim verilator {debug:--sim questa --lockstepverbose --args '+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__'} rv64gc --elf
   ```
 
 Both placeholders should be placed inside `{debug:...}` blocks since they are only needed when trace output is enabled. When debug is off, the placeholders are stripped along with the rest of the block.

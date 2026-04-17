@@ -20,7 +20,9 @@
     {
       "description": "QEMU version in install script",
       "customType": "regex",
-      "fileMatch": ["^\\.github/scripts/install-qemu\\.sh$"],
+      "managerFilePatterns": [
+        "/^\\.github/scripts/install-qemu\\.sh$/"
+      ],
       "matchStrings": ["QEMU_VERSION=\"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "qemu/qemu",
       "datasourceTemplate": "github-tags",
@@ -29,7 +31,9 @@
     {
       "description": "Spike commit in install script",
       "customType": "regex",
-      "fileMatch": ["^\\.github/scripts/install-spike\\.sh$"],
+      "managerFilePatterns": [
+        "/^\\.github/scripts/install-spike\\.sh$/"
+      ],
       "matchStrings": ["SPIKE_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "riscv/riscv-isa-sim",
       "datasourceTemplate": "git-refs",
@@ -39,7 +43,9 @@
     {
       "description": "Whisper commit in install script",
       "customType": "regex",
-      "fileMatch": ["^\\.github/scripts/install-whisper\\.sh$"],
+      "managerFilePatterns": [
+        "/^\\.github/scripts/install-whisper\\.sh$/"
+      ],
       "matchStrings": ["WHISPER_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "tenstorrent/whisper",
       "datasourceTemplate": "git-refs",
@@ -49,7 +55,9 @@
     {
       "description": "CVW commit in install script",
       "customType": "regex",
-      "fileMatch": ["^\\.github/scripts/install-cvw\\.sh$"],
+      "managerFilePatterns": [
+        "/^\\.github/scripts/install-cvw\\.sh$/"
+      ],
       "matchStrings": ["CVW_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
       "depNameTemplate": "openhwgroup/cvw",
       "datasourceTemplate": "git-refs",
@@ -59,7 +67,9 @@
     {
       "description": "RISC-V GCC toolchain version in CI workflow",
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/regress\\.yml$"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/regress\\.yml$/"
+      ],
       "matchStrings": [
         "GCC_TOOLCHAIN_VERSION:\\s*\"(?<currentValue>[\\d.]+)\""
       ],
@@ -69,7 +79,9 @@
     {
       "description": "LLVM version in CI workflow",
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/regress\\.yml$"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/regress\\.yml$/"
+      ],
       "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
       "depNameTemplate": "llvm/llvm-project",
       "datasourceTemplate": "github-tags",

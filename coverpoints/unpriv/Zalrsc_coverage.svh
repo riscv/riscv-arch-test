@@ -23,8 +23,8 @@ covergroup Zalrsc_lr_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
     cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
-    // Combinations of acquire and release
-    ignore_bins rl_noaq = {2'b01};
+        // Combinations of acquire and release
+        ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
         `ifdef XLEN32
@@ -35,7 +35,7 @@ covergroup Zalrsc_lr_w_cg with function sample(ins_t ins);
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
-    `endif
+        `endif
     }
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
@@ -172,8 +172,8 @@ covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
     cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
-    // Combinations of acquire and release
-    ignore_bins rl_noaq = {2'b01};
+        // Combinations of acquire and release
+        ignore_bins rl_noaq = {2'b01};
     }
     cp_custom_rd_edges : coverpoint ins.current.rd_val iff (ins.trap == 0) {
         `ifdef XLEN32
@@ -184,7 +184,7 @@ covergroup Zalrsc_lr_d_cg with function sample(ins_t ins);
             bins zero = {0};
             bins one  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
             bins max  = {64'b1111111111111111111111111111111111111111111111111111111111111111};
-    `endif
+        `endif
     }
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment

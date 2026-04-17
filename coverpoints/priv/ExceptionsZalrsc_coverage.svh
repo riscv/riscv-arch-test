@@ -48,18 +48,6 @@ covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
         }
     `endif
 
-    illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
-    illegal_address_misaligned: coverpoint ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
-    }
-    non_illegal_address: coverpoint ({{ins.current.imm + ins.current.rs1_val}[`XLEN-1:3], 3'b000} != `RVMODEL_ACCESS_FAULT_ADDRESS) {
-        bins non_illegal = {1};
-    }
-    adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
-        // auto fills 000 through 111
-    }
     adr_LSBs_illegal_w: coverpoint ins.current.rs1_val[2:0]  {
         ignore_bins zero = {0};
         ignore_bins four = {3'b100};
@@ -77,6 +65,9 @@ covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
     rd_zero_cur: coverpoint ins.current.rd_val {
         bins zero = {0};
     }
+    adr_LSBs: coverpoint ins.current.rs1_val[2:0]  {
+        // auto fills 000 through 111
+    }
 
     // Ideally this coverpoint would check the rs1 of the paired lr.x and sc.x
     // to match the test plan. With our current toolflow
@@ -90,19 +81,41 @@ covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
     // (4 byte aligned vs ) so they are handled differently in the coverpoints.
 
     // main coverpoints
-    cp_load_address_misaligned:                cross lr, adr_LSBs, non_illegal_address;
-    cp_load_access_fault:                      cross lr, illegal_address;
-    cp_load_access_misaligned_priority:        cross lr, illegal_address_misaligned;
-    cp_store_address_misaligned_legal_w:       cross sc_w, adr_LSBs_legal_w,rd_gt_one_prev, rd_zero_cur, non_illegal_address;
-    cp_store_address_misaligned_illegal_w:     cross sc_w, adr_LSBs_illegal_w, rd_gt_one_prev, rd_gt_one_cur, non_illegal_address;
-    // illegal sc.w and sc.d does not get coverage as SAIL stores content in by bytes instead of giving exceptions
-    // Sail issue: https://github.com/riscv/sail-riscv/issues/1574
-    `ifdef XLEN64
-        cp_store_address_misaligned_legal_d:     cross sc_d, adr_LSBs_legal_d,rd_gt_one_prev, rd_zero_cur, non_illegal_address;
-        cp_store_address_misaligned_illegal_d:   cross sc_d, adr_LSBs_illegal_d, rd_gt_one_prev, rd_gt_one_cur, non_illegal_address;
+
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        illegal_address_misaligned: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
+        }
+        non_illegal_address: coverpoint ({{ins.current.imm + ins.current.rs1_val}[`XLEN-1:3], 3'b000} != `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            bins non_illegal = {1};
+        }
+        cp_load_address_misaligned:                cross lr, adr_LSBs, non_illegal_address;
+        cp_load_access_fault:                      cross lr, illegal_address;
+        cp_load_access_misaligned_priority:        cross lr, illegal_address_misaligned;
+        cp_store_address_misaligned_legal_w:       cross sc_w, adr_LSBs_legal_w,rd_gt_one_prev, rd_zero_cur, non_illegal_address;
+        cp_store_address_misaligned_illegal_w:     cross sc_w, adr_LSBs_illegal_w, rd_gt_one_prev, rd_gt_one_cur, non_illegal_address;
+        // illegal sc.w and sc.d does not get coverage as SAIL stores content in by bytes instead of giving exceptions
+        // Sail issue: https://github.com/riscv/sail-riscv/issues/1574
+        `ifdef XLEN64
+            cp_store_address_misaligned_legal_d:     cross sc_d, adr_LSBs_legal_d,rd_gt_one_prev, rd_zero_cur, non_illegal_address;
+            cp_store_address_misaligned_illegal_d:   cross sc_d, adr_LSBs_illegal_d, rd_gt_one_prev, rd_gt_one_cur, non_illegal_address;
+        `endif
+        cp_store_access_fault:                cross sc, illegal_address, rd_gt_one_prev, rd_gt_one_cur;
+        cp_store_access_misaligned_priority:  cross sc, illegal_address_misaligned, rd_gt_one_prev, rd_gt_one_cur;
+    `else // if no access faults, exclude non_illegal_address condition
+        cp_load_address_misaligned:                cross lr, adr_LSBs;
+        cp_store_address_misaligned_legal_w:       cross sc_w, adr_LSBs_legal_w,rd_gt_one_prev, rd_zero_cur;
+        cp_store_address_misaligned_illegal_w:     cross sc_w, adr_LSBs_illegal_w, rd_gt_one_prev, rd_gt_one_cur;
+        `ifdef XLEN64
+            cp_store_address_misaligned_legal_d:     cross sc_d, adr_LSBs_legal_d,rd_gt_one_prev, rd_zero_cur;
+            cp_store_address_misaligned_illegal_d:   cross sc_d, adr_LSBs_illegal_d, rd_gt_one_prev, rd_gt_one_cur;
+        `endif
     `endif
-    cp_store_access_fault:                cross sc, illegal_address, rd_gt_one_prev, rd_gt_one_cur;
-    cp_store_access_misaligned_priority:  cross sc, illegal_address_misaligned, rd_gt_one_prev, rd_gt_one_cur;
 endgroup
 
 function void exceptionszalrsc_sample(int hart, int issue, ins_t ins);

@@ -269,7 +269,7 @@ def _gen_instrs(
         frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
         ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
         for cp in ordered_cps:
-            if cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}:
+            if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
             # Append SEW suffix for SEW-dependent coverpoints
@@ -461,9 +461,10 @@ def write_instruction_sample_file(
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
-    for arch, tp in test_plans.items():
+    for arch in sorted(test_plans.keys()):
         if arch == "E":
             continue  # E is a duplicate of I; skip to avoid duplicate case entries
+        tp = test_plans[arch]
         instr_keys = _get_sorted_instr_keys(tp, arch)
 
         lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, True))

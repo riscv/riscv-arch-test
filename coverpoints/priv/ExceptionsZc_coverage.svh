@@ -66,18 +66,21 @@ covergroup ExceptionsZc_cg with function sample(ins_t ins);
     adr_LSBs: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0]  {
         // auto fills 000 through 111
     }
-    illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
 
     // main coverpoints
     cp_breakpoint:                           coverpoint ins.current.insn[15:0] {bins c_ebreak = {16'h9002};}
     cp_load_address_misaligned:              cross loadops, adr_LSBs;
-    cp_load_access_fault:                    cross loadops, illegal_address;
     cp_store_address_misaligned:             cross storeops, adr_LSBs;
-    cp_store_access_fault:                   cross storeops, illegal_address;
     cp_illegal_instruction:                  coverpoint ins.current.insn[15:0] { bins illegal0 = {'0}; }
 
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_load_access_fault:                    cross loadops, illegal_address;
+        cp_store_access_fault:                   cross storeops, illegal_address;
+    `endif
 endgroup
 
 function void exceptionszc_sample(int hart, int issue, ins_t ins);

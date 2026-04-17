@@ -124,10 +124,136 @@
         j failedtest_saveregs
 #endif // RVTEST_FP
 
+#ifdef RVTEST_VECTOR
+
+    # -------- ACTIVE --------
+    failedtest_vec_active_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        li x1, 3
+        sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 3 (vector)
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 0                                    # vector mismatch region = 0 (active)
+        j failedtest_saveregs
+
+    failedtest_vec_active_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)
+        SREG DEFAULT_TEMP_REG, 32(x7)
+        SREG DEFAULT_LINK_REG, 40(x7)
+        SREG x1, 8(x7)
+        li x1, 3
+        sw x1, 0(x7)                                # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x7
+        mv DEFAULT_LINK_REG, x8
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 0                                    # vector mismatch region = 0 (active)
+        j failedtest_saveregs
+
+    failedtest_vec_active_x13_x12:
+        la x12, begin_failure_scratch
+        SREG x13, 104(x12)
+        SREG DEFAULT_TEMP_REG, 32(x12)
+        SREG DEFAULT_LINK_REG, 40(x12)
+        SREG x1, 8(x12)
+        li x1, 3
+        sw x1, 0(x12)                               # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x12
+        mv DEFAULT_LINK_REG, x13
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 0                                    # vector mismatch region = 0 (active)
+        j failedtest_saveregs
+
+    # -------- TAIL --------
+    failedtest_vec_tail_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        li x1, 3
+        sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 3 (vector)
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 1                                    # vector mismatch region = 1 (tail)
+        j failedtest_saveregs
+
+    failedtest_vec_tail_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)
+        SREG DEFAULT_TEMP_REG, 32(x7)
+        SREG DEFAULT_LINK_REG, 40(x7)
+        SREG x1, 8(x7)
+        li x1, 3
+        sw x1, 0(x7)                                # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x7
+        mv DEFAULT_LINK_REG, x8
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 1                                    # vector mismatch region = 1 (tail)
+        j failedtest_saveregs
+
+    failedtest_vec_tail_x13_x12:
+        la x12, begin_failure_scratch
+        SREG x13, 104(x12)
+        SREG DEFAULT_TEMP_REG, 32(x12)
+        SREG DEFAULT_LINK_REG, 40(x12)
+        SREG x1, 8(x12)
+        li x1, 3
+        sw x1, 0(x12)                               # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x12
+        mv DEFAULT_LINK_REG, x13
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 1                                    # vector mismatch region = 1 (tail)
+        j failedtest_saveregs
+
+    # -------- MASK --------
+    failedtest_vec_mask_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        li x1, 3
+        sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 3 (vector)
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 2                                    # vector mismatch region = 2 (mask)
+        j failedtest_saveregs
+
+    failedtest_vec_mask_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)
+        SREG DEFAULT_TEMP_REG, 32(x7)
+        SREG DEFAULT_LINK_REG, 40(x7)
+        SREG x1, 8(x7)
+        li x1, 3
+        sw x1, 0(x7)                                # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x7
+        mv DEFAULT_LINK_REG, x8
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 2                                    # vector mismatch region = 2 (mask)
+        j failedtest_saveregs
+
+    failedtest_vec_mask_x13_x12:
+        la x12, begin_failure_scratch
+        SREG x13, 104(x12)
+        SREG DEFAULT_TEMP_REG, 32(x12)
+        SREG DEFAULT_LINK_REG, 40(x12)
+        SREG x1, 8(x12)
+        li x1, 3
+        sw x1, 0(x12)                               # failure_type = 3 (vector)
+        mv DEFAULT_TEMP_REG, x12
+        mv DEFAULT_LINK_REG, x13
+        SREG x2, 16(DEFAULT_TEMP_REG)
+        li x2, 2                                    # vector mismatch region = 2 (mask)
+        j failedtest_saveregs
+
+#endif // RVTEST_VECTOR
+
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
     failedtest_saveregs:
         # x1 has already been saved by all entry points
+    #ifdef RVTEST_VECTOR
+        # SREG x2, 16(DEFAULT_TEMP_REG)
+        # x2 has already been saved by vector failure entry points to indicate mismatch region (active/tail/mask)
+    #else
         SREG x2, 16(DEFAULT_TEMP_REG)
+    #endif
         SREG x3, 24(DEFAULT_TEMP_REG)
         # SREG x4, 32(DEFAULT_TEMP_REG)
         # SREG x5, 40(DEFAULT_TEMP_REG)
@@ -159,6 +285,73 @@
         SREG x30, 240(DEFAULT_TEMP_REG)
         SREG x31, 248(DEFAULT_TEMP_REG)
 
+    #ifdef RVTEST_VECTOR
+        addi x6, DEFAULT_TEMP_REG, 440
+        vs1r.v v0, (x6) # todo: change to store whole vector (be aware of lmul)
+        addi x6, x6, 128
+        vs1r.v v1, (x6)
+        addi x6, x6, 128
+        vs1r.v v2, (x6)
+        addi x6, x6, 128
+        vs1r.v v3, (x6)
+        addi x6, x6, 128
+        vs1r.v v4, (x6)
+        addi x6, x6, 128
+        vs1r.v v5, (x6)
+        addi x6, x6, 128
+        vs1r.v v6, (x6)
+        addi x6, x6, 128
+        vs1r.v v7, (x6)
+        addi x6, x6, 128
+        vs1r.v v8, (x6)
+        addi x6, x6, 128
+        vs1r.v v9, (x6)
+        addi x6, x6, 128
+        vs1r.v v10, (x6)
+        addi x6, x6, 128
+        vs1r.v v11, (x6)
+        addi x6, x6, 128
+        vs1r.v v12, (x6)
+        addi x6, x6, 128
+        vs1r.v v13, (x6)
+        addi x6, x6, 128
+        vs1r.v v14, (x6)
+        addi x6, x6, 128
+        vs1r.v v15, (x6)
+        addi x6, x6, 128
+        vs1r.v v16, (x6)
+        addi x6, x6, 128
+        vs1r.v v17, (x6)
+        addi x6, x6, 128
+        vs1r.v v18, (x6)
+        addi x6, x6, 128
+        vs1r.v v19, (x6)
+        addi x6, x6, 128
+        vs1r.v v20, (x6)
+        addi x6, x6, 128
+        vs1r.v v21, (x6)
+        addi x6, x6, 128
+        vs1r.v v22, (x6)
+        addi x6, x6, 128
+        vs1r.v v23, (x6)
+        addi x6, x6, 128
+        vs1r.v v24, (x6)
+        addi x6, x6, 128
+        vs1r.v v25, (x6)
+        addi x6, x6, 128
+        vs1r.v v26, (x6)
+        addi x6, x6, 128
+        vs1r.v v27, (x6)
+        addi x6, x6, 128
+        vs1r.v v28, (x6)
+        addi x6, x6, 128
+        vs1r.v v29, (x6)
+        addi x6, x6, 128
+        vs1r.v v30, (x6)
+        addi x6, x6, 128
+        vs1r.v v31, (x6)
+    #endif // RVTEST_VECTOR
+
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, 0(DEFAULT_TEMP_REG)       # load failure_type
@@ -168,6 +361,10 @@
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
 #endif // RVTEST_FP
+#ifdef RVTEST_VECTOR
+        li x10, 3
+        beq x9, x10, failedtest_saveresults_vector
+#endif // RVTEST_VECTOR
 
     failedtest_saveresults_int:
         # --- INTEGER (type 0): extract info from beq and load instructions ---
@@ -273,6 +470,176 @@
         j failedtest_saveresults_common
 #endif // RVTEST_FP
 
+#ifdef RVTEST_VECTOR
+
+    failedtest_saveresults_vector:
+
+        # x2: vector mismatch region (active/tail/mask)
+
+        # x6: temporary for instruction decoding
+        # x7: temporary for vd
+        # x8: mismatch index
+
+        # x10: temporary for vl
+        # x11: temporary for vtype
+        # x12: temporary for element size calculation
+        # x13: temporary for instruction decoding
+        # x14: expected value
+        # x15: temporary for actual value
+        # x16: temporary for vsew
+        # x17: temporary for element size calculation
+        # x18/x19: temporary for instruction decoding of vfirst.m before failure path
+
+
+        # --------------------------------------------------
+        # Step 1: Reconstruct instruction near failure (like integer path)
+        # --------------------------------------------------
+        # Save failing address (loaded from embedded instruction pointer after jal)
+        # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
+    #if __riscv_xlen == 64
+        lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
+        lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
+        slli x7, x7, 32
+        or x6, x6, x7                    # combine into 64-bit value
+    #else
+        lw x6, 0(DEFAULT_LINK_REG)       # RV32: 4-byte aligned, safe
+    #endif
+
+        # Fetch the failing instruction using INSTR_PTR address
+        # Check bottom 2 bits: if inst[1:0] != 0b11, it's a 16-bit compressed instruction
+        lhu x7, 0(x6)       # get lower half of the failing instruction
+        lhu x8, 2(x6)       # 32-bit: fetch upper half
+        slli x8, x8, 16
+        or x7, x7, x8
+        sw x7, 256(DEFAULT_TEMP_REG)      # record failing instruction (16 or 32 bits)
+
+
+        # Extract vd (rd field)
+        srli x7, x7, 7
+        andi x7, x7, 31
+        sw   x7, 260(DEFAULT_TEMP_REG)     # failing_reg (vd)
+
+        # --------------------------------------------------
+        # Step 2: Load mismatch index + region
+        # --------------------------------------------------
+        lhu x18, -18(DEFAULT_LINK_REG)
+        lhu x19, -20(DEFAULT_LINK_REG)
+        slli x18, x18, 16
+        or   x18, x18, x19
+
+        # Extract rd field, _TEMP_REG2 = mismatch vd index
+        srli x19, x18, 7
+        andi x19, x19, 31
+
+        slli x19, x19, 3
+        add  x19, DEFAULT_TEMP_REG, x19
+        LREG x8, 0(x19)                    # where _TEMP_REG2 (mismatch vd index) is stored in scratch
+
+        sw x8, 300(DEFAULT_TEMP_REG)       # store mismatch index
+        sw x2, 296(DEFAULT_TEMP_REG)       # store region
+
+        # --------------------------------------------------
+        # Step 3: Restore vl/vtype and read them
+        # --------------------------------------------------
+        csrr x10, vl
+        csrr x11, vtype
+
+        SREG x10, 304(DEFAULT_TEMP_REG)    # save vl
+        SREG x11, 308(DEFAULT_TEMP_REG)    # save vtype
+
+        // vtype[5:3] = vsew encoding: 0→e8, 1→e16, 2→e32, 3→e64
+        # todo: check if correct
+        srli x16, x11, 3
+        andi x16, x16, 7                # vsew field
+        li   x17, 1
+        sll  x17, x17, x16             # eew_bytes = 1 << vsew
+
+
+        # --------------------------------------------------
+        # Step 4: Extract expected value (same style as integer load decode)
+        # --------------------------------------------------
+        lhu x6, -10(DEFAULT_LINK_REG)
+        lhu x7, -12(DEFAULT_LINK_REG)
+        slli x6, x6, 16
+        or   x6, x6, x7
+
+        srai x7, x6, 20            # imm
+        srli x6, x6, 15
+        andi x6, x6, 31            # base register
+
+        slli x6, x6, 3
+        add  x6, DEFAULT_TEMP_REG, x6
+        LREG x6, 0(x6)             # sigptr base
+
+        add  x6, x6, x7            # base + offset
+
+        # add index * element_size (assume SEW known = shift)
+        # NOTE: you may refine based on SEW
+        mul  x8, x8, x17          # failing_index * eew_bytes
+        add  x6, x6, x8
+
+        # todo: consider sew=64
+        LREG x14, 0(x6)
+        SREG x14, 280(DEFAULT_TEMP_REG)    # expected value
+
+        # --------------------------------------------------
+        # Step 5: Extract actual value (from saved vd register)
+        # --------------------------------------------------
+        lw x6, 260(DEFAULT_TEMP_REG)      # vd index
+        slli x6, x6, 7                    # each vector register is 128 bytes -> shift by 7 for register number
+        addi x6, x6, 440                  # offset to where v0 is saved in scratch
+        add  x6, DEFAULT_TEMP_REG, x6
+
+        # offset by mismatch index
+        slli x8, x8, 0                   # already scaled above
+        add  x6, x6, x8
+
+        LREG x7, 0(x6) # todo: consider sew=64
+        SREG x7, 272(DEFAULT_TEMP_REG)   # failing value
+
+        # --------------------------------------------------
+        # Step 1: Reconstruct instruction near failure (like integer path)
+        # --------------------------------------------------
+        lhu x18, -14(DEFAULT_LINK_REG)
+        lhu x19, -16(DEFAULT_LINK_REG)
+        slli x18, x18, 16
+        or   x18, x18, x19
+
+        # Extract vd (rd field)
+        srli x19, x18, 7
+        andi x19, x19, 31
+
+        # --- compute src = vecreg_scratch + vd * vlenb ---
+        addi x6, DEFAULT_TEMP_REG, 440  # vecreg_scratch base address
+        slli x19, x19, 7                  # each vector register is 128 bytes -> shift by 7 for register number
+        add x6, x6, x19                   # offset to where mismatch register is saved in scratch
+
+        # --- dst = failing_mask_vec ---
+        addi x7, DEFAULT_TEMP_REG, 312  # x7 = dst
+
+        # --- copy loop (word-wise for RV32) ---
+        csrr x8, vlenb          # x8 = bytes per vector register
+        mv   x10, x8            # remaining bytes
+
+        copy_loop:
+            beqz x10, copy_done
+
+            lw   x11, 0(x6)
+            sw   x11, 0(x7)
+
+            addi x6, x6, 4
+            addi x7, x7, 4
+            addi x10, x10, -4
+
+            j copy_loop
+
+        copy_done:
+
+        j failedtest_saveresults_common
+
+#endif // RVTEST_VECTOR
+
+
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
@@ -358,7 +725,7 @@
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
         lw a0, failure_type
         beqz a0, 1f
-        li a1, 3    # Trap handler also uses int regs
+        li a1, 4    # Trap handler also uses int regs
         bne a0, a1, failedtest_report_not_intreg
         # Integer: write "x" + decimal register number
         1:
@@ -372,6 +739,8 @@
     failedtest_report_not_intreg:
         li a1, 1
         beq a0, a1, failedtest_report_fpreg
+        li a1, 3
+        beq a0, a1, failedtest_report_vecreg
         # fflags: print "fflags\n"
         LA(x9, fflagsstr)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
@@ -384,10 +753,122 @@
         addi a2, a2, 1
         lw a0, failing_reg
         jal failedtest_dec_to_str
+    failedtest_report_vecreg:
+        li a1, 'v'
+        LA(a2, ascii_buffer)
+        sb a1, 0(a2)
+        addi a2, a2, 1
+        lw a0, failing_reg
+        jal failedtest_dec_to_str
     failedtest_report_print_regstr:
         LA(x9, ascii_buffer)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
     failedtest_report_after_reg:
+    #ifdef RVTEST_VECTOR
+        // ---- Vector-specific fields (only printed for failure_type == 4) ----
+        lw a0, failure_type
+        li a1, 3
+        bne a0, a1, failedtest_report_vec_done
+
+        // Print region (active / tail / mask)
+        LA(x9, regionstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        lw a0, failing_region
+        beqz a0, 1f
+        li a1, 1
+        beq  a0, a1, 2f
+        LA(x9, region_mask_str)
+        j 3f
+    1:  LA(x9, region_active_str)
+        j 3f
+    2:  LA(x9, region_tail_str)
+    3:  RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        // Print element index
+        LA(x9, indexstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        lw a0, failing_index
+        LA(a2, ascii_buffer)
+        jal failedtest_dec_to_str
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        // Print vl
+        LA(x9, vlstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, failing_vl
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        // Print vtype (full hex) then decoded sew/lmul/vta/vma fields
+        LA(x9, vtypestr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, failing_vtype
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
+        // We print as a hex string by iterating over the bytes.
+        // For brevity we print up to VLENMAX_BYTES bytes.
+        LA(x9, mismatch_mask_str)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        LA(a2, ascii_buffer)     # buffer pointer
+        LI(a3, '0')
+        sb a3, 0(a2)            # write '0'
+        LI(a3, 'x')
+        sb a3, 1(a2)            # write 'x'
+        addi a2, a2, 2          # move past "0x"
+
+
+        li a1, 8                    # print 8 bits (1 byte) at a time
+        csrr x31, vlenb
+        LA(x30, failing_mask_vec)       # address of mismatch mask
+        add x30, x30, x31
+        addi x30, x30, -1              # point to end of mask (mismatch_mask + vlenb - 1)
+
+    failedtest_report_mask_loop:
+        beqz x31, failedtest_report_mask_done
+
+        lbu a0, 0(x30)              # load byte
+        li a3, 8                    # a3 = bit count
+    mask_hex_to_str_loop:
+        addi a3, a3, -4         # move to next nibble
+        srl a4, a0, a3          # shift nibble to bottom
+        andi a4, a4, 15         # mask to get nibble
+
+        # Convert nibble to ASCII
+        LI(a5, 10)
+        blt a4, a5, mask_hex_to_str_digit
+        # It's a letter (A-F)
+        addi a4, a4, 87         # 'a' - 10 = 87
+        j mask_hex_to_str_write
+    mask_hex_to_str_digit:
+        # It's a digit (0-9)
+        addi a4, a4, 48         # '0' = 48
+    mask_hex_to_str_write:
+        sb a4, 0(a2)            # write character to buffer
+        addi a2, a2, 1          # advance buffer pointer
+        bnez a3, mask_hex_to_str_loop
+
+        addi x30, x30, -1
+        addi x31, x31, -1
+        j failedtest_report_mask_loop
+    failedtest_report_mask_done:
+    # Add newline and null terminator
+        LI(a3, 10)              # '\n'
+        sb a3, 0(a2)
+        sb zero, 1(a2)          # null terminator
+
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+    failedtest_report_vec_done:
+    #endif // RVTEST_VECTOR
 
         # Print failing value — type-aware
         LA(x9, badvalstr)
@@ -618,15 +1099,15 @@
         .fill 64, 4, 0xfeedf00dbaaaaaad
     failing_instruction:
         .fill 1, 4, 0xfeedf00d
-    failing_reg:
+    failing_reg: # (260)
         .fill 1, 4, 0xbaaaaaad
-    failing_addr:
+    failing_addr: #(264)
         .fill 2, 4, 0xfeedf00dbaaaaaad
-    failing_value:
+    failing_value: #(272)
         .fill 2, 4, 0xfeedf00dbaaaaaad
-    expected_value:
+    expected_value: #(280)
         .fill 2, 4, 0xfeedf00dbaaaaaad
-    failure_string_ptr:
+    failure_string_ptr: #(288)
         .fill 2, 4, 0xfeedf00dbaaaaaad
 #if defined(RVTEST_FP) && FLEN > XLEN
     failing_value_upper:
@@ -634,6 +1115,20 @@
     expected_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
 #endif
+#ifdef RVTEST_VECTOR
+    failing_region:                              # 0=active, 1=tail, 2=mask (296)
+        .fill 1, 4, 0xfeedf00d
+    failing_index:                               # element index of first mismatch (300)
+        .fill 1, 4, 0xbaaaaaad
+    failing_vl:                                  # vl at point of failure (304)
+        .fill 1, 4, 0xfeedf00d
+    failing_vtype:                               # vtype at point of failure (308)
+        .fill 1, 4, 0xbaaaaaad
+    failing_mask_vec:                            # value of failing mask vector register (312)
+        .fill 32, 4, 0xbaaaaaad                  # Assume max VLEN of 1024 bits = 128 bytes
+    vecreg_scratch:                              # space to save full vector register contents (440)
+        .fill 4096, 4, 0xfeedf00dbaaaaaad        # Assume max VLEN of 1024 bits = 128 bytes, 128 bytes * 32 vecreg = 4096 bytes
+#endif // RVTEST_VECTOR
     ascii_buffer:
         .fill 40, 1, 0          # Buffer for hex string conversion (max "0x" + 16 + 16 + "\n" + null)
     end_failure_scratch:
@@ -742,6 +1237,24 @@
 #else
     addrstr:
         .string "RVCP: Address: "
+#endif
+#ifdef RVTEST_VECTOR
+    regionstr:
+        .string "RVCP: Region: "
+    region_active_str:
+        .string "ACTIVE\n"
+    region_tail_str:
+        .string "TAIL\n"
+    region_mask_str:
+        .string "MASK\n"
+    indexstr:
+        .string "RVCP: Element Index: "
+    vlstr:
+        .string "RVCP: VL: "
+    vtypestr:
+        .string "RVCP: VTYPE: "
+    mismatch_mask_str:
+        .string "RVCP: Mismatch Mask (one bit per element, up to VLEN bytes):\n"
 #endif
     regstr:
         .string "RVCP: Register: "

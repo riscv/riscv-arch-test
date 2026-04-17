@@ -1,7 +1,6 @@
 # yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
 # Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
-
 # UDB Architecture Configuration for the CV32A65X, a configuration of the CVA6 project.
 
 ---
@@ -31,11 +30,11 @@ params:
 
   # Addressing & Memory
   PHYS_ADDR_WIDTH: 32         
-  M_MODE_ENDIANNESS: little    # Default RISC-V + CVA6 behaviour
-  PMA_GRANULARITY: 4         # No programmable PMA unit (fixed by system bus)
+  M_MODE_ENDIANNESS: little # Default RISC-V + CVA6 behaviour
+  PMA_GRANULARITY: 4 # No programmable PMA unit (fixed by system bus)
   
   # Privilege & Modes
-  # RVS (Supervisor) and RVU (User) are False 
+  # RVS (Supervisor) and RVU (User) are False
   # Therefore, only Machine Mode (Sm) is active
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
@@ -43,7 +42,7 @@ params:
 
   # Exceptions & Traps(precise in-order pipeline)
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
-  MTVAL_WIDTH: 0                  # TvalEn=False -> hardwired zero
+  MTVAL_WIDTH: 0 # TvalEn=False -> hardwired zero
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low
   TRAP_ON_ILLEGAL_WLRL: false
@@ -56,28 +55,26 @@ params:
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
-  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false  
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
   REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
- 
- 
+  
   # Trap Handling (only direct mode (0) is supported for MTVEC)
   MTVEC_ACCESS: rw
-  MTVEC_MODES: [0] 
+  MTVEC_MODES: [0]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
-  
   NUM_PMP_ENTRIES: 0
   
   # Identification (CVA6 Specifics)
   CONFIG_PTR_ADDRESS: 0x0
   MARCHID_IMPLEMENTED: true
-  ARCH_ID_VALUE: 0x3         
+  ARCH_ID_VALUE: 0x3
   MIMPID_IMPLEMENTED: true
-  IMP_ID_VALUE: 0x0   
-  MISA_CSR_IMPLEMENTED: true   
-  VENDOR_ID_BANK: 0xC         
-  VENDOR_ID_OFFSET: 0x2       
+  IMP_ID_VALUE: 0x0
+  MISA_CSR_IMPLEMENTED: true
+  VENDOR_ID_BANK: 0xC
+  VENDOR_ID_OFFSET: 0x2
   
   COUNTINHIBIT_EN:
     [
@@ -150,7 +147,6 @@ params:
       false,
       false,
     ]
-
 
   MCOUNTENABLE_EN:
     [

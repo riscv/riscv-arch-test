@@ -1,4 +1,3 @@
-
 {
   "$schema": "/opt/sail/share/sail-riscv/sail_riscv_config_schema.json",
   "base": {
@@ -84,7 +83,7 @@
           "supports_cbo_zero": false
         },
         "include_in_device_tree": false
-      },     
+      },
       //CLINT
       {
         "base": {
@@ -109,7 +108,6 @@
         },
         "include_in_device_tree": false
       },
-      
       //PLIC
       {
         "base": {
@@ -182,7 +180,7 @@
         },
         "include_in_device_tree": true
       }
-    ]  
+    ]
   },
   "platform": {
     "vendorid": 1538,

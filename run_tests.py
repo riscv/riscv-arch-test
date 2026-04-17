@@ -23,6 +23,7 @@ from pathlib import Path
 _SUMMARY_RE = re.compile(r'RVCP-SUMMARY: TEST (PASSED|FAILED|SIGRUN) - Test File ".*"')
 _DEBUG_PLACEHOLDER_RE = re.compile(r"\{debug:([^}]*)\}")
 _TRACEFILE_PLACEHOLDER = "__TRACEFILE__"
+_SUMMARYFILE_PLACEHOLDER = "__SUMMARYFILE__"
 
 # ANSI color codes — disabled when stdout is not a terminal
 USE_COLOR = sys.stdout.isatty()
@@ -71,15 +72,22 @@ def dim(text: str) -> str:
 def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose: bool) -> tuple[bool, Path, str]:
     """Run a single ELF and return (failed, elf_path, rvcp_summary_line)."""
 
-    # Create log and trace file paths mirroring the ELF subdirectory hierarchy
-    log_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".log")
-    trace_file = log_dir / elf_path.relative_to(elf_dir).with_suffix(".trace.log")
+    # Create log, trace, and summary file paths mirroring the ELF subdirectory hierarchy
+    rel = elf_path.relative_to(elf_dir)
+    log_file = log_dir / rel.with_suffix(".log")
+    trace_file = log_dir / rel.with_suffix(".trace.log")
+    summary_file = log_dir / rel.with_suffix(".summary.log")
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # Substitute __TRACEFILE__ placeholder with the per-test trace file path.
-    # This directs simulator trace output to a separate file so it doesn't
-    # interleave with RVCP-SUMMARY lines in the main log.
+    # Substitute __TRACEFILE__ / __SUMMARYFILE__ placeholders with per-test paths.
+    # __TRACEFILE__: directs simulator trace output to a separate file so it doesn't
+    #   interleave with RVCP-SUMMARY lines in the main log.
+    # __SUMMARYFILE__: for simulators that can redirect console/UART output (containing
+    #   RVCP-SUMMARY) to a file but cannot redirect trace output. When present,
+    #   run_tests reads RVCP-SUMMARY from this file instead of the main log.
+    has_summary_file = _SUMMARYFILE_PLACEHOLDER in command
     test_command = command.replace(_TRACEFILE_PLACEHOLDER, str(trace_file))
+    test_command = test_command.replace(_SUMMARYFILE_PLACEHOLDER, str(summary_file))
 
     # Split command, extracting leading KEY=VALUE env var assignments
     tokens = shlex.split(test_command)
@@ -110,10 +118,14 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
     # Check exit code
     exit_failed = result.returncode != 0
 
-    # Check log for RVCP-SUMMARY lines
-    log_text = log_file.read_text(errors="replace")
-    summaries = _SUMMARY_RE.findall(log_text)
-    rvcp_lines = [line for line in log_text.splitlines() if "RVCP-SUMMARY:" in line]
+    # Check for RVCP-SUMMARY lines. When __SUMMARYFILE__ was used, read from the
+    # dedicated summary file (simulator UART output) instead of the main log.
+    if has_summary_file and summary_file.exists():
+        summary_text = summary_file.read_text(errors="replace")
+    else:
+        summary_text = log_file.read_text(errors="replace")
+    summaries = _SUMMARY_RE.findall(summary_text)
+    rvcp_lines = [line for line in summary_text.splitlines() if "RVCP-SUMMARY:" in line]
     rvcp_summary = rvcp_lines[0] if rvcp_lines else "No RVCP-SUMMARY line found"
     summary_failed = "FAILED" in summaries
     summary_sigrun = "SIGRUN" in summaries
@@ -202,10 +214,13 @@ def main() -> int:
     print(f"\n{bold_cyan(banner)}")
     print(f"  {bold('Running ELFs from')}: {elf_dir}")
     banner_command = command.replace(_TRACEFILE_PLACEHOLDER, "<trace_file>")
+    banner_command = banner_command.replace(_SUMMARYFILE_PLACEHOLDER, "<summary_file>")
     print(f"  {bold('Using command')}: {banner_command} <elf_path>")
-    print(f"  {bold('Summary available at')}: {summary_log}")
+    print(f"  {bold('Overall summary available at')}: {summary_log}")
     if _TRACEFILE_PLACEHOLDER in command:
         print(f"  {bold('Trace output')}: {log_dir}/<test>.trace.log")
+    if _SUMMARYFILE_PLACEHOLDER in command:
+        print(f"  {bold('RVCP summary source')}: {log_dir}/<test>.summary.log")
 
     # Find all ELFs
     elf_files = sorted(elf_dir.rglob("*.elf"))

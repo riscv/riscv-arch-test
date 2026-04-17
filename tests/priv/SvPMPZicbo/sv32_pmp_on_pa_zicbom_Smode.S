@@ -17,7 +17,6 @@
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv32i_zicsr_zicbom
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_pmp_on_pa_zicbom_Smode.S"

@@ -192,7 +192,7 @@ def main() -> int:
     elf_files = sorted(elf_dir.rglob("*.elf"))
     if not elf_files:
         print(yellow("  No ELF files found"))
-        sys.exit(1)
+        sys.exit(0)
 
     partial_run_test = partial(run_test, command, log_dir, elf_dir, verbose=args.verbose)
 

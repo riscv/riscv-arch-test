@@ -144,3 +144,17 @@ def return_test_regs(test_data: TestData, params: InstructionParams) -> None:
     """
     test_data.int_regs.return_registers(params.used_int_regs)
     test_data.float_regs.return_registers(params.used_float_regs)
+
+
+def check_access_fault_address_defined(test_data: TestData) -> str:
+    """
+    If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute scratch so test runs but does not generate access faults.
+    """
+    lines = [
+        "# If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, substitute scratch so test runs but does not generate access faults.",
+        "#ifndef RVMODEL_ACCESS_FAULT_ADDRESS",
+        "  #define RVMODEL_ACCESS_FAULT_ADDRESS scratch",
+        "#endif",
+        "",
+    ]
+    return "\n".join(lines)

@@ -143,6 +143,11 @@ DZ_PAIR: dict[str, tuple[str, ...]] = {
 }
 
 OF_SET = {"vfadd.vv", "vfadd.vf", "vfmul.vv", "vfmul.vf"}
+# Note: widening .w add/sub (vfwadd.w*, vfwsub.w*) CANNOT overflow the wide
+# format because the narrow operand is always negligible compared to the wide
+# format's ULP at extremes.  They were removed from OF coverage (now use nv_nx
+# instead of nv_nx_of in Vf.csv).
+OF_WIDE_SET: set[str] = set()
 UF_SET = {"vfmul.vv", "vfmul.vf"}
 
 # -- Variant -> flag list mapping ---------------------------------------------
@@ -280,10 +285,42 @@ def _gen_dz(test: str, sew: int) -> None:
 
 def _gen_of(test: str, sew: int) -> None:
     """OF (Overflow) via max + max or max * max."""
-    if test not in OF_SET:
+    if test in OF_SET:
+        of_val = TV[sew]["OF"]
+        _pair(test, sew, of_val, of_val, "OF", "max normal")
         return
-    of_val = TV[sew]["OF"]
-    _pair(test, sew, of_val, of_val, "OF", "max normal")
+    if test in OF_WIDE_SET:
+        # .wv / .wf: vs2 is 2*SEW; pair widened-max with SEW-max to overflow 2*SEW.
+        wt = TV.get(sew * 2)
+        if wt is None:
+            return
+        vs2_val = wt["OF"]
+        vs1_val = TV[sew]["OF"]
+        vs2_lbl = f"custom_flag_wide_of_sew{sew}"
+        vs1_lbl = f"custom_flag_of_sew{sew}"
+        if test.endswith(".wv"):
+            registerCustomData(vs2_lbl, [vs2_val], element_size=sew * 2)
+            registerCustomData(vs1_lbl, [vs1_val], element_size=sew)
+            for i in range(2):
+                sfx = "" if i == 0 else "1"
+                data = randomizeVectorInstructionData(
+                    test, sew, getBaseSuiteTestCount(), lmul=1,
+                    vs2_val_pointer=vs2_lbl, vs1_val_pointer=vs1_lbl,
+                    additional_no_overlap=[["vs2", "vs1"]],
+                )
+                writeTest(
+                    f"cp_custom_vfp_flags (OF{sfx} forced, {test})",
+                    test, data, sew=sew, lmul=1, vl=1,
+                )
+                incrementBasetestCount()
+                vsAddressCount()
+        else:  # .wf
+            registerCustomData(vs2_lbl, [vs2_val], element_size=sew * 2)
+            for i in range(2):
+                sfx = "" if i == 0 else "1"
+                _gen1(test, sew, vs2_lbl, vs2_val,
+                      f"cp_custom_vfp_flags (OF{sfx} forced, {test})",
+                      fs1_val=vs1_val)
 
 
 def _gen_uf(test: str, sew: int) -> None:

@@ -58,6 +58,7 @@ def discover_configs(config_dir: Path) -> list[dict]:
         exclude_extensions = sim_config.get("exclude_extensions", "")
         install_script = sim_config.get("install_script", "")
         apt_packages = sim_config.get("apt_packages", "")
+        setup_script = sim_config.get("setup_script", "")
         exclude_configs: set[str] = set(sim_config.get("exclude_configs", []))
 
         # Cache key is derived from the install script's content hash.
@@ -88,6 +89,7 @@ def discover_configs(config_dir: Path) -> list[dict]:
                     "exclude_extensions": exclude_extensions,
                     "install_script": install_script,
                     "apt_packages": apt_packages,
+                    "setup_script": setup_script,
                     "cache_key": cache_key,
                 }
             )

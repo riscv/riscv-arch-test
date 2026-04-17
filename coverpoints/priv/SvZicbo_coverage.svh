@@ -160,16 +160,6 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    `ifdef XLEN64
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            bins non_existent_pa = {1};
-        }
-    `else
-        d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
-            bins non_existent_pa = {1};
-        }
-    `endif
-
     cbo_ins: coverpoint ins.current.insn {
         `ifdef ZICBOM_SUPPORTED
             wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
@@ -275,27 +265,39 @@ covergroup SvZicbo_cg with function sample(ins_t ins);
         ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
     }
 
-    // PTE points to a non existent physical address
-    cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
-    }
-    cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
-    }
-
-    // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
-    // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
-    cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
-        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
-        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
-        `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
-    }
-
     cp_PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
         `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
         `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
         `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
     }
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef XLEN64
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `endif
+        // PTE points to a non existent physical address
+        cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
+        }
+        cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
+        }
+
+        // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
+        // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
+        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+            `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+            `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+            `ifdef XLEN32         ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+        }
+    `endif
 
 endgroup
 

@@ -63,14 +63,18 @@ jobs:
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - name: Install sail-riscv model
+        env:
+          SAIL_RISCV_VERSION: "0.10"
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_RISCV_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
+        env:
+          GCC_TOOLCHAIN_VERSION: "2025.07.16"
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-22.04-gcc-nightly-${GCC_TOOLCHAIN_VERSION}-nightly.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang

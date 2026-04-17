@@ -16,6 +16,66 @@
     "enabled": true,
     "schedule": ["before 6am on monday"]
   },
+  "customManagers": [
+    {
+      "description": "QEMU version in install script",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/scripts/install-qemu\\.sh$"],
+      "matchStrings": ["QEMU_VERSION=\"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "qemu/qemu",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "description": "Spike commit in install script",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/scripts/install-spike\\.sh$"],
+      "matchStrings": ["SPIKE_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "riscv/riscv-isa-sim",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/riscv/riscv-isa-sim",
+      "currentValueTemplate": "master"
+    },
+    {
+      "description": "Whisper commit in install script",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/scripts/install-whisper\\.sh$"],
+      "matchStrings": ["WHISPER_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "tenstorrent/whisper",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/tenstorrent/whisper",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "CVW commit in install script",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/scripts/install-cvw\\.sh$"],
+      "matchStrings": ["CVW_COMMIT=\"(?<currentDigest>[a-f0-9]+)\""],
+      "depNameTemplate": "openhwgroup/cvw",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/openhwgroup/cvw",
+      "currentValueTemplate": "main"
+    },
+    {
+      "description": "RISC-V GCC toolchain version in CI workflow",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/regress\\.yml$"],
+      "matchStrings": [
+        "GCC_TOOLCHAIN_VERSION:\\s*\"(?<currentValue>[\\d.]+)\""
+      ],
+      "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "LLVM version in CI workflow",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/regress\\.yml$"],
+      "matchStrings": ["LLVM_VERSION:\\s*\"(?<currentValue>\\d+)\""],
+      "depNameTemplate": "llvm/llvm-project",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^llvmorg-(?<version>\\d+)\\.\\d+\\.\\d+$"
+    }
+  ],
   "packageRules": [
     {
       "description": "Do not update Python or Ruby language versions",
@@ -24,12 +84,12 @@
     },
     {
       "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
-      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "matchDepNames": ["ruff", "https://github.com/astral-sh/ruff-pre-commit"],
       "groupName": "ruff"
     },
     {
       "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
-      "matchPackageNames": ["uv", "astral-sh/uv-pre-commit"],
+      "matchDepNames": ["uv", "https://github.com/astral-sh/uv-pre-commit"],
       "groupName": "uv"
     },
     {
@@ -40,12 +100,14 @@
     {
       "description": "Group remaining pre-commit hook bumps",
       "matchManagers": ["pre-commit"],
-      "groupName": "pre-commit hooks"
+      "groupName": "pre-commit hooks",
+      "schedule": ["before 6am on monday"]
     },
     {
       "description": "Pyright moves fast; keep it in its own PR",
       "matchPackageNames": ["pyright"],
-      "groupName": "pyright"
+      "groupName": "pyright",
+      "schedule": ["before 6am on monday"]
     }
   ]
 }

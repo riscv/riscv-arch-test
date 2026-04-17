@@ -5,7 +5,7 @@
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 #
-# Run all ELFs for a spike configuration in parallel
+# Run all ELFs from a directory using the input command in parallel
 ##################################
 
 from __future__ import annotations
@@ -110,7 +110,7 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
     no_summary = len(summaries) == 0
 
     # Overall failure for test
-    failed = exit_failed or summary_failed or summary_sigrun
+    failed = exit_failed or summary_failed or summary_sigrun or no_summary
 
     # Print failure message for test
     if summary_sigrun:
@@ -140,6 +140,12 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {result.returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
+            f"\n         Log: {dim(str(log_file))}"
+        )
+    elif no_summary and not exit_failed:
+        print(
+            f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
+            f"\n         Test may have been killed externally or hung without producing output."
             f"\n         Log: {dim(str(log_file))}"
         )
 

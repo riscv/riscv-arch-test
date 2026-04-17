@@ -86,11 +86,19 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
     #   RVCP-SUMMARY) to a file but cannot redirect trace output. When present,
     #   run_tests reads RVCP-SUMMARY from this file instead of the main log.
     has_summary_file = _SUMMARYFILE_PLACEHOLDER in command
-    test_command = command.replace(_TRACEFILE_PLACEHOLDER, str(trace_file))
-    test_command = test_command.replace(_SUMMARYFILE_PLACEHOLDER, str(summary_file))
 
-    # Split command, extracting leading KEY=VALUE env var assignments
-    tokens = shlex.split(test_command)
+    # Split command first, then substitute placeholders at token level so paths
+    # containing spaces remain a single argument.
+    tokens = shlex.split(command)
+    tokens = [
+        tok.replace(_TRACEFILE_PLACEHOLDER, str(trace_file)).replace(_SUMMARYFILE_PLACEHOLDER, str(summary_file))
+        for tok in tokens
+    ]
+
+    # Build display command from the substituted tokens
+    test_command = shlex.join(tokens)
+
+    # Extract leading KEY=VALUE env var assignments
     env_overrides: dict[str, str] = {}
     while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
         key, _, value = tokens.pop(0).partition("=")
@@ -112,8 +120,9 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
             full_cmd, stdin=subprocess.DEVNULL, stdout=f, stderr=subprocess.STDOUT, timeout=5 * 60, check=False, env=env
         )
 
-    # Build trace file reference for failure output
+    # Build trace/summary file references for failure output
     trace_msg = f"\n         Trace: {dim(str(trace_file))}" if trace_file.exists() else ""
+    summary_msg = f"\n         Summary: {dim(str(summary_file))}" if has_summary_file else ""
 
     # Check exit code
     exit_failed = result.returncode != 0
@@ -139,36 +148,36 @@ def run_test(command: str, log_dir: Path, elf_dir: Path, elf_path: Path, verbose
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY reports SIGRUN"
             f"\n         ELF was not built with RVTEST_SELFCHECK enabled (non-selfchecking test)."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
     elif exit_failed and no_summary:
         print(
             f"  {red('FAIL')} {bold(elf_path.name)} — exit code {result.returncode} indicates failure, no RVCP-SUMMARY line found"
             f"\n         Likely abnormal termination (killed, crash, timeout) or bug in RVMODEL_IO_WRITE macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
     elif exit_failed and summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code {result.returncode}"
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
     elif summary_failed and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST FAILED but exit code {result.returncode} indicates success"
             f"\n         If this is an ImperasFPM test, it is due to ImperasFPM not yet supporting failure exit code.  Otherwise likely bug in RVMODEL_HALT_FAIL macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
     elif exit_failed and not summary_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — RVCP-SUMMARY: TEST PASSED but exit code {result.returncode} indicates failure"
             f"\n         Likely bug in RVMODEL_HALT_PASS macro."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
     elif no_summary and not exit_failed:
         print(
             f"  {red('FAIL')}  {bold(elf_path.name)} — exit code 0 but no RVCP-SUMMARY line found"
             f"\n         Test may have been killed externally or hung without producing output."
-            f"\n         Log: {dim(str(log_file))}{trace_msg}"
+            f"\n         Log: {dim(str(log_file))}{trace_msg}{summary_msg}"
         )
 
     return failed, elf_path, rvcp_summary

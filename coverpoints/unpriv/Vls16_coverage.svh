@@ -3067,7 +3067,7 @@ covergroup Vls16_vlm_v_cg with function sample(ins_t ins);
         bins two = {2};
     }
 
-    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `ACCESS_FAULT_ADDRESS) {
+    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
         bins not_fault_addr = {1'b1};
     }
 
@@ -23448,7 +23448,7 @@ covergroup Vls16_vsm_v_cg with function sample(ins_t ins);
         bins two = {2};
     }
 
-    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `ACCESS_FAULT_ADDRESS) {
+    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
         bins not_fault_addr = {1'b1};
     }
 

@@ -38,8 +38,13 @@ def _get_nf(instruction: str) -> int:
     return int(m.group(1)) if m else 1
 
 
-@register("cp_custom_ffLS_update_vl")
-def make(test: str, sew: int) -> None:
+def _make(test: str, sew: int, min_sew: int = 0) -> None:
+    # Gate for _sew_ge{N} variants: the CSV framework appends e.g. "sew_ge16" to
+    # the column name, producing cp_custom_ffLS_update_vl_sew_ge16. Register one
+    # handler per variant so the suffixed coverpoints dispatch and gate SEW.
+    if sew < min_sew:
+        return
+
     lmul = 2
 
     # nf × EMUL must not exceed 8 (RISC-V V spec constraint)
@@ -78,3 +83,10 @@ def make(test: str, sew: int) -> None:
         vsAddressCount()
     except ValueError:
         pass
+
+
+register("cp_custom_ffLS_update_vl")(lambda test, sew: _make(test, sew))
+for _min in (16, 32, 64):
+    register(f"cp_custom_ffLS_update_vl_sew_ge{_min}")(
+        (lambda m: lambda test, sew: _make(test, sew, min_sew=m))(_min)
+    )

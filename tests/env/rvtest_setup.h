@@ -79,18 +79,6 @@
     #endif
     // Initialize test data pointer
     LA(DEFAULT_DATA_REG, rvtest_data_begin)
-
-    // Enable floating-point with mstatus.FS if applicable
-    #ifdef F_SUPPORTED
-      #ifdef RVTEST_FP
-        RVTEST_FP_ENABLE(T1)
-      #endif
-    #endif
-
-    // Enable vector extension with mstatus.VS if applicable
-    #ifdef RVTEST_VECTOR
-      RVTEST_V_ENABLE(T1, T2) // TODO: These registers might need to change
-    #endif
   .option pop
 .endm
 /*********************************** end of RVTEST_BEGIN ***********************************/
@@ -407,14 +395,6 @@
 /* init regs, to ensure you catch any errors */
 .macro RVTEST_INIT_REGS
   // *** move these to ***boot_to_m_mode
-    #ifdef rvtest_mtrap_routine
-     // Initialising CSR registers (mpec, mtval, mstatus, mip)
-     csrw  CSR_MSTATUS,    x0
-     csrw  CSR_MEPC,       x0
-     csrw  CSR_MIP,        x0
-     csrw  CSR_MTVAL,      x0
-     csrw  CSR_MCAUSE,     x0
-    #endif
     #ifndef RVTEST_E
      LI (x16, (0x7D5BFDDB7D5BFDDB & MASK))
      DBLSHIFTR x17, x16, x15, 7
@@ -466,6 +446,13 @@
     csrw mie, zero
     csrw mip, zero
 
+    // initialize trap CSRs to known values
+    csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
+    csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
+    csrw mepc, zero
+    csrw mtval, zero
+    csrw mcause, zero
+
     // Set up trap handlers for all modes
     // *** this code needs a close review
     RVTEST_TRAP_PROLOG M
@@ -509,21 +496,24 @@
       li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
       csrw mstatus, t0  // Set just all these fields
     #else    // RV32
-      li t0, MSTATUS_VS | MSTATUS_MPP | MSTATUS_FS
+      li t0, MSTATUS_MPP
       csrw mstatus, t0
       csrw mstatush, zero // Clear all these fields
     #endif
     #ifdef F_SUPPORTED
       li t0, MSTATUS_FS
       csrs mstatus, t0 // Set FS to dirty to enable floating-point
+      csrw fcsr, zero // Initialize fcsr
     #endif
     #ifdef ZFINX_SUPPORTED
       li t0, MSTATUS_FS
       csrs mstatus, t0 // Set FS to dirty to enable floating-point
+      csrw fcsr, zero // Initialize fcsr
     #endif
     #ifdef V_SUPPORTED
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
+      // csrr VLENB_CACHE, vlenb // carryover from RVTEST_V_ENABLE; delete when not needed anywhere
     #endif
 
     // Disable all privileged environment configuration, and enable unprivileged configuration

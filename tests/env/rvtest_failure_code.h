@@ -56,7 +56,7 @@
         j failedtest_saveregs
 #endif
 
-#ifdef RVTEST_FP
+#ifdef F_SUPPORTED
     # FP failure entry points (failure_type = 1)
     failedtest_fp_x5_x4:
         la DEFAULT_TEMP_REG, begin_failure_scratch
@@ -122,7 +122,7 @@
         mv DEFAULT_TEMP_REG, x12
         mv DEFAULT_LINK_REG, x13
         j failedtest_saveregs
-#endif // RVTEST_FP
+#endif // F_SUPPORTED
 
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
     failedtest_saveregs:
@@ -162,12 +162,12 @@
     failedtest_saveresults:
         # Dispatch based on failure type
         lw x9, 0(DEFAULT_TEMP_REG)       # load failure_type
-#ifdef RVTEST_FP
+#ifdef F_SUPPORTED
         li x10, 1
         beq x9, x10, failedtest_saveresults_fp
         li x10, 2
         beq x9, x10, failedtest_saveresults_fflags
-#endif // RVTEST_FP
+#endif // F_SUPPORTED
 
     failedtest_saveresults_int:
         # --- INTEGER (type 0): extract info from beq and load instructions ---
@@ -208,7 +208,7 @@
         SREG x6, 280(DEFAULT_TEMP_REG)    # record expected value
         j failedtest_saveresults_common
 
-#ifdef RVTEST_FP
+#ifdef F_SUPPORTED
     failedtest_saveresults_fflags:
         # Re-read fcsr for bad value (hasn't changed since failure)
         csrr x6, fcsr
@@ -271,7 +271,7 @@
         SREG x7, 0(x8)                    # expected_value upper half
     #endif
         j failedtest_saveresults_common
-#endif // RVTEST_FP
+#endif // F_SUPPORTED
 
     failedtest_saveresults_common:
         # After the jal instruction there are two XLEN-sized pointers: the instruction address and the test string pointer
@@ -394,7 +394,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
+    #if defined(F_SUPPORTED) && FLEN > XLEN
         # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
@@ -421,7 +421,7 @@
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
+    #if defined(F_SUPPORTED) && FLEN > XLEN
         # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
@@ -555,7 +555,7 @@
         ret
 
 
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(F_SUPPORTED) && FLEN > XLEN
     # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper XLEN-bit value
     # a1: lower XLEN-bit value
@@ -627,7 +627,7 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(F_SUPPORTED) && FLEN > XLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:

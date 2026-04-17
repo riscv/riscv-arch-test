@@ -1,6 +1,51 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:best-practices"],
+  "baseBranches": ["act4"],
+  "timezone": "America/Los_Angeles",
+  "labels": ["dependencies"],
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 10,
+  "git-submodules": {
+    "enabled": true
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Do not update Python or Ruby language versions",
+      "matchDepNames": ["python", "ruby"],
+      "enabled": false
+    },
+    {
+      "description": "Keep ruff in sync across pyproject.toml dev deps and the pre-commit hook",
+      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "groupName": "ruff"
+    },
+    {
+      "description": "Keep uv in sync across .mise.toml and the pre-commit hook",
+      "matchPackageNames": ["uv", "astral-sh/uv-pre-commit"],
+      "groupName": "uv"
+    },
+    {
+      "description": "Group all GitHub Actions updates into one PR",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Group remaining pre-commit hook bumps",
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks"
+    },
+    {
+      "description": "Pyright moves fast; keep it in its own PR",
+      "matchPackageNames": ["pyright"],
+      "groupName": "pyright"
+    }
   ]
 }

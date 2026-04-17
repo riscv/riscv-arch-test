@@ -485,6 +485,7 @@
     // We are in M-mode now at initial boot time
 
     // Set up trap handler for S-mode
+    // *** uncomment this when rvtest_strap_routine etc. is replaced with S/H_SUPPORTED
     // RVTEST_TRAP_PROLOG S
     // if Hypervisor supported, also set up HS and VS-mode trap handlers
     // *** how does h differ from S?

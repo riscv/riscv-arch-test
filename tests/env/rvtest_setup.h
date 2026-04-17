@@ -108,11 +108,9 @@
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
   cleanup_epilogs:
     #ifdef rvtest_mtrap_routine
-      #ifdef rvtest_strap_routine
-        #ifdef rvtest_vtrap_routine
+      #ifdef S_SUPPORTED
+        #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-        #endif
-        #ifdef rvtest_htrap_routine
           RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
@@ -302,16 +300,14 @@
 .macro RVTEST_DATA_END
 
   // Root page tables
-  #ifdef rvtest_strap_routine
+  #ifdef S_SUPPORTED
     .align 12
     rvtest_Sroot_pg_tbl:
       .zero(4096)                // 4KB page table
-    #ifdef rvtest_htrap_routine
+    #ifdef H_SUPPORTED
       .align 14
       rvtest_Hroot_pg_tbl:
-      .zero(16384)               // 16KB page table
-    #endif
-    #ifdef rvtest_vtrap_routine
+        .zero(16384)               // 16KB page table
       .align 12
       rvtest_Vroot_pg_tbl:
         .zero(4096)              // 4KB page table
@@ -500,12 +496,7 @@
       csrw mstatus, t0
       csrw mstatush, zero // Clear all these fields
     #endif
-    #ifdef F_SUPPORTED
-      li t0, MSTATUS_FS
-      csrs mstatus, t0 // Set FS to dirty to enable floating-point
-      csrw fcsr, zero // Initialize fcsr
-    #endif
-    #ifdef ZFINX_SUPPORTED
+    #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
       li t0, MSTATUS_FS
       csrs mstatus, t0 // Set FS to dirty to enable floating-point
       csrw fcsr, zero // Initialize fcsr

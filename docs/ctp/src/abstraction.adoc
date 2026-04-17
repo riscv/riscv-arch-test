@@ -66,7 +66,7 @@ Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the M-mode trap hand
 CSR initialization includes
 
 * mstatus
-* mnstatus (if SMDBLTRP_SUPPORTED)
+* mnstatus (if SMRNMI_SUPPORTED)
 * mcountinhibit = 0 *** if exists
 * mhpmenvent3...31 = 0
 * mseccfg
@@ -97,6 +97,10 @@ Finally, `rvmodel_boot` jumps to `rvtest_init`, which calls `RVTEST_INIT_REGS` t
 
 
 The test ELF contains the RVMODEL_BOOT macro, which performs any necessary boot operations such as turning on a phase-locked loop or DRAM controller or initializing custom state.  After RVMODEL_BOOT, the system should be in conforming machine mode if supported, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE). *** replace
+
+*** UDB parameters needed
+MCOUNTINHIBIT_IMPLEMENTED
+
 
 
 [[rvmodel-macros]]

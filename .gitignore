@@ -33,6 +33,9 @@ tests/priv/**/*.S
 # docs
 docs/ctp/mismatch_report.txt
 docs/crd/build
+docs/ctp/src/norm
+docs/ctp/src/param
+docs/ctp/src/testplans
 coverpoints/norm/norm-rules.json
 coverpoints/norm/yaml/new
 coverpoints/norm/yaml/chapters

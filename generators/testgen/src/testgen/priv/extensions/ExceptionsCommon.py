@@ -104,7 +104,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
     # jalr_off controls the offset[1:0], covering all 16 combinations of (rs1+offset)[1:0].
     # JALR jumps to (rs1 + offset) with bit 0 cleared.
     # Misaligned exception occurs when bit 1 of the target is set
-    offsets_for_lsb = {0: 8, 1: 5, 2: 6, 3: 7}
+    offsets_for_lsb = {0: 8, 1: 9, 2: 6, 3: 7}
 
     for rs1_lsb in range(4):
         for offset_lsb in range(4):

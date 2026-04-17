@@ -1,7 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:best-practices"],
-  "baseBranches": ["act4"],
+  "baseBranchPatterns": [
+    "act4"
+  ],
   "timezone": "America/Los_Angeles",
   "labels": ["dependencies"],
   "prHourlyLimit": 4,

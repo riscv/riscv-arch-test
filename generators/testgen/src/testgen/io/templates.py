@@ -208,10 +208,6 @@ def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
 
     # Enable trap handlers if needed
     # DH: comment out the following lines as soon as they aren't needed
-    if "H" in ext_components:
-        extra_defines.append("#define rvtest_vtrap_routine")
-    if any(ext in ext_components for ext in ["H", "S"]):
-        extra_defines.append("#define rvtest_strap_routine")
     if any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):
         extra_defines.append("#define rvtest_mtrap_routine")
 

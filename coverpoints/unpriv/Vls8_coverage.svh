@@ -3288,7 +3288,7 @@ covergroup Vls8_vloxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -3312,7 +3312,7 @@ covergroup Vls8_vloxei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -3480,7 +3480,7 @@ covergroup Vls8_vloxei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -3504,7 +3504,7 @@ covergroup Vls8_vloxei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -3672,7 +3672,7 @@ covergroup Vls8_vloxei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -3696,7 +3696,7 @@ covergroup Vls8_vloxei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -3863,7 +3863,7 @@ covergroup Vls8_vloxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -3887,7 +3887,7 @@ covergroup Vls8_vloxei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4077,7 +4077,7 @@ covergroup Vls8_vloxseg2ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -4101,7 +4101,7 @@ covergroup Vls8_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4271,7 +4271,7 @@ covergroup Vls8_vloxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -4295,7 +4295,7 @@ covergroup Vls8_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4465,7 +4465,7 @@ covergroup Vls8_vloxseg2ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -4489,7 +4489,7 @@ covergroup Vls8_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4681,7 +4681,7 @@ covergroup Vls8_vloxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -4705,7 +4705,7 @@ covergroup Vls8_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -4874,7 +4874,7 @@ covergroup Vls8_vloxseg3ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -4898,7 +4898,7 @@ covergroup Vls8_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5068,7 +5068,7 @@ covergroup Vls8_vloxseg3ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -5092,7 +5092,7 @@ covergroup Vls8_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5262,7 +5262,7 @@ covergroup Vls8_vloxseg3ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -5286,7 +5286,7 @@ covergroup Vls8_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5454,7 +5454,7 @@ covergroup Vls8_vloxseg3ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -5478,7 +5478,7 @@ covergroup Vls8_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5670,7 +5670,7 @@ covergroup Vls8_vloxseg4ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -5694,7 +5694,7 @@ covergroup Vls8_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -5888,7 +5888,7 @@ covergroup Vls8_vloxseg4ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -5912,7 +5912,7 @@ covergroup Vls8_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -6083,7 +6083,7 @@ covergroup Vls8_vloxseg4ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -6107,7 +6107,7 @@ covergroup Vls8_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -6299,7 +6299,7 @@ covergroup Vls8_vloxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -6323,7 +6323,7 @@ covergroup Vls8_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -6493,7 +6493,7 @@ covergroup Vls8_vloxseg5ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -6517,7 +6517,7 @@ covergroup Vls8_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -6688,7 +6688,7 @@ covergroup Vls8_vloxseg5ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -6712,7 +6712,7 @@ covergroup Vls8_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -6882,7 +6882,7 @@ covergroup Vls8_vloxseg5ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -6906,7 +6906,7 @@ covergroup Vls8_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7072,7 +7072,7 @@ covergroup Vls8_vloxseg5ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -7096,7 +7096,7 @@ covergroup Vls8_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7268,7 +7268,7 @@ covergroup Vls8_vloxseg6ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -7292,7 +7292,7 @@ covergroup Vls8_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7464,7 +7464,7 @@ covergroup Vls8_vloxseg6ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -7488,7 +7488,7 @@ covergroup Vls8_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7659,7 +7659,7 @@ covergroup Vls8_vloxseg6ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -7683,7 +7683,7 @@ covergroup Vls8_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -7850,7 +7850,7 @@ covergroup Vls8_vloxseg6ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -7874,7 +7874,7 @@ covergroup Vls8_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8047,7 +8047,7 @@ covergroup Vls8_vloxseg7ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -8071,7 +8071,7 @@ covergroup Vls8_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8244,7 +8244,7 @@ covergroup Vls8_vloxseg7ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -8268,7 +8268,7 @@ covergroup Vls8_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8440,7 +8440,7 @@ covergroup Vls8_vloxseg7ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -8464,7 +8464,7 @@ covergroup Vls8_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8632,7 +8632,7 @@ covergroup Vls8_vloxseg7ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -8656,7 +8656,7 @@ covergroup Vls8_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -8853,7 +8853,7 @@ covergroup Vls8_vloxseg8ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -8877,7 +8877,7 @@ covergroup Vls8_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -9074,7 +9074,7 @@ covergroup Vls8_vloxseg8ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -9098,7 +9098,7 @@ covergroup Vls8_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -9294,7 +9294,7 @@ covergroup Vls8_vloxseg8ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -9318,7 +9318,7 @@ covergroup Vls8_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -9510,7 +9510,7 @@ covergroup Vls8_vloxseg8ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -9534,7 +9534,7 @@ covergroup Vls8_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -13887,7 +13887,7 @@ covergroup Vls8_vluxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -13911,7 +13911,7 @@ covergroup Vls8_vluxei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14088,7 +14088,7 @@ covergroup Vls8_vluxei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -14112,7 +14112,7 @@ covergroup Vls8_vluxei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14289,7 +14289,7 @@ covergroup Vls8_vluxei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -14313,7 +14313,7 @@ covergroup Vls8_vluxei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14489,7 +14489,7 @@ covergroup Vls8_vluxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -14513,7 +14513,7 @@ covergroup Vls8_vluxei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14703,7 +14703,7 @@ covergroup Vls8_vluxseg2ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -14727,7 +14727,7 @@ covergroup Vls8_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -14897,7 +14897,7 @@ covergroup Vls8_vluxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -14921,7 +14921,7 @@ covergroup Vls8_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15091,7 +15091,7 @@ covergroup Vls8_vluxseg2ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -15115,7 +15115,7 @@ covergroup Vls8_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15307,7 +15307,7 @@ covergroup Vls8_vluxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -15331,7 +15331,7 @@ covergroup Vls8_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15500,7 +15500,7 @@ covergroup Vls8_vluxseg3ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -15524,7 +15524,7 @@ covergroup Vls8_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15694,7 +15694,7 @@ covergroup Vls8_vluxseg3ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -15718,7 +15718,7 @@ covergroup Vls8_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -15888,7 +15888,7 @@ covergroup Vls8_vluxseg3ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -15912,7 +15912,7 @@ covergroup Vls8_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -16080,7 +16080,7 @@ covergroup Vls8_vluxseg3ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -16104,7 +16104,7 @@ covergroup Vls8_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -16296,7 +16296,7 @@ covergroup Vls8_vluxseg4ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -16320,7 +16320,7 @@ covergroup Vls8_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -16514,7 +16514,7 @@ covergroup Vls8_vluxseg4ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -16538,7 +16538,7 @@ covergroup Vls8_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -16709,7 +16709,7 @@ covergroup Vls8_vluxseg4ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -16733,7 +16733,7 @@ covergroup Vls8_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -16925,7 +16925,7 @@ covergroup Vls8_vluxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -16949,7 +16949,7 @@ covergroup Vls8_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17119,7 +17119,7 @@ covergroup Vls8_vluxseg5ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -17143,7 +17143,7 @@ covergroup Vls8_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17314,7 +17314,7 @@ covergroup Vls8_vluxseg5ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -17338,7 +17338,7 @@ covergroup Vls8_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17508,7 +17508,7 @@ covergroup Vls8_vluxseg5ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -17532,7 +17532,7 @@ covergroup Vls8_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17698,7 +17698,7 @@ covergroup Vls8_vluxseg5ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -17722,7 +17722,7 @@ covergroup Vls8_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -17894,7 +17894,7 @@ covergroup Vls8_vluxseg6ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -17918,7 +17918,7 @@ covergroup Vls8_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18090,7 +18090,7 @@ covergroup Vls8_vluxseg6ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -18114,7 +18114,7 @@ covergroup Vls8_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18285,7 +18285,7 @@ covergroup Vls8_vluxseg6ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -18309,7 +18309,7 @@ covergroup Vls8_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18476,7 +18476,7 @@ covergroup Vls8_vluxseg6ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -18500,7 +18500,7 @@ covergroup Vls8_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18673,7 +18673,7 @@ covergroup Vls8_vluxseg7ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -18697,7 +18697,7 @@ covergroup Vls8_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -18870,7 +18870,7 @@ covergroup Vls8_vluxseg7ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -18894,7 +18894,7 @@ covergroup Vls8_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19066,7 +19066,7 @@ covergroup Vls8_vluxseg7ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -19090,7 +19090,7 @@ covergroup Vls8_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19258,7 +19258,7 @@ covergroup Vls8_vluxseg7ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -19282,7 +19282,7 @@ covergroup Vls8_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19479,7 +19479,7 @@ covergroup Vls8_vluxseg8ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -19503,7 +19503,7 @@ covergroup Vls8_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19700,7 +19700,7 @@ covergroup Vls8_vluxseg8ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -19724,7 +19724,7 @@ covergroup Vls8_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -19920,7 +19920,7 @@ covergroup Vls8_vluxseg8ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -19944,7 +19944,7 @@ covergroup Vls8_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -20136,7 +20136,7 @@ covergroup Vls8_vluxseg8ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -20160,7 +20160,7 @@ covergroup Vls8_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -21504,7 +21504,7 @@ covergroup Vls8_vsoxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -21528,7 +21528,7 @@ covergroup Vls8_vsoxei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -21705,7 +21705,7 @@ covergroup Vls8_vsoxei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -21729,7 +21729,7 @@ covergroup Vls8_vsoxei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -21906,7 +21906,7 @@ covergroup Vls8_vsoxei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -21930,7 +21930,7 @@ covergroup Vls8_vsoxei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22106,7 +22106,7 @@ covergroup Vls8_vsoxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -22130,7 +22130,7 @@ covergroup Vls8_vsoxei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22329,7 +22329,7 @@ covergroup Vls8_vsoxseg2ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -22353,7 +22353,7 @@ covergroup Vls8_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22532,7 +22532,7 @@ covergroup Vls8_vsoxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -22556,7 +22556,7 @@ covergroup Vls8_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22735,7 +22735,7 @@ covergroup Vls8_vsoxseg2ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -22759,7 +22759,7 @@ covergroup Vls8_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -22960,7 +22960,7 @@ covergroup Vls8_vsoxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -22984,7 +22984,7 @@ covergroup Vls8_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23163,7 +23163,7 @@ covergroup Vls8_vsoxseg3ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -23187,7 +23187,7 @@ covergroup Vls8_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23367,7 +23367,7 @@ covergroup Vls8_vsoxseg3ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -23391,7 +23391,7 @@ covergroup Vls8_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23571,7 +23571,7 @@ covergroup Vls8_vsoxseg3ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -23595,7 +23595,7 @@ covergroup Vls8_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -23773,7 +23773,7 @@ covergroup Vls8_vsoxseg3ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -23797,7 +23797,7 @@ covergroup Vls8_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24000,7 +24000,7 @@ covergroup Vls8_vsoxseg4ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -24024,7 +24024,7 @@ covergroup Vls8_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24229,7 +24229,7 @@ covergroup Vls8_vsoxseg4ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -24253,7 +24253,7 @@ covergroup Vls8_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24435,7 +24435,7 @@ covergroup Vls8_vsoxseg4ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -24459,7 +24459,7 @@ covergroup Vls8_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24662,7 +24662,7 @@ covergroup Vls8_vsoxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -24686,7 +24686,7 @@ covergroup Vls8_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -24868,7 +24868,7 @@ covergroup Vls8_vsoxseg5ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -24892,7 +24892,7 @@ covergroup Vls8_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25075,7 +25075,7 @@ covergroup Vls8_vsoxseg5ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -25099,7 +25099,7 @@ covergroup Vls8_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25281,7 +25281,7 @@ covergroup Vls8_vsoxseg5ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -25305,7 +25305,7 @@ covergroup Vls8_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25483,7 +25483,7 @@ covergroup Vls8_vsoxseg5ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -25507,7 +25507,7 @@ covergroup Vls8_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25692,7 +25692,7 @@ covergroup Vls8_vsoxseg6ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -25716,7 +25716,7 @@ covergroup Vls8_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -25901,7 +25901,7 @@ covergroup Vls8_vsoxseg6ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -25925,7 +25925,7 @@ covergroup Vls8_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26109,7 +26109,7 @@ covergroup Vls8_vsoxseg6ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -26133,7 +26133,7 @@ covergroup Vls8_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26313,7 +26313,7 @@ covergroup Vls8_vsoxseg6ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -26337,7 +26337,7 @@ covergroup Vls8_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26524,7 +26524,7 @@ covergroup Vls8_vsoxseg7ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -26548,7 +26548,7 @@ covergroup Vls8_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26735,7 +26735,7 @@ covergroup Vls8_vsoxseg7ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -26759,7 +26759,7 @@ covergroup Vls8_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -26945,7 +26945,7 @@ covergroup Vls8_vsoxseg7ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -26969,7 +26969,7 @@ covergroup Vls8_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -27151,7 +27151,7 @@ covergroup Vls8_vsoxseg7ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -27175,7 +27175,7 @@ covergroup Vls8_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -27387,7 +27387,7 @@ covergroup Vls8_vsoxseg8ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -27411,7 +27411,7 @@ covergroup Vls8_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -27623,7 +27623,7 @@ covergroup Vls8_vsoxseg8ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -27647,7 +27647,7 @@ covergroup Vls8_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -27858,7 +27858,7 @@ covergroup Vls8_vsoxseg8ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -27882,7 +27882,7 @@ covergroup Vls8_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -28089,7 +28089,7 @@ covergroup Vls8_vsoxseg8ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -28113,7 +28113,7 @@ covergroup Vls8_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31198,7 +31198,7 @@ covergroup Vls8_vsuxei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -31222,7 +31222,7 @@ covergroup Vls8_vsuxei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31399,7 +31399,7 @@ covergroup Vls8_vsuxei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -31423,7 +31423,7 @@ covergroup Vls8_vsuxei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31600,7 +31600,7 @@ covergroup Vls8_vsuxei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -31624,7 +31624,7 @@ covergroup Vls8_vsuxei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -31800,7 +31800,7 @@ covergroup Vls8_vsuxei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -31824,7 +31824,7 @@ covergroup Vls8_vsuxei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -32023,7 +32023,7 @@ covergroup Vls8_vsuxseg2ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -32047,7 +32047,7 @@ covergroup Vls8_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -32226,7 +32226,7 @@ covergroup Vls8_vsuxseg2ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -32250,7 +32250,7 @@ covergroup Vls8_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -32429,7 +32429,7 @@ covergroup Vls8_vsuxseg2ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -32453,7 +32453,7 @@ covergroup Vls8_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -32654,7 +32654,7 @@ covergroup Vls8_vsuxseg2ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -32678,7 +32678,7 @@ covergroup Vls8_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -32857,7 +32857,7 @@ covergroup Vls8_vsuxseg3ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -32881,7 +32881,7 @@ covergroup Vls8_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -33061,7 +33061,7 @@ covergroup Vls8_vsuxseg3ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -33085,7 +33085,7 @@ covergroup Vls8_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -33265,7 +33265,7 @@ covergroup Vls8_vsuxseg3ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -33289,7 +33289,7 @@ covergroup Vls8_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -33467,7 +33467,7 @@ covergroup Vls8_vsuxseg3ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -33491,7 +33491,7 @@ covergroup Vls8_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -33694,7 +33694,7 @@ covergroup Vls8_vsuxseg4ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -33718,7 +33718,7 @@ covergroup Vls8_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -33923,7 +33923,7 @@ covergroup Vls8_vsuxseg4ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -33947,7 +33947,7 @@ covergroup Vls8_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34129,7 +34129,7 @@ covergroup Vls8_vsuxseg4ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -34153,7 +34153,7 @@ covergroup Vls8_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34356,7 +34356,7 @@ covergroup Vls8_vsuxseg4ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -34380,7 +34380,7 @@ covergroup Vls8_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34562,7 +34562,7 @@ covergroup Vls8_vsuxseg5ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -34586,7 +34586,7 @@ covergroup Vls8_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34769,7 +34769,7 @@ covergroup Vls8_vsuxseg5ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -34793,7 +34793,7 @@ covergroup Vls8_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -34975,7 +34975,7 @@ covergroup Vls8_vsuxseg5ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -34999,7 +34999,7 @@ covergroup Vls8_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35177,7 +35177,7 @@ covergroup Vls8_vsuxseg5ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -35201,7 +35201,7 @@ covergroup Vls8_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35386,7 +35386,7 @@ covergroup Vls8_vsuxseg6ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -35410,7 +35410,7 @@ covergroup Vls8_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35595,7 +35595,7 @@ covergroup Vls8_vsuxseg6ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -35619,7 +35619,7 @@ covergroup Vls8_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -35803,7 +35803,7 @@ covergroup Vls8_vsuxseg6ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -35827,7 +35827,7 @@ covergroup Vls8_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -36007,7 +36007,7 @@ covergroup Vls8_vsuxseg6ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -36031,7 +36031,7 @@ covergroup Vls8_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -36218,7 +36218,7 @@ covergroup Vls8_vsuxseg7ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -36242,7 +36242,7 @@ covergroup Vls8_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -36429,7 +36429,7 @@ covergroup Vls8_vsuxseg7ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -36453,7 +36453,7 @@ covergroup Vls8_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -36639,7 +36639,7 @@ covergroup Vls8_vsuxseg7ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -36663,7 +36663,7 @@ covergroup Vls8_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -36845,7 +36845,7 @@ covergroup Vls8_vsuxseg7ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -36869,7 +36869,7 @@ covergroup Vls8_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37081,7 +37081,7 @@ covergroup Vls8_vsuxseg8ei16_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -37105,7 +37105,7 @@ covergroup Vls8_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37317,7 +37317,7 @@ covergroup Vls8_vsuxseg8ei32_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -37341,7 +37341,7 @@ covergroup Vls8_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37552,7 +37552,7 @@ covergroup Vls8_vsuxseg8ei64_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -37576,7 +37576,7 @@ covergroup Vls8_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -37783,7 +37783,7 @@ covergroup Vls8_vsuxseg8ei8_v_cg with function sample(ins_t ins);
 
     //// end cp_custom_ls_indexed////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_masked_v0_operand
+    // cp_custom_masked_vs2_v0
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify indexed LS instructions run correctly when masked (vm=0) and
@@ -37807,7 +37807,7 @@ covergroup Vls8_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // Cross: masked with vs2=v0 (v0 serves as both mask and index source)
     cp_custom_masked_vs2_v0: cross std_vec, mask_enabled, vs2_v0, vd_not_v0;
 
-    //// end cp_custom_masked_v0_operand////////////////////////////////////////////////
+    //// end cp_custom_masked_vs2_v0////////////////////////////////////////////////
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };

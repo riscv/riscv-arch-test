@@ -332,7 +332,7 @@ def _generate_user_wfi_timeout_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsU", required_extensions=["Sm", "U", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsU", required_extensions=["U"])
 def make_interruptsu(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsU user-mode interrupt behavior."""
 

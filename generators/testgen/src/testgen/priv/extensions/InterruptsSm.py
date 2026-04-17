@@ -437,7 +437,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("InterruptsSm", required_extensions=["Sm", "I", "Zicsr"])
+@add_priv_test_generator("InterruptsSm", required_extensions=["Sm"])
 def make_interruptssm(test_data: TestData) -> list[str]:
     """Generate tests for InterruptsSm machine-mode interrupts."""
 

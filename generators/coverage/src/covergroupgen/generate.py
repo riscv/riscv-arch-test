@@ -204,100 +204,12 @@ def _is_vector_widen(arch: str, instr: str) -> bool:
 
 
 def _get_sorted_instr_keys(tp: dict[tuple[str, str], list[str]], arch: str) -> list[tuple[str, str]]:
-    """Get sorted instruction keys, filtering by EFFEW for vector architectures.
-
-    Also excludes instructions where nf × EMUL > 8 at this extension's SEW
-    (they can never legally execute).  Per-coverpoint LMUL requirements
-    (from ``_CP_MIN_LMUL``) are checked so that instructions are kept only
-    when at least one non-standard coverpoint is coverable.
-    """
+    """Get sorted instruction keys, filtering by EFFEW for vector architectures."""
     keys = sorted(tp.keys())
     if _is_vector(arch):
         effew = _get_effew(arch)
         keys = [k for k in keys if f"EFFEW{effew}" in tp[k]]
-        sew = int(effew)
-        # Base filter at LMUL=1
-        keys = [k for k in keys if _nf_emul_legal(k[0], sew)]
-        # Per-coverpoint LMUL filter: standard coverpoints (cp_asm_count,
-        # std_vec) are always present but depend on a test being generated.
-        # Only non-standard coverpoints drive test generation, so at least
-        # one must be coverable at its template's required LMUL.
-        _STANDARD_CPS = {"cp_asm_count", "std_vec"}
-        filtered: list[tuple[str, str]] = []
-        for k in keys:
-            cps = [cp for cp in tp[k] if not cp.startswith(("sample_", "EFFEW")) and cp not in {"RV32", "RV64"}]
-            non_standard = [cp for cp in cps if cp not in _STANDARD_CPS]
-            if not non_standard:
-                # No custom coverpoints — keep (standard-only covergroup)
-                filtered.append(k)
-            elif any(_nf_emul_legal(k[0], sew, _cp_required_lmul(cp, k[0])) for cp in non_standard):
-                filtered.append(k)
-        keys = filtered
     return keys
-
-
-def _nf_emul_legal(instr: str, sew: int, lmul: int = 1) -> bool:
-    """Return False if *instr* has nf × EMUL > 8 at *sew* and *lmul*.
-
-    EMUL = EEW × LMUL / SEW.  The check is nf × EMUL ≤ 8.
-
-    Handles indexed (vloxsegNeiM), unit-stride (vlsegNeM / vlsegNeMff),
-    strided (vlssegNeM / vsssegNeM), and non-segmented unit-stride
-    (vleNff / vleN / vseN) patterns.
-    """
-    # Indexed segmented: v[ls][ou]xsegNeiM.v
-    m = re.match(r"v[ls][ou]xseg(\d+)ei(\d+)\.", instr)
-    if m:
-        nf, eew = int(m.group(1)), int(m.group(2))
-        # For indexed: data EMUL = LMUL, index EMUL = EEW*LMUL/SEW
-        # NF applies to data group only; index EMUL must be ≤ 8 independently
-        data_emul = lmul
-        index_emul = eew * lmul / sew
-        return nf * data_emul <= 8 and index_emul <= 8
-
-    # Unit-stride segmented (incl. fault-first): v[ls]segNeM[ff].v
-    m = re.match(r"v[ls]seg(\d+)e(\d+)(?:ff)?\.", instr)
-    if m:
-        nf, eew = int(m.group(1)), int(m.group(2))
-        return nf * (eew * lmul / sew) <= 8
-
-    # Strided segmented: v[ls]ssegNeM.v
-    m = re.match(r"v[ls]sseg(\d+)e(\d+)\.", instr)
-    if m:
-        nf, eew = int(m.group(1)), int(m.group(2))
-        return nf * (eew * lmul / sew) <= 8
-
-    # Non-segmented unit-stride (incl. fault-first): v[ls]eN[ff].v
-    m = re.match(r"v[ls]e(\d+)(?:ff)?\.", instr)
-    if m:
-        eew = int(m.group(1))
-        return (eew * lmul / sew) <= 8
-
-    return True
-
-
-# Minimum LMUL required by specific coverpoint templates.
-# Used to filter out covergroups where the template's cross bins
-# cannot be covered due to EMUL constraints.
-_CP_MIN_LMUL: dict[str, int] = {
-    "cp_custom_ffLS_update_vl": 2,
-}
-
-
-def _cp_required_lmul(cp: str, instr: str) -> int:
-    """Return the LMUL required by *cp* for *instr*.
-
-    For most coverpoints, this is the static value from ``_CP_MIN_LMUL``.
-    For ``cp_custom_indexed_emul_data_only``, the required LMUL depends on
-    the instruction's NF: NF=2→LMUL=4, NF=4→LMUL=2, NF=8→LMUL=1.
-    """
-    if cp == "cp_custom_indexed_emul_data_only":
-        m = re.search(r"seg(\d+)", instr)
-        if m:
-            nf = int(m.group(1))
-            return {2: 4, 4: 2, 8: 1}.get(nf, 1)
-        return 1
-    return _CP_MIN_LMUL.get(cp, 1)
 
 
 def _matches_xlen(cps: list[str], has_rv32: bool, has_rv64: bool) -> bool:
@@ -373,15 +285,17 @@ def _gen_instrs(
         # cp_frm_* declarations first, then regular coverpoints, then explicit cross templates.
         frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
         ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
-        sew = int(_get_effew(arch)) if _is_vector(arch) else 0
         for cp in ordered_cps:
             if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
-            # Skip coverpoints whose LMUL requirement makes this instr illegal
-            req_lmul = _cp_required_lmul(cp, instr)
-            if sew and req_lmul > 1 and not _nf_emul_legal(instr, sew, req_lmul):
-                continue
+            # Handle per-SEW minimum: cp suffixed with _sew_ge{N} only applies when arch SEW >= N
+            ge_match = re.search(r"_sew_ge(\d+)$", cp)
+            if ge_match:
+                min_sew = int(ge_match.group(1))
+                if not _is_vector(arch) or int(_get_effew(arch)) < min_sew:
+                    continue
+                cp = re.sub(r"_sew_ge\d+$", "", cp)
 
             # Append SEW suffix for SEW-dependent coverpoints
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):

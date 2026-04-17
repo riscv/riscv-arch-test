@@ -1,5 +1,5 @@
-#ifndef _COMPLIANCE_MODEL_H
-#define _COMPLIANCE_MODEL_H
+#ifndef _RVMODEL_MACROS_H
+#define _RVMODEL_MACROS_H
 
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -9,8 +9,10 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 ##### TERMINATION #####
 
@@ -49,7 +51,8 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)    \
+# Can be empty or left undefined if no initialization is needed.
+#define RVMODEL_IO_INIT(_R1, _R2, _R3) \
   uart_init:                ;\
     li _R1, UART_LCR         ; /* Load address of UART LCR */    \
     li _R2, 3                ; /* 8-bit characters, 1 stop bit, no parity */ \
@@ -80,9 +83,11 @@
 
 #define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
-##### Machine Timer #####
+##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
+
+##### Machine Timer #####
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
@@ -125,4 +130,4 @@
   li _R2, CVW_SSIP_ADDRESS; \
   sw zero, 0(_R2);
 
-#endif // _COMPLIANCE_MODEL_H
+#endif // _RVMODEL_MACROS_H

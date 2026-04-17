@@ -32,7 +32,7 @@ The ACTs require several tools to generate and run correctly. Ensure all of the 
 
 #### 1. System Dependencies
 
-The ACT4 framework relies on `make` to orchestrate compilation. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
+The ACT4 framework uses `make` to run top-level commands. `git` is needed to clone the `riscv-arch-test` repository. Both of these packages are available in your system package manager.
 
 To install system dependencies:
 
@@ -44,25 +44,37 @@ sudo apt-get install make git
 sudo dnf install make git
 ```
 
-#### 2. Python/uv
+#### 2. `mise` (Tool Manager)
 
-The test generator and framework are written in Python. The recommended way of installing and running Python is using the uv project manager, which will handle Python versions, virtual environments, and dependencies transparently.
+The test generator and framework are written in Python. The recommended way of installing and running Python is using the `uv` project manager, which will handle Python versions, virtual environments, and dependencies transparently.
 
-To install uv:
+The framework also relies on the [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) (UDB) gem, which requires Ruby and Bundler.
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+The recommended way of installing both of these tools (`uv` and Ruby) is using [`mise`](https://mise.jdx.dev/). `mise` handles tool versions and installation automatically — you don't need to install uv, Python, Ruby, or UDB manually.
 
-After installation, verify uv is available:
+To install mise:
 
 ```bash
-uv --version
+curl https://mise.jdx.dev/install.sh | sh
 ```
 
-For more details on uv and alternate installation methods, see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+After installation, verify mise is available:
 
-#### 3. RISC-V Compiler
+```bash
+mise --version
+```
+
+> [!NOTE]
+>
+> For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
+>
+> For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
+
+> [!NOTE]
+>
+> See note on enabling trust in the `.mise.toml` file below.
+
+#### 3. RISC-V Compiler (GCC or LLVM)
 
 The ACT framework is compatible with GCC/Binutils or LLVM/Clang. Only the latest release of each is officially supported and tested in CI.
 Currently, that is GCC 15/Binutils 2.44 or LLVM/Clang 21.
@@ -136,32 +148,24 @@ sail_riscv_sim --version
 
 For more details on the RISC-V Sail model and alternate installation methods, see the [sail-riscv README](https://github.com/riscv/sail-riscv).
 
-#### 5. Container Runtime
-
-The ACTs use [`riscv-unified-db`](https://github.com/riscv/riscv-unified-db) for configuration validation and parsing. UDB requires a container to run. Currently, the ACTs are only compatible with the Podman container runtime. Work is ongoing to remove this dependency. <!-- TODO: Update this when other containers are supported -->
-
-To install Podman:
-
-```bash
-# On Ubuntu/Debian
-sudo apt-get install podman
-
-# On Fedora/CentOS/RHEL
-sudo dnf install podman
-```
-
-Verify the installation:
-
-```bash
-podman --version
-```
-
 ### Get Source Code
 
-Clone the `riscv-arch-test` repo `act4` branch:
+Clone the `riscv-arch-test` repo:
 
 ```bash
-git clone https://github.com/riscv/riscv-arch-test -b act4
+git clone https://github.com/riscv/riscv-arch-test
+```
+
+On entering the top-level directory of the repository for the first
+time, or on the first use of one of the build commands below, you may
+see messages or a prompt from `mise` requiring enabling trust before
+the `.mise.toml` configuration file can be used. This can be done by
+selecting `Yes` in the prompt or with the following command in the
+top-level directory of the repository:
+
+```bash
+mise trust .mise.toml
+
 ```
 
 ### Configuration
@@ -214,19 +218,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 **Printing Macros**: Can be left blank if no console is available
 
-- `RVMODEL_IO_INIT(_R1, _R2, _R3)`
+- `RVMODEL_IO_INIT(_R1, _R2, _R3)` (can be omitted if not needed)
 - `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
-- `RVMODEL_BOOT`
-- `RVMODEL_ACCESS_FAULT_ADDRESS`
+- `RVMODEL_BOOT` (can be omitted if not needed)
+- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS`
-- `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
+- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
@@ -248,17 +252,19 @@ Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc
 A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
 
 - The `ENTRY` point must be `rvtest_entry_point`.
-  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will jump to before anything else.
 - There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
-- There must be another `.text` output section that contains at least the `.text.rvtest` input section (i.e. `.text : { *(.text) *(.text.*) }`). This must follow the `.text.init` section.
-- There must be a `.bss` output section (i.e. `.bss : { *(.bss) }`). This should follow the `.text` section.
-- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.bss` section.
+- There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) }`). This must follow the `.text.init` section.
+- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.text.rvtest` section.
+- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) }`). This **must** follow the `.data` section so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
 
-For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
+For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 
 > [!NOTE]
 >
 > If you modify the base address, you also need to modify the RISC-V Sail model memory map under the `memory.regions` key in `sail.json`.
+
+For a detailed description of the test memory layout (section ordering, contents of each section, etc.), see [docs/memory_map.md](./docs/memory_map.md).
 
 #### Other Config Files <!-- TODO: Remove this section when these files are autogenerated -->
 
@@ -283,15 +289,16 @@ This will create all of the ELFs that apply to your DUT (based on the provided U
 
 The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
 
-| Variable             | Default                                         | Description                                                                                                                                        |
-| -------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CONFIG_FILES`       | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                |
-| `WORKDIR`            | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                          |
-| `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                        |
-| `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                               |
-| `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump and trace files). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
-| `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                    |
-| `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                           |
+| Variable             | Default                                         | Description                                                                                                                                                      |
+| -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONFIG_FILES`       | Spike rv32/rv64 max configs                     | Space-separated list of `test_config.yaml` paths to build ELFs for.                                                                                              |
+| `WORKDIR`            | `work`                                          | Directory where all build artifacts and ELFs are created.                                                                                                        |
+| `EXTENSIONS`         | _(empty — all extensions)_                      | Comma-separated list of extensions to generate tests for. When empty, generates tests for all extensions in the UDB config.                                      |
+| `EXCLUDE_EXTENSIONS` | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                             |
+| `DEBUG`              | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`. |
+| `VERBOSE`            | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                      |
+| `FAST`               | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                  |
+| `JOBS`               | Auto-detected from `make -j` flag, or CPU count | Number of parallel build jobs for test compilation. Set to `1` for debugging test hangs.                                                                         |
 
 By default, both `CONFIG_FILES` and `WORKDIR` are relative to the `riscv-arch-test` directory. Use an absolute path if you need to specify a directory that is out-of-tree.
 
@@ -303,7 +310,7 @@ The ACT framework first compiles signature-generating versions of the tests (wit
 
 > [!NOTE]
 >
-> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `uv` to be installed.
+> To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `mise` to be installed.
 
 ### Running Certification Tests
 
@@ -333,12 +340,21 @@ A common source of errors is configuration mismatches, so ensure that:
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
 
+#### Debug Flag
+
+If the standard debug information is insufficient, use the `DEBUG=True` flag to generate additional artifacts alongside each test that aid in debugging:
+
+- **Sail trace files** (`.sig.log`) — Instruction-by-instruction trace from the Sail reference model. Useful for understanding the expected execution flow.
+- **Trap report** (`.sig.trap_report`) — Human-readable summary of every trap recorded in the trap signature region. Shows cause, mode, xepc, xtval, and status bits for each trap.
+
+These files are generated in the `$WORKDIR/<config_name>/build` directory alongside the `.sig` and `.sig.elf` files. Note that `DEBUG=True` significantly slows down ELF generation and is mutually exclusive with `FAST`. It is recommended to only enable `DEBUG` for an individual extension that is failing (use the `EXTENSIONS` variable).
+
 ## Contributing
 
 Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
-- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

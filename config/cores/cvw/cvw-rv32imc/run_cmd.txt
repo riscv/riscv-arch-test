@@ -1,1 +1,1 @@
-wsim rv32imc --elf
+wsim --sim verilator {debug:--sim questa --lockstepverbose} rv32imc --elf

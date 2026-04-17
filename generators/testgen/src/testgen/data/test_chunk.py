@@ -7,6 +7,8 @@
 
 """TestChunk dataclass for holding test chunk output data."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 

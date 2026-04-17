@@ -12,7 +12,7 @@
         bins unmasked = {1'b0};
     }
 
-    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `ACCESS_FAULT_ADDRESS) {
+    rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
         bins not_fault_addr = {1'b1};
     }
 

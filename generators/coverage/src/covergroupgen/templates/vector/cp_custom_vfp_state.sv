@@ -6,10 +6,6 @@
         bins target = {1};
     }
 
-    vfp_state_vfsqrt_flag_set : coverpoint (ins.current.insn == "vfrsqrt7.v" & ins.current.vs2_val == 0) {
-        bins target = {1};
-    }
-
     mstatus_prev_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
         bins clear = {0};
     }

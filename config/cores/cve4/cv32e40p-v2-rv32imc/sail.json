@@ -1,0 +1,345 @@
+// Copyright (c) 2026 Eclipse Foundation
+// SPDX-License-Identifier: Apache-2.0
+{
+  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 32,
+    "E": false,
+    "writable_misa": false,
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      // Only HPM counter 3 is active (NUM_MHPMCOUNTERS=1 default)
+      "value": "0x00000008"
+    },
+    "xtval_nonzero": {
+      // mtval is hardwired to 0 in cv32e40p — all REPORT_VA_IN_MTVAL_* = false
+      "illegal_instruction": false,
+      "software_breakpoint": false,
+      "hardware_breakpoint": false,
+      "load_address_misaligned": false,
+      "load_access_fault": false,
+      "load_page_fault": false,
+      "samo_address_misaligned": false,
+      "samo_access_fault": false,
+      "samo_page_fault": false,
+      "fetch_address_misaligned": false,
+      "fetch_access_fault": false,
+      "fetch_page_fault": false,
+      "software_check": false,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      "amocas_odd_register": "AMOCAS_Illegal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    }
+  },
+  "memory": {
+    "pmp": {
+      "grain": 0,
+      // cv32e40p default configuration: NUM_PMP_ENTRIES=0
+      "count": 0,
+      "usable_count": 0,
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
+    },
+    "misaligned": {
+      // cv32e40p performs misaligned as two bus transactions — no fault
+      "supported": true,
+      "byte_by_byte": false,
+      "order_decreasing": false,
+      "allowed_within_exp": 0
+    },
+    "translation": {
+      "dirty_update": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x0"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "attributes": {
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_fault": "NoFault",
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false
+        },
+        "include_in_device_tree": true
+      }
+    ]
+  },
+  "platform": {
+    // OpenHW Group JEDEC: bank=0xC, offset=0x2 → mvendorid=0x602=1538
+    "vendorid": 1538,
+    // marchid=0x4 — verified cv32e40p_pkg.sv:528
+    "archid": 4,
+    // mimpid=0x1 for FPU=1 on v1.8.3 — verified cs_registers.sv:511-513
+    "impid": 0, // FPU=0 → mimpid=0
+    "hartid": 0,
+    "cache_block_size_exp": 6,
+    "reservation_set_size_exp": 3,
+    "clint": {
+      "base": 33554432,
+      "size": 786432
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    "wfi_is_nop": false
+  },
+  "extensions": {
+    "M": {
+      "supported": true
+    },
+    "A": {
+      "supported": false
+    },
+    "F": {
+      "supported": false
+    },
+    "D": {
+      "supported": false
+    },
+    "V": {
+      "support_level": "Disabled",
+      "vlen_exp": 7,
+      "elen_exp": 6,
+      "vl_use_ceil": false
+    },
+    "B": {
+      "supported": false
+    },
+    "S": {
+      "supported": false
+    },
+    "U": {
+      // cv32e40p (RI5CY based) — M-mode only, no U-mode execution
+      "supported": false
+    },
+    "Zibi": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": false
+    },
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": false
+    },
+    "Zic64b": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": false
+    },
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
+      "supported": false
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": false
+    },
+    "Zaamo": {
+      "supported": false
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": false
+    },
+    "Zalrsc": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": { "is_nop": false },
+      "sto": { "is_nop": false }
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": false
+    },
+    "Zfhmin": {
+      "supported": false
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": false
+    },
+    "Zcb": {
+      "supported": false
+    },
+    "Zcmop": {
+      "supported": false
+    },
+    "Zba": {
+      "supported": false
+    },
+    "Zbb": {
+      "supported": false
+    },
+    "Zbs": {
+      "supported": false
+    },
+    "Zbc": {
+      "supported": false
+    },
+    "Zbkb": {
+      "supported": false
+    },
+    "Zbkc": {
+      "supported": false
+    },
+    "Zbkx": {
+      "supported": false
+    },
+    "Zknd": {
+      "supported": false
+    },
+    "Zkne": {
+      "supported": false
+    },
+    "Zknh": {
+      "supported": false
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": false
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Sscofpmf": {
+      "supported": false
+    },
+    "Sstc": {
+      "supported": false
+    },
+    "Sstvala": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": false,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": false
+    },
+    "Sv48": {
+      "supported": false
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": { "supported": false },
+      "Ssstateen": { "supported": false },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": false
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Zvabd": { "supported": false },
+    "Zvbb": { "supported": false },
+    "Zvbc": { "supported": false },
+    "Zvfbfmin": { "supported": false },
+    "Zvfbfwma": { "supported": false },
+    "Zvfh": { "supported": false },
+    "Zvfhmin": { "supported": false },
+    "Zvkb": { "supported": false },
+    "Zvkg": { "supported": false },
+    "Zvkned": { "supported": false },
+    "Zvknha": { "supported": false },
+    "Zvknhb": { "supported": false },
+    "Zvksed": { "supported": false },
+    "Zvksh": { "supported": false },
+    "Zvkt": { "supported": false }
+  }
+}

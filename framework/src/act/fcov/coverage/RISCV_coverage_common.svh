@@ -136,63 +136,6 @@
   `endif
 `endif
 
-
-// supported SEWs based on what coverages are enabled
-`ifdef VX64_COVERAGE
-  `define SEW64_SUPPORTED
-`endif
-`ifdef VX32_COVERAGE
-  `define SEW32_SUPPORTED
-`endif
-`ifdef VX16_COVERAGE
-  `define SEW16_SUPPORTED
-`endif
-`ifdef VX8_COVERAGE
-  `define SEW8_SUPPORTED
-`endif
-
-`ifdef VLS64_COVERAGE
-  `define SEW64_SUPPORTED
-`endif
-`ifdef VLS32_COVERAGE
-  `define SEW32_SUPPORTED
-`endif
-`ifdef VLS16_COVERAGE
-  `define SEW16_SUPPORTED
-`endif
-`ifdef VLS8_COVERAGE
-  `define SEW8_SUPPORTED
-`endif
-
-// ELEN (max SEW) definition
-`ifdef VX64_COVERAGE
-  `define ELEN64
-`else
-  `ifdef VX32_COVERAGE
-    `define ELEN32
-  `else
-    `ifdef VX16_COVERAGE
-      `define ELEN16
-    `else
-      `define ELEN8
-    `endif
-  `endif
-`endif
-
-`ifdef VLS64_COVERAGE
-  `define ELEN64
-`else
-  `ifdef VLS32_COVERAGE
-    `define ELEN32
-  `else
-    `ifdef VLS16_COVERAGE
-      `define ELEN16
-    `else
-      `define ELEN8
-    `endif
-  `endif
-`endif
-
 // edge cases
 `ifdef VLEN64
   `ifdef ELEN64
@@ -216,29 +159,29 @@
 `endif
 
 // Minimum supported LMUL
-`ifdef SEW8_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf8_SUPPORTED
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN32
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN16
-    `define LMULf2_SUPPORTED
-  `endif
-`elsif SEW16_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf4_SUPPORTED
-    `define LMULf2_SUPPORTED
-  `elsif ELEN32
-    `define LMULf2_SUPPORTED
-  `endif
-`elsif SEW32_SUPPORTED
-  `ifdef ELEN64
-    `define LMULf2_SUPPORTED
-  `endif
-`endif
+// `ifdef SEW8_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf8_SUPPORTED
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN32
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN16
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `elsif SEW16_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf4_SUPPORTED
+//     `define LMULf2_SUPPORTED
+//   `elsif ELEN32
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `elsif SEW32_SUPPORTED
+//   `ifdef ELEN64
+//     `define LMULf2_SUPPORTED
+//   `endif
+// `endif
 
 
 // Set register type length

@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # implemented_extensions: [I, M, V, Zicsr]
 # MARCH: rv${XLEN}imfv_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #include "test_macros_vector.h"

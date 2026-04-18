@@ -308,10 +308,11 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_load_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed load to a faulting address and check that each one throws a load access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -346,6 +347,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_load_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -353,10 +355,11 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_store_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed store to a faulting address and check that each one throws a store access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -391,6 +394,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_store_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -437,19 +441,12 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
     """Main entry point for Zc exception test generation."""
     lines = []
 
-    addr_reg, val_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+    addr_reg = test_data.int_regs.get_register()
 
     lines.extend(
         [
-            "# Initialize scratch memory with test data",
+            "# Load FP test data from scratch if FP is supported",
             f"LA(x{addr_reg}, scratch)",
-            f"LI(x{val_reg}, 0xDEADBEEF)",
-            f"sw x{val_reg}, 0(x{addr_reg})",
-            f"sw x{val_reg}, 4(x{addr_reg})",
-            f"sw x{val_reg}, 8(x{addr_reg})",
-            f"sw x{val_reg}, 12(x{addr_reg})",
-            "",
-            "# Load FP test data if FP is supported",
             "#ifdef F_SUPPORTED",
             f"FLREG f8, 0(x{addr_reg})",
             "#endif",
@@ -457,7 +454,7 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
         ]
     )
 
-    test_data.int_regs.return_registers([addr_reg, val_reg])
+    test_data.int_regs.return_registers([addr_reg])
 
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_store_address_misaligned_tests(test_data))

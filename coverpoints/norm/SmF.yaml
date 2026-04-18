@@ -1,0 +1,59 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # The FS field encodes the status of the floating-point unit state, including the
+  # floating-point registers f0–f31 and the CSRs fcsr, frm, and fflags.
+  - name: mstatus_fs_op
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
+
+  # When an extension's status is set to Off, any instruction that attempts to read
+  # or write the corresponding state will cause an illegal-instruction exception.
+  - name: mstatus_fs_vs_xs_off_op
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # When the status is Clean, the corresponding state is potentially different from
+  # the initial value, but matches the last value stored on a context swap.
+  - name: mstatus_fs_vs_xs_clean_op
+    coverpoint: ["untested because this is controlled by software"]
+
+  # When the status is Dirty, the corresponding state has potentially been modified
+  # since the last context save.
+  - name: mstatus_fs_vs_xs_dirty_op
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # The status fields will also be updated during execution of instructions,
+  # regardless of privilege mode.
+  - name: mstatus_fs_vs_xs_update_indep_priv
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # Changing the setting of FS has no effect on the contents of the floating-point
+  # register state. In particular, setting FS=Off does not destroy the state, nor
+  # does setting FS=Initial clear the contents.
+  - name: mstatus_fs_wr
+    coverpoint: ["TODO"]
+
+  # Implementations may choose to track the dirtiness of the floating-point register
+  # state imprecisely by reporting the state to be dirty even when it has not been
+  # modified. On some implementations, some instructions that do not mutate the
+  # floating-point state may cause the state to transition from Initial or Clean to
+  # Dirty.
+  - name: mstatus_fs_imprecise
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # dirtiness might not be tracked at all, in which case the valid FS states are Off
+  # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to
+  # Dirty.
+  - name: mstatus_fs_no_dirty_track
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # If an instruction explicitly or implicitly writes a floating-point register or
+  # the fcsr but does not alter its contents, and FS=Initial or FS=Clean, it is
+  # implementation-defined whether FS transitions to Dirty.
+  - name: mstatus_fs_no_change_dirty
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
+
+  # although CSRs and instructions are associated with one privilege level, they are
+  # also accessible at all higher privilege levels.
+  - name: Zicsr_higher_priv
+    coverpoint: ["SmF_cg/cp_fcsr_access"]

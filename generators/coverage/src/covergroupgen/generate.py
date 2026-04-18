@@ -263,8 +263,13 @@ def _gen_instrs(
             init_lines.append(customize_template(templates, "init", arch, instr))
 
         # Coverpoint entries (skip metadata columns: sample_*, RV32, RV64, EFFEW*)
-        for cp in cps:
-            if cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}:
+        # VCS requires coverpoints to be declared before they are referenced by cross coverpoints.
+        # Some templates embed cross definitions (for example, *_frm templates), so prioritize
+        # cp_frm_* declarations first, then regular coverpoints, then explicit cross templates.
+        frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
+        ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
+        for cp in ordered_cps:
+            if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
 
             # Append SEW suffix for SEW-dependent coverpoints
@@ -442,6 +447,26 @@ def write_coverage_headers(
     (coverage_dir / "RISCV_coverage_base_sample.svh").write_text("".join(lines))
 
 
+def _merge_instruction_testplans(
+    test_plans: dict[str, dict[tuple[str, str], list[str]]],
+) -> dict[tuple[str, str], list[str]]:
+    """Merge all testplans into a single mapping with unique instruction entries.
+
+    Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
+    instruction appears in multiple testplan variants.  Merging first-occurrence-wins
+    collapses those duplicates before the instruction sample file is generated.
+    """
+    merged: dict[tuple[str, str], list[str]] = {}
+    for arch in sorted(test_plans.keys()):
+        if arch == "E":
+            continue  # E is a duplicate of I
+        tp = test_plans[arch]
+        for key in _get_sorted_instr_keys(tp, arch):
+            if key not in merged:
+                merged[key] = tp[key]
+    return merged
+
+
 def write_instruction_sample_file(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     templates: dict[str, str],
@@ -455,21 +480,19 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    lines: list[str] = [customize_template(templates, "instruction_sample_header")]
-    for arch, tp in test_plans.items():
-        if arch == "E":
-            continue  # E is a duplicate of I; skip to avoid duplicate case entries
-        instr_keys = _get_sorted_instr_keys(tp, arch)
+    merged_tp = _merge_instruction_testplans(test_plans)
+    instr_keys = sorted(merged_tp.keys())
 
-        lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, True))
-        if _any_xlen_exclusion("RV64", instr_keys, tp):
-            lines.append(customize_template(templates, "RV32", arch))
-            lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, False))
-            lines.append(customize_template(templates, "end", arch))
-        if _any_xlen_exclusion("RV32", instr_keys, tp):
-            lines.append(customize_template(templates, "RV64", arch))
-            lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, False, True))
-            lines.append(customize_template(templates, "end", arch))
+    lines: list[str] = [customize_template(templates, "instruction_sample_header")]
+    lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", True, True))
+    if _any_xlen_exclusion("RV64", instr_keys, merged_tp):
+        lines.append(customize_template(templates, "RV32"))
+        lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", True, False))
+        lines.append(customize_template(templates, "end"))
+    if _any_xlen_exclusion("RV32", instr_keys, merged_tp):
+        lines.append(customize_template(templates, "RV64"))
+        lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", False, True))
+        lines.append(customize_template(templates, "end"))
 
     lines.append(customize_template(templates, "instruction_sample_end"))
     (coverage_dir / "RISCV_instruction_sample.svh").write_text("".join(lines))

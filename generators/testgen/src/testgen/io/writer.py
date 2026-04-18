@@ -8,6 +8,8 @@
 
 """Test file writing utilities."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from testgen.asm.sections import generate_test_data_section, generate_test_string_section

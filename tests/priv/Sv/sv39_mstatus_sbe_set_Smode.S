@@ -14,10 +14,10 @@
 // Total Expected Faults :: 0
 //---------------------------------------------------------------------------------------------------------------------------------
 
+// Remove NORUN once Sail supports Big Endian
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, NORUN]
 # MARCH: rv64i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_mstatus_sbe_set_Smode.S"
@@ -94,7 +94,7 @@ RVTEST_BEGIN
 
 
 main:
-  li a2, 0x800              // Test signature initialization
+  LI( a2, 0x800)            // Test signature initialization
 
 //---------------------------------------------------------------------------------------------------------------------------------
 //                                   Virtual addresses definition for code and test regions

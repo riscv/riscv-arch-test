@@ -111,9 +111,11 @@ covergroup S_sprivinst_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     privinstrs: coverpoint ins.current.insn  {
-        bins ecall  = {ECALL};
-        bins ebreak = {EBREAK};
-        bins mret   = {MRET};
+        bins          ecall      = {ECALL};
+        bins          ebreak     = {EBREAK};
+        bins          mret       = {MRET};
+        bins          sret       = {SRET};
+        wildcard bins sfence_vma = {SFENCE_VMA};
     }
     mret: coverpoint ins.current.insn  {
         bins mret   = {MRET};

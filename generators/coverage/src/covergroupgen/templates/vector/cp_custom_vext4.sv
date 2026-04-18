@@ -1,11 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vext4_overlapping_vd_vs2_lmul8
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vext4_overlapping_vd_vs2_lmul4/8
     //////////////////////////////////////////////////////////////////////////////////
 
     // Custom coverpoints for Vector zext and sext operations (f4)
 
     // ensures vd updates
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+        bins true = {1'b1};
+    }
 
 
     vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
@@ -21,7 +29,7 @@
     }
 
     vs2_mod4_3: coverpoint ins.current.insn[21:20] {
-        bins odd = {2'b11};
+        bins mod4_3 = {2'b11};
     }
 
     vs2_vd_overlap_lmul8: coverpoint (ins.current.insn[24:23] == ins.current.insn[11:10]) {
@@ -29,10 +37,10 @@
     }
 
     vs2_mod8_6: coverpoint ins.current.insn[22:20] {
-        bins odd = {3'b110};
+        bins mod8_6 = {3'b110};
     }
 
     cp_custom_vext4_overlapping_vd_vs2_lmul4:    cross std_vec, vtype_lmul_4, vs2_vd_overlap_lmul4, vs2_mod4_3;
     cp_custom_vext4_overlapping_vd_vs2_lmul8:    cross std_vec, vtype_lmul_8, vs2_vd_overlap_lmul8, vs2_mod8_6;
 
-    //// end cp_custom_vext4_overlapping_vd_vs2_lmul8////////////////////////////////////////////////
+    //// end cp_custom_vext4_overlapping_vd_vs2_lmul4/8 ////////////////////////////////////////////////

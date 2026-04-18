@@ -1,0 +1,1 @@
+wsim --sim verilator {debug:--sim questa --lockstepverbose --args '+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__'} rv32gc --elf

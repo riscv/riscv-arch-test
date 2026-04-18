@@ -404,7 +404,7 @@ def _generate_wfi_tests(test_data: TestData) -> list[str]:
                     f"LI(x{r_scratch}, 0x200008)",
                     f"CSRC(mstatus, x{r_scratch})",
                     "# Set MIE if needed",
-                    f"LI(x{r_scratch}, 0x80)",
+                    f"LI(x{r_scratch}, 0x8)",
                     f"{'CSRS' if mie_val else 'CSRC'}(mstatus, x{r_scratch})",
                 ]
             )

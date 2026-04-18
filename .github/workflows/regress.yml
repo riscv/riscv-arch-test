@@ -79,7 +79,7 @@ jobs:
 
       - name: Install Clang
         env:
-          LLVM_VERSION: "21"
+          LLVM_VERSION: "22"
         run: |
           wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
           sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION

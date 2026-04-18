@@ -100,7 +100,6 @@
 //
 //****************************************************************
 // RVTEST_SIG_END                                                *
-//    gpr_save:          [gpr save area (optional, enabled if rvtest_gpr_save is defined)]
 //    rvtest_sig_end:   [global test   end signature (shared by all modes)] (shouldn't matter what RVMODEL_DATA_END does)
 //    RVMODEL_DATA_END                                           *
 //****************************************************************
@@ -113,13 +112,8 @@
         GOTO_[M/H/S/U]MODE, INSTANTIATE_MODE_MACRO (prolog/handler/epilog/savearea)
    The following are general parameter initialization
         RVMODEL_MTVEC_ALIGN
-        RVMODEL_CBZ_BLOCKSIZE
-        RVMODEL_CMO_BLOCKSIZE
-        RVMODEL_CLEAN_SIG
    The following variables are used     if interrupt tests are enabled (defaulted if not defined):
         NUM_SPECD_INTCAUSES
-   The following variables are optional:
-        rvtest_gpr_save: if defined, stores GPR contents into signature at test end (for debug)
    The following labels are required and defined by required macros:
         rvtest_code_begin:   defined by RVTEST_CODE_BEGIN  macro (boot code called here, but located in code_end)
         rvtest_code_end:     defined by RVTEST_CODE_END    macro (trap handlers follow this)
@@ -182,7 +176,7 @@
 #endif
 
 //==========================================================================================
-// By default, ZIFENCE is defined as nop for the implementation that does not support Zifencei
+// By default, RVMODEL_FENCEI is defined as nop for the implementation that does not support Zifencei
 // Implementations that support Zifencei may use the fence.i instruction.
 // This only gets executed if xTVEC is not writable to point to the trap trampoline,
 // and if it isn't writable, the model better have the zifencei extension implemented.

@@ -33,6 +33,9 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
     cmd = [str(config.compiler_exe)]
     if config.compiler_type == CompilerType.CLANG:
         cmd.extend([f"--target=riscv{xlen}", "-fuse-ld=lld"])
+        linker_flags = ""  # LLD does not emit (or recognize) --no-warn-rwx-segments; the warning is GNU ld only.
+    else:
+        linker_flags = "-Wl,--no-warn-rwx-segments"
     cmd.extend(
         [
             f"-I{config.dut_include_dir.absolute()}",
@@ -41,6 +44,7 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             "-g",
             "-mcmodel=medany",
             "-nostdlib",
+            linker_flags,
             f"-I{tests_dir}/env",
         ]
     )
@@ -287,7 +291,6 @@ def gen_coverage_tasks(
     config_report_dir: Path,
     dut_header_dir: Path,
     coverage_simulator: CoverageSimulator,
-    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -483,7 +486,6 @@ def generate_build_plan(
                 config_report_dir,
                 config.dut_include_dir,
                 coverage_simulator,
-                config.name,
             )
         )
 

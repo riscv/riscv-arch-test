@@ -189,15 +189,11 @@
 //==========================================================================================
 
 #ifndef   RVMODEL_FENCEI        /**** if not defaulted must be a single op or a JAL to a rvmodel_fencei routine in rvmodel_boot ****/
-  #ifndef ZIFENCE
-       #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
+  #ifndef ZIFENCEI_SUPPORTED
+    #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
   #else
-       #define RVMODEL_FENCEI fence.i
+    #define RVMODEL_FENCEI fence.i
   #endif
-#endif
-
-#ifndef RVMODEL_CLEAN_SIG
-  #define RVMODEL_CLEAN_SIG  RVMODEL_FENCEI
 #endif
 
 #ifndef _VA_SZ_
@@ -329,13 +325,6 @@
 // this section has  general test helper macros, required,  optional, or just useful
 //==============================================================================
 
-#define _ARG5(_1ST,_2ND, _3RD,_4TH,_5TH,...) _5TH
-#define _ARG4(_1ST,_2ND, _3RD,_4TH,...) _4TH
-#define _ARG3(_1ST,_2ND, _3RD, ...) _3RD
-#define _ARG2(_1ST,_2ND, ...) _2ND
-#define _ARG1(_1ST,...) _1ST
-#define NARG(...) _ARG5(__VA_OPT__(__VA_ARGS__,)4,3,2,1,0)
-
 /*************************************/
 /**** valid mode configs are:     ****/
 /**** M                           ****/
@@ -367,21 +356,6 @@
       \MACRO_NAME V     // actual v-mode prolog/epilog/handler code
     #endif
   #endif
-.endm
-
-/**************************************************************************/
-/**** this is a helper macro defaulting the int macro if its undefined ****/
-/**** It builds the macro name from arguments prefix,  mode, and type  ****/
-/**** The macro names are RV_MODEL_SET_[M/S/V][SW/TMR,EXT]             ****/
-/****  and                RV_MODEL_CLR_[M/S/V][SW]                     ****/
-/**************************************************************************/
-
-.macro DFLT_INT_MACRO MACRO_NAME
-.set      MACRO_NAME_, \MACRO_NAME
- .ifndef    MACRO_NAME_
-  .warning  "MACRO_NAME_ is not defined by target. Executing this will end test."
-   #define  MACRO_NAME_     j cleanup_epilogs
- .endif
 .endm
 
 /******************************************************************************/
@@ -467,9 +441,9 @@
   .set CSR_XSCRATCH,CSR_SSCRATCH
   .set CSR_XEPC,    CSR_SEPC
   .set CSR_XCAUSE,  CSR_SCAUSE
- #if (XLEN==32)
+#if (XLEN==32)
   .set CSR_XEDELEGH, CSR_HEDELEGH
- #endif
+#endif
 .endm
 
 .macro _XCSR_RENAME_M
@@ -510,119 +484,6 @@
        _XCSR_RENAME_V
   .endif
 .endm
-
-////////////////////////////////////////////////////////////////////////////////////////
-//**** This is a helper macro that saves GPRs. Normally used only inside CODE_END ****//
-//**** Note: this needs a temp scratch register, & there isn't anything that will ****//
-//**** will work, so we always trash some register, determined by macro param     ****//
-//**** NOTE: Only be use for debug! Xregs containing addresses won't be relocated ****//
-////////////////////////////////////////////////////////////////////////////////////////
-
-#define RVTEST_SAVE_GPRS(_BR, _LBL, ...)                ;\
-        .option push                                    ;\
-        .option norvc                                   ;\
-        .set __SV_MASK__,  -1 /* default to save all */ ;\
-    .if NARG(__VA_ARGS__) == 1                          ;\
-        .set __SV_MASK__,  _ARG1(__VA_OPT__(__VA_ARGS__,0)) ;\
-    .endif                                              ;\
-    .set offset, 0                                      ;\
-    LA(_BR, _LBL)                                       ;\
-    .if (__SV_MASK__ &        (0x2)) == 0x2             ;\
-    RVTEST_SIGUPD(_BR, x1)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &        (0x4)) == 0x4             ;\
-    RVTEST_SIGUPD(_BR, x2)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &        (0x8)) == 0x8             ;\
-    RVTEST_SIGUPD(_BR, x3)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x10)) == 0x10            ;\
-    RVTEST_SIGUPD(_BR, x4)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x20)) == 0x20            ;\
-    RVTEST_SIGUPD(_BR, x5)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x40)) == 0x40            ;\
-    RVTEST_SIGUPD(_BR, x6)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &       (0x80)) == 0x80            ;\
-    RVTEST_SIGUPD(_BR, x7)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x100)) == 0x100           ;\
-    RVTEST_SIGUPD(_BR, x8)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x200)) == 0x200           ;\
-    RVTEST_SIGUPD(_BR, x9)                              ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x400)) == 0x400           ;\
-    RVTEST_SIGUPD(_BR, x10)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &      (0x800)) == 0x800           ;\
-    RVTEST_SIGUPD(_BR, x11)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x1000)) == 0x1000          ;\
-    RVTEST_SIGUPD(_BR, x12)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x2000)) == 0x2000          ;\
-    RVTEST_SIGUPD(_BR, x13)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x4000)) == 0x4000          ;\
-    RVTEST_SIGUPD(_BR, x14)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &     (0x8000)) == 0x8000          ;\
-    RVTEST_SIGUPD(_BR, x15)                             ;\
-    .endif                                              ;\
-#ifndef RVTEST_E                                        ;\
-    .if (__SV_MASK__ &    (0x10000)) == 0x10000         ;\
-    RVTEST_SIGUPD(_BR, x16)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x20000)) == 0x20000         ;\
-    RVTEST_SIGUPD(_BR, x17)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x40000)) == 0x40000         ;\
-    RVTEST_SIGUPD(_BR, x18)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &    (0x80000)) == 0x80000         ;\
-    RVTEST_SIGUPD(_BR, x19)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x100000)) == 0x100000        ;\
-    RVTEST_SIGUPD(_BR, x20)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x200000)) == 0x200000        ;\
-    RVTEST_SIGUPD(_BR, x21)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x400000)) == 0x400000        ;\
-    RVTEST_SIGUPD(_BR, x22)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &   (0x800000)) == 0x800000        ;\
-    RVTEST_SIGUPD(_BR, x23)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x1000000)) == 0x1000000       ;\
-    RVTEST_SIGUPD(_BR, x24)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x2000000)) == 0x2000000       ;\
-    RVTEST_SIGUPD(_BR, x25)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x4000000)) == 0x4000000       ;\
-    RVTEST_SIGUPD(_BR, x26)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ &  (0x8000000)) == 0x8000000       ;\
-    RVTEST_SIGUPD(_BR, x27)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x10000000)) == 0x10000000      ;\
-    RVTEST_SIGUPD(_BR, x28)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x20000000)) == 0x20000000      ;\
-    RVTEST_SIGUPD(_BR, x29)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x40000000)) == 0x40000000      ;\
-    RVTEST_SIGUPD(_BR, x30)                             ;\
-    .endif                                              ;\
-    .if (__SV_MASK__ & (0x80000000)) == 0x80000000      ;\
-    RVTEST_SIGUPD(_BR, x31)                             ;\
-    .endif                                              ;\
-#endif                                                  ;\
-    .option pop
 
 /***********************************************************************************/
 /**** This must be used before using RVTEST_GOTO_LOWER_MODE and at CODE_END.    ****/
@@ -807,39 +668,7 @@
 //****************************************************************
 #define RVTEST_DFLT_INT_HNDLR      j cleanup_epilogs
 
-        //Mmode interrupts
-#ifndef RVMODEL_SET_MSW_INT
-        //.warning "RVMODEL_SET_MSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SET_MSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_CLR_MSW_INT
-        //.warning "RVMODEL_CLR_MSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_MSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_CLR_MEXT_INT
-        //.warning "RVMODEL_CLR_MEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_MEXT_INT    RVTEST_DFLT_INT_HNDLR
-#endif
-
-//Smode interrupts
-#ifndef RVMODEL_SET_SSW_INT
-        //.warning "RVMODEL_SET_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_SET_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_CLR_SSW_INT
-        //.warning "RVMODEL_CLR_SSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_SSW_INT     RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_CLR_STIMER_INT
-        //.warning "RVMODEL_CLR_STIMER_INT not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR
-#endif
-#ifndef RVMODEL_CLR_SEXT_INT
-        //.warning "RVMODEL_CLR_SEXT_INT   not defined. Executing this will end test. Define an empty macro to suppress this warning"
-        #define  RVMODEL_CLR_SEXT_INT    RVTEST_DFLT_INT_HNDLR
-#endif
-
-//Vmode interrupts
+// Vmode interrupts TODO: Remove these once hypervisor interrupt handling is sorted out
 #ifndef RVMODEL_SET_VSW_INT
         //.warning "RVMODEL_SET_VSW_INT    not defined. Executing this will end test. Define an empty macro to suppress this warning"
         #define  RVMODEL_SET_VSW_INT     RVTEST_DFLT_INT_HNDLR

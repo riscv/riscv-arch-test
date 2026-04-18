@@ -1,39 +1,34 @@
 ##################################
-# priv/extensions/SsstrictSm.py
+# priv/extensions/SsstrictU.py
 #
-# Ssstrict machine-mode privileged test generator.
-# Tests all CSR encodings and reserved instruction encodings from M-mode.
+# Ssstrict user-mode privileged test generator.
+# Tests all CSR encodings and reserved instruction encodings from U-mode.
 #
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""SsstrictSm — machine-mode strict/negative compliance tests.
+"""SsstrictU — user-mode strict/negative compliance tests.
 
 The fast trap handler is NOT emitted here — generate/priv.py prepends it
 to every split file so every generated .S file redirects mtvec immediately
 after RVTEST_TRAP_PROLOG.
 
+Structure
+---------
+1. Switch to U-mode via RVTEST_GOTO_LOWER_MODE Umode.
+2. CSR sweep from U-mode (user-privilege CSRs only: 0x000-0x0FF,
+   0x400-0x4FF, 0xC00-0xCBF).
+   - All S/H/M CSRs raise illegal-instruction from U-mode.
+   - Custom and reserved ranges are skipped.
+3. Return to M-mode, then run the illegal instruction and compressed
+   sweeps (from M-mode so the fast handler handles every trap correctly).
+4. misa extension disable: same as SsstrictSm/S, from M-mode.
+
 Register exclusion for the CSR sweep
 --------------------------------------
-The CSR sweep uses three scratch registers (r1, r2, r3) for:
-  r1  saved CSR value (to restore at end of block)
-  r2  holds -1 for write-all-ones operations
-  r3  destination for csrrw/csrrs/csrrc
-
-ALL three must be chosen from {x7..x31} only.  The following registers
-are permanently excluded:
-
-  x0  zero — hardware constant
-  x1  ra   — excluded by generate_priv_test's priv_exclude_regs
-  x2  sp   — DEFAULT_SIG_REG (signature pointer); if set to -1 the
-              epilog's sd x6,0(x2) faults, triggering the infinite loop
-  x3  gp   — DEFAULT_DATA_REG (test-data pointer)
-  x4  tp   — DEFAULT_TEMP_REG
-  x5  t0   — DEFAULT_LINK_REG; also clobbered by the fast handler
-              (csrr t0,mcause) on every trap — if r1=x5, the saved CSR
-              value is overwritten before the restore instruction runs
-  x6  t1   — Mtrampoline trap-signature pointer when rvtest_strap_routine
-              is defined; must never be clobbered by the fast handler
+Same constraints as SsstrictSm — all scratch registers chosen from
+{x7..x31} only.  x0-x6 are permanently excluded (see SsstrictSm.py for
+the full rationale).
 """
 
 from random import randint, sample, seed
@@ -42,36 +37,40 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
 
-# Blank line every N consecutive .word/.hword directives so the splitter
-# can break large encoding blocks into separate small files.
 BLANK_INTERVAL = 50
 
-# Registers safe to use as scratch in the CSR sweep.
-# Excludes x0-x6: zero, ra, sp(sig ptr), gp(data ptr), tp, t0, t1.
-# t0 and t1 are clobbered by the fast handler on every trap.
 _SAFE_REGS: list[int] = list(range(7, 32))  # x7 .. x31
 
 
-# ── CSR skip set ──────────────────────────────────────────────────────────
+# ── CSR skip set (U-mode) ─────────────────────────────────────────────────
 
-_M_CSR_SKIP: frozenset[int] = frozenset(
-    list(range(0x3A0, 0x3F0))  # PMP regs
-    + list(range(0x7A0, 0x7B0))  # debug trigger regs
-    + list(range(0x7C0, 0x800))  # M-mode custom1
-    + list(range(0xBC0, 0xC00))  # M-mode custom2
-    + list(range(0xFC0, 0x1000))  # M-mode custom3
-    + list(range(0x5C0, 0x600))  # S-mode custom1
-    + list(range(0x6C0, 0x700))  # H-mode custom1
-    + list(range(0x9C0, 0xA00))  # S-mode custom2
-    + list(range(0xAC0, 0xB00))  # H-mode custom2
-    + list(range(0xDC0, 0xE00))  # S-mode custom3
-    + list(range(0xEC0, 0xF00))  # H-mode custom3
-    + list(range(0x800, 0x900))  # user custom2
-    + list(range(0xCC0, 0xD00))  # user custom3
+# U-mode can only access CSRs with privilege bits[9:8]=00 (user-level):
+#   0x000-0x0FF: user standard (all accessible)
+#   0x400-0x4FF: user standard (performance counter shadows)
+#   0x800-0x8FF: user custom2 — skip: undefined behaviour
+#   0xC00-0xCBF: user read-only counters (cycle, time, instret, hpmcounterN)
+#   0xCC0-0xCFF: user custom3 — skip
+#
+# All S/H/M CSRs (priv bits != 00) raise illegal-instruction from U-mode.
+# Those are swept by SsstrictSm/S so we do not duplicate them here.
+
+_U_CSR_SKIP: frozenset[int] = frozenset(
+    list(range(0x100, 0x1000))  # everything above 0x0FF except user std1 and counters
+    # Re-add the user-accessible ranges (we'll compute accessible positively below)
+    # Actually use an exclusion approach: skip everything NOT user-privilege
+)
+
+# Build the accessible set positively: only CSRs with bits[9:8]=00
+_U_CSR_ACCESSIBLE: frozenset[int] = frozenset(
+    a
+    for a in range(4096)
+    if ((a >> 8) & 3) == 0  # user-privilege level
+    and a not in range(0x800, 0x900)  # skip user custom2
+    and a not in range(0xCC0, 0xD00)  # skip user custom3
 )
 
 
-# ── Encoding helpers ──────────────────────────────────────────────────────
+# ── Encoding helpers (shared logic identical to SsstrictSm) ───────────────
 
 
 def _gen_encodings(
@@ -120,76 +119,96 @@ def _emit_raw_words(
     lines.append("")
 
 
-# ── CSR sweep ─────────────────────────────────────────────────────────────
+# ── U-mode CSR sweep ──────────────────────────────────────────────────────
 
 
-def _generate_csr_tests_m(test_data: TestData) -> list[str]:
-    """cp_csrr / cp_csrw_corners / cp_csrcs.
+def _generate_csr_tests_u(test_data: TestData) -> list[str]:
+    """cp_csrr / cp_csrw_corners / cp_csrcs from U-mode.
 
-    Registers r1, r2, r3 are always chosen from _SAFE_REGS (x7..x31).
-    This prevents the sweep from corrupting framework-reserved registers
-    (sp, gp, tp) or the fast handler's scratch registers (t0, t1).
+    Switches to U-mode, sweeps all user-accessible CSRs, then returns
+    to M-mode via ecall.
     """
-    covergroup = "SsstrictSm_mcsr_cg"
+    covergroup = "SsstrictU_ucsr_cg"
     lines: list[str] = []
 
     lines.append(
         comment_banner(
-            "cp_csrr / cp_csrw_corners / cp_csrcs (M-mode)",
-            "Read, write 0s/1s, set, clear every non-skipped CSR from M-mode.\n"
-            "All scratch registers chosen from x7-x31 only to preserve\n"
-            "framework-reserved regs (x2/sp, x3/gp, x4/tp) and fast-handler\n"
-            "scratch regs (x5/t0, x6/t1).",
+            "cp_csrr / cp_csrw_corners / cp_csrcs (U-mode)",
+            "Read, write 0s/1s, set, clear every user-accessible CSR from U-mode.\n"
+            "S/H/M CSRs all raise illegal-instruction from U-mode.\n"
+            "Custom and reserved CSR ranges skipped.",
         )
     )
 
+    # Switch to U-mode
     lines.extend(
         [
             "",
-            "# Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
-            "\tli t2, 0x8F",  # t2=x7, safe
-            "\tcsrw pmpcfg0, t2",
+            "# Switch to user mode for CSR sweep",
+            "\tRVTEST_GOTO_LOWER_MODE Umode",
             "",
         ]
     )
 
-    for idx, csr_addr in enumerate(a for a in range(4096) if a not in _M_CSR_SKIP):
-        if idx > 0 and idx % 10 == 0:
+    # CSR_BATCH_SIZE CSRs per U-mode session. At each boundary we return to
+    # M-mode and re-enter U-mode so that every split file is self-contained.
+    CSR_BATCH_SIZE = 50
+
+    all_csrs = sorted(_U_CSR_ACCESSIBLE)
+    for idx, csr_addr in enumerate(all_csrs):
+        if idx > 0 and idx % CSR_BATCH_SIZE == 0:
+            lines.extend(
+                [
+                    "\tRVTEST_GOTO_LOWER_MODE Mmode",
+                    "",  # blank line — splitter cuts here
+                    "\tRVTEST_GOTO_LOWER_MODE Umode",
+                ]
+            )
+        elif idx > 0 and idx % 10 == 0:
             lines.append("")
 
-        # Pick three distinct safe registers
         r1, r2, r3 = sample(_SAFE_REGS, 3)
-
         ih = hex(csr_addr)
         lines.extend(
             [
                 f"# CSR {ih}",
                 f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
                 f"\tcsrr x{r1}, {ih}",  # save CSR value
-                f"\tli x{r2}, -1",  # all-ones value (r2 safe to hold -1)
+                f"\tli x{r2}, -1",  # all-ones
                 f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_corners', covergroup)}",
-                f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
+                f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones (illegal for RO csrs)
                 f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_corners', covergroup)}",
                 f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
                 f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
                 f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
                 f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
                 f"\tcsrrc x{r3}, {ih}, x{r2}",  # clear all bits
-                f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore (r1 still holds saved value
-                # because fast handler doesn't touch x7+)
+                f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore
             ]
         )
 
-    lines.append("")
+    # Final return to M-mode after last batch
+    lines.extend(
+        [
+            "",
+            "# Return to machine mode after U-mode CSR sweep",
+            "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "",
+        ]
+    )
+
     return lines
 
 
-# ── Reserved 32-bit encodings ─────────────────────────────────────────────
+# ── Illegal instruction sweep (M-mode, identical templates to SsstrictSm) ─
 
 
 def _generate_illegal_instr(test_data: TestData) -> list[str]:
-    """cp_illegal_instruction — reserved/illegal 32-bit encoding sweep."""
-    covergroup = "SsstrictSm_instr_cg"
+    """cp_illegal_instruction — reserved/illegal 32-bit encoding sweep.
+
+    Run from M-mode so the fast handler can advance mepc correctly.
+    """
+    covergroup = "SsstrictU_instr_cg"
     coverpoint = "cp_illegal_instruction"
     lines: list[str] = []
 
@@ -197,6 +216,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         comment_banner(
             coverpoint,
             "Exhaustive reserved/illegal 32-bit encoding sweep from M-mode.\n"
+            "Illegal encodings trap regardless of privilege level.\n"
             "Vector opcodes op21/op29 excluded — covered in SsstrictV.",
         )
     )
@@ -270,10 +290,8 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
             "00X10000001000000000000001110011",  # mret/sret
             "00000000000000000000000001110011",  # ecall
             "00010000010100000000000001110011",  # wfi
-            # Valid privileged instructions that execute without trapping
-            # on implementations with Sv39/Svinval/H-extension:
-            "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA (any rs1,rs2)
-            "0001011XXXXXXXXXX000000001110011",  # SINVAL.VMA (Svinval)
+            "0001001XXXXXXXXXX000000001110011",  # SFENCE.VMA
+            "0001011XXXXXXXXXX000000001110011",  # SINVAL.VMA
             "00011000000000000000000001110011",  # SFENCE.W.INVAL
             "00011000000100000000000001110011",  # SFENCE.INVAL.IR
             "0010001XXXXXXXXXX000000001110011",  # HFENCE.BVMA
@@ -283,10 +301,16 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
         ],
     )
     _emit_raw_words(
-        lines, "cp_privileged_rd", "00000000000000000000EEEEE1110011", exclusion=["00000000000000000000000001110011"]
+        lines,
+        "cp_privileged_rd",
+        "00000000000000000000EEEEE1110011",
+        exclusion=["00000000000000000000000001110011"],
     )
     _emit_raw_words(
-        lines, "cp_privileged_rs2", "000000000000EEEEE000000001110011", exclusion=["00000000000000000000000001110011"]
+        lines,
+        "cp_privileged_rs2",
+        "000000000000EEEEE000000001110011",
+        exclusion=["00000000000000000000000001110011"],
     )
     _emit_raw_words(lines, "cp_reserved_fma", "RRRRRRRRRRRRRRRRREEERRRRR100EE11")
     _emit_raw_words(lines, "cp_reserved_fence_fm", "EEEE00000000RRRRR000RRRRR0001111")
@@ -324,7 +348,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
 
 def _generate_compressed_instr(test_data: TestData) -> list[str]:
     """cp_illegal_compressed_instruction — all 16-bit quadrant sweeps."""
-    covergroup = "SsstrictSm_comp_instr_cg"
+    covergroup = "SsstrictU_comp_instr_cg"
     coverpoint = "cp_illegal_compressed_instruction"
     lines: list[str] = []
 
@@ -340,14 +364,13 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
         exclusion=[
             "X01XXXXXXXXXXX00",  # c.fld/c.fsd — bad address
             "X10XXXXXXXXXXX00",  # c.lw/c.sw — bad address
-            "011XXXXXXXXXXX00",  # c.ld (RV64) — loads from x8-x15+offset; base holds garbage → load fault
-            "111XXXXXXXXXXX00",  # c.sd (RV64) — stores to x8-x15+offset; same → store fault
-            # Zcb load/store ops — all use x8-x15 as base (garbage after INIT_REGS → fault)
+            "011XXXXXXXXXXX00",  # c.ld (RV64) — base holds garbage → load fault
+            "111XXXXXXXXXXX00",  # c.sd (RV64) — same → store fault
             "10000XXXXXXXXX00",  # c.lbu
             "100010XXXXXXXX00",  # c.lh
             "100011XXX0XXXX00",  # c.lhu
-            "10010XXXXXXXXX00",  # c.sb: bits[15:11]=10010, bit10=imm[5] varies
-            "10011XXXXXXXXX00",  # c.sh: bits[15:11]=10011, bit10 varies
+            "10010XXXXXXXXX00",  # c.sb
+            "10011XXXXXXXXX00",  # c.sh
         ],
     )
     _emit_raw_words(
@@ -359,25 +382,20 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
             "101XXXXXXXXXXX01",  # c.j — random jump
             "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
             "001XXXXXXXXXXX01",  # c.jal (RV32 only) / reserved
-            # c.li rd, imm — legal instruction writing imm to rd.
-            # For rd=x1-x6 (critical regs), corrupts framework state.
-            "010X00001XXXXX01",  # c.li x1 (ra)
-            "010X00010XXXXX01",  # c.li x2 (sp) — FATAL: sp = small_imm
-            "010X00011XXXXX01",  # c.li x3 (gp)
-            "010X00100XXXXX01",  # c.li x4 (tp)
-            "010X00101XXXXX01",  # c.li x5 (t0, fast handler)
-            "010X00110XXXXX01",  # c.li x6 (t1, fast handler)
-            # c.addi16sp (funct3=011, rd=x2) — modifies sp by offset
+            "010X00001XXXXX01",  # c.li x1
+            "010X00010XXXXX01",  # c.li x2 (sp) — FATAL
+            "010X00011XXXXX01",  # c.li x3
+            "010X00100XXXXX01",  # c.li x4
+            "010X00101XXXXX01",  # c.li x5
+            "010X00110XXXXX01",  # c.li x6
             "011X00010XXXXX01",  # c.addi16sp
-            # c.lui (funct3=011, rd=x1-x6) — loads shifted imm to critical reg
             "011X00001XXXXX01",  # c.lui x1
             "011X00011XXXXX01",  # c.lui x3
             "011X00100XXXXX01",  # c.lui x4
             "011X00101XXXXX01",  # c.lui x5
             "011X00110XXXXX01",  # c.lui x6
-            # c.addi (funct3=000, rd=x1-x6) — modifies critical reg
             "000X00001XXXXX01",  # c.addi x1
-            "000X00010XXXXX01",  # c.addi x2 (sp += nzimm)
+            "000X00010XXXXX01",  # c.addi x2
             "000X00011XXXXX01",  # c.addi x3
             "000X00100XXXXX01",  # c.addi x4
             "000X00101XXXXX01",  # c.addi x5
@@ -395,74 +413,39 @@ def _generate_compressed_instr(test_data: TestData) -> list[str]:
             "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — bad address
             "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — bad address
             "1001000000000010",  # c.ebreak
-            "011XXXXXXXXXXX10",  # c.ldsp — legal RV64 load via sp; corrupts regs
-            "111XXXXXXXXXXX10",  # c.sdsp — legal RV64 store via sp; store fault
-            # c.add rd,rs2 with rd = critical framework register:
-            # All regs are 0xF0E1D2C3B4A59687 after RVTEST_INIT_REGS,
-            # adding that to sp/gp/etc corrupts it and breaks the epilog.
-            "100100001XXXXX10",  # c.add x1 (ra)
-            "100100010XXXXX10",  # c.add x2 (sp / DEFAULT_SIG_REG) — FATAL
-            "100100011XXXXX10",  # c.add x3 (gp / DEFAULT_DATA_REG)
-            "100100100XXXXX10",  # c.add x4 (tp / DEFAULT_TEMP_REG)
-            "100100101XXXXX10",  # c.add x5 (t0 / DEFAULT_LINK_REG, fast handler)
-            "100100110XXXXX10",  # c.add x6 (t1, fast handler scratch)
-            # c.mv rd, rs2 (legal move) with rd = critical register:
-            # After RVTEST_INIT_REGS, rs2 holds garbage values.
-            # c.mv x2, rs2: sp = garbage -> epilog faults.
-            "100000001XXXXX10",  # c.mv x1 (ra)
+            "011XXXXXXXXXXX10",  # c.ldsp — legal load via sp
+            "111XXXXXXXXXXX10",  # c.sdsp — store fault
+            "100100001XXXXX10",  # c.add x1
+            "100100010XXXXX10",  # c.add x2 (sp) — FATAL
+            "100100011XXXXX10",  # c.add x3
+            "100100100XXXXX10",  # c.add x4
+            "100100101XXXXX10",  # c.add x5
+            "100100110XXXXX10",  # c.add x6
+            "100000001XXXXX10",  # c.mv x1
             "100000010XXXXX10",  # c.mv x2 (sp) — FATAL
-            "100000011XXXXX10",  # c.mv x3 (gp)
-            "100000100XXXXX10",  # c.mv x4 (tp)
-            "100000101XXXXX10",  # c.mv x5 (t0, fast handler)
-            "100000110XXXXX10",  # c.mv x6 (t1, fast handler)
-            # c.slli rd,shamt where rd = critical framework register:
-            # c.slli x2 shifts sp left by shamt → sp becomes garbage.
-            "000X00001XXXXX10",  # c.slli x1 (ra)
-            "000X00010XXXXX10",  # c.slli x2 (sp) — FATAL, shifts stack pointer
-            "000X00011XXXXX10",  # c.slli x3 (gp)
-            "000X00100XXXXX10",  # c.slli x4 (tp)
-            "000X00101XXXXX10",  # c.slli x5 (t0, fast handler scratch)
-            "000X00110XXXXX10",  # c.slli x6 (t1, fast handler scratch)
+            "100000011XXXXX10",  # c.mv x3
+            "100000100XXXXX10",  # c.mv x4
+            "100000101XXXXX10",  # c.mv x5
+            "100000110XXXXX10",  # c.mv x6
+            "000X00001XXXXX10",  # c.slli x1
+            "000X00010XXXXX10",  # c.slli x2 (sp) — FATAL
+            "000X00011XXXXX10",  # c.slli x3
+            "000X00100XXXXX10",  # c.slli x4
+            "000X00101XXXXX10",  # c.slli x5
+            "000X00110XXXXX10",  # c.slli x6
         ],
     )
 
     lines.append("")
-
     return lines
 
 
-# ── Reserved FP rounding modes ─────────────────────────────────────────────
-
-
-def _generate_reserved_frm(test_data: TestData) -> list[str]:
-    """cp_reserved_frm — FRM 0-7 with FADD.S dynamic rounding."""
-    covergroup = "SsstrictSm_instr_cg"
-    coverpoint = "cp_reserved_frm"
-    lines: list[str] = []
-
-    lines.append(comment_banner(coverpoint, "FRM=0-4 legal; FRM=5,6 reserved; FRM=7+DYN raises invalid FP exception."))
-
-    for frm in range(8):
-        lines.extend(
-            [
-                "",
-                f"// FRM = {frm}",
-                f"\t{test_data.add_testcase(f'frm_{frm}', coverpoint, covergroup)}",
-                f"\tcsrwi frm, {frm}",
-                "\tfadd.s f0, f1, f2",
-            ]
-        )
-
-    lines.append("")
-    return lines
-
-
-# ── misa extension disable ─────────────────────────────────────────────────
+# ── misa extension disable ────────────────────────────────────────────────
 
 
 def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
     """cp_misa_ext_disable — disable each misa bit, run representative instruction."""
-    covergroup = "SsstrictSm_mcsr_cg"
+    covergroup = "SsstrictU_ucsr_cg"
     coverpoint = "cp_misa_ext_disable"
     lines: list[str] = []
 
@@ -471,20 +454,21 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
             coverpoint,
             "Disable each MUTABLE_MISA_* bit, execute representative instruction\n"
             "(should raise illegal-instruction), then re-enable.\n"
-            "B=Zba+Zbb+Zbs. Disabling B should make Zba/Zbb/Zbs instructions trap.",
+            "Run from M-mode so the fast handler advances mepc correctly.",
         )
     )
 
     for ext, bit, instr in [
         ("A", 0, "amoswap.w x0, x0, (x0)"),
         ("C", 2, "c.addi x8, 0"),
-        ("D", 3, ".word 0x02008053"),
+        ("D", 3, "fadd.d f0, f1, f2"),
         ("F", 5, "fadd.s f0, f1, f2"),
-        ("M", 12, "mul x7, x8, x9"),  # use safe regs
+        ("M", 12, "mul x7, x8, x9"),
     ]:
         lines.extend(
             [
-                f"\n#ifdef MUTABLE_MISA_{ext}",
+                "",
+                f"#ifdef MUTABLE_MISA_{ext}",
                 f"\t{test_data.add_testcase(f'misa_{ext}', coverpoint, covergroup)}",
                 f"\tli t2, {1 << bit:#010x}",  # t2=x7, safe
                 "\tcsrc misa, t2",
@@ -511,7 +495,6 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
             f"\t{test_data.add_testcase('misa_B_zbs', coverpoint, covergroup)}",
             "\tbext x8, x9, x10",
             "\tnop",
-            # clmul/Zbc removed: Zbc is NOT a sub-extension of B, has no misa bit.
             "\tcsrs misa, t2",
             "#endif",
             "",
@@ -519,7 +502,7 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
             f"\t{test_data.add_testcase('misa_I_upperreg', coverpoint, covergroup)}",
             "\tli t2, 0x100",
             "\tcsrc misa, t2",
-            "\t.word 0x01080833   // add x16,x16,x16 — traps when E active",
+            "\t.word 0x01080833",  # add x16,x16,x16 — traps when E active
             "\tnop",
             "\tcsrs misa, t2",
             "#endif",
@@ -530,17 +513,16 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
     return lines
 
 
-# ── Entry point ────────────────────────────────────────────────────────────
+# ── Entry point ───────────────────────────────────────────────────────────
 
 
 @add_priv_test_generator(
-    "SsstrictSm",
-    required_extensions=["Sm", "Zicsr"],
+    "SsstrictU",
+    required_extensions=["Sm", "U", "Zicsr"],
     march_extensions=[
         # Zcf excluded — RV32-only.
         # Vector excluded — covered by SsstrictV.
-        # Zbc/Zacas/Zcb excluded: not needed as assembler mnemonics,
-        # not in non-max configs, not supported by GCC < 14.
+        # Zbc/Zacas/Zcb excluded: not in non-max configs, not supported by GCC < 14.
         "I",
         "M",
         "A",
@@ -555,15 +537,12 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
         "Zcd",
     ],
 )
-def make_ssstrictsm(test_data: TestData) -> list[str]:
-    """SsstrictSm — machine-mode strict compliance tests."""
+def make_ssstrictu(test_data: TestData) -> list[str]:
+    """SsstrictU — user-mode strict compliance tests."""
     seed(42)
     lines: list[str] = []
-    lines.extend(_generate_csr_tests_m(test_data))
+    lines.extend(_generate_csr_tests_u(test_data))
     lines.extend(_generate_illegal_instr(test_data))
     lines.extend(_generate_compressed_instr(test_data))
-    # _generate_reserved_frm removed: FRM=5/6/7+fadd.s behavior is
-    # implementation-defined (spec §11.2), causing cross-config signature
-    # mismatches. The CSR sweep already covers frm read/write via CSR 0x002.
     lines.extend(_generate_misa_ext_disable(test_data))
     return lines

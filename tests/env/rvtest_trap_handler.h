@@ -186,7 +186,11 @@
   #ifndef ZIFENCEI_SUPPORTED
     #define RVMODEL_FENCEI nop                                // make sure ifetches get new code
   #else
-    #define RVMODEL_FENCEI fence.i
+    #define RVMODEL_FENCEI \
+    .option push           \
+    .option arch, +zicsr   \
+    fence.i                \
+    .option pop
   #endif
 #endif
 

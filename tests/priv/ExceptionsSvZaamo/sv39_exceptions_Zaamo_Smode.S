@@ -24,7 +24,7 @@
 // 9-36. Setup valid and invalid PTEs at level 2 with RWX permissions
 //        Then, in S-Mode walk through medeleg and execute amoadd.w. Expected: 14 Store/AMO page faults
 //
-// Total Expected Faults :: 21 (+1 while transitioning to higher priv-mode)
+// Total Expected Faults :: 21 (+2 while transitioning to higher priv-mode)
 // --------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
@@ -35,7 +35,7 @@
 
 #define TEST_FILE "sv39_exceptions_Zaamo_Smode.S"
 #define SIGUPD_COUNT 45
-#define TRAP_SIGUPD_COUNT 100
+#define TRAP_SIGUPD_COUNT 110
 #define rvtest_mtrap_routine
 #define rvtest_strap_routine
 #define RVTEST_PRIV_TEST

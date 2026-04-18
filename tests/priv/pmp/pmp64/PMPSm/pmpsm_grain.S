@@ -353,7 +353,6 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: cp_pmp_grain\""
@@ -375,7 +374,7 @@ test_16_str: .string "\"test: 16; cp: cp_pmp_grain\""
 test_17_str: .string "\"test: 17; cp: cp_pmp_grain\""
 test_18_str: .string "\"test: 18; cp: cp_pmp_grain\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

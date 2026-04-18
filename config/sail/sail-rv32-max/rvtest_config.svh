@@ -23,7 +23,7 @@
 // Base addresses specific for PMP
 `define RAM_BASE_ADDR           32'h80000000
 `define DATA_REGION_START       32'h80004000
-`define LARGEST_PROGRAM         32'h00002000
+`define LARGEST_PROGRAM         32'h00001000
 
 // Define relevant addresses
 `define RVMODEL_ACCESS_FAULT_ADDRESS 64'h00000000

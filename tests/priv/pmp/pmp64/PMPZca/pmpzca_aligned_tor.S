@@ -133,7 +133,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpzca_aligned_tor_region_execute\""
 
-.align 13
+.align 12
 TEST_FOR_EXECUTION_1:
     jalr x0, x1, 0                                              // Uncompressed return inside the first region
     .rept (((1<<(RVMODEL_PMP_GRAIN+2)) - 4) / 2)

@@ -371,7 +371,7 @@ test_14_str: .string "\"test: 14; cp: pmpm_aligned_lw_address+4\""
 test_15_str: .string "\"test: 15; cp: pmpm_aligned_lw_address+g-4\""
 test_16_str: .string "\"test: 16; cp: pmpm_aligned_lw_address+g\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

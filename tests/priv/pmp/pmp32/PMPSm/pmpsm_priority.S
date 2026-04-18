@@ -185,7 +185,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: pmpm_priority_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_lw\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

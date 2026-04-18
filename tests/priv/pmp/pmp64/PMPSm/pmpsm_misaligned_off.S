@@ -206,7 +206,6 @@ main:
 RVTEST_CODE_END
 
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
 test_1_str:  .string "\"test: 1;  cp: pmpm_misaligned_napot_sh_address-1\""
@@ -227,7 +226,7 @@ test_14_str: .string "\"test: 14; cp: pmpm_misaligned_napot_lwu_address+g-1\""
 test_15_str: .string "\"test: 15; cp: pmpm_misaligned_napot_sd_address+g-1\""
 test_16_str: .string "\"test: 16; cp: pmpm_misaligned_napot_ld_address+g-1\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

@@ -193,7 +193,7 @@ test_8_str:  .string "\"test: 8;  cp: pmpm_misaligned_na4_lh_address+g-1\""
 test_9_str:  .string "\"test: 9;  cp: pmpm_misaligned_na4_lhu_address+g-1\""
 test_10_str: .string "\"test: 10; cp: pmpm_misaligned_na4_lw_address+g-1\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

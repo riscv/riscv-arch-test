@@ -94,14 +94,13 @@ main:
 
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
-.align 4
 
 // Test case strings for reporting
-canary_mismatch: .string "Testcase signature canary mismatch!"
+
 test_1_str: .string "\"test: 1; cp: cp_pmp_grain_check_1\""
 test_2_str: .string "\"test: 1; cp: cp_pmp_grain_check_2\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

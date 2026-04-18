@@ -230,8 +230,6 @@ main:
 
     VERIFICATION_RWX    TEST_FOR_EXECUTION,test_6
 
-
-
 RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 .align 4
@@ -246,8 +244,7 @@ test_4_str: .string "\"test: 4; cp: cp_cfg_A_na4_lw_address-4\""
 test_5_str: .string "\"test: 5; cp: cp_cfg_A_na4_sw_address+4\""
 test_6_str: .string "\"test: 6; cp: cp_cfg_A_na4_lw_address+4\""
 
-
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

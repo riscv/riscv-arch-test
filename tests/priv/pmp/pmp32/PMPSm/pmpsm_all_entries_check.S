@@ -32,7 +32,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "pmpsm_all_entries_check-01.S"
+#define TEST_FILE "pmpsm_all_entries_check.S"
 #define SIGUPD_COUNT 120
 
 // Enable trap handler
@@ -669,7 +669,7 @@ RVTEST_DATA_BEGIN
 test_1_str: .string "\"test: 1; cp: cp_pmpm64_sw\""
 test_2_str: .string "\"test: 2; cp: cp_pmpm64_lw\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

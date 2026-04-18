@@ -342,7 +342,7 @@ test_8_str:  .string "\"test: 8;  cp: cp_cfg_A_tor_lw_address+4\""
 test_9_str:  .string "\"test: 9;  cp: cp_cfg_A_tor_lw_address+g-4\""
 test_10_str: .string "\"test: 10; cp: cp_cfg_A_tor_lw_address+g\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

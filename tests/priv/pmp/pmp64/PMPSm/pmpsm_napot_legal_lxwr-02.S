@@ -329,7 +329,7 @@ test_17_str: .string "\"test: 17; cp: cp_cfg_A_napot_lw_address+4\""
 test_18_str: .string "\"test: 18; cp: cp_cfg_A_napot_lw_address+g-4\""
 test_19_str: .string "\"test: 19; cp: cp_cfg_A_napot_lw_address+g\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

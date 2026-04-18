@@ -206,7 +206,7 @@ test_6_str: .string "\"test: 6; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr0+4
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1-4\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_A_tor_bot_load_access_at_pmpaddr1+4\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

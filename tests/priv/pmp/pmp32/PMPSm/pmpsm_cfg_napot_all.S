@@ -104,9 +104,11 @@ main:
 #if RVMODEL_PMP_GRAIN != 0
     #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
     #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+    #define SIZE                (1<<(RVMODEL_PMP_GRAIN+2))
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
+    #define SIZE                (1<<(RVMODEL_PMP_GRAIN+3))
 #endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -323,10 +325,10 @@ test_1_str: .string "\"test: 1; cp: pmpm_cfg_napot_all_lw_address\""
 test_2_str: .string "\"test: 2; cp: pmpm_cfg_napot_all_address-4\""
 test_3_str: .string "\"test: 3; cp: pmpm_cfg_napot_all_address+4\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
-    .rept (1<<(RVMODEL_PMP_GRAIN+2))
+    .rept (SIZE/4)
     nop
     .endr
 

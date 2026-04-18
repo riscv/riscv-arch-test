@@ -278,7 +278,7 @@ test_3_str: .string "\"test: 3; cp: pmpzca_legal_lxwr_c.jalr\""
 test_4_str: .string "\"test: 4; cp: pmpzca_legal_lxwr_sd\""
 test_5_str: .string "\"test: 5; cp: pmpzca_legal_lxwr_ld\""
 
-.align 13
+.align 12
 TEST_FOR_EXECUTION:
     .rept (1<<RVMODEL_PMP_GRAIN+2)
     c.nop

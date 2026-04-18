@@ -123,8 +123,13 @@ main:
 
 #define PMPADDRESS_TOP_GLOBAL       -1                                              // All memory region
 #define PMPADDRESS          TEST_FOR_EXECUTION                              // Test section address
-#define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)-1)
-#define PMP_MASK            ~(1 << (RVMODEL_PMP_GRAIN - 1)-1)
+#if RVMODEL_PMP_GRAIN != 0
+    #define PMP_MASK            ~((1 << (RVMODEL_PMP_GRAIN - 1))-1)
+    #define PMP_REGION_SIZE     (1 << (RVMODEL_PMP_GRAIN - 1)) - 1
+#else
+    #define PMP_MASK            ~0
+    #define PMP_REGION_SIZE     0
+#endif
 
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
@@ -272,7 +277,7 @@ test_6_str: .string "\"test: 6; cp: pmpm_cfg_XWR_all_lh\""
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
 
-.align 10
+.align 12
 .align (RVMODEL_PMP_GRAIN+2)
 TEST_FOR_EXECUTION:
     .rept (1<<(RVMODEL_PMP_GRAIN+2))

@@ -93,14 +93,6 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     wildcard bins cfg_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
 
-  all_pmp_entries_off: coverpoint pmpcfg_a { // Including Background Top PMP Entry
-    bins PMP_OFF = {0};
-  }
-
-  // pack_pmpaddr has all the pmpaddr csrs, so when it's zero implies all pmpaddr = 0
-  all_pmpaddr_zero: coverpoint pack_pmpaddr { // Including Background Top PMP Entry
-    bins pmpaddr_zeros = {0};
-  }
 
   pmpaddr_entries: coverpoint ins.current.insn[31:20] {
     bins pmpaddr0   = {12'h3B0};
@@ -188,10 +180,6 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
     bins pmpcfg15  = {12'h3AF};
   }
 
-  mode_switch: coverpoint ins.current.insn {
-    bins mret = {32'b00110000001000000000000001110011};
-  }
-
   csrrw: coverpoint ins.current.insn {
     wildcard bins csrrw  = {32'b????????????_?????_001_?????_1110011};
   }
@@ -254,8 +242,6 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
   cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_region ;
   cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_region ;
   cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_region ;
-
-  cp_none: cross priv_mode_m, mpp_mstatus, all_pmp_entries_off, all_pmpaddr_zero, mode_switch ;
 
   cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;

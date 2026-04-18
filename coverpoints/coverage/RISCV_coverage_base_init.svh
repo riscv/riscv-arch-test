@@ -294,18 +294,6 @@
         `cover_info("//      Vf64 - Enabled");
         `include "Vf64_coverage_init.svh"
     `endif
-    `ifdef COVER_VFCUSTOM16
-        `cover_info("//      VfCustom16 - Enabled");
-        `include "VfCustom16_coverage_init.svh"
-    `endif
-    `ifdef COVER_VFCUSTOM32
-        `cover_info("//      VfCustom32 - Enabled");
-        `include "VfCustom32_coverage_init.svh"
-    `endif
-    `ifdef COVER_VFCUSTOM64
-        `cover_info("//      VfCustom64 - Enabled");
-        `include "VfCustom64_coverage_init.svh"
-    `endif
     `ifdef COVER_VLS16
         `cover_info("//      Vls16 - Enabled");
         `include "Vls16_coverage_init.svh"

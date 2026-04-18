@@ -8,7 +8,7 @@
 
 """Zalrsc extension exception test generator."""
 
-from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -116,6 +116,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint),
         "",
         f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
@@ -131,6 +132,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         "nop",
         write_sigupd(check_reg, test_data),
         "#endif",
+        "#endif",
         "",
     ]
 
@@ -144,6 +146,7 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
     addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint),
         "",
         f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
@@ -160,6 +163,7 @@ def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
         "nop",
         write_sigupd(check_reg, test_data),
         "#endif",
+        "#endif",
         "",
     ]
 
@@ -174,6 +178,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     # sc.w at illegal address does not trigger exception in QEMU
     # QEMU issue: https://gitlab.com/qemu-project/qemu/-/issues/3323
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint),
         "",
         f"LI(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
@@ -201,6 +206,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         write_sigupd(temp_reg, test_data),
         write_sigupd(rd_reg, test_data),
         "#endif",
+        "#endif",
         "",
     ]
 
@@ -213,7 +219,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_misaligned_priority"
     addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4)
 
-    lines = [comment_banner(coverpoint)]
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint)]
 
     lines.extend(
         [
@@ -243,6 +249,7 @@ def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
             write_sigupd(temp_reg, test_data),
             write_sigupd(rd_reg, test_data),
             "#endif",
+            "#endif",
             "",
         ]
     )
@@ -255,7 +262,6 @@ def make_exceptionszalrsc(test_data: TestData) -> list[str]:
     """Generate tests for ExceptionsZalrsc coverpoints"""
     lines = []
 
-    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))
     lines.extend(_generate_load_misaligned_priority_tests(test_data))

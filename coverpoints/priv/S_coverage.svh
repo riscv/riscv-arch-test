@@ -80,6 +80,16 @@ covergroup S_scause_cg with function sample(ins_t ins);
     // main coverpoints
     cp_scause_write_exception: cross priv_mode_s, csrrw, scause, scause_exception_values, scause_exception; // CSR write of scause in S mode with interesting values
     cp_scause_write_interrupt: cross priv_mode_s, csrrw, scause, scause_interrupt_values, scause_interrupt; // CSR write of scause in S mode with interesting values
+
+    `ifdef SS1P13_SUPPORTED
+
+    scause_ss1p13_values: coverpoint ins.current.rs1_val[XLEN-2:0] {
+        bins b_18_software_check = {18};
+        bins b_19_hardware_error = {19};
+    }
+    cp_ss1p13_scause: cross priv_mode_s, csrrw, scause, scause_ss1p13_values, scause_exception;
+    `endif
+
 endgroup
 
 
@@ -103,6 +113,24 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     }
     // main coverpoints
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
+
+    `ifdef SS1P13_SUPPORTED
+
+    sstatus_uxl_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "uxl") {
+        bins uxl_1 = {2'b01};
+        `ifdef XLEN64
+        bins uxl_2 = {2'b10};
+        `endif
+    }
+
+    uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
+        bins attempt_1 = {2'b01};
+        bins attempt_2 = {2'b10};
+    }
+
+    cp_sxlen_ge_uxlen: cross priv_mode_s, csrrs, sstatus, uxl_write_attempt, sstatus_uxl_after;
+
+    `endif // SS1P13_SUPPORTED
 
 endgroup
 

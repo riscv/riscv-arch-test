@@ -42,7 +42,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39]
 # MARCH: rv64i_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_exceptions_mprv_Mmode.S"
@@ -140,7 +139,7 @@ main:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
-  // MPRV does not affect instruction fetches. Setting up an identity mapped PTE with V=0. If MPRV incorrectly 
+  // MPRV does not affect instruction fetches. Setting up an identity mapped PTE with V=0. If MPRV incorrectly
   // affects fetches, it will raise a fault due to PTE.V=0.
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), 0x80000000, LEVEL2)
   sfence.vma

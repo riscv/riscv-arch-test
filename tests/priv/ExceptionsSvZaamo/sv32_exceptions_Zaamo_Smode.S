@@ -30,7 +30,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, Zaamo]
 # MARCH: rv32i_zicsr_zaamo
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_exceptions_Zaamo_Smode.S"

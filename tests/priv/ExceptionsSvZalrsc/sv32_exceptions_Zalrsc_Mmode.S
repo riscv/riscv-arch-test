@@ -39,7 +39,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv32, Zalrsc]
 # MARCH: rv32i_zicsr_zalrsc
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv32_exceptions_Zalrsc_Mmode.S"

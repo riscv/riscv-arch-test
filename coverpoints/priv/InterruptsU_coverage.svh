@@ -28,10 +28,6 @@ covergroup InterruptsU_cg with function sample(ins_t ins);
     mstatus_tw_one: coverpoint ins.current.csr[12'h300][21] {
         bins one = {1};  // Only TW=1
     }
-    mideleg_ones_zeros: coverpoint ins.current.csr[12'h303] {
-        wildcard bins ones  = {16'b????1???1???1???}; //  ones in every field that is not tied to zero
-        wildcard bins zeros = {16'b????0???0???0???}; // zeros in every field that is not tied to zero
-    }
     mie_msie_one: coverpoint ins.current.csr[12'h304][3] {
         bins one = {1};
     }

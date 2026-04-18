@@ -57,12 +57,13 @@ RVTEST_BEGIN
     // Execution Access Check
     LA (a4, \ADDRESS)
     LA(x1, 1f)                          // Store the return Address in x1
+    \TEST_CASE\()_3:
     jalr ra, 0(a4)
     nop
     nop
 1:
     nop
-    nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_3, test_3_str)                 // Signature update
 
     LI(a4, NOP)                                              // Value to write (NOP)
     // Store Access Check
@@ -140,6 +141,7 @@ RVTEST_DATA_BEGIN
 // Test case strings for reporting
 test_1_str: .string "\"test: 1; cp: pmpm_priority_off_sw\""
 test_2_str: .string "\"test: 2; cp: pmpm_priority_off_lw\""
+test_3_str: .string "\"test: 2; cp: pmpm_priority_off_jalr\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)

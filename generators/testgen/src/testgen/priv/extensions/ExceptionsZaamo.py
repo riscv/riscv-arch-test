@@ -15,7 +15,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZaamo_cg", "cp_amo_address_misaligned"
-    addr_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(4, exclude_regs=[0])
+    addr_reg, limit_reg, dest_reg, source_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         comment_banner(
@@ -101,9 +101,10 @@ def _generate_amo_address_misaligned_tests(test_data: TestData) -> list[str]:
 
 def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZaamo_cg", "cp_amo_access_fault"
-    addr_reg, dest_reg, source_reg = test_data.int_regs.get_registers(3, exclude_regs=[0])
+    addr_reg, dest_reg, source_reg = test_data.int_regs.get_registers(3)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
     ]
 
@@ -163,6 +164,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         )
     lines.append("#endif")
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, dest_reg, source_reg])
     return lines
 

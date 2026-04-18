@@ -43,6 +43,8 @@ Names in column I can be a comma-separated list, pipe-separated, or bracketed
 list (e.g. "[add_op, sub_op]"). Blank rows are ignored.
 """
 
+from __future__ import annotations
+
 import argparse
 import csv
 import re

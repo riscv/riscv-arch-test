@@ -8,15 +8,17 @@
 
 """Instruction formatter registry with automatic discovery."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from importlib import import_module
 from pathlib import Path
 from typing import Literal
 
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.discovery import discover_and_import_modules
 from testgen.exceptions import MissingRegistryItemError
 
 # Type alias for instruction formatter functions
@@ -101,21 +103,8 @@ def get_instr_type_formatter(instr_type: str) -> InstructionFormatter:
     return _INSTRUCTION_CONFIGS[instr_type][0]
 
 
-def _discover_and_import_formatters() -> None:
-    """Auto-import all formatter modules in types/ to trigger decorator registration."""
-    types_dir = Path(__file__).parent / "types"
-
-    # Import all Python files in types/ directory
-    for module_file in types_dir.rglob("*.py"):
-        if not module_file.stem.startswith("_"):
-            relative_path = module_file.relative_to(types_dir)
-            module_parts = [*list(relative_path.parts[:-1]), relative_path.stem]
-            module_name = "testgen.formatters.types." + ".".join(module_parts)
-            import_module(module_name)
-
-
 # Discover and import formatters at module load
-_discover_and_import_formatters()
+discover_and_import_modules(Path(__file__).parent / "types", "testgen.formatters.types")
 
 
 def format_instruction(

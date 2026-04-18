@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# test_config.yaml — ACT4 Framework configuration for StarFive VisionFive 2
+#
+# Board:   StarFive VisionFive 2 (JH7110 SoC, quad-core RV64GC)
+# Issue:   https://github.com/riscv/riscv-arch-test/issues/1306
+#
+# IMPORTANT: include_priv_tests is set to false because OpenSBI owns M-mode
+# on this board at runtime. All ACT tests run in S-mode or U-mode.
+# M-mode tests (Sm, PMP, ExceptionsSm, InterruptsSm) are excluded.
+
+name: visionfive2-rv64gc
+compiler_exe: riscv64-unknown-elf-gcc     # executable on $PATH or full path
+objdump_exe: riscv64-unknown-elf-objdump  # optional but recommended for debug
+ref_model_exe: sail_riscv_sim             # RISC-V Sail reference model v0.10+
+udb_config: visionfive2-rv64gc.yaml       # UDB architecture configuration
+linker_script: link.ld                    # VisionFive 2 DRAM memory map
+dut_include_dir: .                        # directory containing rvmodel_macros.h
+include_priv_tests: false                 # M-mode owned by OpenSBI; exclude priv tests

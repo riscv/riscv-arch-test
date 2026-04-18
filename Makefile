@@ -22,7 +22,7 @@ WORKDIR     ?= work
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
 #  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
-EXTENSIONS  ?= Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64
+EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
 # Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments

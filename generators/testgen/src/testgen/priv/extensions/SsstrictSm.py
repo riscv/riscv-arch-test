@@ -110,7 +110,8 @@ def _emit_raw_words(
     """Emit .word/.hword directives with blank lines every BLANK_INTERVAL."""
     directive = ".word" if length == 32 else ".hword"
     encodings = _gen_encodings(template, length, exclusion)
-    lines.append(f"\n// {comment}  ({len(encodings)} encodings)")
+    lines.append("")
+    lines.append(f"# {comment}  ({len(encodings)} encodings)")
     for idx, enc in enumerate(encodings):
         if idx > 0 and idx % BLANK_INTERVAL == 0:
             lines.append("")
@@ -144,7 +145,7 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "// Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
+            "# Lock PMP region 0 (TOR RWX) so PMP CSR reads do not corrupt config",
             "\tli t2, 0x8F",  # t2=x7, safe
             "\tcsrw pmpcfg0, t2",
             "",
@@ -161,7 +162,7 @@ def _generate_csr_tests_m(test_data: TestData) -> list[str]:
         ih = hex(csr_addr)
         lines.extend(
             [
-                f"// CSR {ih}",
+                f"# CSR {ih}",
                 f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
                 f"\tcsrr x{r1}, {ih}",  # save CSR value
                 f"\tli x{r2}, -1",  # all-ones value (r2 safe to hold -1)
@@ -202,7 +203,7 @@ def _generate_illegal_instr(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            "// Enable FP (mstatus.FS=01)",
+            "# Enable FP (mstatus.FS=01)",
             "\tli t2, 1",  # t2=x7, safe
             "\tslli t3, t2, 13",  # t3=x28
             "\tcsrs mstatus, t3",
@@ -443,7 +444,8 @@ def _generate_reserved_frm(test_data: TestData) -> list[str]:
     for frm in range(8):
         lines.extend(
             [
-                f"\n// FRM = {frm}",
+                "",
+                f"// FRM = {frm}",
                 f"\t{test_data.add_testcase(f'frm_{frm}', coverpoint, covergroup)}",
                 f"\tcsrwi frm, {frm}",
                 "\tfadd.s f0, f1, f2",
@@ -495,7 +497,8 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "\n#ifdef MUTABLE_MISA_B",
+            "",
+            "#ifdef MUTABLE_MISA_B",
             "\tli t2, 0x2",
             "\tcsrc misa, t2",
             f"\t{test_data.add_testcase('misa_B_zba', coverpoint, covergroup)}",
@@ -510,7 +513,8 @@ def _generate_misa_ext_disable(test_data: TestData) -> list[str]:
             # clmul/Zbc removed: Zbc is NOT a sub-extension of B, has no misa bit.
             "\tcsrs misa, t2",
             "#endif",
-            "\n#ifdef MUTABLE_MISA_I",
+            "",
+            "#ifdef MUTABLE_MISA_I",
             f"\t{test_data.add_testcase('misa_I_upperreg', coverpoint, covergroup)}",
             "\tli t2, 0x100",
             "\tcsrc misa, t2",

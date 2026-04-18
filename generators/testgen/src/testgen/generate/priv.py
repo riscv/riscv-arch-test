@@ -108,6 +108,11 @@ _FAST_HANDLER_PREFIX: list[str] = [
     "ssstrict_test_body:",
     "\tLA(t0, trap_handler_fastuncompressedillegalinstr)",
     "\tCSRW(mtvec, t0)",
+    "// Disable all M-mode interrupts so timer/external interrupts cannot",
+    "// fire between test encodings and accidentally trigger Mtrampoline.",
+    "// Required when rvtest_strap_routine is defined (SsstrictS/U), which",
+    "// causes RVTEST_BEGIN to enable MIE as part of S-mode trap setup.",
+    "\tcsrw    mie, x0",
     "",
 ]
 

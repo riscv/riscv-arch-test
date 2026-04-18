@@ -11,11 +11,11 @@ readme = "../README.md"
 authors = [{ name = "Jordan Carlin", email = "jcarlin@hmc.edu" }]
 requires-python = ">=3.12"
 dependencies = [
-  "pydantic>=2.11.9",
+  "pydantic>=2.12.5",
   "pyjson5>=2.0.0",
-  "rich>=14.0.0",
+  "rich>=14.3.4",
   "ruamel-yaml>=0.18.16",
-  "typer>=0.20.0",
+  "typer>=0.23.1",
 ]
 
 [project.scripts]
@@ -23,5 +23,5 @@ act = "act.act:main"
 
 ##### BUILD #####
 [build-system]
-requires = ["uv_build>=0.9.4,<0.10.0"]
+requires = ["uv_build>=0.9.4,<0.12.0"]
 build-backend = "uv_build"

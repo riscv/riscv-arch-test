@@ -18,7 +18,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv48, Zicbop]
 # MARCH: rv64i_zicsr_zicbop
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv48_zicbop_Smode.S"

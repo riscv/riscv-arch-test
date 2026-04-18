@@ -1,1 +1,0 @@
-../rvtest_config.svh

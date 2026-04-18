@@ -89,7 +89,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, Sv39, Zicbom, NORUN]
 # MARCH: rv64i_zicsr_zicbom
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "sv39_zicbom_exceptions_Umode.S"

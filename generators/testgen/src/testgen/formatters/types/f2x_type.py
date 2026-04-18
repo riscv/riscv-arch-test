@@ -34,5 +34,8 @@ def format_f2x_type(
     test = [
         f"{instr_name} x{params.rd}, f{params.fs1}{frm} # perform operation",
     ]
-    check = [write_sigupd(params.rd, test_data)]
+    check = [
+        write_sigupd(params.rd, test_data, "int"),
+        write_sigupd(None, test_data, "fflags"),
+    ]
     return (setup, test, check)

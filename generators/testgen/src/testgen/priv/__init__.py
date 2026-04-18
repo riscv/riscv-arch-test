@@ -1,5 +1,5 @@
 # testgen/priv/__init__.py
-"""Coverpoint test body generation with automatic generator discovery."""
+"""Privileged test generation with automatic generator discovery."""
 
 from testgen.priv.registry import (
     add_priv_test_generator,

@@ -5,6 +5,6 @@
 
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
-exclude_extensions: "Sm,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo"
+exclude_extensions: "Sm,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo,PMPZalrsc"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

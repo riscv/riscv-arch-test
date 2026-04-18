@@ -33,9 +33,6 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
     cmd = [str(config.compiler_exe)]
     if config.compiler_type == CompilerType.CLANG:
         cmd.extend([f"--target=riscv{xlen}", "-fuse-ld=lld"])
-        linker_flags = ""  # LLD does not emit (or recognize) --no-warn-rwx-segments; the warning is GNU ld only.
-    else:
-        linker_flags = "-Wl,--no-warn-rwx-segments"
     cmd.extend(
         [
             f"-I{config.dut_include_dir.absolute()}",
@@ -44,10 +41,11 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             "-g",
             "-mcmodel=medany",
             "-nostdlib",
-            linker_flags,
             f"-I{tests_dir}/env",
         ]
     )
+    if config.compiler_type == CompilerType.GCC:
+        cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
 
 

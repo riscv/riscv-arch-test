@@ -120,7 +120,7 @@ elfs: tests
 		$(if $(FAST),--fast) \
 		$(if $(VERBOSE),--verbose) \
 		$(if $(COVERAGE),--coverage) \
-		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR)) \
+		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
 
 .PHONY: clean

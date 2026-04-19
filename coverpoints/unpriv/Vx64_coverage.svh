@@ -30795,11 +30795,9 @@ function void vx64_sample(int hart, int issue, ins_t ins);
             "vrgather.vx"     : begin
                 Vx64_vrgather_vx_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vrgatherei16.vv"     : begin
                 Vx64_vrgatherei16_vv_cg.sample(ins);
             end
-`endif
             "vrsub.vi"     : begin
                 Vx64_vrsub_vi_cg.sample(ins);
             end

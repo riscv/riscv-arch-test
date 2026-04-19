@@ -43940,147 +43940,99 @@ function void vls32_sample(int hart, int issue, ins_t ins);
             "vlm.v"     : begin
                 Vls32_vlm_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxei16.v"     : begin
                 Vls32_vloxei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxei32.v"     : begin
                 Vls32_vloxei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxei64.v"     : begin
                 Vls32_vloxei64_v_cg.sample(ins);
             end
-`endif
             "vloxei8.v"     : begin
                 Vls32_vloxei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg2ei16.v"     : begin
                 Vls32_vloxseg2ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg2ei32.v"     : begin
                 Vls32_vloxseg2ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg2ei64.v"     : begin
                 Vls32_vloxseg2ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg2ei8.v"     : begin
                 Vls32_vloxseg2ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg3ei16.v"     : begin
                 Vls32_vloxseg3ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg3ei32.v"     : begin
                 Vls32_vloxseg3ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg3ei64.v"     : begin
                 Vls32_vloxseg3ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg3ei8.v"     : begin
                 Vls32_vloxseg3ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg4ei16.v"     : begin
                 Vls32_vloxseg4ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg4ei32.v"     : begin
                 Vls32_vloxseg4ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg4ei64.v"     : begin
                 Vls32_vloxseg4ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg4ei8.v"     : begin
                 Vls32_vloxseg4ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg5ei16.v"     : begin
                 Vls32_vloxseg5ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg5ei32.v"     : begin
                 Vls32_vloxseg5ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg5ei64.v"     : begin
                 Vls32_vloxseg5ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg5ei8.v"     : begin
                 Vls32_vloxseg5ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg6ei16.v"     : begin
                 Vls32_vloxseg6ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg6ei32.v"     : begin
                 Vls32_vloxseg6ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg6ei64.v"     : begin
                 Vls32_vloxseg6ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg6ei8.v"     : begin
                 Vls32_vloxseg6ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg7ei16.v"     : begin
                 Vls32_vloxseg7ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg7ei32.v"     : begin
                 Vls32_vloxseg7ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg7ei64.v"     : begin
                 Vls32_vloxseg7ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg7ei8.v"     : begin
                 Vls32_vloxseg7ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vloxseg8ei16.v"     : begin
                 Vls32_vloxseg8ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vloxseg8ei32.v"     : begin
                 Vls32_vloxseg8ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vloxseg8ei64.v"     : begin
                 Vls32_vloxseg8ei64_v_cg.sample(ins);
             end
-`endif
             "vloxseg8ei8.v"     : begin
                 Vls32_vloxseg8ei8_v_cg.sample(ins);
             end
@@ -44312,147 +44264,99 @@ function void vls32_sample(int hart, int issue, ins_t ins);
             "vlsseg8e8.v"     : begin
                 Vls32_vlsseg8e8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxei16.v"     : begin
                 Vls32_vluxei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxei32.v"     : begin
                 Vls32_vluxei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxei64.v"     : begin
                 Vls32_vluxei64_v_cg.sample(ins);
             end
-`endif
             "vluxei8.v"     : begin
                 Vls32_vluxei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg2ei16.v"     : begin
                 Vls32_vluxseg2ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg2ei32.v"     : begin
                 Vls32_vluxseg2ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg2ei64.v"     : begin
                 Vls32_vluxseg2ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg2ei8.v"     : begin
                 Vls32_vluxseg2ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg3ei16.v"     : begin
                 Vls32_vluxseg3ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg3ei32.v"     : begin
                 Vls32_vluxseg3ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg3ei64.v"     : begin
                 Vls32_vluxseg3ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg3ei8.v"     : begin
                 Vls32_vluxseg3ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg4ei16.v"     : begin
                 Vls32_vluxseg4ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg4ei32.v"     : begin
                 Vls32_vluxseg4ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg4ei64.v"     : begin
                 Vls32_vluxseg4ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg4ei8.v"     : begin
                 Vls32_vluxseg4ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg5ei16.v"     : begin
                 Vls32_vluxseg5ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg5ei32.v"     : begin
                 Vls32_vluxseg5ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg5ei64.v"     : begin
                 Vls32_vluxseg5ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg5ei8.v"     : begin
                 Vls32_vluxseg5ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg6ei16.v"     : begin
                 Vls32_vluxseg6ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg6ei32.v"     : begin
                 Vls32_vluxseg6ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg6ei64.v"     : begin
                 Vls32_vluxseg6ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg6ei8.v"     : begin
                 Vls32_vluxseg6ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg7ei16.v"     : begin
                 Vls32_vluxseg7ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg7ei32.v"     : begin
                 Vls32_vluxseg7ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg7ei64.v"     : begin
                 Vls32_vluxseg7ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg7ei8.v"     : begin
                 Vls32_vluxseg7ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vluxseg8ei16.v"     : begin
                 Vls32_vluxseg8ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vluxseg8ei32.v"     : begin
                 Vls32_vluxseg8ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vluxseg8ei64.v"     : begin
                 Vls32_vluxseg8ei64_v_cg.sample(ins);
             end
-`endif
             "vluxseg8ei8.v"     : begin
                 Vls32_vluxseg8ei8_v_cg.sample(ins);
             end
@@ -44483,147 +44387,99 @@ function void vls32_sample(int hart, int issue, ins_t ins);
             "vsm.v"     : begin
                 Vls32_vsm_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxei16.v"     : begin
                 Vls32_vsoxei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxei32.v"     : begin
                 Vls32_vsoxei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxei64.v"     : begin
                 Vls32_vsoxei64_v_cg.sample(ins);
             end
-`endif
             "vsoxei8.v"     : begin
                 Vls32_vsoxei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg2ei16.v"     : begin
                 Vls32_vsoxseg2ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg2ei32.v"     : begin
                 Vls32_vsoxseg2ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg2ei64.v"     : begin
                 Vls32_vsoxseg2ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg2ei8.v"     : begin
                 Vls32_vsoxseg2ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg3ei16.v"     : begin
                 Vls32_vsoxseg3ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg3ei32.v"     : begin
                 Vls32_vsoxseg3ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg3ei64.v"     : begin
                 Vls32_vsoxseg3ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg3ei8.v"     : begin
                 Vls32_vsoxseg3ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg4ei16.v"     : begin
                 Vls32_vsoxseg4ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg4ei32.v"     : begin
                 Vls32_vsoxseg4ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg4ei64.v"     : begin
                 Vls32_vsoxseg4ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg4ei8.v"     : begin
                 Vls32_vsoxseg4ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg5ei16.v"     : begin
                 Vls32_vsoxseg5ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg5ei32.v"     : begin
                 Vls32_vsoxseg5ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg5ei64.v"     : begin
                 Vls32_vsoxseg5ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg5ei8.v"     : begin
                 Vls32_vsoxseg5ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg6ei16.v"     : begin
                 Vls32_vsoxseg6ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg6ei32.v"     : begin
                 Vls32_vsoxseg6ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg6ei64.v"     : begin
                 Vls32_vsoxseg6ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg6ei8.v"     : begin
                 Vls32_vsoxseg6ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg7ei16.v"     : begin
                 Vls32_vsoxseg7ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg7ei32.v"     : begin
                 Vls32_vsoxseg7ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg7ei64.v"     : begin
                 Vls32_vsoxseg7ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg7ei8.v"     : begin
                 Vls32_vsoxseg7ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsoxseg8ei16.v"     : begin
                 Vls32_vsoxseg8ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsoxseg8ei32.v"     : begin
                 Vls32_vsoxseg8ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsoxseg8ei64.v"     : begin
                 Vls32_vsoxseg8ei64_v_cg.sample(ins);
             end
-`endif
             "vsoxseg8ei8.v"     : begin
                 Vls32_vsoxseg8ei8_v_cg.sample(ins);
             end
@@ -44783,147 +44639,99 @@ function void vls32_sample(int hart, int issue, ins_t ins);
             "vssseg8e8.v"     : begin
                 Vls32_vssseg8e8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxei16.v"     : begin
                 Vls32_vsuxei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxei32.v"     : begin
                 Vls32_vsuxei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxei64.v"     : begin
                 Vls32_vsuxei64_v_cg.sample(ins);
             end
-`endif
             "vsuxei8.v"     : begin
                 Vls32_vsuxei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg2ei16.v"     : begin
                 Vls32_vsuxseg2ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg2ei32.v"     : begin
                 Vls32_vsuxseg2ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg2ei64.v"     : begin
                 Vls32_vsuxseg2ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg2ei8.v"     : begin
                 Vls32_vsuxseg2ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg3ei16.v"     : begin
                 Vls32_vsuxseg3ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg3ei32.v"     : begin
                 Vls32_vsuxseg3ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg3ei64.v"     : begin
                 Vls32_vsuxseg3ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg3ei8.v"     : begin
                 Vls32_vsuxseg3ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg4ei16.v"     : begin
                 Vls32_vsuxseg4ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg4ei32.v"     : begin
                 Vls32_vsuxseg4ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg4ei64.v"     : begin
                 Vls32_vsuxseg4ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg4ei8.v"     : begin
                 Vls32_vsuxseg4ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg5ei16.v"     : begin
                 Vls32_vsuxseg5ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg5ei32.v"     : begin
                 Vls32_vsuxseg5ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg5ei64.v"     : begin
                 Vls32_vsuxseg5ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg5ei8.v"     : begin
                 Vls32_vsuxseg5ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg6ei16.v"     : begin
                 Vls32_vsuxseg6ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg6ei32.v"     : begin
                 Vls32_vsuxseg6ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg6ei64.v"     : begin
                 Vls32_vsuxseg6ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg6ei8.v"     : begin
                 Vls32_vsuxseg6ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg7ei16.v"     : begin
                 Vls32_vsuxseg7ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg7ei32.v"     : begin
                 Vls32_vsuxseg7ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg7ei64.v"     : begin
                 Vls32_vsuxseg7ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg7ei8.v"     : begin
                 Vls32_vsuxseg7ei8_v_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vsuxseg8ei16.v"     : begin
                 Vls32_vsuxseg8ei16_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE32
             "vsuxseg8ei32.v"     : begin
                 Vls32_vsuxseg8ei32_v_cg.sample(ins);
             end
-`endif
-`ifdef MAXINDEXEEW_GE64
             "vsuxseg8ei64.v"     : begin
                 Vls32_vsuxseg8ei64_v_cg.sample(ins);
             end
-`endif
             "vsuxseg8ei8.v"     : begin
                 Vls32_vsuxseg8ei8_v_cg.sample(ins);
             end

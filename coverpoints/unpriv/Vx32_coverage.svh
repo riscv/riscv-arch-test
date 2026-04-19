@@ -42390,11 +42390,9 @@ function void vx32_sample(int hart, int issue, ins_t ins);
             "vrgather.vx"     : begin
                 Vx32_vrgather_vx_cg.sample(ins);
             end
-`ifdef MAXINDEXEEW_GE16
             "vrgatherei16.vv"     : begin
                 Vx32_vrgatherei16_vv_cg.sample(ins);
             end
-`endif
             "vrsub.vi"     : begin
                 Vx32_vrsub_vi_cg.sample(ins);
             end

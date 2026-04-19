@@ -31,10 +31,17 @@ def _reinit_pointer_registers(first_chunk: TestChunk) -> str:
     files need to re-establish them in whichever registers the chunks expect.
     Uses independent LA macros rather than chained `mv`s so that the two
     loads never have read-after-write dependencies on each other.
+    The signature pointer must be restored to the post-canary position used
+    after RVTEST_BEGIN, not to the raw `signature_base` label itself.
     """
     lines: list[str] = []
     if first_chunk.start_sig_reg != IntegerRegisterFile.default_sig_reg:
-        lines.append(f"{INDENT}LA(x{first_chunk.start_sig_reg}, signature_base) # restore signature pointer")
+        lines.extend(
+            [
+                f"{INDENT}LA(x{first_chunk.start_sig_reg}, signature_base) # restore signature pointer base",
+                f"{INDENT}addi x{first_chunk.start_sig_reg}, x{first_chunk.start_sig_reg}, SIG_STRIDE # advance past canary",
+            ]
+        )
     if first_chunk.start_data_reg != IntegerRegisterFile.default_data_reg:
         lines.append(f"{INDENT}LA(x{first_chunk.start_data_reg}, rvtest_data_begin) # restore data pointer")
     return "\n".join(lines)

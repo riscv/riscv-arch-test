@@ -4,6 +4,7 @@
 
     // Fault-only-first load: fault on non-first element updates VL without trapping
 
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     v0_eq_1: coverpoint unsigned'(ins.current.v0_val) {
         bins one = {1};
     }
@@ -17,5 +18,6 @@
     }
 
     cp_custom_ffLS_update_vl : cross std_vec, vtype_lmul_2, vl_max, mask_enabled, v0_eq_1, rs1_at_fault_addr;
+    `endif
 
     //// end cp_custom_ffLS////////////////////////////////////////////////

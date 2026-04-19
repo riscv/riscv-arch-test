@@ -10,6 +10,7 @@ from coverpoint_registry import register
 import vector_testgen_common as common
 from vector_testgen_common import (
     writeTest,
+    writeLine,
     randomizeVectorInstructionData,
     incrementBasetestCount,
     getBaseSuiteTestCount,
@@ -54,6 +55,8 @@ def make(test: str, sew: int) -> None:
                 )
             except ValueError:
                 continue
+            writeLine("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
             writeTest(description, test, data, sew=test_sew, lmul=lmul, vl="vlmax")
+            writeLine("#endif")
             incrementBasetestCount()
             vsAddressCount()

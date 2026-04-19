@@ -33,9 +33,12 @@
         bins eight  = {3};
     }
 
+    cp_custom_maskLS_emul_ge_16             : cross std_vec, vtype_all_lmulgt1, vtype_all_sewgt8;
+
     // --- Exception-suppression scenarios: faulting element is in tail or prestart,
     //     so the access must be masked off and produce no trap. ---
 
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
     v0_eq_1: coverpoint unsigned'(ins.current.v0_val) {
         bins one = {1};
     }
@@ -76,8 +79,8 @@
         bins two = {1};
     }
 
-    cp_custom_maskLS_emul_ge_16             : cross std_vec, vtype_all_lmulgt1, vtype_all_sewgt8;
     cp_custom_maskLS_tail_no_exception      : cross std_vec, vtype_lmul_2, vl_1, mask_enabled, v0_eq_1, rs1_at_fault_addr, no_trap;
     cp_custom_maskLS_prestart_no_exception  : cross std_vec, vtype_prev_vill_clear, vtype_lmul_2, vl_2, vstart_1, mask_enabled, rs1_at_fault_addr, v0_eq_2, no_trap;
+    `endif
 
     //// end cp_custom_maskLS////////////////////////////////////////////////

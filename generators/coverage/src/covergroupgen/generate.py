@@ -309,9 +309,9 @@ def _gen_instrs(
                     max_sew = int(match.group(1))
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        covergroup_lines.append(customize_template(templates, cp, arch, instr))
+                        covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
             else:
-                covergroup_lines.append(customize_template(templates, cp, arch, instr))
+                covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
 
         # Instruction footer
         if vectorwiden:

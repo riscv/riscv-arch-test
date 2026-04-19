@@ -104,7 +104,7 @@
   // ***dh 4/8/26 is this still the right thing to do if there is no conforming M-mode?
   rvtest_code_end:
     #ifdef CONFORMING_SM_SUPPORTED
-      // RVTEST_GOTO_MMODE // *** dh 4/18/26 should this still be here?
+      RVTEST_GOTO_MMODE // *** dh 4/18/26 should this still be here?
     #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved

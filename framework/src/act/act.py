@@ -126,7 +126,8 @@ def run_act(
             if untested_extensions:
                 print(
                     f"Warning: {config.name}: no applicable tests selected for implemented extension(s): "
-                    f"{', '.join(untested_extensions)}. Tests may not exist for this ISA profile.",
+                    f"{', '.join(untested_extensions)}. Tests may be missing, excluded, or "
+                    "otherwise inapplicable for the current configuration.",
                     file=sys.stderr,
                 )
         mxlen = config_params["MXLEN"]

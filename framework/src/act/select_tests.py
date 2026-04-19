@@ -81,3 +81,22 @@ def select_tests(
             if check_test_params(test_params, config_params):
                 selected_tests[test_name] = test_metadata
     return selected_tests
+
+
+def get_untested_implemented_extensions(
+    selected_tests: dict[str, TestMetadata],
+    implemented_extensions: set[str],
+    *,
+    include_priv_tests: bool = True,
+    excluded_extensions: set[str] | None = None,
+) -> list[str]:
+    """Return implemented extensions that have no selected tests."""
+    covered_extensions = {
+        extension for test_metadata in selected_tests.values() for extension in test_metadata.required_extensions
+    }
+    untested_extensions = implemented_extensions - covered_extensions
+    if not include_priv_tests:
+        untested_extensions -= PRIV_EXTENSIONS
+    if excluded_extensions:
+        untested_extensions -= excluded_extensions
+    return sorted(untested_extensions)

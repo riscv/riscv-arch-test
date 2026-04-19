@@ -22,7 +22,7 @@ from act.config import CoverageSimulator, load_config
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
-from act.select_tests import select_tests
+from act.select_tests import get_untested_implemented_extensions, select_tests
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -100,6 +100,7 @@ def run_act(
 
     config_names: list[str] = []
     tasks: list[BuildTask] = []
+    excluded_extensions = {ext.strip() for ext in exclude.split(",") if ext.strip()}
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
@@ -115,6 +116,19 @@ def run_act(
         selected_tests = select_tests(
             full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
         )
+        if extensions == "all":
+            untested_extensions = get_untested_implemented_extensions(
+                selected_tests,
+                implemented_extensions,
+                include_priv_tests=config.include_priv_tests,
+                excluded_extensions=excluded_extensions,
+            )
+            if untested_extensions:
+                print(
+                    f"Warning: {config.name}: no applicable tests selected for implemented extension(s): "
+                    f"{', '.join(untested_extensions)}. Tests may not exist for this ISA profile.",
+                    file=sys.stderr,
+                )
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")

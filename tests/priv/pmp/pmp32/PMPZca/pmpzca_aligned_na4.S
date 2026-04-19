@@ -21,7 +21,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca']
+# REQUIRED_EXTENSIONS: ['I','Zca','Sm']
 # params:
 #   MXLEN: 32
 #   PMP_GRANULARITY: 2

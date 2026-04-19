@@ -233,25 +233,20 @@ def gen_rvvi_tasks(
 
     # Paths
     coverage_dir = base_dir / "coverage"
-    build_dir = base_dir / "build"
-    # Use sig.elf (non-selfcheck) for coverage traces: it runs all tests to
-    # completion without halting on selfcheck mismatches, producing a complete
-    # trace for every instruction.
-    elf = build_dir / test_name.with_suffix(".sig.elf")
+    elf_dir = base_dir / "elfs"
+    elf = elf_dir / test_name.with_suffix(".elf")
     objdump_link = coverage_dir / test_name.with_suffix(".elf.objdump")
     sail_trace = coverage_dir / test_name.with_suffix(".trace")
     sail_log = coverage_dir / test_name.with_suffix(".log")
     rvvi_trace = coverage_dir / test_name.with_suffix(".rvvi")
 
-    # Symlink objdump into coverage dir (use final elf's objdump for debugging)
+    # Symlink objdump into coverage dir
     if not fast and config.objdump_exe is not None:
-        elf_dir = base_dir / "elfs"
-        final_elf = elf_dir / test_name.with_suffix(".elf")
-        objdump_orig_file = Path(f"{final_elf}.objdump")
+        objdump_orig_file = Path(f"{elf}.objdump")
         tasks.append(
             BuildTask(
                 outputs=(objdump_link,),
-                deps=(final_elf,),
+                deps=(elf,),
                 action=SymlinkAction(src=objdump_orig_file, dst=objdump_link),
             )
         )

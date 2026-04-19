@@ -342,11 +342,6 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
-        # Guard indexed load/store instructions by MAXINDEXEEW
-        idx_eew = _get_indexed_eew(instr)
-        if idx_eew and idx_eew > 8:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
-
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
                 effew = _get_effew(arch)
@@ -356,8 +351,6 @@ def _gen_covergroup_samples(
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
-        if idx_eew and idx_eew > 8:
-            lines.append("`endif\n")
     return "".join(lines)
 
 
@@ -556,5 +549,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
 
     templates = read_covergroup_templates()
     write_covergroups(test_plans, templates, output_dir)
-    write_coverage_headers(all_test_plans, output_dir, templates)
+    write_coverage_headers(test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)

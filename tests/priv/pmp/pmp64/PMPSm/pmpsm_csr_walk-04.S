@@ -50,25 +50,6 @@ main:
     RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to zeros
-    // -----------------------------------------------------------------------
-    .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to ones
-    // -----------------------------------------------------------------------
-    li t0, -1
-    .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, t0
-    .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
     // Walking ones through pmpaddr registers — bits 0..63 fully unrolled.
     //
     // Label strategy: place GAS numeric local label "1:" immediately before
@@ -142,16 +123,6 @@ main:
 1:  li t2, (1 << 27)
     RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t2, 1b, test_28_str)
     .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
-    // SET ALL pmpcfg REGs to zero (placed after walking ones, matching
-    // original test ordering)
-    // -----------------------------------------------------------------------
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
     .endr
 
     RVTEST_GOTO_MMODE

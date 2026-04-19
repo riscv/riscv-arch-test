@@ -14,7 +14,7 @@
 //               Specification v1.12 and includes:
 //               - Comprehensive RWX checks for multiple PMP regions.
 //
-// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is fully covered in
+// Coverpoints : cp_pmpcfg_walk and cp_pmpaddr_walk for PMPM is partially in
 //               this test file.
 //
 // Test Cases  : Test pmpaddr access. No background region, writing all 1s,
@@ -48,32 +48,6 @@ main:
     RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to zeros
-    // -----------------------------------------------------------------------
-    .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to ones
-    // -----------------------------------------------------------------------
-    li t0, -1
-    .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, t0
-    .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
-    // SET ALL pmpcfg REGs to zero
-    // -----------------------------------------------------------------------
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
 
     // -----------------------------------------------------------------------
     // Walking ones through even pmpcfg registers (pmpcfg0, pmpcfg2, ...).

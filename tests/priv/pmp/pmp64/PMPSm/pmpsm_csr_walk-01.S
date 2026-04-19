@@ -50,22 +50,31 @@ main:
     RVTEST_GOTO_MMODE
 
     // -----------------------------------------------------------------------
-    // SET ALL pmpaddr REGs to zeros
-    // -----------------------------------------------------------------------
-    .set pmpaddri, CSR_PMPADDR0
-    .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, x0
-    .set pmpaddri, pmpaddri+1
-    .endr
-
-    // -----------------------------------------------------------------------
     // SET ALL pmpaddr REGs to ones
     // -----------------------------------------------------------------------
     li t0, -1
     .set pmpaddri, CSR_PMPADDR0
     .rept RVMODEL_NUM_PMPS
-    csrw pmpaddri, t0
+1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, t0, 1b, test_9_str)
     .set pmpaddri, pmpaddri+1
+    .endr
+
+    // -----------------------------------------------------------------------
+    // SET ALL pmpaddr REGs to zeros
+    // -----------------------------------------------------------------------
+    .set pmpaddri, CSR_PMPADDR0
+    .rept RVMODEL_NUM_PMPS
+1:  RVTEST_SIGUPD_CSR_WRITE(pmpaddri, x0, 1b, test_8_str)
+    .set pmpaddri, pmpaddri+1
+    .endr
+
+    // -----------------------------------------------------------------------
+    // SET ALL pmpcfg REGs to zero
+    // -----------------------------------------------------------------------
+    .set pmpcfgi, CSR_PMPCFG0
+    .rept RVMODEL_NUM_PMPS/4
+1:  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, x0, 1b, test_10_str)
+    .set pmpcfgi, pmpcfgi+1
     .endr
 
     // -----------------------------------------------------------------------
@@ -144,16 +153,6 @@ main:
     .set pmpaddri, pmpaddri+1
     .endr
 
-    // -----------------------------------------------------------------------
-    // SET ALL pmpcfg REGs to zero (placed after walking ones, matching
-    // original test ordering)
-    // -----------------------------------------------------------------------
-    .set pmpcfgi, CSR_PMPCFG0
-    .rept RVMODEL_NUM_PMPS/4
-    csrw pmpcfgi, x0
-    .set pmpcfgi, pmpcfgi+1
-    .endr
-
     RVTEST_GOTO_MMODE
 
 RVTEST_CODE_END
@@ -167,6 +166,9 @@ test_4_str:  .string "\"test: 4; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_4\"
 test_5_str:  .string "\"test: 5; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_5\""
 test_6_str:  .string "\"test: 6; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_6\""
 test_7_str:  .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_7\""
+test_8_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_8\""
+test_9_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_9\""
+test_10_str: .string "\"test: 7; cp: cp_pmpcfg_walk_and_cp_pmpaddr_walk_test_10\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)

@@ -3,16 +3,11 @@
 # Modified April 5, 2026
 # SPDX-License-Identifier: Apache-2.0
 
-
-
 ########## Runtime Options ##########
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
 CONFIG_FILES ?= config/spike/spike-rv32-max/test_config.yaml config/spike/spike-rv64-max/test_config.yaml
 COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/sail-rv32-max/test_config.yaml
-
-# WORKDIR is where all of the generated files are created
-WORKDIR     ?= work
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
@@ -25,12 +20,6 @@ WORKDIR     ?= work
 EXTENSIONS  ?=
 EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
 
-# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
-empty :=
-space := $(empty) $(empty)
-override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
-override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
-
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
 # FAST disables objdump generation for faster builds. This speeds up ELF generation significantly, but makes debugging mismatches harder.
@@ -39,14 +28,23 @@ DEBUG       ?=
 FAST        ?=
 VERBOSE     ?=
 
+# COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+
+# WORKDIR is where all of the generated files are created
+WORKDIR     ?= work
+
 # VERBOSE implies DEBUG and serializes the build
 ifneq ($(VERBOSE),)
   DEBUG := True
 	JOBS  := 1
 endif
 
-# COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
-COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
+empty :=
+space := $(empty) $(empty)
+override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
+override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 
 # Number of parallel build jobs for test compilation.
 # Automatically derived from make's -j or --jobs flag (e.g., make -j4). Can be overridden with JOBS=N.

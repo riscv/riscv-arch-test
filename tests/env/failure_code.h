@@ -286,8 +286,8 @@
         SREG x31, 248(DEFAULT_TEMP_REG)
 
     #ifdef RVTEST_VECTOR
-        addi x6, DEFAULT_TEMP_REG, 440
-        vs1r.v v0, (x6) # todo: change to store whole vector (be aware of lmul)
+        addi x6, DEFAULT_TEMP_REG, 452
+        vs1r.v v0, (x6)
         addi x6, x6, 128
         vs1r.v v1, (x6)
         addi x6, x6, 128
@@ -545,14 +545,15 @@
         csrr x11, vtype
 
         SREG x10, 304(DEFAULT_TEMP_REG)    # save vl
-        SREG x11, 308(DEFAULT_TEMP_REG)    # save vtype
+        SREG x11, 312(DEFAULT_TEMP_REG)    # save vtype
 
         // vtype[5:3] = vsew encoding: 0→e8, 1→e16, 2→e32, 3→e64
-        # todo: check if correct
         srli x16, x11, 3
         andi x16, x16, 7                # vsew field
         li   x17, 1
         sll  x17, x17, x16             # eew_bytes = 1 << vsew
+        slli x18 ,x17, 3             # element size in bits = eew_bytes * 8
+        sw x18, 320(DEFAULT_TEMP_REG)    # save sew_bits for later use in expected/actual value extraction
 
 
         # --------------------------------------------------
@@ -579,15 +580,38 @@
         add  x6, x6, x8
 
         # todo: consider sew=64
-        LREG x14, 0(x6)
-        SREG x14, 280(DEFAULT_TEMP_REG)    # expected value
+        # LREG x14, 0(x6)
+        # SREG x14, 280(DEFAULT_TEMP_REG)    # expected value
+
+        li x14, 0
+        li x15, 0
+        li x18, 0          # bit shift counter
+        addi x19, DEFAULT_TEMP_REG, 280   # expected value address (start with base move by byte)
+
+        byte_loop:
+            bge x15, x17, byte_done
+
+            lbu x16, 0(x6)
+            sb  x16, 0(x19)
+
+            sll x16, x16, x18
+            or  x14, x14, x16
+
+            addi x6, x6, 1
+            addi x15, x15, 1
+            addi x18, x18, 8
+            addi x19, x19, 1
+
+            j byte_loop
+
+        byte_done:
 
         # --------------------------------------------------
         # Step 5: Extract actual value (from saved vd register)
         # --------------------------------------------------
         lw x6, 260(DEFAULT_TEMP_REG)      # vd index
         slli x6, x6, 7                    # each vector register is 128 bytes -> shift by 7 for register number
-        addi x6, x6, 440                  # offset to where v0 is saved in scratch
+        addi x6, x6, 452                  # offset to where v0 is saved in scratch
         add  x6, DEFAULT_TEMP_REG, x6
 
         # offset by mismatch index
@@ -610,12 +634,12 @@
         andi x19, x19, 31
 
         # --- compute src = vecreg_scratch + vd * vlenb ---
-        addi x6, DEFAULT_TEMP_REG, 440  # vecreg_scratch base address
+        addi x6, DEFAULT_TEMP_REG, 452    # vecreg_scratch base address
         slli x19, x19, 7                  # each vector register is 128 bytes -> shift by 7 for register number
         add x6, x6, x19                   # offset to where mismatch register is saved in scratch
 
         # --- dst = failing_mask_vec ---
-        addi x7, DEFAULT_TEMP_REG, 312  # x7 = dst
+        addi x7, DEFAULT_TEMP_REG, 324  # x7 = dst
 
         # --- copy loop (word-wise for RV32) ---
         csrr x8, vlenb          # x8 = bytes per vector register
@@ -765,7 +789,7 @@
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
     failedtest_report_after_reg:
     #ifdef RVTEST_VECTOR
-        // ---- Vector-specific fields (only printed for failure_type == 4) ----
+        // ---- Vector-specific fields (only printed for failure_type == 3) ----
         lw a0, failure_type
         li a1, 3
         bne a0, a1, failedtest_report_vec_done
@@ -811,6 +835,24 @@
         LA(x9, ascii_buffer)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
 
+        # Print failing value — SEW long
+        LA(x9, badvalstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, failing_value
+        lw a1, failing_sew_bits
+        jal failedtest_hex_to_str
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        # Print expected value — type-aware
+        LA(x9, expvalstr)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, expected_value
+        lw a1, failing_sew_bits
+        jal failedtest_hex_to_str
+        LA(x9, ascii_buffer)
+        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
         // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
         // We print as a hex string by iterating over the bytes.
         // For brevity we print up to VLENMAX_BYTES bytes.
@@ -836,24 +878,7 @@
 
         lbu a0, 0(x30)              # load byte
         li a3, 8                    # a3 = bit count
-    mask_hex_to_str_loop:
-        addi a3, a3, -4         # move to next nibble
-        srl a4, a0, a3          # shift nibble to bottom
-        andi a4, a4, 15         # mask to get nibble
-
-        # Convert nibble to ASCII
-        LI(a5, 10)
-        blt a4, a5, mask_hex_to_str_digit
-        # It's a letter (A-F)
-        addi a4, a4, 87         # 'a' - 10 = 87
-        j mask_hex_to_str_write
-    mask_hex_to_str_digit:
-        # It's a digit (0-9)
-        addi a4, a4, 48         # '0' = 48
-    mask_hex_to_str_write:
-        sb a4, 0(a2)            # write character to buffer
-        addi a2, a2, 1          # advance buffer pointer
-        bnez a3, mask_hex_to_str_loop
+        jal failedtest_hex_to_str_loop
 
         addi x30, x30, -1
         addi x31, x31, -1
@@ -866,6 +891,8 @@
 
         LA(x9, ascii_buffer)
         RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+
+        j failedtest_report_end
 
     failedtest_report_vec_done:
     #endif // RVTEST_VECTOR
@@ -1121,12 +1148,14 @@
     failing_index:                               # element index of first mismatch (300)
         .fill 1, 4, 0xbaaaaaad
     failing_vl:                                  # vl at point of failure (304)
-        .fill 1, 4, 0xfeedf00d
-    failing_vtype:                               # vtype at point of failure (308)
+        .fill 2, 4, 0xfeedf00d
+    failing_vtype:                               # vtype at point of failure (312)
+        .fill 2, 4, 0xbaaaaaad
+    failing_sew_bits:                          # SEW in bits (320)
         .fill 1, 4, 0xbaaaaaad
-    failing_mask_vec:                            # value of failing mask vector register (312)
+    failing_mask_vec:                            # value of failing mask vector register (324)
         .fill 32, 4, 0xbaaaaaad                  # Assume max VLEN of 1024 bits = 128 bytes
-    vecreg_scratch:                              # space to save full vector register contents (440)
+    vecreg_scratch:                              # space to save full vector register contents (452)
         .fill 4096, 4, 0xfeedf00dbaaaaaad        # Assume max VLEN of 1024 bits = 128 bytes, 128 bytes * 32 vecreg = 4096 bytes
 #endif // RVTEST_VECTOR
     ascii_buffer:

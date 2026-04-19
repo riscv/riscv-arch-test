@@ -556,7 +556,7 @@ def _add_shadow(r1: int, r2: int, wreg: str, rreg: str, coverpoint: str, covergr
     )
 
 
-@add_priv_test_generator("S", required_extensions=["S", "Zicsr"])
+@add_priv_test_generator("S", required_extensions=["S"])
 def make_s(test_data: TestData) -> list[str]:
     """Generate tests for S supervisor-mode testsuite."""
     lines: list[str] = []

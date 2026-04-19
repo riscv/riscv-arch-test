@@ -62,7 +62,7 @@ def insert_header_template(
         template.replace("@TEST_PATH@", f"{test_file}")
         .replace("@TEST_FILE_NAME@", f"{test_file.name}")
         .replace("@EXTENSION_LIST@", f"{ext_components}")
-        .replace("@PARAMS@", format_params(params))
+        .replace("@PARAMS@", format_params(params, ext_components))
         .replace("@MARCH@", march)
         .replace("@EXTRA_DEFINES@", "\n".join(extra_defines))
         .replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sigupd_count))
@@ -193,11 +193,16 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
     return march
 
 
-def format_params(params: list[str]) -> str:
+def format_params(params: list[str], ext_components: list[str]) -> str:
     """Format parameters for insertion into template."""
     if not params:
         return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
+    if any(
+        ext in ext_components for ext in ["Sm", "H", "S", "U"]
+    ):  # might need hack to require conforming Sm for all priv tests until nonconforming trap handler setup works
+        #    if any(ext in ext_components for ext in ["Sm"]):
+        param_lines.extend("#    CONFORMING_SM_REQUIRED")
     param_lines.extend(f"#   {param}" for param in params)
     return "\n".join(param_lines)
 
@@ -205,11 +210,6 @@ def format_params(params: list[str]) -> str:
 def generate_defines_from_extensions(ext_components: list[str]) -> list[str]:
     """Generate extra #define statements from extension components."""
     extra_defines: list[str] = []
-
-    # Enable trap handlers if needed
-    # DH: comment out the following lines as soon as they aren't needed
-    if any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):
-        extra_defines.append("#define rvtest_mtrap_routine")
 
     if any(ext in ext_components for ext in ["H", "S"]):
         extra_defines.append("#define BOOT_TO_SMODE")

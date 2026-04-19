@@ -26,7 +26,9 @@ The REQUIRED_EXTENSIONS list in each test implies the privilege mode into which 
 The implication of these rules is that privileged tests that specify ConformingSm, S, or U will boot into those modes, respectively, and unprivileged tests will run in U-mode if supported and M-mode (possibly nonconforming) otherwise.
 
 *** signpost trap, sbi, rvmodel, memory map
-TODO: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
+DONE: remove RVTEST_PRIV_TEST
+
+DONE: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
     replace rvtest_strap_routine with S_SUPPORTED if needed
     replace rvtest_htrap_routine with H_SUPPORTED if needed
 
@@ -34,7 +36,7 @@ Test generator:
     Any test that lists Sm in REQUIRED_EXTENSIONS adds CONFORMING_SM_SUPPORTED as a parameter
     DONE Any test that lists S in REQUIRED_EXTENSIONS adds #define BOOT_TO_SMODE
     DONE else any test that lists Sm in REQUIRED_EXTENSIONS adds #define BOOT_TO_MMODE
-    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  Drop RVTEST_FP and tweak where it was used (hopefully removed)
+    DONE *** edit generators/testgen/src/testgen/io/templates.py/generate_defines_from_extensions to define these boot_TO_*.  DONE Drop RVTEST_FP and tweak where it was used (hopefully removed)
         if any(ext in ext_components for ext in ["H", "S"]):
             extra_defines.append("#define BOOT_TO_SMODE")
         elif any(ext in ext_components for ext in ["Sm"]):
@@ -43,6 +45,10 @@ Test generator:
 
     *** delete mcountinhibt init from OpenHW core
     *** Need zicsr in march string (generate_march_string)
+
+    *** debug
+    Zca-c.addi-00.sig.trace at 8998 80001E64 store fault on x2
+        tval = 2D2D807D (x2)
 
 
 === Controlling Parameters
@@ -84,8 +90,7 @@ S-mode CSR initialization includes
 * medeleg = 0x***
 * mideleg = *** to
 * sstateen0
-* mcounteren = all 1s
-* scounteren = all 1s (if U_SUPPORTED)
+* scounteren = all 1s
 * senvcfg
 * satp = 0 (disable VM)
 
@@ -100,7 +105,6 @@ The test ELF contains the RVMODEL_BOOT macro, which performs any necessary boot 
 
 *** UDB parameters needed
 MCOUNTINHIBIT_IMPLEMENTED
-
 
 
 [[rvmodel-macros]]

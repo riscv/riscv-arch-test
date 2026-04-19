@@ -40,7 +40,7 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
-#ifdef rvtest_mtrap_routine
+#ifdef CONFORMING_SM_SUPPORTED
     # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
     failedtest_trap_x7_x9:
         la x9, begin_failure_scratch
@@ -442,7 +442,7 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
-#ifdef rvtest_mtrap_routine
+#ifdef CONFORMING_SM_SUPPORTED
     failedtest_report_traphandler:
         lw a0, failure_type
         li a1, 3            # Failed in trap handler
@@ -662,7 +662,8 @@
         .string "\n"
     inststr:
         .string "RVCP: Instruction: "
-#ifdef RVTEST_PRIV_TEST
+
+    // Failure strings for privileged tests
     addrstr:
         .string "RVCP: Approximate address (failure may be slightly after this): "
     xepcstr:
@@ -739,10 +740,6 @@
         .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
     Vclr_Vext_int_str:
         .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
-#else
-    addrstr:
-        .string "RVCP: Address: "
-#endif
     regstr:
         .string "RVCP: Register: "
     badvalstr:

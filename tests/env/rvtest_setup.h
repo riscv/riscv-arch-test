@@ -103,11 +103,13 @@
   // Switch to M-mode
   // ***dh 4/8/26 is this still the right thing to do if there is no conforming M-mode?
   rvtest_code_end:
-    RVTEST_GOTO_MMODE // If only M-mode used by tests, this has no effect
+    #ifdef CONFORMING_SM_SUPPORTED
+      // RVTEST_GOTO_MMODE // *** dh 4/18/26 should this still be here?
+    #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
   cleanup_epilogs:
-    #ifdef rvtest_mtrap_routine
+    #ifdef CONFORMING_SM_SUPPORTED
       #ifdef S_SUPPORTED
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
@@ -118,7 +120,7 @@
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
     #endif
 
-  #ifdef rvtest_mtrap_routine
+  #ifdef CONFORMING_SM_SUPPORTED
     LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
     bne     T4, T5, check_trap_sig_offset
     jal     T2, failedtest_trap_x7_x9
@@ -132,7 +134,9 @@
       LREG    T1, 0(T1)               // Trap signature pointer
       LA(     T2, mtrap_sigptr)       // Base address of trap signature region
       sub     T1, T1, T2              // Calculate offset
-      RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
+      // *** the following code uses x2 as a pointer.
+      // *** x2 has been modified by unpriv tests and thus causes a store access fault
+      // RVTEST_SIGUPD(x2, x5, x4, T1, check_trap_sig_offset, trap_sig_offset_mismatch)
   #endif
 
   // Terminate test
@@ -198,7 +202,7 @@
     j . // Explicit non-returning tail if the macro returns (it should not)
 
   // ***DH 4/8/26 check this is proper gating
-  #ifdef rvtest_mtrap_routine
+  #ifdef CONFORMING_SM_SUPPORTED
     rvtest_set_msw_int:
       RVMODEL_SET_MSW_INT(T2, T5)
       ret
@@ -352,7 +356,7 @@
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Signature region for trap handlers
-      #ifdef rvtest_mtrap_routine
+      #ifdef CONFORMING_SM_SUPPORTED
         tsig_begin_canary:
           TRAP_CANARY
 
@@ -435,163 +439,132 @@
   #ifdef RVMODEL_BOOT_TO_MMODE
     RVMODEL_BOOT_TO_MMODE
   #else
-    // Default implementation assumes conforming M-mode
+    // Default implementation assumes conforming M-mode or no M-mode registers
     // We are in M-mode now at initial boot time
 
+    // Do setup that requires a conforming M-mode
+    #ifdef CONFORMING_SM_SUPPORTED
+
+
     // Disable interrupts
-    csrw mie, zero
-    csrw mip, zero
+      csrw mie, zero
+      csrw mip, zero
 
-    // initialize trap CSRs to known values
-    csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
-    csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
-    csrw mepc, zero
-    csrw mtval, zero
-    csrw mcause, zero
+      // disable trap delegation
+      csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
+      csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
 
-    // Set up trap handlers for all modes
-    // *** this code needs a close review
-    RVTEST_TRAP_PROLOG M
-    //RVTEST_TRAP_PROLOG S
-    //INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
+      // initialize trap CSRs to known values
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
 
-    // *** change rvtest_mtrap_routine stuff everywhere to TBD
-    // *** change rvtest_strap_routine to S_SUPPORTED
-    // *** change rvtest_htrap_routine to H_SUPPORTED
+      // Set up trap handlers for all modes
+      // *** this code needs a close review
+      // *** preferably move the S and H stuff to RVTEST_BOOT_TO_SMODE, but it is giving linker problems right now
+      RVTEST_TRAP_PROLOG M
+      #ifdef S_SUPPORTED
+        RVTEST_TRAP_PROLOG S
+        #ifdef H_SUPPORTED
+          RVTEST_TRAP_PROLOG H
+          RVTEST_TRAP_PROLOG V
+        #endif
+      #endif
+      //INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
 
-    // Initialize M-mode CSRs
+       // Initialize M-mode CSRs
 
-    // Put mstatus in a known initial state.
-    // mstatus.SIE = 0: Disable S-mode interrupts
-    // mstatus.MIE = 0: Disable M-mode interrupts
-    // mstatus.SPIE = 0: Clear S-mode previous interrupt enable bit
-    // mstatus.UBE = 0: User-mode Little Endian
-    // mstatus.MPIE = 0: Clear M-mode previous interrupt enable bit
-    // mstatus.SPP = 0: Clear previous privilege mode bit (set to U-mode)
-    // mstatus.XS = 00: Set custom state to OFF
-    // mstatus.MPRV = 0: Disable MPRV so memory accesses are in M-mode
-    // mstatus.SUM = 0: Disable supervisor access to user memory
-    // mstatus.MXR = 0: Disable Make eXecutable Readable
-    // mstatus.TVM = 0: Disable Trap Virtual Memory
-    // mstatus.TW = 0: Disable Timeout Wait
-    // mstatus.TSR = 0: Enable SRET instruction when S-mode supported
-    // mstatus.VS = 11: Set vector state to dirty if supported (V)
-    // mstatus.MPP = 11: Set previous privilege mode to M-mode
-    // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
-    // mstatus.UXL = XLEN (RV64 only)
-    // mstatus.SXL = XLEN (RV64 only)
-    // mstatus.SBE = 0: Set S-mode to little endian if supported
-    // mstatus.MBE = 0: Set M-mode to little endian if supported
-    // mstatus.GVA = 0: Guest virtual address
-    // mstatus.MPV = 0: Previous virtualization OFF
-    // mstatus.MPELP = 0: Disable landing pads
-    // mstatus.MDT = 0: Disable double trap
-    #if __riscv_xlen == 64
-      #define MSTATUS_UXL_64         0x0000000200000000
-      #define MSTATUS_SXL_64         0x0000000800000000
-      li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
-      csrw mstatus, t0  // Set just all these fields
-    #else    // RV32
-      li t0, MSTATUS_MPP
-      csrw mstatus, t0
-      csrw mstatush, zero // Clear all these fields
-    #endif
-    #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
-      li t0, MSTATUS_FS
-      csrs mstatus, t0 // Set FS to dirty to enable floating-point
-      csrw fcsr, zero // Initialize fcsr
-    #endif
-    #ifdef V_SUPPORTED
-      li t0, MSTATUS_VS
-      csrs mstatus, t0 // Set VS to dirty to enable vector
-      // csrr VLENB_CACHE, vlenb // carryover from RVTEST_V_ENABLE; delete when not needed anywhere
-    #endif
+      // Put mstatus in a known initial state.
+      // mstatus.SIE = 0: Disable S-mode interrupts
+      // mstatus.MIE = 0: Disable M-mode interrupts
+      // mstatus.SPIE = 0: Clear S-mode previous interrupt enable bit
+      // mstatus.UBE = 0: User-mode Little Endian
+      // mstatus.MPIE = 0: Clear M-mode previous interrupt enable bit
+      // mstatus.SPP = 0: Clear previous privilege mode bit (set to U-mode)
+      // mstatus.XS = 00: Set custom state to OFF
+      // mstatus.FS = 00: Set floating-point state to OFF
+      // mstatus.VS = 00: Set vector state to OFF
+      // mstatus.MPRV = 0: Disable MPRV so memory accesses are in M-mode
+      // mstatus.SUM = 0: Disable supervisor access to user memory
+      // mstatus.MXR = 0: Disable Make eXecutable Readable
+      // mstatus.TVM = 0: Disable Trap Virtual Memory
+      // mstatus.TW = 0: Disable Timeout Wait
+      // mstatus.TSR = 0: Enable SRET instruction when S-mode supported
+      // mstatus.MPP = 11: Set previous privilege mode to M-mode
+      // mstatus.UXL = XLEN (RV64 only)
+      // mstatus.SXL = XLEN (RV64 only)
+      // mstatus.SBE = 0: Set S-mode to little endian if supported
+      // mstatus.MBE = 0: Set M-mode to little endian if supported
+      // mstatus.GVA = 0: Guest virtual address
+      // mstatus.MPV = 0: Previous virtualization OFF
+      // mstatus.MPELP = 0: Disable landing pads
+      // mstatus.MDT = 0: Disable double trap
+      #if __riscv_xlen == 64
+        #define MSTATUS_UXL_64         0x0000000200000000
+        #define MSTATUS_SXL_64         0x0000000800000000
+        li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
+        csrw mstatus, t0  // Set just all these fields
+      #else    // RV32
+        li t0, MSTATUS_MPP
+        csrw mstatus, t0
+        csrw mstatush, zero // Clear all these fields
+      #endif
 
-    // Disable all privileged environment configuration, and enable unprivileged configuration
-    // Privileged tests that want to use these features should turn them on
-    // Unprivileged tests don't make SBI calls so the features should already be enabled
-    // menvcfg.STCE = 0: Disable Sstc supervisor timer compare
-    // menvcfg.PBMTE = 0: Disable Svpbmt page-based memory types
-    // menvcfg.ADUE = 0: Disable Svadu A/D bit update
-    // menvcfg.CDE = 0: Disable counter delegation ***check
-    // menvcfg.DTE = 0: Disable Ssdbltrp double traps
-    // menvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode
-    // menvcfg.SSE = 0: Disable Zicfiss shadow stacks
-    // menvcfg.LPE = 0: Disable Zicfilp landing pads
-    // menvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
-    // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
-    // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
-    // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
-    csrw menvcfg, t0
-    #if __riscv_xlen == 32
-      csrw menvcfgh, zero // Clear upper bits if they exist
-    #endif
 
-    // Enable necessary state for unpriv instructions and access from lower privilege modes
-    // Disable privileged extensions until they are turned on explicitly by tests that need them
-    // mstateen0.SE0 = 1: enable access to hststateen0, hstatene0h, ssstateen0
-    // mstateen0.ENVCFG = 1: enable access to henvcfg, henvcfgh, senvcfg
-    // mstateen0.CSRIND = 0: disable access to Sscrind siselect, sireg* registers (until turned on for those tests)
-    // mstateen0.AIA = 0: disable access to Ssaia advanced interrupt architecture state
-    // mstateen0.IMSIC = 0: disable access to MISIC state
-    // mstateen0.P1P13 = 0: disable access to hedelegh for 1P13 until turned on
-    // mstateen0.SRMCFG = 0: disable access to srmcfg for Ssqosid until turned on
-    // mstateen0.CTR = 0: disable access to Smctr control transfer records until turned on
-    // mstateen0.JVT = 1: Enable jvt for Zcmt
-    // mstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
-    // mstateen0.C = 0: Disable custom state
-    #if __riscv_xlen == 64
-      li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_JVT
-      csrw mstateen0, t0  // Set just all these fields
-    #else    // RV32
-      li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
-      csrw mstateen0h, t0 // Set just all these fields
-      li t0, MSTATEEN0_JVT
-      csrw mstateen0, t0 // Set just this field
-    #endif
-    #ifdef ZFINX_SUPPORTED
-      li t0, MSTATEEN0_FCSR
-      csrs mstateen0, t0 // Set mstateen0.FCSR
-      li t0,
-    #endif
+      // Disable all privileged environment configuration, and enable unprivileged configuration
+      // Privileged tests that want to use these features should turn them on
+      // Unprivileged tests don't make SBI calls so the features should already be enabled
+      // menvcfg.STCE = 0: Disable Sstc supervisor timer compare
+      // menvcfg.PBMTE = 0: Disable Svpbmt page-based memory types
+      // menvcfg.ADUE = 0: Disable Svadu A/D bit update
+      // menvcfg.CDE = 0: Disable counter delegation ***check
+      // menvcfg.DTE = 0: Disable Ssdbltrp double traps
+      // menvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode
+      // menvcfg.SSE = 0: Disable Zicfiss shadow stacks
+      // menvcfg.LPE = 0: Disable Zicfilp landing pads
+      // menvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
+      // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
+      // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
+      // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
+      li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+      csrw menvcfg, t0
+      #if __riscv_xlen == 32
+        csrw menvcfgh, zero // Clear upper bits if they exist
+      #endif
 
-    // Enable all performance counters if they exist
-    // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-    //   *** define a UDB parameter to determine whether mcountinhibit is implemented
-    csrw mcountinhibit, zero
+      // Enable necessary state for unpriv instructions
+      // Disable privileged extensions until they are turned on explicitly by tests that need them
+      // mstateen0.SE0 = 0: disable access to hststateen0, hstatene0h, ssstateen0
+      // mstateen0.ENVCFG = 0: disable access to henvcfg, henvcfgh, senvcfg
+      // mstateen0.CSRIND = 0: disable access to Sscrind siselect, sireg* registers (until turned on for those tests)
+      // mstateen0.AIA = 0: disable access to Ssaia advanced interrupt architecture state
+      // mstateen0.IMSIC = 0: disable access to MISIC state
+      // mstateen0.P1P13 = 0: disable access to hedelegh for 1P13 until turned on
+      // mstateen0.SRMCFG = 0: disable access to srmcfg for Ssqosid until turned on
+      // mstateen0.CTR = 0: disable access to Smctr control transfer records until turned on
+      // mstateen0.JVT = 1: Enable jvt for Zcmt
+      // mstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
+      // mstateen0.C = 0: Disable custom state
+      #if __riscv_xlen == 64
+        li t0, MSTATEEN0_JVT
+        csrw mstateen0, t0
+      #else    // RV32
+        csrw mstateen0h, zero
+        li t0, MSTATEEN0_JVT
+        csrw mstateen0, t0
+      #endif
+      #ifdef ZFINX_SUPPORTED
+        li t0, MSTATEEN0_FCSR
+        csrs mstateen0, t0 // Set mstateen0.FCSR
+        li t0,
+      #endif
 
-    // Initialize counter event selectors to 0.  They must be implemented.
-    csrw mhpmevent3, zero
-    csrw mhpmevent4, zero
-    csrw mhpmevent5, zero
-    csrw mhpmevent6, zero
-    csrw mhpmevent7, zero
-    csrw mhpmevent8, zero
-    csrw mhpmevent9, zero
-    csrw mhpmevent10, zero
-    csrw mhpmevent11, zero
-    csrw mhpmevent12, zero
-    csrw mhpmevent13, zero
-    csrw mhpmevent14, zero
-    csrw mhpmevent15, zero
-    csrw mhpmevent16, zero
-    csrw mhpmevent17, zero
-    csrw mhpmevent18, zero
-    csrw mhpmevent19, zero
-    csrw mhpmevent20, zero
-    csrw mhpmevent21, zero
-    csrw mhpmevent22, zero
-    csrw mhpmevent23, zero
-    csrw mhpmevent24, zero
-    csrw mhpmevent25, zero
-    csrw mhpmevent26, zero
-    csrw mhpmevent27, zero
-    csrw mhpmevent28, zero
-    csrw mhpmevent29, zero
-    csrw mhpmevent30, zero
-    csrw mhpmevent31, zero
-    #if __riscv_xlen == 32
+      // Enable all performance counters if they exist
+      // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
+      //   *** define a UDB parameter to determine whether mcountinhibit is implemented
+      csrw mcountinhibit, zero
+
+      // Initialize counter event selectors to 0.  They must be implemented.
       csrw mhpmevent3, zero
       csrw mhpmevent4, zero
       csrw mhpmevent5, zero
@@ -621,35 +594,87 @@
       csrw mhpmevent29, zero
       csrw mhpmevent30, zero
       csrw mhpmevent31, zero
-    #endif
-
-    // msseccfg.MLL, MMWP, RLB, USEED, and SSEED reset to defined values.
-    // if Pointer Masking is supported, mseccfg.PMM should be initialized to 0 to turn it off
-    // might as well turn off everything
-    #ifdef SMMPM_SUPPORTED
-      csrw msseccfg, zero
-    #endif
-
-
-    #ifdef SMRNMI_SUPPORTED
-      // if Resumable NMI supported, also clear all RNMI-related fields, especially mnstatus.NMIE
-      csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
-    #endif
-
-    #if RVMODEL_NUM_PMPS > 0
-      // set up PMP so user and supervisor mode can access full address space
-      CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
-      LI(t0, -1)
-      CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
-      // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
-      // memory system and any PMP or address translation caches. sfence.vma should not be
-      // performed in a system that does not support virtual memory because it might raise
-      // an illegal instruction.
-      #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
-        sfence.vma
+      #if __riscv_xlen == 32
+        csrw mhpmevent3, zero
+        csrw mhpmevent4, zero
+        csrw mhpmevent5, zero
+        csrw mhpmevent6, zero
+        csrw mhpmevent7, zero
+        csrw mhpmevent8, zero
+        csrw mhpmevent9, zero
+        csrw mhpmevent10, zero
+        csrw mhpmevent11, zero
+        csrw mhpmevent12, zero
+        csrw mhpmevent13, zero
+        csrw mhpmevent14, zero
+        csrw mhpmevent15, zero
+        csrw mhpmevent16, zero
+        csrw mhpmevent17, zero
+        csrw mhpmevent18, zero
+        csrw mhpmevent19, zero
+        csrw mhpmevent20, zero
+        csrw mhpmevent21, zero
+        csrw mhpmevent22, zero
+        csrw mhpmevent23, zero
+        csrw mhpmevent24, zero
+        csrw mhpmevent25, zero
+        csrw mhpmevent26, zero
+        csrw mhpmevent27, zero
+        csrw mhpmevent28, zero
+        csrw mhpmevent29, zero
+        csrw mhpmevent30, zero
+        csrw mhpmevent31, zero
       #endif
+
+      // make counters accessible to a lower privilege mode if one exists
+      #ifdef U_SUPPORTED
+        li t0, -1
+        csrw mcounteren, t0 // Enable all counters for access from next lower priv mode
+      #endif
+
+      // msseccfg.MLL, MMWP, RLB, USEED, and SSEED reset to defined values.
+      // if Pointer Masking is supported, mseccfg.PMM should be initialized to 0 to turn it off
+      // might as well turn off everything
+      #ifdef SMMPM_SUPPORTED
+        csrw msseccfg, zero
+      #endif
+
+      #ifdef SMRNMI_SUPPORTED
+        // if Resumable NMI supported, also clear all RNMI-related fields, especially mnstatus.NMIE
+        csrw mnstatus, zero // Clear all fields in mnstatus as well if it exists
+      #endif
+
+      #if (RVMODEL_NUM_PMPS > 0) && defined(U_SUPPORTED)
+        // set up PMP so user and supervisor mode can access full address space
+        CSRW(pmpcfg0, 0xF)   // configure PMP0 to TOR RWX
+        LI(t0, -1)
+        CSRW(pmpaddr0, t0)   // configure PMP0 top of range to 0xFFF...FFF to allow all addresses
+        // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
+        // memory system and any PMP or address translation caches. sfence.vma should not be
+        // performed in a system that does not support virtual memory because it might raise
+        // an illegal instruction.
+        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+          sfence.vma
+        #endif // SV32 or SV39
+      #endif // PMP
+    #endif // CONFORMING_M_MODE
+
+    // Additional setup that applies even without conforming M-mode
+    // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
+    // mstatus.VS = 11: Set vector state to dirty if supported (V)
+    // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
+    // for floating-point and vector
+    #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+      li t0, MSTATUS_FS
+      csrs mstatus, t0 // Set FS to dirty to enable floating-point
+      csrw fcsr, zero // Initialize fcsr
     #endif
-  #endif
+    #ifdef V_SUPPORTED
+      li t0, MSTATUS_VS
+      csrs mstatus, t0 // Set VS to dirty to enable vector
+      // csrr VLENB_CACHE, vlenb // carryover from RVTEST_V_ENABLE; delete when not needed anywhere
+    #endif
+  #endif // !RVMODEL_BOOT_TO_MMODE
 .endm
 
 /************************************ RVTEST_BOOT_TO_S_MODE ********************************/
@@ -676,6 +701,21 @@
       //RVTEST_TRAP_PROLOG H
       //RVTEST_TRAP_PROLOG V
     #endif
+
+    // Delegate most exceptions and supervisor interrupts to S-mode.
+    // mideleg.
+
+    // Enable necessary state for access from lower privilege modes
+    // mstateen0.SE0 = 1: enable access to hststateen0, hstatene0h, ssstateen0
+    // mstateen0.ENVCFG = 1: enable access to henvcfg, henvcfgh, senvcfg
+    #if __riscv_xlen == 64
+      li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
+      csrs mstateen0, t0  // Set these fields
+    #else    // RV32
+      li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
+      csrs mstateen0h, t0 // Set these fields
+    #endif
+
 
   // Initialize S-mode CSRs
   #endif

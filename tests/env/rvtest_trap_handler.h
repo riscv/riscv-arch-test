@@ -355,7 +355,7 @@
 /**** PROLOG/HANDLER/EPILOG/SAVEAREA depending on test type & mode support ****/
 /******************************************************************************/
 .macro INSTANTIATE_MODE_MACRO MACRO_NAME
-  #ifdef rvtest_mtrap_routine
+  #ifdef CONFORMING_SM_SUPPORTED
     \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
   #endif
   #ifdef S_SUPPORTED
@@ -652,7 +652,7 @@
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc
-  #ifdef  rvtest_mtrap_routine
+  #ifdef  CONFORMING_SM_SUPPORTED
     mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
     li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
     // Note that if ecalls are delegated, this may infinite loop
@@ -668,7 +668,7 @@
 .macro  RVTEST_GOTO_DELEGATED_MMODE
   .option push
   .option norvc
-  #ifdef  rvtest_mtrap_routine
+  #ifdef  CONFORMING_SM_SUPPORTED
     // Note that this must be called with ecall traps delegated, else it could infinite loop
 
     mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead

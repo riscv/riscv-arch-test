@@ -8,18 +8,7 @@
 #define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
-/*
- * Perform boot operations.
- * CV32E40P resets mcountinhibit=0xd (all counters inhibited). Clear it so
- * cycle/instret increment as Zicntr tests expect.
- * .option arch, +zicsr is needed because I tests compile with -march=rv32i
- * which does not include Zicsr (binutils >= 2.38).
- */
-#define RVMODEL_BOOT \
-  .option push           ;\
-  .option arch, +zicsr   ;\
-  csrwi mcountinhibit, 0 ;\
-  .option pop            ;
+//#define RVMODEL_BOOT \
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
 // This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.

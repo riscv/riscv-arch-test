@@ -47,7 +47,6 @@ RVTEST_BEGIN
 #else
   #define g   (1 << (RVMODEL_PMP_GRAIN + 3))
 #endif
-
 .macro VERIFICATION_RWX ADDRESS TEST_CASE
 
     LI(x4, 0xACCE)                      // Store a value which is to be checked in trap handler
@@ -260,10 +259,7 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-
-#ifdef rvtest_strap_routine
     csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

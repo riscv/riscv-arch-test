@@ -41,9 +41,7 @@ RVTEST_BEGIN
 #define PMP_REGION_GLOBAL    ((((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF) << PMP3_CFG_SHIFT))  // Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL        -1                                                // All memory region
 
-#ifdef rvtest_strap_routine
     csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

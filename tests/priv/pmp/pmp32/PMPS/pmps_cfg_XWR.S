@@ -124,9 +124,7 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef rvtest_strap_routine
     csrw satp, zero                // Disable address translation.
-#endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)
     csrw     pmpaddr15, x4

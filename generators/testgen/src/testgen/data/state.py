@@ -145,8 +145,18 @@ class TestData:
         self._test_count += 1
 
     def begin_test_chunk(self) -> TestChunk:
-        """Create and set a new active TestChunk."""
-        self.test_chunk = TestChunk()
+        """Create and set a new active TestChunk.
+
+        Snapshots the current signature/data pointer register assignments so
+        that if this chunk ends up as the first chunk of a non-initial test
+        file, the generator can emit code to re-establish those pointers (which
+        would otherwise only live in the default registers set by
+        RVTEST_BEGIN).
+        """
+        self.test_chunk = TestChunk(
+            start_sig_reg=self._int_regs.sig_reg,
+            start_data_reg=self._int_regs.data_reg,
+        )
         return self.test_chunk
 
     def end_test_chunk(self) -> TestChunk:

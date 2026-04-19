@@ -43,13 +43,14 @@ Test generator:
             extra_defines.append("#define BOOT_TO_MMODE")
 
 
-    *** delete mcountinhibt init from OpenHW core
+    DONE delete mcountinhibt init from OpenHW core
     *** Need zicsr in march string (generate_march_string)
 
-    *** debug
-    Zca-c.addi-00.sig.trace at 8998 80001E64 store fault on x2
-        tval = 2D2D807D (x2)
-
+    TODO: restore sigupd in rvtest_setup.h check_trap_sig_offset
+        that relied on x2 containing a signature pointer, which
+        is not preserved by unpriv tests.  This causes the sigupd
+        to throw a store access fault on unpriv tests in
+        make coverage.
 
 === Controlling Parameters
 

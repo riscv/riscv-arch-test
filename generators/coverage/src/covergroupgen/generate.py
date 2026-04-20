@@ -27,7 +27,9 @@ SEW_DEPENDENT_CPS = {
     "cp_custom_shift_vv",
     "cp_custom_shift_vx",
     "cp_custom_shift_vi",
-    "cp_custom_vindex",
+    "cp_custom_vindexVV",
+    "cp_custom_vindexVX",
+    "cp_custom_vindexCorners",
     "cr_vs2_vs1_edges_f",
     "cp_fs1_edges_v",
     "cr_vs2_fs1_edges",
@@ -237,6 +239,24 @@ def _get_indexed_eew(instr: str) -> int | None:
     return int(m.group(1)) if m else None
 
 
+def _ffLS_feasible(instr: str, sew: int) -> bool:
+    """Check if cp_custom_ffLS (which requires LMUL=2) is feasible for this instruction at the given SEW.
+
+    Returns False when EMUL * nf > 8 with LMUL=2, meaning the configuration is impossible.
+    """
+    # Extract EEW from instruction name (e.g., vle32ff.v → 32, vlseg3e64ff.v → 64)
+    eew_m = re.search(r"e(\d+)ff", instr)
+    if not eew_m:
+        return True
+    eew = int(eew_m.group(1))
+    # Extract nf (number of fields) from segmented instructions
+    nf_m = re.search(r"seg(\d+)", instr)
+    nf = int(nf_m.group(1)) if nf_m else 1
+    lmul = 2
+    emul = eew * lmul // sew
+    return emul * nf <= 8
+
+
 ##################################
 # Content generation
 ##################################
@@ -288,6 +308,12 @@ def _gen_instrs(
         for cp in ordered_cps:
             if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
+
+            # Skip cp_custom_ffLS for instructions where LMUL=2 is infeasible at this SEW
+            if cp == "cp_custom_ffLS" and _is_vector(arch):
+                sew = int(_get_effew(arch))
+                if not _ffLS_feasible(instr, sew):
+                    continue
 
             # Handle per-SEW minimum: cp suffixed with _sew_ge{N} only applies when arch SEW >= N
             ge_match = re.search(r"_sew_ge(\d+)$", cp)

@@ -3,8 +3,10 @@ name: Build image
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "*"
+    branches:
+      - act4
+    tags-ignore:
+      - cert-docs-*
 
 jobs:
   act4-build-image:
@@ -16,6 +18,8 @@ jobs:
     with:
       output: image
       push: true
+      cache: true
+      cache-mode: max
       platforms: linux/amd64,linux/arm64
       meta-images: ghcr.io/${{ github.repository_owner }}/act4-build
       meta-tags: |
@@ -23,7 +27,7 @@ jobs:
         type=ref,event=branch
         type=sha,format=long
       meta-flavor: |
-        latest=false
+        latest=${{ github.ref == 'refs/heads/act4' }}
     secrets:
       registry-auths: |
         - registry: ghcr.io

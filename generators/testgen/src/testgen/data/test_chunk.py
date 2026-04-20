@@ -7,6 +7,8 @@
 
 """TestChunk dataclass for holding test chunk output data."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
@@ -25,6 +27,8 @@ class TestChunk:
         sigupd_count: Number of signature updates
         num_testcases: Number of individual testcases (for split counting)
         section_header: Optional banner comment before a coverpoint section
+        start_sig_reg: Signature pointer register expected at the start of this chunk
+        start_data_reg: Data pointer register expected at the start of this chunk
     """
 
     code: str = ""
@@ -33,3 +37,5 @@ class TestChunk:
     sigupd_count: int = 0
     num_testcases: int = 0
     section_header: str | None = None
+    start_sig_reg: int = 2
+    start_data_reg: int = 3

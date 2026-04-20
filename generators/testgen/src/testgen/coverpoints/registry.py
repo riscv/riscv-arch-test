@@ -7,6 +7,8 @@
 
 """Coverpoint generator registry with automatic discovery."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from pathlib import Path
 from random import seed

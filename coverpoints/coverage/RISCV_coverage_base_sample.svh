@@ -223,15 +223,6 @@
     `ifdef COVER_VF64
         vf64_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_VFCUSTOM16
-        vfcustom16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VFCUSTOM32
-        vfcustom32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VFCUSTOM64
-        vfcustom64_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_VLS16
         vls16_sample(hart, issue, ins);
     `endif

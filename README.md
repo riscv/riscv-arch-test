@@ -78,7 +78,7 @@ mise --version
 
 If you already have your own Python environment, you can install the
 framework packages into it with `pip` instead of using `mise`/`uv`. You are
-responsible for providing Python 3.12+, and Ruby/Bundler must be installed
+responsible for providing Python 3.10+, and Ruby/Bundler must be installed
 separately (see the [UDB repository](https://github.com/riscv/riscv-unified-db)).
 
 Activate your venv, then from the cloned repository run:

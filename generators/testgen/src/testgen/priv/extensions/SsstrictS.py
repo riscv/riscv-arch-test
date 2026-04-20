@@ -138,35 +138,50 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
         )
     )
 
-    # Switch to S-mode
+    # Switch to S-mode — no trailing blank so the splitter cannot cut between
+    # this and the first CSR instruction.  Every file that contains sweep code
+    # must have the GOTO Smode either preceding it (in a prior file) or as its
+    # own first executable line.
     lines.extend(
         [
             "",
             "# Switch to supervisor mode for CSR sweep",
             "\tRVTEST_GOTO_LOWER_MODE Smode",
-            "",
         ]
     )
 
-    # CSR_BATCH_SIZE CSRs per S-mode session. At each boundary we return to
-    # M-mode and re-enter S-mode so that every split file is self-contained:
-    # each file starts with RVTEST_GOTO_LOWER_MODE Smode and ends with
-    # RVTEST_GOTO_LOWER_MODE Mmode, regardless of where the splitter cuts.
-    CSR_BATCH_SIZE = 50
-
+    # The S-mode CSR sweep stays in S-mode continuously from the opening
+    # RVTEST_GOTO_LOWER_MODE Smode (above) to the closing RVTEST_GOTO_LOWER_MODE Mmode
+    # (below).  No intra-sweep mode switches are emitted.
+    #
+    # Why no batch boundaries with GOTO Mmode/Smode pairs:
+    # RVTEST_GOTO_LOWER_MODE Mmode is a preprocessor no-op on some configs
+    # (including RV32 sail-rv32-max) — it generates zero machine code.  Emitting
+    # it inside the sweep therefore leaves us in S-mode.  GOTO Smode then executes
+    # from S-mode: its first instruction is an M-mode CSR read that traps as
+    # illegal.  The fast handler advances mepc+4, skipping only that instruction,
+    # and execution falls into the middle of the macro with a corrupt register
+    # value.  The subsequent lw using that register hits an invalid address,
+    # producing a load-access-fault.  Mtrampoline (not the fast handler) catches
+    # it, saves S-mode sp=0 into the framework save area, and later rtn_fm_mmode
+    # restores sp=0 → epilog store-access-fault → infinite fetch-fault loop.
+    #
+    # Safe split-file invariant (no GOTO pairs needed):
+    # The only instructions in the sweep body are csrr / li / csrrw / csrrs /
+    # csrrc — all either trap as illegal (M-mode CSRs from S-mode, handled by
+    # the fast handler) or execute silently (S/U-mode CSRs from S-mode).
+    # Neither path fires Mtrampoline.  Therefore the framework save area is never
+    # written during the sweep, and it retains the valid M-mode sp written by the
+    # GOTO Smode that opened the sweep (either at the start of this function for
+    # the first file that contains the sweep opening, or by the previous file's
+    # setup for subsequent files).  When RVTEST_CODE_END's ecall fires from
+    # S-mode, rtn_fm_mmode restores that valid sp and the epilog succeeds.
+    #
+    # Blank lines every 10 CSRs give the splitter enough cut points without any
+    # mode-switch instructions at the boundaries.
     all_csrs = [a for a in range(4096) if a not in _S_CSR_SKIP]
     for idx, csr_addr in enumerate(all_csrs):
-        # At every batch boundary (except the first): return to M-mode,
-        # emit a blank line (the splitter cuts here), then re-enter S-mode.
-        if idx > 0 and idx % CSR_BATCH_SIZE == 0:
-            lines.extend(
-                [
-                    "\tRVTEST_GOTO_LOWER_MODE Mmode",
-                    "",  # blank line — splitter cuts here
-                    "\tRVTEST_GOTO_LOWER_MODE Smode",
-                ]
-            )
-        elif idx > 0 and idx % 10 == 0:
+        if idx > 0 and idx % 10 == 0:
             lines.append("")
 
         r1, r2, r3 = sample(_SAFE_REGS, 3)
@@ -195,6 +210,7 @@ def _generate_csr_tests_s(test_data: TestData) -> list[str]:
             "",
             "# Return to machine mode after S-mode CSR sweep",
             "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "\tcsrw    mie, x0",
             "",
         ]
     )
@@ -265,6 +281,7 @@ def _generate_shadow_csr(test_data: TestData) -> list[str]:
         [
             "",
             "\tRVTEST_GOTO_LOWER_MODE Mmode",
+            "\tcsrw    mie, x0",  # re-disable interrupts after Mtrampoline ecall return
             "",
         ]
     )

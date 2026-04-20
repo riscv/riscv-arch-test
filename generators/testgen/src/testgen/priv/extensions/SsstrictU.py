@@ -140,31 +140,26 @@ def _generate_csr_tests_u(test_data: TestData) -> list[str]:
         )
     )
 
-    # Switch to U-mode
+    # Switch to U-mode — no trailing blank so the splitter cannot cut between
+    # this and the first CSR instruction.
     lines.extend(
         [
             "",
             "# Switch to user mode for CSR sweep",
             "\tRVTEST_GOTO_LOWER_MODE Umode",
-            "",
         ]
     )
 
-    # CSR_BATCH_SIZE CSRs per U-mode session. At each boundary we return to
-    # M-mode and re-enter U-mode so that every split file is self-contained.
-    CSR_BATCH_SIZE = 50
-
+    # The U-mode CSR sweep stays in U-mode continuously from the opening
+    # RVTEST_GOTO_LOWER_MODE Umode to the closing RVTEST_GOTO_LOWER_MODE Mmode.
+    # No intra-sweep mode switches are emitted — same rationale as SsstrictS.py:
+    # RVTEST_GOTO_LOWER_MODE Mmode is a no-op on some configs, so any intra-sweep
+    # GOTO Umode would execute from U-mode, crashing identically.
+    # All CSR accesses from U-mode either trap as illegal (handled by fast handler)
+    # or execute silently — Mtrampoline is never fired, save area sp stays valid.
     all_csrs = sorted(_U_CSR_ACCESSIBLE)
     for idx, csr_addr in enumerate(all_csrs):
-        if idx > 0 and idx % CSR_BATCH_SIZE == 0:
-            lines.extend(
-                [
-                    "\tRVTEST_GOTO_LOWER_MODE Mmode",
-                    "",  # blank line — splitter cuts here
-                    "\tRVTEST_GOTO_LOWER_MODE Umode",
-                ]
-            )
-        elif idx > 0 and idx % 10 == 0:
+        if idx > 0 and idx % 10 == 0:
             lines.append("")
 
         r1, r2, r3 = sample(_SAFE_REGS, 3)

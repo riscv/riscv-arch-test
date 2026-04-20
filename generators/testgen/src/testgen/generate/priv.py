@@ -192,6 +192,28 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
         write_test_file(test_config, None, [tc], output_path, file_idx=0, extra_defines=extra_defines)
     else:
         # ── Ssstrict: split into multiple files with fast handler per file ─────
+        #
+        # SsstrictS/U files end in S-mode (the CSR sweep stays in S-mode until
+        # RVTEST_CODE_END).  RVTEST_CODE_END issues an ecall (cause=9, s-call)
+        # which Mtrampoline catches and routes through Mrtn2mmode → rtn_fm_mmode.
+        # rtn_fm_mmode restores sp from the framework save area (offset 0x274).
+        # That value was written when RVTEST_GOTO_LOWER_MODE Smode ran FROM M-MODE
+        # at the start of this file's code section.
+        #
+        # Invariant enforced by SsstrictS.py's batch boundary layout:
+        #   The splitter blank line is placed AFTER RVTEST_GOTO_LOWER_MODE Smode,
+        #   not before it.  This guarantees that every split file's first code
+        #   line (after the fast-handler prefix) is GOTO Smode executing from
+        #   M-mode, which writes a valid M-mode sp into the save area.  When
+        #   RVTEST_CODE_END later runs from S-mode, rtn_fm_mmode restores that
+        #   valid sp and the epilog succeeds.
+        #
+        # Do NOT append a RVTEST_GOTO_LOWER_MODE Mmode suffix here.
+        # On some configs (including RV32 sail-rv32-max) that macro is a
+        # preprocessor no-op that generates zero machine code.  Appending it
+        # does nothing useful, and the accompanying `csrw mie, x0` becomes
+        # unreachable dead code that clutters the generated files.
+
         groups = _split_at_blank(body_lines, _LINES_PER_FILE)
         for file_idx, group in enumerate(groups):
             chunk = TestChunk()
@@ -199,6 +221,11 @@ def generate_priv_test(testsuite: str, output_test_dir: Path) -> None:
             # redirected to it at the start of each file's code section,
             # regardless of which part of the body the file contains.
             chunk.code = "\n".join(_FAST_HANDLER_PREFIX + group)
+            # Count testcase labels in this group to set the correct
+            # sigupd_count. Without this, write_test_file uses only
+            # SIGUPD_MARGIN (=10), which overflows on RV32 when a CSR-sweep
+            # file has hundreds of testcase labels (50 CSRs × 5 ops = 250).
+            chunk.sigupd_count = sum(1 for line in group if line.strip().endswith(":") and "_cg_" in line)
             # Pass a COPY of extra_defines: insert_header_template() calls
             # extra_defines.extend(...) which mutates the list in-place.
             # Without a copy, each successive file accumulates duplicate

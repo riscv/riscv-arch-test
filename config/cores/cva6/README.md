@@ -8,7 +8,6 @@ The following configuration is provided for the CVA6 core in its 32-bit applicat
 
 This configuration implements a 6-stage in-order, single-issue pipeline compliant with the RISC-V Privileged Architecture v1.13 (Machine-mode only). The specific architectural features, supported exceptions, and parameters for this core version are detailed in the [CV32A65X Design Document](https://docs.openhwgroup.org/projects/cva6-user-manual/04_cv32a65x/design/design.html). This configuration is intended for high-confidence validation using the ACT 4.0 framework.
 
-
 To build the UDB configuration, coverage files and ELFs run the following
 command from the top of your working copy of this repo:
 

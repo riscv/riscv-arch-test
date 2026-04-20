@@ -1,9 +1,10 @@
-"""Supervisor-mode interrupt test generator for RISC-V privileged architecture.
-
-This module generates tests for supervisor-mode interrupts (STIP, SSIP, SEIP),
-covering both non-delegated (fires in M-mode) and delegated (fires in S-mode)
-interrupt handling across a wide range of mideleg, mie, and mstatus configurations.
-"""
+##################################
+# priv/extensions/interruptsS.py
+#
+# InterruptsS privileged extension test generator.
+# sanarayanan@hmc.edu April 2026
+# SPDX-License-Identifier: Apache-2.0
+##################################
 
 from testgen.asm.helpers import comment_banner
 from testgen.asm.interrupts import (

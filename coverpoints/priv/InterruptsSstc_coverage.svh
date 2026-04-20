@@ -18,16 +18,13 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    sip_stip_one: coverpoint ins.current.csr[12'h144][5]{
-        bins one = {1};
-    }
     stimecmp_zero: coverpoint ins.current.csr[12'h14D] {
         bins zero = {0};
     }
-    mstatus_mie: coverpoint ins.current.csr[12'h300][3]  {
+    mstatus_mie: coverpoint ins.prev.csr[12'h300][3]  {
         // autofill 0/1
     }
-    mstatus_mie_one: coverpoint ins.current.csr[12'h300][3] {
+    mstatus_mie_one: coverpoint ins.prev.csr[12'h300][3] {
         bins one = {1};
     }
     mstatus_sie: coverpoint ins.current.csr[12'h300][1] {
@@ -35,6 +32,12 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     }
     mideleg_sti: coverpoint ins.current.csr[12'h303][5] {
         // autofill 0/1
+    }
+    mideleg_sti_zero: coverpoint ins.current.csr[12'h303][5] {
+        bins zero = {0};
+    }
+    mideleg_sti_one: coverpoint ins.current.csr[12'h303][5] {
+        bins one = {1};
     }
     mie_stie: coverpoint ins.current.csr[12'h304][5] {
         // autofill 0/1
@@ -68,10 +71,13 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     cp_machine_sti:     cross priv_mode_m, menvcfg_stce_one, mstatus_mie_one, mideleg_sti, mie_stie, stimecmp_zero;
     cp_machine_tm:      cross priv_mode_m, csrr, read_stimecmp, mcounteren_tm;
     cp_machine_stce:    cross priv_mode_m, csrr, read_stimecmp, menvcfg_stce;
-    cp_supervisor_sti:  cross priv_mode_s, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, stimecmp_zero;
+
+    cp_supervisor_sti_deleg:   cross priv_mode_s, mstatus_mie, mstatus_sie, mideleg_sti_one, mie_stie, stimecmp_zero;
+    cp_supervisor_sti_nodeleg: cross priv_mode_m, menvcfg_stce, mstatus_mie_one, mideleg_sti_zero, mie_stie, stimecmp_zero;
     cp_supervisor_tm:   cross priv_mode_s, csrr, read_stimecmp, mcounteren_tm;
     cp_supervisor_stce: cross priv_mode_s, csrr, read_stimecmp, menvcfg_stce;
-    cp_user_sti:        cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one;
+
+    cp_user_sti:         cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie;
     cp_user_tm:         cross priv_mode_u, csrr, read_stimecmp, mcounteren_tm;
     cp_user_stce:       cross priv_mode_u, csrr, read_stimecmp, menvcfg_stce;
 

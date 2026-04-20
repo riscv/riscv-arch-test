@@ -1,1 +1,1 @@
-whisper {debug:--log --loglabel --traceload} --config config/whisper/whisper-rv32-max/whisper.json
+whisper {debug:--log --loglabel --traceload --logfile __TRACEFILE__} --config config/whisper/whisper-rv32-max/whisper.json

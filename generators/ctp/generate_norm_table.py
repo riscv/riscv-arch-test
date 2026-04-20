@@ -27,6 +27,8 @@ The script writes an .adoc file containing a table with columns:
 It also prints (and writes) a small report of names present in one file but not the other.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os

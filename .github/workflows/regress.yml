@@ -80,8 +80,32 @@ jobs:
 
       - name: Install Clang
         run: |
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
-          sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+          retry() {
+            local max_attempts="$1"
+            shift
+            local attempt=1
+            while ! "$@"; do
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "Command failed after ${attempt} attempts: $*"
+                return 1
+              fi
+              local backoff=$((attempt * 10))
+              echo "Attempt ${attempt} failed: $*"
+              echo "Retrying in ${backoff}s..."
+              sleep "$backoff"
+              attempt=$((attempt + 1))
+            done
+          }
+
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+            https://apt.llvm.org/llvm.sh \
+            --output /tmp/llvm.sh
+          chmod +x /tmp/llvm.sh
+
+          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
+          retry 3 sudo apt-get update
+          retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
+            clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
           for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
             sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
           done

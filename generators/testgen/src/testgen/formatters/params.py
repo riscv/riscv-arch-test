@@ -32,6 +32,8 @@ The InstructionTypeConfig supports:
   - imm_nonzero: Whether immediate must be nonzero
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from testgen.data.params import InstructionParams

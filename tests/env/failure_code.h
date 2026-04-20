@@ -317,25 +317,24 @@
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:
-        # RVMODEL_IO_INIT(x6, x7, x8)
       print_failstr:
-        LA(x9, failstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, failstr)
+        call rvmodel_io_write_str
 
         # Print test name string
       print_testnamestr:
-        LA(x9, testnamestr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, testnamestr)
+        call rvmodel_io_write_str
       print_failure_test_name_str:
-        LREG x9, failure_string_ptr
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, failure_string_ptr
+        call rvmodel_io_write_str
       print_newline_str:
-        LA(x9, newlinestr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, newlinestr)
+        call rvmodel_io_write_str
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
-        LA(x9, inststr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, inststr)
+        call rvmodel_io_write_str
         lw a0, failing_instruction
         li a1, 32            # assume 32-bit instruction
         andi a2, a0, 3
@@ -344,21 +343,21 @@
         li a1, 16            # compressed: print as 16-bit
     2:
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print failing address (XLEN-bit)
-        LA(x9, addrstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, addrstr)
+        call rvmodel_io_write_str
         LREG a0, failing_addr
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print failing register — "x<N>" for int, "f<N>" for FP, "fflags" for fflags
-        LA(x9, regstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, regstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
         beqz a0, 1f
         li a1, 3    # Trap handler also uses int regs
@@ -376,8 +375,8 @@
         li a1, 1
         beq a0, a1, failedtest_report_fpreg
         # fflags: print "fflags\n"
-        LA(x9, fflagsstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, fflagsstr)
+        call rvmodel_io_write_str
         j failedtest_report_after_reg
     failedtest_report_fpreg:
         # FP: write "f" + decimal register number
@@ -388,13 +387,13 @@
         lw a0, failing_reg
         jal failedtest_dec_to_str
     failedtest_report_print_regstr:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
     failedtest_report_after_reg:
 
         # Print failing value — type-aware
-        LA(x9, badvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, badvalstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
@@ -416,12 +415,12 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
     failedtest_report_badval_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print expected value — type-aware
-        LA(x9, expvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, expvalstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
@@ -443,8 +442,8 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
     failedtest_report_expval_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
 #ifdef rvtest_mtrap_routine
     failedtest_report_traphandler:
@@ -452,8 +451,8 @@
         li a1, 3            # Failed in trap handler
         bne a0, a1, failedtest_report_end
     failedtest_report_xepc:
-        LA(x9, xepcstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, xepcstr)
+        call rvmodel_io_write_str
         # Load CSR_XEPC (12-bit CSR addr) placed after STR_PTR
         lhu x6, 2*REGWIDTH(DEFAULT_LINK_REG)
         LI(x7, CSR_MEPC)
@@ -465,14 +464,14 @@
         2:
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        mv x7, a0           # move xepc
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
     failedtest_report_xepc_instr:
         # Print instruction at xepc
-        LA(x9, xepcinstrstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, xepcinstrstr)
+        call rvmodel_io_write_str
         # Check if its a compressed instruction
-        mv x7, a0           # move xepc
         lhu a0, 0(x7)       # load lower half of instruction at xepc
         li a1, 16
         andi x8, a0, 3
@@ -484,17 +483,17 @@
         li a1, 32
         1:
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 #endif
 
     failedtest_report_end:
         # Print end string
-        LA(x9, endstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, endstr)
+        call rvmodel_io_write_str
 
     failedtest_terminate:
-        RVMODEL_HALT_FAIL
+        call rvmodel_halt_fail
 
 
     # Convert hex number to ASCII string and store result in ascii_buffer
@@ -644,15 +643,16 @@
     successstr:
         // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
         // clang does not allow implicit string concatenation with .string directives
+        // NOTE: the SELFCHECK and non-SELFCHECK branches MUST emit the same number of bytes so
+        // that every symbol defined after successstr (including begin_signature) lands at the
+        // same address in both the .elf and .sig.elf builds.
         #ifdef RVTEST_SELFCHECK
             .ascii "\nRVCP-SUMMARY: TEST PASSED - Test File \""
-            .ascii TEST_FILE
-            .asciz "\"\n\n"
         #else
             .ascii "\nRVCP-SUMMARY: TEST SIGRUN - Test File \""
-            .ascii TEST_FILE
-            .asciz "\"\n"
         #endif
+        .ascii TEST_FILE
+        .asciz "\"\n\n"
     failstr:
         .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
         .ascii TEST_FILE

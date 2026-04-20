@@ -1,1 +1,1 @@
-spike {debug:-l --log-commits} --isa=rv32imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcf_zcd_zaamo_zalrsc
+spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv32imafdc_zicclsm_zicsr_zifencei_zicntr_zca_zcf_zcd_zaamo_zalrsc

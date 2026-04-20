@@ -13,5 +13,5 @@ To build the UDB configuration, coverage files and ELFs run the following
 command from the top of your working copy of this repo:
 
 ```
-$ make -j$(nproc) CONFIG_FILES=config/cores/cva6/cv32a65x/test_config.yaml
+$ make CONFIG_FILES=config/cores/cva6/cv32a65x/test_config.yaml
 ```

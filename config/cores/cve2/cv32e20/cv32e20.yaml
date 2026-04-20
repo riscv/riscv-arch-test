@@ -37,7 +37,7 @@ params:
   M_MODE_ENDIANNESS: little
   #U_MODE_ENDIANNESS: little
 
-  # trap/exception behavior (!VERIFIED)
+  # trap/exception behavior (VERIFIED)
   #TRAP_ON_ECALL_FROM_U: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
@@ -46,7 +46,7 @@ params:
   TRAP_ON_UNIMPLEMENTED_CSR: false
   TRAP_ON_ILLEGAL_WLRL: false
 
-  # MTVAL reporting (!VERIFIED)
+  # MTVAL reporting (VERIFIED)
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
   REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
@@ -57,7 +57,7 @@ params:
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true   
   MTVAL_WIDTH: 32
 
-  # Misaligned load/store support (!VERIFIED)
+  # Misaligned load/store support (VERIFIED)
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: low # LSU documentation says: “If an error response is received for the first transaction, the second transaction will still be issued and ignored.” means that Misalignment does not cause an exception
   MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0 # no A extension, no atomicity requirements
@@ -65,11 +65,11 @@ params:
 
   # CSR / implementation IDs (VERIFIED)
   ARCH_ID_VALUE: 0x23
-  IMP_ID_VALUE: 0x0
+  # IMP_ID_VALUE is gated by MIMPID_IMPLEMENTED=true; omitted because mimpid is read-only-0 in RTL
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
 
-  # MTVEC (!VERIFIED)
+  # MTVEC (VERIFIED)
   MTVEC_MODES: [1]
   MTVEC_ACCESS: rw
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
@@ -78,14 +78,14 @@ params:
   #Parameter is not defined by this config: 'MTVEC_BASE_ALIGNMENT_DIRECT'.
   #  Needs: ((`Sm=1.11.0`{false} || `Sm=1.12.0`{true} || `Sm=1.13.0`{false}) && !`(MTVEC_ACCESS=="ro")`{false} && (!`Sm=1.11.0`{false} || !`Sm=1.12.0`{true}) && (!`Sm=1.11.0`{false} || !`Sm=1.13.0`{false}) && (!`Sm=1.12.0`{true} || !`Sm=1.13.0`{false}) && `Sm>=0`{true} && `(MTVEC_ACCESS=="rw")`{true} && `$array_includes?(MTVEC_MODES, 0)`{false})
 
-  # Sm params (!VERIFIED)
-  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
-  MARCHID_IMPLEMENTED: true
-  MIMPID_IMPLEMENTED: true
-  PMA_GRANULARITY: 3 # Why is this needed?!?
+  # Sm params (VERIFIED)
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED — 2-stage in-order pipeline, no imprecise-exception path in RTL
+  MARCHID_IMPLEMENTED: true # VERIFIED — cve2_pkg.sv:563 MARCHID=32'd35; cs_registers.sv:272 returns non-zero
+  MIMPID_IMPLEMENTED: false # VERIFIED — cve2_pkg.sv:572 CSR_MIMPID_VALUE=32'b0 hardcoded (spec: read-only-0 == not implemented)
+  PMA_GRANULARITY: 2 # VERIFIED — no PMA hardware in RTL; 32-bit OBI bus with byte enables (load_store_unit.sv:32 data_be_o[3:0]) => 4-byte (2^2) natural granule; matches cv32e40p precedent
 
-  # CONFIG PTR (!VERIFIED)
-  CONFIG_PTR_ADDRESS: 0x0
+  # CONFIG PTR (VERIFIED)
+  CONFIG_PTR_ADDRESS: 0x0 # VERIFIED — cve2_pkg.sv:577 CSR_MCONFIGPTR_VALUE=32'b0 hardcoded
 
   # HPM (VERIFIED)
   HPM_EVENTS: [0]

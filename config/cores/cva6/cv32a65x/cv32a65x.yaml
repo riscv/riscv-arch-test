@@ -29,7 +29,7 @@ params:
   MUTABLE_MISA_C: false
 
   # Addressing & Memory
-  PHYS_ADDR_WIDTH: 32         
+  PHYS_ADDR_WIDTH: 32
   M_MODE_ENDIANNESS: little # Default RISC-V + CVA6 behaviour
   PMA_GRANULARITY: 4 # No programmable PMA unit (fixed by system bus)
   

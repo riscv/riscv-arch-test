@@ -103,9 +103,7 @@ FROM ubuntu:24.04 AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# mise needs curl + ca-certificates to download tools.
-# The remaining packages are required by ruby-build to compile Ruby from source (mise uses ruby-build under the hood and
-# does not use the distro Ruby package).
+# mise needs curl + ca-certificates to download tools, build-essential is needed for installation of Ruby gems.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \

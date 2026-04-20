@@ -78,8 +78,8 @@
   ],
   "packageRules": [
     {
-      "description": "Do not update Python or Ruby language versions",
-      "matchDepNames": ["python", "ruby"],
+      "description": "Do not update Ruby language versions",
+      "matchDepNames": ["ruby"],
       "enabled": false
     },
     {

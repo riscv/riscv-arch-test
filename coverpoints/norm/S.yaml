@@ -18,7 +18,7 @@ normative_rule_definitions:
   # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
   # set to 0.
   - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
-    coverpoint: ["S_sprivist_cg/cp_sret_s"]
+    coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 
   # The SIE bit enables or disables all interrupts in supervisor mode. When SIE is
   # clear, interrupts are not taken while in supervisor mode. When the hart is
@@ -35,7 +35,7 @@ normative_rule_definitions:
   - names: [sstatus_spie_sz, sstatus_spie_acc, sstatus_spie_op]
     coverpoint:
       [
-        "InterruptsS_cg/cp_user_mti, ExceptionsS_cg/cp_medeleg_msu_illegalinstruction, S_sprivist_cg/cp_sret_s",
+        "InterruptsS_cg/cp_user_mti, ExceptionsS_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s",
       ]
 
   # The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may
@@ -352,3 +352,88 @@ normative_rule_definitions:
   # read-only zero.
   - name: senvcfg_fiom_acc
     coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]
+
+  # although CSRs and instructions are associated with one privilege level, they are
+  # also accessible at all higher privilege levels.
+  - name: Zicsr_higher_priv
+    coverpoint: ["S_scsr_cg/cp_scsr_from_m", "S_scsr_cg/cp_ucsr_from_s"]
+
+  # The top two bits (csr[11:10]) indicate whether the register is read/write
+  # (00,01, or 10) or read-only (11).
+  - name: Zicsr_rw
+    coverpoint: ["S_scsr_cg/cp_csr_ro"]
+
+    # The next two bits (csr[9:8]) encode the lowest privilege level that can access
+  # the CSR.
+  - name: Zicsr_access
+    coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
+
+  # Attempts to access a CSR without appropriate privilege level raise
+  # illegal-instruction exceptions or, as described in &lt;&lt;sec:hcauses&gt;&gt;,
+  # virtual-instruction exceptions.
+  - name: Zicsr_illegal_mode
+    coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
+
+  # Attempts to write a read-only register raise illegal-instruction exceptions.
+  - name: Zicsr_illegal_acc
+    coverpoint: ["S_scsr_cg/cp_csr_ro"]
+
+  # A read/write register might also contain some bits that are read-only, in which
+  # case writes to the read-only bits are ignored.
+  - name: Zicsr_write_ro
+    coverpoint: ["S_scsr_cg/cp_scsr_access checks this if applicable"]
+
+  # 0x7B0-0x7BF are only visible to debug mode. Implementations should raise
+  # illegal-instruction exceptions on machine-mode access to the latter set of
+  # registers.
+  - name: Zicsr_debug-illegal
+    coverpoint: ["S_scsr_cg/cp_csr_insufficient_priv"]
+
+  # For forward compatibility, implementations that do not furnish these fields must
+  # make them read-only zero. These fields are labeled WPRI in the register
+  # descriptions.
+  - name: Zicsr_wpri_roz
+    coverpoint: ["S_scsr_cg/cp_scsr_access (e.g. sstatus)"]
+
+  # Software should not write anything other than legal values to such a field, and
+  # should not assume a read will return a legal value unless the last write was of
+  # a legal value, or the register has not been written since another operation
+  # (e.g., reset) set the register to a legal value. These fields are labeled WLRL
+  # in the register descriptions.
+  - name: Zicsr_wlrl
+    coverpoint: ["S_scsr_cg/cp_scsr_access scause"]
+
+  # Implementations are permitted but not required to raise an illegal-instruction
+  # exception if an instruction attempts to write a non-supported value to a WLRL
+  # field.
+  - name: Zicsr_wlrl_exception
+    coverpoint: ["Not tested - no wrong answer"]
+
+  # Implementations will not raise an exception on writes of unsupported values to a
+  # WARL field.
+  - name: Zicsr_warl
+    coverpoint: ["S_scsr_cg/cp_scsr_access"]
+
+  # The ECALL instruction is used to make a service request to the execution
+  # environment.
+  - name: ecall_op
+    coverpoint: ["S_sprivinst_cg/cp_sprivinst ecall bin"]
+
+  # The EBREAK instruction is used to return control to a debugging environment.
+  - name: ebreak_op
+    coverpoint: ["S_sprivinst_cg/cp_sprivinst ebreak bin"]
+
+  - name: mret_in_S_mode
+    coverpoint: ["S_sprivinst_cg/cp_sprivinst mret bin"]
+
+  - name: sret_presence
+    coverpoint: ["S_sprivinst_cg/cp_sprivinst sret bin"]
+
+  - name: sret_ill_inst_exc_rst
+    coverpoint: ["TODO"]
+
+  - name: sret_op
+    coverpoint: ["S_privinst_cg/cp_privinst sret bin"]
+
+  - name: sfence_vma_op
+    coverpoint: ["S_privinst_cg/cp_sprivinst sfence_vma bin"]

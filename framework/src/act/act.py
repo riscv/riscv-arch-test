@@ -7,14 +7,20 @@
 # Main entry point for RISC-V architecture verification framework
 ##################################
 
+from __future__ import annotations
+
+import os
+import sys
 from pathlib import Path
 from typing import Annotated
 
 import typer
 
-from act.config import load_config
-from act.makefile_gen import ConfigData, generate_makefiles
-from act.parse_test_constraints import generate_test_dict
+from act.build import BuildTask, build
+from act.build_plan import generate_build_plan
+from act.config import CoverageSimulator, load_config
+from act.coverreport import print_coverage_summary
+from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.parse_udb_config import generate_udb_files, get_config_params, get_implemented_extensions
 from act.select_tests import select_tests
 
@@ -45,32 +51,65 @@ def run_act(
         str,
         typer.Option("--exclude", "-x", help="Comma-separated list of extensions to exclude from test generation"),
     ] = "",
+    jobs: Annotated[
+        int,
+        typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
+    ] = 0,
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
     fast: Annotated[bool, typer.Option(help="Disable objdump generation for faster builds")] = False,
+    verbose: Annotated[
+        bool, typer.Option(help="Implies --debug, serializes builds (jobs=1), and prints each command as it runs")
+    ] = False,
+    keep_going: Annotated[bool, typer.Option("--keep-going", "-k", help="Continue building after failures")] = False,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", "-n", help="Show what would be built without executing")
+    ] = False,
+    coverage_simulator: Annotated[
+        CoverageSimulator,
+        typer.Option(help="Coverage simulator backend", case_sensitive=False),
+    ] = CoverageSimulator.QUESTA,
 ) -> None:
+
+    # Parse options
+    if verbose:
+        debug = True
+        jobs = 1
+
     if debug and fast:
         raise typer.BadParameter("--debug and --fast cannot be used together")
 
     if workdir is None:
         workdir = Path.cwd() / "work"
 
-    # Generate test list
-    full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    if jobs <= 0:
+        jobs = os.cpu_count() or 1
 
-    configs: list[ConfigData] = []
+    # Resolve paths
+    test_dir = test_dir.absolute()
+    coverpoint_dir = coverpoint_dir.absolute()
+    workdir = workdir.absolute()
+
+    # Generate test list
+    try:
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+    except TestYamlHeaderError as e:
+        e.print()
+        raise typer.Exit(1) from None
+
+    config_names: list[str] = []
+    tasks: list[BuildTask] = []
     for config_file in config_files:
         # Load configuration
         config = load_config(config_file)
-        udb_config_file = config.udb_config
         config_dir = workdir / config.udb_config.stem
         config_dir.mkdir(parents=True, exist_ok=True)
 
         # UDB integration
-        generate_udb_files(udb_config_file, config_dir)
+        generate_udb_files(config.udb_config, config_dir)
         implemented_extensions = get_implemented_extensions(config_dir / "extensions.txt")
-        config_params = get_config_params(udb_config_file)
+        config_params = get_config_params(config.udb_config)
 
         # Select tests for config
         selected_tests = select_tests(
@@ -79,27 +118,49 @@ def run_act(
         mxlen = config_params["MXLEN"]
         if not isinstance(mxlen, int):
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
-        configs.append(
-            {
-                "config": config,
-                "xlen": mxlen,
-                "e_ext": "E" in implemented_extensions,
-                "selected_tests": selected_tests,
-            }
+
+        config_names.append(config.name)
+        tasks.extend(
+            generate_build_plan(
+                config,
+                mxlen,
+                selected_tests,
+                test_dir,
+                coverpoint_dir,
+                workdir,
+                coverage,
+                coverage_simulator,
+                debug,
+                fast,
+            )
         )
 
-    # Generate Makefiles
-    generate_makefiles(
-        configs,
-        test_dir.absolute(),
-        coverpoint_dir.absolute(),
-        workdir.absolute(),
-        coverage,
-        debug,
-        fast,
-    )
-    print(f"Makefiles generated in {workdir}")
-    print(f"Run make -C {workdir} compile to build all tests.")
+    # Run all tasks to compile ELFs
+    result = build(tasks, jobs=jobs, keep_going=keep_going, dry_run=dry_run, verbose=verbose)
+
+    # Print summary
+    parts = []
+    if result.succeeded:
+        parts.append(f"{result.succeeded} succeeded")
+    if result.skipped:
+        parts.append(f"{result.skipped} up-to-date")
+    if result.failed:
+        parts.append(f"{result.failed} failed")
+    print(f"Build complete: {', '.join(parts)}")
+
+    if result.errors:
+        print(f"\n{len(result.errors)} task(s) failed:", file=sys.stderr)
+        for error in result.errors:
+            print(f"  - {error.task_name}", file=sys.stderr)
+        sys.exit(1)
+
+    # Always print coverage summaries when coverage is enabled, even if up-to-date
+    if coverage:
+        for name in config_names:
+            overall_summary = workdir / name / "reports" / "_overall_summary.txt"
+            if overall_summary.exists():
+                print()
+                print_coverage_summary(overall_summary, name)
 
 
 def main() -> None:

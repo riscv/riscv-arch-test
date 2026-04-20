@@ -119,12 +119,16 @@ include::in_scope_param_intro.adoc[]
 |===
 | Parameter | Allowed Value(s) | Impact on Certificate Scope
 
+| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+| Any
+| Only counters with a size of 0 are IN-SCOPE since the behavior of HPM counters is implementation-specific.
+
 | <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
 | Any
 | The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
 
 | <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
-| True, False
+| Any
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
 
@@ -149,7 +153,7 @@ include::out_of_scope_param_intro.adoc[]
 |===
 | Parameter
 
-| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+| TBD
 
 |===
 

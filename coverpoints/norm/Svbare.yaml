@@ -1,0 +1,6 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # TODO when rules from profiles are merged
+  - name: satp_mode_op
+    coverpoint: ["Svbare_cg/cp_satp_bare"]

@@ -16,28 +16,61 @@ covergroup ExceptionsZicboU_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
     // building blocks for the main coverpoints
-    cbo_inval: coverpoint ins.current.insn {
-       wildcard bins cbo_inval = {32'b000000000000_?????_010_00000_0001111};
+    `ifdef ZICBOM_SUPPORTED
+        cbo_inval: coverpoint ins.current.insn {
+        wildcard bins cbo_inval = {CBO_INVAL};
+        }
+        cbo_flushclean: coverpoint ins.current.insn {
+            wildcard bins cbo_flush = {CBO_FLUSH};
+            wildcard bins cbo_clean = {CBO_CLEAN};
+        }
+        menvcfg_cbie: coverpoint ins.current.csr[12'h30A][5:4] {
+            ignore_bins reserved = {2'b10};
+        }
+        menvcfg_cbcfe: coverpoint ins.current.csr[12'h30A][6] {
+        }
+    `endif
+    `ifdef ZICBOZ_SUPPORTED
+        cbo_zero: coverpoint ins.current.insn {
+            wildcard bins cbo_zero = {CBO_ZERO};
+        }
+        menvcfg_cbze: coverpoint ins.current.csr[12'h30A][7] {
+        }
+    `endif
+
+    adr_misaligned: coverpoint ins.current.rs1_val[0]  {
+        bins misaligned = {1};
     }
-    cbo_flushclean: coverpoint ins.current.insn {
-        wildcard bins cbo_flush = {32'b000000000010_?????_010_00000_0001111};
-        wildcard bins cbo_clean = {32'b000000000001_?????_010_00000_0001111};
+    menvcfg_all_enable: coverpoint ins.current.csr[12'h30A][7:4] {
+        bins ones = {4'b1111};
     }
-    cbo_zero: coverpoint ins.current.insn {
-        wildcard bins cbo_zero = {32'b000000000100_?????_010_00000_0001111};
-    }
-    menvcfg_cbie: coverpoint ins.current.csr[12'h30A][5:4] {
-        ignore_bins reserved = {2'b10};
-    }
-    menvcfg_cbcfe: coverpoint ins.current.csr[12'h30A][6] {
-    }
-    menvcfg_cbze: coverpoint ins.current.csr[12'h30A][7] {
+    cbo_instrs: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins inval = {CBO_INVAL};
+            wildcard bins clean  = {CBO_CLEAN};
+            wildcard bins flush  = {CBO_FLUSH};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zero   = {CBO_ZERO};
+        `endif
+        wildcard bins prefetch_i  = {PREFETCH_I};
+        wildcard bins prefetch_w  = {PREFETCH_W};
+        wildcard bins prefetch_r  = {PREFETCH_R};
     }
 
     // main coverpoints
     cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_m_u;
     cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_m_u;
     cp_cbze:  cross cbo_zero,       menvcfg_cbze,  priv_mode_m_u;
+    cp_cbo_address_misaligned:  cross cbo_instrs,     adr_misaligned, priv_mode_m_u, menvcfg_all_enable;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, priv_mode_m_u, menvcfg_all_enable;
+    `endif
 
 endgroup
 

@@ -40,6 +40,22 @@
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
         j failedtest_saveregs
 
+#ifdef rvtest_mtrap_routine
+    # Log failure. x7 contains return address of jal from the failure and x9 is a vacant temporary register
+    failedtest_trap_x7_x9:
+        la x9, begin_failure_scratch
+        SREG x7, 104(x9)               # store return address
+        SREG DEFAULT_TEMP_REG, 32(x9)  # save DEFAULT_TEMP_REG
+        SREG DEFAULT_LINK_REG, 40(x9)  # save DEFAULT_LINK_REG
+        SREG x1, 8(x9)                 # save x1 early
+        li x1, 3
+        sw x1, 0(x9)                   # failure_type = 3 (trap handler)
+        mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
+        mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
+        # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
+        j failedtest_saveregs
+#endif
+
 #ifdef RVTEST_FP
     # FP failure entry points (failure_type = 1)
     failedtest_fp_x5_x4:
@@ -226,10 +242,13 @@
         sw x6, 260(DEFAULT_TEMP_REG)      # record failing_reg
 
         # Load bad FP value from scratch memory (written by FSREG in the sigupd macro)
+        # Use FP_LREG so we read exactly the CONFIG_FLEN bits FSREG stored,
+        # zero-extending on RV64+F-only where fsw wrote fewer bytes than LREG reads.
+        # See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
         la x6, scratch
-        LREG x7, 0(x6)
+        FP_LREG x7, 0(x6)
         SREG x7, 272(DEFAULT_TEMP_REG)    # failing_value (lower/only)
-    #if FLEN > XLEN
+    #if CONFIG_FLEN > XLEN
         LREG x7, REGWIDTH(x6)
         la x8, failing_value_upper
         SREG x7, 0(x8)                    # failing_value upper half
@@ -249,7 +268,7 @@
         # Load full expected FP value from signature
         LREG x7, 0(x6)
         SREG x7, 280(DEFAULT_TEMP_REG)    # expected_value (lower/only)
-    #if FLEN > XLEN
+    #if CONFIG_FLEN > XLEN
         LREG x7, SIG_STRIDE(x6)
         la x8, expected_value_upper
         SREG x7, 0(x8)                    # expected_value upper half
@@ -262,7 +281,15 @@
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
 
         # Save failing address (loaded from embedded instruction pointer after jal)
-        LREG x6, 0(DEFAULT_LINK_REG)      # load the instruction address from memory
+        # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
+    #if __riscv_xlen == 64
+        lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
+        lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
+        slli x7, x7, 32
+        or x6, x6, x7                    # combine into 64-bit value
+    #else
+        lw x6, 0(DEFAULT_LINK_REG)       # RV32: 4-byte aligned, safe
+    #endif
         SREG x6, 264(DEFAULT_TEMP_REG)
 
         # Fetch the failing instruction using INSTR_PTR address
@@ -278,29 +305,36 @@
         sw x7, 256(DEFAULT_TEMP_REG)      # record failing instruction (16 or 32 bits)
 
         # Get pointer to failure string (loaded from second embedded pointer after jal)
-        LREG x6, REGWIDTH(DEFAULT_LINK_REG) # load the string pointer from memory
+        # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
+    #if __riscv_xlen == 64
+        lwu x6, REGWIDTH(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
+        lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)      # load upper 32 bits
+        slli x7, x7, 32
+        or x6, x6, x7                     # combine into 64-bit value
+    #else
+        lw x6, REGWIDTH(DEFAULT_LINK_REG) # RV32: 4-byte aligned, safe
+    #endif
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:
-        # RVMODEL_IO_INIT(x6, x7, x8)
       print_failstr:
-        LA(x9, failstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, failstr)
+        call rvmodel_io_write_str
 
         # Print test name string
       print_testnamestr:
-        LA(x9, testnamestr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, testnamestr)
+        call rvmodel_io_write_str
       print_failure_test_name_str:
-        LREG x9, failure_string_ptr
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LREG a0, failure_string_ptr
+        call rvmodel_io_write_str
       print_newline_str:
-        LA(x9, newlinestr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, newlinestr)
+        call rvmodel_io_write_str
 
         # Print failing instruction (detect 16-bit compressed vs 32-bit)
-        LA(x9, inststr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, inststr)
+        call rvmodel_io_write_str
         lw a0, failing_instruction
         li a1, 32            # assume 32-bit instruction
         andi a2, a0, 3
@@ -309,24 +343,27 @@
         li a1, 16            # compressed: print as 16-bit
     2:
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print failing address (XLEN-bit)
-        LA(x9, addrstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, addrstr)
+        call rvmodel_io_write_str
         LREG a0, failing_addr
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print failing register — "x<N>" for int, "f<N>" for FP, "fflags" for fflags
-        LA(x9, regstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, regstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
-        bnez a0, failedtest_report_not_intreg
+        beqz a0, 1f
+        li a1, 3    # Trap handler also uses int regs
+        bne a0, a1, failedtest_report_not_intreg
         # Integer: write "x" + decimal register number
+        1:
         li a1, 'x'
         LA(a2, ascii_buffer)
         sb a1, 0(a2)
@@ -338,8 +375,8 @@
         li a1, 1
         beq a0, a1, failedtest_report_fpreg
         # fflags: print "fflags\n"
-        LA(x9, fflagsstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, fflagsstr)
+        call rvmodel_io_write_str
         j failedtest_report_after_reg
     failedtest_report_fpreg:
         # FP: write "f" + decimal register number
@@ -350,23 +387,23 @@
         lw a0, failing_reg
         jal failedtest_dec_to_str
     failedtest_report_print_regstr:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
     failedtest_report_after_reg:
 
         # Print failing value — type-aware
-        LA(x9, badvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, badvalstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_badval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
-        # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
+    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, failing_value_upper
         LREG a1, failing_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with FLEN <= XLEN (or FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, failing_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
@@ -378,22 +415,22 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
     failedtest_report_badval_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print expected value — type-aware
-        LA(x9, expvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, expvalstr)
+        call rvmodel_io_write_str
         lw a0, failure_type
         li a1, 1
         bne a0, a1, failedtest_report_expval_not_fp
-    #if defined(RVTEST_FP) && FLEN > XLEN
-        # FP with FLEN > XLEN: combined hex "0xUPPER_LOWER"
+    #if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
+        # FP with CONFIG_FLEN > XLEN: combined hex "0xUPPER_LOWER"
         LREG a0, expected_value_upper
         LREG a1, expected_value
         jal failedtest_combined_hex_to_str
     #else
-        # FP with FLEN <= XLEN (or FLEN not defined): standard hex
+        # FP with CONFIG_FLEN <= XLEN (or CONFIG_FLEN not defined): standard hex
         LREG a0, expected_value
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
@@ -405,15 +442,58 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
     failedtest_report_expval_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
+#ifdef rvtest_mtrap_routine
+    failedtest_report_traphandler:
+        lw a0, failure_type
+        li a1, 3            # Failed in trap handler
+        bne a0, a1, failedtest_report_end
+    failedtest_report_xepc:
+        LA(a0, xepcstr)
+        call rvmodel_io_write_str
+        # Load CSR_XEPC (12-bit CSR addr) placed after STR_PTR
+        lhu x6, 2*REGWIDTH(DEFAULT_LINK_REG)
+        LI(x7, CSR_MEPC)
+        bne x6, x7, 1f
+        csrr a0, mepc
+        j 2f
+        1:
+        csrr a0, sepc
+        2:
+        li a1, __riscv_xlen
+        jal failedtest_hex_to_str
+        mv x7, a0           # move xepc
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+    failedtest_report_xepc_instr:
+        # Print instruction at xepc
+        LA(a0, xepcinstrstr)
+        call rvmodel_io_write_str
+        # Check if its a compressed instruction
+        lhu a0, 0(x7)       # load lower half of instruction at xepc
+        li a1, 16
+        andi x8, a0, 3
+        li x9, 3
+        bne x8, x9, 1f      # compressed: only lower half needed
+        lhu x8, 2(x7)
+        slli x8, x8, 16
+        or a0, a0, x8
+        li a1, 32
+        1:
+        jal failedtest_hex_to_str
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
+#endif
+
+    failedtest_report_end:
         # Print end string
-        LA(x9, endstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, endstr)
+        call rvmodel_io_write_str
 
     failedtest_terminate:
-        RVMODEL_HALT_FAIL
+        call rvmodel_halt_fail
 
 
     # Convert hex number to ASCII string and store result in ascii_buffer
@@ -478,7 +558,7 @@
         ret
 
 
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
     # Convert two XLEN-wide values to combined hex string: "0xUPPER_LOWER\n\0"
     # a0: upper XLEN-bit value
     # a1: lower XLEN-bit value
@@ -550,7 +630,7 @@
         .fill 2, 4, 0xfeedf00dbaaaaaad
     failure_string_ptr:
         .fill 2, 4, 0xfeedf00dbaaaaaad
-#if defined(RVTEST_FP) && FLEN > XLEN
+#if defined(RVTEST_FP) && CONFIG_FLEN > XLEN
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:
@@ -563,19 +643,20 @@
     successstr:
         // Sequence of .ascii and .asciz is used to create a multi-part string with a single null terminator
         // clang does not allow implicit string concatenation with .string directives
+        // NOTE: the SELFCHECK and non-SELFCHECK branches MUST emit the same number of bytes so
+        // that every symbol defined after successstr (including begin_signature) lands at the
+        // same address in both the .elf and .sig.elf builds.
         #ifdef RVTEST_SELFCHECK
-            .ascii "\nRVCP-SUMMARY: Test File \""
-            .ascii TEST_FILE
-            .asciz "\": PASSED\n\n"
+            .ascii "\nRVCP-SUMMARY: TEST PASSED - Test File \""
         #else
-            .ascii "\nRVCP-SUMMARY: Test File \""
-            .ascii TEST_FILE
-            .asciz "\": SIGRUN\n"
+            .ascii "\nRVCP-SUMMARY: TEST SIGRUN - Test File \""
         #endif
-    failstr:
-        .ascii "\nRVCP-SUMMARY: Test File \""
         .ascii TEST_FILE
-        .asciz "\": FAILED\nRVCP: DEBUG INFORMATION FOLLOWS\n"
+        .asciz "\"\n\n"
+    failstr:
+        .ascii "\nRVCP-SUMMARY: TEST FAILED - Test File \""
+        .ascii TEST_FILE
+        .asciz "\"\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
     testnamestr:
@@ -587,6 +668,80 @@
 #ifdef RVTEST_PRIV_TEST
     addrstr:
         .string "RVCP: Approximate address (failure may be slightly after this): "
+    xepcstr:
+        .string "RVCP: Address of instruction that trapped (XEPC): "
+    xepcinstrstr:
+        .string "RVCP: Instruction that trapped: "
+    trap_sig_offset_mismatch:
+        .string "\"Mismatch in trap signature pointer offset! The test likely observed an incorrect number of traps.\"";
+    sv_Mvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in M-Mode.\"";
+    sv_Svect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in S-Mode.\"";
+    sv_Hvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in HS-Mode.\"";
+    sv_Vvect_str:
+        .string "\"Mismatch in trap vector signature! Trap was being handled in VS-Mode.\"";
+    sv_Mcause_str:
+        .string "\"Mismatch in mcause value! Trap was being handled in M-Mode.\"";
+    sv_Scause_str:
+        .string "\"Mismatch in scause value! Trap was being handled in S-Mode.\"";
+    sv_Hcause_str:
+        .string "\"Mismatch in scause value! Trap was being handled in HS-Mode.\"";
+    sv_Vcause_str:
+        .string "\"Mismatch in vscause value! Trap was being handled in VS-Mode.\"";
+    sv_Mepc_str:
+        .string "\"Mismatch in mepc value! Trap was being handled in M-Mode.\"";
+    sv_Sepc_str:
+        .string "\"Mismatch in sepc value! Trap was being handled in S-Mode.\"";
+    sv_Hepc_str:
+        .string "\"Mismatch in sepc value! Trap was being handled in HS-Mode.\"";
+    sv_Vepc_str:
+        .string "\"Mismatch in vsepc value! Trap was being handled in VS-Mode.\"";
+    sv_Mtval_str:
+        .string "\"Mismatch in mtval value! Trap was being handled in M-Mode.\"";
+    sv_Stval_str:
+        .string "\"Mismatch in stval value! Trap was being handled in S-Mode.\"";
+    sv_Htval_str:
+        .string "\"Mismatch in stval value! Trap was being handled in HS-Mode.\"";
+    sv_Vtval_str:
+        .string "\"Mismatch in vstval value! Trap was being handled in VS-Mode.\"";
+    sv_Mtval2_str:
+        .string "\"Mismatch in mtval2 value! Trap was being handled in M-Mode.\"";
+    sv_Mtinst_str:
+        .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
+    sv_Mip_str:
+        .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
+    sv_Sip_str:
+        .string "\"Mismatch in sip value! Trap was being handled in S-Mode.\"";
+    sv_Hip_str:
+        .string "\"Mismatch in hip value! Trap was being handled in HS-Mode.\"";
+    sv_Vip_str:
+        .string "\"Mismatch in vsip value! Trap was being handled in VS-Mode.\"";
+    Mclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in M-Mode.\"";
+    Mclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Mclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in M-Mode.\"";
+    Sclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Sclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in S-Mode.\"";
+    Hclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Hclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Hclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in HS-Mode.\"";
+    Vclr_Mext_int_str:
+        .string "\"Mismatch in machine external interrupt ID! Trap was being handled in VS-Mode.\"";
+    Vclr_Sext_int_str:
+        .string "\"Mismatch in supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
+    Vclr_Vext_int_str:
+        .string "\"Mismatch in virtual supervisor external interrupt ID! Trap was being handled in VS-Mode.\"";
 #else
     addrstr:
         .string "RVCP: Address: "
@@ -601,4 +756,6 @@
         .string "RVCP: END OF DEBUG INFORMATION\n\n"
     fflagsstr:
         .string "fflags\n"
+    canary_mismatch:
+        .string "Testcase signature canary mismatch!"
 .endm

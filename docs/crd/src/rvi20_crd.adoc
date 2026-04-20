@@ -1,4 +1,4 @@
-= RVI20 Certification Requirements Document (rev 0.8)
+= RVI20 Certification Requirements Document (rev 1.0)
 :description: RVI20 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -17,6 +17,11 @@ History of documentation changes that eventually lead to releases.
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
+
+| Mar 10, 2026
+| 1.0 - Voted on and approved by the CSC Requirements WG on this date
+a| * Set allowed values for MISALIGNED_LDST_HW_SUPPORT to be "Any" to be consistent with other parameters.
+   * Moved HPM_COUNTER_SZ to IN-SCOPE parameters and add "and will not trap if read." to its parameter definition.
 
 | Mar 10, 2026
 | 0.8
@@ -152,12 +157,16 @@ include::in_scope_param_intro.adoc[]
 |===
 | Parameter | Allowed Value(s) | Impact on Certificate Scope
 
+| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+| Any
+| Only counters with a size of 0 are IN-SCOPE since the behavior of HPM counters is implementation-specific.
+
 | <<param:LRSC_RESERVATION_STRATEGY,LRSC_RESERVATION_STRATEGY>>
 | Any
 | The load-reserved/store-conditional instructions are only IN-SCOPE if this parameter is not "Other"
 
 | <<param:MISALIGNED_LDST_HW_SUPPORT,MISALIGNED_LDST_HW_SUPPORT>>
-| True, False
+| Any
 | Misaligned load/store instructions are only IN-SCOPE if this parameter is true
 and if any restrictions on misaligned load/store instructions expressed by other parameters are met.
 
@@ -174,7 +183,7 @@ include::out_of_scope_param_intro.adoc[]
 |===
 | Parameter
 
-| <<param:HPM_COUNTER_SZ,HPM_COUNTER_SZ>>
+| None
 
 |===
 

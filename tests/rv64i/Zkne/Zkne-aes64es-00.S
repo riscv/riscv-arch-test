@@ -6269,6 +6269,8 @@ Zkne_aes64es_cg_cp_sbox_b255:
   # Check if x10 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x11, x8, x7, x10, Zkne_aes64es_cg_cp_sbox_b255, Zkne_aes64es_cg_cp_sbox_b255_str)
 
+  mv x2, x11 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

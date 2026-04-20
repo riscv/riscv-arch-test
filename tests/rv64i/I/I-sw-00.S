@@ -2178,6 +2178,8 @@ I_sw_cg_cp_align_word_b4:
 #endif
 
 
+  mv x2, x9 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

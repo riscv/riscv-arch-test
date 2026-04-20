@@ -32,7 +32,7 @@ params:
   PHYS_ADDR_WIDTH: 32
   M_MODE_ENDIANNESS: little # Default RISC-V + CVA6 behaviour
   PMA_GRANULARITY: 4 # No programmable PMA unit (fixed by system bus)
-  
+
   # Privilege & Modes
   # RVS (Supervisor) and RVU (User) are False
   # Therefore, only Machine Mode (Sm) is active
@@ -49,7 +49,7 @@ params:
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
   TRAP_ON_UNIMPLEMENTED_CSR: true
-  
+
   # mtval and trap reporting behavior (all false per TvalEN= False)
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
   REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
@@ -59,13 +59,13 @@ params:
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
   REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
-  
+
   # Trap Handling (only direct mode (0) is supported for MTVEC)
   MTVEC_ACCESS: rw
   MTVEC_MODES: [0]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   NUM_PMP_ENTRIES: 0
-  
+
   # Identification (CVA6 Specifics)
   CONFIG_PTR_ADDRESS: 0x0
   MARCHID_IMPLEMENTED: true
@@ -75,7 +75,7 @@ params:
   MISA_CSR_IMPLEMENTED: true
   VENDOR_ID_BANK: 0xC
   VENDOR_ID_OFFSET: 0x2
-  
+
   COUNTINHIBIT_EN:
     [
       false,

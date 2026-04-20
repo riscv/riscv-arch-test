@@ -65,7 +65,7 @@
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
       "datasourceTemplate": "github-releases",
-      "versioning": "loose"
+      "versioningTemplate": "loose"
     },
     {
       "description": "LLVM version in CI workflow",

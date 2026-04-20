@@ -1,11 +1,15 @@
 # rvmodel_macros.h
-# RVMODEL macro definitions for OpenHW CV32E20 core
+# RVMODEL macro definitions for OpenHW CVA6 (cv32a65x) core
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+#define RVMODEL_DATA_SECTION \
+        .pushsection .tohost,"aw",@progbits;                \
+        .align 8; .global tohost; tohost: .dword 0;         \
+        .align 8; .global fromhost; fromhost: .dword 0;     \
+        .popsection;
 
 ##### STARTUP #####
 
@@ -14,18 +18,14 @@
 # initializing custom state.
 //#define RVMODEL_BOOT
 
-# Address to use for load/store fault tests that should cause an access fault on the DUT.
-// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
-//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_PASS  \
-  li x1, 123456789        ;\
-  li t0, 0x20000000       ;\
-  write_halt_pass:        ;\
+  li x1, 1                ;\
+  la t0, tohost           ;\
+  write_tohost_pass:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_pass:         ;\
@@ -34,9 +34,9 @@
 # Terminate test with a fail indication.
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
-  li x1, 1                ;\
-  li t0, 0x20000000       ;\
-  write_halt_fail:        ;\
+  li x1, 3                ;\
+  la t0, tohost           ;\
+  write_tohost_fail:      ;\
     sw x1, 0(t0)          ;\
     sw x0, 4(t0)          ;\
   self_loop_fail:         ;\
@@ -48,7 +48,7 @@
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
 # Can be empty or left undefined if no initialization is needed.
-//#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+ //#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -65,23 +65,19 @@
   j 1b                       ; /* Loop */             \
 3:
 
-##### MTVEC Alignment #####
+##### Access Fault #####
 
-// CV32E20 RTL forces mtvec.BASE to 256-byte alignment
-// Value is log2(bytes): 8 => 256-byte alignment (matches cv32e20.yaml).
-#define RVMODEL_MTVEC_ALIGN 8
+// #define RVMODEL_ACCESS_FAULT_ADDRESS 0x50000000
 
-##### Interrupt Latency #####
+##### Machine Interrupts #####
 
+// Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-// MTIME is not implemented on this DUT. Comment out to prevent testing them.
-//#define RVMODEL_MTIME_ADDRESS
-//#define RVMODEL_MTIMECMP_ADDRESS
+##### Machine Timer #####
+
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)

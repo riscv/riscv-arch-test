@@ -694,6 +694,8 @@ D_fcvt_d_w_cg_cp_fd_b31:
   # Check if f31 contains the expected result. Also checks fflags. x1 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x1, x5, x4, f4, f31, D_fcvt_d_w_cg_cp_fd_b31, D_fcvt_d_w_cg_cp_fd_b31_str)
 
+  mv x2, x1 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

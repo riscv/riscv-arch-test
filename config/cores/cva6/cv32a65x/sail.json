@@ -10,7 +10,7 @@
       // Only HPM counter 1 and 2 are active
       "value": "0x0000_0005"
     },
-    // mtval is hardwired to 0 in cv32e40p — all REPORT_VA_IN_MTVAL_* = false
+    // mtval is hardwired to 0 in CVA6(cv32a65x) — all REPORT_VA_IN_MTVAL_* = false
     "xtval_nonzero": {
       "illegal_instruction": false,
       "software_breakpoint": false,

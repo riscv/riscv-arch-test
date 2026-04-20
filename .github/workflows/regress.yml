@@ -14,7 +14,7 @@ concurrency:
 
 env:
   SAIL_VERSION: "0.10"
-  GCC_TOOLCHAIN_VERSION: "2025.07.16"
+  GCC_TOOLCHAIN_VERSION: "2026.04.05"
   LLVM_VERSION: "22"
 
 jobs:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-22.04-gcc-nightly-${GCC_TOOLCHAIN_VERSION}-nightly.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
@@ -236,7 +236,7 @@ jobs:
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-22.04-gcc-nightly-${GCC_TOOLCHAIN_VERSION}-nightly.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)

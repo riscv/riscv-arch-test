@@ -21,9 +21,9 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS:  ['I','Zcb','Sm']
 # params:
-#   MXLEN: 32
+#   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
-# MARCH: rv32i_zicsr_zcb
+# MARCH: rv64i_zicsr_zcb
 ##### END_TEST_CONFIG #####
 
 #define TEST_FILE "pmpzcb_legal_lwxr.S"

@@ -62,6 +62,12 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### MTVEC Alignment #####
+
+// CV32E40P RTL forces mtvec.BASE to 256-byte alignment
+// Value is log2(bytes): 8 => 256-byte alignment (matches cv32e40p.yaml).
+#define RVMODEL_MTVEC_ALIGN 8
+
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
@@ -69,17 +75,7 @@
 ##### Machine Timer #####
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
-/*
- * NOTE: The following parameters are intentionally left empty.
- *
- * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
- * will FAIL because these platform-level memory-mapped registers are
- * not defined. This is a temporary state.
- *
- * To properly run the suite by excluding these specific tests (the recommended
- * workaround), refer to the instructions here:
- * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
- */
+
 // MTIME is not implemented on this DUT. Comment out to prevent testing them.
 //#define RVMODEL_MTIME_ADDRESS
 //#define RVMODEL_MTIMECMP_ADDRESS

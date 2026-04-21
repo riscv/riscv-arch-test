@@ -28,6 +28,7 @@ covergroup Zicntr_csrrc_cg with function sample(ins_t ins);
                 bins csr_instreth = {12'hC82};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup Zicntr_csrrs_cg with function sample(ins_t ins);
@@ -46,6 +47,7 @@ covergroup Zicntr_csrrs_cg with function sample(ins_t ins);
                 bins csr_instreth = {12'hC82};
         `endif
     }
+
 endgroup
 // ---------------------
 function void zicntr_sample(int hart, int issue, ins_t ins);

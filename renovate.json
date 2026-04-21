@@ -44,7 +44,7 @@
       "depNameTemplate": "tenstorrent/whisper",
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/tenstorrent/whisper",
-      "currentValueTemplate": "main"
+      "currentValueTemplate": "master"
     },
     {
       "description": "CVW commit in install script",
@@ -64,7 +64,8 @@
         "GCC_TOOLCHAIN_VERSION:\\s*\"(?<currentValue>[\\d.]+)\""
       ],
       "depNameTemplate": "riscv-collab/riscv-gnu-toolchain",
-      "datasourceTemplate": "github-releases"
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
     },
     {
       "description": "LLVM version in CI workflow",
@@ -78,8 +79,8 @@
   ],
   "packageRules": [
     {
-      "description": "Do not update Python or Ruby language versions",
-      "matchDepNames": ["python", "ruby"],
+      "description": "Do not update Ruby language versions",
+      "matchDepNames": ["ruby"],
       "enabled": false
     },
     {

@@ -2652,6 +2652,8 @@ I_slti_cg_cp_imm_edges_m0x1:
   # Check if x30 contains the expected result. x25 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x25, x5, x4, x30, I_slti_cg_cp_imm_edges_m0x1, I_slti_cg_cp_imm_edges_m0x1_str)
 
+  mv x2, x25 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

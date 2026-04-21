@@ -11,15 +11,36 @@
 from pathlib import Path
 
 from testgen.constants import (
+    INDENT,
     TESTCASES_PER_FILE,
     get_flen_for_extension,
 )
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
+from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.io.testplans import read_testplan
 from testgen.io.writer import write_test_file
+
+
+def _append_sig_reg_reset(test_file_chunks: list[TestChunk]) -> None:
+    """Move the signature pointer back to the default register after the last testcase.
+
+    Coverpoints that target x2 as a source/destination relocate the signature
+    pointer to another register and leave it there. The test teardown code
+    (RVTEST_CODE_END) assumes the signature pointer is in DEFAULT_SIG_REG, so
+    emit a `mv` at the end of the final chunk to restore it.
+    """
+    last_chunk = test_file_chunks[-1]
+    if last_chunk.end_sig_reg == IntegerRegisterFile.default_sig_reg:
+        return
+    reset = (
+        "\n"
+        f"{INDENT}mv x{IntegerRegisterFile.default_sig_reg}, x{last_chunk.end_sig_reg}"
+        f" # restore signature pointer to default register for teardown"
+    )
+    last_chunk.code = f"{last_chunk.code}\n{reset}" if last_chunk.code else reset
 
 
 def generate_unpriv_extension_tests(
@@ -94,6 +115,7 @@ def _generate_unpriv_tests_for_instruction(
     # Split into test files and write
     test_files = _split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
     for file_idx, test_file_chunks in enumerate(test_files):
+        _append_sig_reg_reset(test_file_chunks)
         write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx)
 
     # Clean up (make sure all registers were returned)

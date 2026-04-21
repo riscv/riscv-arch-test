@@ -18,15 +18,18 @@ covergroup Zicbop_prefetch_i_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for cbo.  Coverpoint just checks that instruction was executed
     // but test is more comprehensive, writing and reading back consecutive words
 
     cp_custom_prefetch : coverpoint ins.current.insn  {
         wildcard bins prefetch = {32'b???????000???????110000000010011};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup Zicbop_prefetch_r_cg with function sample(ins_t ins);
@@ -35,15 +38,18 @@ covergroup Zicbop_prefetch_r_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for cbo.  Coverpoint just checks that instruction was executed
     // but test is more comprehensive, writing and reading back consecutive words
 
     cp_custom_prefetch : coverpoint ins.current.insn  {
         wildcard bins prefetch = {32'b???????000???????110000000010011};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 covergroup Zicbop_prefetch_w_cg with function sample(ins_t ins);
@@ -52,15 +58,18 @@ covergroup Zicbop_prefetch_w_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for cbo.  Coverpoint just checks that instruction was executed
     // but test is more comprehensive, writing and reading back consecutive words
 
     cp_custom_prefetch : coverpoint ins.current.insn  {
         wildcard bins prefetch = {32'b???????000???????110000000010011};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
 endgroup
 // ---------------------
 function void zicbop_sample(int hart, int issue, ins_t ins);

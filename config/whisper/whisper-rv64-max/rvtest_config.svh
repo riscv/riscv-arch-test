@@ -10,6 +10,9 @@
 `define FLEN64
 `define VLEN256
 
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
+
 // Virtual Memory Modes
 `define SV39_SUPPORTED
 `define SV48_SUPPORTED

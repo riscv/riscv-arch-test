@@ -235,18 +235,6 @@
     `ifdef COVER_VLS8
         vls8_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_VLSCUSTOM16
-        vlscustom16_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLSCUSTOM32
-        vlscustom32_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLSCUSTOM64
-        vlscustom64_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_VLSCUSTOM8
-        vlscustom8_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_VX16
         vx16_sample(hart, issue, ins);
     `endif

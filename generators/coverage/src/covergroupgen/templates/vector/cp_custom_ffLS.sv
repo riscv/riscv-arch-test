@@ -11,12 +11,6 @@
     // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
     // memory. Element 1+ are active and access the fault address region, triggering
     // the vl-trimming behavior without trapping.
-    //
-    // NOTE for implementers: RVMODEL_ACCESS_FAULT_ADDRESS must point to a region
-    // where at least ceil(VLEN*LMUL/8) bytes are faulting (i.e. the entire page
-    // containing that address should be unmapped). With LMUL=2, the test accesses
-    // up to 2*VLEN/8 bytes starting from the fault address base. For typical
-    // implementations where address 0 is unmapped, the entire first page suffices.
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
 

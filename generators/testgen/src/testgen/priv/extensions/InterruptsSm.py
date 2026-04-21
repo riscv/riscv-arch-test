@@ -208,7 +208,6 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                 lines.extend(
                     [
                         "CSRW(mie, zero)",  # disable interrupts
-                        "CSRW(mie, zero)",  # disable interrupts
                         "# Testcase: " + binname,
                         test_data.add_testcase(binname, coverpoint, covergroup),
                     ]
@@ -223,7 +222,6 @@ def _generate_interrupt_cross_tests(test_data: TestData) -> list[str]:
                     lines.append("RVTEST_SET_MSW_INT")
 
                 # More settling
-                lines.extend([f"CSRW(mie, x{r_mie_val})", "RVTEST_IDLE_FOR_INTERRUPT"])
                 lines.extend([f"CSRW(mie, x{r_mie_val})", "RVTEST_IDLE_FOR_INTERRUPT"])
 
                 # Clear to prevent leakage

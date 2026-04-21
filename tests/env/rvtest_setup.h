@@ -225,7 +225,8 @@
 
     rvtest_clr_ssw_int:
       RVMODEL_CLR_SSW_INT(T2, T5)
-      csrci sip, 2
+      li T2, 2
+      csrc mip, T2              /* Always called from M-mode; mip.SSIP must be cleared via mip */
       ret
 
     rvtest_set_sext_int:

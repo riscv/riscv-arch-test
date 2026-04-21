@@ -2,7 +2,7 @@
 # priv/extensions/Ssu64xl.py
 #
 # Ssu64x privileged extension test generator.
-# ammarahwakeel9@gmail.com UET (April 2026)
+# Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, April 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 

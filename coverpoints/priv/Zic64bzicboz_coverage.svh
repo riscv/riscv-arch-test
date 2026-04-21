@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////
 // RISC-V Architectural Functional Coverage Covergroups
 //
-// Written: ammarahwakeel9@gmail.com
+// Written:  Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, April 2026)
 //
 // Copyright (C) : 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
@@ -14,8 +14,6 @@
 covergroup Zic64bzicboz_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `ifdef XLEN64
-    `ifdef ZICBOZ_SUPPORTED
 
     cbo_zero: coverpoint ins.current.insn {
         wildcard bins cbo_zero = {CBO_ZERO};
@@ -41,10 +39,8 @@ covergroup Zic64bzicboz_cg with function sample(ins_t ins);
         bins offset_64 = {7'd64};
     }
 
-    cp_zic64bzicboz: cross cbo_zero, cbo_zero_offset, priv_mode_u;
+    cp_zi64cb: cross cbo_zero, cbo_zero_offset ;
 
-    `endif
-    `endif
 
 endgroup
 

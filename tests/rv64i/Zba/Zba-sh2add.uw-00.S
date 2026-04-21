@@ -4227,6 +4227,8 @@ Zba_sh2add_uw_cg_cmp_rd_rs1_rs2_b31:
   # Check if x31 contains the expected result. x17 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x17, x5, x4, x31, Zba_sh2add_uw_cg_cmp_rd_rs1_rs2_b31, Zba_sh2add_uw_cg_cmp_rd_rs1_rs2_b31_str)
 
+  mv x2, x17 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

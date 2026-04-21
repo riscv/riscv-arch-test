@@ -3308,6 +3308,8 @@ Zabha_amomax_h_cg_cp_align_hword_b6:
   RVTEST_SIGUPD(x25, x8, x7, x26, Zabha_amomax_h_cg_cp_align_hword_b6, Zabha_amomax_h_cg_cp_align_hword_b6_str)
 
 
+  mv x2, x25 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

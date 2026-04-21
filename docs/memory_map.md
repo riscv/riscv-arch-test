@@ -67,7 +67,7 @@ Additional details on what each section contains and why each section is needed 
 | `rvtest_data_end`                      | End of test specific data label.                                                                                                                                                            |
 | `begin_signature` / `rvtest_sig_begin` | Start of the signature region (aligned to 16 bytes).                                                                                                                                        |
 | _(signature data)_                     | Main signature region written by test code via `RVTEST_SIGUPD`.                                                                                                                             |
-| _(trap signature)_                     | Trap handler signature region (when `CONFORMING_SM_SUPPORTED` is defined).                                                                                                                  |
+| _(trap signature)_                     | Trap handler signature region (when `S_SUPPORTED` or `CONFORMING_SM_SUPPORTED` is defined).                                                                                                 |
 | `end_signature` / `rvtest_sig_end`     | End of the signature region.                                                                                                                                                                |
 | `RVMODEL_DATA_SECTION`                 | DUT-specific data defined in `rvmodel_macros.h` (e.g. `tohost`/`fromhost` for HTIF). May be empty. Placed last so variable-size DUT data does not affect any test-visible symbol addresses. |
 

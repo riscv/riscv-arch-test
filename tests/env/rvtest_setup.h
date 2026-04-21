@@ -636,7 +636,7 @@
       // if Pointer Masking is supported, mseccfg.PMM should be initialized to 0 to turn it off
       // might as well turn off everything
       #ifdef SMMPM_SUPPORTED
-        csrw msseccfg, zero
+        csrw mseccfg, zero
       #endif
 
       #ifdef SMRNMI_SUPPORTED

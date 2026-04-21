@@ -1523,12 +1523,12 @@ skp_\__MODE__\()tval:
   .ifnc \__MODE__ , S
     .ifnc \__MODE__ , V                 // must be either M with H enabled or H
       #ifdef H_SUPPORTED
-        sv_Mtval2:
+        sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2          // **** FIXME: does this need reloc also? Its a guest phys addr
-        TRAP_SIGUPD(T4, T3, 4, sv_Mtval2, sv_Mtval2_str)  // Save MTVAL2
-        sv_Mtinst:
+        TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str)  // Save MTVAL2
+        sv_\__MODE__\()Mtinst:
         csrr    T3, CSR_MTINST
-        TRAP_SIGUPD(T4, T3, 5, sv_Mtinst, sv_Mtinst_str)  // Save MTINST
+        TRAP_SIGUPD(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str)  // Save MTINST
       #endif
     .endif
   .endif

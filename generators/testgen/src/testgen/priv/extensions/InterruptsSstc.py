@@ -327,15 +327,18 @@ def _generate_supervisor_stce_tests(test_data: TestData) -> list[str]:
 def _generate_user_sti_tests(test_data: TestData) -> list[str]:
     """cp_user_sti: U-mode STI cross (32 bins).
 
-    All 32 bins (menvcfg_stce x mstatus_mie x mstatus_sie x mideleg_sti x mie_stie)
-    are sampled at a nop in U-mode.
+    Cross of:
+      menvcfg.STCE  x  mstatus.MIE  x  mstatus.SIE  x  mideleg.STI  x  mie.STIE
+    = 2^5 = 32 bins
 
-    stce=1: stimecmp=TIME+500 so the interrupt fires AFTER the sample nop; the
-            interrupt then goes to S-mode (mideleg=1) or M-mode (mideleg=0).
-    stce=0: stimecmp=TIME+500 is set but STCE=0 disables Sstc, so no interrupt fires;
-            we only sample the CSR configuration.  mip.STIP is NOT set for stce=0
-            because doing so with mideleg=0+STIE=1 would cause M-mode to preempt
-            U-mode unconditionally before the sample instruction executes.
+    STIMECMP is always set to TIME+500 so the interrupt fires AFTER the sample
+    nop in U-mode.  The interrupt is expected to be taken in M-mode (mideleg=0)
+    or S-mode (mideleg=1) regardless of MIE/SIE — the interrupt pending bit
+    (mip.STIP) asserts only when STCE=1; when STCE=0 the Sstc extension is
+    disabled so no timer interrupt fires and we only sample the CSR state.
+
+    Note: for stce=0 we do NOT manually set mip.STIP because with
+    mideleg=0 + STIE=1 M-mode would preempt U-mode before the sample executes.
     """
     covergroup = "InterruptsS_S_cg"
     coverpoint = "cp_user_sti"
@@ -344,10 +347,10 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_user_sti",
-            "U-mode STI: menvcfg_stce x mstatus_mie x mstatus_sie\n"
-            "         x mideleg_sti x mie_stie  (32 bins)\n"
-            "stce=1: stimecmp=TIME+500, interrupt fires after sample.\n"
-            "stce=0: CSR state sampled only; no interrupt (avoids mideleg=0+STIE=1 preemption).",
+            "U-mode STI cross (32 bins)\n"
+            "menvcfg_stce x mstatus_mie x mstatus_sie x mideleg_sti x mie_stie\n"
+            "STIMECMP=TIME+500: interrupt fires after sample nop.\n"
+            "stce=0: Sstc disabled; CSR state sampled only, no interrupt.",
         ),
         "",
     ]
@@ -360,53 +363,88 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                         deleg_name = ["no_deleg", "deleg"][deleg]
                         binname = f"stce{stce}_mie{mie}_sie{sie}_{deleg_name}_stie{stie}"
 
-                        # --- common M-mode setup: disable all interrupts, clear state ---
                         lines += [
                             "",
-                            f"# cp_user_sti: STCE={stce} MIE={mie} SIE={sie} deleg={deleg} STIE={stie}",
+                            f"# ---- cp_user_sti bin: {binname} ----",
+                            "# Setup: enter M-mode, disable all interrupts, clear pending state",
                             "RVTEST_GOTO_MMODE",
+                            # Disable all interrupts and clear MIE/SIE in mstatus
                             "CSRW(mie, zero)",
-                            "csrci mstatus, 8",  # MIE=0
-                            "csrci mstatus, 2",  # SIE=0
+                            "csrci mstatus, 8",  # clear MIE  (bit 3)
+                            "csrci mstatus, 2",  # clear SIE  (bit 1)
+                            # Clear any stale STIP (bit 5 of mip)
                             f"LI(x{r_scratch}, 0x20)",
-                            f"CSRC(mip, x{r_scratch})",  # clear any pending STIP
-                            *set_stimecmp_max(r_scratch),  # stimecmp=-1
-                            *set_menvcfg_stce(r_stce, bool(stce)),  # set STCE
+                            f"CSRC(mip, x{r_scratch})",
+                            # Reset stimecmp to max so no spurious interrupt
+                            *set_stimecmp_max(r_scratch),
+                            # Programme STCE bit in menvcfg
+                            *set_menvcfg_stce(r_stce, bool(stce)),
                         ]
 
-                        # configure delegation and interrupt enable
+                        # ---- mideleg: route STI to S-mode or keep in M-mode ----
                         if deleg:
-                            lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mideleg, x{r_scratch})"]  # STI → S-mode
+                            lines += [
+                                "# mideleg.STI=1 → delegate STI to S-mode",
+                                f"LI(x{r_scratch}, 0x20)",
+                                f"CSRW(mideleg, x{r_scratch})",
+                            ]
                         else:
-                            lines.append("CSRW(mideleg, zero)")  # STI → M-mode
+                            lines += [
+                                "# mideleg.STI=0 → STI handled in M-mode",
+                                "CSRW(mideleg, zero)",
+                            ]
 
+                        # ---- mie.STIE ----
                         if stie:
-                            lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mie, x{r_scratch})"]  # STIE=1
+                            lines += [
+                                "# mie.STIE=1",
+                                f"LI(x{r_scratch}, 0x20)",
+                                f"CSRW(mie, x{r_scratch})",
+                            ]
                         else:
-                            lines.append("CSRW(mie, zero)")  # STIE=0
+                            lines += [
+                                "# mie.STIE=0",
+                                "CSRW(mie, zero)",
+                            ]
 
-                        # schedule interrupt: stce=1 fires after sample; stce=0 no interrupt
-                        if stce:
-                            lines += set_stimecmp_soon(r_scratch, r_stce, r_hi)  # stimecmp=TIME+500
-
-                        # set SIE in mstatus before entering U-mode
-                        if sie:
-                            lines.append("csrsi mstatus, 2")
-                        else:
-                            lines.append("csrci mstatus, 2")
-
-                        # MPIE controls MIE after mret into U-mode
-                        lines += set_mpie(r_scratch, bool(mie))
-                        lines.append("RVTEST_GOTO_LOWER_MODE Umode")
-                        lines.append(f"    {test_data.add_testcase(binname, coverpoint, covergroup)}")
+                        # ---- Schedule the interrupt (only meaningful when STCE=1) ----
+                        # stimecmp = TIME+500: fires after the sample nop executes.
+                        # For stce=0, Sstc is disabled so this write has no effect on mip.STIP,
+                        # but we still write it to keep the CSR state realistic.
                         lines += [
+                            "# Set stimecmp=TIME+500 (interrupt fires after sample when STCE=1)",
+                            *set_stimecmp_soon(r_scratch, r_stce, r_hi),
+                        ]
+
+                        # ---- mstatus.SIE — set before mret so it's live in U-mode ----
+                        if sie:
+                            lines += ["# mstatus.SIE=1", "csrsi mstatus, 2"]
+                        else:
+                            lines += ["# mstatus.SIE=0", "csrci mstatus, 2"]
+
+                        # ---- mstatus.MIE — encoded in MPIE so mret restores it ----
+                        lines += [
+                            "# MPIE encodes the MIE value that mret will restore",
+                            *set_mpie(r_scratch, bool(mie)),
+                        ]
+
+                        # ---- Enter U-mode, execute sample + countdown ----
+                        lines += [
+                            "RVTEST_GOTO_LOWER_MODE Umode",
+                            # Sample instruction — coverpoint is hit here
+                            f"    {test_data.add_testcase(binname, coverpoint, covergroup)}",
+                            # Short spin loop so the interrupt has time to arrive (stce=1)
+                            # and so we don't exit U-mode immediately for stce=0 bins.
                             f"    LI(x{r_scratch}, 2500)",
                             f"1:  addi x{r_scratch}, x{r_scratch}, -1",
                             f"    bnez x{r_scratch}, 1b",
                         ]
 
-                        # --- cleanup: restore stimecmp=-1, STCE=0, mideleg=0, mie=0 ---
-                        lines += mmode_sti_cleanup(r_scratch, r_stce)
+                        # ---- Cleanup: back to M-mode, restore safe CSR state ----
+                        lines += [
+                            "# Cleanup: reset stimecmp, STCE, mideleg, mie",
+                            *mmode_sti_cleanup(r_scratch, r_stce),
+                        ]
 
     test_data.int_regs.return_registers([r_scratch, r_stce, r_hi])
     return lines

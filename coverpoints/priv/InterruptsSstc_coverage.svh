@@ -52,6 +52,9 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
         menvcfg_stce_one: coverpoint ins.current.csr[12'h30A][63] {
             bins one = {1};
         }
+        menvcfg_stce_zero: coverpoint ins.current.csr[12'h30A][63] {
+            bins zero = {0};
+        }
     `else
         menvcfg_stce: coverpoint ins.current.csr[12'h31A][31] {
             // autofill 0/1
@@ -59,12 +62,18 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
         menvcfg_stce_one: coverpoint ins.current.csr[12'h31A][31] {
             bins one = {1};
         }
+        menvcfg_stce_zero: coverpoint ins.current.csr[12'h31A][31] {
+            bins zero = {0};
+        }
     `endif
     csrr: coverpoint ins.current.insn[6:0] {
         bins csrr = {7'b1110011};
     }
     read_stimecmp: coverpoint ins.current.insn[31:20] {
         bins read_stimecmp = {12'h14D};
+    }
+    sip_stip_one: coverpoint ins.current.csr[12'h144][5]{
+        bins one = {1};
     }
 
     // main coverpoints
@@ -77,7 +86,10 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     cp_supervisor_tm:   cross priv_mode_s, csrr, read_stimecmp, mcounteren_tm;
     cp_supervisor_stce: cross priv_mode_s, csrr, read_stimecmp, menvcfg_stce;
 
-    cp_user_sti:         cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie;
+    // if stce is 0, can ssip ever be 1?
+    // cp_user_sti_stce0:  cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one;
+    cp_user_sti_stce0:  cross priv_mode_u, menvcfg_stce_zero, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie;
+    cp_user_sti_stce1:  cross priv_mode_u, menvcfg_stce_one, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one;
     cp_user_tm:         cross priv_mode_u, csrr, read_stimecmp, mcounteren_tm;
     cp_user_stce:       cross priv_mode_u, csrr, read_stimecmp, menvcfg_stce;
 

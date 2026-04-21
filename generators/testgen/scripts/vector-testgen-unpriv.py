@@ -565,7 +565,7 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None):
         emul = lmul
 
       maskval = randomizeMask(test)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
 
       description = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"
       cp = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}"
@@ -607,7 +607,7 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
         emul = lmul
 
       maskval = randomizeMask(instruction, always_masked=True)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
       vta = t
       vma = m
 

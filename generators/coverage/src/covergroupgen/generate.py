@@ -368,6 +368,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
+        idx_eew = _get_indexed_eew(instr)
+        if idx_eew and idx_eew > 8:
+            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
                 effew = _get_effew(arch)
@@ -376,6 +380,9 @@ def _gen_covergroup_samples(
                 lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
+
+        if idx_eew and idx_eew > 8:
+            lines.append("`endif\n")
 
     return "".join(lines)
 
@@ -394,12 +401,7 @@ def _gen_instruction_samples(
         cps = tp[(instr, _instr_type)]
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
-        idx_eew = _get_indexed_eew(instr)
-        if idx_eew and idx_eew > 8:
-            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
         lines.extend(customize_template(templates, cp, arch, instr) for cp in cps if cp.startswith("sample_"))
-        if idx_eew and idx_eew > 8:
-            lines.append("`endif\n")
     return "".join(lines)
 
 

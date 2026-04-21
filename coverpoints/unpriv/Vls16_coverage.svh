@@ -2378,6 +2378,56 @@ covergroup Vls16_vle16ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -2617,6 +2667,56 @@ covergroup Vls16_vle32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -2860,6 +2960,56 @@ covergroup Vls16_vle64ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -3101,6 +3251,56 @@ covergroup Vls16_vle8ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -3233,6 +3433,45 @@ covergroup Vls16_vlm_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_maskLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector mask load/store operations
+
+    // --- EMUL >= 16 (LMUL > 1 and SEW > 8) ---
+
+    vtype_all_sewgt8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+          option.auto_bin_max = 0;
+          `ifdef COVER_VLS16
+          bins sixteen    = {1};
+          `endif
+          `ifdef COVER_VLS32
+          bins thirtytwo  = {2};
+          `endif
+          `ifdef COVER_VLS64
+          bins sixtyfour  = {3};
+          `endif
+
+          `ifndef COVER_VLS16
+          `ifndef COVER_VLS32
+          `ifndef COVER_VLS64
+          ignore_bins sew_not_supported  = {[1:3]};
+          `endif
+          `endif
+          `endif
+      }
+
+    vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_custom_maskLS_emul_ge_16             : cross std_vec, vtype_all_lmulgt1, vtype_all_sewgt8;
+
+    //// end cp_custom_maskLS////////////////////////////////////////////////
 
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
@@ -10703,6 +10942,56 @@ covergroup Vls16_vlseg2e16ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -10946,6 +11235,56 @@ covergroup Vls16_vlseg2e32ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -11411,6 +11750,56 @@ covergroup Vls16_vlseg2e8ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -11654,6 +12043,56 @@ covergroup Vls16_vlseg3e16ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -12101,6 +12540,56 @@ covergroup Vls16_vlseg3e8ff_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -12345,6 +12834,56 @@ covergroup Vls16_vlseg4e16ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -12803,6 +13342,56 @@ covergroup Vls16_vlseg4e8ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -13272,6 +13861,56 @@ covergroup Vls16_vlseg5e8ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -13746,6 +14385,56 @@ covergroup Vls16_vlseg6e8ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -14224,6 +14913,56 @@ covergroup Vls16_vlseg7e8ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -14706,6 +15445,56 @@ covergroup Vls16_vlseg8e8ff_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_ffLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Fault-only-first load: fault on non-first element updates VL without trapping.
+    // Per V spec §7.7: "If element 0 raises an exception, vl is not modified, and
+    // the trap is taken. If an element > 0 raises an exception, the corresponding
+    // trap is not taken, and the vector length vl is reduced to the index of the
+    // element that would have raised an exception."
+    //
+    // Strategy: mask OFF element 0 (v0 bit 0 = 0) so element 0 does NOT access
+    // memory. Element 1+ are active and access the fault address region, triggering
+    // the vl-trimming behavior without trapping.
+
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+
+    ffLS_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    ffLS_v0_eq_2: coverpoint unsigned'(ins.current.v0_val) {
+        bins two = {2};
+    }
+
+    ffLS_mask_enabled: coverpoint ins.current.insn[25] {
+        bins masked = {1'b0};
+    }
+
+    ffLS_vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    ffLS_vl_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")
+                        == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+        bins target = {1'b1};
+    }
+
+    ffLS_rs1_at_fault_addr: coverpoint (unsigned'(ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        bins at_fault_addr = {1'b1};
+    }
+
+    cp_custom_ffLS_fault_addr : cross ffLS_valid, ffLS_vtype_lmul_2, ffLS_vl_max, ffLS_mask_enabled, ffLS_v0_eq_2, ffLS_rs1_at_fault_addr;
+
+    `endif
+
+    //// end cp_custom_ffLS////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_ffLS_update_vl
@@ -24915,6 +25704,45 @@ covergroup Vls16_vsm_v_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_maskLS
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Custom coverpoints for Vector mask load/store operations
+
+    // --- EMUL >= 16 (LMUL > 1 and SEW > 8) ---
+
+    vtype_all_sewgt8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+          option.auto_bin_max = 0;
+          `ifdef COVER_VLS16
+          bins sixteen    = {1};
+          `endif
+          `ifdef COVER_VLS32
+          bins thirtytwo  = {2};
+          `endif
+          `ifdef COVER_VLS64
+          bins sixtyfour  = {3};
+          `endif
+
+          `ifndef COVER_VLS16
+          `ifndef COVER_VLS32
+          `ifndef COVER_VLS64
+          ignore_bins sew_not_supported  = {[1:3]};
+          `endif
+          `endif
+          `endif
+      }
+
+    vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two    = {1};
+        bins four   = {2};
+        bins eight  = {3};
+    }
+
+    cp_custom_maskLS_emul_ge_16             : cross std_vec, vtype_all_lmulgt1, vtype_all_sewgt8;
+
+    //// end cp_custom_maskLS////////////////////////////////////////////////
 
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
@@ -44151,99 +44979,147 @@ function void vls16_sample(int hart, int issue, ins_t ins);
             "vlm.v"     : begin
                 Vls16_vlm_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxei16.v"     : begin
                 Vls16_vloxei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxei32.v"     : begin
                 Vls16_vloxei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxei64.v"     : begin
                 Vls16_vloxei64_v_cg.sample(ins);
             end
+`endif
             "vloxei8.v"     : begin
                 Vls16_vloxei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg2ei16.v"     : begin
                 Vls16_vloxseg2ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg2ei32.v"     : begin
                 Vls16_vloxseg2ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg2ei64.v"     : begin
                 Vls16_vloxseg2ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg2ei8.v"     : begin
                 Vls16_vloxseg2ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg3ei16.v"     : begin
                 Vls16_vloxseg3ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg3ei32.v"     : begin
                 Vls16_vloxseg3ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg3ei64.v"     : begin
                 Vls16_vloxseg3ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg3ei8.v"     : begin
                 Vls16_vloxseg3ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg4ei16.v"     : begin
                 Vls16_vloxseg4ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg4ei32.v"     : begin
                 Vls16_vloxseg4ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg4ei64.v"     : begin
                 Vls16_vloxseg4ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg4ei8.v"     : begin
                 Vls16_vloxseg4ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg5ei16.v"     : begin
                 Vls16_vloxseg5ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg5ei32.v"     : begin
                 Vls16_vloxseg5ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg5ei64.v"     : begin
                 Vls16_vloxseg5ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg5ei8.v"     : begin
                 Vls16_vloxseg5ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg6ei16.v"     : begin
                 Vls16_vloxseg6ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg6ei32.v"     : begin
                 Vls16_vloxseg6ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg6ei64.v"     : begin
                 Vls16_vloxseg6ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg6ei8.v"     : begin
                 Vls16_vloxseg6ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg7ei16.v"     : begin
                 Vls16_vloxseg7ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg7ei32.v"     : begin
                 Vls16_vloxseg7ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg7ei64.v"     : begin
                 Vls16_vloxseg7ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg7ei8.v"     : begin
                 Vls16_vloxseg7ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vloxseg8ei16.v"     : begin
                 Vls16_vloxseg8ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vloxseg8ei32.v"     : begin
                 Vls16_vloxseg8ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vloxseg8ei64.v"     : begin
                 Vls16_vloxseg8ei64_v_cg.sample(ins);
             end
+`endif
             "vloxseg8ei8.v"     : begin
                 Vls16_vloxseg8ei8_v_cg.sample(ins);
             end
@@ -44421,99 +45297,147 @@ function void vls16_sample(int hart, int issue, ins_t ins);
             "vlsseg8e8.v"     : begin
                 Vls16_vlsseg8e8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxei16.v"     : begin
                 Vls16_vluxei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxei32.v"     : begin
                 Vls16_vluxei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxei64.v"     : begin
                 Vls16_vluxei64_v_cg.sample(ins);
             end
+`endif
             "vluxei8.v"     : begin
                 Vls16_vluxei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg2ei16.v"     : begin
                 Vls16_vluxseg2ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg2ei32.v"     : begin
                 Vls16_vluxseg2ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg2ei64.v"     : begin
                 Vls16_vluxseg2ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg2ei8.v"     : begin
                 Vls16_vluxseg2ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg3ei16.v"     : begin
                 Vls16_vluxseg3ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg3ei32.v"     : begin
                 Vls16_vluxseg3ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg3ei64.v"     : begin
                 Vls16_vluxseg3ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg3ei8.v"     : begin
                 Vls16_vluxseg3ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg4ei16.v"     : begin
                 Vls16_vluxseg4ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg4ei32.v"     : begin
                 Vls16_vluxseg4ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg4ei64.v"     : begin
                 Vls16_vluxseg4ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg4ei8.v"     : begin
                 Vls16_vluxseg4ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg5ei16.v"     : begin
                 Vls16_vluxseg5ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg5ei32.v"     : begin
                 Vls16_vluxseg5ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg5ei64.v"     : begin
                 Vls16_vluxseg5ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg5ei8.v"     : begin
                 Vls16_vluxseg5ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg6ei16.v"     : begin
                 Vls16_vluxseg6ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg6ei32.v"     : begin
                 Vls16_vluxseg6ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg6ei64.v"     : begin
                 Vls16_vluxseg6ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg6ei8.v"     : begin
                 Vls16_vluxseg6ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg7ei16.v"     : begin
                 Vls16_vluxseg7ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg7ei32.v"     : begin
                 Vls16_vluxseg7ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg7ei64.v"     : begin
                 Vls16_vluxseg7ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg7ei8.v"     : begin
                 Vls16_vluxseg7ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vluxseg8ei16.v"     : begin
                 Vls16_vluxseg8ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vluxseg8ei32.v"     : begin
                 Vls16_vluxseg8ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vluxseg8ei64.v"     : begin
                 Vls16_vluxseg8ei64_v_cg.sample(ins);
             end
+`endif
             "vluxseg8ei8.v"     : begin
                 Vls16_vluxseg8ei8_v_cg.sample(ins);
             end
@@ -44544,99 +45468,147 @@ function void vls16_sample(int hart, int issue, ins_t ins);
             "vsm.v"     : begin
                 Vls16_vsm_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxei16.v"     : begin
                 Vls16_vsoxei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxei32.v"     : begin
                 Vls16_vsoxei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxei64.v"     : begin
                 Vls16_vsoxei64_v_cg.sample(ins);
             end
+`endif
             "vsoxei8.v"     : begin
                 Vls16_vsoxei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg2ei16.v"     : begin
                 Vls16_vsoxseg2ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg2ei32.v"     : begin
                 Vls16_vsoxseg2ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg2ei64.v"     : begin
                 Vls16_vsoxseg2ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg2ei8.v"     : begin
                 Vls16_vsoxseg2ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg3ei16.v"     : begin
                 Vls16_vsoxseg3ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg3ei32.v"     : begin
                 Vls16_vsoxseg3ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg3ei64.v"     : begin
                 Vls16_vsoxseg3ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg3ei8.v"     : begin
                 Vls16_vsoxseg3ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg4ei16.v"     : begin
                 Vls16_vsoxseg4ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg4ei32.v"     : begin
                 Vls16_vsoxseg4ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg4ei64.v"     : begin
                 Vls16_vsoxseg4ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg4ei8.v"     : begin
                 Vls16_vsoxseg4ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg5ei16.v"     : begin
                 Vls16_vsoxseg5ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg5ei32.v"     : begin
                 Vls16_vsoxseg5ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg5ei64.v"     : begin
                 Vls16_vsoxseg5ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg5ei8.v"     : begin
                 Vls16_vsoxseg5ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg6ei16.v"     : begin
                 Vls16_vsoxseg6ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg6ei32.v"     : begin
                 Vls16_vsoxseg6ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg6ei64.v"     : begin
                 Vls16_vsoxseg6ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg6ei8.v"     : begin
                 Vls16_vsoxseg6ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg7ei16.v"     : begin
                 Vls16_vsoxseg7ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg7ei32.v"     : begin
                 Vls16_vsoxseg7ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg7ei64.v"     : begin
                 Vls16_vsoxseg7ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg7ei8.v"     : begin
                 Vls16_vsoxseg7ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsoxseg8ei16.v"     : begin
                 Vls16_vsoxseg8ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsoxseg8ei32.v"     : begin
                 Vls16_vsoxseg8ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsoxseg8ei64.v"     : begin
                 Vls16_vsoxseg8ei64_v_cg.sample(ins);
             end
+`endif
             "vsoxseg8ei8.v"     : begin
                 Vls16_vsoxseg8ei8_v_cg.sample(ins);
             end
@@ -44760,99 +45732,147 @@ function void vls16_sample(int hart, int issue, ins_t ins);
             "vssseg8e8.v"     : begin
                 Vls16_vssseg8e8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxei16.v"     : begin
                 Vls16_vsuxei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxei32.v"     : begin
                 Vls16_vsuxei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxei64.v"     : begin
                 Vls16_vsuxei64_v_cg.sample(ins);
             end
+`endif
             "vsuxei8.v"     : begin
                 Vls16_vsuxei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg2ei16.v"     : begin
                 Vls16_vsuxseg2ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg2ei32.v"     : begin
                 Vls16_vsuxseg2ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg2ei64.v"     : begin
                 Vls16_vsuxseg2ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg2ei8.v"     : begin
                 Vls16_vsuxseg2ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg3ei16.v"     : begin
                 Vls16_vsuxseg3ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg3ei32.v"     : begin
                 Vls16_vsuxseg3ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg3ei64.v"     : begin
                 Vls16_vsuxseg3ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg3ei8.v"     : begin
                 Vls16_vsuxseg3ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg4ei16.v"     : begin
                 Vls16_vsuxseg4ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg4ei32.v"     : begin
                 Vls16_vsuxseg4ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg4ei64.v"     : begin
                 Vls16_vsuxseg4ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg4ei8.v"     : begin
                 Vls16_vsuxseg4ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg5ei16.v"     : begin
                 Vls16_vsuxseg5ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg5ei32.v"     : begin
                 Vls16_vsuxseg5ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg5ei64.v"     : begin
                 Vls16_vsuxseg5ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg5ei8.v"     : begin
                 Vls16_vsuxseg5ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg6ei16.v"     : begin
                 Vls16_vsuxseg6ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg6ei32.v"     : begin
                 Vls16_vsuxseg6ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg6ei64.v"     : begin
                 Vls16_vsuxseg6ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg6ei8.v"     : begin
                 Vls16_vsuxseg6ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg7ei16.v"     : begin
                 Vls16_vsuxseg7ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg7ei32.v"     : begin
                 Vls16_vsuxseg7ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg7ei64.v"     : begin
                 Vls16_vsuxseg7ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg7ei8.v"     : begin
                 Vls16_vsuxseg7ei8_v_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vsuxseg8ei16.v"     : begin
                 Vls16_vsuxseg8ei16_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE32
             "vsuxseg8ei32.v"     : begin
                 Vls16_vsuxseg8ei32_v_cg.sample(ins);
             end
+`endif
+`ifdef MAXINDEXEEW_GE64
             "vsuxseg8ei64.v"     : begin
                 Vls16_vsuxseg8ei64_v_cg.sample(ins);
             end
+`endif
             "vsuxseg8ei8.v"     : begin
                 Vls16_vsuxseg8ei8_v_cg.sample(ins);
             end

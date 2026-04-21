@@ -23172,6 +23172,37 @@ covergroup Vx64_vrgather_vv_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
+    // cp_custom_vindexCorners (SEW=64): vrgather/vslidedown index corner cases
+    vindexCorners_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    vtype_sew_elemt_zero_vs1_all_ones : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+        wildcard bins sew64     = {66'b11_11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111};
+    }
+
+    cp_custom_vindexCorners_index_ge_vlmax : cross vindexCorners_valid, vtype_sew_elemt_zero_vs1_all_ones;
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vindexCorners_vl_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        bins one = {1};
+    }
+
+    vindexCorners_vtype_lmul_2 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_sew_elemt_zero_vs1_2 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+        wildcard bins sew64     = {66'b11_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010};
+    }
+
+    cp_custom_vindexCorners_index_gt_vl_lt_vlmax :   cross vindexCorners_valid, vindexCorners_vl_one, vindexCorners_vtype_lmul_2, vtype_sew_elemt_zero_vs1_2;
+
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vindexEdges_index_gt_vl_lt_vlmax
     //////////////////////////////////////////////////////////////////////////////////
@@ -23551,6 +23582,37 @@ covergroup Vx64_vrgatherei16_vv_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
+
+    // cp_custom_vindexCorners (SEW=64): vrgather/vslidedown index corner cases
+    vindexCorners_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
+    } {
+        bins true = {1'b1};
+    }
+
+    vtype_sew_elemt_zero_vs1_all_ones : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+        wildcard bins sew64     = {66'b11_11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111};
+    }
+
+    cp_custom_vindexCorners_index_ge_vlmax : cross vindexCorners_valid, vtype_sew_elemt_zero_vs1_all_ones;
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    vindexCorners_vl_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+        bins one = {1};
+    }
+
+    vindexCorners_vtype_lmul_2 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
+        bins two = {1};
+    }
+
+    vtype_sew_elemt_zero_vs1_2 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
+        wildcard bins sew64     = {66'b11_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010};
+    }
+
+    cp_custom_vindexCorners_index_gt_vl_lt_vlmax :   cross vindexCorners_valid, vindexCorners_vl_one, vindexCorners_vtype_lmul_2, vtype_sew_elemt_zero_vs1_2;
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vindexEdges_index_gt_vl_lt_vlmax
@@ -32924,9 +32986,11 @@ function void vx64_sample(int hart, int issue, ins_t ins);
             "vrgather.vx"     : begin
                 Vx64_vrgather_vx_cg.sample(ins);
             end
+`ifdef MAXINDEXEEW_GE16
             "vrgatherei16.vv"     : begin
                 Vx64_vrgatherei16_vv_cg.sample(ins);
             end
+`endif
             "vrsub.vi"     : begin
                 Vx64_vrsub_vi_cg.sample(ins);
             end

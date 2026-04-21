@@ -2615,7 +2615,6 @@
             ins.add_vd(0);
             ins.add_rs1(1);
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2623,8 +2622,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2632,8 +2629,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2641,7 +2636,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2649,7 +2643,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg2ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2657,8 +2650,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg2ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2666,8 +2657,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg2ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2675,7 +2664,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg2ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2683,7 +2671,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg3ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2691,8 +2678,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg3ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2700,8 +2685,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg3ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2709,7 +2692,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg3ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2717,7 +2699,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg4ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2725,8 +2706,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg4ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2734,8 +2713,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg4ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2743,7 +2720,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg4ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2751,7 +2727,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg5ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2759,8 +2734,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg5ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2768,8 +2741,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg5ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2777,7 +2748,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg5ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2785,7 +2755,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg6ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2793,8 +2762,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg6ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2802,8 +2769,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg6ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2811,7 +2776,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg6ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2819,7 +2783,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg7ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2827,8 +2790,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg7ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2836,8 +2797,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg7ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2845,7 +2804,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg7ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2853,7 +2811,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vloxseg8ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2861,8 +2818,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vloxseg8ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2870,8 +2825,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vloxseg8ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -2879,7 +2832,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vloxseg8ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3447,7 +3399,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3455,8 +3406,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3464,8 +3413,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3473,7 +3420,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3481,7 +3427,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg2ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3489,8 +3434,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg2ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3498,8 +3441,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg2ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3507,7 +3448,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg2ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3515,7 +3455,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg3ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3523,8 +3462,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg3ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3532,8 +3469,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg3ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3541,7 +3476,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg3ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3549,7 +3483,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg4ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3557,8 +3490,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg4ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3566,8 +3497,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg4ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3575,7 +3504,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg4ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3583,7 +3511,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg5ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3591,8 +3518,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg5ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3600,8 +3525,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg5ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3609,7 +3532,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg5ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3617,7 +3539,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg6ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3625,8 +3546,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg6ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3634,8 +3553,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg6ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3643,7 +3560,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg6ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3651,7 +3567,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg7ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3659,8 +3574,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg7ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3668,8 +3581,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg7ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3677,7 +3588,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg7ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3685,7 +3595,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vluxseg8ei16.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3693,8 +3602,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vluxseg8ei32.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3702,8 +3609,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vluxseg8ei64.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -3711,7 +3616,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vluxseg8ei8.v"     : begin
             ins.add_vd(0);
             ins.add_rs1(1);
@@ -4488,7 +4392,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vrgatherei16.vv"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -4496,7 +4399,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vrol.vv"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);
@@ -4741,7 +4643,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4749,8 +4650,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4758,8 +4657,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4767,7 +4664,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4775,7 +4671,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg2ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4783,8 +4678,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg2ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4792,8 +4685,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg2ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4801,7 +4692,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg2ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4809,7 +4699,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg3ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4817,8 +4706,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg3ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4826,8 +4713,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg3ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4835,7 +4720,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg3ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4843,7 +4727,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg4ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4851,8 +4734,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg4ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4860,8 +4741,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg4ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4869,7 +4748,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg4ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4877,7 +4755,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg5ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4885,8 +4762,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg5ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4894,8 +4769,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg5ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4903,7 +4776,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg5ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4911,7 +4783,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg6ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4919,8 +4790,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg6ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4928,8 +4797,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg6ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4937,7 +4804,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg6ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4945,7 +4811,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg7ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4953,8 +4818,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg7ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4962,8 +4825,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg7ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4971,7 +4832,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg7ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4979,7 +4839,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsoxseg8ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4987,8 +4846,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsoxseg8ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -4996,8 +4853,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsoxseg8ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5005,7 +4860,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsoxseg8ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5531,7 +5385,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5539,8 +5392,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5548,8 +5399,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5557,7 +5406,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5565,7 +5413,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg2ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5573,8 +5420,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg2ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5582,8 +5427,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg2ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5591,7 +5434,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg2ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5599,7 +5441,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg3ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5607,8 +5448,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg3ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5616,8 +5455,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg3ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5625,7 +5462,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg3ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5633,7 +5469,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg4ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5641,8 +5476,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg4ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5650,8 +5483,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg4ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5659,7 +5490,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg4ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5667,7 +5497,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg5ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5675,8 +5504,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg5ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5684,8 +5511,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg5ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5693,7 +5518,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg5ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5701,7 +5525,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg6ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5709,8 +5532,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg6ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5718,8 +5539,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg6ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5727,7 +5546,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg6ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5735,7 +5553,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg7ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5743,8 +5560,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg7ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5752,8 +5567,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg7ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5761,7 +5574,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg7ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5769,7 +5581,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`ifdef MAXINDEXEEW_GE16
         "vsuxseg8ei16.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5777,8 +5588,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE32
         "vsuxseg8ei32.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5786,8 +5595,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
-`ifdef MAXINDEXEEW_GE64
         "vsuxseg8ei64.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);
@@ -5795,7 +5602,6 @@
             ins.add_vm(3);
             ins.add_v0();
         end
-`endif
         "vsuxseg8ei8.v"     : begin
             ins.add_vs3(0);
             ins.add_rs1(1);

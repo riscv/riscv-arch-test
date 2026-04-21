@@ -122,7 +122,6 @@ elfs: tests
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
-
 .PHONY: clean
 clean:
 	@if [ -d $(WORKDIR) ]; then \

@@ -131,7 +131,7 @@
   sw zero, 0(_R2)            ; /* Clear SEXT interrupt */
 
 
-// TODO: check to see if SAIL support this, and we may want to implement this in WALLY
+// Sail does not yet support memory-mapped I/O to cause a supervisor software interrupt. Change CLINT_SSIP_ADDRSS to appropriate location when implemented in Sail.
 // #define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
 #define CLINT_SSIP_ADDRESS (0x80000000)
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \

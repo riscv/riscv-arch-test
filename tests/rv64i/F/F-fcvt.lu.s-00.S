@@ -2496,6 +2496,8 @@ F_fcvt_lu_s_cg_cp_csr_frm_rne:
   # Check fflags. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x18, x5, x4, F_fcvt_lu_s_cg_cp_csr_frm_rne, F_fcvt_lu_s_cg_cp_csr_frm_rne_str)
 
+  mv x2, x18 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

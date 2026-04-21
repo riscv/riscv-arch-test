@@ -513,5 +513,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
 
     templates = read_covergroup_templates()
     write_covergroups(test_plans, templates, output_dir)
-    write_coverage_headers(test_plans, output_dir, templates)
+    write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)

@@ -528,10 +528,12 @@
       // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
       // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
       // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-      li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
-      csrw menvcfg, t0
-      #if __riscv_xlen == 32
-        csrw menvcfgh, zero // Clear upper bits if they exist
+      #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
+        li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+        csrw menvcfg, t0
+        #if __riscv_xlen == 32
+          csrw menvcfgh, zero // Clear upper bits if they exist
+        #endif
       #endif
 
       // Enable necessary state for unpriv instructions
@@ -547,18 +549,20 @@
       // mstateen0.JVT = 1: Enable jvt for Zcmt
       // mstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
       // mstateen0.C = 0: Disable custom state
-      #if __riscv_xlen == 64
-        li t0, MSTATEEN0_JVT
-        csrw mstateen0, t0
-      #else    // RV32
-        csrw mstateen0h, zero
-        li t0, MSTATEEN0_JVT
-        csrw mstateen0, t0
-      #endif
-      #ifdef ZFINX_SUPPORTED
-        li t0, MSTATEEN0_FCSR
-        csrs mstateen0, t0 // Set mstateen0.FCSR
-        li t0,
+      #ifdef SMSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          li t0, MSTATEEN0_JVT
+          csrw mstateen0, t0
+        #else    // RV32
+          csrw mstateen0h, zero
+          li t0, MSTATEEN0_JVT
+          csrw mstateen0, t0
+        #endif
+        #ifdef ZFINX_SUPPORTED
+          li t0, MSTATEEN0_FCSR
+          csrs mstateen0, t0 // Set mstateen0.FCSR
+          li t0, 0
+        #endif
       #endif
 
       // Enable all performance counters if they exist
@@ -710,12 +714,14 @@
     // Enable necessary state for access from lower privilege modes
     // mstateen0.SE0 = 1: enable access to hststateen0, hstatene0h, ssstateen0
     // mstateen0.ENVCFG = 1: enable access to henvcfg, henvcfgh, senvcfg
-    #if __riscv_xlen == 64
-      li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
-      csrs mstateen0, t0  // Set these fields
-    #else    // RV32
-      li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
-      csrs mstateen0h, t0 // Set these fields
+    #ifdef MSTATEEN_SUPPORTED
+      #if __riscv_xlen == 64
+        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG
+        csrs mstateen0, t0  // Set these fields
+      #else    // RV32
+        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG
+        csrs mstateen0h, t0 // Set these fields
+      #endif
     #endif
 
 

@@ -1191,6 +1191,8 @@ Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8:
   # Check if f20 contains the expected result. Also checks fflags. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x21, x5, x4, f4, f20, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8, Zcd_c_fsdsp_cg_cp_imm_mul_8sp_b0x1f8_str)
 
+  mv x2, x21 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

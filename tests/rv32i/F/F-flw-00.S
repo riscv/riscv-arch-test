@@ -800,6 +800,8 @@ F_flw_cg_cp_fd_b31:
   RVTEST_SIGUPD_F(x24, x5, x4, f4, f31, F_flw_cg_cp_fd_b31, F_flw_cg_cp_fd_b31_str)
   addi x6, x6, SIG_STRIDE # increment data_ptr
 
+  mv x2, x24 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

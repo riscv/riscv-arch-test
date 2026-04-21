@@ -773,6 +773,8 @@ Zfh_fcvt_h_wu_cg_cp_NaNBox_S_H_NaNBox:
   # Check if f6 contains the expected result. Also checks fflags. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x27, x5, x4, f4, f6, Zfh_fcvt_h_wu_cg_cp_NaNBox_S_H_NaNBox, Zfh_fcvt_h_wu_cg_cp_NaNBox_S_H_NaNBox_str)
 
+  mv x2, x27 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

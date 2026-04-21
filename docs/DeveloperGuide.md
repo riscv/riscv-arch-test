@@ -739,10 +739,28 @@ Create a configuration directory following the instructions in the [Configuratio
 The command can include `{debug:...}` placeholders for DUT-specific trace flags that are only enabled when running with `DEBUG=1`. For example:
 
 ```
-spike {debug:-l --log-commits} --isa=rv64gc
+spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
 ```
 
-When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
+When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --log=<trace_file> --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
+
+When debug mode enables simulator tracing, trace output can interleave with `RVCP-SUMMARY` lines and prevent `run_tests.py` from detecting pass/fail. Two placeholders solve this by redirecting output to per-test files:
+
+- **`__TRACEFILE__`** — Use when the simulator can redirect its _trace_ output to a file. `run_tests.py` substitutes this with a per-test `.trace.log` path so trace output goes to a separate file, keeping `RVCP-SUMMARY` lines clean in the main log. Examples:
+
+  ```
+  spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
+  qemu-system-riscv64 {debug:-d in_asm,int -D __TRACEFILE__} -nographic ...
+  sail_riscv_sim {debug:--trace-all --trace-output __TRACEFILE__} --config ...
+  ```
+
+- **`__SUMMARYFILE__`** — Use when the simulator cannot redirect trace but _can_ redirect its console output (which contains `RVCP-SUMMARY`) to a file. When present, `run_tests.py` reads `RVCP-SUMMARY` from this `.summary.log` file instead of the main log. Example:
+
+  ```
+  wsim --sim verilator {debug:--sim questa --lockstepverbose --args '+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__'} rv64gc --elf
+  ```
+
+Both placeholders should be placed inside `{debug:...}` blocks since they are only needed when trace output is enabled. When debug is off, the placeholders are stripped along with the rest of the block.
 
 Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
 

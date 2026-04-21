@@ -8,7 +8,7 @@
 
 """Compressed exceptions test generator."""
 
-from testgen.asm.helpers import check_access_fault_address_defined, comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.priv.registry import add_priv_test_generator
@@ -308,10 +308,11 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_load_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed load to a faulting address and check that each one throws a load access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -346,6 +347,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_load_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -353,10 +355,11 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
     covergroup, coverpoint = "ExceptionsZc_cg", "cp_store_access_fault"
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(
             coverpoint,
             "Test every type of compressed store to a faulting address and check that each one throws a store access fault.",
-        )
+        ),
     ]
 
     # Zca
@@ -391,6 +394,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
         lines.extend(_add_store_fault(instr, test_data, coverpoint, covergroup))
     lines.append("\n#endif")
 
+    lines.append("#endif")
     return lines
 
 
@@ -452,7 +456,6 @@ def make_exceptionszc(test_data: TestData) -> list[str]:
 
     test_data.int_regs.return_registers([addr_reg])
 
-    lines.append(check_access_fault_address_defined(test_data))
     lines.extend(_generate_load_address_misaligned_tests(test_data))
     lines.extend(_generate_store_address_misaligned_tests(test_data))
     lines.extend(_generate_load_access_fault_tests(test_data))

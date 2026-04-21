@@ -12,6 +12,11 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
 
+env:
+  SAIL_VERSION: "0.10"
+  GCC_TOOLCHAIN_VERSION: "2026.04.05"
+  LLVM_VERSION: "22"
+
 jobs:
   lint:
     name: Pre-commit check
@@ -19,10 +24,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
 
       - name: Ensure pre-commit checks pass
         run: uvx pre-commit run --all-files --show-diff-on-failure --color=always
@@ -39,10 +44,10 @@ jobs:
       matrix: ${{ steps.discover.outputs.matrix }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
 
       - name: Discover CI configs
         id: discover
@@ -57,28 +62,50 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up mise
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - name: Install sail-riscv model
         run: |
           sudo mkdir -p /usr/local
-          curl --location https://github.com/riscv/sail-riscv/releases/download/0.10/sail-riscv-$(uname)-$(arch).tar.gz \
+          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
           | sudo tar xvz --directory=/usr/local --strip-components=1
 
       - name: Install RISC-V GCC toolchain
         run: |
-          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.07.16/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.07.16-nightly.tar.xz \
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
           | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Install Clang
-        env:
-          LLVM_VERSION: "21"
         run: |
-          wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- $LLVM_VERSION
-          sudo apt-get install -y clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+          retry() {
+            local max_attempts="$1"
+            shift
+            local attempt=1
+            while ! "$@"; do
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                echo "Command failed after ${attempt} attempts: $*"
+                return 1
+              fi
+              local backoff=$((attempt * 10))
+              echo "Attempt ${attempt} failed: $*"
+              echo "Retrying in ${backoff}s..."
+              sleep "$backoff"
+              attempt=$((attempt + 1))
+            done
+          }
+
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
+            https://apt.llvm.org/llvm.sh \
+            --output /tmp/llvm.sh
+          chmod +x /tmp/llvm.sh
+
+          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
+          retry 3 sudo apt-get update
+          retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
+            clang-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
           for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
             sudo ln -sf /usr/bin/${tool}-$LLVM_VERSION /usr/bin/${tool}
           done
@@ -92,7 +119,7 @@ jobs:
       - name: Restore cached simulator
         if: matrix.cache_key != ''
         id: cache-restore
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
           key: ${{ matrix.cache_key }}
@@ -103,7 +130,7 @@ jobs:
 
       - name: Save cached simulator
         if: matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
           key: ${{ matrix.cache_key }}
@@ -134,7 +161,7 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ matrix.config }}-logs
           path: work/${{ matrix.config }}/logs
@@ -144,10 +171,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up mise
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - name: Generate vector tests
         run: make vector-tests --jobs $(nproc)
@@ -156,10 +183,10 @@ jobs:
     name: Build CTP
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up mise
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - run: git submodule update --init docs/docs-resources
 
@@ -170,7 +197,7 @@ jobs:
     name: Build CRD
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - run: git submodule update --init docs/docs-resources
 
@@ -183,10 +210,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up mise
-        uses: jdx/mise-action@v4
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - name: Regenerate tests and coverpoints
         run: make clean-tests tests
@@ -204,12 +231,59 @@ jobs:
           fi
           echo "Checked-in generated files are up to date."
 
+  # Test testgen and framework with oldest supported Python version
+  python-versions:
+    name: Python ${{ matrix.python-version }} (uv)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Pin Python version for this job
+        run: echo "${{ matrix.python-version }}" > .python-version
+
+      - name: Set up mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+
+      - name: Verify Python version
+        run: uv run python --version
+
+      - name: Install sail-riscv model
+        run: |
+          sudo mkdir -p /usr/local
+          curl --location https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-$(uname)-$(arch).tar.gz \
+          | sudo tar xvz --directory=/usr/local --strip-components=1
+
+      - name: Install RISC-V GCC toolchain
+        run: |
+          curl --location https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${GCC_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz \
+          | sudo tar xvJ --directory=/usr/local --strip-components=1
+
+      - name: Build ELFs (exercises full act build DAG)
+        run: |
+          FAST=True \
+          EXTENSIONS=I \
+          make
+
   # This is here so that the "Status checks that are required" Github
   # option doesn't need to list all of the matrix jobs (it doesn't seem
   # to work if you just specify the job ID of the matrix itself).
   ci_pass:
     runs-on: ubuntu-latest
-    needs: [lint, regress, vector-testgen, check-tests, ctp-build, crd-build]
+    needs:
+      [
+        lint,
+        regress,
+        vector-testgen,
+        check-tests,
+        python-versions,
+        ctp-build,
+        crd-build,
+      ]
     if: "${{ always() }}"
     steps:
       - name: exit failure

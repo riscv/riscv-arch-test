@@ -82,24 +82,32 @@ $(STAMP_DIR):
 
 
 ########## Installation Check ##########
-# Tool management — use mise if available, fall back to direct tool detection
+# Tool management — prefer mise, then uv, then an activated venv with the
+# CLIs already installed. uv/mise always wins over VIRTUAL_ENV.
 MISE := $(shell command -v mise 2> /dev/null)
+UV   := $(shell command -v uv 2> /dev/null)
+
 ifneq ($(MISE),)
   UV_RUN := $(MISE) exec -- uv run
-else
-  # Check for uv (needed for Python dependencies if not using mise)
-  UV := $(shell command -v uv 2> /dev/null)
-  ifneq ($(UV),)
-    UV_RUN := $(UV) run
-  else
-    UV_RUN :=
-    $(warning "Warning: Neither mise nor uv found. Running without uv, but there may be dependency issues. See the README for more information.")
+else ifneq ($(UV),)
+  UV_RUN := $(UV) run
+else ifneq ($(VIRTUAL_ENV),)
+  # Activated venv without uv/mise: require the three CLIs on PATH.
+  MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\
+                    $(if $(shell command -v $(c) 2> /dev/null),,$(c))))
+  ifneq ($(MISSING_CLIS),)
+    $(error Activated venv ($(VIRTUAL_ENV)) is missing required CLIs: $(MISSING_CLIS). Install with: pip install -e ./framework -e ./generators/testgen -e ./generators/coverage or use mise/uv)
   endif
+  UV_RUN :=
+else
+  $(error Neither uv nor mise found, and no venv is activated. See the README (Prerequisites) for install options.)
+endif
 
-  # Check for Ruby/Bundler (needed for UDB gem when not using mise)
+# Ruby/Bundler is required for the UDB gem whenever we are not going through mise.
+ifeq ($(MISE),)
   BUNDLE := $(shell command -v bundle 2> /dev/null)
   ifeq ($(BUNDLE),)
-    $(error "Error: Neither mise nor bundle found. Ruby and Bundler are required for UDB. See the README for more information.")
+    $(error Bundle not found. Ruby and Bundler are required for UDB. See the README for more information.)
   endif
 endif
 

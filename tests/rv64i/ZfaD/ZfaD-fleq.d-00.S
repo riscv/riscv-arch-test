@@ -10360,6 +10360,8 @@ ZfaD_fleq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e89599373
   # Check fflags. x10 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x8, x7, ZfaD_fleq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426c_frm_None, ZfaD_fleq_d_cg_cr_fs1_fs2_edges_D_fs1val_0xa6e895993737426c_fs2val_0xa6e895993737426c_frm_None_str)
 
+  mv x2, x10 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

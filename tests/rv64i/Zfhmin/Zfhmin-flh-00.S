@@ -812,6 +812,8 @@ Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox:
   RVTEST_SIGUPD_F(x23, x8, x7, f4, f25, Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox, Zfhmin_flh_cg_cp_NaNBox_S_H_NaNBox_str)
   addi x9, x9, SIG_STRIDE # increment data_ptr
 
+  mv x2, x23 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

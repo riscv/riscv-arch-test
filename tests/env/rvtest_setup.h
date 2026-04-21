@@ -451,8 +451,10 @@
       csrw mip, zero
 
       // disable trap delegation
-      csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
-      csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
+      #ifdef U_SUPPORTED
+        csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
+        csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
+      #endif
 
       // initialize trap CSRs to known values
       csrw mepc, zero

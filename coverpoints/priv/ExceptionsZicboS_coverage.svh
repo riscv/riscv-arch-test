@@ -45,9 +45,6 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
         }
     `endif
 
-    illegal_address: coverpoint ins.current.rs1_val {
-        bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
-    }
     adr_misaligned: coverpoint ins.current.rs1_val[0]  {
         bins misaligned = {1};
     }
@@ -79,8 +76,15 @@ covergroup ExceptionsZicboS_cg with function sample(ins_t ins);
     `ifdef ZICBOZ_SUPPORTED
         cp_cbze:                    cross cbo_zero,       menvcfg_cbze,  senvcfg_cbze,  priv_mode_m_s_u;
     `endif
-    cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
     cp_cbo_address_misaligned:  cross cbo_instrs,     adr_misaligned, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+        cp_cbo_access_fault:        cross cbo_instrs,     illegal_address, priv_mode_m_s_u, menvcfg_all_enable, senvcfg_all_enable;
+    `endif
 
 endgroup
 

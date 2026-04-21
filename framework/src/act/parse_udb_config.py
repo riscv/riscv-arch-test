@@ -7,6 +7,8 @@
 # Parse UDB configuration file
 ##################################
 
+from __future__ import annotations
+
 import importlib.resources
 import shutil
 import subprocess

@@ -104,6 +104,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
     addr_reg, dest_reg, source_reg = test_data.int_regs.get_registers(3)
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Test amo instructions on restricted memory and check for access fault"),
     ]
 
@@ -163,6 +164,7 @@ def _generate_amo_access_fault_tests(test_data: TestData) -> list[str]:
         )
     lines.append("#endif")
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, dest_reg, source_reg])
     return lines
 

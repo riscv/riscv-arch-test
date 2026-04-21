@@ -9,6 +9,7 @@
 `define XLEN32
 `define FLEN128
 `define VLEN128
+`define ELEN64
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)

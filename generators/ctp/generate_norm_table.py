@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "ruamel-yaml>=0.18.16",
 # ]
@@ -26,6 +26,8 @@ The script writes an .adoc file containing a table with columns:
 
 It also prints (and writes) a small report of names present in one file but not the other.
 """
+
+from __future__ import annotations
 
 import argparse
 import json

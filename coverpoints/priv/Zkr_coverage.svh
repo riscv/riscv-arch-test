@@ -1,0 +1,48 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups
+//
+// Written: Julia Gong jgong@g.hmc.edu April 2026
+//
+// Copyright (C) 2026 Harvey Mudd College
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+`define COVER_ZKR
+covergroup Zkr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    seed_csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw_seed = {32'b000000010101_?????_001_?????_1110011};
+    }
+
+    csrops_seed_illegal: coverpoint ins.current.insn {
+        wildcard bins csrrs_seed  = {32'b000000010101_?????_010_?????_1110011};
+        wildcard bins csrrc_seed  = {32'b000000010101_?????_011_?????_1110011};
+        wildcard bins csrrwi_seed = {32'b000000010101_?????_101_?????_1110011};
+        wildcard bins csrrsi_seed = {32'b000000010101_?????_110_?????_1110011};
+        wildcard bins csrrci_seed = {32'b000000010101_?????_111_?????_1110011};
+    }
+
+    rs1_imm_0_1: coverpoint ins.current.insn[19:15] {
+        bins zero    = {5'b00000};
+        bins nonzero = {5'b00001};
+    }
+
+    mseccfg_sseed: coverpoint ins.current.csr[12'h747][9] {
+    }
+    mseccfg_useed: coverpoint ins.current.csr[12'h747][8] {
+    }
+
+    // Main coverpoints
+    cp_zkr_seed_csrrw:          cross seed_csrrw, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m_s_u;
+
+endgroup
+
+function void zkr_sample(int hart, int issue, ins_t ins);
+    Zkr_cg.sample(ins);
+endfunction

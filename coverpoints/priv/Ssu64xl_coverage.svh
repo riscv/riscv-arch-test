@@ -6,7 +6,7 @@
 // Copyright (C) : 2026 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 // SPDX-License-Identifier: Apache-2.0
 //
-// Description: Coverage for RVA23 profile - Ssu64x extension
+// Description: Coverage for RVA23 profile - Ssu64xl extension
 //
 ///////////////////////////////////////////////
 
@@ -17,6 +17,8 @@ covergroup Ssu64xl_cg with function sample(ins_t ins);
 
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
+    `ifdef XLEN64
+
     sstatus_uxl: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
         bins uxl_sstatus = {2'b10};
     }
@@ -25,7 +27,9 @@ covergroup Ssu64xl_cg with function sample(ins_t ins);
         bins bit63_set = {1'b1};
     }
 
-    cp_ssu64xl_UXLEN: cross priv_mode_u, sstatus_uxl, gpr_bit63;
+    cp_ssu64xl: cross priv_mode_u, sstatus_uxl, gpr_bit63;
+
+    `endif
 
 endgroup
 

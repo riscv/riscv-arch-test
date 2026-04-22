@@ -831,85 +831,52 @@
         bne a0, a1, failedtest_report_vec_done
 
         // Print region (active / tail / mask)
-        LA(x9, regionstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, regionstr)
+        call rvmodel_io_write_str
         lw a0, failing_region
         beqz a0, 1f
         li a1, 1
         beq  a0, a1, 2f
         li a1, 2
         beq  a0, a1, 3f
-        LA(x9, region_base_str)
+        LA(a0, region_base_str)
         j 4f
-    1:  LA(x9, region_active_str)
+    1:  LA(a0, region_active_str)
         j 4f
-    2:  LA(x9, region_tail_str)
+    2:  LA(a0, region_tail_str)
         j 4f
-    3:  LA(x9, region_mask_str)
-    4:  RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+    3:  LA(a0, region_mask_str)
+    4:  call rvmodel_io_write_str
 
         // Print element index
-        LA(x9, indexstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, indexstr)
+        call rvmodel_io_write_str
         lw a0, failing_index
         LA(a2, ascii_buffer)
         jal failedtest_dec_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-    failedtest_report_after_reg:
-    #ifdef RVTEST_VECTOR
-        // ---- Vector-specific fields (only printed for failure_type == 3) ----
-        lw a0, failure_type
-        li a1, 3
-        bne a0, a1, failedtest_report_vec_done
-
-        // Print region (active / tail / mask)
-        LA(x9, regionstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        lw a0, failing_region
-        beqz a0, 1f
-        li a1, 1
-        beq  a0, a1, 2f
-        li a1, 2
-        beq  a0, a1, 3f
-        LA(x9, region_base_str)
-        j 4f
-    1:  LA(x9, region_active_str)
-        j 4f
-    2:  LA(x9, region_tail_str)
-        j 4f
-    3:  LA(x9, region_mask_str)
-    4:  RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-
-        // Print element index
-        LA(x9, indexstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        lw a0, failing_index
-        LA(a2, ascii_buffer)
-        jal failedtest_dec_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         // Print vl
-        LA(x9, vlstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, vlstr)
+        call rvmodel_io_write_str
         LREG a0, failing_vl
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         // Print vtype (full hex) then decoded sew/lmul/vta/vma fields
-        LA(x9, vtypestr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, vtypestr)
+        call rvmodel_io_write_str
         LREG a0, failing_vtype
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print failing value — SEW long
-        LA(a0, ascii_buffer)
+        LA(a0, badvalstr)
         call rvmodel_io_write_str
         lw t0, failing_sew_bits
         li t1, __riscv_xlen
@@ -925,12 +892,12 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
         failing_value_print_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         # Print expected value - SEW long
-        LA(x9, expvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, expvalstr)
+        call rvmodel_io_write_str
         lw t0, failing_sew_bits
         li t1, __riscv_xlen
         ble t0, t1, expected_value_normal_print
@@ -945,14 +912,14 @@
         li a1, __riscv_xlen
         jal failedtest_hex_to_str
         expected_value_print_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
         // We print as a hex string by iterating over the bytes.
         // For brevity we print up to VLENMAX_BYTES bytes.
-        LA(x9, mismatch_mask_str)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, mismatch_mask_str)
+        call rvmodel_io_write_str
 
         LA(a2, ascii_buffer)     # buffer pointer
         LI(a3, '0')
@@ -984,92 +951,8 @@
         sb a3, 0(a2)
         sb zero, 1(a2)          # null terminator
 
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-
-        j failedtest_report_end
-
-    failedtest_report_vec_done:
-    #endif // RVTEST_VECTOR
-
-        # Print failing value — SEW long
-        LA(x9, badvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        lw t0, failing_sew_bits
-        li t1, __riscv_xlen
-        ble t0, t1, failing_value_normal_print
-        # 64-bit case on RV32
-        la t0, failing_value   # load address of failing_value
-        lw a1, 0(t0)           # lower 32 bits
-        lw a0, 4(t0)           # upper 32 bits
-        jal failedtest_combined_hex_to_str
-        j failing_value_print_done
-        failing_value_normal_print:
-        LREG a0, failing_value
-        li a1, __riscv_xlen
-        jal failedtest_hex_to_str
-        failing_value_print_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-
-        # Print expected value - SEW long
-        LA(x9, expvalstr)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-        lw t0, failing_sew_bits
-        li t1, __riscv_xlen
-        ble t0, t1, expected_value_normal_print
-        # 64-bit case on RV32
-        la t0, expected_value   # load address of expected_value
-        lw a1, 0(t0)           # lower 32 bits
-        lw a0, 4(t0)           # upper 32 bits
-        jal failedtest_combined_hex_to_str
-        j expected_value_print_done
-        expected_value_normal_print:
-        LREG a0, expected_value
-        li a1, __riscv_xlen
-        jal failedtest_hex_to_str
-        expected_value_print_done:
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-
-        // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
-        // We print as a hex string by iterating over the bytes.
-        // For brevity we print up to VLENMAX_BYTES bytes.
-        LA(x9, mismatch_mask_str)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
-
-        LA(a2, ascii_buffer)     # buffer pointer
-        LI(a3, '0')
-        sb a3, 0(a2)            # write '0'
-        LI(a3, 'x')
-        sb a3, 1(a2)            # write 'x'
-        addi a2, a2, 2          # move past "0x"
-
-
-        li a1, 8                    # print 8 bits (1 byte) at a time
-        csrr x31, vlenb
-        LA(x30, failing_mask_vec)       # address of mismatch mask
-        add x30, x30, x31
-        addi x30, x30, -1              # point to end of mask (mismatch_mask + vlenb - 1)
-
-    failedtest_report_mask_loop:
-        beqz x31, failedtest_report_mask_done
-
-        lbu a0, 0(x30)              # load byte
-        li a3, 8                    # a3 = bit count
-        jal failedtest_hex_to_str_loop
-
-        addi x30, x30, -1
-        addi x31, x31, -1
-        j failedtest_report_mask_loop
-    failedtest_report_mask_done:
-    # Add newline and null terminator
-        LI(a3, 10)              # '\n'
-        sb a3, 0(a2)
-        sb zero, 1(a2)          # null terminator
-
-        LA(x9, ascii_buffer)
-        RVMODEL_IO_WRITE_STR(x6, x7, x8, x9)
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         j failedtest_report_end
 

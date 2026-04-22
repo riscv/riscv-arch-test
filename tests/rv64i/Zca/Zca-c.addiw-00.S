@@ -1837,6 +1837,8 @@ Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1:
   # Check if x29 contains the expected result. x15 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x15, x8, x7, x29, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1, Zca_c_addiw_cg_cr_rs1_imm_edges_6bit_rs1val_0x100000001_immval_m0x1_str)
 
+  mv x2, x15 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

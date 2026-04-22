@@ -17,25 +17,32 @@ covergroup I_add_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "add"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -69,9 +76,11 @@ covergroup I_add_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -105,9 +114,11 @@ covergroup I_add_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_addi_cg with function sample(ins_t ins);
@@ -115,10 +126,12 @@ covergroup I_addi_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "addi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -141,12 +154,15 @@ covergroup I_addi_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -180,9 +196,11 @@ covergroup I_addi_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_and_cg with function sample(ins_t ins);
@@ -190,25 +208,32 @@ covergroup I_and_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "and"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -242,9 +267,11 @@ covergroup I_and_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -278,9 +305,11 @@ covergroup I_and_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_andi_cg with function sample(ins_t ins);
@@ -288,10 +317,12 @@ covergroup I_andi_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "andi"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -314,12 +345,15 @@ covergroup I_andi_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -353,9 +387,11 @@ covergroup I_andi_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_auipc_cg with function sample(ins_t ins);
@@ -364,6 +400,7 @@ covergroup I_auipc_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_20bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Imm Edges
         bins zero  = {0};
@@ -394,9 +431,11 @@ covergroup I_auipc_cg with function sample(ins_t ins);
         bins minp1_2  = {-524287};
         bins min_2    = {-524288};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
 endgroup
 // ---------------------
 covergroup I_beq_cg with function sample(ins_t ins);
@@ -404,10 +443,12 @@ covergroup I_beq_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "beq"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -419,14 +460,17 @@ covergroup I_beq_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -460,9 +504,11 @@ covergroup I_beq_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -496,9 +542,11 @@ covergroup I_beq_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_bge_cg with function sample(ins_t ins);
@@ -506,10 +554,12 @@ covergroup I_bge_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "bge"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -521,14 +571,17 @@ covergroup I_bge_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -562,9 +615,11 @@ covergroup I_bge_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -598,9 +653,11 @@ covergroup I_bge_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_bgeu_cg with function sample(ins_t ins);
@@ -608,10 +665,12 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "bgeu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -623,14 +682,17 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -664,9 +726,11 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -700,9 +764,11 @@ covergroup I_bgeu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_blt_cg with function sample(ins_t ins);
@@ -710,10 +776,12 @@ covergroup I_blt_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "blt"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -725,14 +793,17 @@ covergroup I_blt_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -766,9 +837,11 @@ covergroup I_blt_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -802,9 +875,11 @@ covergroup I_blt_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_bltu_cg with function sample(ins_t ins);
@@ -812,10 +887,12 @@ covergroup I_bltu_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "bltu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -827,14 +904,17 @@ covergroup I_bltu_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -868,9 +948,11 @@ covergroup I_bltu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -904,9 +986,11 @@ covergroup I_bltu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_bne_cg with function sample(ins_t ins);
@@ -914,10 +998,12 @@ covergroup I_bne_cg with function sample(ins_t ins);
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "bne"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_branch : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // some corner values of branch offsets
         bins b_4 = {4};
@@ -929,14 +1015,17 @@ covergroup I_bne_cg with function sample(ins_t ins);
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -970,9 +1059,11 @@ covergroup I_bne_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1006,9 +1097,11 @@ covergroup I_bne_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges_offset : cross cp_rs1_edges,cp_rs2_edges,cp_offset  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges and branch direction
     }
+
 endgroup
 // ---------------------
 covergroup I_fence_cg with function sample(ins_t ins);
@@ -1017,6 +1110,7 @@ covergroup I_fence_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     // Custom coverpoints for fence
 
     cp_custom_fence : coverpoint ins.current.insn  {
@@ -1034,6 +1128,7 @@ covergroup I_fence_cg with function sample(ins_t ins);
         bins fence_hint3      = {32'h0200000f}; // fence with rd = x0, rs1 = x0, fm = 0, pred != W, succ = 0 is a hint
         bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
     }
+
 endgroup
 // ---------------------
 covergroup I_jal_cg with function sample(ins_t ins);
@@ -1042,6 +1137,7 @@ covergroup I_jal_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_jal : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // imm is the jump offset
         bins b_4     = {4};
@@ -1069,14 +1165,17 @@ covergroup I_jal_cg with function sample(ins_t ins);
         bins b_m4096 = {-4096};
         bins b_m8192 = {-8192};
     }
+
     cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Branch Immediate Offset value
         bins neg  = {[$:-1]};
         bins pos  = {[1:$]};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
 endgroup
 // ---------------------
 covergroup I_jalr_cg with function sample(ins_t ins);
@@ -1085,10 +1184,12 @@ covergroup I_jalr_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_asm_count : coverpoint ins.ins_str == "jalr"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1111,6 +1212,7 @@ covergroup I_jalr_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_offset : coverpoint signed'(ins.current.rs1_val) + signed'(ins.current.imm) - ins.get_pc()  iff (ins.trap == 0 )  {
         // jalr destination in rs1+imm is forward/backward
         bins neg  = {[$:-1]};
@@ -1119,13 +1221,16 @@ covergroup I_jalr_cg with function sample(ins_t ins);
     cp_offset_lsbs : coverpoint {ins.current.rs1_val[0], ins.current.imm[0]}  iff (ins.trap == 0 )  {
         // jalr destination is a multiple of 4 + 0/1.  Only check for the +0/1, with each lsb of rs1 and imm
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lb_cg with function sample(ins_t ins);
@@ -1134,12 +1239,15 @@ covergroup I_lb_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lb"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1162,6 +1270,7 @@ covergroup I_lb_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_byte : coverpoint {ins.current.rd_val[7:0]} iff (ins.trap == 0) {
         bins zero = {8'h00};
         bins one  = {8'h01};
@@ -1169,13 +1278,16 @@ covergroup I_lb_cg with function sample(ins_t ins);
         bins min  = {8'h80};
         bins mone = {8'hff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lbu_cg with function sample(ins_t ins);
@@ -1184,12 +1296,15 @@ covergroup I_lbu_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lbu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1212,6 +1327,7 @@ covergroup I_lbu_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_byte : coverpoint {ins.current.rd_val[7:0]} iff (ins.trap == 0) {
         bins zero = {8'h00};
         bins one  = {8'h01};
@@ -1219,13 +1335,16 @@ covergroup I_lbu_cg with function sample(ins_t ins);
         bins min  = {8'h80};
         bins mone = {8'hff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lh_cg with function sample(ins_t ins);
@@ -1234,12 +1353,15 @@ covergroup I_lh_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lh"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1262,6 +1384,7 @@ covergroup I_lh_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_hword : coverpoint {ins.current.rd_val[15:0]} iff (ins.trap == 0) {
         bins zero = {16'h0000};
         bins one  = {16'h0001};
@@ -1269,13 +1392,16 @@ covergroup I_lh_cg with function sample(ins_t ins);
         bins min  = {16'h8000};
         bins mone = {16'hffff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lhu_cg with function sample(ins_t ins);
@@ -1284,12 +1410,15 @@ covergroup I_lhu_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lhu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1312,6 +1441,7 @@ covergroup I_lhu_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_hword : coverpoint {ins.current.rd_val[15:0]} iff (ins.trap == 0) {
         bins zero = {16'h0000};
         bins one  = {16'h0001};
@@ -1319,13 +1449,16 @@ covergroup I_lhu_cg with function sample(ins_t ins);
         bins min  = {16'h8000};
         bins mone = {16'hffff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lui_cg with function sample(ins_t ins);
@@ -1334,6 +1467,7 @@ covergroup I_lui_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges_20bit : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         // Imm Edges
         bins zero  = {0};
@@ -1364,9 +1498,11 @@ covergroup I_lui_cg with function sample(ins_t ins);
         bins minp1_2  = {-524287};
         bins min_2    = {-524288};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
 endgroup
 // ---------------------
 covergroup I_lw_cg with function sample(ins_t ins);
@@ -1375,12 +1511,15 @@ covergroup I_lw_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1403,6 +1542,7 @@ covergroup I_lw_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -1410,13 +1550,16 @@ covergroup I_lw_cg with function sample(ins_t ins);
         bins min  = {32'h80000000};
         bins mone = {32'hffffffff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_nop_cg with function sample(ins_t ins);
@@ -1425,6 +1568,7 @@ covergroup I_nop_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
 endgroup
 // ---------------------
 covergroup I_or_cg with function sample(ins_t ins);
@@ -1432,25 +1576,32 @@ covergroup I_or_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "or"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1484,9 +1635,11 @@ covergroup I_or_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1520,9 +1673,11 @@ covergroup I_or_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_ori_cg with function sample(ins_t ins);
@@ -1530,10 +1685,12 @@ covergroup I_ori_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "ori"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1556,12 +1713,15 @@ covergroup I_ori_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1595,19 +1755,23 @@ covergroup I_ori_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sb_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sb"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1630,13 +1794,16 @@ covergroup I_sb_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1670,16 +1837,19 @@ covergroup I_sb_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup I_sh_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sh"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -1702,13 +1872,16 @@ covergroup I_sh_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1742,6 +1915,7 @@ covergroup I_sh_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup I_sll_cg with function sample(ins_t ins);
@@ -1749,25 +1923,32 @@ covergroup I_sll_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sll"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1801,9 +1982,11 @@ covergroup I_sll_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1837,9 +2020,11 @@ covergroup I_sll_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_slli_cg with function sample(ins_t ins);
@@ -1847,16 +2032,20 @@ covergroup I_slli_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "slli"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1890,9 +2079,11 @@ covergroup I_slli_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:`XLEN - 1]}; // 5/6 bit immediates
     }
+
     cp_imm_edges_uimm : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -1910,6 +2101,7 @@ covergroup I_slli_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_slt_cg with function sample(ins_t ins);
@@ -1917,25 +2109,32 @@ covergroup I_slt_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "slt"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -1969,9 +2168,11 @@ covergroup I_slt_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2005,9 +2206,11 @@ covergroup I_slt_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_slti_cg with function sample(ins_t ins);
@@ -2015,10 +2218,12 @@ covergroup I_slti_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "slti"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2041,12 +2246,15 @@ covergroup I_slti_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2080,9 +2288,11 @@ covergroup I_slti_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sltiu_cg with function sample(ins_t ins);
@@ -2090,10 +2300,12 @@ covergroup I_sltiu_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sltiu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2116,12 +2328,15 @@ covergroup I_sltiu_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2155,9 +2370,11 @@ covergroup I_sltiu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sltu_cg with function sample(ins_t ins);
@@ -2165,25 +2382,32 @@ covergroup I_sltu_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sltu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2217,9 +2441,11 @@ covergroup I_sltu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2253,9 +2479,11 @@ covergroup I_sltu_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sra_cg with function sample(ins_t ins);
@@ -2263,25 +2491,32 @@ covergroup I_sra_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sra"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2315,9 +2550,11 @@ covergroup I_sra_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2351,9 +2588,11 @@ covergroup I_sra_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_srai_cg with function sample(ins_t ins);
@@ -2361,16 +2600,20 @@ covergroup I_srai_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "srai"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2404,9 +2647,11 @@ covergroup I_srai_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:`XLEN - 1]}; // 5/6 bit immediates
     }
+
     cp_imm_edges_uimm : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -2424,6 +2669,7 @@ covergroup I_srai_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_srl_cg with function sample(ins_t ins);
@@ -2431,25 +2677,32 @@ covergroup I_srl_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "srl"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2483,9 +2736,11 @@ covergroup I_srl_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2519,9 +2774,11 @@ covergroup I_srl_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_srli_cg with function sample(ins_t ins);
@@ -2529,16 +2786,20 @@ covergroup I_srli_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "srli"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2572,9 +2833,11 @@ covergroup I_srli_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:`XLEN - 1]}; // 5/6 bit immediates
     }
+
     cp_imm_edges_uimm : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -2592,6 +2855,7 @@ covergroup I_srli_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimm : cross cp_rs1_edges,cp_imm_edges_uimm  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sub_cg with function sample(ins_t ins);
@@ -2599,25 +2863,32 @@ covergroup I_sub_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sub"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2651,9 +2922,11 @@ covergroup I_sub_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2687,19 +2960,23 @@ covergroup I_sub_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sw_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2722,13 +2999,16 @@ covergroup I_sw_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2762,6 +3042,7 @@ covergroup I_sw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup I_xor_cg with function sample(ins_t ins);
@@ -2769,25 +3050,32 @@ covergroup I_xor_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "xor"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2821,9 +3109,11 @@ covergroup I_xor_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2857,9 +3147,11 @@ covergroup I_xor_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_xori_cg with function sample(ins_t ins);
@@ -2867,10 +3159,12 @@ covergroup I_xori_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "xori"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2893,12 +3187,15 @@ covergroup I_xori_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -2932,9 +3229,11 @@ covergroup I_xori_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 `ifdef XLEN64
@@ -2943,10 +3242,12 @@ covergroup I_addiw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "addiw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -2969,12 +3270,15 @@ covergroup I_addiw_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3008,9 +3312,11 @@ covergroup I_addiw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_imm_edges : cross cp_rs1_edges,cp_imm_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_addw_cg with function sample(ins_t ins);
@@ -3018,25 +3324,32 @@ covergroup I_addw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "addw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3070,9 +3383,11 @@ covergroup I_addw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3106,9 +3421,11 @@ covergroup I_addw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_ld_cg with function sample(ins_t ins);
@@ -3117,10 +3434,12 @@ covergroup I_ld_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_asm_count : coverpoint ins.ins_str == "ld"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3143,6 +3462,7 @@ covergroup I_ld_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_double : coverpoint {ins.current.rd_val[63:0]} iff (ins.trap == 0) {
         bins zero = {64'h0000000000000000};
         bins one  = {64'h0000000000000001};
@@ -3150,13 +3470,16 @@ covergroup I_ld_cg with function sample(ins_t ins);
         bins min  = {64'h8000000000000000};
         bins mone = {64'hffffffffffffffff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_lwu_cg with function sample(ins_t ins);
@@ -3165,12 +3488,15 @@ covergroup I_lwu_cg with function sample(ins_t ins);
         // Compare assignments of all 31 registers excluding x0
         ignore_bins x0 = {x0};
     }
+
     cp_align_word : coverpoint {ins.current.rs1_val + ins.current.imm}[2] iff (ins.trap == 0) {
     }
+
     cp_asm_count : coverpoint ins.ins_str == "lwu"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3193,6 +3519,7 @@ covergroup I_lwu_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_memval_word : coverpoint {ins.current.rd_val[31:0]} iff (ins.trap == 0) {
         bins zero = {32'h00000000};
         bins one  = {32'h00000001};
@@ -3200,13 +3527,16 @@ covergroup I_lwu_cg with function sample(ins_t ins);
         bins min  = {32'h80000000};
         bins mone = {32'hffffffff};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
 endgroup
 // ---------------------
 covergroup I_sd_cg with function sample(ins_t ins);
@@ -3215,6 +3545,7 @@ covergroup I_sd_cg with function sample(ins_t ins);
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_imm_edges : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins zero  = {0};
         bins p0    = {1};
@@ -3237,13 +3568,16 @@ covergroup I_sd_cg with function sample(ins_t ins);
         bins ones   = {-1};
         bins randomp = {1795};
     }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3277,6 +3611,7 @@ covergroup I_sd_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
 endgroup
 // ---------------------
 covergroup I_slliw_cg with function sample(ins_t ins);
@@ -3284,16 +3619,20 @@ covergroup I_slliw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "slliw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3327,9 +3666,11 @@ covergroup I_slliw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm_5 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit immediates for csr*i, iw, and vector instructions
     }
+
     cp_imm_edges_uimmw : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -3340,6 +3681,7 @@ covergroup I_slliw_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sllw_cg with function sample(ins_t ins);
@@ -3347,25 +3689,32 @@ covergroup I_sllw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sllw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3399,9 +3748,11 @@ covergroup I_sllw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3435,9 +3786,11 @@ covergroup I_sllw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sraiw_cg with function sample(ins_t ins);
@@ -3445,16 +3798,20 @@ covergroup I_sraiw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sraiw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3488,9 +3845,11 @@ covergroup I_sraiw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm_5 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit immediates for csr*i, iw, and vector instructions
     }
+
     cp_imm_edges_uimmw : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -3501,6 +3860,7 @@ covergroup I_sraiw_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_sraw_cg with function sample(ins_t ins);
@@ -3508,25 +3868,32 @@ covergroup I_sraw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "sraw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3560,9 +3927,11 @@ covergroup I_sraw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3596,9 +3965,11 @@ covergroup I_sraw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_srliw_cg with function sample(ins_t ins);
@@ -3606,16 +3977,20 @@ covergroup I_srliw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "srliw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3649,9 +4024,11 @@ covergroup I_srliw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_uimm_5 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins uimm[] = {[0:31]}; // 5 bit immediates for csr*i, iw, and vector instructions
     }
+
     cp_imm_edges_uimmw : coverpoint unsigned'(ins.current.imm[5:0])  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
@@ -3662,6 +4039,7 @@ covergroup I_srliw_cg with function sample(ins_t ins);
     cr_rs1_imm_edges_uimmw : cross cp_rs1_edges,cp_imm_edges_uimmw  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 and Imm edges
     }
+
 endgroup
 // ---------------------
 covergroup I_srlw_cg with function sample(ins_t ins);
@@ -3669,25 +4047,32 @@ covergroup I_srlw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "srlw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3721,9 +4106,11 @@ covergroup I_srlw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3757,9 +4144,11 @@ covergroup I_srlw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 covergroup I_subw_cg with function sample(ins_t ins);
@@ -3767,25 +4156,32 @@ covergroup I_subw_cg with function sample(ins_t ins);
     cmp_rd_rs1 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cmp_rs1_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
         // Compare assignments of all registers
     }
+
     cp_asm_count : coverpoint ins.ins_str == "subw"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
+
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
+
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3819,9 +4215,11 @@ covergroup I_subw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
+
     cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
         `ifdef XLEN32
             bins zero     = {0};
@@ -3855,9 +4253,11 @@ covergroup I_subw_cg with function sample(ins_t ins);
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
     }
+
     cr_rs1_rs2_edges : cross cp_rs1_edges,cp_rs2_edges  iff (ins.trap == 0 )  {
         // Cross coverage of RS1 edges and RS2 edges
     }
+
 endgroup
 // ---------------------
 `endif

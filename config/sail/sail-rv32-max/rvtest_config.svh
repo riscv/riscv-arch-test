@@ -9,6 +9,7 @@
 `define XLEN32
 `define FLEN128
 `define VLEN1024
+`define ELEN64
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -47,6 +48,7 @@
 `define ZICBOM_SUPPORTED
 `define ZICBOZ_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZKR_SUPPORTED
 `define S_SUPPORTED
 
 `define COUNTINHIBIT_EN_0
@@ -65,3 +67,6 @@
 `define LMULf8_SUPPORTED
 `define LMULf4_SUPPORTED
 `define LMULf2_SUPPORTED
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW32

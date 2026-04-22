@@ -73,7 +73,7 @@
     // checked before address translation. `misaligned_fault` in
     // `regions` is checked after address translation.
     "misaligned": {
-      "supported": false,
+      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0
@@ -179,7 +179,7 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true
+    "wfi_is_nop": false
   },
   "extensions": {
     "M": {

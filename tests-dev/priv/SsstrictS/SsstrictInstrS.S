@@ -11,7 +11,6 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: [I, S, Zicsr, Ssstrict, Sm]
 # MARCH: rv${XLEN}if_zicsr
-# CONFIG_DEPENDENT: true
 ##### END_TEST_CONFIG #####
 
 #include "WALLY-init-lib.h"

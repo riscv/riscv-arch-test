@@ -21,9 +21,15 @@ WORKDIR     ?= work
 #  - Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo: sail-riscv missing support for Svade/Svadu causes mismatches. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZalrsc: See sail-riscv issue 1574. Resolved in upcoming sail-riscv release.
 #  - ExceptionsZaamo: Configuration needed between access and misaligned faults
-#  - InterruptsSm,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
+#  - InterruptsSm,InterruptsS,InterruptsU,PMPSm,PMPZca,PMPmisaligned: Additional testing needed on a wider range of configs. Some missing config options to match ref model.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
+EXCLUDE_EXTENSIONS ?= Sm,S,InterruptsSm,InterruptsS,InterruptsU,ExceptionsZalrsc,ExceptionsZaamo,PMPSm,PMPZca,PMPmisaligned,Sv,Svade,Svadu,SvaduPMP,SvPMP,SvZicbo,SvPMPZicbo
+
+# Strip spaces from comma-separated lists so shell word-splitting doesn't break CLI arguments
+empty :=
+space := $(empty) $(empty)
+override EXTENSIONS := $(subst $(space),$(empty),$(EXTENSIONS))
+override EXCLUDE_EXTENSIONS := $(subst $(space),$(empty),$(EXCLUDE_EXTENSIONS))
 
 # DEBUG, FAST, and VERBOSE are runtime options for controlling build output. DEBUG and FAST are mutually exclusive.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
@@ -75,14 +81,35 @@ $(STAMP_DIR):
 	@mkdir -p $@
 
 
+
 ########## Installation Check ##########
-# Check if UV is installed and set UV variable
-UV := $(shell command -v uv 2> /dev/null)
-ifneq ($(UV),)
+# Tool management — prefer mise, then uv, then an activated venv with the
+# CLIs already installed. uv/mise always wins over VIRTUAL_ENV.
+MISE := $(shell command -v mise 2> /dev/null)
+UV   := $(shell command -v uv 2> /dev/null)
+
+ifneq ($(MISE),)
+  UV_RUN := $(MISE) exec -- uv run
+else ifneq ($(UV),)
   UV_RUN := $(UV) run
-else
+else ifneq ($(VIRTUAL_ENV),)
+  # Activated venv without uv/mise: require the three CLIs on PATH.
+  MISSING_CLIS := $(strip $(foreach c,act testgen covergroupgen,\
+                    $(if $(shell command -v $(c) 2> /dev/null),,$(c))))
+  ifneq ($(MISSING_CLIS),)
+    $(error Activated venv ($(VIRTUAL_ENV)) is missing required CLIs: $(MISSING_CLIS). Install with: pip install -e ./framework -e ./generators/testgen -e ./generators/coverage or use mise/uv)
+  endif
   UV_RUN :=
-  $(warning "Warning: 'uv' command not found. Running scripts without UV, but there may be dependency issues.")
+else
+  $(error Neither uv nor mise found, and no venv is activated. See the README (Prerequisites) for install options.)
+endif
+
+# Ruby/Bundler is required for the UDB gem whenever we are not going through mise.
+ifeq ($(MISE),)
+  BUNDLE := $(shell command -v bundle 2> /dev/null)
+  ifeq ($(BUNDLE),)
+    $(error Bundle not found. Ruby and Bundler are required for UDB. See the README for more information.)
+  endif
 endif
 
 
@@ -104,7 +131,7 @@ elfs: tests
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
 
 .PHONY: clean
-clean: clean-tests
+clean:
 	@if [ -d $(WORKDIR) ]; then \
 		find $(WORKDIR) \( -type f -o -type l \) ! -name 'extensions.txt' -delete; \
 		find $(WORKDIR) -type d -empty -delete; \
@@ -128,7 +155,7 @@ $(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
 .PHONY: vector-testgen
 vector-testgen: $(STAMP_DIR)/vector-testgen-unpriv.stamp
 $(STAMP_DIR)/vector-testgen-unpriv.stamp: generators/testgen/scripts/vector-testgen-unpriv.py generators/testgen/scripts/vector_testgen_common.py Makefile | $(STAMP_DIR)
-	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py
+	$(UV_RUN) generators/testgen/scripts/vector-testgen-unpriv.py $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	touch $@
 
 .PHONY: tests

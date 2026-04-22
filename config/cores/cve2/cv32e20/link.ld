@@ -4,12 +4,12 @@ ENTRY(rvtest_entry_point)
 SECTIONS
 {
   . = 0x00004000;
-  .text.init : { *(.text.init) }
-  .text : { *(.text) *(.text.*) }
+  .text.init    : { *(.text.init) }
+  .text.rvtest  : { *(.text.rvtest) *(.text.rvtest.*) }
   . = ALIGN(0x4000);
-  .bss : { *(.bss) }
+  .data         : { *(.data) }
   . = ALIGN(0x1000);
-  .data : { *(.data) }
+  .text.rvmodel : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) }
   . = ALIGN(0x1000);
   _end = .;
 }

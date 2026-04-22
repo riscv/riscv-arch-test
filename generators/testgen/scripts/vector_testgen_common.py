@@ -1251,8 +1251,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
     with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
-    if (test == "ExceptionsV"):
+    if (test == "ExceptionsV") or test.startswith("ExceptionsV"):
       march = f"rv{xlen}i_m_v_zicsr"
+      ext_parts_no_I = ['M', 'V', 'Zicsr']
     else:
       # Split extension into components based on capital letters
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
@@ -2951,7 +2952,11 @@ def readTestplans(priv=False):
     for file in os.listdir(coverplanDir):
         if file.endswith(".csv"):
             arch = re.search("(.*).csv", file).group(1)
-            if (arch == "ExceptionsV" or arch.startswith("V") or arch.startswith("Zv")):
+            if (priv):
+                is_vector = (arch.startswith("ExceptionsV") or arch.startswith("SsstrictV") or arch.startswith("V") or arch.startswith("Zv"))
+            else:
+                is_vector = (arch.startswith("V") or arch.startswith("Zv"))
+            if is_vector:
                 with open(os.path.join(coverplanDir, file)) as csvfile:
                     reader = csv.DictReader(csvfile)
                     tp = dict()

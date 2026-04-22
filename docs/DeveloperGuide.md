@@ -691,6 +691,22 @@ There are a few important gotchas to keep in mind when writing privileged tests:
 - The trap handler skips 4 bytes when returning to the test. This means that every instruction that could trap must be followed by a `nop` (or two `c.nop` if compressed instructions are supported). Alternatively, this skipped instruction can be used to change a counter/indicator of some kind to detect if a trap was taken. This is generally not necessary because the total number of traps is always checked at the end of a test.
 - Different implementations may trap on different CSRs, so always assume a CSR access could trap. The `CSRRW`, `CSRRS`, `CSRR`, etc. macros include a `nop` after the CSR access and should always be used in place of raw CSR instructions.
 
+#### Vector Privileged Tests (ExceptionsV*, SsstrictV*)
+
+Vector privileged test suites do **not** go through the `generators/testgen/src/testgen/priv/extensions/` flow described above. They have their own generator that reuses the vector unprivileged testgen infrastructure so that full per-instruction vector setup (vtype, vstart, mask, data, signature handling) is available.
+
+- Testplans live in [`testplans/priv/`](../testplans/priv/) as CSVs (one per suite, e.g. `ExceptionsVx.csv`, `ExceptionsVls.csv`). They are CSV-driven like unprivileged testplans rather than spreadsheet-driven, because each suite covers every vector load/store or arithmetic instruction and a spreadsheet row per instruction is impractical.
+- The driver script is [`generators/testgen/scripts/vector-testgen-priv.py`](../generators/testgen/scripts/vector-testgen-priv.py) (run by the `vector-testgen` Make target). It reads every CSV in `testplans/priv/` via `readTestplans(priv=True)` and emits one `.S` file per suite per XLEN into `tests/priv/<Suite>/<Suite>_rv{32,64}.S`.
+- Per-coverpoint test generators go in [`generators/testgen/scripts/priv/`](../generators/testgen/scripts/priv/) as modules named `cp_<coverpoint>.py`. Each module registers its coverpoint(s) with the `@register("cp_<name>")` decorator from `priv_coverpoint_registry.py`. All modules in that package are auto-imported by `import_all_modules(priv)` in the driver script. When the driver sees a coverpoint column in the testplan it dispatches to `PRIV_REGISTRY[coverpoint](instruction)`; unregistered coverpoints produce a `Warning: <cp> not implemented yet for <instruction>` and are silently skipped.
+- The covergroups for these suites are generated (not handwritten) by `write_priv_covergroups` in [`generators/coverage/src/covergroupgen/generate.py`](../generators/coverage/src/covergroupgen/generate.py), which reads the same `testplans/priv/*.csv` and emits `coverpoints/priv/<Suite>_coverage.svh` and `_coverage_init.svh` using the existing coverpoint SystemVerilog templates.
+
+To add a new vector privileged suite or coverpoint:
+
+1. Add or extend the CSV in `testplans/priv/` with a column per coverpoint and an `x` on each instruction that should be covered.
+2. For any new coverpoint, add a SystemVerilog template under `generators/coverage/src/covergroupgen/templates/` (or `templates/vector/` for SEW-specific variants) named `cp_<coverpoint>.sv`.
+3. Add a Python handler under `generators/testgen/scripts/priv/cp_<coverpoint>.py` and decorate it with `@register("cp_<coverpoint>")`. The handler receives a single `instruction` string and should use helpers from `vector_testgen_common` (`writeLine`, `randomizeVectorInstructionData`, `writeVecTest`, etc.) — see `cp_exceptionsv_LS.py` for a reference implementation.
+4. Run `make vector-tests` (which invokes `covergroupgen` + `vector-testgen`) to regenerate everything.
+
 For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).

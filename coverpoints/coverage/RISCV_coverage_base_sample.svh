@@ -142,6 +142,9 @@
     `ifdef COVER_S
         s_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SCOUNTEREN
+        scounteren_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
     `endif
@@ -150,6 +153,12 @@
     `endif
     `ifdef COVER_SMV
         smv_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SMSTATEEN
+        smstateen_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSSTATEEN
+        ssstateen_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSSTRICTS
         ssstricts_sample(hart, issue, ins);
@@ -162,6 +171,12 @@
     `endif
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTVALA
+        sstvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTVECD
+        sstvecd_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SV
         sv_sample(hart, issue, ins);

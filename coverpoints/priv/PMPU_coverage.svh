@@ -15,29 +15,29 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*XLEN-1:0] pack_pmpa
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   addr_offset_napot: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base    = {`REGIONSTART};           // Access exactly at the region base
-    bins below_base    = {`REGIONSTART - 4};         // Access 4 bytes below the region
-    bins just_inside  = {`REGIONSTART + 4};         // Access 4 bytes into the region
-    bins highest_word = {`REGIONSTART + `g_napot - 4};  // Access at the last word in region
-    bins just_beyond  = {`REGIONSTART + `g_napot};      // Access exactly at the end of the region
+    bins at_base    = {`PMP_REGION_START};           // Access exactly at the region base
+    bins below_base    = {`PMP_REGION_START - 4};         // Access 4 bytes below the region
+    bins just_inside  = {`PMP_REGION_START + 4};         // Access 4 bytes into the region
+    bins highest_word = {`PMP_REGION_START + `g_napot - 4};  // Access at the last word in region
+    bins just_beyond  = {`PMP_REGION_START + `g_napot};      // Access exactly at the end of the region
   }
 
   addr_offset_na4: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base  = {`REGIONSTART};     // Access exactly at the region base
-    bins below_base  = {`REGIONSTART - 4};  // Access below region base
-    bins beyond_top  = {`REGIONSTART + 4};  // Access beyond top of region
+    bins at_base  = {`PMP_REGION_START};     // Access exactly at the region base
+    bins below_base  = {`PMP_REGION_START - 4};  // Access below region base
+    bins beyond_top  = {`PMP_REGION_START + 4};  // Access beyond top of region
   }
 
-  // if range is from `REGIONSTART to `REGIONSTART + `g
+  // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
   addr_offset_tor: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_base    = {`REGIONSTART};           // Access exactly at the region base
-    bins below_base    = {`REGIONSTART - 4};         // Access 4 bytes below the base
-    bins at_top      = {`REGIONSTART + `g_tor};    // Access exactly at top of range
-    bins highest_word = {`REGIONSTART + `g_tor - 4}; // Access at the last word in region
+    bins at_base    = {`PMP_REGION_START};           // Access exactly at the region base
+    bins below_base    = {`PMP_REGION_START - 4};         // Access 4 bytes below the base
+    bins at_top      = {`PMP_REGION_START + `g_tor};    // Access exactly at top of range
+    bins highest_word = {`PMP_REGION_START + `g_tor - 4}; // Access at the last word in region
   }
 
   exec_instr: coverpoint ins.current.insn {

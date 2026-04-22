@@ -15,7 +15,7 @@ covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   rs1_in_region: coverpoint ins.current.rs1_val {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   atomic_intrs: coverpoint ins.current.insn {

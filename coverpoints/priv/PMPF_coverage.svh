@@ -15,7 +15,7 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
   addr_in_region: coverpoint (ins.current.rs1_val + ins.current.imm) {
-    bins at_region = {`REGIONSTART};
+    bins at_region = {`PMP_REGION_START};
   }
 
   read_fp_instr: coverpoint ins.current.insn {

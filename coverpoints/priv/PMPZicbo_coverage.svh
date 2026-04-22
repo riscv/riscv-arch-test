@@ -18,13 +18,13 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
-    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`REGIONSTART>>2)) &&
-                                 (pmpaddr[1] == ((`REGIONSTART + 16'h1000) >>2))) {
+    pmpaddr_region: coverpoint  ((pmpaddr[0] == (`PMP_REGION_START>>2)) &&
+                                 (pmpaddr[1] == ((`PMP_REGION_START + 16'h1000) >>2))) {
         bins region = {1};
     }
 
     addr_in_region: coverpoint ins.current.rs1_val {
-        bins address = {`REGIONSTART};
+        bins address = {`PMP_REGION_START};
     }
 
     cbo_clean_instr: coverpoint ins.current.insn {

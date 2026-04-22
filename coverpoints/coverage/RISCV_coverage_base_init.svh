@@ -10,6 +10,14 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
+    `ifdef COVER_D
+        `cover_info("//      D - Enabled");
+        `include "D_coverage_init.svh"
+    `endif
+    `ifdef COVER_E
+        `cover_info("//      E - Enabled");
+        `include "E_coverage_init.svh"
+    `endif
     `ifdef COVER_ENDIANH
         `cover_info("//      EndianH - Enabled");
         `include "EndianH_coverage_init.svh"
@@ -94,9 +102,17 @@
         `cover_info("//      ExceptionsZicboU - Enabled");
         `include "ExceptionsZicboU_coverage_init.svh"
     `endif
+    `ifdef COVER_F
+        `cover_info("//      F - Enabled");
+        `include "F_coverage_init.svh"
+    `endif
     `ifdef COVER_HV
         `cover_info("//      HV - Enabled");
         `include "HV_coverage_init.svh"
+    `endif
+    `ifdef COVER_I
+        `cover_info("//      I - Enabled");
+        `include "I_coverage_init.svh"
     `endif
     `ifdef COVER_INTERRUPTSS
         `cover_info("//      InterruptsS - Enabled");
@@ -113,6 +129,26 @@
     `ifdef COVER_INTERRUPTSU
         `cover_info("//      InterruptsU - Enabled");
         `include "InterruptsU_coverage_init.svh"
+    `endif
+    `ifdef COVER_M
+        `cover_info("//      M - Enabled");
+        `include "M_coverage_init.svh"
+    `endif
+    `ifdef COVER_MISALIGN
+        `cover_info("//      Misalign - Enabled");
+        `include "Misalign_coverage_init.svh"
+    `endif
+    `ifdef COVER_MISALIGND
+        `cover_info("//      MisalignD - Enabled");
+        `include "MisalignD_coverage_init.svh"
+    `endif
+    `ifdef COVER_MISALIGNF
+        `cover_info("//      MisalignF - Enabled");
+        `include "MisalignF_coverage_init.svh"
+    `endif
+    `ifdef COVER_MISALIGNZCA
+        `cover_info("//      MisalignZca - Enabled");
+        `include "MisalignZca_coverage_init.svh"
     `endif
     `ifdef COVER_PMPF
         `cover_info("//      PMPF - Enabled");
@@ -246,6 +282,186 @@
         `cover_info("//      VF - Enabled");
         `include "VF_coverage_init.svh"
     `endif
+    `ifdef COVER_VF16
+        `cover_info("//      Vf16 - Enabled");
+        `include "Vf16_coverage_init.svh"
+    `endif
+    `ifdef COVER_VF32
+        `cover_info("//      Vf32 - Enabled");
+        `include "Vf32_coverage_init.svh"
+    `endif
+    `ifdef COVER_VF64
+        `cover_info("//      Vf64 - Enabled");
+        `include "Vf64_coverage_init.svh"
+    `endif
+    `ifdef COVER_VLS16
+        `cover_info("//      Vls16 - Enabled");
+        `include "Vls16_coverage_init.svh"
+    `endif
+    `ifdef COVER_VLS32
+        `cover_info("//      Vls32 - Enabled");
+        `include "Vls32_coverage_init.svh"
+    `endif
+    `ifdef COVER_VLS64
+        `cover_info("//      Vls64 - Enabled");
+        `include "Vls64_coverage_init.svh"
+    `endif
+    `ifdef COVER_VLS8
+        `cover_info("//      Vls8 - Enabled");
+        `include "Vls8_coverage_init.svh"
+    `endif
+    `ifdef COVER_VX16
+        `cover_info("//      Vx16 - Enabled");
+        `include "Vx16_coverage_init.svh"
+    `endif
+    `ifdef COVER_VX32
+        `cover_info("//      Vx32 - Enabled");
+        `include "Vx32_coverage_init.svh"
+    `endif
+    `ifdef COVER_VX64
+        `cover_info("//      Vx64 - Enabled");
+        `include "Vx64_coverage_init.svh"
+    `endif
+    `ifdef COVER_VX8
+        `cover_info("//      Vx8 - Enabled");
+        `include "Vx8_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZAAMO
+        `cover_info("//      Zaamo - Enabled");
+        `include "Zaamo_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZABHA
+        `cover_info("//      Zabha - Enabled");
+        `include "Zabha_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZACAS
+        `cover_info("//      Zacas - Enabled");
+        `include "Zacas_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZACASZABHA
+        `cover_info("//      ZacasZabha - Enabled");
+        `include "ZacasZabha_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZALRSC
+        `cover_info("//      Zalrsc - Enabled");
+        `include "Zalrsc_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBA
+        `cover_info("//      Zba - Enabled");
+        `include "Zba_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBB
+        `cover_info("//      Zbb - Enabled");
+        `include "Zbb_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBC
+        `cover_info("//      Zbc - Enabled");
+        `include "Zbc_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBKB
+        `cover_info("//      Zbkb - Enabled");
+        `include "Zbkb_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBKC
+        `cover_info("//      Zbkc - Enabled");
+        `include "Zbkc_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBKX
+        `cover_info("//      Zbkx - Enabled");
+        `include "Zbkx_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZBS
+        `cover_info("//      Zbs - Enabled");
+        `include "Zbs_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCA
+        `cover_info("//      Zca - Enabled");
+        `include "Zca_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCB
+        `cover_info("//      Zcb - Enabled");
+        `include "Zcb_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCBM
+        `cover_info("//      ZcbM - Enabled");
+        `include "ZcbM_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCBZBA
+        `cover_info("//      ZcbZba - Enabled");
+        `include "ZcbZba_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCBZBB
+        `cover_info("//      ZcbZbb - Enabled");
+        `include "ZcbZbb_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCD
+        `cover_info("//      Zcd - Enabled");
+        `include "Zcd_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCF
+        `cover_info("//      Zcf - Enabled");
+        `include "Zcf_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZCMOP
+        `cover_info("//      Zcmop - Enabled");
+        `include "Zcmop_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFAD
+        `cover_info("//      ZfaD - Enabled");
+        `include "ZfaD_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFAF
+        `cover_info("//      ZfaF - Enabled");
+        `include "ZfaF_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFAZFH
+        `cover_info("//      ZfaZfh - Enabled");
+        `include "ZfaZfh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFAZFHD
+        `cover_info("//      ZfaZfhD - Enabled");
+        `include "ZfaZfhD_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFAZVFH
+        `cover_info("//      ZfaZvfh - Enabled");
+        `include "ZfaZvfh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFBFMIN
+        `cover_info("//      Zfbfmin - Enabled");
+        `include "Zfbfmin_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFH
+        `cover_info("//      Zfh - Enabled");
+        `include "Zfh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFHD
+        `cover_info("//      ZfhD - Enabled");
+        `include "ZfhD_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFHMIN
+        `cover_info("//      Zfhmin - Enabled");
+        `include "Zfhmin_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZFHMIND
+        `cover_info("//      ZfhminD - Enabled");
+        `include "ZfhminD_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICBOM
+        `cover_info("//      Zicbom - Enabled");
+        `include "Zicbom_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICBOP
+        `cover_info("//      Zicbop - Enabled");
+        `include "Zicbop_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICBOZ
+        `cover_info("//      Zicboz - Enabled");
+        `include "Zicboz_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICNTR
+        `cover_info("//      Zicntr - Enabled");
+        `include "Zicntr_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICNTRH
         `cover_info("//      ZicntrH - Enabled");
         `include "ZicntrH_coverage_init.svh"
@@ -258,11 +474,111 @@
         `cover_info("//      ZicntrU - Enabled");
         `include "ZicntrU_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICOND
+        `cover_info("//      Zicond - Enabled");
+        `include "Zicond_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICSR
+        `cover_info("//      Zicsr - Enabled");
+        `include "Zicsr_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICSRF
         `cover_info("//      ZicsrF - Enabled");
         `include "ZicsrF_coverage_init.svh"
     `endif
+    `ifdef COVER_ZIFENCEI
+        `cover_info("//      Zifencei - Enabled");
+        `include "Zifencei_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZIHINTNTL
+        `cover_info("//      Zihintntl - Enabled");
+        `include "Zihintntl_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZIHINTNTLZCA
+        `cover_info("//      ZihintntlZca - Enabled");
+        `include "ZihintntlZca_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZIHINTPAUSE
+        `cover_info("//      Zihintpause - Enabled");
+        `include "Zihintpause_coverage_init.svh"
+    `endif
     `ifdef COVER_ZIHPM
         `cover_info("//      Zihpm - Enabled");
         `include "Zihpm_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZIMOP
+        `cover_info("//      Zimop - Enabled");
+        `include "Zimop_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKND
+        `cover_info("//      Zknd - Enabled");
+        `include "Zknd_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKNE
+        `cover_info("//      Zkne - Enabled");
+        `include "Zkne_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKNH
+        `cover_info("//      Zknh - Enabled");
+        `include "Zknh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKSED
+        `cover_info("//      Zksed - Enabled");
+        `include "Zksed_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZKSH
+        `cover_info("//      Zksh - Enabled");
+        `include "Zksh_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZMMUL
+        `cover_info("//      Zmmul - Enabled");
+        `include "Zmmul_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVBB16
+        `cover_info("//      Zvbb16 - Enabled");
+        `include "Zvbb16_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVBB32
+        `cover_info("//      Zvbb32 - Enabled");
+        `include "Zvbb32_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVBB64
+        `cover_info("//      Zvbb64 - Enabled");
+        `include "Zvbb64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVBB8
+        `cover_info("//      Zvbb8 - Enabled");
+        `include "Zvbb8_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVBC64
+        `cover_info("//      Zvbc64 - Enabled");
+        `include "Zvbc64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVFBFMIN
+        `cover_info("//      Zvfbfmin - Enabled");
+        `include "Zvfbfmin_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVFBFWMA
+        `cover_info("//      Zvfbfwma - Enabled");
+        `include "Zvfbfwma_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVFHMIN
+        `cover_info("//      Zvfhmin - Enabled");
+        `include "Zvfhmin_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKB16
+        `cover_info("//      Zvkb16 - Enabled");
+        `include "Zvkb16_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKB32
+        `cover_info("//      Zvkb32 - Enabled");
+        `include "Zvkb32_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKB64
+        `cover_info("//      Zvkb64 - Enabled");
+        `include "Zvkb64_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZVKB8
+        `cover_info("//      Zvkb8 - Enabled");
+        `include "Zvkb8_coverage_init.svh"
     `endif

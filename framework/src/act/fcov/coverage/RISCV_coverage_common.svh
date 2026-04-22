@@ -184,6 +184,28 @@
 // `endif
 
 
+// MAXINDEXEEW — maximum supported index element width for indexed load/store
+// Config should define one of: MAXINDEXEEW64, MAXINDEXEEW32, MAXINDEXEEW16, MAXINDEXEEW8
+`ifdef MAXINDEXEEW64
+  `define MAXINDEXEEW 64
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+  `define MAXINDEXEEW_GE32
+  `define MAXINDEXEEW_GE64
+`elsif MAXINDEXEEW32
+  `define MAXINDEXEEW 32
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+  `define MAXINDEXEEW_GE32
+`elsif MAXINDEXEEW16
+  `define MAXINDEXEEW 16
+  `define MAXINDEXEEW_GE8
+  `define MAXINDEXEEW_GE16
+`elsif MAXINDEXEEW8
+  `define MAXINDEXEEW 8
+  `define MAXINDEXEEW_GE8
+`endif
+
 // Set register type length
 `define XLEN_BITS         bit        [`XLEN-1:0]
 `define SIGNED_XLEN_BITS  bit signed [`XLEN-1:0]

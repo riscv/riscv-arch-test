@@ -515,6 +515,8 @@ jalrlsb_3: c.nop
   # Check if x1 contains the expected result. x27 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x27, x5, x4, x1, Zca_c_jalr_cg_cp_offset_lsbs_11, Zca_c_jalr_cg_cp_offset_lsbs_11_str)
 
+  mv x2, x27 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

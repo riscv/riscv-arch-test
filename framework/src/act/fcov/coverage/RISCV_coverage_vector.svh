@@ -381,12 +381,23 @@ typedef enum {
 // Check for vector operand edge values, assuming vl = 1
 function edge_mask_values_t mask_edges_check(int hart, int issue, `VLEN_BITS mask_val);
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+  // Mask v0 only uses the low `vlmax' bits; bits above are don't-care
+  // (mask-producing ops leave them as agnostic-ones per the RVV 1.0 spec
+  // and previous random-mask tests can leave any value there). Discard the
+  // inactive bits before classifying so the edge-value bins are reachable.
+  `VLEN_BITS active_mask;
+  if (vlmax >= $bits(mask_val)) begin
+    active_mask = mask_val;
+  end else begin
+    `VLEN_BITS one = 'b1;
+    active_mask = mask_val & ((one << vlmax) - 1);
+  end
 
-  if      (mask_val == 0)                           return mask_zero;
-  else if (mask_val == ((2 ** (vlmax)) - 1))        return mask_ones;
-  else if (mask_val == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
-  else if (mask_val == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
-  else                                              return mask_random;
+  if      (active_mask == 0)                           return mask_zero;
+  else if (active_mask == ((2 ** (vlmax)) - 1))        return mask_ones;
+  else if (active_mask == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
+  else if (active_mask == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
+  else                                                 return mask_random;
 
 endfunction
 

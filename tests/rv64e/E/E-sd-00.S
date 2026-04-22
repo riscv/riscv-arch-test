@@ -1469,6 +1469,8 @@ E_sd_cg_cp_imm_edges_m0x1:
   nop
 #endif
 
+  mv x2, x9 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

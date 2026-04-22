@@ -1803,6 +1803,8 @@ Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc:
   nop
 #endif
 
+  mv x2, x11 # restore signature pointer to default register for teardown
+
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
 

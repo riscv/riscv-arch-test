@@ -19,7 +19,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Zcb','Sm']
+# REQUIRED_EXTENSIONS:  ['Zcb','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

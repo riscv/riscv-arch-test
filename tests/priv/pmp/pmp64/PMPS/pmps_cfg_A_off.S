@@ -20,7 +20,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','S']
+# REQUIRED_EXTENSIONS:  ['S']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

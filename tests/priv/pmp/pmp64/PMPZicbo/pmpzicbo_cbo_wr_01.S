@@ -20,7 +20,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Sm','Zicbom','Zicboz']
+# REQUIRED_EXTENSIONS:  ['Sm','Zicbom','Zicboz']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

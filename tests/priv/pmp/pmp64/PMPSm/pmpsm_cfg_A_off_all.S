@@ -21,7 +21,7 @@
 //               because region is off even though inaccessible.
 // --------------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Sm']
+# REQUIRED_EXTENSIONS:  ['Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

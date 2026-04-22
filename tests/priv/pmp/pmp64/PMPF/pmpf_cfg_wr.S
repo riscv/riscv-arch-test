@@ -19,7 +19,7 @@
 // --------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','F','Sm']
+# REQUIRED_EXTENSIONS:  ['F','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'
@@ -114,10 +114,6 @@ main:
 #else
     #define PMP_MASK            ~0
     #define PMP_REGION_SIZE     0
-#endif
-
-#ifdef rvtest_strap_routine
-    csrw satp, zero                // Disable address translation.
 #endif
 
     LA(x4, PMPADDRESS_TOP_GLOBAL)

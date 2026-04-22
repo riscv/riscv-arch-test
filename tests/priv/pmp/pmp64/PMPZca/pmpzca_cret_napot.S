@@ -22,7 +22,7 @@
 //               Attempt jalr to each c.ret.
 // ---------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I','Zca','Sm']
+# REQUIRED_EXTENSIONS:  ['Zca','Sm']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

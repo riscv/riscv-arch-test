@@ -25,7 +25,7 @@
 // ---------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','Zcf','Sm']
+# REQUIRED_EXTENSIONS:  ['Zcf','Sm']
 # params:
 #   MXLEN: 32
 #   NUM_PMP_ENTRIES: '>0'

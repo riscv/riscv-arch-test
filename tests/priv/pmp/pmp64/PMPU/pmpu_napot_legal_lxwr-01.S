@@ -22,7 +22,7 @@
 //               should succeed because of background region with RWX permissions.
 // --------------------------------------------------------------------------------
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS:  ['I','U']
+# REQUIRED_EXTENSIONS:  ['U']
 # params:
 #   MXLEN: 64
 #   NUM_PMP_ENTRIES: '>0'

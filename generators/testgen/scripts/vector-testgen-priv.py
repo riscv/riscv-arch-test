@@ -15,6 +15,7 @@ import filecmp
 import math
 import os
 import pathlib
+import re
 from random import randint, seed
 
 import priv  # priv coverpoint generator scripts
@@ -270,6 +271,43 @@ if __name__ == '__main__':
 
         # Finish
         f.close()
+        # Resolve SIGUPD_COUNT by parsing the generated file for the actual bytes
+        # consumed by scalar and vector signature updates. SIGUPD_COUNT is measured
+        # in units of SIG_STRIDE = TEST_FLEN/8 = 4 bytes, so total bytes / 4.
+        SIG_STRIDE = 4  # TEST_FLEN=32 assumed
+        temp_path = pathlib.Path(tempfname)
+        src = temp_path.read_text()
+
+        def iter_calls(text, name):
+            # Matches "<name>(" at start of a (possibly indented) line, not inside a comment/macro definition.
+            pattern = re.compile(rf"^[ \t]*{re.escape(name)}\s*\(([^)\n]*)\)", re.MULTILINE)
+            for m in pattern.finditer(text):
+                yield [a.strip() for a in m.group(1).split(",")]
+
+        total_bytes = 0
+        # Scalar sigupds: each advances SIG_PTR by SIG_STRIDE
+        for macro in ("RVTEST_SIGUPD", "RVTEST_SIGUPD_F"):
+            total_bytes += sum(1 for _ in iter_calls(src, macro)) * SIG_STRIDE
+        # Vector SIGUPD_V: arg index 7 is _OFFSET in bytes
+        for args in iter_calls(src, "RVTEST_SIGUPD_V"):
+            if len(args) > 7:
+                try:
+                    total_bytes += int(args[7])
+                except ValueError:
+                    total_bytes += 4096  # fallback upper bound
+        # Vector SIGUPD_V_LEN: arg index 12 is offsetRem; caller emits fullOffsets*2047 separately
+        # via addi, so we count offsetRem here. We also include a conservative extra per-call to
+        # account for the addi adjustments.
+        for args in iter_calls(src, "RVTEST_SIGUPD_V_LEN"):
+            if len(args) > 12:
+                try:
+                    total_bytes += int(args[12])
+                except ValueError:
+                    total_bytes += 4096
+            total_bytes += 2047  # margin for one fullOffset-style adjustment
+
+        resolved_sigupd = (total_bytes // SIG_STRIDE) + 256  # margin
+        temp_path.write_text(src.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(resolved_sigupd)))
         # if new file is different from old file, replace old file with new file
         if pathlib.Path(fname).exists():
             if filecmp.cmp(fname, tempfname): # files are the same

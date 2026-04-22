@@ -20,7 +20,7 @@
 //---------------------------------------------------------------------------------------------------------------------------------
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: [I, S, Svinval]
+# REQUIRED_EXTENSIONS: [S, Svinval]
 # MARCH: rv${XLEN}i_zicsr_svinval
 ##### END_TEST_CONFIG #####
 

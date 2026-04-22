@@ -83,7 +83,7 @@ main:
 #define PMP_REGION_GLOBAL    ((PMP_L|PMP_R|PMP_W|PMP_X|PMP_NAPOT)&0xFF)      // Background region with RWX enable.
 #define PMPADDRESS_TOP_GLOBAL        -1                                        // All memory region
 
-#ifdef rvtest_strap_routine
+#ifdef S_SUPPORTED
     csrw satp, zero                // Disable address translation.
 #endif
 

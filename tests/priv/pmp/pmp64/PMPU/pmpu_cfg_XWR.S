@@ -136,7 +136,7 @@ main:
     #define PMP_REGION_SIZE     0
 #endif
 
-#ifdef rvtest_strap_routine
+#ifdef S_SUPPORTED
     csrw satp, zero                // Disable address translation.
 #endif
 

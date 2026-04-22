@@ -291,7 +291,7 @@
         LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
         beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
-        jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
@@ -309,7 +309,7 @@
         LREG _TEMP_REG, 0(_SIG_PTR)        /* dummy instr for failed_test macro for now */ ;\
         beq  _TEMP_REG, _TEMP_REG, 1f      /* dummy instr for failed_test macro for now */ ;\
     1:                                                              ;\
-        jal _LINK_REG, failedtest_##_LINK_REG##_##_TEMP_REG         ;\
+        jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\

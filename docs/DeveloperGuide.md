@@ -9,6 +9,7 @@ Each is described below.
 
 - [Certification Test Plan](#certification-test-plan)
 - [Test Hierarchy](#test-hierarchy)
+- [Test YAML Header](#test-yaml-header)
 - [Table-Driven Unprivileged Coverpoints and Tests](#table-driven-unprivileged-coverpoints-and-tests)
   - [Creating New CSV Testplans](#creating-new-csv-testplans)
   - [Adding New Coverpoints](#adding-new-coverpoints)
@@ -81,6 +82,147 @@ test suite
 - **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index.
 
 - **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `ZcbZbb`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite typically contains a single test file covering all coverpoints for that feature.
+
+## Test YAML Header
+
+Every assembly test file (`.S`) must include a YAML configuration header that
+describes the test's requirements. The framework uses this header to determine
+which tests to select and how to compile them for a given DUT configuration.
+
+The header is embedded in assembly comments between two marker lines:
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zba']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i_zba
+##### END_TEST_CONFIG #####
+```
+
+The framework strips the leading `#` comment characters from each line and
+parses the remaining content as YAML. The header must appear before any
+assembly code in the file.
+
+### Supported Keys
+
+The following top-level keys are recognized. No other keys are permitted
+(the parser uses strict validation and will reject unknown keys).
+
+| Key                   | Type            | Required | Description                                                                                                                                          |
+| --------------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REQUIRED_EXTENSIONS` | list of strings | **Yes**  | RISC-V extensions required by this test. The test is only selected for a DUT whose implemented extensions list contains **all** of these extensions. |
+| `MARCH`               | string          | **Yes**  | The `-march` string passed to the compiler. Must match the pattern `rv(32\|64\|${XLEN})(i\|e\|g)...` (e.g., `rv32i_zba`, `rv64ifd_zfh`).             |
+| `params`              | mapping         | No       | A dictionary of parameter constraints that must match the DUT's UDB configuration for the test to be selected.                                       |
+
+#### `REQUIRED_EXTENSIONS`
+
+A YAML list of extension name strings. Both quoted and unquoted styles are
+accepted:
+
+```yaml
+# Quoted style (common in generated tests)
+REQUIRED_EXTENSIONS: ['I', 'Zba']
+
+# Unquoted style (common in hand-written tests)
+REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+```
+
+During test selection, the framework checks that every extension in this list
+is present in the DUT's implemented extensions (derived from the UDB
+configuration). A test is skipped if any required extension is missing.
+
+#### `MARCH`
+
+The compiler march string determines the available extensions during compilation.
+It will usually contain the same list of extensions as `REQUIRED_EXTENSIONS`, but
+certain privileged extensions are omitted (the compiler does not accept them).
+The `REQUIRED_EXTENSIONS` list and march string may also differ for tests that
+conditionally include extra testcases depending on the DUT configuration.
+It follows the standard RISC-V ISA string naming convention:
+
+- Single-letter extensions are concatenated without separators: `rv32imafd`
+- Multi-letter extensions are separated by underscores: `rv64i_zba_zbb`
+- Privilege-mode extensions (`Sm`, `S`, `U`) are omitted from the march string
+
+For privileged tests that need to support both RV32 and RV64, use the
+`${XLEN}` placeholder:
+
+```yaml
+MARCH: rv${XLEN}i_zicsr
+```
+
+The framework substitutes the actual XLEN value (32 or 64) at compile time
+based on the DUT configuration.
+
+#### `params`
+
+An optional mapping of parameter names to required values. Each parameter
+must exist in the DUT's UDB configuration and match the specified value for the
+test to be selected.
+
+```yaml
+params:
+  MXLEN: 32
+```
+
+Parameters support both exact matching and comparison operators. Comparison
+operators are specified as string-prefixed values:
+
+| Operator | Example                  | Meaning                             |
+| -------- | ------------------------ | ----------------------------------- |
+| _(none)_ | `MXLEN: 32`              | Exact equality (equivalent to `==`) |
+| `==`     | `MXLEN: '==64'`          | Exact equality                      |
+| `>`      | `NUM_PMP_ENTRIES: '>0'`  | Greater than                        |
+| `>=`     | `VLEN: '>=64'`           | Greater than or equal               |
+| `<`      | `VLEN: '<256'`           | Less than                           |
+| `<=`     | `PMP_GRANULARITY: '<=4'` | Less than or equal                  |
+| `!=`     | `PMP_GRANULARITY: '!=0'` | Not equal                           |
+
+Comparison operator values support both decimal and hexadecimal (e.g.,
+`'>=0x80'`, `'<0xFF'`). Comparison values must be quoted in YAML since they
+start with special characters.
+
+### Examples
+
+**Minimal header** (unprivileged test, single extension, fixed XLEN):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I']
+# params:
+#   MXLEN: 32
+# MARCH: rv32i
+##### END_TEST_CONFIG #####
+```
+
+**Privileged test** (multi-XLEN, no params):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+# MARCH: rv${XLEN}i_zicsr
+##### END_TEST_CONFIG #####
+```
+
+Note that `MARCH` does not include `S` or `Sm` because the compiler does not need those extensions.
+
+**Test with parameter constraints** (PMP requirements):
+
+```asm
+##### START_TEST_CONFIG #####
+# REQUIRED_EXTENSIONS: ['I', 'Zca', 'Sm']
+# params:
+#   MXLEN: 32
+#   NUM_PMP_ENTRIES: '>0'
+#   PMP_GRANULARITY: '<=2'
+# MARCH: rv32i_zca_zicsr
+##### END_TEST_CONFIG #####
+```
+
+This header would correspond to a PMP test that uses NA4 mode. NA4 does not exist if
+the PMP_GRANULARITY is >2 and PMP in general does not exist if NUM_PMP_ENTRIES is 0,
+so both of these param constraints are needed to make sure the test can run on the DUT.
 
 ## Table-Driven Unprivileged Coverpoints and Tests
 
@@ -597,10 +739,28 @@ Create a configuration directory following the instructions in the [Configuratio
 The command can include `{debug:...}` placeholders for DUT-specific trace flags that are only enabled when running with `DEBUG=1`. For example:
 
 ```
-spike {debug:-l --log-commits} --isa=rv64gc
+spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
 ```
 
-When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
+When `DEBUG=1` is set, the placeholder expands to its contents (e.g., `spike -l --log-commits --log=<trace_file> --isa=rv64gc`). Otherwise, it is removed (e.g., `spike --isa=rv64gc`). `stdout` and `stderr` are captured in the existing log files under `work/<config>/logs/`.
+
+When debug mode enables simulator tracing, trace output can interleave with `RVCP-SUMMARY` lines and prevent `run_tests.py` from detecting pass/fail. Two placeholders solve this by redirecting output to per-test files:
+
+- **`__TRACEFILE__`** — Use when the simulator can redirect its _trace_ output to a file. `run_tests.py` substitutes this with a per-test `.trace.log` path so trace output goes to a separate file, keeping `RVCP-SUMMARY` lines clean in the main log. Examples:
+
+  ```
+  spike {debug:-l --log-commits --log=__TRACEFILE__} --isa=rv64gc
+  qemu-system-riscv64 {debug:-d in_asm,int -D __TRACEFILE__} -nographic ...
+  sail_riscv_sim {debug:--trace-all --trace-output __TRACEFILE__} --config ...
+  ```
+
+- **`__SUMMARYFILE__`** — Use when the simulator cannot redirect trace but _can_ redirect its console output (which contains `RVCP-SUMMARY`) to a file. When present, `run_tests.py` reads `RVCP-SUMMARY` from this `.summary.log` file instead of the main log. Example:
+
+  ```
+  wsim --sim verilator {debug:--sim questa --lockstepverbose --args '+UART_LOG=1 +UART_LOG_FILE=__SUMMARYFILE__'} rv64gc --elf
+  ```
+
+Both placeholders should be placed inside `{debug:...}` blocks since they are only needed when trace output is enabled. When debug is off, the placeholders are stripped along with the rest of the block.
 
 Once the config directory exists and has a `run_cmd.txt` file, the following Make targets are automatically available:
 
@@ -618,13 +778,15 @@ To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in th
 ```yaml
 ci_enabled: true # Set false to skip in CI
 exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
-install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
 apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
+install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
+setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before running tests
 ```
 
 Field details:
 
 - **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
 - **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream.
-- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
 - **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).
+- **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
+- **`setup_script`**: Path to a shell script that sets up the simulator environment. This script is always run before running tests.

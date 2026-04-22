@@ -2,7 +2,9 @@
     // cp_custom_maskLS
     //////////////////////////////////////////////////////////////////////////////////
 
-    // Mask load/store with EMUL >= 16 (LMUL > 1 and SEW > 8)
+    // Custom coverpoints for Vector mask load/store operations
+
+    // --- EMUL >= 16 (LMUL > 1 and SEW > 8) ---
 
     vtype_all_sewgt8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
           option.auto_bin_max = 0;
@@ -23,7 +25,6 @@
           `endif
           `endif
           `endif
-
       }
 
     vtype_all_lmulgt1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {

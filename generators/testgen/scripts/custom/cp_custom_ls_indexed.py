@@ -99,16 +99,14 @@ def make(test: str, sew: int) -> None:
                 vs2_val_pointer=label,
             )
             vs2 = _get_vs2_reg(data)
-            rs1 = _get_rs1_reg(data)
-            # Pick a temp register that avoids rs1 and sigReg (signature pointer)
-            avoid = {rs1, common.sigReg, 0}
-            temp = next(r for r in range(31, 0, -1) if r not in avoid)
-            # Reload vs2 from custom data after sanitization
+            # {s0} is allocated by writeTest (pre_test_scratch_regs=1) — avoids
+            # collision with rs1/sigReg, including post-switch sigReg.
+            # Reload vs2 from custom data after sanitization.
             pre_lines = [
-                f"la x{temp}, {label}",
-                f"vle64.v v{vs2}, (x{temp})",
+                f"la x{{s0}}, {label}",
+                f"vle64.v v{vs2}, (x{{s0}})",
             ]
-            writeTest(description, test, data, sew=sew, lmul=1, vl=1, pre_test_lines=pre_lines)
+            writeTest(description, test, data, sew=sew, lmul=1, vl=1, pre_test_lines=pre_lines, pre_test_scratch_regs=1)
             incrementBasetestCount()
             vsAddressCount()
         except ValueError:

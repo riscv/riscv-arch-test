@@ -9,6 +9,7 @@
 `define XLEN32
 `define FLEN128
 `define VLEN1024
+`define ELEN64
 
 // PMP Grain (G)
 // Set G as needed (e.g., 0, 1, 2, ...)
@@ -47,6 +48,7 @@
 `define ZICBOM_SUPPORTED
 `define ZICBOZ_SUPPORTED
 `define ZICBOP_SUPPORTED
+`define ZKR_SUPPORTED
 `define S_SUPPORTED
 
 `define COUNTINHIBIT_EN_0

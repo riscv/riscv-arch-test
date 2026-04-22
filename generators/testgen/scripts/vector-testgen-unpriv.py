@@ -93,19 +93,6 @@ from vector_testgen_common import (
 )
 
 unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed below
-  # "vnclip.wi",      # Sail issue 1071
-  # "vnclipu.wi",     # Sail issue 1071
-  # "vnsra.wi",       # Sail issue 1071
-  # "vnsrl.wi",       # Sail issue 1071
-  # "vslideup.vi",    # Sail issue 1071
-  # "vslidedown.vi",  # Sail issue 1071
-  # "vrgather.vi",    # Sail issue 1071
-  # "vlseg3e32ff.v",  # resolved 2026-04-08: Spike PASS on all SEW/RV variants
-  # "vlseg3e32.v",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants
-  # "vlseg4e32.v",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants
-  # "vsseg3e64.v",    # Sail/Spike disagree on masking (2026-04-08) — Sail runs fine, only Spike comparison fails. NOT a coverage blocker.
-  # "vsseg3e32.v",    # Sail/Spike disagree on masking (2026-04-08) — Sail runs fine, only Spike comparison fails. NOT a coverage blocker.
-  # "vwredsum.vs",    # resolved 2026-04-08: Spike PASS on all SEW/RV variants (was typo: vwredusum.vs)
 
 ]
 
@@ -578,7 +565,7 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None):
         emul = lmul
 
       maskval = randomizeMask(test)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
 
       description = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"
       cp = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}"
@@ -620,7 +607,7 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
         emul = lmul
 
       maskval = randomizeMask(instruction, always_masked=True)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
       vta = t
       vma = m
 

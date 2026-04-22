@@ -14,18 +14,18 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
-      "software_breakpoint": true,
-      "hardware_breakpoint": true,
-      "load_address_misaligned": true,
+      "software_breakpoint": false,
+      "hardware_breakpoint": false,
+      "load_address_misaligned": false,
       "load_access_fault": true,
-      "load_page_fault": true,
-      "samo_address_misaligned": true,
+      "load_page_fault": false,
+      "samo_address_misaligned": false,
       "samo_access_fault": true,
-      "samo_page_fault": true,
-      "fetch_address_misaligned": true,
+      "samo_page_fault": false,
+      "fetch_address_misaligned": false,
       "fetch_access_fault": true,
-      "fetch_page_fault": true,
-      "software_check": true,
+      "fetch_page_fault": false,
+      "software_check": false,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -73,7 +73,7 @@
     // checked before address translation. `misaligned_fault` in
     // `regions` is checked after address translation.
     "misaligned": {
-      "supported": false,
+      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
       "allowed_within_exp": 0

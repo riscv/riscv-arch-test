@@ -9,6 +9,10 @@
 `define XLEN64
 `define FLEN64
 `define VLEN512
+`define ELEN64
+
+// Maximum supported index EEW for indexed load/store
+`define MAXINDEXEEW64
 
 // Maximum supported index EEW for indexed load/store
 `define MAXINDEXEEW64

@@ -9,11 +9,14 @@
 
 ##### STARTUP #####
 
-# Perform boot operations. Can be empty.
-#define RVMODEL_BOOT
+# Perform boot operations. Can be empty or left undefined unless needed for
+# DUT-specific behavior such as turning on a memory controller or
+# initializing custom state.
+//#define RVMODEL_BOOT
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -44,7 +47,8 @@
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
-#define RVMODEL_IO_INIT(_R1, _R2, _R3)
+# Can be empty or left undefined if no initialization is needed.
+//#define RVMODEL_IO_INIT(_R1, _R2, _R3)
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -61,6 +65,12 @@
   j 1b                       ; /* Loop */             \
 3:
 
+##### MTVEC Alignment #####
+
+// CV32E20 RTL forces mtvec.BASE to 256-byte alignment
+// Value is log2(bytes): 8 => 256-byte alignment (matches cv32e20.yaml).
+#define RVMODEL_MTVEC_ALIGN 8
+
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
@@ -69,20 +79,9 @@
 
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
-/*
- * NOTE: The following parameters are intentionally left empty.
- *
- * Running 'make CONFIG_FILES=' will include Machine-mode (sm) tests that
- * will FAIL because these platform-level memory-mapped registers are
- * not defined. This is a temporary state.
- *
- * To properly run the suite by excluding these specific tests (the recommended
- * workaround), refer to the instructions here:
- * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
- */
-#define RVMODEL_MTIME_ADDRESS  /* unimplemented */
-
-#define RVMODEL_MTIMECMP_ADDRESS   /* unimplemented */
+// MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS
+//#define RVMODEL_MTIMECMP_ADDRESS
 ##### Machine Interrupts #####
 
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)

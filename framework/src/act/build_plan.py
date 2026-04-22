@@ -44,6 +44,8 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             f"-I{tests_dir}/env",
         ]
     )
+    if config.compiler_type == CompilerType.GCC:
+        cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
 
 
@@ -59,6 +61,8 @@ def gen_compile_tasks(
     xlen: int,
     config: Config,
     compiler_cmd: list[str],
+    compile_inputs: tuple[Path, ...] = (),
+    sail_inputs: tuple[Path, ...] = (),
     debug: bool = False,
     fast: bool = False,
 ) -> list[BuildTask]:
@@ -75,6 +79,8 @@ def gen_compile_tasks(
         xlen: XLEN (32 or 64).
         config: Configuration object.
         compiler_cmd: Pre-built compiler command prefix (from _compiler_cmd).
+        compile_inputs: Shared inputs for compilation (env headers, DUT headers, linker script).
+        sail_inputs: Shared inputs for the Sail reference model (e.g. sail.json).
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
     """
@@ -93,7 +99,7 @@ def gen_compile_tasks(
 
     # Metadata — substitute ${XLEN} placeholder used by priv tests
     march = test_metadata.march.replace("${XLEN}", str(xlen))
-    flen = test_metadata.flen
+    test_flen = test_metadata.flen
     test_path = test_metadata.test_path
     mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
 
@@ -106,13 +112,13 @@ def gen_compile_tasks(
         f"-mabi={mabi}",
         "-DSIGNATURE",
         f"-DXLEN={xlen}",
-        f"-DFLEN={flen}",
+        f"-DTEST_FLEN={test_flen}",
         str(test_path),
     ]
     tasks.append(
         BuildTask(
             outputs=(sig_elf,),
-            extra_inputs=(test_path,),
+            extra_inputs=(test_path, *compile_inputs),
             action=SubprocessAction(cmd=sig_elf_cmd),
         )
     )
@@ -144,6 +150,7 @@ def gen_compile_tasks(
         BuildTask(
             outputs=(sig_file,),
             deps=(sig_elf,),
+            extra_inputs=sail_inputs,
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sig_log_file),
         )
     )
@@ -184,14 +191,14 @@ def gen_compile_tasks(
         f"-mabi={mabi}",
         "-DRVTEST_SELFCHECK",
         f"-DXLEN={xlen}",
-        f"-DFLEN={flen}",
+        f"-DTEST_FLEN={test_flen}",
         f'-DSIGNATURE_FILE="{result_file}"',
         str(test_path),
     ]
     tasks.append(
         BuildTask(
             outputs=(final_elf,),
-            extra_inputs=(test_path,),
+            extra_inputs=(test_path, *compile_inputs),
             deps=(result_file,),
             action=SubprocessAction(cmd=final_elf_cmd),
         )
@@ -218,6 +225,7 @@ def gen_rvvi_tasks(
     test_name: Path,
     base_dir: Path,
     config: Config,
+    sail_inputs: tuple[Path, ...] = (),
     fast: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for RVVI trace generation (coverage pipeline)."""
@@ -262,6 +270,7 @@ def gen_rvvi_tasks(
         BuildTask(
             outputs=(sail_trace,),
             deps=(elf,),
+            extra_inputs=sail_inputs,
             action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log),
         )
     )
@@ -285,11 +294,27 @@ def gen_coverage_tasks(
     config_report_dir: Path,
     dut_header_dir: Path,
     coverage_simulator: CoverageSimulator,
-    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
     coverage_reports: list[Path] = []
+
+    # Resolve package resources once for use in commands and dependency tracking.
+    # Uses importlib.resources.files() which returns a real filesystem path when the
+    # package is installed from source (the current workflow). If act is ever published
+    # as a zipped wheel, these resources will need to be materialized via as_file() with
+    # a context that spans task execution.
+    act_resources = importlib.resources.files("act")
+    fcov_path = Path(str(act_resources / "fcov")).absolute()
+    script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
+    sim_script = Path(str(act_resources / script_name)).absolute()
+
+    # Collect file dependencies for staleness checking.
+    # Coverage simulation depends on coverpoints, fcov infrastructure, DUT config headers, and the simulator script.
+    coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
+    fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
+    dut_svh_files = tuple(sorted(p.absolute() for p in dut_header_dir.iterdir() if p.suffix == ".svh"))
+    coverage_inputs = (*coverpoint_files, *fcov_files, *dut_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
@@ -303,47 +328,43 @@ def gen_coverage_tasks(
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
 
-        # Write tracelist file
+        # Write tracelist file, but only when its contents actually change so its mtime
+        # reflects real changes. This lets us include it in extra_inputs below without
+        # forcing a coverage rebuild on every run.
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
-        tracelist_file.write_text(
+        tracelist_contents = (
             f"# Tests for coverage group: {coverage_group}\n"
             "# Generated automatically by riscv-arch-test act framework\n"
             + "\n".join(str(trace) for trace in sorted(traces))
         )
+        if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
+            tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
         if coverage_simulator == CoverageSimulator.QUESTA:
-            with (
-                importlib.resources.path("act", "fcov") as fcov_path,
-                importlib.resources.path("act", "riscv-arch-test.do") as vsim_do_path,
-            ):
-                do_script = (
-                    f"do {vsim_do_path.absolute()} "
-                    f"{tracelist_file} "
-                    f"{simulator_artifact} "
-                    f"{work_dir} "
-                    f"{fcov_path.absolute()} "
-                    f"{coverpoint_dir} "
-                    f"{dut_header_dir} "
-                    f"{{{coverage_group.stem.upper()}_COVERAGE}}"
-                )
-                coverage_cmd = ["vsim", "-c", "-do", do_script]
+            do_script = (
+                f"do {sim_script} "
+                f"{tracelist_file} "
+                f"{simulator_artifact} "
+                f"{work_dir} "
+                f"{fcov_path} "
+                f"{coverpoint_dir} "
+                f"{dut_header_dir} "
+                f"{{{coverage_group.stem.upper()}_COVERAGE}}"
+            )
+            coverage_cmd = ["vsim", "-c", "-do", do_script]
         else:
-            with (
-                importlib.resources.path("act", "fcov") as fcov_path,
-                importlib.resources.path("act", "riscv-arch-test-vcs.sh") as vcs_script_path,
-            ):
-                coverage_cmd = [
-                    "bash",
-                    str(vcs_script_path.absolute()),
-                    str(tracelist_file),
-                    str(simulator_artifact),
-                    str(work_dir),
-                    str(fcov_path.absolute()),
-                    str(coverpoint_dir),
-                    str(dut_header_dir),
-                    f"{coverage_group.stem.upper()}_COVERAGE",
-                ]
+            coverage_cmd = [
+                "bash",
+                str(sim_script),
+                str(tracelist_file),
+                str(simulator_artifact),
+                str(work_dir),
+                str(fcov_path),
+                str(coverpoint_dir),
+                str(dut_header_dir),
+                f"{coverage_group.stem.upper()}_COVERAGE",
+            ]
 
         # Deps: all rvvi traces for this coverage group must be done
         # The rvvi traces have the same stems as the traces list but with .rvvi suffix
@@ -353,6 +374,7 @@ def gen_coverage_tasks(
             BuildTask(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
+                extra_inputs=(*coverage_inputs, tracelist_file),
                 action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
             )
         )
@@ -411,6 +433,16 @@ def generate_build_plan(
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
     compiler_cmd = _compiler_cmd(config, xlen, tests_dir)
 
+    # Collect shared file dependencies that affect all compilations.
+    # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
+    env_headers = tuple(sorted(p.absolute() for p in (tests_dir / "env").iterdir() if p.is_file()))
+    dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
+    compile_inputs = (*env_headers, *dut_headers, config.linker_script.absolute())
+
+    # Sail config affects reference model output
+    sail_config = config.dut_include_dir / "sail.json"
+    sail_inputs = (sail_config.absolute(),) if sail_config.exists() else ()
+
     for test_name_str, test_metadata in sorted(selected_tests.items()):
         test_name = Path(test_name_str)
 
@@ -423,6 +455,8 @@ def generate_build_plan(
                 xlen,
                 config,
                 compiler_cmd,
+                compile_inputs,
+                sail_inputs,
                 debug,
                 fast,
             )
@@ -440,6 +474,7 @@ def generate_build_plan(
                     test_name,
                     config_wkdir,
                     config,
+                    sail_inputs,
                     fast,
                 )
             )
@@ -454,7 +489,6 @@ def generate_build_plan(
                 config_report_dir,
                 config.dut_include_dir,
                 coverage_simulator,
-                config.name,
             )
         )
 

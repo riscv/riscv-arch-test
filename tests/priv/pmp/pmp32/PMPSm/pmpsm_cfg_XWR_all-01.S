@@ -53,10 +53,12 @@ RVTEST_BEGIN
     LA (a4, \ADDRESS)
     LI(x4, 0xACCE)                        // Store a value which is to be checked in trap handler
     LA(x1, 1f)                            // Store the return Address in x1
+    \TEST_CASE\()_9:
     jalr ra, 0(a4)
     nop
 1:
     nop
+    RVTEST_SIGUPD(x2, x5, x4, a4, \TEST_CASE\()_9, test_9_str)
 
     // Store Access Check
     LA(a5, \ADDRESS)                                         // Address to be verified
@@ -276,6 +278,7 @@ test_5_str: .string "\"test: 5; cp: pmpm_cfg_XWR_all_lbu\""
 test_6_str: .string "\"test: 6; cp: pmpm_cfg_XWR_all_lh\""
 test_7_str: .string "\"test: 7; cp: pmpm_cfg_XWR_all_lhu\""
 test_8_str: .string "\"test: 8; cp: pmpm_cfg_XWR_all_lw\""
+test_9_str: .string "\"test: 9; cp: pmpm_cfg_XWR_all_jalr\""
 
 .align 12
 .align (RVMODEL_PMP_GRAIN+2)

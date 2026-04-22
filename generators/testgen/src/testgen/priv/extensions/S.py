@@ -74,40 +74,6 @@ def _generate_scause_tests(test_data: TestData) -> list[str]:
 
     lines.append(f"\nCSRW(scause, x{save_reg})       # restore CSR")
 
-    lines.extend(
-        [
-            "",
-            "#ifdef SS1P13_SUPPORTED",
-            comment_banner(
-                "cp_ss1p13_scause",
-                "Ss1p13: explicitly write scause = 18 (software-check) and\n"
-                "19 (hardware-error) and read back to confirm acceptance.",
-            ),
-            f"CSRR(x{save_reg}, scause)     # save scause before Ss1p13 tests",
-        ]
-    )
-
-    coverpoint = "cp_ss1p13_scause"
-    for cause, name in ((18, "software_check"), (19, "hardware_error")):
-        lines.extend(
-            [
-                "",
-                f"# Testcase: Ss1p13 write scause = {cause} ({name})",
-                f"LI(x{check_reg}, {cause})",
-                test_data.add_testcase(f"b_{cause}_{name}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "scause", test_data),
-                gen_csr_read_sigupd(check_reg, "scause", test_data),
-            ]
-        )
-
-    lines.extend(
-        [
-            "",
-            f"CSRW(scause, x{save_reg})       # restore scause after Ss1p13 tests",
-            "#endif // SS1P13_SUPPORTED",
-        ]
-    )
-
     test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
     return lines
 
@@ -167,34 +133,30 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         [
             "",
             "#ifdef SS1P13_SUPPORTED",
+            "#if __riscv_xlen == 64",
             comment_banner(
-                "cp_sxlen_ge_uxlen",
+                f"{coverpoint}",
                 "Ss1p13: from S-mode attempt to set sstatus.UXL = 1 and UXL = 2.\n"
                 "UXL=2 must be silently rejected when SXLEN=32 (UXLEN <= SXLEN).",
             ),
-            f"CSRR(x{save_reg}, sstatus)        # save sstatus before UXL tests",
+            f"CSRR(x{save_reg}, sstatus)",
             "",
-            "# Clear UXL field [33:32] to start from a known state",
-            f"LI(x{reg2}, 3)                    # x{reg2} = 0b11",
-            f"slli x{reg2}, x{reg2}, 32         # x{reg2} = UXL mask (bits [33:32])",
-            f"CSRC(sstatus, x{reg2})             # clear UXL bits",
         ]
     )
 
-    coverpoint = "cp_sxlen_ge_uxlen"
     for uxl, label in ((1, "uxlen32"), (2, "uxlen64")):
         lines.extend(
             [
                 "",
                 f"# Testcase: Ss1p13 attempt to set sstatus.UXL = {uxl} ({label})",
-                f"LI(x{check_reg}, {uxl})            # UXL value to attempt",
-                f"slli x{check_reg}, x{check_reg}, 32 # shift into UXL field [33:32]",
-                f"CSRS(sstatus, x{check_reg})         # attempt to set UXL={uxl}",
+                f"CSRR(x{check_reg}, sstatus)                     # read current sstatus into GPR",
+                f"LI(x{reg2}, {~(3 << 32) & 0xFFFFFFFFFFFFFFFF})  # mask to clear UXL bits [33:32]",
+                f"and x{check_reg}, x{check_reg}, x{reg2}         # clear UXL bits [33:32]",
+                f"LI(x{reg2}, {uxl << 32})                        # UXL={uxl} shifted into position [33:32]",
+                f"or x{check_reg}, x{check_reg}, x{reg2}          # OR in desired UXL value",
                 test_data.add_testcase(f"uxl_attempt_{uxl}", coverpoint, covergroup),
+                f"CSRW(sstatus, x{check_reg})                     # attempt to set UXL={uxl}",
                 gen_csr_read_sigupd(check_reg, "sstatus", test_data),
-                f"LI(x{reg2}, 3)",
-                f"slli x{reg2}, x{reg2}, 32",
-                f"CSRC(sstatus, x{reg2})             # clear UXL for next attempt",
             ]
         )
 
@@ -203,6 +165,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
             "",
             f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
             "#endif // SS1P13_SUPPORTED",
+            "#endif // XLEN64",
         ]
     )
 

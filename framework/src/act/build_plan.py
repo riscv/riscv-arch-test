@@ -44,6 +44,8 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
             f"-I{tests_dir}/env",
         ]
     )
+    if config.compiler_type == CompilerType.GCC:
+        cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
 
 
@@ -287,7 +289,6 @@ def gen_coverage_tasks(
     config_report_dir: Path,
     dut_header_dir: Path,
     coverage_simulator: CoverageSimulator,
-    config_name: str = "",
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -483,7 +484,6 @@ def generate_build_plan(
                 config_report_dir,
                 config.dut_include_dir,
                 coverage_simulator,
-                config.name,
             )
         )
 

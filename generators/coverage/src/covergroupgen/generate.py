@@ -7,6 +7,8 @@
 # Generate functional covergroups for RISC-V instructions
 ##################################
 
+from __future__ import annotations
+
 import csv
 import importlib.resources
 import math
@@ -25,7 +27,9 @@ SEW_DEPENDENT_CPS = {
     "cp_custom_shift_vv",
     "cp_custom_shift_vx",
     "cp_custom_shift_vi",
-    "cp_custom_vindex",
+    "cp_custom_vindexVV",
+    "cp_custom_vindexVX",
+    "cp_custom_vindexCorners",
     "cr_vs2_vs1_edges_f",
     "cp_fs1_edges_v",
     "cr_vs2_fs1_edges",
@@ -226,6 +230,33 @@ def _any_xlen_exclusion(
     return any(rv_marker not in tp[key] for key in instr_keys)
 
 
+def _get_indexed_eew(instr: str) -> int | None:
+    """Return the index EEW if *instr* is an indexed load/store, else None.
+
+    Matches vluxeiN, vsuxeiN, vloxsegMeiN, vsoxsegMeiN patterns.
+    """
+    m = re.search(r"ei(\d+)\.", instr)
+    return int(m.group(1)) if m else None
+
+
+def _ffLS_feasible(instr: str, sew: int) -> bool:
+    """Check if cp_custom_ffLS (which requires LMUL=2) is feasible for this instruction at the given SEW.
+
+    Returns False when EMUL * nf > 8 with LMUL=2, meaning the configuration is impossible.
+    """
+    # Extract EEW from instruction name (e.g., vle32ff.v → 32, vlseg3e64ff.v → 64)
+    eew_m = re.search(r"e(\d+)ff", instr)
+    if not eew_m:
+        return True
+    eew = int(eew_m.group(1))
+    # Extract nf (number of fields) from segmented instructions
+    nf_m = re.search(r"seg(\d+)", instr)
+    nf = int(nf_m.group(1)) if nf_m else 1
+    lmul = 2
+    emul = eew * lmul // sew
+    return emul * nf <= 8
+
+
 ##################################
 # Content generation
 ##################################
@@ -253,6 +284,12 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
+        # Guard indexed load/store instructions by MAXINDEXEEW
+        idx_eew = _get_indexed_eew(instr)
+        if idx_eew and idx_eew > 8:
+            covergroup_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+            init_lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+
         # Instruction header
         if vectorwiden:
             effew = _get_effew(arch)
@@ -269,8 +306,22 @@ def _gen_instrs(
         frm_coverpoints = {"cp_frm_2", "cp_frm_3", "cp_frm_4"}
         ordered_cps = sorted(cps, key=lambda cp: (0 if cp in frm_coverpoints else 2 if cp.startswith("cr_") else 1, cp))
         for cp in ordered_cps:
-            if cp.startswith(("sample_", "EFFEW")) or cp in {"RV32", "RV64"}:
+            if cp.startswith(("sample_", "EFFEW", "cp_ibm")) or cp in {"RV32", "RV64"}:
                 continue
+
+            # Skip cp_custom_ffLS for instructions where LMUL=2 is infeasible at this SEW
+            if cp == "cp_custom_ffLS" and _is_vector(arch):
+                sew = int(_get_effew(arch))
+                if not _ffLS_feasible(instr, sew):
+                    continue
+
+            # Handle per-SEW minimum: cp suffixed with _sew_ge{N} only applies when arch SEW >= N
+            ge_match = re.search(r"_sew_ge(\d+)$", cp)
+            if ge_match:
+                min_sew = int(ge_match.group(1))
+                if not _is_vector(arch) or int(_get_effew(arch)) < min_sew:
+                    continue
+                cp = re.sub(r"_sew_ge\d+$", "", cp)
 
             # Append SEW suffix for SEW-dependent coverpoints
             if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
@@ -284,15 +335,20 @@ def _gen_instrs(
                     max_sew = int(match.group(1))
                     if int(effew) <= max_sew:
                         cp = re.sub(r"_sew_lte_\d+", "", cp)
-                        covergroup_lines.append(customize_template(templates, cp, arch, instr))
+                        covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
             else:
-                covergroup_lines.append(customize_template(templates, cp, arch, instr))
+                covergroup_lines.append(customize_template(templates, cp, arch, instr) + "\n")
 
         # Instruction footer
         if vectorwiden:
             covergroup_lines.append(customize_template(templates, "endgroup_vector_widen", arch, instr))
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
+
+        # Close MAXINDEXEEW guard
+        if idx_eew and idx_eew > 8:
+            covergroup_lines.append("`endif\n")
+            init_lines.append("`endif\n")
 
     return "".join(covergroup_lines), "".join(init_lines)
 
@@ -312,6 +368,10 @@ def _gen_covergroup_samples(
         if not _matches_xlen(cps, has_rv32, has_rv64):
             continue
 
+        idx_eew = _get_indexed_eew(instr)
+        if idx_eew and idx_eew > 8:
+            lines.append(f"`ifdef MAXINDEXEEW_GE{idx_eew}\n")
+
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
                 effew = _get_effew(arch)
@@ -320,6 +380,10 @@ def _gen_covergroup_samples(
                 lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
+
+        if idx_eew and idx_eew > 8:
+            lines.append("`endif\n")
+
     return "".join(lines)
 
 
@@ -447,6 +511,26 @@ def write_coverage_headers(
     (coverage_dir / "RISCV_coverage_base_sample.svh").write_text("".join(lines))
 
 
+def _merge_instruction_testplans(
+    test_plans: dict[str, dict[tuple[str, str], list[str]]],
+) -> dict[tuple[str, str], list[str]]:
+    """Merge all testplans into a single mapping with unique instruction entries.
+
+    Vector extensions are SEW-expanded (e.g. Vx → Vx8/16/32/64), so the same
+    instruction appears in multiple testplan variants.  Merging first-occurrence-wins
+    collapses those duplicates before the instruction sample file is generated.
+    """
+    merged: dict[tuple[str, str], list[str]] = {}
+    for arch in sorted(test_plans.keys()):
+        if arch == "E":
+            continue  # E is a duplicate of I
+        tp = test_plans[arch]
+        for key in _get_sorted_instr_keys(tp, arch):
+            if key not in merged:
+                merged[key] = tp[key]
+    return merged
+
+
 def write_instruction_sample_file(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     templates: dict[str, str],
@@ -460,21 +544,19 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    lines: list[str] = [customize_template(templates, "instruction_sample_header")]
-    for arch, tp in test_plans.items():
-        if arch == "E":
-            continue  # E is a duplicate of I; skip to avoid duplicate case entries
-        instr_keys = _get_sorted_instr_keys(tp, arch)
+    merged_tp = _merge_instruction_testplans(test_plans)
+    instr_keys = sorted(merged_tp.keys())
 
-        lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, True))
-        if _any_xlen_exclusion("RV64", instr_keys, tp):
-            lines.append(customize_template(templates, "RV32", arch))
-            lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, True, False))
-            lines.append(customize_template(templates, "end", arch))
-        if _any_xlen_exclusion("RV32", instr_keys, tp):
-            lines.append(customize_template(templates, "RV64", arch))
-            lines.append(_gen_instruction_samples(instr_keys, templates, tp, arch, False, True))
-            lines.append(customize_template(templates, "end", arch))
+    lines: list[str] = [customize_template(templates, "instruction_sample_header")]
+    lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", True, True))
+    if _any_xlen_exclusion("RV64", instr_keys, merged_tp):
+        lines.append(customize_template(templates, "RV32"))
+        lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", True, False))
+        lines.append(customize_template(templates, "end"))
+    if _any_xlen_exclusion("RV32", instr_keys, merged_tp):
+        lines.append(customize_template(templates, "RV64"))
+        lines.append(_gen_instruction_samples(instr_keys, templates, merged_tp, "", False, True))
+        lines.append(customize_template(templates, "end"))
 
     lines.append(customize_template(templates, "instruction_sample_end"))
     (coverage_dir / "RISCV_instruction_sample.svh").write_text("".join(lines))
@@ -495,5 +577,5 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
 
     templates = read_covergroup_templates()
     write_covergroups(test_plans, templates, output_dir)
-    write_coverage_headers(test_plans, output_dir, templates)
+    write_coverage_headers(all_test_plans, output_dir, templates)
     write_instruction_sample_file(all_test_plans, templates, output_dir)

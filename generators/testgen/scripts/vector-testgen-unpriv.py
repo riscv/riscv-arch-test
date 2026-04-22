@@ -12,11 +12,16 @@
 ##################################
 # libraries
 ##################################
+import argparse
 import filecmp
 import math
 import os
 import re
 from random import randint, seed
+
+import custom # custom coverpoint generator scripts
+from coverpoint_registry import import_all_modules
+from coverpoint_registry import REGISTRY
 
 import vector_testgen_common as common
 from vector_testgen_common import (
@@ -27,6 +32,7 @@ from vector_testgen_common import (
   flen,
   freg_count,
   frmList,
+  clearCustomData,
   genVtestdata,
   getBaseLmul,
   getBaseSuiteTestCount,
@@ -51,6 +57,7 @@ from vector_testgen_common import (
   randomizeOngroupVectorRegister,
   randomizeVectorInstructionData,
   readTestplans,
+  setCurrentCoverpoint,
   setExtension,
   setFlen,
   setXlen,
@@ -86,19 +93,6 @@ from vector_testgen_common import (
 )
 
 unsupported_tests = [ # conflicting signatures between sail and spike, open PRs listed below
-  # "vnclip.wi",      # Sail issue 1071
-  # "vnclipu.wi",     # Sail issue 1071
-  # "vnsra.wi",       # Sail issue 1071
-  # "vnsrl.wi",       # Sail issue 1071
-  # "vslideup.vi",    # Sail issue 1071
-  # "vslidedown.vi",  # Sail issue 1071
-  # "vrgather.vi",    # Sail issue 1071
-  "vlseg3e32ff.v",
-  "vlseg3e32.v",
-  "vlseg4e32.v",
-  "vsseg3e64.v",
-  "vsseg3e32.v",
-  "vwredusum.vs"
 
 ]
 
@@ -448,6 +442,95 @@ def make_frm(instruction, sew):
       writeTest(description, instruction, cp, instruction_data, sew=sew, frm=frm)
       incrementBasetestCount()
 
+# FMA instructions grouped by operand role
+_fma_acc_ins = ["vfmacc", "vfnmacc", "vfmsac", "vfnmsac"]   # vd = ±(vs1/fs1 × vs2) ± vd
+_fma_mul_ins = ["vfmadd", "vfnmadd", "vfmsub", "vfnmsub"]   # vd = ±(vs1/fs1 × vd) ± vs2
+
+def _get_fflags_pairs(instruction: str, sew: int) -> list[tuple[str, dict[str, object]]]:
+  """Return list of (flag_name, data_kwargs) pairs for fflags transition bins.
+
+  Each pair describes data that triggers the named flag.  Two consecutive
+  writeTest calls with this data (second with clear_fflags=False) will cover
+  the "1" transition bin for that flag.
+  """
+  if sew == 64:
+    edge_dict = fedgesD
+  elif sew == 16:
+    edge_dict = fedgesH
+  else:
+    edge_dict = fedges
+
+  base_name = instruction.split(".")[0]  # e.g. "vfmacc" from "vfmacc.vf"
+  suffix = instruction.split(".")[1]     # e.g. "vf" or "vv" or "v"
+  pairs: list[tuple[str, dict[str, object]]] = []
+
+  # UF pair data for FMA instructions
+  if base_name in _fma_acc_ins:
+    # vd = ±(mult1 × vs2) ± vd ; mult1 is vs1 (.vv) or fs1 (.vf)
+    kwargs: dict[str, object] = {
+      "vs2_val_pointer": "vs_corner_f_min_subnorm_emul1",
+      "vd_val_pointer": "vs_corner_f_pos0_emul1",
+    }
+    if suffix == "vv":
+      kwargs["vs1_val_pointer"] = "vs_corner_f_min_subnorm_emul1"
+    else:
+      kwargs["fs1_val"] = edge_dict["min_subnorm"]
+    pairs.append(("UF", kwargs))
+
+  elif base_name in _fma_mul_ins:
+    # vd = ±(mult1 × vd) ± vs2 ; mult1 is vs1 (.vv) or fs1 (.vf)
+    kwargs = {
+      "vd_val_pointer": "vs_corner_f_min_subnorm_emul1",
+      "vs2_val_pointer": "vs_corner_f_pos0_emul1",
+    }
+    if suffix == "vv":
+      kwargs["vs1_val_pointer"] = "vs_corner_f_min_subnorm_emul1"
+    else:
+      kwargs["fs1_val"] = edge_dict["min_subnorm"]
+    pairs.append(("UF", kwargs))
+
+  # OF pair data for vfsub / vfrsub
+  elif base_name == "vfsub":
+    # vd = vs2 - vs1/fs1 ; vs2=twoToEmax, vs1/fs1=negmaxnorm → huge+huge → OF
+    kwargs = {"vs2_val_pointer": "vs_corner_f_twoToEmax_emul1"}
+    if suffix == "vv":
+      kwargs["vs1_val_pointer"] = "vs_corner_f_negmaxnorm_emul1"
+    else:
+      kwargs["fs1_val"] = edge_dict["negmaxnorm"]
+    pairs.append(("OF", kwargs))
+
+  elif base_name == "vfrsub":
+    # vd = fs1 - vs2 ; fs1=twoToEmax, vs2=negmaxnorm → huge+huge → OF
+    kwargs = {
+      "vs2_val_pointer": "vs_corner_f_negmaxnorm_emul1",
+      "fs1_val": edge_dict["twoToEmax"],
+    }
+    pairs.append(("OF", kwargs))
+
+  # NX + OF pair data for vfrec7
+  elif base_name == "vfrec7":
+    # NX: rec7(1.5) is inexact
+    pairs.append(("NX", {"vs2_val_pointer": "vs_corner_f_pos1p5_emul1"}))
+    # OF: rec7(min_subnorm) overflows
+    pairs.append(("OF", {"vs2_val_pointer": "vs_corner_f_min_subnorm_emul1"}))
+
+  return pairs
+
+def make_fflags_pairs(instruction: str, sew: int) -> None:
+  """Generate back-to-back instruction pairs for fflags '1' transition bins."""
+  pairs = _get_fflags_pairs(instruction, sew)
+
+  for flag_name, data_kwargs in pairs:
+    for i in range(2):
+      description = f"cp_csr_fflags ({flag_name}1 pair {i+1}/2)"
+      cp = f"cp_csr_fflags_{flag_name}1_pair{i+1}"
+      instruction_data = randomizeVectorInstructionData(
+        instruction, sew, getBaseSuiteTestCount(), **data_kwargs
+      )
+      writeTest(description, instruction, cp, instruction_data,
+                sew=sew, clear_fflags=(i == 0))
+      incrementBasetestCount()
+
 ##################################### length suite (vl!=1) test generation #####################################
 
 def getMaxlmul(sew, eew, maxemul):
@@ -482,7 +565,7 @@ def make_vl_lmul(instruction, sew, maxemul=8, eew = None, preset_emul = None):
         emul = lmul
 
       maskval = randomizeMask(test)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
 
       description = f"cr_vl_lmul (Test lmul = {lmul}, vl = {vl})"
       cp = f"cp_vl_lmul_vl_{vl}_lmul_{lmul}"
@@ -524,7 +607,7 @@ def make_vtype_agnostic(instruction, sew, maxemul=8, eew = None, preset_emul = N
         emul = lmul
 
       maskval = randomizeMask(instruction, always_masked=True)
-      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0']] if maskval is not None else None
+      no_overlap = [['vs1', 'v0'], ['vs2', 'v0'], ['vd', 'v0'], ['vs3', 'v0']] if maskval is not None else None
       vta = t
       vma = m
 
@@ -837,6 +920,10 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs1_nv0"                   : make_vs1(test, sew, range(1,vreg_count))
     elif coverpoint == "cp_vs1_emul2"                 : make_vs1(test, sew, range(0,vreg_count,2))
     elif coverpoint == "cmp_vd_vs2"                   : make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
+    elif coverpoint.startswith("cmp_vd_vs2_sew_lte"):
+      max_sew = int(coverpoint.split("_")[-1])
+      if sew <= max_sew:
+        make_vd_vs2(test, sew, range(vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_nv0"               : make_vd_vs2(test, sew, range(1,vreg_count), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul2"             : make_vd_vs2(test, sew, range(0,vreg_count,2), getBaseLmul(test, sew))
     elif coverpoint == "cmp_vd_vs2_emul4"             : make_vd_vs2(test, sew, range(0,vreg_count,4), getBaseLmul(test, sew))
@@ -894,7 +981,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vxrm_vs2_imm_edges"      : make_vxrm_vs2_imm_edges(test, sew, vedgesemul1)
     elif coverpoint == "cr_vxrm_vs2_imm_edges_wi"   : make_vxrm_vs2_imm_edges(test, sew, vedgesemul2)
     elif coverpoint == "cp_csr_frm_v"                 : make_frm(test, sew)
-    elif "cp_csr_fflags" in coverpoint                : pass # flags are expected to be raised by edge values of input
+    elif "cp_csr_fflags" in coverpoint                : make_fflags_pairs(test, sew)
     elif coverpoint == "cp_imm_edges_5bit"          : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_imm_edges_5bit_u"        : pass # already tested in cp_imm_5bit but needed for cr_vs2_imm_edges
     elif coverpoint == "cp_csr_vxrm"                  : pass # already tested in cross coverpoints with vs2 and vs1/rs1/imm
@@ -941,6 +1028,9 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cr_vtype_agnostic_e16_emul1max" : make_vtype_agnostic(test, sew, eew = 16, maxemul=1)
     elif coverpoint == "cr_vtype_agnostic_e32_emul1max" : make_vtype_agnostic(test, sew, eew = 32, maxemul=1)
     elif coverpoint == "cr_vtype_agnostic_e64_emul1max" : make_vtype_agnostic(test, sew, eew = 64, maxemul=1)
+    elif coverpoint == "cr_vtype_agnostic_lmul4max_nomask" : make_vtype_agnostic(test, sew, maxemul=4, preset_emul=getLengthLmul(test))
+    elif coverpoint == "cr_vtype_agnostic_lmul2max_nomask" : make_vtype_agnostic(test, sew, maxemul=2, preset_emul=getLengthLmul(test))
+    elif coverpoint == "cr_vtype_agnostic_lmul1max_nomask" : make_vtype_agnostic(test, sew, maxemul=1, preset_emul=getLengthLmul(test))
     ############################  cp_custom   ############################
     elif coverpoint == "cp_custom_vmask_write_lmulge1"                : make_custom_vmask_write_lmulge1(test, sew)
     elif coverpoint == "cp_custom_vmask_write_v0_masked"              : make_custom_vmask_write_v0_masked(test, sew)
@@ -978,9 +1068,10 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_custom_vshift_upperbits_rs1_ones"          : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1")
     elif coverpoint == "cp_custom_vshiftn_upperbits_vs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "vs1", narrow=True)
     elif coverpoint == "cp_custom_vshiftn_upperbits_rs1_ones"         : make_custom_vshift_upperbits_r1_ones(test, sew, "rs1", narrow=True)
-    elif coverpoint == "cp_custom_vindexedges_index_ge_vlmax"       : make_custom_vindexedges_index_ge_vlmax(test, sew)
-    elif coverpoint == "cp_custom_vindexedges_index_gt_vl_lt_vlmax" : make_custom_vindexedges_index_gt_vl_lt_vlmax(test, sew)
+    elif coverpoint == "cp_custom_vindexedges_index_ge_vlmax"         : make_custom_vindexedges_index_ge_vlmax(test, sew)
+    elif coverpoint == "cp_custom_vindexedges_index_gt_vl_lt_vlmax"   : make_custom_vindexedges_index_gt_vl_lt_vlmax(test, sew)
     elif coverpoint[:2] != "cp"                                       : pass # skip all the helper coverpoints
+    elif coverpoint in REGISTRY                                       : setCurrentCoverpoint(coverpoint); REGISTRY[coverpoint](test, sew)   # call the registered function (cp_custom_**)
     else:
       print("Warning: " + coverpoint + " not implemented yet for " + test)
 
@@ -1147,7 +1238,17 @@ def getExtensions():
   return extensions
 
 if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description="Generate directed vector tests for functional coverage")
+  parser.add_argument("--extensions", type=str, default="",
+                      help="Comma-separated list of extensions to generate tests for (default: all)")
+  parser.add_argument("--exclude", type=str, default="",
+                      help="Comma-separated list of extensions to exclude from generation")
+  args = parser.parse_args()
+
   common.writeLine        = writeLine
+
+  # import custom coverpoints for use
+  import_all_modules(custom)
 
   # TODO: auipc missing, check whatelse is missing in ^these^ types
 
@@ -1159,11 +1260,21 @@ if __name__ == '__main__':
   # setup
   seed(0) # make tests reproducible
 
+  # parse extension filters
+  include_set = set(args.extensions.split(",")) if args.extensions else set()
+  exclude_set = set(args.exclude.split(",")) if args.exclude else set()
+
   # generate files for each test
   for xlen in xlens:
     # extensions = getExtensions() # find all extensions in
     testplans = readTestplans()
     extensions = list(testplans.keys())
+
+    # filter extensions based on --extensions and --exclude
+    if include_set:
+      extensions = [e for e in extensions if e in include_set]
+    if exclude_set:
+      extensions = [e for e in extensions if e not in exclude_set]
     maxreg = 31 # I uses registers x0-x31
 
     for extension in extensions:
@@ -1210,7 +1321,7 @@ if __name__ == '__main__':
       basepathname = pathname
       includeVData = " "
 
-      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
+      for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$', r'/Zvbb(\d+)$', r'/Zvkb(\d+)$', r'/Zvbc(\d+)$']:
         match = re.search(pattern, pathname)
         if match:
             sew = int(match.group(1))
@@ -1259,7 +1370,7 @@ if __name__ == '__main__':
           float_en = "\n# set mstatus.FS to 10 to enable fp\nli t0,0x4000\ncsrs mstatus, t0\n\n"
           f.write(float_en)
 
-        for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$']:
+        for pattern in [r'/Vx(\d+)$', r'/Vls(\d+)$', r'/Vf(\d+)$', r'/VlsCustom(\d+)$', r'/VfCustom(\d+)$']:
           sew_match = re.search(pattern, pathname)
           if sew_match:
               sew = int(sew_match.group(1))
@@ -1267,7 +1378,11 @@ if __name__ == '__main__':
         else:
           sew = 8
 
-        setFlen(32)
+        # Set flen based on extension: VfCustom/Vf tests need flen >= sew for FP operations
+        if extension.startswith(("VfCustom", "Vf")) and sew > 32:
+          setFlen(sew)
+        else:
+          setFlen(32)
 
         legalvlmuls = getLegalVlmul(maxELEN, minSEW_MIN, sew)
 
@@ -1288,6 +1403,7 @@ if __name__ == '__main__':
           elif (sew == 64):
             f.write("#if ELEN > 64\n")
 
+        clearCustomData()  # clear any custom data from previous test
         coverpoints = list(testplans[extension][test])
         applicable_coverpoints = coverpointInclusions(coverpoints)
         if test not in unsupported_tests:

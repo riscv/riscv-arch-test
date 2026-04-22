@@ -22,7 +22,8 @@
   .option pop            ;
 
 # Address to use for load/store fault tests that should cause an access fault on the DUT.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -79,8 +80,9 @@
  * workaround), refer to the instructions here:
  * https://github.com/riscv/riscv-arch-test/issues/1135#issuecomment-4140522435
  */
-#define RVMODEL_MTIME_ADDRESS
-#define RVMODEL_MTIMECMP_ADDRESS
+// MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS
+//#define RVMODEL_MTIMECMP_ADDRESS
 
 ##### Machine Interrupts #####
 

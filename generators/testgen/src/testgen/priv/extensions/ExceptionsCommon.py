@@ -104,7 +104,7 @@ def generate_instr_adr_misaligned_jalr_tests(test_data: TestData, covergroup: st
     # jalr_off controls the offset[1:0], covering all 16 combinations of (rs1+offset)[1:0].
     # JALR jumps to (rs1 + offset) with bit 0 cleared.
     # Misaligned exception occurs when bit 1 of the target is set
-    offsets_for_lsb = {0: 8, 1: 5, 2: 6, 3: 7}
+    offsets_for_lsb = {0: 8, 1: 9, 2: 6, 3: 7}
 
     for rs1_lsb in range(4):
         for offset_lsb in range(4):
@@ -134,12 +134,14 @@ def generate_instr_access_fault_tests(test_data: TestData, covergroup: str) -> l
     addr_reg = test_data.int_regs.get_register(exclude_regs=[0, 4])
 
     lines = [
+        "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner(coverpoint, "Instruction Access Fault"),
         f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
         "LI(x4, 0xACCE)",  # trap handler checks x4 value and uses x1 (ra) as return address instead of mepc
         test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
         f"jalr x1, 0(x{addr_reg})",
         "nop",
+        "#endif",
     ]
 
     test_data.int_regs.return_registers([addr_reg])
@@ -338,7 +340,7 @@ def generate_load_access_fault_tests(
     coverpoint = "cp_load_access_fault"
     addr_reg, check_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-    lines = [comment_banner(coverpoint, "Load Access Fault")]
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, "Load Access Fault")]
 
     load_ops = ["lb", "lbu", "lh", "lhu", "lw"]
 
@@ -372,7 +374,7 @@ def generate_load_access_fault_tests(
         )
         if use_sigupd:
             lines.append(write_sigupd(check_reg, test_data))
-    lines.extend(["", "#endif"])
+    lines.extend(["", "#endif", "#endif"])
 
     test_data.int_regs.return_registers([addr_reg, check_reg])
     return lines
@@ -382,7 +384,7 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
     coverpoint = "cp_store_access_fault"
     addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-    lines = [comment_banner(coverpoint, "Store Access Fault")]
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, "Store Access Fault")]
 
     store_ops = ["sb", "sh", "sw"]
     test_values = {"sb": "0xAB", "sh": "0xBEAD", "sw": "0xADDEDCAB", "sd": "0xADDEDCABADDEDCAB"}
@@ -411,6 +413,7 @@ def generate_store_access_fault_tests(test_data: TestData, covergroup: str) -> l
             "nop",
             "",
             "#endif",
+            "#endif",
         ]
     )
 
@@ -427,7 +430,7 @@ def generate_misaligned_priority_load_tests(
     """Generate misaligned-priority load testcases."""
     addr_reg, temp_reg, check_reg = test_data.int_regs.get_registers(3, exclude_regs=[0, 1])
 
-    lines = [comment_banner(coverpoint, "Misaligned Priority Load")]
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, "Misaligned Priority Load")]
     load_ops_base = ["lh", "lhu", "lw", "lb", "lbu"]
     load_ops_64 = ["lwu", "ld"]
 
@@ -458,6 +461,7 @@ def generate_misaligned_priority_load_tests(
             )
         lines.append("\n#endif\n")
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([temp_reg, addr_reg, check_reg])
     return lines
 
@@ -471,7 +475,7 @@ def generate_misaligned_priority_store_tests(
     """Generate misaligned-priority store testcases."""
     addr_reg, data_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
 
-    lines = [comment_banner(coverpoint, "Misaligned Priority Store")]
+    lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint, "Misaligned Priority Store")]
     store_ops_base = ["sb", "sh", "sw"]
 
     for offset in range(8):
@@ -507,6 +511,7 @@ def generate_misaligned_priority_store_tests(
             ]
         )
 
+    lines.append("#endif")
     test_data.int_regs.return_registers([addr_reg, data_reg])
     return lines
 
@@ -536,6 +541,7 @@ def generate_misaligned_priority_fetch_tests(
             ".align 4",
             f"{target_label}:",
             "nop",
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             "\n# misaligned fetch - non-existent (fault) address",
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
             f"addi x{addr_reg}, x{addr_reg}, 2",
@@ -543,6 +549,7 @@ def generate_misaligned_priority_fetch_tests(
             test_data.add_testcase(f"{name_prefix}misaligned_nonexistent{name_suffix}", coverpoint, covergroup),
             f"jalr x1, 0(x{addr_reg})",
             "nop",
+            "#endif",
         ]
     )
 

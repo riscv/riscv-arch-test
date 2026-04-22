@@ -239,18 +239,6 @@
 `ifdef VLS8_COVERAGE
   `include "Vls8_coverage.svh"
 `endif
-`ifdef VLSCUSTOM16_COVERAGE
-  `include "VlsCustom16_coverage.svh"
-`endif
-`ifdef VLSCUSTOM32_COVERAGE
-  `include "VlsCustom32_coverage.svh"
-`endif
-`ifdef VLSCUSTOM64_COVERAGE
-  `include "VlsCustom64_coverage.svh"
-`endif
-`ifdef VLSCUSTOM8_COVERAGE
-  `include "VlsCustom8_coverage.svh"
-`endif
 `ifdef VX16_COVERAGE
   `include "Vx16_coverage.svh"
 `endif

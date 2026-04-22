@@ -19,6 +19,7 @@ covergroup MisalignZca_c_lw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
@@ -28,6 +29,7 @@ covergroup MisalignZca_c_lw_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
 endgroup
 // ---------------------
 covergroup MisalignZca_c_lwsp_cg with function sample(ins_t ins);
@@ -37,6 +39,7 @@ covergroup MisalignZca_c_lwsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
@@ -46,6 +49,7 @@ covergroup MisalignZca_c_lwsp_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
 endgroup
 // ---------------------
 covergroup MisalignZca_c_sw_cg with function sample(ins_t ins);
@@ -55,23 +59,6 @@ covergroup MisalignZca_c_sw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    `ifdef XLEN32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
-endgroup
-// ---------------------
-covergroup MisalignZca_c_swsp_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "c.swsp"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
 
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
@@ -82,6 +69,27 @@ covergroup MisalignZca_c_swsp_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_swsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.swsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+
+    `ifdef XLEN32
+        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
+            // test all 4 possible offsets of word alignments
+        }
+    `else
+        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+            // test all 8 possible offsets of doubleword alignments
+        }
+    `endif
+
 endgroup
 // ---------------------
 `ifdef XLEN64
@@ -92,6 +100,7 @@ covergroup MisalignZca_c_ld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
@@ -101,6 +110,7 @@ covergroup MisalignZca_c_ld_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
 endgroup
 // ---------------------
 covergroup MisalignZca_c_ldsp_cg with function sample(ins_t ins);
@@ -110,6 +120,7 @@ covergroup MisalignZca_c_ldsp_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
             // test all 4 possible offsets of word alignments
@@ -119,6 +130,7 @@ covergroup MisalignZca_c_ldsp_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
 endgroup
 // ---------------------
 covergroup MisalignZca_c_sd_cg with function sample(ins_t ins);
@@ -128,23 +140,6 @@ covergroup MisalignZca_c_sd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    `ifdef XLEN32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
-endgroup
-// ---------------------
-covergroup MisalignZca_c_sdsp_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    cp_asm_count : coverpoint ins.ins_str == "c.sdsp"  iff (ins.trap == 0 )  {
-        // Number of times instruction is executed
-        bins count[]  = {1};
-    }
 
     `ifdef XLEN32
         cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
@@ -155,6 +150,27 @@ covergroup MisalignZca_c_sdsp_cg with function sample(ins_t ins);
             // test all 8 possible offsets of doubleword alignments
         }
     `endif
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_sdsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.sdsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+
+    `ifdef XLEN32
+        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
+            // test all 4 possible offsets of word alignments
+        }
+    `else
+        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+            // test all 8 possible offsets of doubleword alignments
+        }
+    `endif
+
 endgroup
 // ---------------------
 `endif

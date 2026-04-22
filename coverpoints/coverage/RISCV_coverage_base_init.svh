@@ -314,22 +314,6 @@
         `cover_info("//      Vls8 - Enabled");
         `include "Vls8_coverage_init.svh"
     `endif
-    `ifdef COVER_VLSCUSTOM16
-        `cover_info("//      VlsCustom16 - Enabled");
-        `include "VlsCustom16_coverage_init.svh"
-    `endif
-    `ifdef COVER_VLSCUSTOM32
-        `cover_info("//      VlsCustom32 - Enabled");
-        `include "VlsCustom32_coverage_init.svh"
-    `endif
-    `ifdef COVER_VLSCUSTOM64
-        `cover_info("//      VlsCustom64 - Enabled");
-        `include "VlsCustom64_coverage_init.svh"
-    `endif
-    `ifdef COVER_VLSCUSTOM8
-        `cover_info("//      VlsCustom8 - Enabled");
-        `include "VlsCustom8_coverage_init.svh"
-    `endif
     `ifdef COVER_VX16
         `cover_info("//      Vx16 - Enabled");
         `include "Vx16_coverage_init.svh"

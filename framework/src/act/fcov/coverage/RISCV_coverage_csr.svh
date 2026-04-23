@@ -963,6 +963,21 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "vxsat" : val = val & 'h1;
       default: val = 0; // Todo: error
     endcase
+  if (name == "mstateen0") begin
+    case(field)
+      "fcsr"    : val = (val >> 1)  & 'h1;
+      "jvt"     : val = (val >> 2)  & 'h1;
+      "ctr"     : val = (val >> 54) & 'h1;
+      "srmcfg"  : val = (val >> 55) & 'h1;
+      "p1p13"   : val = (val >> 56) & 'h1;
+      "context" : val = (val >> 57) & 'h1;
+      "imsic"   : val = (val >> 58) & 'h1;
+      "aia"     : val = (val >> 59) & 'h1;
+      "csrind"  : val = (val >> 60) & 'h1;
+      "envcfg"  : val = (val >> 62) & 'h1;
+      "se0"     : val = (val >> 63) & 'h1;
+      default: val = 0;
+    endcase
   end
   return val;
 endfunction

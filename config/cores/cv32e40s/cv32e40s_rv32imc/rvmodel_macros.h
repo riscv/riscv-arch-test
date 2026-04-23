@@ -5,7 +5,7 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-#define RVMODEL_DATA_SECTION 
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 
@@ -20,8 +20,8 @@
   csrwi mcountinhibit, 0 ;\
   .option pop            ;
 
-# Address to use for load/store fault tests that should cause an access fault on the DUT.
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
+# This DUT does not generate access faults. Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
+//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -66,8 +66,9 @@
 
 ##### Machine Timer #####
 
-#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
+# MTIME is not implemented on this DUT. Comment out to prevent testing them.
+//#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
+//#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
 #define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####

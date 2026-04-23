@@ -21,9 +21,9 @@ implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
-  - { name: Sm, version: "= 1.11.0" }
-  - { name: Smpmp, version: "= 1.11.0" } # VERIFIED — SECURE=1 hardcoded → PMP CSRs always accessible; PMP_NUM_REGIONS=0 default
-  - { name: Smhpm, version: "= 1.11.0" }
+  - { name: Sm, version: "= 1.12.0" }
+  - { name: Smpmp, version: "= 1.12.0" } # VERIFIED — SECURE=1 hardcoded → PMP CSRs always accessible; PMP_NUM_REGIONS=0 default
+  - { name: Smhpm, version: "= 1.12.0" }
   # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
 params:
@@ -83,20 +83,54 @@ params:
   MIMPID_IMPLEMENTED: true
   PMA_GRANULARITY: 2 # Schema minimum (= 4 bytes); PMA_NUM_REGIONS=1, region 0 covers 0x00000000–0x003FFFFF
   NUM_PMP_ENTRIES: 0 # VERIFIED — PMP_NUM_REGIONS=0 default; PMP CSRs exist (SECURE=1) but all read-only-zero
-  PMP_GRANULARITY: 2 # VERIFIED — RTL default PMP_GRANULARITY=0 (G=0); UDB PMP_GRANULARITY = G+2 = 2
-  
+  CONFIG_PTR_ADDRESS: 0 # VERIFIED — cs_registers.sv: mconfigptr_rdata = 32'h0 (hardwired)
+
   # Zcmt params (VERIFIED — cv32e40s_pkg.sv: CSR_JVT_MASK=0xFFFFFFC0, JVT_RESET_VAL=0)
   JVT_BASE_TYPE: mask # VERIFIED — upper 26 bits writable via mask
   JVT_READ_ONLY: false # VERIFIED — jvt is writable
   JVT_BASE_MASK: 0x7FFFFFC0 # RTL mask is 0xFFFFFFC0 but UDB requires < 0xFFFFFFC0 for RV32; bit 31 excluded
 
   # HPM Counters (VERIFIED — cv32e40s_pkg.sv: NUM_HPM_EVENTS=2; cv32e40s_core.sv: NUM_MHPMCOUNTERS=0)
-  HPM_EVENTS: [0, 1] # VERIFIED — 2 HPM events (cycle, instret)
   HPM_COUNTER_EN: # VERIFIED — NUM_MHPMCOUNTERS=0; no HPM counters instantiated
     [
       false, # index 0 (CY — must be false per UDB schema)
       false, # index 1 (TM — must be false per UDB schema)
       false, # index 2 (IR — must be false per UDB schema)
+      false,
+      false,
+      false,
+      false,
+      false, # 3..7
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 8..15
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 16..23
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false, # 24..31
+    ]
+  MCOUNTENABLE_EN: # VERIFIED — cs_registers.sv: mcounteren_rdata = 32'h0 (hardwired, no S-mode delegation)
+    [
+      false, # index 0 (CY)
+      false, # index 1 (TM)
+      false, # index 2 (IR)
       false,
       false,
       false,

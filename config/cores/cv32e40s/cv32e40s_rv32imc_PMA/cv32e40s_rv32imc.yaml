@@ -22,8 +22,6 @@ implemented_extensions: # VERIFIED against cv32e40s_core.sv (openhwgroup/cv32e40
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zkt, version: "= 1.0.0" } # VERIFIED — always enabled per intro.rst; data-independent execution latency
   - { name: Sm, version: "= 1.12.0" }
-  - { name: Smpmp, version: "= 1.12.0" } # VERIFIED — SECURE=1 hardcoded → PMP CSRs always accessible; PMP_NUM_REGIONS=0 default
-  - { name: Smhpm, version: "= 1.12.0" }
   # B_EXT=B_NONE by default → no Zba, Zbb, Zbc, Zbs
 
 params:

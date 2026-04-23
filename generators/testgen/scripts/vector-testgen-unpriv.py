@@ -40,6 +40,7 @@ from vector_testgen_common import (
   getLegalVlmul,
   getLengthLmul,
   getLengthSuiteTestCount,
+  finalizeSigupdCount,
   getSigSpace,
   imm_31,
   incrementBasetestCount,
@@ -1420,6 +1421,9 @@ if __name__ == '__main__':
 
         # Finish
         f.close()
+        # Rewrite the SIGUPD_COUNT placeholder in the header now that the full
+        # dynamic count is known.
+        finalizeSigupdCount(tempfname, xlen, flen)
         # if new file is different from old file, replace old file with new file
         if os.path.exists(fname):
           if filecmp.cmp(fname, tempfname): # files are the same

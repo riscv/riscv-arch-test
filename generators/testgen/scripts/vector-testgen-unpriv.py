@@ -1420,6 +1420,12 @@ if __name__ == '__main__':
 
         # Finish
         f.close()
+        # Resolve @SIGUPD_COUNT_FROM_TESTGEN@ placeholder now that the final
+        # signatureWords for this test is known (header was emitted before tests).
+        with open(tempfname, "r") as _rf:
+          _src = _rf.read()
+        with open(tempfname, "w") as _wf:
+          _wf.write(_src.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(signatureWords)))
         # if new file is different from old file, replace old file with new file
         if os.path.exists(fname):
           if filecmp.cmp(fname, tempfname): # files are the same

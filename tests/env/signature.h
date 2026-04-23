@@ -265,8 +265,11 @@
 //   - No comparisons are performed.
 //   - sigptr is advanced by offset.
 //
-// offset is calculated in vector-testgen.py due to the complexity of
-// computing the correct signature stride for different SEW/LMUL settings.
+// The signature stride is computed inside the macro from the current vl and
+// vtype (SEW field): bytes = vl << vsew, then +4 padding, then rounded up to
+// a multiple of 8.  For base suite callers vl=1; for length suite callers
+// (handled by the _LEN macro below) vl is first set to VLMAX via vsetvli so
+// the same formula yields VLEN*LMUL/8 bytes.
 //
 // Assumptions:
 //   - For mask producing instructions, the default SEW is 8.
@@ -283,14 +286,26 @@
 //   _VTMP       - Temporary vector register used to load reference data
 //   _MTMP       - Mask register holding mismatch results
 //   _SEW        - Element width
-//   _OFFSET     - Signature stride (computed in vector-testgen.py)
 //   _VREG       - Vector register under test
 //   _INST_PTR   - Label of instruction under test
 //   _STR_PTR    - Label to descriptive string
 
+// Advance _SIG_PTR by the signature stride computed from current vl and vtype.
+// Clobbers _TEMP_REG and _LINK_REG (both are free here after the compare).
+// bytes = vl << ((vtype >> 3) & 7)  ;  bytes = (bytes + 4 + 7) & ~7
+#define RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     \
+    csrr _TEMP_REG, vl                                             ;\
+    csrr _LINK_REG, vtype                                          ;\
+    srli _LINK_REG, _LINK_REG, 3                                   ;\
+    andi _LINK_REG, _LINK_REG, 7                                   ;\
+    sll  _TEMP_REG, _TEMP_REG, _LINK_REG                           ;\
+    addi _TEMP_REG, _TEMP_REG, 11                                  ;\
+    andi _TEMP_REG, _TEMP_REG, -8                                  ;\
+    add  _SIG_PTR, _SIG_PTR, _TEMP_REG
+
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
+        _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)              \
         .option push                                                ;\
         .option norvc                                               ;\
         vle##_SEW.v _VTMP, 0(_SIG_PTR)                              ;\
@@ -304,11 +319,11 @@
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
 #else
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _SEW, _OFFSET, _VREG, _INST_PTR, _STR_PTR)     \
+        _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)              \
         .option push                                                ;\
         .option norvc                                               ;\
         vse##_SEW.v _VREG, 0(_SIG_PTR)                              ;\
@@ -322,7 +337,7 @@
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
     2:                                                              ;\
-        addi _SIG_PTR, _SIG_PTR, _OFFSET                            ;\
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
 #endif
 
@@ -353,8 +368,9 @@
 // linkreg and tempreg. instptr and strptr are emitted as .word/.dword so that
 // the failing instruction address and descriptive string can be retrieved.
 //
-// On success, sigptr is incremented by offset, which is calculated in vector-testgen.py
-// due to the complexity of the calculations.
+// On success, sigptr is incremented by a stride computed inside the macro
+// from the current vl (which has been set to VLMAX for this SEW/LMUL) and the
+// vtype SEW field, so no offset operand is required from vector-testgen.
 //
 // In non-SELFCHECK mode, the macro should only update the signature and advance
 // sigptr, without performing comparisons.
@@ -377,14 +393,13 @@
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
 //   _SEW           - Element width
 //   _LMUL          - LMUL setting
-//   _OFFSET        - Signature stride, calculated in vector-testgen.py (function writeSIGUPD_V)
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _INST_PTR, _STR_PTR)                                             \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -485,11 +500,11 @@
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR,              \
-        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _OFFSET, _INST_PTR, _STR_PTR)                                    \
+        _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _INST_PTR, _STR_PTR)                                             \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -590,7 +605,7 @@
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
-        addi        _SIG_PTR, _SIG_PTR, _OFFSET;                                                                    \
+        RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                                                    ;\
         .option pop
 #endif
 

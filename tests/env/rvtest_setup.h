@@ -33,7 +33,10 @@
   .option norvc
 
   // Include model specific boot code
-  call rvmodel_boot
+  // potentially long call to code after the data segment.
+  LA(ra, rvmodel_boot)
+  jalr ra
+  //call rvmodel_boot
 
   // Create new section so that .align directives in the test code don't affect the
   // entry point address. The assembler increases a section's overall alignment to
@@ -101,10 +104,12 @@
   /**** MPRV must be clear here !!! ****/
 
   // Switch to M-mode
-  // ***dh 4/8/26 is this still the right thing to do if there is no conforming M-mode?
+  // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
+  // invoked unless there is CONFORMING_SM_SUPPORTED.  A user with nonconforming S-mode will need
+  // to reimplement this.
   rvtest_code_end:
     #ifdef CONFORMING_SM_SUPPORTED
-      RVTEST_GOTO_MMODE // *** dh 4/18/26 should this still be here?
+      RVTEST_GOTO_MMODE
     #endif
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved
@@ -174,12 +179,14 @@
     // always boot to at least M-mode
     RVTEST_BOOT_TO_MMODE
     #ifndef BOOT_TO_MMODE
-      // continue to a lower privilege mode depending on the type of test
+      // the BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
+      // otherwise continue to a lower privilege mode (if one exists) depending on the type of test
       #ifdef S_SUPPORTED
         RVTEST_BOOT_TO_SMODE
       #endif
-      #ifndef S_REQUIRED
-        // continue to U-mode if U-mode supported and S-mode not required
+      #ifndef BOOT_TO_SMODE
+        // the BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
+        // otherwise continue to U-mode if U-mode supported
         #ifdef U_SUPPORTED
           RVTEST_BOOT_TO_UMODE
         #endif
@@ -218,7 +225,9 @@
     rvtest_clr_mext_int:
       RVMODEL_CLR_MEXT_INT(T2, T5)
       ret
+  #endif
 
+  #ifdef S_SUPPORTED
     rvtest_set_ssw_int:
       RVMODEL_SET_SSW_INT(T2, T5)
       ret
@@ -236,7 +245,7 @@
     rvtest_clr_sext_int:
       RVMODEL_CLR_SEXT_INT(T2, T5)
       LI(T3, 512)
-      csrc sip, T3
+      csrc sip, T3 // clear sip.SEIP
       ret
   #endif
 
@@ -357,13 +366,11 @@
         .fill SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Signature region for trap handlers
-      #ifdef CONFORMING_SM_SUPPORTED
-        tsig_begin_canary:
-          TRAP_CANARY
+      tsig_begin_canary:
+        TRAP_CANARY
 
-        mtrap_sigptr:
-            .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
-      #endif
+      mtrap_sigptr:
+          .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Create canary at end of signature region to detect overwrites
       sig_end_canary:
@@ -446,7 +453,6 @@
     // Do setup that requires a conforming M-mode
     #ifdef CONFORMING_SM_SUPPORTED
 
-
     // Disable interrupts
       csrw mie, zero
       csrw mip, zero
@@ -463,8 +469,8 @@
       csrw mcause, zero
 
       // Set up trap handlers for all modes
-      // *** this code needs a close review
-      // *** preferably move the S and H stuff to RVTEST_BOOT_TO_SMODE, but it is giving linker problems right now
+      // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
+      // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
         RVTEST_TRAP_PROLOG S
@@ -473,9 +479,8 @@
           RVTEST_TRAP_PROLOG V
         #endif
       #endif
-      //INSTANTIATE_MODE_MACRO RVTEST_TRAP_PROLOG // instantiate priv mode specific prologs
 
-       // Initialize M-mode CSRs
+      // Initialize M-mode CSRs
 
       // Put mstatus in a known initial state.
       // mstatus.SIE = 0: Disable S-mode interrupts
@@ -512,7 +517,6 @@
         csrw mstatus, t0
         csrw mstatush, zero // Clear all these fields
       #endif
-
 
       // Disable all privileged environment configuration, and enable unprivileged configuration
       // Privileged tests that want to use these features should turn them on
@@ -602,35 +606,35 @@
       csrw mhpmevent30, zero
       csrw mhpmevent31, zero
       #if __riscv_xlen == 32
-        csrw mhpmevent3, zero
-        csrw mhpmevent4, zero
-        csrw mhpmevent5, zero
-        csrw mhpmevent6, zero
-        csrw mhpmevent7, zero
-        csrw mhpmevent8, zero
-        csrw mhpmevent9, zero
-        csrw mhpmevent10, zero
-        csrw mhpmevent11, zero
-        csrw mhpmevent12, zero
-        csrw mhpmevent13, zero
-        csrw mhpmevent14, zero
-        csrw mhpmevent15, zero
-        csrw mhpmevent16, zero
-        csrw mhpmevent17, zero
-        csrw mhpmevent18, zero
-        csrw mhpmevent19, zero
-        csrw mhpmevent20, zero
-        csrw mhpmevent21, zero
-        csrw mhpmevent22, zero
-        csrw mhpmevent23, zero
-        csrw mhpmevent24, zero
-        csrw mhpmevent25, zero
-        csrw mhpmevent26, zero
-        csrw mhpmevent27, zero
-        csrw mhpmevent28, zero
-        csrw mhpmevent29, zero
-        csrw mhpmevent30, zero
-        csrw mhpmevent31, zero
+        csrw mhpmevent3h, zero
+        csrw mhpmevent4h, zero
+        csrw mhpmevent5h, zero
+        csrw mhpmevent6h, zero
+        csrw mhpmevent7h, zero
+        csrw mhpmevent8h, zero
+        csrw mhpmevent9h, zero
+        csrw mhpmevent10h, zero
+        csrw mhpmevent11h, zero
+        csrw mhpmevent12h, zero
+        csrw mhpmevent13h, zero
+        csrw mhpmevent14h, zero
+        csrw mhpmevent15h, zero
+        csrw mhpmevent16h, zero
+        csrw mhpmevent17h, zero
+        csrw mhpmevent18h, zero
+        csrw mhpmevent19h, zero
+        csrw mhpmevent20h, zero
+        csrw mhpmevent21h, zero
+        csrw mhpmevent22h, zero
+        csrw mhpmevent23h, zero
+        csrw mhpmevent24h, zero
+        csrw mhpmevent25h, zero
+        csrw mhpmevent26h, zero
+        csrw mhpmevent27h, zero
+        csrw mhpmevent28h, zero
+        csrw mhpmevent29h, zero
+        csrw mhpmevent30h, zero
+        csrw mhpmevent31h, zero
       #endif
 
       // make counters accessible to a lower privilege mode if one exists
@@ -676,10 +680,9 @@
       csrs mstatus, t0 // Set FS to dirty to enable floating-point
       csrw fcsr, zero // Initialize fcsr
     #endif
-    #ifdef V_SUPPORTED
+    #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
       li t0, MSTATUS_VS
       csrs mstatus, t0 // Set VS to dirty to enable vector
-      // csrr VLENB_CACHE, vlenb // carryover from RVTEST_V_ENABLE; delete when not needed anywhere
     #endif
   #endif // !RVMODEL_BOOT_TO_MMODE
 .endm
@@ -698,16 +701,7 @@
   #else
     // Default implementation assumes conforming M-mode
     // We are in M-mode now at initial boot time
-
-    // Set up trap handler for S-mode
-    // *** uncomment this when rvtest_strap_routine etc. is replaced with S/H_SUPPORTED
-    // RVTEST_TRAP_PROLOG S
-    // if Hypervisor supported, also set up HS and VS-mode trap handlers
-    // *** how does h differ from S?
-    #ifdef H_SUPPORTED
-      //RVTEST_TRAP_PROLOG H
-      //RVTEST_TRAP_PROLOG V
-    #endif
+    // The M-mode boot already set up S, HS, VS trap handlers if applicable.
 
     // Delegate most exceptions and supervisor interrupts to S-mode.
     // mideleg.

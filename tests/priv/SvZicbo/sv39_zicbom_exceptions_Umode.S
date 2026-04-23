@@ -93,9 +93,6 @@
 
 #define TEST_FILE "sv39_zicbom_exceptions_Umode.S"
 #define SIGUPD_COUNT 120
-#define rvtest_mtrap_routine
-#define rvtest_strap_routine
-#define RVTEST_PRIV_TEST
 #define SKIP_MEPC
 
 #include "riscv_arch_test.h"

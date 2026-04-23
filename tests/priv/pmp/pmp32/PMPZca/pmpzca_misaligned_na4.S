@@ -38,9 +38,6 @@
 #define TEST_FILE "pmpzca_aligned_na4.S"
 #define SIGUPD_COUNT 50
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 #define SKIP_MEPC
 

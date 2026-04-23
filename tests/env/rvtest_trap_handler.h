@@ -13,6 +13,9 @@
         //********** FIXME: these comments are now completely out of order****************
         //********************************************************************************
 
+// NOTE: Users with a non-conforming M-mode that cannot run this trap handler may
+//      need to reimplement this entire file with their own custom version.  Use a custom
+//      RVMODEL_BOOT_TO_MMODE to initialize the custom trap handler.
 // This file is divided into the following sections:
 //      RV Arch Test Constants
 //      general test and helper macros, required,  optional, or just useful
@@ -355,9 +358,7 @@
 /**** PROLOG/HANDLER/EPILOG/SAVEAREA depending on test type & mode support ****/
 /******************************************************************************/
 .macro INSTANTIATE_MODE_MACRO MACRO_NAME
-  #ifdef CONFORMING_SM_SUPPORTED
-    \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
-  #endif
+  \MACRO_NAME M       // actual m-mode prolog/epilog/handler code
   #ifdef S_SUPPORTED
     \MACRO_NAME S       // actual s-mode prolog/epilog/handler code
     #ifdef H_SUPPORTED
@@ -652,32 +653,28 @@
 .macro  RVTEST_GOTO_MMODE
   .option push
   .option norvc
-  #ifdef  CONFORMING_SM_SUPPORTED
-    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
-    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
-    // Note that if ecalls are delegated, this may infinite loop
-    // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
+  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+  // Note that if ecalls are delegated, this may infinite loop
+  // The solution is to use RVTEST_GOTO_DELEGATED_MMODE instead
 
-    GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
-                                  the next op if x3=0, else handles trap normally */
-    mv   x3, t0
-  #endif
+  GOTO_M_OP                   /* ECALL: traps always, but returns immediately to
+                                the next op if x3=0, else handles trap normally */
+  mv   x3, t0
   .option pop
 .endm
 
 .macro  RVTEST_GOTO_DELEGATED_MMODE
   .option push
   .option norvc
-  #ifdef  CONFORMING_SM_SUPPORTED
-    // Note that this must be called with ecall traps delegated, else it could infinite loop
+  // Note that this must be called with ecall traps delegated, else it could infinite loop
 
-    mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
-    li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
+  mv   t0, x3                 // FIXME: Hacky way to preserve x3 by trashing t0 instead
+  li   x3, 0                  // Ecall w/x3=0 is handled specially to rtn here
 
-    ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
+  ALT_GOTO_M_OP               /* It will trap and if ecalls are delegated, it will simply
                                   return to op after illegal op, else handles trap normally */
-    mv   x3, t0
-  #endif
+  mv   x3, t0
   .option pop
 .endm
 

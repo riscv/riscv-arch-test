@@ -39,9 +39,6 @@
 #define TEST_FILE "pmpsm_napot_legal_lwxr.S"
 #define SIGUPD_COUNT 120
 
-// Enable trap handler
-#define rvtest_mtrap_routine
-#define RVTEST_PRIV_TEST
 
 // Include framework macros
 #include "riscv_arch_test.h"

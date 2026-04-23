@@ -26,6 +26,9 @@ The REQUIRED_EXTENSIONS list in each test implies the privilege mode into which 
 The implication of these rules is that privileged tests that specify ConformingSm, S, or U will boot into those modes, respectively, and unprivileged tests will run in U-mode if supported and M-mode (possibly nonconforming) otherwise.
 
 *** signpost trap, sbi, rvmodel, memory map
+
+testgen/src/testgen/io/templates.py format_params needs to accept CONFORMING_SM_SUPPORTED parameter when available.  How to deal with UDB?
+
 DONE: remove RVTEST_PRIV_TEST
 
 DONE: replace rvtest_mtrap_routine with CONFORMING_SM_SUPPORTED or many places it gets deleted
@@ -68,7 +71,7 @@ The test ELF begins with the `RVTEST_BEGIN` macro, which defines `rvtest_entry_p
 
 Next, `rvmodel_boot` calls `RVMODEL_IO_INIT` to perform any necessary I/O initialization, such as configuring baud rate and flow control in a UART.  This macro can also be empty or undefined if no I/O initialization is needed.
 
-Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the M-mode trap handler and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming conforming M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for nonconforming M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
+Next, `rvmodel_boot` calls `RVTEST_BOOT_TO_MMODE` to set up the trap handlers and initialize M-mode CSRs. This macro first checks if `RVMODEL_BOOT_TO_MMODE` is defined. If undefined, it runs default boot code assuming conforming M-mode. If defined, it runs the DUT-specific `RVMODEL_BOOT_TO_MMODE` that performs the same general steps for nonconforming M-mode (or should be blank for cases such as an RV32I DUT that has no CSRs).
 
 CSR initialization includes
 
@@ -84,7 +87,9 @@ CSR initialization includes
 * pmpaddr0/pmpcfg0 if PMP_ENTRIES > 0
 * perform sfence.vma to synchronize MMU if SV32_SUPPORTED or SV39_SUPPORTED
 
-If the test is continuing to boot to a lower privilege mode, it next checks if `S_SUPPORTED` and, if so, calls `RVTEST_BOOT_TO_SMODE`. This sets up the S-mode trap handler (and H and V if H_SUPPORTED), initializes S-mode CSRs, and adjusts M-mode CSRs such as trap delegation and environment configuration. It then enters S-mode. This entire routine can be overridden by a RVMODEL equivalent for non-conforming M-mode implementations that cannot access M-mode CSRs or use the standard `mret` method of entering S-mode.
+The boot process ends in M-mode if the BOOT_TO_MMODE symbol is defined in the test (for tests intended to run in machine mode), or if no lower privilege mode is supported.
+
+If the test is continuing to boot to a lower privilege mode, it next checks if `S_SUPPORTED` and, if so, calls `RVTEST_BOOT_TO_SMODE`. This initializes S-mode CSRs, and adjusts M-mode CSRs such as trap delegation and environment configuration. It then enters S-mode. This entire routine can be overridden by a RVMODEL equivalent for non-conforming M-mode implementations that cannot access M-mode CSRs or use the standard `mret` method of entering S-mode.
 
 S-mode CSR initialization includes
 
@@ -95,12 +100,11 @@ S-mode CSR initialization includes
 * senvcfg
 * satp = 0 (disable VM)
 
-If the test is not intended to run in S-mode, and U-mode is supported, it calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for non-conforming M-mode implementations.
+The boot process ends in S-mode if the BOOT_TO_SMODE symbol is defined in the test (for tests intended to run in supervisor mode).
+
+If the test is not intended to run in S-mode, and U-mode is supported, `rvmodel_boot` calls `RVTEST_BOOT_TO_UMODE`, which switches to U-mode by calling `RVTEST_GOTO_LOWER_MODE U`. *** or the correct macro  *** any other .  Again, it can be overridden by `RVMODEL_BOOT_TO_UMODE` for non-conforming M-mode implementations.
 
 Finally, `rvmodel_boot` jumps to `rvtest_init`, which calls `RVTEST_INIT_REGS` to initialize GPRs, then sets up the signature pointer and checks a canary if applicable.***
-
-*** discuss memory map, sizes to keep things the same
-
 
 The test ELF contains the RVMODEL_BOOT macro, which performs any necessary boot operations such as turning on a phase-locked loop or DRAM controller or initializing custom state.  After RVMODEL_BOOT, the system should be in conforming machine mode if supported, with XLEN and endianness for each lower privilege mode set to the same value as in machine mode (MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE). *** replace
 

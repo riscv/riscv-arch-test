@@ -108,8 +108,6 @@ def canonicalize_extensions(
         ext_components.append("D")  # Add D if Zcd is present
     if any(ext in ext_components for ext in ["Zcf", "D", "Zfh", "Zfhmin", "Zfa", "Zfbfmin"]):
         ext_components.append("F")  # Add F if any floating point extension is present
-    if any(ext in ext_components for ext in ["Sm", "S", "U", "H"]):
-        ext_components.append("Zicsr")  # Add Zicsr if any priv extension is present
     if any(ext in ext_components for ext in ["V", "Zvfh"]):
         ext_components.append("M")  # Add M if V is present (required for gcc 15)
 
@@ -195,14 +193,13 @@ def generate_march_string(ext_components: list[str], xlen: int) -> str:
 
 def format_params(params: list[str], ext_components: list[str]) -> str:
     """Format parameters for insertion into template."""
-    if not params:
-        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines = ["params:"]
-    if any(
-        ext in ext_components for ext in ["Sm", "H", "S", "U"]
-    ):  # might need hack to require conforming Sm for all priv tests until nonconforming trap handler setup works
-        #    if any(ext in ext_components for ext in ["Sm"]):
-        param_lines.extend("#    CONFORMING_SM_REQUIRED")
+    if False:  # any(ext in ext_components for ext in ["Sm", "H", "S", "U"]):  # might need hack to require conforming Sm for all priv tests until nonconforming trap handler setup works
+        param_lines.append(
+            "#    CONFORMING_SM_SUPPORTED: True"
+        )  # dh 4/23/26 seems to need true, not in UDB, not sure how to handle yet
+    elif not params:
+        return "# # no param constraints"  # Extra comment symbol necessary because YAML parser strips initial comment
     param_lines.extend(f"#   {param}" for param in params)
     return "\n".join(param_lines)
 

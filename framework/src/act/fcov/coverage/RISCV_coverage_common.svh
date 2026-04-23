@@ -158,16 +158,6 @@
   `endif
 `endif
 
-`ifdef SEW64_SUPPORTED
-  `define ELEN64
-`elsif SEW32_SUPPORTED
-  `define ELEN32
-`elsif SEW16_SUPPORTED
-  `define ELEN16
-`elsif SEW8_SUPPORTED
-  `define ELEN8
-`endif
-
 // Minimum supported LMUL
 // `ifdef SEW8_SUPPORTED
 //   `ifdef ELEN64

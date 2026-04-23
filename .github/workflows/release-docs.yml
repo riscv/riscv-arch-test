@@ -23,10 +23,10 @@ jobs:
   build-ctp:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
 
       - run: git submodule update --init docs/docs-resources
 
@@ -34,13 +34,13 @@ jobs:
         run: cd docs/ctp && make -j2
 
       - name: Upload CTP PDF
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ctp.pdf
           path: docs/ctp/build/ctp.pdf
 
       - name: Upload CTP HTML
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ctp.html
           path: docs/ctp/build/ctp.html
@@ -48,7 +48,7 @@ jobs:
   build-crd:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - run: git submodule update --init docs/docs-resources
 
@@ -56,13 +56,13 @@ jobs:
         run: cd docs/crd && make -j2
 
       - name: Upload CRD PDFs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: crd-pdf
           path: docs/crd/build/*.pdf
 
       - name: Upload CRD HTMLs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: crd-html
           path: docs/crd/build/*.html
@@ -72,25 +72,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download CTP PDF
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: ctp.pdf
           path: ./
 
       - name: Download CTP HTML
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: ctp.html
           path: ./
 
       - name: Download CRD PDFs
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: crd-pdf
           path: ./
 
       - name: Download CRD HTMLs
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: crd-html
           path: ./
@@ -101,7 +101,7 @@ jobs:
           echo "SHORT_SHA=$(echo ${GITHUB_SHA::7})" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
           draft: false
           prerelease: ${{ github.event_name != 'workflow_dispatch' }}
@@ -124,27 +124,27 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           sparse-checkout: docs/pages
 
       - name: Download CTP HTML
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: ctp.html
           path: docs/pages
 
       - name: Download CRD HTMLs
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: crd-html
           path: docs/pages/crd
 
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: docs/pages
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

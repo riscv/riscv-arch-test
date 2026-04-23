@@ -1,41 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_indexed_emul_data_only
     //////////////////////////////////////////////////////////////////////////////////
 
     // Verify EMUL*NFIELDS <= 8 constraint applies to data group only, not index group
-    // Test at LMUL*NFIELDS = 8 boundary; index EMUL*NFIELDS may exceed 8
+    // Test at data LMUL*NFIELDS = 8 boundary; index EMUL*NFIELDS may exceed 8
+    // Combined check: nf_field from insn[31:29] paired with correct LMUL
+    //   NF=2 (nf=001) at LMUL=4 (vlmul=2)
+    //   NF=4 (nf=011) at LMUL=2 (vlmul=1)
+    //   NF=8 (nf=111) at LMUL=1 (vlmul=0)
 
-
-
-    // NFIELDS from nf field (bits [31:29]), NFIELDS = nf + 1
-    nf_8: coverpoint ins.current.insn[31:29] {
-        bins nf7 = {3'b111};  // NFIELDS=8
+    nf_lmul_at_boundary: coverpoint {
+        (ins.current.insn[31:29] == 3'b001 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 2) |
+        (ins.current.insn[31:29] == 3'b011 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 1) |
+        (ins.current.insn[31:29] == 3'b111 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") == 0)
+    }
+    {
+        bins boundary_hit = {1'b1};
     }
 
-    nf_4: coverpoint ins.current.insn[31:29] {
-        bins nf3 = {3'b011};  // NFIELDS=4
-    }
-
-    nf_2: coverpoint ins.current.insn[31:29] {
-        bins nf1 = {3'b001};  // NFIELDS=2
-    }
-
-    // LMUL values paired with NFIELDS at the data EMUL*NFIELDS = 8 boundary
-    vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins one = {0};
-    }
-
-    vtype_lmul_2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins two = {1};
-    }
-
-    vtype_lmul_4: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-        bins four = {2};
-    }
-
-    // LMUL*NFIELDS = 8 boundary cases (data EMUL at limit)
-    cp_custom_indexed_emul_data_only_lmul1_nf8: cross std_vec, vtype_lmul_1, nf_8;
-    cp_custom_indexed_emul_data_only_lmul2_nf4: cross std_vec, vtype_lmul_2, nf_4;
-    cp_custom_indexed_emul_data_only_lmul4_nf2: cross std_vec, vtype_lmul_4, nf_2;
+    cp_custom_indexed_emul_data_only: cross std_vec, nf_lmul_at_boundary;
 
     //// end cp_custom_indexed_emul_data_only////////////////////////////////////////////////

@@ -68,7 +68,27 @@ mise --version
 >
 > For more details on mise and alternate installation methods, see the [mise getting started guide](https://mise.jdx.dev/getting-started.html).
 >
-> For alternate installation instructions that do not require mise, see Advanced Installation - COMING SOON.
+> If you do not want to install mise, you can install `uv` directly (see the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)) or use an existing Python environment as described in [Installing without uv or mise](#installing-without-uv-or-mise).
+
+> [!NOTE]
+>
+> See note on enabling trust in the `.mise.toml` file below.
+
+##### Installing without uv or mise
+
+If you already have your own Python environment, you can install the
+framework packages into it with `pip` instead of using `mise`/`uv`. You are
+responsible for providing Python 3.10+, and Ruby/Bundler must be installed
+separately (see the [UDB repository](https://github.com/riscv/riscv-unified-db)).
+
+Activate your venv, then from the cloned repository run:
+
+```bash
+pip install -e ./framework -e ./generators/testgen -e ./generators/coverage
+```
+
+With the venv active, `make`, `make tests`, `make coverage`, `make spike-*`,
+and the other documented targets work as usual.
 
 #### 3. RISC-V Compiler (GCC or LLVM)
 
@@ -152,6 +172,18 @@ Clone the `riscv-arch-test` repo:
 git clone https://github.com/riscv/riscv-arch-test
 ```
 
+On entering the top-level directory of the repository for the first
+time, or on the first use of one of the build commands below, you may
+see messages or a prompt from `mise` requiring enabling trust before
+the `.mise.toml` configuration file can be used. This can be done by
+selecting `Yes` in the prompt or with the following command in the
+top-level directory of the repository:
+
+```bash
+mise trust .mise.toml
+
+```
+
 ### Configuration
 
 Several configuration files are needed to tell the ACT framework how to find your tools, what extensions and parameters are supported by your implementation, and how to perform implementation-specific functions.
@@ -202,19 +234,19 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 
 **Printing Macros**: Can be left blank if no console is available
 
-- `RVMODEL_IO_INIT(_R1, _R2, _R3)`
+- `RVMODEL_IO_INIT(_R1, _R2, _R3)` (can be omitted if not needed)
 - `RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR)`
 
 **DUT-Specific Functions**: Can be left blank if not needed
 
 - `RVMODEL_DATA_SECTION`
-- `RVMODEL_BOOT`
-- `RVMODEL_ACCESS_FAULT_ADDRESS`
+- `RVMODEL_BOOT` (can be omitted if not needed)
+- `RVMODEL_ACCESS_FAULT_ADDRESS` (can be omitted if DUT does not generate some/all access faults)
 
 **Timer Macros**: Can be left blank if machine mode is not supported.
 
-- `RVMODEL_MTIME_ADDRESS`
-- `RVMODEL_MTIMECMP_ADDRESS`
+- `RVMODEL_MTIME_ADDRESS` (can be omitted if MTIME is not implemented)
+- `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
 **Interrupt Macros**: Can be left blank if interrupts are not supported.
@@ -236,16 +268,19 @@ Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc
 A linker script is needed to place the code and data regions in the appropriate place for the DUT's memory map. This can be customized as needed, but it must adhere to the following requirements:
 
 - The `ENTRY` point must be `rvtest_entry_point`.
-  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will run before anything else.
+  - DUT-specific boot code can be run using the `RVMODEL_BOOT` macro, which `rvtest_entry_point` will jump to before anything else.
 - There must be a `.text.init` output section that contains the `.text.init` input section (i.e. `.text.init : { *(.text.init) }`).
-- There must be another `.text` output section that contains at least the `.text.rvtest` input section (i.e. `.text : { *(.text) *(.text.*) }`). This must follow the `.text.init` section.
-- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.text` section.
+- There must be a `.text.rvtest` output section that contains the `.text.rvtest` input sections (i.e. `.text.rvtest : { *(.text.rvtest) *(.text.rvtest.*) }`). This must follow the `.text.init` section.
+- There must be a `.data` output section (i.e. `.data : { *(.data) }`). This should follow the `.text.rvtest` section.
+- There must be a `.text.rvmodel` output section for DUT-specific (RVMODEL) code, with catch-all wildcards for any remaining text sections (i.e. `.text.rvmodel : { *(.text.rvmodel) *(.text.rvmodel.*) *(.text) *(.text.*) }`). This **must** follow the `.data` section so that variable-size model-specific code does not affect the addresses of test data symbols (such as `scratch` and `begin_signature`). This ensures the DUT ELF and the reference-model ELF agree on data addresses.
 
-For an example linker script that should work for most basic implementations (modify the base address as needed for your memory map), see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld).
+For an example linker script that should work for most basic implementations, see [config/cores/cvw/cvw-rv64gc/link.ld](./config/cores/cvw/cvw-rv64gc/link.ld). The first line of the list of `SECTIONS` in the linker script sets the starting address of the ELF (`. = 0x...`) and is the only part of the sample linker script that most users will need to change. Set it to your reset address for simple DUTs. Users with special needs can customize the linker script to start at their own boot code (leaving the `RVMODEL_BOOT` macro blank) and then jump to `rvtest_entry_point`.
 
 > [!NOTE]
 >
 > If you modify the base address, you also need to modify the RISC-V Sail model memory map under the `memory.regions` key in `sail.json`.
+
+For a detailed description of the test memory layout (section ordering, contents of each section, etc.), see [docs/memory_map.md](./docs/memory_map.md).
 
 #### Other Config Files <!-- TODO: Remove this section when these files are autogenerated -->
 
@@ -335,7 +370,7 @@ These files are generated in the `$WORKDIR/<config_name>/build` directory alongs
 Contributors are always welcome. There are several ways to contribute:
 
 - [Open issues](https://github.com/riscv/riscv-arch-test/issues/new) with bug reports or feature requests.
-- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTION.md`](./CONTRIBUTION.md)
+- [Submit PRs](https://github.com/riscv/riscv-arch-test/pulls) that fix open issues, add tests for new extensions, or add a new feature. Before opening a PR, make sure to review the guidelines and helpful tips in [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Join the [ACT SIG mailing list](https://lists.riscv.org/g/sig-arch-test) or the biweekly [ACT SIG meetings](https://tech.riscv.org/calendar/). The mailing list and meetings are only open to RISC-V members.
 
 ## Licensing

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "pyyaml",
 # ]
@@ -25,6 +25,8 @@ containing normative rule definitions. It maps instruction names from the CSV
 to rules in the JSON file, where dots in instruction names are replaced with
 underscores and "_op" is appended.
 """
+
+from __future__ import annotations
 
 import argparse
 import csv

@@ -9,6 +9,8 @@
 Instruction parameter dataclass.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Literal
 
@@ -60,6 +62,7 @@ class InstructionParams:
     # Flags
     frm: str | None = None  # Floating-point rounding mode tests
     aqrl: str | None = None  # Acquire/Release for atomic operations
+    fflags: int | None = None  # Floating-point result flags
 
     # Internal params to pass to formatters
     fp_load_type: Literal["single", "double", "half", "quad"] | None = None  # Type for FP loads/stores

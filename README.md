@@ -249,7 +249,7 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_MTIMECMP_ADDRESS` (can be omitted if MTIMECMP is not implemented)
 - `RVMODEL_TIMER_INT_SOON_DELAY`
 
-**MSIP Macro**: Can be omitted if machine software interrupts are not supported.
+**MSIP Macro**: Required only for Sm version 1.13 and above. Can be omitted if machine software interrupts are not supported.
 
 - `RVMODEL_MSIP_ADDRESS` (can be omitted if MSIP is not memory-mapped or not tested)
 

@@ -1378,13 +1378,10 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       # _LEN macro sets vl = VLMAX for (sew, emul) → bytes = maxVLEN_bits * emul / 8.
       emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1) else 1
       worst_bytes = (maxVLEN * emul_for_bytes) // 8
-    elif "vwred" in inst_ptr:
-      worst_bytes = (avl * 2 * sew) // 8
-    elif avl == "random" or avl == "vlmax":
-      # Base macro: only 1 element compared; account for that element's width.
-      worst_bytes = sew // 8
     else:
-      # Base suite: vl = 1 element of width sew.
+      # Base suite: vl = 1 element of vd's EEW. `sew` here already reflects
+      # the destination EEW (writeVecTest passes 2*SEW for any vd_widen_ins,
+      # including vwred), so no per-instruction special case is needed.
       worst_bytes = sew // 8
     sig_stride = max(xlen, flen) // 8 if flen > 0 else xlen // 8
     offset_bytes = (worst_bytes + 4 + 7) & ~7
@@ -1869,7 +1866,7 @@ def getSigSpace(xlen, flen):
 
 # Headroom added to the dynamically-counted signature size so minor under-counts
 # (e.g. a new SIGUPD variant not yet accounted for) don't overflow the buffer.
-SIGUPD_COUNT_BUFFER = 0
+SIGUPD_COUNT_BUFFER = 40
 
 def finalizeSigupdCount(filename, xlen, flen):
   """Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder left in the header with
@@ -1930,8 +1927,8 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
       writeLine(f"csrr x{fcsrsaveReg}, fcsr", f"# save fcsr into x{fcsrsaveReg} for signature")
       writeSIGUPD(inst_ptr, fcsrsaveReg)
 
-    if (test in vd_widen_ins) and (test not in wvsins):
-      writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul)  # EEW of vd = 2 * SEW for widening
+    if (test in vd_widen_ins):
+      writeSIGUPD_V(inst_ptr, vd, 2*sew, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul)  # EEW of vd = 2 * SEW for widening (incl. vwred)
     elif (test in maskprodins):
       writeSIGUPD_V(inst_ptr, vd, 8, avl=vl, sig_lmul=sig_lmul, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, vd_mask = True, testtype=testtype, masked=masked, lmul=lmul)      # EEW of vd = 1 for mask
     elif (test in xvtype) or (test in xvmtype):

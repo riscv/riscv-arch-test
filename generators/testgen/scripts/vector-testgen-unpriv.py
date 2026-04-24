@@ -1260,7 +1260,6 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   xlen = xlen_arg
   extension = extension_arg
 
-  _setup_worker()
   seed(common.myhash(f"{xlen}-{extension}"))
 
   testplans = readTestplans()
@@ -1429,7 +1428,7 @@ def main() -> None:
     for xlen, extension in track(tasks, description="[cyan]Generating vector tests...", total=len(tasks)):
       generate_extension(xlen, extension)
   else:
-    with ProcessPoolExecutor(max_workers=jobs) as executor:
+    with ProcessPoolExecutor(max_workers=jobs, initializer=_setup_worker) as executor:
       futures = [executor.submit(generate_extension, xlen, extension) for xlen, extension in tasks]
       for future in track(as_completed(futures), description="[cyan]Generating vector tests...", total=len(futures)):
         future.result()

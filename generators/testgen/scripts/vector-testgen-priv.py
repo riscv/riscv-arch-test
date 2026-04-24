@@ -252,7 +252,7 @@ if __name__ == '__main__':
         f.write(line)
 
         # insert generic header
-        insertTemplate(basename, 0, "testgen_header_vector_priv.S")
+        insertTemplate(basename, 0, "testgen_header.S", priv=True)
 
         ###############################     test body      ###############################
         for instruction in instructions:

@@ -16,6 +16,7 @@ import argparse
 import filecmp
 import math
 import os
+import pathlib
 import re
 from random import randint, seed
 
@@ -1422,10 +1423,8 @@ if __name__ == '__main__':
         f.close()
         # Resolve @SIGUPD_COUNT_FROM_TESTGEN@ placeholder now that the final
         # signatureWords for this test is known (header was emitted before tests).
-        with open(tempfname, "r") as _rf:
-          _src = _rf.read()
-        with open(tempfname, "w") as _wf:
-          _wf.write(_src.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(signatureWords)))
+        temp_path = pathlib.Path(tempfname)
+        temp_path.write_text(temp_path.read_text().replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(signatureWords)))
         # if new file is different from old file, replace old file with new file
         if os.path.exists(fname):
           if filecmp.cmp(fname, tempfname): # files are the same

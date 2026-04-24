@@ -1246,12 +1246,28 @@ def myhash(s):
     h = (h * 31 + ord(c)) & 0xFFFFFFFF
   return h
 
-def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
+def getPrivExtraDefines():
+    """Extra defines needed by vector privileged tests."""
+    sew_to_suffix = {8: "e8", 16: "e16", 32: "e32", 64: "e64"}
+    sewsize = sew_to_suffix[minSEW_MIN]
+    vle = f"vle{minSEW_MIN}.v"
+    return "\n".join([
+        "#define rvtest_mtrap_routine",
+        "#define rvtest_strap_routine",
+        "#define RVTEST_PRIV_TEST",
+        f"#define SEWMIN {minSEW_MIN}",
+        f"#define ELEN {maxELEN}",
+        f"#define SEWSIZE {sewsize}",
+        f"#define VLESEWMIN {vle}",
+        f"#define RVTEST_SIGUPD_V_SEWMIN(BR, TMPR, AVL, VREG) RVTEST_SIGUPD_V(BR, TMPR, AVL, {minSEW_MIN}, VREG)",
+    ])
+
+def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", priv=False):
     writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
-    if (test == "ExceptionsV") or test.startswith("ExceptionsV"):
+    if test.startswith("ExceptionsV"):
       march = f"rv{xlen}i_m_v_zicsr"
       ext_parts_no_I = ['M', 'V', 'Zicsr']
     else:
@@ -1285,7 +1301,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TEST_FILE_NAME@", f"{test}.S")
         # @SIGUPD_COUNT_FROM_TESTGEN@ left in place; resolved post-generation from tracked sigupd_count
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
-        .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_FP\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
+        .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_FP\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}" + (f"\n{getPrivExtraDefines()}" if priv else ""))
     )
     writeLine(template)
 

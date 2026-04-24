@@ -42,6 +42,19 @@ VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 # Subset of vector prefixes that support widening instructions.
 VECTOR_WIDEN_PREFIXES = ("Vx", "Vls", "Vf")
 
+# Generated coverage files are marked read-only (0o444) to deter manual edits.
+# Regeneration temporarily restores write permission (0o644) before overwriting.
+_READONLY_MODE = 0o444
+_WRITABLE_MODE = 0o644
+
+
+def _write_readonly(path: Path, content: str) -> None:
+    """Write content to a generated file and mark it read-only to deter manual edits."""
+    if path.exists():
+        path.chmod(_WRITABLE_MODE)
+    path.write_text(content)
+    path.chmod(_READONLY_MODE)
+
 
 ##################################
 # Reading testplans and templates
@@ -470,8 +483,8 @@ def write_covergroups(
         lines.append(customize_template(templates, sample_end, arch))
 
         # Write both files
-        (unpriv_dir / f"{arch}_coverage.svh").write_text("".join(lines))
-        (unpriv_dir / f"{arch}_coverage_init.svh").write_text("".join(init_lines))
+        _write_readonly(unpriv_dir / f"{arch}_coverage.svh", "".join(lines))
+        _write_readonly(unpriv_dir / f"{arch}_coverage_init.svh", "".join(init_lines))
 
 
 def write_coverage_headers(
@@ -496,19 +509,19 @@ def write_coverage_headers(
         lines.append(f"`ifdef {arch.upper()}_COVERAGE\n")
         lines.append(f'  `include "{arch}_coverage.svh"\n')
         lines.append("`endif\n")
-    (coverage_dir / "RISCV_coverage_config.svh").write_text("".join(lines))
+    _write_readonly(coverage_dir / "RISCV_coverage_config.svh", "".join(lines))
 
     # RISCV_coverage_base_init.svh — init calls for each extension
     lines = [customize_template(templates, "base_init_header")]
     for arch in sorted_keys:
         lines.append(customize_template(templates, "coverageinit", arch))
-    (coverage_dir / "RISCV_coverage_base_init.svh").write_text("".join(lines))
+    _write_readonly(coverage_dir / "RISCV_coverage_base_init.svh", "".join(lines))
 
     # RISCV_coverage_base_sample.svh — sample calls for each extension
     lines = [customize_template(templates, "base_sample_header")]
     for arch in sorted_keys:
         lines.append(customize_template(templates, "coveragesample", arch))
-    (coverage_dir / "RISCV_coverage_base_sample.svh").write_text("".join(lines))
+    _write_readonly(coverage_dir / "RISCV_coverage_base_sample.svh", "".join(lines))
 
 
 def _merge_instruction_testplans(
@@ -559,7 +572,7 @@ def write_instruction_sample_file(
         lines.append(customize_template(templates, "end"))
 
     lines.append(customize_template(templates, "instruction_sample_end"))
-    (coverage_dir / "RISCV_instruction_sample.svh").write_text("".join(lines))
+    _write_readonly(coverage_dir / "RISCV_instruction_sample.svh", "".join(lines))
 
 
 ##################################

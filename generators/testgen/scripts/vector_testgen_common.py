@@ -1247,7 +1247,6 @@ def myhash(s):
   return h
 
 def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
-    writeLine(f"\n# {name}")
     with open(f"{ARCH_VERIF}/generators/testgen/src/testgen/templates/{name}") as h:
         template = h.read()
 
@@ -1257,7 +1256,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
       # Split extension into components based on capital letters
       ext_parts = re.findall(r'Z[a-z]+|[A-Z]', extension)
       ext_parts_no_I = [ext for ext in ext_parts if ext != "I"]
-      if 'V' in ext_parts_no_I:
+      if 'V' in ext_parts_no_I or any(ext.startswith('Zv') for ext in ext_parts_no_I):
         if (test in vfloattypes):
           fp_exts = ['F'] + ['Zfhmin']
           if flen > 32:

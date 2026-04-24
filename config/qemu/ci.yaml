@@ -5,6 +5,7 @@
 
 ci_enabled: true
 # TODO: Priv tests mismatch due to config issues. Atomics failure still needs to be diagnosed.
+# TODO: remove za64rs from excluded_extensions when Sail supports UDB_LRSC_FAIL_ON_NON_EXACT_LRSC to match DUT
 exclude_extensions: "Sm,S,Zalrsc,Zacas,ZacasZabha,InterruptsSm,PMPSm,PMPmisaligned,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,Svadu,SvaduPMP,Svnapot,Svpbmt,SvZicbo,ExceptionsZaamo,Za64rs"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"

@@ -715,7 +715,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
         ),
     )
 
-    r_msip1, r_msip2, r_msipaddr = test_data.int_regs.get_registers(3)
+    r_msip, r_msipaddr = test_data.int_regs.get_registers(2)
 
     lines.extend(
         [
@@ -723,33 +723,35 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
             f"LA(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
             "",
             "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
-            f"LI(x{r_msip1}, 1)                         # value 1: assert msip",
-            f"SW x{r_msip1}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
-            f"csrr x{r_msip2}, mip                      # read mip ",
-            "nop\nnop\nnop\nnop\nnop\nnop               # wait for msip write to propagate",
+            f"LI(x{r_msip}, 1)                         # value 1: assert msip",
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 1 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
             "RVTEST_IDLE_FOR_INTERRUPT",
             test_data.add_testcase("msip_set", coverpoint, covergroup),
-            f"CSRR(x{r_msip2}, mip)                     # read mip",
-            f"srli x{r_msip2}, x{r_msip2}, 3            # shift mip.MSIP (bit 3) to bit 0",
-            f"andi x{r_msip2}, x{r_msip2}, 1            # isolate mip.MSIP",
-            write_sigupd(r_msip2, test_data),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
             "",
             "# Write 0 to msip (clear MSIP) and check mip.MSIP is clear",
-            f"LI(x{r_msip1}, 0)                         # value 0: deassert msip",
-            f"SW x{r_msip1}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
-            f"csrr x{r_msip2}, mip                      # read mip ",
-            "nop\nnop\nnop\nnop\nnop\nnop               # wait for msip write to propagate",
+            f"LI(x{r_msip}, 0)                         # value 0: deassert msip",
+            f"SW x{r_msip}, 0(x{r_msipaddr})           # write msip = 0 via memory-mapped I/O",
+            f"LW x{r_msip}, 0(x{r_msipaddr})            # read back memory-mapped msip register",
+            f"andi x{r_msip}, x{r_msip}, 1              # isolate bit 0",
+            write_sigupd(r_msip, test_data),
             "RVTEST_IDLE_FOR_INTERRUPT",
             test_data.add_testcase("msip_clear", coverpoint, covergroup),
-            f"CSRR(x{r_msip2}, mip)                     # read mip",
-            f"srli x{r_msip2}, x{r_msip2}, 3            # shift mip.MSIP (bit 3) to bit 0",
-            f"andi x{r_msip2}, x{r_msip2}, 1            # isolate mip.MSIP",
-            write_sigupd(r_msip2, test_data),
+            f"CSRR(x{r_msip}, mip)                     # read mip",
+            f"srli x{r_msip}, x{r_msip}, 3            # shift mip.MSIP (bit 3) to bit 0",
+            f"andi x{r_msip}, x{r_msip}, 1            # isolate mip.MSIP",
+            write_sigupd(r_msip, test_data),
             "#endif // RVMODEL_MSIP_ADDRESS",
         ]
     )
 
-    test_data.int_regs.return_registers([r_msip1, r_msip2, r_msipaddr])
+    test_data.int_regs.return_registers([r_msip, r_msipaddr])
 
     ######################################
     coverpoint = "cp_medelegh"

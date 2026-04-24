@@ -43,12 +43,16 @@ covergroup Zkr_cg with function sample(ins_t ins);
     }
 
     // Main coverpoints
-    cp_zkr_seed_csrrw: cross seed_csrrw, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed;
-    cp_zkr_seed_illegal_csr_op: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed {
-        // Only need sseed=1 for S-mode and useed=1 for U-mode
-        ignore_bins sseed_0 = binsof(mseccfg_sseed.clear);
-        ignore_bins useed_0 = binsof(mseccfg_useed.clear);
-    }
+    cp_zkr_seed_csrrw_M: cross seed_csrrw, priv_mode_m, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_M: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m;
+`ifdef S_SUPPORTED
+    cp_zkr_seed_csrrw_S: cross seed_csrrw, priv_mode_s, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_S: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_s;
+`endif
+`ifdef U_SUPPORTED
+    cp_zkr_seed_csrrw_U: cross seed_csrrw, priv_mode_u, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_U: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_u;
+`endif
 
 endgroup
 

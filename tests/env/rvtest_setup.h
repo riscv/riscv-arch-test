@@ -519,7 +519,8 @@
 
       // Enable all performance counters if they exist
       // This is reserved if mcountinhibit is not implemented, and might trap or have unspecified behavior
-      //   *** define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
+      //   *** need to define a UDB parameter MCOUNTINHIBIT_IMPLEMENTED to determine whether mcountinhibit is implemented
+      //   see https://github.com/riscv/riscv-isa-manual/issues/2964
       csrw mcountinhibit, zero
 
       // Initialize counter event selectors to 0.  They must be implemented.

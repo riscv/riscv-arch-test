@@ -14,18 +14,25 @@ from testgen.priv.registry import add_priv_test_generator
 
 
 def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
-    """Test csrrw seed in M/S/U mode for each of the 4 mseccfg (sseed x useed) combinations."""
+    """Test csrrw/csrw seed in M/S/U mode for each of the 4 mseccfg (sseed x useed) combinations (3 x 4 bins)."""
     covergroup = "Zkr_cg"
     coverpoint = "cp_zkr_seed_csrrw"
 
-    dest_reg, mseccfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[1, 6, 7, 9])
+    dest_reg, mseccfg_reg, src_reg, save_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         comment_banner(
             coverpoint,
-            "csrrw seed across privilege modes and mseccfg.sseed/useed",
+            "csrrw/csrw seed across privilege modes and mseccfg.sseed/useed",
         )
     ]
+
+    lines.extend(
+        [
+            "RVTEST_GOTO_MMODE",
+            f"csrr x{save_reg}, mseccfg",
+        ]
+    )
 
     for sseed in (0, 1):
         for useed in (0, 1):
@@ -34,38 +41,48 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
 
             lines.extend(
                 [
-                    f"\n# mseccfg: sseed={sseed}, useed={useed}",
+                    f"# mseccfg: sseed={sseed}, useed={useed}",
                     "RVTEST_GOTO_MMODE",
                     f"LI(x{mseccfg_reg}, {mseccfg_val})",
                     f"csrw mseccfg, x{mseccfg_reg}",
                 ]
             )
 
-            # legal access in M-mode: access always legal
+            # legal access in M-mode
             lines.extend(
                 [
                     test_data.add_testcase(f"M_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
+                    test_data.add_testcase(f"csrw_M_{tag}", coverpoint, covergroup),
+                    f"csrw seed, x{src_reg}",
                 ]
             )
 
-            # legal when ssead = 1 in S-mode
+            # legal when sseed = 1 in S-mode
             lines.extend(
                 [
+                    "#ifdef S_SUPPORTED",
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
+                    test_data.add_testcase(f"csrw_S_{tag}", coverpoint, covergroup),
+                    f"csrw seed, x{src_reg}",
                     "RVTEST_GOTO_MMODE",
+                    "#endif",
                 ]
             )
 
             # legal only when useed = 1 in U-mode
             lines.extend(
                 [
+                    "#ifdef U_SUPPORTED",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     f"csrrw x{dest_reg}, seed, x0",
+                    test_data.add_testcase(f"csrw_U_{tag}", coverpoint, covergroup),
+                    f"csrw seed, x{src_reg}",
                     "RVTEST_GOTO_MMODE",
+                    "#endif",
                 ]
             )
 
@@ -73,12 +90,11 @@ def _generate_seed_csrrw_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "RVTEST_GOTO_MMODE",
-            f"LI(x{mseccfg_reg}, 0)",
-            f"csrw mseccfg, x{mseccfg_reg}",
+            f"csrw mseccfg, x{save_reg}",
         ]
     )
 
-    test_data.int_regs.return_registers([dest_reg, mseccfg_reg])
+    test_data.int_regs.return_registers([dest_reg, mseccfg_reg, src_reg, save_reg])
     return lines
 
 
@@ -87,44 +103,49 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
     covergroup = "Zkr_cg"
     coverpoint = "cp_zkr_seed_illegal_csr_op"
 
-    dest_reg, mseccfg_reg = test_data.int_regs.get_registers(2, exclude_regs=[1, 6, 7, 9])
+    dest_reg, mseccfg_reg, rs1_reg, save_reg = test_data.int_regs.get_registers(4)
 
     lines = [
         comment_banner(
             coverpoint,
-            "Non-CSRRW CSR ops on seed cause illegal instruction in every mode",
+            "CSR Read ops on seed cause illegal instruction in every mode",
         )
     ]
 
-    # Enable S-mode and U-mode access using mseccfg
     sseed_useed_enabled = (1 << 9) | (1 << 8)
     lines.extend(
         [
             "RVTEST_GOTO_MMODE",
+            f"csrr x{save_reg}, mseccfg",
             f"LI(x{mseccfg_reg}, {sseed_useed_enabled})",
             f"csrw mseccfg, x{mseccfg_reg}",
+            f"LI(x{rs1_reg}, 0)",
         ]
     )
 
-    # (op, funct3, is_immediate) for each illegal CSR op
-    illegal_ops: list[tuple[str, bool]] = [
-        ("csrrs", False),
-        ("csrrc", False),
-        ("csrrwi", True),
-        ("csrrsi", True),
-        ("csrrci", True),
+    # (op, is_immediate, has_dest) for each illegal CSR op
+    illegal_ops: list[tuple[str, bool, bool]] = [
+        ("csrrs", False, True),
+        ("csrrc", False, True),
+        ("csrrwi", True, True),
+        ("csrrsi", True, True),
+        ("csrrci", True, True),
+        ("csrw", False, False),
     ]
 
-    for op, is_imm in illegal_ops:
+    for op, is_imm, has_dest in illegal_ops:
         for rs1_imm_val in (0, 1):
             tag = f"{op}_rs1imm{rs1_imm_val}"
 
             if is_imm:
                 instr_zero = f"{op} x{dest_reg}, seed, 0"
                 instr_nonzero = f"{op} x{dest_reg}, seed, 1"
-            else:
+            elif has_dest:
                 instr_zero = f"{op} x{dest_reg}, seed, x0"
-                instr_nonzero = f"{op} x{dest_reg}, seed, x1"
+                instr_nonzero = f"{op} x{dest_reg}, seed, x{rs1_reg}"
+            else:
+                instr_zero = f"{op} seed, x0"
+                instr_nonzero = f"{op} seed, x{rs1_reg}"
 
             instr = instr_zero if rs1_imm_val == 0 else instr_nonzero
 
@@ -140,20 +161,24 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
             # S-mode
             lines.extend(
                 [
+                    "#ifdef S_SUPPORTED",
                     "RVTEST_GOTO_LOWER_MODE Smode",
                     test_data.add_testcase(f"S_{tag}", coverpoint, covergroup),
                     instr,
                     "RVTEST_GOTO_MMODE",
+                    "#endif",
                 ]
             )
 
             # U-mode
             lines.extend(
                 [
+                    "#ifdef U_SUPPORTED",
                     "RVTEST_GOTO_LOWER_MODE Umode",
                     test_data.add_testcase(f"U_{tag}", coverpoint, covergroup),
                     instr,
                     "RVTEST_GOTO_MMODE",
+                    "#endif",
                 ]
             )
 
@@ -161,19 +186,23 @@ def _generate_seed_illegal_csr_op_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "RVTEST_GOTO_MMODE",
-            f"LI(x{mseccfg_reg}, 0)",
-            f"csrw mseccfg, x{mseccfg_reg}",
+            f"csrw mseccfg, x{save_reg}",
         ]
     )
 
-    test_data.int_regs.return_registers([dest_reg, mseccfg_reg])
+    test_data.int_regs.return_registers([dest_reg, mseccfg_reg, rs1_reg, save_reg])
     return lines
 
 
 @add_priv_test_generator(
     "Zkr",
-    required_extensions=["I", "Zicsr", "Sm", "S", "Zkr"],
-    march_extensions=["Zicsr", "Zkr", "I"],
+    required_extensions=["I", "Zicsr", "Sm", "Zkr"],
+    extra_defines=[
+        '#include "rvtest_config.h"',
+        "#ifdef S_SUPPORTED",
+        "#define rvtest_strap_routine",
+        "#endif",
+    ],
 )
 def make_zkr(test_data: TestData) -> list[str]:
     """Generate tests for Zkr"""

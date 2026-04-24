@@ -25,21 +25,30 @@ covergroup Zkr_cg with function sample(ins_t ins);
         wildcard bins csrrwi_seed = {32'b000000010101_?????_101_?????_1110011};
         wildcard bins csrrsi_seed = {32'b000000010101_?????_110_?????_1110011};
         wildcard bins csrrci_seed = {32'b000000010101_?????_111_?????_1110011};
+        wildcard bins csrw_seed  = {32'b000000010101_?????_001_00000_1110011};
     }
 
     rs1_imm_0_1: coverpoint ins.current.insn[19:15] {
         bins zero    = {5'b00000};
-        bins nonzero = {5'b00001};
+        bins nonzero = {[5'b00001:5'b11111]};
     }
 
-    mseccfg_sseed: coverpoint ins.current.csr[12'h747][9] {
+    mseccfg_sseed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "sseed")[0] {
+        bins set   = {1};
+        bins clear = {0};
     }
-    mseccfg_useed: coverpoint ins.current.csr[12'h747][8] {
+    mseccfg_useed: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "useed")[0] {
+        bins set   = {1};
+        bins clear = {0};
     }
 
     // Main coverpoints
-    cp_zkr_seed_csrrw:          cross seed_csrrw, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed;
-    cp_zkr_seed_illegal_csr_op: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m_s_u;
+    cp_zkr_seed_csrrw: cross seed_csrrw, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m_s_u, mseccfg_sseed, mseccfg_useed {
+        // Only need sseed=1 for S-mode and useed=1 for U-mode
+        ignore_bins sseed_0 = binsof(mseccfg_sseed.clear);
+        ignore_bins useed_0 = binsof(mseccfg_useed.clear);
+    }
 
 endgroup
 

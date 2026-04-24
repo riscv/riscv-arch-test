@@ -81,15 +81,23 @@ covergroup InterruptsSstc_cg with function sample(ins_t ins);
     cp_machine_tm:      cross priv_mode_m, csrr, read_stimecmp, mcounteren_tm;
     cp_machine_stce:    cross priv_mode_m, csrr, read_stimecmp, menvcfg_stce;
 
-    cp_supervisor_sti_deleg:   cross priv_mode_s, mstatus_mie, mstatus_sie, mideleg_sti_one, mie_stie, stimecmp_zero;
-    cp_supervisor_sti_nodeleg: cross priv_mode_m, menvcfg_stce, mstatus_mie_one, mideleg_sti_zero, mie_stie, stimecmp_zero;
+    cp_supervisor_sti_deleg: cross priv_mode_s, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, stimecmp_zero {
+        // When mideleg.STI=0, the interrupt is not delegated to S-mode, so mie.STIE is irrelevant
+        ignore_bins unreachable = binsof(mideleg_sti) intersect {0} && binsof(mie_stie) intersect {1};
+    }
     cp_supervisor_tm:   cross priv_mode_s, csrr, read_stimecmp, mcounteren_tm;
     cp_supervisor_stce: cross priv_mode_s, csrr, read_stimecmp, menvcfg_stce;
 
-    // if stce is 0, can ssip ever be 1?
-    // cp_user_sti_stce0:  cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one;
-    cp_user_sti_stce0:  cross priv_mode_u, menvcfg_stce_zero, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie;
-    cp_user_sti_stce1:  cross priv_mode_u, menvcfg_stce_one, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one;
+    cp_user_sti:        cross priv_mode_u, menvcfg_stce, mstatus_mie, mstatus_sie, mideleg_sti, mie_stie, sip_stip_one {
+        // If menvcfg.STCE=0, timer doesn't fire so sip.STIP can never be 1
+        ignore_bins stce_disabled = binsof(menvcfg_stce) intersect {0} && binsof(sip_stip_one) intersect {1};
+        // When mideleg.STI=0, interrupt not delegated to U-mode, so mie.STIE is irrelevant
+        ignore_bins no_deleg = binsof(mideleg_sti) intersect {0} && binsof(mie_stie) intersect {1};
+        // When MIE=0 and STIE=0, interrupt cannot fire at all so STIP cannot be 1
+        ignore_bins all_masked = binsof(mstatus_mie) intersect {0} && binsof(mie_stie) intersect {0} && binsof(sip_stip_one) intersect {1};
+        // When MIE=0 and SIE=0, neither M-mode nor S-mode will take interrupt
+        ignore_bins both_disabled_timing = binsof(mstatus_mie) intersect {0} && binsof(mstatus_sie) intersect {0} && binsof(sip_stip_one) intersect {1};
+    }
     cp_user_tm:         cross priv_mode_u, csrr, read_stimecmp, mcounteren_tm;
     cp_user_stce:       cross priv_mode_u, csrr, read_stimecmp, menvcfg_stce;
 

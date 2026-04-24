@@ -54,7 +54,6 @@ def set_mtimer_int(r_mtime: int, r_mtimecmp: int, r_temp: int, r_temp2: int) -> 
 def clr_mtimer_int(r_temp: int, r_mtimecmp: int) -> list[str]:
     """Generate assembly to clear machine timer interrupt (mtimecmp = -1).
 
-
     Args:
         r_temp: Register number for -1 value
         r_mtimecmp: Register number to hold MTIMECMP address

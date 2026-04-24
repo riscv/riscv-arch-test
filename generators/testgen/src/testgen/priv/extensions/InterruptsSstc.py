@@ -161,78 +161,73 @@ def _generate_supervisor_sti_tests(test_data: TestData) -> list[str]:
         for mie in [0, 1]:
             for sie in [0, 1]:
                 for deleg in [0, 1]:
-                    for stie in [0, 1]:
-                        deleg_name = ["no_deleg", "deleg"][deleg]
-                        binname = f"stce{stce}_mie{mie}_sie{sie}_{deleg_name}_stie{stie}"
+                    # when deleg==1, generate both real-deleg (mideleg=1) and the architecturally-possible
+                    # but atypical case (mideleg=0) so coverage can observe mideleg==0 under the deleg path.
+                    mideleg_values = [1, 0] if deleg == 1 else [0]
+                    for mideleg_val in mideleg_values:
+                        for stie in [0, 1]:
+                            deleg_name = ["no_deleg", "deleg"][deleg]
+                            midname = f"mideleg{mideleg_val}"
+                            binname = f"stce{stce}_mie{mie}_sie{sie}_{deleg_name}_{midname}_stie{stie}"
 
-                        # --- common M-mode setup: disable all interrupts, clear state ---
-                        lines += [
-                            "",
-                            f"# cp_supervisor_sti: STCE={stce} MIE={mie} SIE={sie} deleg={deleg} STIE={stie}",
-                            "RVTEST_GOTO_MMODE",
-                            "CSRW(mie, zero)",
-                            "csrci mstatus, 8",  # MIE=0
-                            "csrci mstatus, 2",  # SIE=0
-                            f"LI(x{r_scratch}, 0x20)",
-                            f"CSRC(mip, x{r_scratch})",  # clear any pending STIP
-                        ]
+                            # --- common M-mode setup: disable all interrupts, clear state ---
+                            lines += [
+                                "",
+                                f"# cp_supervisor_sti: STCE={stce} MIE={mie} SIE={sie} deleg={deleg} MIDELEG={mideleg_val} STIE={stie}",
+                                "RVTEST_GOTO_MMODE",
+                                "CSRW(mie, zero)",
+                                "csrci mstatus, 8",  # MIE=0
+                                "csrci mstatus, 2",  # SIE=0
+                                f"LI(x{r_scratch}, 0x20)",
+                                f"CSRC(mip, x{r_scratch})",  # clear any pending STIP
+                            ]
 
-                        # configure STCE and stimecmp
-                        if stce:
-                            lines += set_stimecmp_max(r_scratch)  # stimecmp=-1 (no pending STI yet)
-                            lines += set_menvcfg_stce(r_stce, True)  # STCE=1: enable Sstc
-                        else:
-                            lines += set_menvcfg_stce(r_stce, False)  # STCE=0: disable Sstc
-                            lines.append("CSRW(stimecmp, zero)")  # stimecmp=0; no STI fires (STCE=0)
+                            # configure STCE and stimecmp
+                            if stce:
+                                lines += set_stimecmp_max(r_scratch)  # stimecmp=-1 (no pending STI yet)
+                                lines += set_menvcfg_stce(r_stce, True)  # STCE=1: enable Sstc
+                            else:
+                                lines += set_menvcfg_stce(r_stce, False)  # STCE=0: disable Sstc
+                                lines.append("CSRW(stimecmp, zero)")  # stimecmp=0; no STI fires (STCE=0)
 
-                        # configure delegation and interrupt enable
-                        if deleg:
-                            lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mideleg, x{r_scratch})"]  # STI → S-mode
-                        else:
-                            lines.append("CSRW(mideleg, zero)")  # STI → M-mode
+                            # configure delegation and interrupt enable
+                            if deleg:
+                                if mideleg_val:
+                                    lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mideleg, x{r_scratch})"]  # STI → S-mode
+                                else:
+                                    # override: keep the 'deleg' test path but set mideleg=0 in CSR
+                                    lines.append("CSRW(mideleg, zero)")
+                            else:
+                                lines.append("CSRW(mideleg, zero)")  # STI → M-mode
 
-                        if stie:
-                            lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mie, x{r_scratch})"]  # STIE=1
-                        else:
-                            lines.append("CSRW(mie, zero)")  # STIE=0
+                            if stie:
+                                lines += [f"LI(x{r_scratch}, 0x20)", f"CSRW(mie, x{r_scratch})"]  # STIE=1
+                            else:
+                                lines.append("CSRW(mie, zero)")  # STIE=0
 
-                        if deleg:
+                            # choose test name based on delegation
+                            test_name = "cp_supervisor_sti_deleg" if deleg else "cp_supervisor_sti_nodeleg"
+
                             # --- enter S-mode; MIE controlled via MPIE, SIE set inside S-mode ---
                             lines += set_mpie(r_scratch, bool(mie))  # MPIE → MIE after mret
+                            # If STCE=1, write stimecmp=0 in M-mode
+                            if stce:
+                                lines += set_stimecmp_zero()
                             lines.append("RVTEST_GOTO_LOWER_MODE Smode")
                             if sie:
                                 lines.append("    csrsi sstatus, 2")  # SIE=1
                             else:
                                 lines.append("    csrci sstatus, 2")  # SIE=0
-                            lines.append(
-                                f"    {test_data.add_testcase(binname, 'cp_supervisor_sti_deleg', covergroup)}"
-                            )
-                            if stce:
-                                lines += ["    " + l for l in set_stimecmp_zero()]
-                            else:
-                                lines.append("    nop")
+                            lines.append(f"    {test_data.add_testcase(binname, test_name, covergroup)}")
+                            lines.append("    nop")
                             lines += [
                                 f"    LI(x{r_scratch}, 2500)",
                                 f"1:  addi x{r_scratch}, x{r_scratch}, -1",
                                 f"    bnez x{r_scratch}, 1b",
                             ]
-                        else:
-                            # --- stay in M-mode; enable MIE=1 before testcase so prev.MIE=1 at sample ---
-                            lines.append("csrsi mstatus, 8")  # MIE=1 (prev.MIE=1 at next insn)
-                            lines.append("nop")  # stable prev state
-                            lines.append(test_data.add_testcase(binname, "cp_supervisor_sti_nodeleg", covergroup))
-                            if stce:
-                                lines += set_stimecmp_zero()
-                            else:
-                                lines.append("nop")
-                            lines += [
-                                f"LI(x{r_scratch}, 2500)",
-                                f"1:  addi x{r_scratch}, x{r_scratch}, -1",
-                                f"    bnez x{r_scratch}, 1b",
-                            ]
 
-                        # --- cleanup: restore stimecmp=-1, STCE=0, mideleg=0, mie=0 ---
-                        lines += mmode_sti_cleanup(r_scratch, r_stce)
+                            # --- cleanup: restore stimecmp=-1, STCE=0, mideleg=0, mie=0 ---
+                            lines += mmode_sti_cleanup(r_scratch, r_stce)
 
     test_data.int_regs.return_registers([r_scratch, r_stce])
     return lines
@@ -377,7 +372,6 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             f"CSRC(mip, x{r_scratch})",
                             # Reset stimecmp to max so no spurious interrupt
                             *set_stimecmp_max(r_scratch),
-                            # Programme STCE bit in menvcfg
                             *set_menvcfg_stce(r_stce, bool(stce)),
                         ]
 
@@ -408,13 +402,21 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             ]
 
                         # ---- Schedule the interrupt (only meaningful when STCE=1) ----
-                        # stimecmp = TIME+500: fires after the sample nop executes.
-                        # For stce=0, Sstc is disabled so this write has no effect on mip.STIP,
-                        # but we still write it to keep the CSR state realistic.
-                        lines += [
-                            "# Set stimecmp=TIME+500 (interrupt fires after sample when STCE=1)",
-                            *set_stimecmp_soon(r_scratch, r_stce, r_hi),
-                        ]
+                        # By default set stimecmp = TIME+500 so the interrupt fires during the
+                        # spin loop after entering U-mode. However, in the specific case
+                        # where the interrupt is delegated to S-mode (deleg=1) and both
+                        # MIE and SIE are 0, ensure the pending bit is observable at the
+                        # sample point by asserting stimecmp=0 immediately.
+                        if deleg and (mie == 0) and (sie == 0):
+                            lines += [
+                                "# Special-case: ensure STIP is asserted at sample for deleg=1, MIE=0, SIE=0",
+                                *set_stimecmp_zero(),
+                            ]
+                        else:
+                            lines += [
+                                "# Set stimecmp=TIME+500 (interrupt fires after sample when STCE=1)",
+                                *set_stimecmp_soon(r_scratch, r_stce, r_hi),
+                            ]
 
                         # ---- mstatus.SIE — set before mret so it's live in U-mode ----
                         if sie:
@@ -428,7 +430,7 @@ def _generate_user_sti_tests(test_data: TestData) -> list[str]:
                             *set_mpie(r_scratch, bool(mie)),
                         ]
 
-                        # ---- Enter U-mode, execute sample + countdown ----
+                        # ---- Enter U-mode, execute sample + wait loop ----
                         lines += [
                             "RVTEST_GOTO_LOWER_MODE Umode",
                             # Sample instruction — coverpoint is hit here

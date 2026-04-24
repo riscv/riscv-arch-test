@@ -105,8 +105,8 @@
 
   // Switch to M-mode
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
-  // invoked unless there is CONFORMING_SM_SUPPORTED.  A user with nonconforming S-mode will need
-  // to reimplement this.
+  // invoked unless there is CONFORMING_SM_SUPPORTED.  A user with nonconforming M-mode will need
+  // to reimplement many parts of this macro.
   rvtest_code_end:
     #ifdef CONFORMING_SM_SUPPORTED
       RVTEST_GOTO_MMODE
@@ -156,7 +156,12 @@
     j       cleanup_epilogs
 
   // Instantiate trap handlers for each priv mode
+  // Guard matches the RVTEST_TRAP_EPILOG guard above: rvtest_Mend (and sibling
+  // labels) are defined by RVTEST_TRAP_EPILOG, so the handler that references
+  // them must only be emitted when the epilog is also emitted.
+  #ifdef CONFORMING_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_HANDLER
+  #endif
 
   // Include test failure handling code
   RVTEST_FAILURE_CODE
@@ -192,6 +197,7 @@
         #endif
       #endif
     #endif
+
     LA (T1, rvtest_init)
     jr T1                         // Jump back to the start of the test
 
@@ -296,7 +302,12 @@
   .align 4
 
   // Create separate save areas for each priv mode trap handler
+  // Guard matches RVTEST_TRAP_HANDLER guard: RVTEST_TRAP_SAVEAREA references
+  // Mtrampoline (and sibling labels) which are only defined when RVTEST_TRAP_HANDLER
+  // is instantiated.
+  #ifdef CONFORMING_SM_SUPPORTED
   INSTANTIATE_MODE_MACRO RVTEST_TRAP_SAVEAREA
+  #endif
 
   // Data for use in test
   .align 4
@@ -670,21 +681,9 @@
       #endif // PMP
     #endif // CONFORMING_M_MODE
 
-    // Additional setup that applies even without conforming M-mode
-    // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
-    // mstatus.VS = 11: Set vector state to dirty if supported (V)
-    // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
-    // for floating-point and vector
-    #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
-      li t0, MSTATUS_FS
-      csrs mstatus, t0 // Set FS to dirty to enable floating-point
-      csrw fcsr, zero // Initialize fcsr
-    #endif
-    #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
-      li t0, MSTATUS_VS
-      csrs mstatus, t0 // Set VS to dirty to enable vector
-    #endif
   #endif // !RVMODEL_BOOT_TO_MMODE
+  // Init floating-point and vector state if necessary, even if the rest of M-mode is not implemented
+  INIT_FLOAT_VECTOR_STATE
 .endm
 
 /************************************ RVTEST_BOOT_TO_S_MODE ********************************/
@@ -730,4 +729,25 @@
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
   // Cannot assume M-mode is conforming, so access M-mode features through SBI
+.endm
+
+/************************************ INIT_FLOAT_VECTOR_STATE ********************************/
+/**** Initialize floating-point and vector state                                          ****/
+/*******************************************************************************************/
+.macro INIT_FLOAT_VECTOR_STATE
+
+    // Additional setup that applies even without conforming M-mode
+    // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
+    // mstatus.VS = 11: Set vector state to dirty if supported (V)
+    // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
+    // for floating-point and vector
+    #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
+      li t0, MSTATUS_FS
+      csrs mstatus, t0 // Set FS to dirty to enable floating-point
+      csrw fcsr, zero // Initialize fcsr
+    #endif
+    #ifdef ZVL32B_SUPPORTED  // this should be defined if there is any vector support whatsoever
+      li t0, MSTATUS_VS
+      csrs mstatus, t0 // Set VS to dirty to enable vector
+    #endif
 .endm

@@ -19,15 +19,14 @@ covergroup Ssu64xl_cg with function sample(ins_t ins);
 
     `ifdef XLEN64
 
-    sstatus_uxl: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
-        bins uxl_sstatus = {2'b10};
-    }
+        sstatus_uxl_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "uxl") {
+            bins uxl_is_10 = {2'b10};
+        }
+        gpr_bit63: coverpoint ins.current.rd_val[63] {
+            bins bit63_set = {1'b1};
+        }
 
-    gpr_bit63: coverpoint ins.current.rd_val[63] {
-        bins bit63_set = {1'b1};
-    }
-
-    cp_ssu64xl: cross priv_mode_u, sstatus_uxl, gpr_bit63;
+        cp_ssu64xl: cross priv_mode_u, sstatus_uxl_after, gpr_bit63;
 
     `endif
 

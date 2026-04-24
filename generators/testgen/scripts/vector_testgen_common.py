@@ -1777,7 +1777,7 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
           element_positiv_reg = randint(1,31)
         scalar_registers_used.append(element_positiv_reg)
         writeLine(f"li x{element_positiv_reg}, {element_positive}",             "#  make sure the number is positive since it will be 0 extended to XLEN")
-        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#  ")
+        writeLine(f"vand.vx v{register}, v{register}, x{element_positiv_reg}",  "#")
       writeLine(f"vrem.vx v{register}, v{register}, x{vlmaxReg}",               "# ensure all values are within (-2*vlmax, 2*vlmax)")
       writeLine(f"vand.vi v{register}, v{register}, {sew_aligned}",             "# sew-aligning elements")
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}",                           "# restore vl and vtype setting")

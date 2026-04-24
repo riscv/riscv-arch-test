@@ -106,16 +106,17 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
     cp_sstatus_sd_write: cross priv_mode_s, csrrw, sstatus, cp_sstatus_sd, cp_sstatus_fs, cp_sstatus_vs, cp_sstatus_xs;
 
     `ifdef SS1P13_SUPPORTED
-     `ifdef XLEN64
-
-      uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
-        bins attempt_1 = {2'b01};
-        bins attempt_2 = {2'b10};
-      }
-
-      cp_sxlen_ge_uxlen: cross priv_mode_s, csrrs, sstatus, uxl_write_attempt, sstatus_uxl_after;
-
-     `endif // XLEN64
+        `ifdef XLEN64
+            uxl_write_attempt: coverpoint ins.current.rs1_val[33:32] {
+                bins attempt_1 = {2'b01};
+                bins attempt_2 = {2'b10};
+            }
+            csrop: coverpoint ins.current.insn {
+                wildcard bins csrrw = {CSRRW};
+            }
+             // main coverpoints
+            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
+        `endif // XLEN64
     `endif // SS1P13_SUPPORTED
 
 endgroup

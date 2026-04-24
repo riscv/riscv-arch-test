@@ -155,8 +155,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
                 f"LI(x{reg2}, {uxl << 32})                        # UXL={uxl} shifted into position [33:32]",
                 f"or x{check_reg}, x{check_reg}, x{reg2}          # OR in desired UXL value",
                 test_data.add_testcase(f"uxl_attempt_{uxl}", coverpoint, covergroup),
-                f"CSRW(sstatus, x{check_reg})                     # attempt to set UXL={uxl}",
-                gen_csr_read_sigupd(check_reg, "sstatus", test_data),
+                gen_csr_write_sigupd(check_reg, "sstatus", test_data),
             ]
         )
 
@@ -164,8 +163,8 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"CSRW(sstatus, x{save_reg})        # restore sstatus after Ss1p13 UXL tests",
-            "#endif // SS1P13_SUPPORTED",
             "#endif // XLEN64",
+            "#endif // SS1P13_SUPPORTED",
         ]
     )
 

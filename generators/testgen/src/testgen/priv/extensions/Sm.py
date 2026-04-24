@@ -720,7 +720,7 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "#ifdef RVMODEL_MSIP_ADDRESS",
-            f"LA(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
+            f"LI(x{r_msipaddr}, RVMODEL_MSIP_ADDRESS)   # load address of memory-mapped msip register",
             "",
             "# Write 1 to msip (set MSIP) and check mip.MSIP is set",
             f"LI(x{r_msip}, 1)                         # value 1: assert msip",

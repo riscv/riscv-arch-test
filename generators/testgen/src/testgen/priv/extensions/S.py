@@ -129,6 +129,7 @@ def _generate_sstatus_sd_tests(test_data: TestData) -> list[str]:
 
     lines.append(f"\nCSRW(sstatus, x{save_reg})    # restore CSR")
 
+    coverpoint = "cp_sxlen_ge_uxlen"  # For SS1P13 extension.
     lines.extend(
         [
             "",

@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/Ssu64xl.py
 #
-# Ssu64x privileged extension test generator.
+# Ssu64xl privileged extension test generator.
 # Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, April 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -71,7 +71,7 @@ def _generate_ssu64xl_tests(test_data: TestData) -> list[str]:
     required_extensions=["S", "Ssu64xl"],
     march_extensions=["S"],
 )
-def make_ssu64x(test_data: TestData) -> list[str]:
+def make_ssu64xl(test_data: TestData) -> list[str]:
     lines: list[str] = []
     lines.extend(_generate_ssu64xl_tests(test_data))
     return lines

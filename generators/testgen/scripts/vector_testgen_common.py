@@ -1285,7 +1285,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data=""):
         .replace("@TESTCASE_STRINGS@", generate_testcase_string_section())
         .replace("@EXTRA_DEFINES@", f"#define RVTEST_VECTOR\n#define RVTEST_FP\n#define RVTEST_SEW {sew}\n#define VDSEW {vdsew}")
     )
-    writeLine(template)
+    # Strip trailing newlines so writeLine's own appended newline doesn't produce
+    # a blank line at end of file (which breaks the end-of-file-fixer pre-commit hook).
+    writeLine(template.rstrip("\n"))
 
 def writeSIGUPD(inst_ptr, rd):
     global sigupd_count  # Allow modification of global variable

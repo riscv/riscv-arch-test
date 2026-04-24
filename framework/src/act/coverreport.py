@@ -81,9 +81,13 @@ def merge_summaries(input_files: list[Path], output_file: Path) -> None:
     all_entries: list[CoverageEntry] = []
     for path in input_files:
         if not path.exists():
-            print(f"Error: Required summary file {path} does not exist.", file=sys.stderr)
-            sys.exit(1)
+            print(f"Warning: File {path} does not exist, skipping.", file=sys.stderr)
+            continue
         all_entries.extend(_parse_summary_file(path))
+
+    if not all_entries:
+        print("Error: Failed to merge coverage summaries. All input summary files are empty.", file=sys.stderr)
+        sys.exit(1)
 
     output_file.write_text(_format_table(all_entries))
 

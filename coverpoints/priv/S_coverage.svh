@@ -111,14 +111,11 @@ covergroup S_sstatus_cg with function sample(ins_t ins);
                 bins attempt_1 = {2'b01};
                 bins attempt_2 = {2'b10};
             }
-            sstatus_uxl_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "uxl") {
-                // empty bins: auto-observes what DUT actually stored, no assertion on value
-            }
             csrop: coverpoint ins.current.insn {
                 wildcard bins csrrw = {CSRRW};
             }
              // main coverpoints
-            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt, sstatus_uxl_after;
+            cp_sxlen_ge_uxlen: cross priv_mode_s, csrop, sstatus, uxl_write_attempt;
         `endif // XLEN64
     `endif // SS1P13_SUPPORTED
 

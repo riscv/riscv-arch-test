@@ -416,25 +416,29 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     `endif
 
     `ifdef SM1P13_SUPPORTED
-        misa_b_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "b")[0] {
+        misa_b_bit: coverpoint ins.current.rs1_val[1] {
             bins b_set   = {1'b1};
             bins b_clear = {1'b0};
         }
-        misa_v_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "v")[0] {
+        misa_v_bit: coverpoint ins.current.rs1_val[21] {
             bins v_set   = {1'b1};
             bins v_clear = {1'b0};
-        }
-        mip_csr: coverpoint ins.current.insn[31:20] {
-            bins mip = {CSR_MIP};
-        }
-        mip_msip_after: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0] {
-            bins msip_set   = {1'b1};
-            bins msip_clear = {1'b0};
         }
 
         cp_misa_b: cross priv_mode_m, misa, csrop, misa_b_bit;
         cp_misa_v: cross priv_mode_m, misa, csrop, misa_v_bit;
-        cp_msip: cross priv_mode_m, csrr, mip_csr, mip_msip_after;
+
+
+        `ifdef RVMODEL_MSIP_ADDRESS
+            msip_address: coverpoint ins.current.rs1_val {
+                bin msip = {`RVMODEL_MSIP_ADDRESS};
+            }
+            msip_val: coverpoint ins.current.rs2_val {
+                bin zero = {0};
+                bin one  = {1};
+            }
+            cp_msip: cross priv_mode_m, sw, msip_address, msip_val;
+        `endif // RVMODEL_MSIP_ADDRESS
 
         `ifdef XLEN32
             medelegh: coverpoint ins.current.insn[31:20] {

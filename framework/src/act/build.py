@@ -39,6 +39,7 @@ class SubprocessAction:
     cmd: list[str]
     stdout_file: Path | None = None  # redirect stdout to file
     cwd: Path | None = None  # working directory for the subprocess
+    timeout: int | None = None  # timeout in seconds (None = no limit)
 
 
 @dataclass(frozen=True)
@@ -141,6 +142,7 @@ def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None
                 text=True,
                 check=False,  # manual check of returncode below for better error reporting
                 cwd=action.cwd,
+                timeout=action.timeout,
             )
             if action.stdout_file is not None:
                 action.stdout_file.write_text(result.stdout + result.stderr)
@@ -151,6 +153,13 @@ def execute_task(task: BuildTask, *, verbose: bool = False) -> BuildError | None
                     returncode=result.returncode,
                     output=result.stderr or result.stdout,
                 )
+        except subprocess.TimeoutExpired:
+            return BuildError(
+                task_name=task.name,
+                command=_task_str(task),
+                returncode=-1,
+                output=f"Timed out after {action.timeout} seconds",
+            )
         except OSError as e:
             return BuildError(
                 task_name=task.name,

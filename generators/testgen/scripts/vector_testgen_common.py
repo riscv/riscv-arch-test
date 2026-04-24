@@ -1364,18 +1364,25 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
 
     global sigupd_count
 
-    length_mode = (avl == "random" or avl == "vlmax" or testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr)))
+    # The _LEN macro is only used for length-suite tests and for whole-register
+    # vmv*r_v moves (mirroring the original routing).  For base-suite calls
+    # with avl=="vlmax"/"random" the simple SIGUPD_V macro is still used,
+    # which only compares a single element (preserving prior behavior).
+    length_macro = (testtype == "length" or (("vmv" in inst_ptr) and ("r_v" in inst_ptr)))
 
     # Count signature bytes this call will consume.  The macro itself computes
     # the same formula at runtime (bytes = vl << vsew, +4 pad, round up to 8)
     # and advances _SIG_PTR accordingly.  Here we compute the worst case so
     # the reserved signature region is large enough.
-    if length_mode:
+    if length_macro:
       # _LEN macro sets vl = VLMAX for (sew, emul) → bytes = maxVLEN_bits * emul / 8.
       emul_for_bytes = int(sig_lmul) if (sig_lmul is not None and sig_lmul >= 1) else 1
       worst_bytes = (maxVLEN * emul_for_bytes) // 8
     elif "vwred" in inst_ptr:
       worst_bytes = (avl * 2 * sew) // 8
+    elif avl == "random" or avl == "vlmax":
+      # Base macro: only 1 element compared; account for that element's width.
+      worst_bytes = sew // 8
     else:
       # Base suite: vl = 1 element of width sew.
       worst_bytes = sew // 8
@@ -1469,7 +1476,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
     else:
       masked_flag = 1
 
-    if length_mode:
+    if length_macro:
       writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _INST_PTR, _STR_PTR)")
       if vd_mask:
         writeLine(
@@ -1862,7 +1869,7 @@ def getSigSpace(xlen, flen):
 
 # Headroom added to the dynamically-counted signature size so minor under-counts
 # (e.g. a new SIGUPD variant not yet accounted for) don't overflow the buffer.
-SIGUPD_COUNT_BUFFER = 16
+SIGUPD_COUNT_BUFFER = 0
 
 def finalizeSigupdCount(filename, xlen, flen):
   """Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder left in the header with

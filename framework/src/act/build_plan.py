@@ -21,6 +21,8 @@ from act.sig_modify import process_signature_file
 from act.trap_report import generate_trap_report
 
 OBJDUMP_FLAGS = ["-Stsxd", "-M", "no-aliases,numeric"]
+SAIL_TIMEOUT = 1800  # 30-minute timeout for Sail simulator runs (allows for parallel CPU contention)
+COVERAGE_SIM_TIMEOUT = 1800  # 30-minute timeout for coverage simulator runs
 
 
 # ---------------------------------------------------------------------------
@@ -47,6 +49,17 @@ def _compiler_cmd(config: Config, xlen: int, tests_dir: Path) -> list[str]:
     if config.compiler_type == CompilerType.GCC:
         cmd.extend(["-Wl,--no-warn-rwx-segments"])
     return cmd
+
+
+def _write_tracelist(tracelist_file: Path, coverage_group: Path, all_traces: tuple[Path, ...]) -> None:
+    """Write a tracelist file containing all rvvi traces (which are guaranteed to exist
+    by hard dependencies on the rvvi conversion tasks)."""
+    contents = (
+        f"# Tests for coverage group: {coverage_group}\n"
+        "# Generated automatically by riscv-arch-test act framework\n" + "\n".join(str(t) for t in sorted(all_traces))
+    )
+    if not tracelist_file.exists() or tracelist_file.read_text() != contents:
+        tracelist_file.write_text(contents)
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +164,7 @@ def gen_compile_tasks(
             outputs=(sig_file,),
             deps=(sig_elf,),
             extra_inputs=sail_inputs,
-            action=SubprocessAction(cmd=sail_cmd, stdout_file=sig_log_file),
+            action=SubprocessAction(cmd=sail_cmd, stdout_file=sig_log_file, timeout=SAIL_TIMEOUT),
         )
     )
 
@@ -266,7 +279,7 @@ def gen_rvvi_tasks(
             outputs=(sail_trace,),
             deps=(elf,),
             extra_inputs=sail_inputs,
-            action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log),
+            action=SubprocessAction(cmd=sail_cmd, stdout_file=sail_log, timeout=SAIL_TIMEOUT),
         )
     )
 
@@ -323,17 +336,18 @@ def gen_coverage_tasks(
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
 
-        # Write tracelist file, but only when its contents actually change so its mtime
-        # reflects real changes. This lets us include it in extra_inputs below without
-        # forcing a coverage rebuild on every run.
+        # Deps: all rvvi traces for this coverage group
+        rvvi_deps = tuple(sorted(traces))
+
+        # Tracelist generation task: hard-deps on all rvvi traces (failure propagates).
         tracelist_file.parent.mkdir(parents=True, exist_ok=True)
-        tracelist_contents = (
-            f"# Tests for coverage group: {coverage_group}\n"
-            "# Generated automatically by riscv-arch-test act framework\n"
-            + "\n".join(str(trace) for trace in sorted(traces))
+        tasks.append(
+            BuildTask(
+                outputs=(tracelist_file,),
+                deps=rvvi_deps,
+                action=PythonAction(fn=_write_tracelist, args=(tracelist_file, coverage_group, rvvi_deps)),
+            )
         )
-        if not tracelist_file.exists() or tracelist_file.read_text() != tracelist_contents:
-            tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
         if coverage_simulator == CoverageSimulator.QUESTA:
@@ -361,16 +375,14 @@ def gen_coverage_tasks(
                 f"{coverage_group.stem.upper()}_COVERAGE",
             ]
 
-        # Deps: all rvvi traces for this coverage group must be done
-        # The rvvi traces have the same stems as the traces list but with .rvvi suffix
-        rvvi_deps = tuple(sorted(traces))
-
         tasks.append(
             BuildTask(
                 outputs=(simulator_artifact,),
-                deps=rvvi_deps,
-                extra_inputs=(*coverage_inputs, tracelist_file),
-                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                deps=(tracelist_file,),
+                extra_inputs=coverage_inputs,
+                action=SubprocessAction(
+                    cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir, timeout=COVERAGE_SIM_TIMEOUT
+                ),
             )
         )
 
@@ -386,7 +398,7 @@ def gen_coverage_tasks(
             )
         )
 
-    # Overall summary merging
+    # Overall summary merging — hard deps so any failure propagates.
     if coverage_reports:
         overall_summary = config_report_dir / "_overall_summary.txt"
         report_deps = tuple(sorted(coverage_reports))

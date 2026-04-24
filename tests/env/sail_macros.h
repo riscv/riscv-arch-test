@@ -26,8 +26,10 @@
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
-#undef RVMODEL_BOOT
-//#define RVMODEL_BOOT
+# NOTE: do NOT #undef RVMODEL_BOOT here — the sail-max DUT config defines a
+# vector-test trap-fail stub in RVMODEL_BOOT that must survive into the
+# sig.elf build so a trapping test exits sail immediately with FAILURE
+# instead of hanging until SAIL_TIMEOUT.
 
 ##### TERMINATION #####
 
@@ -154,8 +156,7 @@
 
 // TODO: check to see if SAIL support this, and we may want to implement this in WALLY
 #undef SAIL_CLINT_SSIP_ADDRESS
-// #define SAIL_CLINT_SSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xC000)
-#define SAIL_CLINT_SSIP_ADDRESS (0x80000000)  // dummy address for now
+#define SAIL_CLINT_SSIP_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xC000)
 #undef RVMODEL_SET_SSW_INT
 #define RVMODEL_SET_SSW_INT(_R1, _R2)        \
   li _R1, 1;                 \

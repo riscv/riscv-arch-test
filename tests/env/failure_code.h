@@ -528,7 +528,6 @@
     #endif
 
         # Fetch the failing instruction using INSTR_PTR address
-        # Check bottom 2 bits: if inst[1:0] != 0b11, it's a 16-bit compressed instruction
         lhu x7, 0(x6)       # get lower half of the failing instruction
         lhu x8, 2(x6)       # 32-bit: fetch upper half
         slli x8, x8, 16
@@ -543,6 +542,9 @@
         # --------------------------------------------------
         # Load mismatch index & region
         # --------------------------------------------------
+        li a1, 3
+        beq x2, a1, base_mismatchindex   # if mismatch region is vector base, skip loading mismatch index since it is not valid
+
         lhu x18, -18(DEFAULT_LINK_REG)     # addi, instruction which copies mismatch index to _TEMP_REG2
         lhu x19, -20(DEFAULT_LINK_REG)
         slli x18, x18, 16
@@ -558,10 +560,17 @@
 
         sw x8, 300(DEFAULT_TEMP_REG)       # store mismatch index
         sw x2, 296(DEFAULT_TEMP_REG)       # store region
+        j vlvtype_store
+
+        base_mismatchindex:
+        li x8, 0
+        sw x8, 300(DEFAULT_TEMP_REG)       # store mismatch index = 0
+        sw x2, 296(DEFAULT_TEMP_REG)       # store region
 
         # --------------------------------------------------
         # Store vl/vtype and SEW for later use
         # --------------------------------------------------
+        vlvtype_store:
         csrr x10, vl
         csrr x11, vtype
 
@@ -661,6 +670,9 @@
         # --------------------------------------------------
         # Store failing mask
         # --------------------------------------------------
+        li a1, 3
+        beq x2, a1, copy_done    # if mismatch region is vector base, skip copying failing mask since it is not valid
+
         lhu x18, -14(DEFAULT_LINK_REG)    # vmv.v.v, instruction which moves failing mask to _MTMP2/_VTMP
         lhu x19, -16(DEFAULT_LINK_REG)
         slli x18, x18, 16
@@ -813,6 +825,7 @@
         addi a2, a2, 1
         lw a0, failing_reg
         jal failedtest_dec_to_str
+        j failedtest_report_print_regstr
     failedtest_report_vecreg:
         li a1, 'v'
         LA(a2, ascii_buffer)
@@ -915,6 +928,10 @@
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str
 
+        lw a0, failure_region
+        li a1, 3
+        beq a0, a1, failedtest_report_vec_done   # if mismatch region is vector base, skip printing mismatch mask since it is not valid
+
         // Print mismatch mask (raw bytes of vec_mismatch_mask, VLEN/8 bytes)
         // We print as a hex string by iterating over the bytes.
         // For brevity we print up to VLENMAX_BYTES bytes.
@@ -938,18 +955,23 @@
     failedtest_report_mask_loop:
         beqz x31, failedtest_report_mask_done
 
-        lbu a0, 0(x30)              # load byte
-        li a3, 8                    # a3 = bit count
+        LA(a2, ascii_buffer)           # reuse buffer for one rendered byte at a time
+        lbu a0, 0(x30)                 # load byte
+        li a3, 8                       # a3 = bit count
         jal failedtest_hex_to_str_loop
+        sb zero, 0(a2)                 # null terminate after the two hex chars
+        LA(a0, ascii_buffer)
+        call rvmodel_io_write_str
 
         addi x30, x30, -1
         addi x31, x31, -1
         j failedtest_report_mask_loop
     failedtest_report_mask_done:
     # Add newline and null terminator
-        LI(a3, 10)              # '\n'
+        LA(a2, ascii_buffer)
+        LI(a3, 10)                     # '\n'
         sb a3, 0(a2)
-        sb zero, 1(a2)          # null terminator
+        sb zero, 1(a2)                 # null terminator
 
         LA(a0, ascii_buffer)
         call rvmodel_io_write_str

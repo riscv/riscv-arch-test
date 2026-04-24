@@ -48,8 +48,8 @@
         SREG DEFAULT_TEMP_REG, 32(x9)  # save DEFAULT_TEMP_REG
         SREG DEFAULT_LINK_REG, 40(x9)  # save DEFAULT_LINK_REG
         SREG x1, 8(x9)                 # save x1 early
-        li x1, 3
-        sw x1, 0(x9)                   # failure_type = 3 (trap handler)
+        li x1, 4
+        sw x1, 0(x9)                   # failure_type = 4 (trap handler)
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
         mv DEFAULT_LINK_REG, x7        # move return address into DEFAULT_LINK_REG
         # now DEFAULT_LINK_REG has the return address of jal from the failure and DEFAULT_TEMP_REG is a vacant temporary register.
@@ -1016,7 +1016,7 @@
 #ifdef rvtest_mtrap_routine
     failedtest_report_traphandler:
         lw a0, failure_type
-        li a1, 3            # Failed in trap handler
+        li a1, 4            # Failed in trap handler
         bne a0, a1, failedtest_report_end
     failedtest_report_xepc:
         LA(a0, xepcstr)
@@ -1183,7 +1183,7 @@
 .macro RVTEST_FAILURE_DATA
     .data
     .align 4
-    failure_type:                # 0=int, 1=fp, 2=fflags (reuses x0 slot at offset 0)
+    failure_type:                # 0=int, 1=fp, 2=fflags (reuses x0 slot at offset 0), 3=vector, 4=trap handler
     begin_failure_scratch:
         .fill 64, 4, 0xfeedf00dbaaaaaad
     failing_instruction:

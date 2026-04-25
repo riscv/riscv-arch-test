@@ -15,17 +15,20 @@ covergroup Zkr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    seed_csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw_seed = {32'b000000010101_?????_001_?????_1110011};
+    csrrw: coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
     }
 
-    csrops_seed_illegal: coverpoint ins.current.insn {
-        wildcard bins csrrs_seed  = {32'b000000010101_?????_010_?????_1110011};
-        wildcard bins csrrc_seed  = {32'b000000010101_?????_011_?????_1110011};
-        wildcard bins csrrwi_seed = {32'b000000010101_?????_101_?????_1110011};
-        wildcard bins csrrsi_seed = {32'b000000010101_?????_110_?????_1110011};
-        wildcard bins csrrci_seed = {32'b000000010101_?????_111_?????_1110011};
-        wildcard bins csrw_seed  = {32'b000000010101_?????_001_00000_1110011};
+    csrops_illegal: coverpoint ins.current.insn {
+        wildcard bins csrrs  = {CSRRS};
+        wildcard bins csrrc  = {CSRRC};
+        wildcard bins csrrwi = {CSRRWI};
+        wildcard bins csrrsi = {CSRRSI};
+        wildcard bins csrrci = {CSRRCI};
+    }
+
+    seed_csr: coverpoint ins.current.insn[31:20] {
+        bins seed = {CSR_SEED};
     }
 
     rs1_imm_0_1: coverpoint ins.current.insn[19:15] {
@@ -43,15 +46,15 @@ covergroup Zkr_cg with function sample(ins_t ins);
     }
 
     // Main coverpoints
-    cp_zkr_seed_csrrw_M: cross seed_csrrw, priv_mode_m, mseccfg_sseed, mseccfg_useed;
-    cp_zkr_seed_illegal_csr_op_M: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_m;
+    cp_zkr_seed_csrrw_M: cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_m, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_M: cross csrops_illegal, seed_csr, rs1_imm_0_1, priv_mode_m;
 `ifdef S_SUPPORTED
-    cp_zkr_seed_csrrw_S: cross seed_csrrw, priv_mode_s, mseccfg_sseed, mseccfg_useed;
-    cp_zkr_seed_illegal_csr_op_S: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_s;
+    cp_zkr_seed_csrrw_S: cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_s, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_S: cross csrops_illegal, seed_csr, rs1_imm_0_1, priv_mode_s;
 `endif
 `ifdef U_SUPPORTED
-    cp_zkr_seed_csrrw_U: cross seed_csrrw, priv_mode_u, mseccfg_sseed, mseccfg_useed;
-    cp_zkr_seed_illegal_csr_op_U: cross csrops_seed_illegal, rs1_imm_0_1, priv_mode_u;
+    cp_zkr_seed_csrrw_U: cross csrrw, seed_csr, rs1_imm_0_1, priv_mode_u, mseccfg_sseed, mseccfg_useed;
+    cp_zkr_seed_illegal_csr_op_U: cross csrops_illegal, seed_csr, rs1_imm_0_1, priv_mode_u;
 `endif
 
 endgroup

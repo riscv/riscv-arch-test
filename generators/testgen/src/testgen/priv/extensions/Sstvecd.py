@@ -39,7 +39,7 @@ def _generate_stvec_mode_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Sstvecd", required_extensions=["S", "Zicsr"])
+@add_priv_test_generator("Sstvecd", required_extensions=["S"])
 def make_sstvecd(test_data: TestData) -> list[str]:
     lines: list[str] = []
     lines.extend(_generate_stvec_mode_tests(test_data))

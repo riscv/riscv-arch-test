@@ -225,9 +225,9 @@
   #endif
 #endif
 
-// Advance _SIG_PTR by the signature stride computed from current vl and vtype.
-// _VD_EEW is the destination element width passed through for documentation
-// (the runtime vtype.vsew is set to match _VD_EEW by the caller's vsetvli).
+// Advance _SIG_PTR by the signature stride computed from the current vl and vtype.
+// The caller must set vtype.vsew appropriately before invoking this macro
+// (for example via vsetvli), since the stride is derived from the runtime CSR state.
 // Clobbers _TEMP_REG and _LINK_REG (both are free here after the compare).
 // bytes = vl << ((vtype >> 3) & 7)  ;  bytes = (bytes + 4 + 7) & ~7
 #define RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)  \

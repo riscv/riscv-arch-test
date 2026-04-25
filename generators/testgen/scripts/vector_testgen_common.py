@@ -26,7 +26,7 @@ ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", ".
 ##################################
 
 # Define VLEN, ELEN and SEWMIN as extremes which these tests support
-maxVLEN = 4096   # TODO: change to 2048 later, save as 512 for now for smaller files
+maxVLEN = 1024   # TODO: change to 2048 later, save as 512 for now for smaller files
 maxELEN = 64
 minSEW_MIN = 8
 
@@ -1474,7 +1474,7 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, load_testline = Non
       masked_flag = 1
 
     if length_macro:
-      writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _MASKPROD_FLAG, _MASKED_FLAG, _SEW, _LMUL, _INST_PTR, _STR_PTR)")
+      writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _VTMP, _MTMP2, _MTMP, _VR, _MASKPROD_FLAG, _MASKED_FLAG, _VD_EEW, _LMUL, _INST_PTR, _STR_PTR)")
       if vd_mask:
         writeLine(
         f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, v{vtmp}, v{vtmp2}, v{mtmp}, v{vd}, 1, {masked_flag}, 8, {emul}, {inst_ptr}, {str_ptr})",

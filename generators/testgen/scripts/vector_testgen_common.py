@@ -1872,9 +1872,16 @@ def finalizeSigupdCount(filename, xlen, flen):
   """Replace the @SIGUPD_COUNT_FROM_TESTGEN@ placeholder left in the header with
   the real dynamic count (getSigSpace) plus a small hardcoded buffer."""
   sig_count = getSigSpace(xlen, flen) + SIGUPD_COUNT_BUFFER
+  placeholder = "@SIGUPD_COUNT_FROM_TESTGEN@"
   with open(filename, "r") as fh:
     content = fh.read()
-  content = content.replace("@SIGUPD_COUNT_FROM_TESTGEN@", str(sig_count))
+  placeholder_count = content.count(placeholder)
+  if placeholder_count != 1:
+    raise ValueError(
+      f"Expected exactly one {placeholder} placeholder in {filename}, "
+      f"found {placeholder_count}"
+    )
+  content = content.replace(placeholder, str(sig_count))
   with open(filename, "w") as fh:
     fh.write(content)
 

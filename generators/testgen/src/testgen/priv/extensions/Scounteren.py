@@ -26,7 +26,7 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     return lines
 
 
-@add_priv_test_generator("Scounteren", required_extensions=["S", "Zicsr"])
+@add_priv_test_generator("Scounteren", required_extensions=["S"])
 def make_sscounteren(test_data: TestData) -> list[str]:
     """Generate tests for Scounteren supervisor counter-enable register."""
     lines: list[str] = []

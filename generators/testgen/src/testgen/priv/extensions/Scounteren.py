@@ -12,7 +12,7 @@ from testgen.priv.registry import add_priv_test_generator
 
 def _generate_scounteren_tests(test_data: TestData) -> list[str]:
     """Generate tests for scounteren CSR."""
-    covergroup = "Scounteren_cg"
+    covergroup = "Sscounteren_cg"
     coverpoint = "cp_scounteren_writable"
     lines = [
         comment_banner(
@@ -27,7 +27,7 @@ def _generate_scounteren_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator("Scounteren", required_extensions=["S", "Zicsr"])
-def make_scounteren(test_data: TestData) -> list[str]:
+def make_sscounteren(test_data: TestData) -> list[str]:
     """Generate tests for Scounteren supervisor counter-enable register."""
     lines: list[str] = []
     lines.extend(_generate_scounteren_tests(test_data))

@@ -119,16 +119,26 @@ RUN mkdir -p /home/shared
 # Install mise itself into ~/.local/bin
 RUN curl -fsSL https://mise.jdx.dev/install.sh | sh
 
-# Copy the full repo from the build context.
-# mise and bundler need .mise.toml and the Gemfile(s); uv needs pyproject.toml / uv.lock.
-COPY . /act4/
+# mise and bundler need .mise.toml and the Gemfile(s); uv needs .python-version / pyproject.toml / uv.lock.
+COPY \
+    .mise.toml \
+        framework/src/act/data/Gemfile framework/src/act/data/Gemfile.lock \
+        .python-version pyproject.toml uv.lock README.md \
+    /act4/
+# Copy files of other workspace members
+COPY framework/pyproject.toml /act4/framework/pyproject.toml
+COPY framework/src/act/__init__.py /act4/framework/src/act/__init__.py
+COPY generators/coverage/pyproject.toml /act4/generators/coverage/pyproject.toml
+COPY generators/coverage/src/covergroupgen/__init__.py /act4/generators/coverage/src/covergroupgen/__init__.py
+COPY generators/testgen/pyproject.toml /act4/generators/testgen/pyproject.toml
+COPY generators/testgen/src/testgen/__init__.py /act4/generators/testgen/src/testgen/__init__.py
 
 # Install uv and Ruby at the versions pinned in .mise.toml
 # Pre-install the riscv-unified-db gem into the mise-managed Ruby's gem dir so `bundle install` is a no-op at runtime.
 # Pre-download all Python dependencies so `uv sync` is a no-op at runtime.
 RUN cd /act4 \
   && mise install \
-  && mise exec -- bundle install --gemfile=framework/src/act/data/Gemfile \
+  && mise exec -- bundle install \
   && mise exec -- uv sync
 
 # Stage 3: final runtime image
@@ -166,7 +176,7 @@ RUN SAIL_OS="$(uname -s)" \
   | tar xz --directory="${SAIL_PREFIX}" --strip-components=1
 
 COPY --from=toolchain-builder "${RISCV_TOOLCHAIN_PREFIX}" "${RISCV_TOOLCHAIN_PREFIX}"
-COPY --from=mise-fetcher      /act4                       /act4
+COPY --from=mise-fetcher      /act4/.venv                 /act4/.venv
 COPY --from=mise-fetcher      /home/shared                /home/shared
 
 # Fix home ownership so that any user can use it
@@ -183,3 +193,5 @@ USER ubuntu
 WORKDIR /act4
 
 CMD ["/bin/bash"]
+
+COPY --chmod=777 . /act4

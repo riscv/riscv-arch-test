@@ -379,6 +379,9 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
 
     lines.append("\n#ifdef MSECCFG_SUPPORTED")
     lines.extend(csr_access_test(test_data, "mseccfgh", covergroup, coverpoint))
+    lines.append("#endif")
+    lines.append("\n#ifdef SM1P13_SUPPORTED")
+    lines.extend(csr_access_test(test_data, "medelegh", covergroup, coverpoint))
     lines.extend(
         [
             "#endif",
@@ -754,38 +757,6 @@ def _generate_mcsr_tests(test_data: TestData) -> list[str]:
     )
 
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
-
-    ######################################
-    coverpoint = "cp_medelegh"
-    ######################################
-    lines.append(
-        comment_banner(
-            coverpoint,
-            "Sm1p13 RV32 only: write all 1s to medelegh and read back.\n"
-            "The ref model determines which bits are writable; signature must match.",
-        ),
-    )
-
-    r_medsave, r_medcheck = test_data.int_regs.get_registers(2)
-
-    lines.extend(
-        [
-            "#if __riscv_xlen == 32",
-            f"CSRR(x{r_medsave}, medelegh)   # save medelegh before testing",
-            "",
-            "# Write all 1s and all 0s to medelegh",
-            f"LI(x{r_medcheck}, -1)          # x{r_medcheck} = all 1s",
-            test_data.add_testcase("write_ones", coverpoint, covergroup),
-            gen_csr_write_sigupd(r_medcheck, "medelegh", test_data),
-            test_data.add_testcase("write_zeros", coverpoint, covergroup),
-            gen_csr_write_sigupd(0, "medelegh", test_data),
-            "",
-            f"CSRW(medelegh, x{r_medsave})   # restore medelegh",
-            "#endif // __riscv_xlen == 32",
-        ]
-    )
-
-    test_data.int_regs.return_registers([r_medsave, r_medcheck])
 
     lines.append("#endif // SM1P13_SUPPORTED")
 

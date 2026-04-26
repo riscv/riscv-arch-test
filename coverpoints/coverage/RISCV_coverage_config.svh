@@ -143,6 +143,9 @@
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
 `endif
+`ifdef SCOUNTEREN_COVERAGE
+  `include "Scounteren_coverage.svh"
+`endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"
 `endif
@@ -151,6 +154,9 @@
 `endif
 `ifdef SMV_COVERAGE
   `include "SmV_coverage.svh"
+`endif
+`ifdef SSCOUNTERENW_COVERAGE
+  `include "Sscounterenw_coverage.svh"
 `endif
 `ifdef SSSTRICTS_COVERAGE
   `include "SsstrictS_coverage.svh"
@@ -163,6 +169,12 @@
 `endif
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
+`endif
+`ifdef SSTVALA_COVERAGE
+  `include "Sstvala_coverage.svh"
+`endif
+`ifdef SSTVECD_COVERAGE
+  `include "Sstvecd_coverage.svh"
 `endif
 `ifdef SV_COVERAGE
   `include "Sv_coverage.svh"

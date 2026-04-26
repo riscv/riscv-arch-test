@@ -79,6 +79,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
     // This is Sm machine-mode testing, so all coverpoints are in Machine mode.
     cp_mcause_write_exception: cross priv_mode_m, csrrw, mcause, mcause_exception_values, mcause_exception; // CSR write of mcause in M mode with interesting values
     cp_mcause_write_interrupt: cross priv_mode_m, csrrw, mcause, mcause_interrupt_values, mcause_interrupt; // CSR write of mcause in M mode with interesting values
+
 endgroup
 
 

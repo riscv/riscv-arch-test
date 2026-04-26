@@ -108,7 +108,7 @@
       "description": "Major GitHub Actions bumps still get grouped but require manual review",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["major"],
-      "groupName": "github-actions"
+      "groupName": "github-actions (major)"
     },
     {
       "description": "Group remaining pre-commit hook bumps (ruff/uv are grouped with their non-hook counterparts above); auto-merge non-major",
@@ -130,7 +130,7 @@
         "!astral-sh/uv-pre-commit"
       ],
       "matchUpdateTypes": ["major"],
-      "groupName": "pre-commit hooks",
+      "groupName": "pre-commit hooks (major)",
       "schedule": ["before 6am on monday"]
     },
     {
